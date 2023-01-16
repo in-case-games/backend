@@ -1,10 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using wdskills.DomainLayer.Entities;
 using wdskills.DomainLayer.Repositories;
 using wdskills.EntityFramework.Data;

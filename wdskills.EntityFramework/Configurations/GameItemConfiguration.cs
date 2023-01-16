@@ -17,7 +17,7 @@ namespace wdskills.EntityFramework.Configurations
                 .IsUnique();
 
             builder.Property(p => p.GameItemCost)
-                .HasPrecision(3, 3)
+                .HasPrecision(18, 5)
                 .IsRequired();
 
             builder.Property(p => p.GameItemImage)

@@ -23,7 +23,7 @@ namespace wdskills.EntityFramework.Configurations
                 .OnDelete(DeleteBehavior.Cascade);
 
             builder.Property(p => p.LossChance)
-                .HasPrecision(11, 3);
+                .HasPrecision(18, 10);
 
         }
     }

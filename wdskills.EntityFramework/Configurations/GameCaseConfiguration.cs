@@ -17,11 +17,11 @@ namespace wdskills.EntityFramework.Configurations
                 .IsRequired();
 
             builder.Property(p => p.GameCaseCost)
-                .HasPrecision(3, 3)
+                .HasPrecision(18, 5)
                 .IsRequired();
 
             builder.Property(p => p.RevenuePrecentage)
-                .HasPrecision(5, 3)
+                .HasPrecision(18, 5)
                 .IsRequired();
         }
     }
