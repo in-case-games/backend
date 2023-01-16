@@ -1,9 +1,9 @@
 ﻿namespace wdskills.DomainLayer.Entities
 {
-    public class UserEffects : BaseEntity
+    public class UserRestriction : BaseEntity
     {
         public User? User { get; set; }
-        public string? EffectName { get; set; }
+        public string? RestrictionName { get; set; }
         public DateTime? CreatedDate { get; set; }
     }
 }
