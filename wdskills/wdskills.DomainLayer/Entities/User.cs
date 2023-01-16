@@ -1,0 +1,10 @@
+﻿namespace wdskills.DomainLayer.Entities
+{
+    public class User : BaseEntity
+    {
+        public string? UserName { get; set; }
+        public string? UserEmail { get; set; }
+        public string? PasswordSalt { get; set; }
+        public string? PasswordHash { get; set; }
+    }
+}

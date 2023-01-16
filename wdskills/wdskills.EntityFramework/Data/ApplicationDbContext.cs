@@ -13,7 +13,7 @@ namespace wdskills.EntityFramework.Data
     {
         internal DbSet<User> User => Set<User>();
         internal DbSet<UserRole> UserRole => Set<UserRole>();
-        internal DbSet<UserEffect> UserEffect => Set<UserEffect>();
+        internal DbSet<UserEffects> UserEffect => Set<UserEffects>();
         internal DbSet<UserAdditionalInfo> UserAdditionalInfo => Set<UserAdditionalInfo>();
         internal DbSet<UserInventory> UserInventory => Set<UserInventory>();
         internal DbSet<GameCase> GameCase => Set<GameCase>();
