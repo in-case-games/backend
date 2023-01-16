@@ -5,11 +5,11 @@ VisualStudioVersion = 17.4.33205.214
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "wdskills.WPF", "wdskills.WPF\wdskills.WPF.csproj", "{E128B857-6709-4DCA-A1C1-F8C4692D9D3C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "wdskills.EntityFramework", "wdskills.EntityFramework\wdskills.EntityFramework.csproj", "{BADF1534-9556-4814-917C-E2E40E111EB1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "wdskills.EntityFramework", "wdskills.EntityFramework\wdskills.EntityFramework.csproj", "{BADF1534-9556-4814-917C-E2E40E111EB1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "wdskills.DomainLayer", "wdskills.DomainLayer\wdskills.DomainLayer.csproj", "{A180E89D-D2E2-4F6F-89F7-E47E5182D0EB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "wdskills.DomainLayer", "wdskills.DomainLayer\wdskills.DomainLayer.csproj", "{A180E89D-D2E2-4F6F-89F7-E47E5182D0EB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "wdskills.API", "wdskills.API\wdskills.API.csproj", "{5DC1DD14-6E97-48D7-821F-F41CFC9CEB93}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "wdskills.API", "wdskills.API\wdskills.API.csproj", "{5DC1DD14-6E97-48D7-821F-F41CFC9CEB93}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
