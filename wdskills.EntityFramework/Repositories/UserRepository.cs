@@ -1,0 +1,60 @@
+﻿using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using wdskills.DomainLayer.Entities;
+using wdskills.DomainLayer.Repositories;
+using wdskills.EntityFramework.Data;
+
+namespace wdskills.EntityFramework.Repositories
+{
+    public class UserRepository : IUserRepository
+    {
+        private readonly ApplicationDbContextFactory _contextFactory;
+        public UserRepository(ApplicationDbContextFactory context)
+        {
+            _contextFactory= context;
+        }
+        public async Task<bool> CreateUser(User user)
+        {
+            using ApplicationDbContext _context = _contextFactory.CreateDbContext();
+            await _context.User.AddAsync(user);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> DeleteUser(Guid id)
+        {
+            using ApplicationDbContext _context = _contextFactory.CreateDbContext();
+            User? user = await _context.User.FirstOrDefaultAsync(x => x.Id == id);
+            if(user != null)
+            {
+                _context.User.Remove(user);
+            }
+            return (user != null);
+        }
+
+        public async Task<IEnumerable<User>> GetAllUsers()
+        {
+            using ApplicationDbContext _context = _contextFactory.CreateDbContext();
+            return await _context.User.ToListAsync();
+        }
+
+        public async Task<User> GetUser(string email)
+        {
+            using ApplicationDbContext _context = _contextFactory.CreateDbContext();
+            return await _context.User.FirstOrDefaultAsync(x => x.UserEmail == email) ?? new();
+        }
+
+        public async Task<bool> UpdateUser(User user)
+        {
+            using ApplicationDbContext _context = _contextFactory.CreateDbContext();
+            _context.Set<User>().Update(user);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+    }
+}

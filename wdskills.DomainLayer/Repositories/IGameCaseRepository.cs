@@ -6,11 +6,11 @@ namespace wdskills.DomainLayer.Repositories
     {
         public Task<bool> CreateCase(GameCase gameCase);
         public Task<bool> AddItem(Guid id, GameItem item);
-        public Task<bool> RemoveItem(Guid id, GameItem item);
+        public Task<bool> RemoveItem(Guid id);
         public Task<bool> DeleteCase(Guid id);
-        public Task<bool> UpdateCase(Guid id, GameCase gameCase);
-        public Task<bool> GetCurrentCase(Guid id);
-        public Task<GameCase> GetAllCases();
+        public Task<bool> UpdateCase(GameCase gameCase);
+        public Task<GameCase> GetCurrentCase(Guid id);
+        public Task<IEnumerable<GameCase>> GetAllCases();
 
     }
 }

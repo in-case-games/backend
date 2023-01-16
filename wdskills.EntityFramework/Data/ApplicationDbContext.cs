@@ -12,6 +12,7 @@ namespace wdskills.EntityFramework.Data
         internal DbSet<UserInventory> UserInventory => Set<UserInventory>();
         internal DbSet<GameCase> GameCase => Set<GameCase>();
         internal DbSet<GameItem> GameItem => Set<GameItem>();
+        internal DbSet<CaseInventory> CaseInventory => Set<CaseInventory>();
 
         public ApplicationDbContext(DbContextOptions options) : base(options) {}
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

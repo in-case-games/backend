@@ -1,7 +1,9 @@
-﻿namespace wdskills.DomainLayer.Repositories
+﻿using wdskills.DomainLayer.Entities;
+
+namespace wdskills.DomainLayer.Repositories
 {
     public interface ICaseInventoryRepository
     {
-        public Task<bool> ChangeLoss(Guid id, decimal loss);
+        public Task<bool> CaseInventoryUpdate(CaseInventory caseInventory);
     }
 }
