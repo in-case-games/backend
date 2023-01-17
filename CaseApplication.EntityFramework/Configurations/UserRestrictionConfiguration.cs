@@ -12,7 +12,7 @@ namespace CaseApplication.EntityFramework.Configurations
 
             builder.HasOne(o => o.User)
                 .WithMany(m => m.UserRestrictions)
-                .HasForeignKey(fk => fk.User)
+                .HasForeignKey(fk => fk.UserId)
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Cascade);
 

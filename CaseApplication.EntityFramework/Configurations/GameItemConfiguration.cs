@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using CaseApplication.DomainLayer.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace CaseApplication.EntityFramework.Configurations
 {
@@ -17,7 +18,7 @@ namespace CaseApplication.EntityFramework.Configurations
                 .IsUnique();
 
             builder.Property(p => p.GameItemCost)
-                .HasPrecision(18, 5)
+                .HasColumnType("DECIMAL(7, 5)")
                 .IsRequired();
 
             builder.Property(p => p.GameItemImage)

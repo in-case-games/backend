@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using CaseApplication.DomainLayer.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace CaseApplication.EntityFramework.Configurations
 {
@@ -17,11 +18,11 @@ namespace CaseApplication.EntityFramework.Configurations
                 .IsRequired();
 
             builder.Property(p => p.GameCaseCost)
-                .HasPrecision(18, 5)
+                .HasColumnType("DECIMAL(7, 5)")
                 .IsRequired();
 
             builder.Property(p => p.RevenuePrecentage)
-                .HasPrecision(18, 5)
+                .HasColumnType("DECIMAL(6, 5)")
                 .IsRequired();
         }
     }

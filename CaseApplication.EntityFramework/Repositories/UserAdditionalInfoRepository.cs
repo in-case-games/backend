@@ -7,8 +7,8 @@ namespace CaseApplication.EntityFramework.Repositories
 {
     public class UserAdditionalInfoRepository : IUserAdditionalInfoRepository
     {
-        private readonly ApplicationDbContextFactory _contextFactory;
-        public UserAdditionalInfoRepository(ApplicationDbContextFactory contextFactory) {
+        private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
+        public UserAdditionalInfoRepository(IDbContextFactory<ApplicationDbContext> contextFactory) {
             _contextFactory = contextFactory;
         }
 

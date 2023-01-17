@@ -23,7 +23,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\wdskills.DomainLayer\wdskills.DomainLayer.csproj" />
+    <ProjectReference Include="..\CaseApplication.DomainLayer\CaseApplication.DomainLayer.csproj" />
+    <ProjectReference Include="..\CaseApplication.DomainLayer\CaseApplication.DomainLayer.csproj" />
   </ItemGroup>
 
 </Project>

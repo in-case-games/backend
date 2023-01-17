@@ -12,16 +12,21 @@ namespace CaseApplication.EntityFramework.Configurations
 
             builder.HasOne(o => o.User)
                 .WithMany(m => m.UserAdditionalInfos)
-                .HasForeignKey(fk => fk.User)
+                .HasForeignKey(fk => fk.UserId)
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Cascade);
 
             builder.Property(p => p.UserAbleToPay)
-                .HasDefaultValue(0);
+                .HasColumnType("DECIMAL(6, 5)")
+                .IsRequired();
+
+            builder.Property(p => p.UserBalance)
+                .HasColumnType("DECIMAL(6, 5)")
+                .IsRequired();
 
             builder.HasOne(i => i.UserRole)
                 .WithMany(m => m.UserAdditionalInfos)
-                .HasForeignKey(fk => fk.UserRole)
+                .HasForeignKey(fk => fk.UserRoleId)
                 .IsRequired();
         }
     }

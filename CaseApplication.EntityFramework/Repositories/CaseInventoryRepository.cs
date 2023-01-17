@@ -1,13 +1,14 @@
 ﻿using CaseApplication.DomainLayer.Entities;
 using CaseApplication.DomainLayer.Repositories;
 using CaseApplication.EntityFramework.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace CaseApplication.EntityFramework.Repositories
 {
     public class CaseInventoryRepository : ICaseInventoryRepository
     {
-        private readonly ApplicationDbContextFactory _contextFactory;
-        public CaseInventoryRepository(ApplicationDbContextFactory contextFactory)
+        private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
+        public CaseInventoryRepository(IDbContextFactory<ApplicationDbContext> contextFactory)
         {
             _contextFactory = contextFactory;
         }

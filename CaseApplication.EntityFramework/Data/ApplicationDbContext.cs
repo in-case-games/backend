@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using CaseApplication.DomainLayer.Entities;
+using CaseApplication.EntityFramework.Configurations;
 
 namespace CaseApplication.EntityFramework.Data
 {
@@ -15,9 +16,17 @@ namespace CaseApplication.EntityFramework.Data
         internal DbSet<CaseInventory> CaseInventory => Set<CaseInventory>();
 
         public ApplicationDbContext(DbContextOptions options) : base(options) {}
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            optionsBuilder.UseSqlServer(@"Server=DESKTOP-E44T45H\\FERBRAY;Database=CaseApp;Trusted_Connection=True;");
+            modelBuilder.ApplyConfiguration(new CaseInventoryConfiguration());
+            modelBuilder.ApplyConfiguration(new GameCaseConfiguration());
+            modelBuilder.ApplyConfiguration(new GameItemConfiguration());
+            modelBuilder.ApplyConfiguration(new UserAdditionalInfoConfiguration());
+            modelBuilder.ApplyConfiguration(new UserConfiguration());
+            modelBuilder.ApplyConfiguration(new UserInventoryConfiguration());
+            modelBuilder.ApplyConfiguration(new UserRestrictionConfiguration());
+            modelBuilder.ApplyConfiguration(new UserRoleConfiguration());
         }
     }
 }

@@ -7,9 +7,9 @@ namespace CaseApplication.EntityFramework.Repositories
 {
     public class GameCaseRepository : IGameCaseRepository
     {
-        private readonly ApplicationDbContextFactory _contextFactory;
+        private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
 
-        public GameCaseRepository(ApplicationDbContextFactory contextFactory)
+        public GameCaseRepository(IDbContextFactory<ApplicationDbContext> contextFactory)
         {
             _contextFactory = contextFactory;
         }

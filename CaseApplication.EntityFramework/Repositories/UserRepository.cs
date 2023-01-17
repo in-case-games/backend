@@ -7,8 +7,8 @@ namespace CaseApplication.EntityFramework.Repositories
 {
     public class UserRepository : IUserRepository
     {
-        private readonly ApplicationDbContextFactory _contextFactory;
-        public UserRepository(ApplicationDbContextFactory context)
+        private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
+        public UserRepository(IDbContextFactory<ApplicationDbContext> context)
         {
             _contextFactory= context;
         }

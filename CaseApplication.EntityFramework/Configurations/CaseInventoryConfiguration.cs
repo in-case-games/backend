@@ -12,18 +12,19 @@ namespace CaseApplication.EntityFramework.Configurations
 
             builder.HasOne(o => o.GameCase)
                 .WithMany(m => m.CaseInventories)
-                .HasForeignKey(fk => fk.GameCase)
+                .HasForeignKey(fk => fk.GameCaseId)
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasOne(o => o.CaseItem)
                 .WithMany(m => m.CaseInventories)
-                .HasForeignKey(fk => fk.CaseItem)
+                .HasForeignKey(fk => fk.CaseItemId)
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Cascade);
-
+            
             builder.Property(p => p.LossChance)
-                .HasPrecision(18, 10);
+                .HasColumnType("DECIMAL(6, 5)")
+                .IsRequired();
 
         }
     }

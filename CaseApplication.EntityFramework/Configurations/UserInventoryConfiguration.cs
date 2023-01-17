@@ -12,11 +12,13 @@ namespace CaseApplication.EntityFramework.Configurations
 
             builder.HasOne(o => o.User)
                 .WithMany(m => m.UserInventories)
+                .HasForeignKey(fk => fk.UserId)
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasOne(o => o.GameItem)
                 .WithMany(m => m.UserInventories)
+                .HasForeignKey(fk => fk.GameItemId)
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Cascade);
         }
