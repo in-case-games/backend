@@ -19,9 +19,9 @@ namespace CaseApplication.API.Controllers
         }
 
         [HttpGet]
-        public async Task<UserAdditionalInfo> GetInfo(Guid id)
+        public async Task<UserAdditionalInfo> GetInfo(Guid userId)
         {
-            return await _userInfoRepository.GetInfo(id);
+            return await _userInfoRepository.GetInfo(userId);
         }
 
         [HttpPost]
@@ -40,12 +40,11 @@ namespace CaseApplication.API.Controllers
         }
 
         [HttpPost("UpdateInfo")]
-        public async Task<IActionResult> UpdateInfo(UserAdditionalInfoDto userInfo)
+        public async Task<IActionResult> UpdateInfo(UserAdditionalInfoDto userInfo, string hash)
         {
             var temp = new UserAdditionalInfo()
             {
                 Id = userInfo.Id,
-                UserId = userInfo.UserId,
                 UserRoleId = userInfo.UserRoleId,
                 UserAbleToPay = userInfo.UserAbleToPay,
                 UserAge = userInfo.UserAge,
@@ -55,9 +54,9 @@ namespace CaseApplication.API.Controllers
         }
 
         [HttpDelete]
-        public async Task<IActionResult> DeleteInfo(Guid id)
+        public async Task<IActionResult> DeleteInfo(Guid infoId, UserDto userRemoving)
         {
-            return Ok(await _userInfoRepository.DeleteInfo(id));
+            return Ok(await _userInfoRepository.DeleteInfo(infoId));
         }
     }
 }

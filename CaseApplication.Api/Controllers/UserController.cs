@@ -39,22 +39,22 @@ namespace CaseApplication.API.Controllers
             var temp = new User()
             {
                 UserName = user.UserName,
-                UserEmail =user.UserEmail,
+                UserEmail = user.UserEmail,
                 UserImage = user.UserImage,
-                PasswordHash= user.PasswordHash,
-                PasswordSalt= user.PasswordSalt
+                PasswordHash = user.PasswordHash,
+                PasswordSalt = user.PasswordSalt,
             };
             return Ok(await _userRepository.CreateUser(temp));
         }
 
         [HttpDelete]
-        public async Task<IActionResult> DeleteUser(Guid id)
+        public async Task<IActionResult> DeleteUser(Guid id, UserDto userRemoving)
         {
             return Ok(await _userRepository.DeleteUser(id));
         }
 
         [HttpPost("UpdateUser")]
-        public async Task<IActionResult> UpdateUser(UserDto user)
+        public async Task<IActionResult> UpdateUser(UserDto user, string hash)
         {
             var temp = new User()
             {
