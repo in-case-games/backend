@@ -10,19 +10,9 @@ namespace CaseApplication.EntityFramework.Configurations
         {
             base.Configure(builder);
 
-            builder.HasOne(o => o.User)
-                .WithMany(m => m.UserRestrictions)
-                .HasForeignKey(fk => fk.UserId)
-                .IsRequired()
-                .OnDelete(DeleteBehavior.Cascade);
-
             builder.Property(p => p.RestrictionName)
                 .HasMaxLength(30)
                 .IsRequired();
-
-            builder.Property(p => p.CreatedDate)
-                .HasColumnType("datetime2(7)")
-                .HasDefaultValue(DateTime.Now);
         }
     }
 }

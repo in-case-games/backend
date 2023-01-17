@@ -10,23 +10,12 @@ namespace CaseApplication.EntityFramework.Configurations
         {
             base.Configure(builder);
 
-            builder.HasOne(o => o.User)
-                .WithMany(m => m.UserAdditionalInfos)
-                .HasForeignKey(fk => fk.UserId)
-                .IsRequired()
-                .OnDelete(DeleteBehavior.Cascade);
-
             builder.Property(p => p.UserAbleToPay)
                 .HasColumnType("DECIMAL(6, 5)")
                 .IsRequired();
 
             builder.Property(p => p.UserBalance)
                 .HasColumnType("DECIMAL(6, 5)")
-                .IsRequired();
-
-            builder.HasOne(i => i.UserRole)
-                .WithMany(m => m.UserAdditionalInfos)
-                .HasForeignKey(fk => fk.UserRoleId)
                 .IsRequired();
         }
     }

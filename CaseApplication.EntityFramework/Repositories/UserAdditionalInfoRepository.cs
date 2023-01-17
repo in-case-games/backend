@@ -19,7 +19,7 @@ namespace CaseApplication.EntityFramework.Repositories
             UserRole? standartRole = await _context.UserRole.FirstOrDefaultAsync(x => x.RoleName == "user");
             if (standartRole is null) throw new Exception();
 
-            info.UserRoleId = standartRole.Id;
+            info.UserRole!.Id = standartRole.Id;
             await _context.UserAdditionalInfo.AddAsync(info);
             await _context.SaveChangesAsync();
 
@@ -45,7 +45,7 @@ namespace CaseApplication.EntityFramework.Repositories
         {
             using ApplicationDbContext _context = _contextFactory.CreateDbContext();
 
-            return await _context.UserAdditionalInfo.FirstOrDefaultAsync(x => x.UserId == userId)
+            return await _context.UserAdditionalInfo.FirstOrDefaultAsync(x => x.User!.Id == userId)
                 ?? new();
         }
 

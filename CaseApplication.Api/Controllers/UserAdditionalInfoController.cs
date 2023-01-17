@@ -30,8 +30,6 @@ namespace CaseApplication.API.Controllers
             var temp = new UserAdditionalInfo()
             {
                 Id = userInfo.Id,
-                UserId = userInfo.UserId,
-                UserRoleId = userInfo.UserRoleId,
                 UserAbleToPay = userInfo.UserAbleToPay,
                 UserAge = userInfo.UserAge,
                 UserBalance = userInfo.UserBalance,
@@ -45,7 +43,6 @@ namespace CaseApplication.API.Controllers
             var temp = new UserAdditionalInfo()
             {
                 Id = userInfo.Id,
-                UserRoleId = userInfo.UserRoleId,
                 UserAbleToPay = userInfo.UserAbleToPay,
                 UserAge = userInfo.UserAge,
                 UserBalance = userInfo.UserBalance,
