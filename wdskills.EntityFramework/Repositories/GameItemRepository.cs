@@ -1,9 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using wdskills.DomainLayer.Entities;
-using wdskills.DomainLayer.Repositories;
-using wdskills.EntityFramework.Data;
+using CaseApplication.DomainLayer.Entities;
+using CaseApplication.DomainLayer.Repositories;
+using CaseApplication.EntityFramework.Data;
 
-namespace wdskills.EntityFramework.Repositories
+namespace CaseApplication.EntityFramework.Repositories
 {
     public class GameItemRepository : IGameItemRepository
     {

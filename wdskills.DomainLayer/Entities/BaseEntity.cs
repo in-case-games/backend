@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace wdskills.DomainLayer.Entities
+namespace CaseApplication.DomainLayer.Entities
 {
     public class BaseEntity
     {

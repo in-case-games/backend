@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using wdskills.DomainLayer.Entities;
+using CaseApplication.DomainLayer.Entities;
 
-namespace wdskills.EntityFramework.Data
+namespace CaseApplication.EntityFramework.Data
 {
     public class ApplicationDbContext : DbContext
     {

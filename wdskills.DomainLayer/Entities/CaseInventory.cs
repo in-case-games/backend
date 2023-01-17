@@ -1,4 +1,4 @@
-﻿namespace wdskills.DomainLayer.Entities
+﻿namespace CaseApplication.DomainLayer.Entities
 {
     public class CaseInventory : BaseEntity
     {

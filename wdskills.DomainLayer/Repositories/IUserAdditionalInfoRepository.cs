@@ -1,6 +1,6 @@
-﻿using wdskills.DomainLayer.Entities;
+﻿using CaseApplication.DomainLayer.Entities;
 
-namespace wdskills.DomainLayer.Repositories
+namespace CaseApplication.DomainLayer.Repositories
 {
     public interface IUserAdditionalInfoRepository
     {

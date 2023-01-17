@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace wdskills.API.Controllers
+namespace CaseApplication.Api.Controllers
 {
     [ApiController]
     [Route("[controller]")]

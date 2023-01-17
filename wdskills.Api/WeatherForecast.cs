@@ -1,4 +1,4 @@
-namespace wdskills.API
+namespace CaseApplication.Api
 {
     public class WeatherForecast
     {

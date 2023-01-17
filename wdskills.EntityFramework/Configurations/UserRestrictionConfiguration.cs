@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using wdskills.DomainLayer.Entities;
+using CaseApplication.DomainLayer.Entities;
 
-namespace wdskills.EntityFramework.Configurations
+namespace CaseApplication.EntityFramework.Configurations
 {
     internal class UserRestrictionConfiguration: BaseEntityConfiguration<UserRestriction>
     {
