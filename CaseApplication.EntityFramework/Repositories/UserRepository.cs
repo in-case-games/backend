@@ -27,6 +27,7 @@ namespace CaseApplication.EntityFramework.Repositories
             if(user != null)
             {
                 _context.User.Remove(user);
+                await _context.SaveChangesAsync();
             }
             return (user != null);
         }
