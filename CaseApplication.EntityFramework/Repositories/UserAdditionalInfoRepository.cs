@@ -24,7 +24,7 @@ namespace CaseApplication.EntityFramework.Repositories
                 "review what data comes from the api");
 
             info.Id = Guid.NewGuid();
-            info.RoleId = searchRole!.Id;
+            info.UserRoleId = searchRole!.Id;
 
             await _context.UserAdditionalInfo.AddAsync(info);
             await _context.SaveChangesAsync();

@@ -20,6 +20,9 @@ namespace CaseApplication.EntityFramework.Configurations
             builder.HasIndex(i => i.UserEmail)
                 .IsUnique();
 
+            builder.HasOne(o => o.UserAdditionalInfo)
+                .WithOne(o => o.User)
+                .HasForeignKey<UserAdditionalInfo>(fk => fk.UserId);
         }
     }
 }
