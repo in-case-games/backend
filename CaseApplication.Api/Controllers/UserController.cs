@@ -45,7 +45,7 @@ namespace CaseApplication.API.Controllers
             return Ok(await _userRepository.DeleteUser(id));
         }
 
-        [HttpPost("UpdateUser")]
+        [HttpPut]
         public async Task<IActionResult> UpdateUser(User user, string hash)
         {
             return Ok(await _userRepository.UpdateUser(user));

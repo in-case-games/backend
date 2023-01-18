@@ -30,7 +30,7 @@ namespace CaseApplication.API.Controllers
             return Ok(await _userInfoRepository.CreateInfo(userInfo));
         }
 
-        [HttpPost("UpdateInfo")]
+        [HttpPut]
         public async Task<IActionResult> UpdateInfo(UserAdditionalInfo userInfo, string hash)
         {
             return Ok(await _userInfoRepository.UpdateInfo(userInfo));
