@@ -62,7 +62,7 @@ namespace CaseApplication.EntityFramework.Repositories
             if (searchItem is null) throw new Exception("There is no such item, " +
                 "review what data comes from the api");
 
-            _context.Set<GameItem>().Update(item);
+            _context.Entry(searchItem).CurrentValues.SetValues(item);
             await _context.SaveChangesAsync();
 
             return true;

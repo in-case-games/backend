@@ -22,7 +22,7 @@ namespace CaseApplication.EntityFramework.Repositories
             if (searchCaseInventory is null) throw new Exception("There is no such case inventory, " +
                 "review what data comes from the api");
 
-            _context.Set<CaseInventory>().Update(caseInventory);
+            _context.Entry(searchCaseInventory).CurrentValues.SetValues(caseInventory);
             await _context.SaveChangesAsync();
 
             return true;

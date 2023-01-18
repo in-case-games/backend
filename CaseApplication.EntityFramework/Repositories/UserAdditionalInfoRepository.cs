@@ -64,7 +64,7 @@ namespace CaseApplication.EntityFramework.Repositories
             if (searchInfo is null) throw new Exception("You cannot change the guid, " +
                 "review what data comes from the api");
 
-            _context.Set<UserAdditionalInfo>().Update(info);
+            _context.Entry(searchInfo).CurrentValues.SetValues(info);
             await _context.SaveChangesAsync();
 
             return true;

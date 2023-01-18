@@ -98,7 +98,7 @@ namespace CaseApplication.EntityFramework.Repositories
             if (searchGameCase is null) throw new Exception("There is no such case, " +
                 "review what data comes from the api");
 
-            _context.Set<GameCase>().Update(gameCase);
+            _context.Entry(searchGameCase).CurrentValues.SetValues(gameCase);
             await _context.SaveChangesAsync();
 
             return true;
