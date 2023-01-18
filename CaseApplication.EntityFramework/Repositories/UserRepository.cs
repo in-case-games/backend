@@ -62,7 +62,7 @@ namespace CaseApplication.EntityFramework.Repositories
             if(searchUser is null) throw new Exception("You cannot change the guid, " +
                 "review what data comes from the api");
 
-            _context.Set<User>().Update(user);
+            _context.Entry(searchUser).CurrentValues.SetValues(user);
             await _context.SaveChangesAsync();
 
             return true;
