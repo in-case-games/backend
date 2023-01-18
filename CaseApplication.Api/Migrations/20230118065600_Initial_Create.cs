@@ -6,11 +6,25 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace CaseApplication.API.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "CaseInventory",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    GameCaseId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    GameItemId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    LossChance = table.Column<decimal>(type: "DECIMAL(6,5)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CaseInventory", x => x.Id);
+                });
+
             migrationBuilder.CreateTable(
                 name: "GameCase",
                 columns: table => new
@@ -58,41 +72,19 @@ namespace CaseApplication.API.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserRole",
+                name: "UserAdditionalInfo",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    RoleName = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false)
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    RoleId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserAge = table.Column<int>(type: "int", nullable: false),
+                    UserBalance = table.Column<decimal>(type: "DECIMAL(6,5)", nullable: false),
+                    UserAbleToPay = table.Column<decimal>(type: "DECIMAL(6,5)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserRole", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "CaseInventory",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    GameCaseId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CaseItemId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    LossChance = table.Column<decimal>(type: "DECIMAL(6,5)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_CaseInventory", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_CaseInventory_GameCase_GameCaseId",
-                        column: x => x.GameCaseId,
-                        principalTable: "GameCase",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_CaseInventory_GameItem_CaseItemId",
-                        column: x => x.CaseItemId,
-                        principalTable: "GameItem",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                    table.PrimaryKey("PK_UserAdditionalInfo", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -106,18 +98,18 @@ namespace CaseApplication.API.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_UserInventory", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_UserInventory_GameItem_GameItemId",
-                        column: x => x.GameItemId,
-                        principalTable: "GameItem",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_UserInventory_User_UserId",
-                        column: x => x.UserId,
-                        principalTable: "User",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserRole",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    RoleName = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserRole", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -127,7 +119,7 @@ namespace CaseApplication.API.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     RestrictionName = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
-                    CreatedDate = table.Column<DateTime>(type: "datetime2(7)", nullable: true, defaultValue: new DateTime(2023, 1, 17, 9, 50, 12, 997, DateTimeKind.Local).AddTicks(6))
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -139,44 +131,6 @@ namespace CaseApplication.API.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
-
-            migrationBuilder.CreateTable(
-                name: "UserAdditionalInfo",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    UserAge = table.Column<int>(type: "int", nullable: false),
-                    UserBalance = table.Column<decimal>(type: "DECIMAL(6,5)", nullable: false),
-                    UserAbleToPay = table.Column<decimal>(type: "DECIMAL(6,5)", nullable: false),
-                    UserRoleId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_UserAdditionalInfo", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_UserAdditionalInfo_UserRole_UserRoleId",
-                        column: x => x.UserRoleId,
-                        principalTable: "UserRole",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_UserAdditionalInfo_User_UserId",
-                        column: x => x.UserId,
-                        principalTable: "User",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_CaseInventory_CaseItemId",
-                table: "CaseInventory",
-                column: "CaseItemId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_CaseInventory_GameCaseId",
-                table: "CaseInventory",
-                column: "GameCaseId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_GameItem_GameItemName",
@@ -191,26 +145,6 @@ namespace CaseApplication.API.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserAdditionalInfo_UserId",
-                table: "UserAdditionalInfo",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserAdditionalInfo_UserRoleId",
-                table: "UserAdditionalInfo",
-                column: "UserRoleId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserInventory_GameItemId",
-                table: "UserInventory",
-                column: "GameItemId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserInventory_UserId",
-                table: "UserInventory",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_UserRestriction_UserId",
                 table: "UserRestriction",
                 column: "UserId");
@@ -223,6 +157,12 @@ namespace CaseApplication.API.Migrations
                 name: "CaseInventory");
 
             migrationBuilder.DropTable(
+                name: "GameCase");
+
+            migrationBuilder.DropTable(
+                name: "GameItem");
+
+            migrationBuilder.DropTable(
                 name: "UserAdditionalInfo");
 
             migrationBuilder.DropTable(
@@ -232,13 +172,7 @@ namespace CaseApplication.API.Migrations
                 name: "UserRestriction");
 
             migrationBuilder.DropTable(
-                name: "GameCase");
-
-            migrationBuilder.DropTable(
                 name: "UserRole");
-
-            migrationBuilder.DropTable(
-                name: "GameItem");
 
             migrationBuilder.DropTable(
                 name: "User");

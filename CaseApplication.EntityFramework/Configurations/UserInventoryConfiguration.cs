@@ -9,6 +9,9 @@ namespace CaseApplication.EntityFramework.Configurations
         public override void Configure(EntityTypeBuilder<UserInventory> builder)
         {
             base.Configure(builder);
+
+            builder.HasIndex(k => k.UserId).IsUnique();
+            builder.HasIndex(k => k.GameItemId).IsUnique();
         }
     }
 }

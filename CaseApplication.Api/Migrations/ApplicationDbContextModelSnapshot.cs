@@ -28,10 +28,10 @@ namespace CaseApplication.API.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("CaseItemId")
+                    b.Property<Guid>("GameCaseId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("GameCaseId")
+                    b.Property<Guid>("GameItemId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<decimal?>("LossChance")
@@ -40,9 +40,14 @@ namespace CaseApplication.API.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CaseItemId");
+                    b.HasIndex("GameCaseId")
+                        .IsUnique();
 
-                    b.HasIndex("GameCaseId");
+                    b.HasIndex("GameItemId")
+                        .IsUnique();
+
+                    b.HasIndex("Id")
+                        .IsUnique();
 
                     b.ToTable("CaseInventory");
                 });
@@ -69,6 +74,9 @@ namespace CaseApplication.API.Migrations
                         .HasColumnType("DECIMAL(6, 5)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Id")
+                        .IsUnique();
 
                     b.ToTable("GameCase");
                 });
@@ -101,6 +109,9 @@ namespace CaseApplication.API.Migrations
                     b.HasIndex("GameItemName")
                         .IsUnique();
 
+                    b.HasIndex("Id")
+                        .IsUnique();
+
                     b.ToTable("GameItem");
                 });
 
@@ -131,6 +142,9 @@ namespace CaseApplication.API.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Id")
+                        .IsUnique();
+
                     b.HasIndex("UserEmail")
                         .IsUnique();
 
@@ -143,6 +157,9 @@ namespace CaseApplication.API.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid>("RoleId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<decimal>("UserAbleToPay")
                         .HasColumnType("DECIMAL(6, 5)");
 
@@ -152,17 +169,19 @@ namespace CaseApplication.API.Migrations
                     b.Property<decimal>("UserBalance")
                         .HasColumnType("DECIMAL(6, 5)");
 
-                    b.Property<Guid?>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("UserRoleId")
+                    b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("Id")
+                        .IsUnique();
 
-                    b.HasIndex("UserRoleId");
+                    b.HasIndex("RoleId")
+                        .IsUnique();
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
 
                     b.ToTable("UserAdditionalInfo");
                 });
@@ -173,17 +192,22 @@ namespace CaseApplication.API.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("GameItemId")
+                    b.Property<Guid>("GameItemId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("UserId")
+                    b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("GameItemId");
+                    b.HasIndex("GameItemId")
+                        .IsUnique();
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("Id")
+                        .IsUnique();
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
 
                     b.ToTable("UserInventory");
                 });
@@ -207,7 +231,11 @@ namespace CaseApplication.API.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("Id")
+                        .IsUnique();
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
 
                     b.ToTable("UserRestriction");
                 });
@@ -225,52 +253,10 @@ namespace CaseApplication.API.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Id")
+                        .IsUnique();
+
                     b.ToTable("UserRole");
-                });
-
-            modelBuilder.Entity("CaseApplication.DomainLayer.Entities.CaseInventory", b =>
-                {
-                    b.HasOne("CaseApplication.DomainLayer.Entities.GameItem", "CaseItem")
-                        .WithMany()
-                        .HasForeignKey("CaseItemId");
-
-                    b.HasOne("CaseApplication.DomainLayer.Entities.GameCase", "GameCase")
-                        .WithMany()
-                        .HasForeignKey("GameCaseId");
-
-                    b.Navigation("CaseItem");
-
-                    b.Navigation("GameCase");
-                });
-
-            modelBuilder.Entity("CaseApplication.DomainLayer.Entities.UserAdditionalInfo", b =>
-                {
-                    b.HasOne("CaseApplication.DomainLayer.Entities.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
-
-                    b.HasOne("CaseApplication.DomainLayer.Entities.UserRole", "UserRole")
-                        .WithMany()
-                        .HasForeignKey("UserRoleId");
-
-                    b.Navigation("User");
-
-                    b.Navigation("UserRole");
-                });
-
-            modelBuilder.Entity("CaseApplication.DomainLayer.Entities.UserInventory", b =>
-                {
-                    b.HasOne("CaseApplication.DomainLayer.Entities.GameItem", "GameItem")
-                        .WithMany()
-                        .HasForeignKey("GameItemId");
-
-                    b.HasOne("CaseApplication.DomainLayer.Entities.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
-
-                    b.Navigation("GameItem");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("CaseApplication.DomainLayer.Entities.UserRestriction", b =>

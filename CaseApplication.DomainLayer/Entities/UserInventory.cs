@@ -2,7 +2,7 @@
 {
     public class UserInventory : BaseEntity
     {
-        public User? User { get; set; }
-        public GameItem? GameItem { get; set; }
+        public Guid UserId { get; set; }
+        public Guid GameItemId { get; set; }
     }
 }

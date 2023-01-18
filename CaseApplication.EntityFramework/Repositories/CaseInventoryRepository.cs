@@ -16,8 +16,15 @@ namespace CaseApplication.EntityFramework.Repositories
         public async Task<bool> CaseInventoryUpdate(CaseInventory caseInventory)
         {
             using ApplicationDbContext _context = _contextFactory.CreateDbContext();
+
+            CaseInventory? searchCaseInventory = await _context.CaseInventory.FirstOrDefaultAsync(x => x.Id == caseInventory.Id);
+
+            if (searchCaseInventory is null) throw new Exception("There is no such case inventory, " +
+                "review what data comes from the api");
+
             _context.Set<CaseInventory>().Update(caseInventory);
             await _context.SaveChangesAsync();
+
             return true;
         }
     }

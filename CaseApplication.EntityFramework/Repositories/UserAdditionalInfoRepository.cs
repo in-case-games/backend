@@ -16,10 +16,16 @@ namespace CaseApplication.EntityFramework.Repositories
         {
             using ApplicationDbContext _context = _contextFactory.CreateDbContext();
 
-            UserRole? standartRole = await _context.UserRole.FirstOrDefaultAsync(x => x.RoleName == "user");
-            if (standartRole is null) throw new Exception();
+            User? searchUser = await _context.User.FirstOrDefaultAsync(x => x.Id == info.UserId);
+            UserRole? searchRole = await _context.UserRole.FirstOrDefaultAsync(x => x.RoleName == "user");
 
-            info.UserRole!.Id = standartRole.Id;
+            if (searchRole is null) throw new Exception("Add standard roles to the database");
+            if (searchUser is null) throw new Exception("There is no user with this Guid in the database, " +
+                "review what data comes from the api");
+
+            info.Id = Guid.NewGuid();
+            info.RoleId = searchRole!.Id;
+
             await _context.UserAdditionalInfo.AddAsync(info);
             await _context.SaveChangesAsync();
 
@@ -30,22 +36,22 @@ namespace CaseApplication.EntityFramework.Repositories
         {
             using ApplicationDbContext _context = _contextFactory.CreateDbContext();
 
-            UserAdditionalInfo? info = await _context.UserAdditionalInfo.FirstOrDefaultAsync(x => x.Id == infoId);
+            UserAdditionalInfo? searchInfo = await _context.UserAdditionalInfo.FirstOrDefaultAsync(x => x.Id == infoId);
             
-            if (info is not null)
-            {
-                _context.UserAdditionalInfo.Remove(info);
-                await _context.SaveChangesAsync();
-            }
+            if (searchInfo is null) throw new Exception("There is no such information in the database, " +
+                "review what data comes from the api");
 
-            return (info is not null);
+            _context.UserAdditionalInfo.Remove(searchInfo);
+            await _context.SaveChangesAsync();
+            
+            return true;
         }
 
         public async Task<UserAdditionalInfo> GetInfo(Guid userId)
         {
             using ApplicationDbContext _context = _contextFactory.CreateDbContext();
 
-            return await _context.UserAdditionalInfo.FirstOrDefaultAsync(x => x.User!.Id == userId)
+            return await _context.UserAdditionalInfo.FirstOrDefaultAsync(x => x.UserId == userId)
                 ?? new();
         }
 
@@ -53,26 +59,26 @@ namespace CaseApplication.EntityFramework.Repositories
         {
             using ApplicationDbContext _context = _contextFactory.CreateDbContext();
 
+            UserAdditionalInfo? searchInfo = await _context.UserAdditionalInfo.FirstOrDefaultAsync(x => x.Id == info.Id);
+
+            if (searchInfo is null) throw new Exception("You cannot change the guid, " +
+                "review what data comes from the api");
+
             _context.Set<UserAdditionalInfo>().Update(info);
             await _context.SaveChangesAsync();
 
             return true;
         }
 
-        public async Task<UserRole> GetRoleToName(string nameRole)
+        public async Task<UserRole> GetRole(UserRole role)
         {
             using ApplicationDbContext _context = _contextFactory.CreateDbContext();
 
-            return await _context.UserRole.FirstOrDefaultAsync(x => x.RoleName == nameRole) 
-                ?? new();
-        }
+            UserRole? searchRole = await _context.UserRole.FirstOrDefaultAsync(x => x.Id == role.Id);
+            
+            searchRole ??= await _context.UserRole.FirstOrDefaultAsync(x => x.RoleName == role.RoleName);
 
-        public async Task<UserRole> GetRoleToId(Guid id)
-        {
-            using ApplicationDbContext _context = _contextFactory.CreateDbContext();
-
-            return await _context.UserRole.FirstOrDefaultAsync(x => x.Id == id)
-                ?? new();
+            return searchRole ?? new();
         }
     }
 }

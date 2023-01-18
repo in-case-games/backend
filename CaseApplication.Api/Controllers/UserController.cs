@@ -34,17 +34,9 @@ namespace CaseApplication.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateUser(UserDto user)
+        public async Task<IActionResult> CreateUser(User user)
         {
-            var temp = new User()
-            {
-                UserName = user.UserName,
-                UserEmail = user.UserEmail,
-                UserImage = user.UserImage,
-                PasswordHash = user.PasswordHash,
-                PasswordSalt = user.PasswordSalt,
-            };
-            return Ok(await _userRepository.CreateUser(temp));
+            return Ok(await _userRepository.CreateUser(user));
         }
 
         [HttpDelete]
@@ -54,18 +46,9 @@ namespace CaseApplication.API.Controllers
         }
 
         [HttpPost("UpdateUser")]
-        public async Task<IActionResult> UpdateUser(UserDto user, string hash)
+        public async Task<IActionResult> UpdateUser(User user, string hash)
         {
-            var temp = new User()
-            {
-                Id = user.Id,
-                UserName = user.UserName,
-                UserEmail = user.UserEmail,
-                UserImage = user.UserImage,
-                PasswordHash = user.PasswordHash,
-                PasswordSalt = user.PasswordSalt
-            };
-            return Ok(await _userRepository.UpdateUser(temp));
+            return Ok(await _userRepository.UpdateUser(user));
         }
     }
 }

@@ -17,69 +17,90 @@ namespace CaseApplication.EntityFramework.Repositories
         public async Task<bool> AddItem(Guid id, GameItem item)
         {
             using ApplicationDbContext _context = _contextFactory.CreateDbContext();
-            GameCase? gameCase = await _context.GameCase.FirstOrDefaultAsync(x => x.Id == id);
-            if(gameCase != null)
+
+            GameCase? searchGameCase = await _context.GameCase.FirstOrDefaultAsync(x => x.Id == id);
+
+            if(searchGameCase is null) throw new Exception("There is no such case, " +
+                "review what data comes from the api");
+
+            CaseInventory caseInventory = new()
             {
-                CaseInventory caseInventory = new()
-                {
-                    GameCase = gameCase,
-                    CaseItem = item
-                };
-                await _context.CaseInventory.AddAsync(caseInventory);
-                await _context.SaveChangesAsync();
-            }
-            return (gameCase != null);
+                Id = new Guid(),
+                GameCaseId = searchGameCase.Id,
+                GameItemId = item.Id,
+            };
+
+            await _context.CaseInventory.AddAsync(caseInventory);
+            await _context.SaveChangesAsync();
+
+            return true;
         }
 
         public async Task<bool> CreateCase(GameCase gameCase)
         {
             using ApplicationDbContext _context = _contextFactory.CreateDbContext();
+
             await _context.GameCase.AddAsync(gameCase);
             await _context.SaveChangesAsync();
+
             return true;
         }
 
         public async Task<bool> DeleteCase(Guid id)
         {
             using ApplicationDbContext _context = _contextFactory.CreateDbContext();
-            GameCase? gameCase = await _context.GameCase.FirstOrDefaultAsync(x => x.Id == id);
-            if(gameCase != null)
-            {
-                _context.GameCase.Remove(gameCase);
-                await _context.SaveChangesAsync();
-            }
+
+            GameCase? searchGameCase = await _context.GameCase.FirstOrDefaultAsync(x => x.Id == id);
+
+            if(searchGameCase is null) throw new Exception("There is no such case, " +
+                "review what data comes from the api");
+            
+            _context.GameCase.Remove(searchGameCase);
+            await _context.SaveChangesAsync();
+
             return true;
         }
 
         public async Task<IEnumerable<GameCase>> GetAllCases()
         {
             using ApplicationDbContext _context = _contextFactory.CreateDbContext();
+
             return await _context.GameCase.ToListAsync();
         }
 
         public async Task<GameCase> GetCurrentCase(Guid id)
         {
             using ApplicationDbContext _context = _contextFactory.CreateDbContext();
+
             return await _context.GameCase.FirstOrDefaultAsync(x => x.Id == id) ?? new();
         }
 
         public async Task<bool> RemoveItem(Guid id)
         {
             using ApplicationDbContext _context = _contextFactory.CreateDbContext();
-            CaseInventory? caseInventory = await _context.CaseInventory.FirstOrDefaultAsync(x => x.Id == id);
-            if(caseInventory != null)
-            {
-                _context.CaseInventory.Remove(caseInventory);
-                await _context.SaveChangesAsync();
-            }
-            return (caseInventory != null);
+
+            CaseInventory? searchCaseInventory = await _context.CaseInventory.FirstOrDefaultAsync(x => x.Id == id);
+
+            if (searchCaseInventory is null) throw new Exception("There is no such case inventory, " +
+                "review what data comes from the api");
+            
+            _context.CaseInventory.Remove(searchCaseInventory);
+            await _context.SaveChangesAsync();
+            return true;
         }
 
         public async Task<bool> UpdateCase(GameCase gameCase)
         {
             using ApplicationDbContext _context = _contextFactory.CreateDbContext();
+
+            GameCase? searchGameCase = await _context.GameCase.FirstOrDefaultAsync(x => x.Id == gameCase.Id);
+
+            if (searchGameCase is null) throw new Exception("There is no such case, " +
+                "review what data comes from the api");
+
             _context.Set<GameCase>().Update(gameCase);
             await _context.SaveChangesAsync();
+
             return true;
         }
     }

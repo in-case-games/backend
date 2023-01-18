@@ -17,6 +17,9 @@ namespace CaseApplication.EntityFramework.Configurations
             builder.Property(p => p.UserBalance)
                 .HasColumnType("DECIMAL(6, 5)")
                 .IsRequired();
+
+            builder.HasIndex(k => k.RoleId).IsUnique();
+            builder.HasIndex(k => k.UserId).IsUnique();
         }
     }
 }

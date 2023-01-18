@@ -13,6 +13,8 @@ namespace CaseApplication.EntityFramework.Configurations
             builder.Property(p => p.RestrictionName)
                 .HasMaxLength(30)
                 .IsRequired();
+
+            builder.HasIndex(k => k.UserId).IsUnique();
         }
     }
 }

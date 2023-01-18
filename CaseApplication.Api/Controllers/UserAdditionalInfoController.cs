@@ -25,33 +25,19 @@ namespace CaseApplication.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateInfo(UserAdditionalInfoDto userInfo)
+        public async Task<IActionResult> CreateInfo(UserAdditionalInfo userInfo)
         {
-            var temp = new UserAdditionalInfo()
-            {
-                Id = userInfo.Id,
-                UserAbleToPay = userInfo.UserAbleToPay,
-                UserAge = userInfo.UserAge,
-                UserBalance = userInfo.UserBalance,
-            };
-            return Ok(await _userInfoRepository.CreateInfo(temp));
+            return Ok(await _userInfoRepository.CreateInfo(userInfo));
         }
 
         [HttpPost("UpdateInfo")]
-        public async Task<IActionResult> UpdateInfo(UserAdditionalInfoDto userInfo, string hash)
+        public async Task<IActionResult> UpdateInfo(UserAdditionalInfo userInfo, string hash)
         {
-            var temp = new UserAdditionalInfo()
-            {
-                Id = userInfo.Id,
-                UserAbleToPay = userInfo.UserAbleToPay,
-                UserAge = userInfo.UserAge,
-                UserBalance = userInfo.UserBalance,
-            };
-            return Ok(await _userInfoRepository.UpdateInfo(temp));
+            return Ok(await _userInfoRepository.UpdateInfo(userInfo));
         }
 
         [HttpDelete]
-        public async Task<IActionResult> DeleteInfo(Guid infoId, UserDto userRemoving)
+        public async Task<IActionResult> DeleteInfo(Guid infoId, User userRemoving)
         {
             return Ok(await _userInfoRepository.DeleteInfo(infoId));
         }

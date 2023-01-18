@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CaseApplication.API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230117184800_RestoreChanges")]
-    partial class RestoreChanges
+    [Migration("20230118065600_Initial_Create")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -31,10 +31,10 @@ namespace CaseApplication.API.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("CaseItemId")
+                    b.Property<Guid>("GameCaseId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("GameCaseId")
+                    b.Property<Guid>("GameItemId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<decimal?>("LossChance")
@@ -42,10 +42,6 @@ namespace CaseApplication.API.Migrations
                         .HasColumnType("DECIMAL(6, 5)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CaseItemId");
-
-                    b.HasIndex("GameCaseId");
 
                     b.ToTable("CaseInventory");
                 });
@@ -146,6 +142,9 @@ namespace CaseApplication.API.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid>("RoleId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<decimal>("UserAbleToPay")
                         .HasColumnType("DECIMAL(6, 5)");
 
@@ -155,17 +154,10 @@ namespace CaseApplication.API.Migrations
                     b.Property<decimal>("UserBalance")
                         .HasColumnType("DECIMAL(6, 5)");
 
-                    b.Property<Guid?>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("UserRoleId")
+                    b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.HasIndex("UserRoleId");
 
                     b.ToTable("UserAdditionalInfo");
                 });
@@ -176,17 +168,13 @@ namespace CaseApplication.API.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("GameItemId")
+                    b.Property<Guid>("GameItemId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("UserId")
+                    b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("GameItemId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("UserInventory");
                 });
@@ -229,51 +217,6 @@ namespace CaseApplication.API.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("UserRole");
-                });
-
-            modelBuilder.Entity("CaseApplication.DomainLayer.Entities.CaseInventory", b =>
-                {
-                    b.HasOne("CaseApplication.DomainLayer.Entities.GameItem", "CaseItem")
-                        .WithMany()
-                        .HasForeignKey("CaseItemId");
-
-                    b.HasOne("CaseApplication.DomainLayer.Entities.GameCase", "GameCase")
-                        .WithMany()
-                        .HasForeignKey("GameCaseId");
-
-                    b.Navigation("CaseItem");
-
-                    b.Navigation("GameCase");
-                });
-
-            modelBuilder.Entity("CaseApplication.DomainLayer.Entities.UserAdditionalInfo", b =>
-                {
-                    b.HasOne("CaseApplication.DomainLayer.Entities.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
-
-                    b.HasOne("CaseApplication.DomainLayer.Entities.UserRole", "UserRole")
-                        .WithMany()
-                        .HasForeignKey("UserRoleId");
-
-                    b.Navigation("User");
-
-                    b.Navigation("UserRole");
-                });
-
-            modelBuilder.Entity("CaseApplication.DomainLayer.Entities.UserInventory", b =>
-                {
-                    b.HasOne("CaseApplication.DomainLayer.Entities.GameItem", "GameItem")
-                        .WithMany()
-                        .HasForeignKey("GameItemId");
-
-                    b.HasOne("CaseApplication.DomainLayer.Entities.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
-
-                    b.Navigation("GameItem");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("CaseApplication.DomainLayer.Entities.UserRestriction", b =>
