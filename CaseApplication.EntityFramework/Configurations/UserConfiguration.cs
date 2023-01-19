@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using CaseApplication.DomainLayer.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace CaseApplication.EntityFramework.Configurations
 {
@@ -23,6 +24,15 @@ namespace CaseApplication.EntityFramework.Configurations
             builder.HasOne(o => o.UserAdditionalInfo)
                 .WithOne(o => o.User)
                 .HasForeignKey<UserAdditionalInfo>(fk => fk.UserId);
+
+            builder.HasMany(o => o.UserRestrictions)
+                .WithOne(o => o.User)
+                .HasForeignKey(fk => fk.UserId);
+
+            builder.HasMany(o => o.UserInventories)
+                .WithOne(o => o.User)
+                .HasForeignKey(fk => fk.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

@@ -1,7 +1,5 @@
-﻿using CaseApplication.DomainLayer.Dtos;
-using CaseApplication.DomainLayer.Entities;
+﻿using CaseApplication.DomainLayer.Entities;
 using CaseApplication.DomainLayer.Repositories;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CaseApplication.API.Controllers
@@ -39,16 +37,16 @@ namespace CaseApplication.API.Controllers
             return Ok(await _userRepository.CreateUser(user));
         }
 
-        [HttpDelete]
-        public async Task<IActionResult> DeleteUser(Guid id, UserDto userRemoving)
-        {
-            return Ok(await _userRepository.DeleteUser(id));
-        }
-
         [HttpPut]
         public async Task<IActionResult> UpdateUser(User user, string hash)
         {
             return Ok(await _userRepository.UpdateUser(user));
+        }
+
+        [HttpDelete]
+        public async Task<IActionResult> DeleteUser(Guid id, User userRemoving)
+        {
+            return Ok(await _userRepository.DeleteUser(id));
         }
     }
 }

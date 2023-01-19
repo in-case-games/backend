@@ -1,9 +1,6 @@
-﻿using CaseApplication.DomainLayer.Dtos;
-using CaseApplication.DomainLayer.Entities;
+﻿using CaseApplication.DomainLayer.Entities;
 using CaseApplication.DomainLayer.Repositories;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.Runtime.CompilerServices;
 
 namespace CaseApplication.API.Controllers
 {

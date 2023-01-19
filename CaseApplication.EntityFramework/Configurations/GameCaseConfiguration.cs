@@ -24,6 +24,12 @@ namespace CaseApplication.EntityFramework.Configurations
             builder.Property(p => p.RevenuePrecentage)
                 .HasColumnType("DECIMAL(6, 5)")
                 .IsRequired();
+
+            builder.HasMany(p => p.СaseInventories)
+                .WithOne(p => p.GameCase)
+                .HasForeignKey(p => p.GameCaseId)
+                .OnDelete(DeleteBehavior.Cascade);
+                
         }
     }
 }

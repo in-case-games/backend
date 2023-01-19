@@ -19,6 +19,7 @@ builder.Services.AddTransient<IUserAdditionalInfoRepository, UserAdditionalInfoR
 builder.Services.AddTransient<IGameItemRepository, GameItemRepository>();
 builder.Services.AddTransient<IGameCaseRepository, GameCaseRepository>();
 builder.Services.AddTransient<ICaseInventoryRepository, CaseInventoryRepository>();
+builder.Services.AddTransient<IUserRoleRepository, UserRoleRepository>();
 
 var app = builder.Build();
 

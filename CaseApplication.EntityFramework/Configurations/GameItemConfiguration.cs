@@ -27,6 +27,15 @@ namespace CaseApplication.EntityFramework.Configurations
             builder.Property(p => p.GameItemRarity)
                 .HasMaxLength(30)
                 .IsRequired();
+
+            builder.HasMany(p => p.UserInventories)
+                .WithOne(p => p.GameItem)
+                .HasForeignKey(p => p.GameItemId);
+
+            builder.HasMany(p => p.CaseInventories)
+                .WithOne(P => P.GameItem)
+                .HasForeignKey(p => p.GameItemId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

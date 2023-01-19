@@ -9,11 +9,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace CaseApplication.API.Migrations
+namespace CaseApplication.Api.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230118102606_RefactorEasy")]
-    partial class RefactorEasy
+    [Migration("20230119053659_Initial_Create")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -40,6 +40,9 @@ namespace CaseApplication.API.Migrations
                     b.Property<decimal?>("LossChance")
                         .IsRequired()
                         .HasColumnType("DECIMAL(6, 5)");
+
+                    b.Property<int>("NumberItemsCase")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -203,8 +206,12 @@ namespace CaseApplication.API.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("GameItemId");
+
                     b.HasIndex("Id")
                         .IsUnique();
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("UserInventory");
                 });
@@ -255,6 +262,25 @@ namespace CaseApplication.API.Migrations
                     b.ToTable("UserRole");
                 });
 
+            modelBuilder.Entity("CaseApplication.DomainLayer.Entities.CaseInventory", b =>
+                {
+                    b.HasOne("CaseApplication.DomainLayer.Entities.GameCase", "GameCase")
+                        .WithMany("СaseInventories")
+                        .HasForeignKey("GameCaseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CaseApplication.DomainLayer.Entities.GameItem", "GameItem")
+                        .WithMany("CaseInventories")
+                        .HasForeignKey("GameItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("GameCase");
+
+                    b.Navigation("GameItem");
+                });
+
             modelBuilder.Entity("CaseApplication.DomainLayer.Entities.UserAdditionalInfo", b =>
                 {
                     b.HasOne("CaseApplication.DomainLayer.Entities.User", "User")
@@ -274,10 +300,29 @@ namespace CaseApplication.API.Migrations
                     b.Navigation("UserRole");
                 });
 
+            modelBuilder.Entity("CaseApplication.DomainLayer.Entities.UserInventory", b =>
+                {
+                    b.HasOne("CaseApplication.DomainLayer.Entities.GameItem", "GameItem")
+                        .WithMany("UserInventories")
+                        .HasForeignKey("GameItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CaseApplication.DomainLayer.Entities.User", "User")
+                        .WithMany("UserInventories")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("GameItem");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("CaseApplication.DomainLayer.Entities.UserRestriction", b =>
                 {
                     b.HasOne("CaseApplication.DomainLayer.Entities.User", "User")
-                        .WithMany()
+                        .WithMany("UserRestrictions")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -285,9 +330,25 @@ namespace CaseApplication.API.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("CaseApplication.DomainLayer.Entities.GameCase", b =>
+                {
+                    b.Navigation("СaseInventories");
+                });
+
+            modelBuilder.Entity("CaseApplication.DomainLayer.Entities.GameItem", b =>
+                {
+                    b.Navigation("CaseInventories");
+
+                    b.Navigation("UserInventories");
+                });
+
             modelBuilder.Entity("CaseApplication.DomainLayer.Entities.User", b =>
                 {
                     b.Navigation("UserAdditionalInfo");
+
+                    b.Navigation("UserInventories");
+
+                    b.Navigation("UserRestrictions");
                 });
 
             modelBuilder.Entity("CaseApplication.DomainLayer.Entities.UserRole", b =>
