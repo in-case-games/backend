@@ -8,6 +8,6 @@ namespace CaseApplication.DomainLayer.Repositories
         public Task<IEnumerable<UserRole>> GetAllRoles();
         public Task<bool> CreateRole(UserRole role);
         public Task<bool> UpdateRole(UserRole role);
-        public Task<bool> DeleteRole(UserRole role);
+        public Task<bool> DeleteRole(Guid id);
     }
 }

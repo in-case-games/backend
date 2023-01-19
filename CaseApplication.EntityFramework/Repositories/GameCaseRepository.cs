@@ -43,11 +43,14 @@ namespace CaseApplication.EntityFramework.Repositories
 
         public async Task<bool> UpdateCase(GameCase gameCase)
         {
-            GameCase searchGameCase = await GetCurrentCase(gameCase.Id);
-
             using ApplicationDbContext _context = _contextFactory.CreateDbContext();
 
-            _context.Entry(searchGameCase).CurrentValues.SetValues(gameCase);
+            GameCase? searchCase = await _context.GameCase.FirstOrDefaultAsync(x => x.Id == gameCase.Id);
+
+            if (searchCase is null) throw new Exception("There is no such case in the database, " +
+                "review what data comes from the api");
+
+            _context.Entry(searchCase).CurrentValues.SetValues(gameCase);
             await _context.SaveChangesAsync();
 
             return true;
@@ -55,11 +58,14 @@ namespace CaseApplication.EntityFramework.Repositories
 
         public async Task<bool> DeleteCase(Guid id)
         {
-            GameCase searchGameCase = await GetCurrentCase(id);
-
             using ApplicationDbContext _context = _contextFactory.CreateDbContext();
-            
-            _context.GameCase.Remove(searchGameCase);
+
+            GameCase? searchCase = await _context.GameCase.FirstOrDefaultAsync(x => x.Id == id);
+
+            if (searchCase is null) throw new Exception("There is no such case in the database, " +
+                "review what data comes from the api");
+
+            _context.GameCase.Remove(searchCase);
             await _context.SaveChangesAsync();
 
             return true;

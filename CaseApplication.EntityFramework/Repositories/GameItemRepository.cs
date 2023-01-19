@@ -44,9 +44,12 @@ namespace CaseApplication.EntityFramework.Repositories
 
         public async Task<bool> UpdateItem(GameItem item)
         {
-            GameItem searchItem = await GetCurrentItem(item.Id);
-
             using ApplicationDbContext _context = _contextFactory.CreateDbContext();
+
+            GameItem? searchItem = await _context.GameItem.FirstOrDefaultAsync(x => x.Id == item.Id);
+
+            if (searchItem is null) throw new Exception("There is no such item in the database, " +
+                "review what data comes from the api");
 
             _context.Entry(searchItem).CurrentValues.SetValues(item);
             await _context.SaveChangesAsync();
@@ -56,9 +59,12 @@ namespace CaseApplication.EntityFramework.Repositories
 
         public async Task<bool> DeleteItem(Guid id)
         {
-            GameItem searchItem = await GetCurrentItem(id);
-
             using ApplicationDbContext _context = _contextFactory.CreateDbContext();
+
+            GameItem? searchItem = await _context.GameItem.FirstOrDefaultAsync(x => x.Id == id);
+
+            if (searchItem is null) throw new Exception("There is no such item in the database, " +
+                "review what data comes from the api");
 
             _context.GameItem.Remove(searchItem);
             await _context.SaveChangesAsync();

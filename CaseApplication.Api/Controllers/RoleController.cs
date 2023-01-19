@@ -41,9 +41,9 @@ namespace CaseApplication.Api.Controllers
         }
 
         [HttpDelete]
-        public async Task<bool> DeleteRole(UserRole userRole)
+        public async Task<bool> DeleteRole(Guid id)
         {
-            return await _userRoleRepository.DeleteRole(userRole);
+            return await _userRoleRepository.DeleteRole(id);
         }
     }
 }

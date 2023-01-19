@@ -10,13 +10,15 @@ namespace CaseApplication.EntityFramework.Repositories
         private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
         public UserRepository(IDbContextFactory<ApplicationDbContext> context)
         {
-            _contextFactory= context;
+            _contextFactory = context;
         }
         public async Task<User> GetUser(string email)
         {
             using ApplicationDbContext _context = _contextFactory.CreateDbContext();
 
-            return await _context.User.FirstOrDefaultAsync(x => x.UserEmail == email) ?? new();
+            return await _context.User.FirstOrDefaultAsync(x => x.UserEmail == email) 
+                ?? throw new Exception("There is no such user in the database, " +
+                "review what data comes from the api");
         }
 
         public async Task<IEnumerable<User>> GetAllUsers()

@@ -57,20 +57,28 @@ namespace CaseApplication.EntityFramework.Repositories
         
         public async Task<bool> UpdateRole(UserRole role)
         {
-            UserRole searchUserRole = await GetRole(role);
-
             using ApplicationDbContext _context = _contextFactory.CreateDbContext();
+
+            UserRole? searchUserRole = await _context.UserRole.FirstOrDefaultAsync(x => x.Id == role.Id);
+
+            if (searchUserRole is null) throw new Exception("There is no such role in the database, " +
+                "review what data comes from the api");
+
             _context.Entry(searchUserRole).CurrentValues.SetValues(role);
             await _context.SaveChangesAsync();
 
             return true;
         }
 
-        public async Task<bool> DeleteRole(UserRole role)
+        public async Task<bool> DeleteRole(Guid id)
         {
-            UserRole searchUserRole = await GetRole(role);
-
             using ApplicationDbContext _context = _contextFactory.CreateDbContext();
+
+            UserRole? searchUserRole = await _context.UserRole.FirstOrDefaultAsync(x => x.Id == id);
+
+            if (searchUserRole is null) throw new Exception("There is no such role in the database, " +
+                "review what data comes from the api");
+
             _context.UserRole.Remove(searchUserRole);
             await _context.SaveChangesAsync();
 

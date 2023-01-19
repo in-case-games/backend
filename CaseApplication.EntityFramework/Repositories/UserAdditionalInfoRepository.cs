@@ -43,9 +43,12 @@ namespace CaseApplication.EntityFramework.Repositories
         }
         public async Task<bool> UpdateInfo(UserAdditionalInfo info)
         {
-            UserAdditionalInfo searchInfo = await GetInfo(info.Id);
-
             using ApplicationDbContext _context = _contextFactory.CreateDbContext();
+
+            UserAdditionalInfo? searchInfo = await _context.UserAdditionalInfo.FirstOrDefaultAsync(x => x.UserId == info.Id);
+
+            if(searchInfo is null) throw new Exception("There is no such information in the database, " +
+                "review what data comes from the api");
 
             _context.Entry(searchInfo).CurrentValues.SetValues(info);
             await _context.SaveChangesAsync();
