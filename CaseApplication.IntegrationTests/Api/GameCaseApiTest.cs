@@ -45,8 +45,7 @@ namespace CaseApplication.IntegrationTests.Api
         [Fact]
         public async Task GameCaseGetTest()
         {
-            List<GameCase> gameCases = await _clientApi.CreateResponseGet<List<GameCase>>("/GameCase/GetAllCases");
-            Guid caseId = gameCases.LastOrDefault()!.Id;
+            Guid caseId = await SearchIdLastGameCase();
 
             GameCase gameCase = await _clientApi.CreateResponseGet<GameCase>($"/GameCase?id={caseId}");
 
@@ -56,8 +55,7 @@ namespace CaseApplication.IntegrationTests.Api
         [Fact]
         public async Task GameCaseUpdateTest()
         {
-            List<GameCase> gameCases = await _clientApi.CreateResponseGet<List<GameCase>>("/GameCase/GetAllCases");
-            Guid caseId = gameCases.LastOrDefault()!.Id;
+            Guid caseId = await SearchIdLastGameCase();
 
             PostEntityModel<GameCase> postEntityModel = new()
             {
@@ -79,12 +77,17 @@ namespace CaseApplication.IntegrationTests.Api
         [Fact]
         public async Task GameCaseDeleteTest()
         {
-            List<GameCase> gameCases = await _clientApi.CreateResponseGet<List<GameCase>>("/GameCase/GetAllCases");
-            Guid caseId = gameCases.LastOrDefault()!.Id;
+            Guid caseId = await SearchIdLastGameCase();
 
             HttpStatusCode statusCode = await _clientApi.CreateResponseDelete($"/GameCase?id={caseId}");
 
             Assert.Equal(HttpStatusCode.OK, statusCode);
+        }
+
+        private async Task<Guid> SearchIdLastGameCase()
+        {
+            List<GameCase> gameCases = await _clientApi.CreateResponseGet<List<GameCase>>("/GameCase/GetAllCases");
+            return gameCases.LastOrDefault()!.Id;
         }
     }
 }
