@@ -16,9 +16,9 @@ namespace CaseApplication.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<UserRole> GetRole(Guid id = new(), string? roleName = null)
+        public async Task<UserRole> GetRole(Guid roleId = new(), string? roleName = null)
         {
-            UserRole role = new() { Id = id, RoleName = roleName };
+            UserRole role = new() { Id = roleId, RoleName = roleName };
             return await _userRoleRepository.GetRole(role);
         }
 

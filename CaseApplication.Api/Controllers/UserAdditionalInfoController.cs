@@ -34,9 +34,9 @@ namespace CaseApplication.API.Controllers
         }
 
         [HttpDelete]
-        public async Task<IActionResult> DeleteInfo(Guid infoId, User userRemoving)
+        public async Task<IActionResult> DeleteInfo(Guid id, User userRemoving)
         {
-            return Ok(await _userInfoRepository.DeleteInfo(infoId));
+            return Ok(await _userInfoRepository.DeleteInfo(id));
         }
     }
 }

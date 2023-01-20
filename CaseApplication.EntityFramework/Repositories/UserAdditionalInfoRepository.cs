@@ -56,11 +56,11 @@ namespace CaseApplication.EntityFramework.Repositories
             return true;
         }
 
-        public async Task<bool> DeleteInfo(Guid infoId)
+        public async Task<bool> DeleteInfo(Guid id)
         {
             using ApplicationDbContext _context = _contextFactory.CreateDbContext();
 
-            UserAdditionalInfo? searchInfo = await _context.UserAdditionalInfo.FirstOrDefaultAsync(x => x.Id == infoId);
+            UserAdditionalInfo? searchInfo = await _context.UserAdditionalInfo.FirstOrDefaultAsync(x => x.Id == id);
 
             if(searchInfo is null) throw new Exception("There is no such information in the database, " +
                 "review what data comes from the api");
