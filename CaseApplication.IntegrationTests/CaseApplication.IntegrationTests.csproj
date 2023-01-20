@@ -21,5 +21,11 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
   </ItemGroup>
-
+	
+    <ItemGroup>
+		<ProjectReference Include="..\CaseApplication.Api\CaseApplication.Api.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\CaseApplication.WebClient\CaseApplication.WebClient.csproj" />
+	</ItemGroup>
 </Project>

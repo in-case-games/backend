@@ -1,13 +1,90 @@
-﻿using Microsoft.AspNetCore.Mvc.Testing;
+﻿using CaseApplication.DomainLayer.Entities;
+using CaseApplication.WebClient;
+using CaseApplication.WebClient.Repositories;
+using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.VisualStudio.TestPlatform.TestHost;
+using System.Net;
+using System.Net.Http.Json;
+using System.Runtime.Serialization;
+using System.Text;
+using System.Text.Json;
+using Xunit.Sdk;
 
 namespace CaseApplication.IntegrationTests.Api
 {
-    public class GameCaseApiTest : IClassFixture<WebApplicationFactory<>>
+    public class GameCaseApiTest : IClassFixture<WebApplicationFactory<Program>>
     {
-        [Fact]
-        public async Task GetRetrievesGameCase()
+        private readonly ClientApiRepository _clientApi;
+
+        public GameCaseApiTest(WebApplicationFactory<Program> applicationFactory)
         {
-            Console.WriteLine();
+            _clientApi = new(applicationFactory.CreateClient());
+        }
+
+
+        [Fact]
+        public async Task GameCaseCreateTest()
+        {
+            PostEntityModel<GameCase> postEntityModel = new()
+            {
+                PostUrl = "/GameCase",
+                PostContent = new()
+                {
+                    GameCaseCost = 0,
+                    GameCaseName = "Test",
+                    GameCaseImage = "Image",
+                    RevenuePrecentage = 0
+                }
+            };
+
+            HttpStatusCode statusCode = await _clientApi.CreateResponsePost<GameCase>(postEntityModel);
+
+            Assert.Equal(HttpStatusCode.OK, statusCode);
+        }
+
+        [Fact]
+        public async Task GameCaseGetTest()
+        {
+            List<GameCase> gameCases = await _clientApi.CreateResponseGet<List<GameCase>>("/GameCase/GetAllCases");
+            Guid caseId = gameCases.LastOrDefault()!.Id;
+
+            GameCase gameCase = await _clientApi.CreateResponseGet<GameCase>($"/GameCase?id={caseId}");
+
+            Assert.Equal(gameCase.Id, caseId);
+        }
+
+        [Fact]
+        public async Task GameCaseUpdateTest()
+        {
+            List<GameCase> gameCases = await _clientApi.CreateResponseGet<List<GameCase>>("/GameCase/GetAllCases");
+            Guid caseId = gameCases.LastOrDefault()!.Id;
+
+            PostEntityModel<GameCase> postEntityModel = new()
+            {
+                PostUrl = "/GameCase",
+                PostContent = new()
+                {
+                    Id = caseId,
+                    GameCaseCost = 2M,
+                    GameCaseName = "Test123",
+                    GameCaseImage = "Image321"
+                }
+            };
+
+            HttpStatusCode statusCode = await _clientApi.CreateResponsePut<GameCase>(postEntityModel);
+
+            Assert.Equal(HttpStatusCode.OK, statusCode);
+        }
+
+        [Fact]
+        public async Task GameCaseDeleteTest()
+        {
+            List<GameCase> gameCases = await _clientApi.CreateResponseGet<List<GameCase>>("/GameCase/GetAllCases");
+            Guid caseId = gameCases.LastOrDefault()!.Id;
+
+            HttpStatusCode statusCode = await _clientApi.CreateResponseDelete($"/GameCase?id={caseId}");
+
+            Assert.Equal(HttpStatusCode.OK, statusCode);
         }
     }
 }

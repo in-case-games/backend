@@ -29,19 +29,19 @@ namespace CaseApplication.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<bool> CreateCases(GameCase gameCase)
+        public async Task<bool> CreateCase(GameCase gameCase)
         {
             return await _gameCaseRepository.CreateCase(gameCase);
         }
 
         [HttpPut]
-        public async Task<bool> UpdateCases(GameCase gameCase)
+        public async Task<bool> UpdateCase(GameCase gameCase)
         {
             return await _gameCaseRepository.UpdateCase(gameCase);
         }
 
         [HttpDelete]
-        public async Task<bool> DeleteCases(Guid id)
+        public async Task<bool> DeleteCase(Guid id)
         {
             return await _gameCaseRepository.DeleteCase(id);
         }
