@@ -401,4 +401,5 @@ FodyWeavers.xsd
 appsetings.Local.json
 
 # Integration Tests
-# CaseApplication.IntegrationTests
+##CaseApplication.IntegrationTests/*
+##CaseApplication.IntegrationTests
