@@ -1,17 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http.Json;
+﻿using System.Net.Http.Json;
 using System.Net;
-using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace CaseApplication.WebClient.Repositories
 {
     public class ClientApiRepository
     {
         private readonly HttpClient _httpClient;
+        private readonly string baseUrl = "https://localhost:7053";
 
         public ClientApiRepository(HttpClient httpClient)
         {
@@ -20,7 +16,7 @@ namespace CaseApplication.WebClient.Repositories
 
         public async Task<T> CreateResponseGet<T>(string urlGet) where T : new()
         {
-            string url = "https://localhost:7053" + urlGet;
+            string url = baseUrl + urlGet;
 
             T gameCase = new();
 
@@ -37,7 +33,7 @@ namespace CaseApplication.WebClient.Repositories
 
         public async Task<HttpStatusCode> CreateResponsePost<T>(PostEntityModel<T> model)
         {
-            string url = "https://localhost:7053" + model.PostUrl;
+            string url = baseUrl + model.PostUrl;
 
             JsonContent json = JsonContent.Create(model.PostContent);
 
@@ -48,7 +44,7 @@ namespace CaseApplication.WebClient.Repositories
 
         public async Task<HttpStatusCode> CreateResponsePut<T>(PostEntityModel<T> model)
         {
-            string url = "https://localhost:7053" + model.PostUrl;
+            string url = baseUrl + model.PostUrl;
 
             JsonContent json = JsonContent.Create(model.PostContent);
 
@@ -59,7 +55,7 @@ namespace CaseApplication.WebClient.Repositories
 
         public async Task<HttpStatusCode> CreateResponseDelete(string urlDelete)
         {
-            string url = "https://localhost:7053" + urlDelete;
+            string url = baseUrl + urlDelete;
             HttpResponseMessage response = await _httpClient.DeleteAsync(url);
 
             return response.StatusCode;

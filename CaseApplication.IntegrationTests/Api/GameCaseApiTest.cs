@@ -2,13 +2,7 @@
 using CaseApplication.WebClient;
 using CaseApplication.WebClient.Repositories;
 using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.VisualStudio.TestPlatform.TestHost;
 using System.Net;
-using System.Net.Http.Json;
-using System.Runtime.Serialization;
-using System.Text;
-using System.Text.Json;
-using Xunit.Sdk;
 
 namespace CaseApplication.IntegrationTests.Api
 {

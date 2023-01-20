@@ -44,7 +44,7 @@ namespace CaseApplication.API.Controllers
         }
 
         [HttpDelete]
-        public async Task<IActionResult> DeleteUser(Guid id, User userRemoving)
+        public async Task<IActionResult> DeleteUser(Guid id)
         {
             return Ok(await _userRepository.DeleteUser(id));
         }
