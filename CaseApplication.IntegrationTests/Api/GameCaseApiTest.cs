@@ -7,7 +7,7 @@ namespace CaseApplication.IntegrationTests.Api
         [Fact]
         public async Task GetRetrievesGameCase()
         {
-
+            Console.WriteLine();
         }
     }
 }
