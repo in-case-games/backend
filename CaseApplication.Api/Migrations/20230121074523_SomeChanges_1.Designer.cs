@@ -4,6 +4,7 @@ using CaseApplication.EntityFramework.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CaseApplication.Api.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230121074523_SomeChanges_1")]
+    partial class SomeChanges1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -43,9 +46,11 @@ namespace CaseApplication.Api.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("GameCaseId");
+                    b.HasIndex("GameCaseId")
+                        .IsUnique();
 
-                    b.HasIndex("GameItemId");
+                    b.HasIndex("GameItemId")
+                        .IsUnique();
 
                     b.HasIndex("Id")
                         .IsUnique();

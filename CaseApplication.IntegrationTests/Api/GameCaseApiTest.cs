@@ -9,6 +9,7 @@ namespace CaseApplication.IntegrationTests.Api
     public class GameCaseApiTest : IClassFixture<WebApplicationFactory<Program>>
     {
         private readonly ClientApiRepository _clientApi;
+        private Random random = new();
 
         public GameCaseApiTest(WebApplicationFactory<Program> applicationFactory)
         {
@@ -25,7 +26,7 @@ namespace CaseApplication.IntegrationTests.Api
                 PostContent = new()
                 {
                     GameCaseCost = 0,
-                    GameCaseName = "Test",
+                    GameCaseName = $"Test {random.Next(1, 1000000)}",
                     GameCaseImage = "Image",
                     RevenuePrecentage = 0
                 }
@@ -44,6 +45,14 @@ namespace CaseApplication.IntegrationTests.Api
             GameCase gameCase = await _clientApi.CreateResponseGet<GameCase>($"/GameCase?id={caseId}");
 
             Assert.Equal(gameCase.Id, caseId);
+        }
+
+        [Fact]
+        public async Task GameCaseGetAllTest()
+        {
+            List<GameCase> gameCases = await _clientApi.CreateResponseGet<List<GameCase>>("/GameCase/GetAllCases");
+
+            Assert.True(gameCases.Count > 0);
         }
 
         [Fact]
