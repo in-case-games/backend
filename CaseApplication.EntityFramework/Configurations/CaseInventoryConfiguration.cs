@@ -13,6 +13,7 @@ namespace CaseApplication.EntityFramework.Configurations
             builder.Property(p => p.LossChance)
                 .HasColumnType("DECIMAL(18, 5)")
                 .IsRequired();
+
             builder.HasIndex(k => k.GameCaseId);
             builder.HasIndex(k => k.GameItemId);
         }
