@@ -15,7 +15,7 @@ namespace CaseApplication.WebClient.Services
             _httpClient = httpClient;
         }
 
-        public async Task<T> ResponseGet<T>(string uri) where T: BaseEntity
+        public async Task<T> ResponseGet<T>(string uri) where T: new()
         {
             HttpResponseMessage response = await _httpClient.GetAsync(baseUrl + uri);
 
@@ -25,7 +25,7 @@ namespace CaseApplication.WebClient.Services
             }
 
             return await response.Content.ReadFromJsonAsync<T>(
-                    new JsonSerializerOptions(JsonSerializerDefaults.Web)) ?? new T();
+                    new JsonSerializerOptions(JsonSerializerDefaults.Web)) ?? new();
         }
 
         public async Task<HttpStatusCode> ResponsePost<T>(string uri, T entity) where T: BaseEntity
