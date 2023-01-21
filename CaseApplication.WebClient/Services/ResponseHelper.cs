@@ -25,7 +25,7 @@ namespace CaseApplication.WebClient.Services
             }
 
             return await response.Content.ReadFromJsonAsync<T>(
-                    new JsonSerializerOptions(JsonSerializerDefaults.Web));
+                    new JsonSerializerOptions(JsonSerializerDefaults.Web)) ?? new T();
         }
 
         public async Task<HttpStatusCode> ResponsePost<T>(string uri, T entity) where T: BaseEntity
@@ -45,7 +45,7 @@ namespace CaseApplication.WebClient.Services
         }
         public async Task<HttpStatusCode> ResponseDelete(string uri)
         {
-            HttpRequestMessage response = await _httpClient.DeleteAsync(baseUrl + uri);
+            HttpResponseMessage response = await _httpClient.DeleteAsync(baseUrl + uri);
 
             return response.StatusCode;
         }
