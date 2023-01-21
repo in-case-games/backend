@@ -1,21 +1,16 @@
 ﻿using CaseApplication.DomainLayer.Entities;
-using CaseApplication.DomainLayer.Repositories;
-using CaseApplication.EntityFramework.Repositories;
 using CaseApplication.WebClient;
 using CaseApplication.WebClient.Repositories;
 using Microsoft.AspNetCore.Mvc.Testing;
-using Newtonsoft.Json;
 using System.Net;
-using System.Net.Http.Json;
-using System.Text.Json;
 
 namespace CaseApplication.IntegrationTests.Api
 {
-    public class UserControllerTests: IClassFixture<WebApplicationFactory<Program>>
+    public class UserApiTest: IClassFixture<WebApplicationFactory<Program>>
     {
         private readonly HttpClient _client;
         private readonly ClientApiRepository _clientApi;
-        public UserControllerTests(WebApplicationFactory<Program> application)
+        public UserApiTest(WebApplicationFactory<Program> application)
         {
             _clientApi = new(application.CreateClient());
             _client = application.CreateClient();

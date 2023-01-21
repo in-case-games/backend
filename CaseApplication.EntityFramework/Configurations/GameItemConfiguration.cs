@@ -18,7 +18,7 @@ namespace CaseApplication.EntityFramework.Configurations
                 .IsUnique();
 
             builder.Property(p => p.GameItemCost)
-                .HasColumnType("DECIMAL(7, 5)")
+                .HasColumnType("DECIMAL(18, 5)")
                 .IsRequired();
 
             builder.Property(p => p.GameItemImage)

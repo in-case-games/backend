@@ -18,11 +18,11 @@ namespace CaseApplication.EntityFramework.Configurations
                 .IsRequired();
 
             builder.Property(p => p.GameCaseCost)
-                .HasColumnType("DECIMAL(7, 5)")
+                .HasColumnType("DECIMAL(18, 5)")
                 .IsRequired();
 
             builder.Property(p => p.RevenuePrecentage)
-                .HasColumnType("DECIMAL(6, 5)")
+                .HasColumnType("DECIMAL(18, 5)")
                 .IsRequired();
 
             builder.HasMany(p => p.СaseInventories)
