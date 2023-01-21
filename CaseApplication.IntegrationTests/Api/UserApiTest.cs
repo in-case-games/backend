@@ -1,6 +1,4 @@
 ﻿using CaseApplication.DomainLayer.Entities;
-using CaseApplication.WebClient;
-using CaseApplication.WebClient.Repositories;
 using CaseApplication.WebClient.Services;
 using Microsoft.AspNetCore.Mvc.Testing;
 using System.Net;
@@ -27,6 +25,19 @@ namespace CaseApplication.IntegrationTests.Api
             }
             
         }
+        private User InitializeUser()
+        {
+            User user = new User
+            {
+                UserName = GenerateString(),
+                UserEmail = GenerateString(),
+                UserImage = GenerateString(),
+                PasswordHash = GenerateString(),
+                PasswordSalt = GenerateString(),
+            };
+
+            return user;
+        }
         private string GenerateString()
         {
             byte[] bytes = new byte[10];
@@ -47,18 +58,11 @@ namespace CaseApplication.IntegrationTests.Api
         public async Task GetUserTest()
         {
             // Arrange
-            User user = new User
-            {
-                UserName = GenerateString(),
-                UserEmail = GenerateString(),
-                UserImage = GenerateString(),
-                PasswordHash = GenerateString(),
-                PasswordSalt = GenerateString(),
-            };
+            User user = InitializeUser();
 
             // Act
             HttpStatusCode statusCode = await _response.ResponsePost<User>("/User", user);
-            await DeleteUser(user.UserEmail);
+            await DeleteUser(user.UserEmail!);
 
             // Assert
             Assert.True(statusCode == HttpStatusCode.OK);
@@ -81,18 +85,11 @@ namespace CaseApplication.IntegrationTests.Api
         public async Task PostUserTest()
         {
             // Arrange
-            User user = new User
-            {
-                UserName = GenerateString(),
-                UserEmail = GenerateString(),
-                UserImage = GenerateString(),
-                PasswordHash = GenerateString(),
-                PasswordSalt = GenerateString(),
-            };
+            User user = InitializeUser();
 
             // Act
             HttpStatusCode statusCode = await _response.ResponsePost("/User", user);
-            await DeleteUser(user.UserEmail);
+            await DeleteUser(user.UserEmail!);
 
             // Assert
             Assert.True(statusCode == HttpStatusCode.OK);
@@ -109,6 +106,40 @@ namespace CaseApplication.IntegrationTests.Api
             // Assert
             Assert.True(statusCode != HttpStatusCode.OK);
         }
-        
+        [Fact]
+        public async Task PutUserTest()
+        {
+            // Arrange
+            User oldUser = InitializeUser();
+            User newUser = oldUser;
+            newUser.UserName = oldUser.UserName + newUser.UserName;
+
+            // Act
+            await _response.ResponsePost("/User", oldUser);
+
+            IEnumerable<User> users = await _response.ResponseGet<List<User>>($"/User/GetAll");
+            newUser.Id = users.FirstOrDefault(x => x.UserEmail == oldUser.UserEmail)!.Id;
+
+            HttpStatusCode statusCode = await _response.ResponsePut("/User?hash=123", newUser);
+            await DeleteUser(newUser.UserEmail!);
+
+            // Assert
+            Assert.True(statusCode == HttpStatusCode.OK);
+        }
+        [Fact]
+        public async Task DeleteUserTest()
+        {
+            // Arrange
+            User user = InitializeUser();
+            await _response.ResponsePost("/User", user);
+
+            IEnumerable<User> users = await _response.ResponseGet<List<User>>($"/User/GetAll");
+            user.Id = users.FirstOrDefault(x => x.UserEmail == user.UserEmail)!.Id;
+            // Act
+            HttpStatusCode statusCode = await _response.ResponseDelete($"/User?id={user.Id}");
+
+            // Assert
+            Assert.True(statusCode == HttpStatusCode.OK);
+        }
     }
 }
