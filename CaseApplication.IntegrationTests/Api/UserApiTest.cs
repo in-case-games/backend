@@ -1,6 +1,7 @@
 ﻿using CaseApplication.DomainLayer.Entities;
 using CaseApplication.WebClient;
 using CaseApplication.WebClient.Repositories;
+using CaseApplication.WebClient.Services;
 using Microsoft.AspNetCore.Mvc.Testing;
 using System.Net;
 
@@ -9,17 +10,17 @@ namespace CaseApplication.IntegrationTests.Api
     public class UserApiTest: IClassFixture<WebApplicationFactory<Program>>
     {
         private readonly HttpClient _client;
-        private readonly ClientApiRepository _clientApi;
+        private readonly ResponseHelper _response;
         public UserApiTest(WebApplicationFactory<Program> application)
         {
-            _clientApi = new(application.CreateClient());
+            _response = new ResponseHelper(application.CreateClient());
             _client = application.CreateClient();
         }
         private async Task DeleteUser(params string[] emails)
         {
             foreach (string email in emails)
             {
-                List<User> users = await _clientApi.CreateResponseGet<List<User>>("/User/GetAll");
+                IEnumerable<User> users = await _response.ResponseGet<List<User>>("/User/GetAll");
                 User? user = users!.FirstOrDefault(x => x.UserEmail == email);
 
                 HttpResponseMessage response = await _client.DeleteAsync($"/User?id={user!.Id}");
@@ -37,10 +38,10 @@ namespace CaseApplication.IntegrationTests.Api
         public async Task GetAllUsersTest()
         {
             // Act
-            HttpResponseMessage response = await _client.GetAsync("/User/GetAll");
+            HttpStatusCode statusCode = await _response.ResponseGetStatusCode("/User/GetAll");
 
             //Assert
-            Assert.True(response.IsSuccessStatusCode);
+            Assert.True(statusCode == HttpStatusCode.OK);
         }
         [Fact]
         public async Task GetUserTest()
@@ -54,18 +55,13 @@ namespace CaseApplication.IntegrationTests.Api
                 PasswordHash = GenerateString(),
                 PasswordSalt = GenerateString(),
             };
-            PostEntityModel<User> postEntityModel = new PostEntityModel<User>
-            {
-                PostUrl = "/User",
-                PostContent = user
-            };
 
             // Act
-            HttpStatusCode code = await _clientApi.CreateResponsePost(postEntityModel);
+            HttpStatusCode statusCode = await _response.ResponsePost<User>("/User", user);
             await DeleteUser(user.UserEmail);
 
             // Assert
-            Assert.True(code == HttpStatusCode.OK);
+            Assert.True(statusCode == HttpStatusCode.OK);
         }
         [Fact]
         public async Task GetImpossibleUserTest()
@@ -75,10 +71,11 @@ namespace CaseApplication.IntegrationTests.Api
             string hash = "' DROP DATABASE;";
 
             // Act
-            HttpResponseMessage response = await _client.GetAsync($"/User?email={email}&hash={hash}");
+            HttpStatusCode statusCode = await _response.ResponseGetStatusCode(
+                $"/User?email={email}&hash={hash}");
 
             // Assert
-            Assert.True(!response.IsSuccessStatusCode);
+            Assert.True(statusCode != HttpStatusCode.OK);
         }
         [Fact]
         public async Task PostUserTest()
@@ -94,16 +91,11 @@ namespace CaseApplication.IntegrationTests.Api
             };
 
             // Act
-            PostEntityModel<User> postEntityModel = new PostEntityModel<User>
-            {
-                PostUrl = "/User",
-                PostContent = user
-            };
-            HttpStatusCode code = await _clientApi.CreateResponsePost(postEntityModel);
+            HttpStatusCode statusCode = await _response.ResponsePost("/User", user);
             await DeleteUser(user.UserEmail);
 
             // Assert
-            Assert.True(code == HttpStatusCode.OK);
+            Assert.True(statusCode == HttpStatusCode.OK);
         }
         [Fact]
         public async Task PostEmptyUserTest()
@@ -112,15 +104,10 @@ namespace CaseApplication.IntegrationTests.Api
             User user = new User();
 
             // Act
-            PostEntityModel<User> postEntityModel = new PostEntityModel<User>
-            {
-                PostUrl = "/User",
-                PostContent = user
-            };
-            HttpStatusCode code = await _clientApi.CreateResponsePost(postEntityModel);
+            HttpStatusCode statusCode = await _response.ResponsePost("/User", user);
 
-            //Assert
-            Assert.True(code != HttpStatusCode.OK);
+            // Assert
+            Assert.True(statusCode != HttpStatusCode.OK);
         }
         
     }

@@ -14,7 +14,12 @@ namespace CaseApplication.WebClient.Services
         {
             _httpClient = httpClient;
         }
+        public async Task<HttpStatusCode> ResponseGetStatusCode(string uri)
+        {
+            HttpResponseMessage response = await _httpClient.GetAsync(baseUrl + uri);
 
+            return response.StatusCode;
+        }
         public async Task<T> ResponseGet<T>(string uri) where T: new()
         {
             HttpResponseMessage response = await _httpClient.GetAsync(baseUrl + uri);
