@@ -127,6 +127,18 @@ namespace CaseApplication.IntegrationTests.Api
             Assert.Equal(HttpStatusCode.OK, statusCode);
         }
         [Fact]
+        public async Task PutNotExistedUserTest()
+        {
+            // Arrange
+            User user = new User();
+
+            // Act
+            HttpStatusCode statusCode = await _response.ResponsePut<User>("/User?hash=123", user);
+
+            // Assert
+            Assert.NotEqual(HttpStatusCode.OK, statusCode);
+        }
+        [Fact]
         public async Task DeleteUserTest()
         {
             // Arrange
@@ -140,6 +152,18 @@ namespace CaseApplication.IntegrationTests.Api
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, statusCode);
+        }
+        [Fact]
+        public async Task DeleteNotExistedUserTest()
+        {
+            // Arrange
+            User user = new User();
+
+            // Act
+            HttpStatusCode statusCode = await _response.ResponseDelete($"/User?id={user.Id}");
+
+            // Assert
+            Assert.NotEqual(HttpStatusCode.OK, statusCode);
         }
     }
 }

@@ -14,7 +14,7 @@ namespace CaseApplication.IntegrationTests.Api
         }
         private string GenerateString()
         {
-            byte[] bytes = new byte[10];
+            byte[] bytes = new byte[2];
             new Random().NextBytes(bytes);
 
             return Convert.ToBase64String(bytes);
@@ -29,6 +29,18 @@ namespace CaseApplication.IntegrationTests.Api
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, statusCode);
+        }
+        [Fact]
+        public async Task GetNotExistRoleTest()
+        {
+            // Arrange
+            string roleName = "' SELECT * FROM User --%20";
+
+            // Act 
+            HttpStatusCode statusCode = await _response.ResponseGetStatusCode($"/Role?roleName={roleName}");
+
+            // Assert
+            Assert.NotEqual(HttpStatusCode.OK, statusCode);
         }
         [Fact]
         public async Task GetRoleTest()
@@ -57,6 +69,18 @@ namespace CaseApplication.IntegrationTests.Api
             Assert.Equal(HttpStatusCode.OK, statusCode);
         }
         [Fact]
+        public async Task PostEmptyRoleTest()
+        {
+            // Arrange
+            UserRole userRole = new UserRole();
+
+            // Act
+            HttpStatusCode statusCode = await _response.ResponsePost<UserRole>("/Role", userRole);
+
+            // Assert
+            Assert.NotEqual(HttpStatusCode.OK, statusCode);
+        }
+        [Fact]
         public async Task PutRoleTest()
         {
             // Arrange
@@ -70,6 +94,48 @@ namespace CaseApplication.IntegrationTests.Api
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, statusCode);
+        }
+        [Fact]
+        public async Task PutNotExistRoleTest()
+        {
+            // Arrange 
+            UserRole userRole = new UserRole();
+
+            // Act
+            HttpStatusCode statusCode = await _response.ResponsePut<UserRole>("/Role", userRole);
+
+            // Assert
+            Assert.NotEqual(HttpStatusCode.OK, statusCode);
+
+        }
+        [Fact]
+        public async Task DeleteRoleTest()
+        {
+            // Arrange
+            UserRole newUserRole = new UserRole
+            {
+                RoleName = GenerateString()
+            };
+            HttpStatusCode postStatusCode = await _response.ResponsePost<UserRole>("/Role", newUserRole);
+            UserRole userRole = await _response
+                .ResponseGet<UserRole>($"/Role?roleName={newUserRole.RoleName}");
+            // Act
+            HttpStatusCode statusCode = await _response.ResponseDelete($"/Role?id={userRole.Id}");
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, statusCode);
+        }
+        [Fact]
+        public async Task DeleteNotExistRoleTest()
+        {
+            // Arrange
+            UserRole userRole = new UserRole();
+
+            // Act
+            HttpStatusCode statusCode = await _response.ResponseDelete($"/Role?id={userRole.Id}");
+
+            // Assert
+            Assert.NotEqual(HttpStatusCode.OK, statusCode);
         }
     }
 }
