@@ -16,7 +16,7 @@ namespace CaseApplication.IntegrationTests.Api
         }
 
         [Fact]
-        public async Task GameItemTests()
+        public async Task GameItemSimpleTests()
         {
             //Post
             GameItem gameItem = new()

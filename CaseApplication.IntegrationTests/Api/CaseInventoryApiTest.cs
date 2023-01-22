@@ -15,23 +15,16 @@ namespace CaseApplication.IntegrationTests.Api
         }
 
         [Fact]
-        public async Task CaseInventoryTests()
+        public async Task CaseInventorySimpleTests()
         {
-            //Create Test
-            bool IsCreateDependent = await CreateDependentsInventory();
+            bool IsCreatedDependencies = await CreateDependenciesInventory();
+            bool IsDeletedDependencies = false;
 
-            HttpStatusCode createFirstInventory = HttpStatusCode.BadRequest;
-            HttpStatusCode createSecondInventory = HttpStatusCode.BadRequest;
-            HttpStatusCode statusUpdate = HttpStatusCode.BadRequest;
-            HttpStatusCode statusDelete = HttpStatusCode.BadRequest;
-
-            Guid caseId = new Guid();
-
-            if (IsCreateDependent)
+            if (IsCreatedDependencies)
             {
+                Guid caseId = await SearchIdCase("Все или ничего");
                 Guid firstItemId = await SearchIdItem("Драгон лор");
                 Guid secondItemId = await SearchIdItem("Пистолет");
-                caseId = await SearchIdCase("Все или ничего");
 
                 CaseInventory caseInventory = new()
                 {
@@ -40,102 +33,67 @@ namespace CaseApplication.IntegrationTests.Api
                     LossChance = 0.01M,
                     NumberItemsCase = 1
                 };
+                //Create
 
-                createFirstInventory = await _clientApi.ResponsePost<CaseInventory>("/CaseInventory", caseInventory);
+                await CreateCaseInventory(caseInventory);
 
                 caseInventory.GameItemId = secondItemId;
                 caseInventory.LossChance = 0.99M;
 
-                createSecondInventory = await _clientApi.ResponsePost<CaseInventory>("/CaseInventory", caseInventory);
+                await CreateCaseInventory(caseInventory);
+
+
+                //Get and Get All
+
+                CaseInventory caseInventoryFirst = await SearchCaseInventory(caseId, firstItemId);
+                CaseInventory caseInventorySecond = await SearchCaseInventory(caseId, secondItemId);
+
+                //Update
+                caseInventoryFirst.NumberItemsCase = 2;
+
+                await UpdateCaseInventory(caseInventoryFirst);
+
+                //Delete
+                await DeleteCaseInventory(caseInventoryFirst.Id);
+                await DeleteCaseInventory(caseInventorySecond.Id);
+
+                IsDeletedDependencies = await DeleteDependenciesInventory(new() { caseInventoryFirst, caseInventorySecond });
             }
 
-            //Get Test and Get All
-
-            bool IsCreatedInventory = (createFirstInventory == HttpStatusCode.OK) &&
-                (createSecondInventory == HttpStatusCode.OK);
-
-            Guid idFirstInventory = new Guid();
-            Guid idSecondInventory = new Guid();
-            CaseInventory getInventoryTest1 = new();
-            CaseInventory getInventoryTest2 = new();
-
-            if (IsCreatedInventory)
-            {
-                List<CaseInventory> inventories = await _clientApi.ResponseGet<List<CaseInventory>>($"/CaseInventory/GetAllCaseInventories?caseId={caseId}");
-                idFirstInventory = inventories[0].Id;
-                idSecondInventory = inventories[1].Id;
-
-                getInventoryTest1 = await _clientApi.ResponseGet<CaseInventory>($"/CaseInventory?id={idFirstInventory}");
-                getInventoryTest2 = await _clientApi.ResponseGet<CaseInventory>($"/CaseInventory?id={idSecondInventory}");
-            }
-
-            //Update Test
-            bool IsGetInventory = ((getInventoryTest1.Id == idFirstInventory) && 
-                (getInventoryTest2.Id == idSecondInventory));
-
-            if (IsGetInventory)
-            {
-                CaseInventory caseInventory = new()
-                {
-                    Id = idFirstInventory,
-                    GameCaseId = caseId,
-                    GameItemId = getInventoryTest1.GameItemId,
-                    LossChance = 0.01M,
-                    NumberItemsCase = 2
-                };
-
-                statusUpdate = await _clientApi.ResponsePut<CaseInventory>("/CaseInventory", caseInventory);
-            }
-
-            //Delete Test
-            bool IsUpdateInventory = statusUpdate == HttpStatusCode.OK;
-
-            if(IsUpdateInventory)
-            {
-                statusDelete = await _clientApi.ResponseDelete($"/CaseInventory?id={idFirstInventory}");
-                statusDelete = await _clientApi.ResponseDelete($"/CaseInventory?id={idSecondInventory}");
-            }
-
-            bool IsDeleteInventory = statusDelete == HttpStatusCode.OK;
-            bool IsDeleteDependens = false;
-
-            if(IsDeleteInventory)
-            {
-                IsDeleteDependens = await DeleteDependentsInventory(new() { getInventoryTest1, getInventoryTest2 });
-            }
-
-            Assert.True(IsDeleteDependens);
+            Assert.True(IsDeletedDependencies);
         }
 
-        private async Task<Guid> SearchIdItem(string name)
+        private async Task<bool> CreateCaseInventory(CaseInventory caseInventory)
         {
-            List<GameItem> items = await _clientApi.ResponseGet<List<GameItem>>("/GameItem/GetAllItems");
+            HttpStatusCode statusCode = await _clientApi.ResponsePost<CaseInventory>("/CaseInventory", caseInventory);
 
-            return items.FirstOrDefault(x => x.GameItemName == name)!.Id;
+            return statusCode == HttpStatusCode.OK;
         }
 
-        private async Task<Guid> SearchIdCase(string name)
+        private async Task<CaseInventory> SearchCaseInventory(Guid caseId, Guid itemId)
         {
-            List<GameCase> items = await _clientApi.ResponseGet<List<GameCase>>("/GameCase/GetAllCases");
+            var caseInventories = await _clientApi.ResponseGet<List<CaseInventory>>($"/CaseInventory/GetAllCaseInventories?caseId={caseId}");
 
-            return items.FirstOrDefault(x => x.GameCaseName == name)!.Id;
+            CaseInventory? caseInventory = caseInventories.FirstOrDefault(x => x.GameItemId == itemId);
+
+            return caseInventory ?? throw new Exception("No such case inventory");
         }
 
-        private async Task<bool> DeleteDependentsInventory(List<CaseInventory> caseInventories)
+        private async Task<bool> UpdateCaseInventory(CaseInventory caseInventory)
         {
-            HttpStatusCode statusCodeDeleteDependents = HttpStatusCode.BadRequest;
+            HttpStatusCode statusCode = await _clientApi.ResponsePut<CaseInventory>("/CaseInventory", caseInventory);
 
-            foreach (CaseInventory inventory in caseInventories)
-            {
-                statusCodeDeleteDependents = await _clientApi.ResponseDelete($"/GameItem?id={inventory.GameItemId}");
-            }
-
-            statusCodeDeleteDependents = await _clientApi.ResponseDelete($"/GameCase?id={caseInventories[0].GameCaseId}");
-
-            return statusCodeDeleteDependents == HttpStatusCode.OK;
+            return statusCode == HttpStatusCode.OK;
         }
 
-        private async Task<bool> CreateDependentsInventory()
+        private async Task<bool> DeleteCaseInventory(Guid inventoryId)
+        {
+            HttpStatusCode statusCode = await _clientApi.ResponseDelete($"/CaseInventory?id={inventoryId}");
+            
+            return statusCode == HttpStatusCode.OK;
+        }
+
+        private async Task<bool> CreateDependenciesInventory()
         {
             GameItem gameItem = new()
             {
@@ -169,6 +127,34 @@ namespace CaseApplication.IntegrationTests.Api
                 (createFirstItem == HttpStatusCode.OK) && 
                 (createSecondItem == HttpStatusCode.OK) && 
                 (createGameCase == HttpStatusCode.OK));
+        }
+
+        private async Task<Guid> SearchIdItem(string name)
+        {
+            List<GameItem> items = await _clientApi.ResponseGet<List<GameItem>>("/GameItem/GetAllItems");
+
+            return items.FirstOrDefault(x => x.GameItemName == name)!.Id;
+        }
+
+        private async Task<Guid> SearchIdCase(string name)
+        {
+            List<GameCase> items = await _clientApi.ResponseGet<List<GameCase>>("/GameCase/GetAllCases");
+
+            return items.FirstOrDefault(x => x.GameCaseName == name)!.Id;
+        }
+
+        private async Task<bool> DeleteDependenciesInventory(List<CaseInventory> caseInventories)
+        {
+            HttpStatusCode statusCodeDeleteDependents = HttpStatusCode.BadRequest;
+
+            foreach (CaseInventory inventory in caseInventories)
+            {
+                statusCodeDeleteDependents = await _clientApi.ResponseDelete($"/GameItem?id={inventory.GameItemId}");
+            }
+
+            statusCodeDeleteDependents = await _clientApi.ResponseDelete($"/GameCase?id={caseInventories[0].GameCaseId}");
+
+            return statusCodeDeleteDependents == HttpStatusCode.OK;
         }
     }
 }

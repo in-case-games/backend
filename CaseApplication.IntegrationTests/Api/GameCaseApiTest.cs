@@ -19,7 +19,7 @@ namespace CaseApplication.IntegrationTests.Api
 
 
         [Fact]
-        public async Task GameCaseTests()
+        public async Task GameCaseSimpleTests()
         {
             //Post
             GameCase gameCase = new()
