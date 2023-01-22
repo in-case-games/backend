@@ -1,6 +1,6 @@
 ﻿using CaseApplication.DomainLayer.Entities;
 using CaseApplication.WebClient;
-using CaseApplication.WebClient.Repositories;
+using CaseApplication.WebClient.Services;
 using Microsoft.AspNetCore.Mvc.Testing;
 using System.Net;
 
@@ -8,7 +8,7 @@ namespace CaseApplication.IntegrationTests.Api
 {
     public class GameCaseApiTest : IClassFixture<WebApplicationFactory<Program>>
     {
-        private readonly ClientApiRepository _clientApi;
+        private readonly ResponseHelper _clientApi;
         private Random random = new();
 
         public GameCaseApiTest(WebApplicationFactory<Program> applicationFactory)
@@ -20,19 +20,15 @@ namespace CaseApplication.IntegrationTests.Api
         [Fact]
         public async Task GameCaseCreateTest()
         {
-            PostEntityModel<GameCase> postEntityModel = new()
+            GameCase gameCase = new()
             {
-                PostUrl = "/GameCase",
-                PostContent = new()
-                {
-                    GameCaseCost = 0,
-                    GameCaseName = $"Test {random.Next(1, 1000000)}",
-                    GameCaseImage = "Image",
-                    RevenuePrecentage = 0
-                }
+                GameCaseCost = 0,
+                GameCaseName = $"Test {random.Next(1, 1000000)}",
+                GameCaseImage = "Image",
+                RevenuePrecentage = 0
             };
 
-            HttpStatusCode statusCode = await _clientApi.CreateResponsePost<GameCase>(postEntityModel);
+            HttpStatusCode statusCode = await _clientApi.ResponsePost<GameCase>("/GameCase", gameCase);
 
             Assert.Equal(HttpStatusCode.OK, statusCode);
         }
@@ -42,7 +38,7 @@ namespace CaseApplication.IntegrationTests.Api
         {
             Guid caseId = await SearchIdLastGameCase();
 
-            GameCase gameCase = await _clientApi.CreateResponseGet<GameCase>($"/GameCase?id={caseId}");
+            GameCase gameCase = await _clientApi.ResponseGet<GameCase>($"/GameCase?id={caseId}");
 
             Assert.Equal(gameCase.Id, caseId);
         }
@@ -50,7 +46,7 @@ namespace CaseApplication.IntegrationTests.Api
         [Fact]
         public async Task GameCaseGetAllTest()
         {
-            List<GameCase> gameCases = await _clientApi.CreateResponseGet<List<GameCase>>("/GameCase/GetAllCases");
+            List<GameCase> gameCases = await _clientApi.ResponseGet<List<GameCase>>("/GameCase/GetAllCases");
 
             Assert.True(gameCases.Count > 0);
         }
@@ -60,19 +56,15 @@ namespace CaseApplication.IntegrationTests.Api
         {
             Guid caseId = await SearchIdLastGameCase();
 
-            PostEntityModel<GameCase> postEntityModel = new()
+            GameCase gameCase = new()
             {
-                PostUrl = "/GameCase",
-                PostContent = new()
-                {
-                    Id = caseId,
-                    GameCaseCost = 2M,
-                    GameCaseName = "Test123",
-                    GameCaseImage = "Image321"
-                }
+                Id = caseId,
+                GameCaseCost = 200,
+                GameCaseName = $"Test {random.Next(1, 1000000)}",
+                GameCaseImage = "Image321"
             };
 
-            HttpStatusCode statusCode = await _clientApi.CreateResponsePut<GameCase>(postEntityModel);
+            HttpStatusCode statusCode = await _clientApi.ResponsePut<GameCase>("/GameCase", gameCase);
 
             Assert.Equal(HttpStatusCode.OK, statusCode);
         }
@@ -82,14 +74,15 @@ namespace CaseApplication.IntegrationTests.Api
         {
             Guid caseId = await SearchIdLastGameCase();
 
-            HttpStatusCode statusCode = await _clientApi.CreateResponseDelete($"/GameCase?id={caseId}");
+            HttpStatusCode statusCode = await _clientApi.ResponseDelete($"/GameCase?id={caseId}");
 
             Assert.Equal(HttpStatusCode.OK, statusCode);
         }
 
         private async Task<Guid> SearchIdLastGameCase()
         {
-            List<GameCase> gameCases = await _clientApi.CreateResponseGet<List<GameCase>>("/GameCase/GetAllCases");
+            List<GameCase> gameCases = await _clientApi.ResponseGet<List<GameCase>>("/GameCase/GetAllCases");
+            
             return gameCases.LastOrDefault()!.Id;
         }
     }

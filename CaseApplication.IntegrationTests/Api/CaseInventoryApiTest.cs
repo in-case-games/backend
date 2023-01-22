@@ -1,20 +1,13 @@
 ﻿using CaseApplication.DomainLayer.Entities;
-using CaseApplication.WebClient;
-using CaseApplication.WebClient.Repositories;
-using Microsoft.AspNetCore.Builder;
+using CaseApplication.WebClient.Services;
 using Microsoft.AspNetCore.Mvc.Testing;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CaseApplication.IntegrationTests.Api
 {
     public class CaseInventoryApiTest : IClassFixture<WebApplicationFactory<Program>>
     {
-        private readonly ClientApiRepository _clientApi;
+        private readonly ResponseHelper _clientApi;
 
         public CaseInventoryApiTest(WebApplicationFactory<Program> applicationFactory)
         {
@@ -40,24 +33,20 @@ namespace CaseApplication.IntegrationTests.Api
                 Guid secondItemId = await SearchIdItem("Пистолет");
                 caseId = await SearchIdCase("Все или ничего");
 
-                PostEntityModel<CaseInventory> entityModel = new()
+                CaseInventory caseInventory = new()
                 {
-                    PostUrl = "/CaseInventory",
-                    PostContent = new CaseInventory()
-                    {
-                        GameCaseId = caseId,
-                        GameItemId = firstItemId,
-                        LossChance = 0,
-                        NumberItemsCase = 1
-                    }
+                    GameCaseId = caseId,
+                    GameItemId = firstItemId,
+                    LossChance = 0.01M,
+                    NumberItemsCase = 1
                 };
 
-                createFirstInventory = await _clientApi.CreateResponsePost<CaseInventory>(entityModel);
+                createFirstInventory = await _clientApi.ResponsePost<CaseInventory>("/CaseInventory", caseInventory);
 
-                entityModel.PostContent.GameItemId = secondItemId;
-                entityModel.PostContent.LossChance = 0;
+                caseInventory.GameItemId = secondItemId;
+                caseInventory.LossChance = 0.99M;
 
-                createSecondInventory = await _clientApi.CreateResponsePost<CaseInventory>(entityModel);
+                createSecondInventory = await _clientApi.ResponsePost<CaseInventory>("/CaseInventory", caseInventory);
             }
 
             //Get Test and Get All
@@ -72,12 +61,12 @@ namespace CaseApplication.IntegrationTests.Api
 
             if (IsCreatedInventory)
             {
-                List<CaseInventory> inventories = await _clientApi.CreateResponseGet<List<CaseInventory>>($"/CaseInventory/GetAllCaseInventories?caseId={caseId}");
+                List<CaseInventory> inventories = await _clientApi.ResponseGet<List<CaseInventory>>($"/CaseInventory/GetAllCaseInventories?caseId={caseId}");
                 idFirstInventory = inventories[0].Id;
                 idSecondInventory = inventories[1].Id;
 
-                getInventoryTest1 = await _clientApi.CreateResponseGet<CaseInventory>($"/CaseInventory?id={idFirstInventory}");
-                getInventoryTest2 = await _clientApi.CreateResponseGet<CaseInventory>($"/CaseInventory?id={idSecondInventory}");
+                getInventoryTest1 = await _clientApi.ResponseGet<CaseInventory>($"/CaseInventory?id={idFirstInventory}");
+                getInventoryTest2 = await _clientApi.ResponseGet<CaseInventory>($"/CaseInventory?id={idSecondInventory}");
             }
 
             //Update Test
@@ -86,20 +75,16 @@ namespace CaseApplication.IntegrationTests.Api
 
             if (IsGetInventory)
             {
-                PostEntityModel<CaseInventory> entityModel = new()
+                CaseInventory caseInventory = new()
                 {
-                    PostUrl = "/CaseInventory",
-                    PostContent = new CaseInventory()
-                    {
-                        Id = idFirstInventory,
-                        GameCaseId = caseId,
-                        GameItemId = getInventoryTest1.GameItemId,
-                        LossChance = 1,
-                        NumberItemsCase = 2
-                    }
-                }; 
+                    Id = idFirstInventory,
+                    GameCaseId = caseId,
+                    GameItemId = getInventoryTest1.GameItemId,
+                    LossChance = 0.01M,
+                    NumberItemsCase = 2
+                };
 
-                statusUpdate = await _clientApi.CreateResponsePut<CaseInventory>(entityModel);
+                statusUpdate = await _clientApi.ResponsePut<CaseInventory>("/CaseInventory", caseInventory);
             }
 
             //Delete Test
@@ -107,8 +92,8 @@ namespace CaseApplication.IntegrationTests.Api
 
             if(IsUpdateInventory)
             {
-                statusDelete = await _clientApi.CreateResponseDelete($"/CaseInventory?id={idFirstInventory}");
-                statusDelete = await _clientApi.CreateResponseDelete($"/CaseInventory?id={idSecondInventory}");
+                statusDelete = await _clientApi.ResponseDelete($"/CaseInventory?id={idFirstInventory}");
+                statusDelete = await _clientApi.ResponseDelete($"/CaseInventory?id={idSecondInventory}");
             }
 
             bool IsDeleteInventory = statusDelete == HttpStatusCode.OK;
@@ -124,14 +109,14 @@ namespace CaseApplication.IntegrationTests.Api
 
         private async Task<Guid> SearchIdItem(string name)
         {
-            List<GameItem> items = await _clientApi.CreateResponseGet<List<GameItem>>("/GameItem/GetAllItems");
+            List<GameItem> items = await _clientApi.ResponseGet<List<GameItem>>("/GameItem/GetAllItems");
 
             return items.FirstOrDefault(x => x.GameItemName == name)!.Id;
         }
 
         private async Task<Guid> SearchIdCase(string name)
         {
-            List<GameCase> items = await _clientApi.CreateResponseGet<List<GameCase>>("/GameCase/GetAllCases");
+            List<GameCase> items = await _clientApi.ResponseGet<List<GameCase>>("/GameCase/GetAllCases");
 
             return items.FirstOrDefault(x => x.GameCaseName == name)!.Id;
         }
@@ -142,55 +127,43 @@ namespace CaseApplication.IntegrationTests.Api
 
             foreach (CaseInventory inventory in caseInventories)
             {
-                statusCodeDeleteDependents = await _clientApi.CreateResponseDelete($"/GameItem?id={inventory.GameItemId}");
+                statusCodeDeleteDependents = await _clientApi.ResponseDelete($"/GameItem?id={inventory.GameItemId}");
             }
 
-            statusCodeDeleteDependents = await _clientApi.CreateResponseDelete($"/GameCase?id={caseInventories[0].GameCaseId}");
+            statusCodeDeleteDependents = await _clientApi.ResponseDelete($"/GameCase?id={caseInventories[0].GameCaseId}");
 
             return statusCodeDeleteDependents == HttpStatusCode.OK;
         }
 
         private async Task<bool> CreateDependentsInventory()
         {
-            PostEntityModel<GameItem> entityModelItem = new()
+            GameItem gameItem = new()
             {
-                PostUrl = "/GameItem",
-                PostContent = new GameItem()
-                {
-                    GameItemName = "Драгон лор",
-                    GameItemCost = 50,
-                    GameItemImage = "aaa",
-                    GameItemRarity = "Редкий"
-                }
+                GameItemName = "Драгон лор",
+                GameItemCost = 500000,
+                GameItemImage = "aaa",
+                GameItemRarity = "Редкий"
             };
 
-            PostEntityModel<GameItem> entityModelItem2 = new()
+            GameItem gameItem2 = new()
             {
-                PostUrl = "/GameItem",
-                PostContent = new GameItem()
-                {
-                    GameItemName = "Пистолет",
-                    GameItemCost = 1,
-                    GameItemImage = "abc",
-                    GameItemRarity = "Ширп"
-                }
+                GameItemName = "Пистолет",
+                GameItemCost = 10,
+                GameItemImage = "abc",
+                GameItemRarity = "Ширп"
             };
 
-            PostEntityModel<GameCase> entityModelCase = new()
+            GameCase gameCase = new()
             {
-                PostUrl = "/GameCase",
-                PostContent = new GameCase()
-                {
-                    GameCaseName = "Все или ничего",
-                    GameCaseCost = 20,
-                    GameCaseImage = "asd",
-                    RevenuePrecentage = 0
-                }
+                GameCaseName = "Все или ничего",
+                GameCaseCost = 20,
+                GameCaseImage = "asd",
+                RevenuePrecentage = 0
             };
 
-            HttpStatusCode createFirstItem = await _clientApi.CreateResponsePost(entityModelItem);
-            HttpStatusCode createSecondItem = await _clientApi.CreateResponsePost(entityModelItem2);
-            HttpStatusCode createGameCase = await _clientApi.CreateResponsePost(entityModelCase);
+            HttpStatusCode createFirstItem = await _clientApi.ResponsePost("/GameItem", gameItem);
+            HttpStatusCode createSecondItem = await _clientApi.ResponsePost("/GameItem", gameItem2);
+            HttpStatusCode createGameCase = await _clientApi.ResponsePost("/GameCase", gameCase);
 
             return (
                 (createFirstItem == HttpStatusCode.OK) && 

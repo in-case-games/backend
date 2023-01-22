@@ -10,7 +10,7 @@ builder.Services.AddDbContextFactory<ApplicationDbContext>(
 #if DEBUG
         builder.Configuration["CaseApp:DevelopmentConnection"],
 #else
-        builder.Configuration["CaseApp:ProdConnection"],
+        builder.Configuration["CaseApp:ProductionConnection"],
 #endif
         b => b.MigrationsAssembly("CaseApplication.Api"))
 );
