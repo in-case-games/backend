@@ -7,7 +7,11 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContextFactory<ApplicationDbContext>(
     options => options.UseSqlServer(
+#if DEBUG
         builder.Configuration["CaseApp:DevelopmentConnection"],
+#else
+        builder.Configuration["CaseApp:ProdConnection"],
+#endif
         b => b.MigrationsAssembly("CaseApplication.Api"))
 );
 
