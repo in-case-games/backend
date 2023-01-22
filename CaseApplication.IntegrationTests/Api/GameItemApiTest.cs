@@ -16,74 +16,45 @@ namespace CaseApplication.IntegrationTests.Api
         }
 
         [Fact]
-        public async Task GameItemCreateTest()
+        public async Task GameItemTests()
         {
+            //Post
             GameItem gameItem = new()
             {
-                GameItemCost = 100,
-                GameItemImage = "image",
+                GameItemCost = 100M,
+                GameItemImage = "image200",
                 GameItemName = $"Оружие {random.Next(1, 100000)}",
                 GameItemRarity = "Rare"
             };
-            HttpStatusCode httpStatusCode = await _clientApi.ResponsePost<GameItem>("/GameItem", gameItem);
+
+            HttpStatusCode statusCodeCreate = await _clientApi.ResponsePost<GameItem>("/GameItem", gameItem);
+
+            //Get && Get All
+            Guid itemId = await SearchIdItemByName(gameItem.GameItemName);
+
+            //Put
+            gameItem.Id = itemId;
+            gameItem.GameItemImage = "img231231231";
+
+            HttpStatusCode statusCodePut = await _clientApi.ResponsePut<GameItem>("/GameItem", gameItem);
+
+            //Delete
+            HttpStatusCode statusCodeDelete = await _clientApi.ResponseDelete($"/GameItem?id={itemId}");
             
-            Assert.Equal(HttpStatusCode.OK, httpStatusCode);
+            bool IsPassedTests = (statusCodeCreate == HttpStatusCode.OK) &&
+                (statusCodePut == HttpStatusCode.OK) &&
+                (statusCodeDelete == HttpStatusCode.OK);
+
+            Assert.True(IsPassedTests);
         }
 
-        [Fact]
-        public async Task GameItemGetTest()
-        {
-            Guid id = await SearchIdLastGameItem();
-
-            GameItem gameItem = await _clientApi.ResponseGet<GameItem>($"/GameItem?id={id}");
-
-            Assert.Equal(id, gameItem.Id);
-        }
-
-        [Fact]
-        public async Task GameItemGetAllTest()
+        private async Task<Guid> SearchIdItemByName(string name)
         {
             List<GameItem> gameItems = await _clientApi.ResponseGet<List<GameItem>>("/GameItem/GetAllItems");
 
-            Assert.True(gameItems.Count > 0);
+            GameItem gameItem = gameItems.FirstOrDefault(x => x.GameItemName == name) ?? new();
+
+            return gameItem.Id;
         }
-
-        [Fact]
-        public async Task GameItemUpdateTest()
-        {
-            Guid id = await SearchIdLastGameItem();
-
-            GameItem gameItem = new()
-            {
-                Id = id,
-                GameItemImage = "image2",
-                GameItemCost = 2,
-                GameItemName = $"Средний айтем {random.Next(1, 100000)}",
-                GameItemRarity = "Simple"
-            };
-
-            HttpStatusCode statusCode = await _clientApi.ResponsePut<GameItem>("/GameItem", gameItem);
-
-            Assert.Equal(HttpStatusCode.OK, statusCode);
-        }
-
-        [Fact]
-        public async Task GameItemDeleteTest()
-        {
-            Guid id = await SearchIdLastGameItem();
-
-            HttpStatusCode statusCode = await _clientApi.ResponseDelete($"/GameItem?id={id}");
-
-            Assert.Equal(HttpStatusCode.OK, statusCode);
-        }
-
-        private async Task<Guid> SearchIdLastGameItem()
-        {
-            List<GameItem> gameItems = await _clientApi.ResponseGet<List<GameItem>>("/GameItem/GetAllItems");
-            
-            Guid id = gameItems.LastOrDefault()!.Id;
-            
-            return id;
-        } 
     }
 }

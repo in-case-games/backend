@@ -14,6 +14,9 @@ namespace CaseApplication.EntityFramework.Configurations
                 .HasMaxLength(30)
                 .IsRequired();
 
+            builder.HasIndex(p => p.GameCaseName)
+                .IsUnique();
+
             builder.HasIndex(i => i.GameCaseName)
                 .IsUnique();
 

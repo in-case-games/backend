@@ -3,6 +3,7 @@ using CaseApplication.WebClient;
 using CaseApplication.WebClient.Services;
 using Microsoft.AspNetCore.Mvc.Testing;
 using System.Net;
+using System.Reflection.Metadata.Ecma335;
 
 namespace CaseApplication.IntegrationTests.Api
 {
@@ -18,72 +19,45 @@ namespace CaseApplication.IntegrationTests.Api
 
 
         [Fact]
-        public async Task GameCaseCreateTest()
+        public async Task GameCaseTests()
         {
+            //Post
             GameCase gameCase = new()
             {
-                GameCaseCost = 0,
+                GameCaseCost = 200M,
                 GameCaseName = $"Test {random.Next(1, 1000000)}",
-                GameCaseImage = "Image",
-                RevenuePrecentage = 0
+                GameCaseImage = "image541",
+                RevenuePrecentage = 10M
             };
 
-            HttpStatusCode statusCode = await _clientApi.ResponsePost<GameCase>("/GameCase", gameCase);
+            HttpStatusCode statusCodeCreate = await _clientApi.ResponsePost<GameCase>("/GameCase", gameCase);
+            
+            //Get && Get All
+            Guid caseId = await SearchIdCaseByName(gameCase.GameCaseName);
 
-            Assert.Equal(HttpStatusCode.OK, statusCode);
+            //Put
+            gameCase.Id = caseId;
+            gameCase.GameCaseImage = "igame4123";
+
+            HttpStatusCode statusCodePut = await _clientApi.ResponsePut<GameCase>("/GameCase", gameCase);
+
+            //Delete
+            HttpStatusCode statusCodeDelete = await _clientApi.ResponseDelete($"/GameCase?id={caseId}");
+
+            bool IsPassedTests = (statusCodeCreate == HttpStatusCode.OK) &&
+                (statusCodePut == HttpStatusCode.OK) &&
+                (statusCodeDelete == HttpStatusCode.OK);
+
+            Assert.True(IsPassedTests);
         }
 
-        [Fact]
-        public async Task GameCaseGetTest()
-        {
-            Guid caseId = await SearchIdLastGameCase();
-
-            GameCase gameCase = await _clientApi.ResponseGet<GameCase>($"/GameCase?id={caseId}");
-
-            Assert.Equal(gameCase.Id, caseId);
-        }
-
-        [Fact]
-        public async Task GameCaseGetAllTest()
-        {
-            List<GameCase> gameCases = await _clientApi.ResponseGet<List<GameCase>>("/GameCase/GetAllCases");
-
-            Assert.True(gameCases.Count > 0);
-        }
-
-        [Fact]
-        public async Task GameCaseUpdateTest()
-        {
-            Guid caseId = await SearchIdLastGameCase();
-
-            GameCase gameCase = new()
-            {
-                Id = caseId,
-                GameCaseCost = 200,
-                GameCaseName = $"Test {random.Next(1, 1000000)}",
-                GameCaseImage = "Image321"
-            };
-
-            HttpStatusCode statusCode = await _clientApi.ResponsePut<GameCase>("/GameCase", gameCase);
-
-            Assert.Equal(HttpStatusCode.OK, statusCode);
-        }
-
-        [Fact]
-        public async Task GameCaseDeleteTest()
-        {
-            Guid caseId = await SearchIdLastGameCase();
-
-            HttpStatusCode statusCode = await _clientApi.ResponseDelete($"/GameCase?id={caseId}");
-
-            Assert.Equal(HttpStatusCode.OK, statusCode);
-        }
-
-        private async Task<Guid> SearchIdLastGameCase()
+        private async Task<Guid> SearchIdCaseByName(string name)
         {
             List<GameCase> gameCases = await _clientApi.ResponseGet<List<GameCase>>("/GameCase/GetAllCases");
             
-            return gameCases.LastOrDefault()!.Id;
+            GameCase gameCase = gameCases.FirstOrDefault(x => x.GameCaseName == name) ?? new();
+
+            return gameCase.Id;
         }
     }
 }

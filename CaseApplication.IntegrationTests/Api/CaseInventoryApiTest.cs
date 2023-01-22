@@ -140,7 +140,7 @@ namespace CaseApplication.IntegrationTests.Api
             GameItem gameItem = new()
             {
                 GameItemName = "Драгон лор",
-                GameItemCost = 500000,
+                GameItemCost = 50000,
                 GameItemImage = "aaa",
                 GameItemRarity = "Редкий"
             };
