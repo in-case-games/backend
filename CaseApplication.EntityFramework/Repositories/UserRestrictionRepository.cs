@@ -28,7 +28,7 @@ namespace CaseApplication.EntityFramework.Repositories
                 ?? throw new Exception("There is no such user restriction in the database, " +
                 "review what data comes from the api");
         }
-        public async Task<IEnumerable<UserRestriction>> GetAllRestrictions(Guid userId)
+        public async Task<IEnumerable<UserRestriction>> GetAllRestrictions()
         {
             using ApplicationDbContext _context = _contextFactory.CreateDbContext();
             

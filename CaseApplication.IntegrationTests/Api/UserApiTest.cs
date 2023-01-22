@@ -7,12 +7,10 @@ namespace CaseApplication.IntegrationTests.Api
 {
     public class UserApiTest: IClassFixture<WebApplicationFactory<Program>>
     {
-        private readonly HttpClient _client;
         private readonly ResponseHelper _response;
         public UserApiTest(WebApplicationFactory<Program> application)
         {
             _response = new ResponseHelper(application.CreateClient());
-            _client = application.CreateClient();
         }
         private async Task DeleteUser(params string[] emails)
         {
@@ -21,7 +19,7 @@ namespace CaseApplication.IntegrationTests.Api
                 IEnumerable<User> users = await _response.ResponseGet<List<User>>("/User/GetAll");
                 User? user = users!.FirstOrDefault(x => x.UserEmail == email);
 
-                HttpResponseMessage response = await _client.DeleteAsync($"/User?id={user!.Id}");
+                await _response.ResponseDelete($"/User?id={user!.Id}");
             }
             
         }
@@ -52,7 +50,7 @@ namespace CaseApplication.IntegrationTests.Api
             HttpStatusCode statusCode = await _response.ResponseGetStatusCode("/User/GetAll");
 
             //Assert
-            Assert.True(statusCode == HttpStatusCode.OK);
+            Assert.Equal(HttpStatusCode.OK, statusCode);
         }
         [Fact]
         public async Task GetUserTest()
@@ -61,11 +59,13 @@ namespace CaseApplication.IntegrationTests.Api
             User user = InitializeUser();
 
             // Act
-            HttpStatusCode statusCode = await _response.ResponsePost<User>("/User", user);
+            await _response.ResponsePost<User>("/User", user);
+            HttpStatusCode statusCode = await _response
+                .ResponseGetStatusCode($"/User?email={user.UserEmail}&hash=123");
             await DeleteUser(user.UserEmail!);
 
             // Assert
-            Assert.True(statusCode == HttpStatusCode.OK);
+            Assert.Equal(HttpStatusCode.OK, statusCode);
         }
         [Fact]
         public async Task GetImpossibleUserTest()
@@ -79,7 +79,7 @@ namespace CaseApplication.IntegrationTests.Api
                 $"/User?email={email}&hash={hash}");
 
             // Assert
-            Assert.True(statusCode != HttpStatusCode.OK);
+            Assert.Equal(HttpStatusCode.InternalServerError, statusCode);
         }
         [Fact]
         public async Task PostUserTest()
@@ -92,7 +92,7 @@ namespace CaseApplication.IntegrationTests.Api
             await DeleteUser(user.UserEmail!);
 
             // Assert
-            Assert.True(statusCode == HttpStatusCode.OK);
+            Assert.Equal(HttpStatusCode.OK, statusCode);
         }
         [Fact]
         public async Task PostEmptyUserTest()
@@ -124,7 +124,7 @@ namespace CaseApplication.IntegrationTests.Api
             await DeleteUser(newUser.UserEmail!);
 
             // Assert
-            Assert.True(statusCode == HttpStatusCode.OK);
+            Assert.Equal(HttpStatusCode.OK, statusCode);
         }
         [Fact]
         public async Task DeleteUserTest()
@@ -139,7 +139,7 @@ namespace CaseApplication.IntegrationTests.Api
             HttpStatusCode statusCode = await _response.ResponseDelete($"/User?id={user.Id}");
 
             // Assert
-            Assert.True(statusCode == HttpStatusCode.OK);
+            Assert.Equal(HttpStatusCode.OK, statusCode);
         }
     }
 }
