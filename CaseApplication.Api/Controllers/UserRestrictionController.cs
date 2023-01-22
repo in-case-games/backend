@@ -23,9 +23,9 @@ namespace CaseApplication.Api.Controllers
         }
 
         [HttpGet("GetAllRestrictions")]
-        public async Task<IEnumerable<UserRestriction>> GetAllRestrictions()
+        public async Task<IEnumerable<UserRestriction>> GetAllRestrictions(Guid userId)
         {
-            return await _userRestrictionRepository.GetAllRestrictions();
+            return await _userRestrictionRepository.GetAllRestrictions(userId);
         }
 
         [HttpPost]

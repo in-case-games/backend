@@ -28,11 +28,11 @@ namespace CaseApplication.EntityFramework.Repositories
                 ?? throw new Exception("There is no such user restriction in the database, " +
                 "review what data comes from the api");
         }
-        public async Task<IEnumerable<UserRestriction>> GetAllRestrictions()
+        public async Task<IEnumerable<UserRestriction>> GetAllRestrictions(Guid userId)
         {
             using ApplicationDbContext _context = _contextFactory.CreateDbContext();
-            
-            return await _context.UserRestriction.ToListAsync();
+
+            return await _context.UserRestriction.Where(x => x.UserId == userId).ToListAsync();
         }
 
         public async Task<bool> CreateRestriction(UserRestriction userRestriction)
