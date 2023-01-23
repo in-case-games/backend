@@ -28,6 +28,7 @@ namespace CaseApplication.WPF
 
             services.AddSingleton<PageService>();
             services.AddSingleton<ResponseHelper>();
+            services.AddSingleton<ResizeMainWindowService>();
 
             _provider = services.BuildServiceProvider();
 

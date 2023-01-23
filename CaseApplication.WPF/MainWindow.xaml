@@ -6,7 +6,12 @@
         xmlns:local="clr-namespace:CaseApplication.WPF"
         DataContext="{Binding MainViewModel, Source={StaticResource ViewModelLocator}}"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        MaxHeight="{Binding WindowMeasurements.MaxHeight}"
+        MaxWidth="{Binding WindowMeasurements.MaxWidth}"
+        MinHeight="{Binding WindowMeasurements.MinHeight}"
+        MinWidth="{Binding WindowMeasurements.MinWidth}"
+        d:DesignHeight="450" d:DesignWidth="450"
+        Title="MainWindow">
     <Grid>
         <Frame Content="{Binding PageSource}" NavigationUIVisibility="Hidden"></Frame>
     </Grid>

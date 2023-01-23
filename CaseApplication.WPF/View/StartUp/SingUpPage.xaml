@@ -5,9 +5,8 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:CaseApplication.WPF.View.StartUp"
       DataContext="{Binding SignUpViewModel, Source={StaticResource ViewModelLocator}}"
-      mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800"
-      Title="SingUpPage">
+      mc:Ignorable="d"
+      Title="SingUpPage" Height="450" Width="450">
 
     <Grid>
         

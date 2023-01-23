@@ -10,10 +10,14 @@ namespace CaseApplication.WPF.ViewModel.StartUp
     public class SignUpViewModel
     {
         private readonly PageService _pageService;
+        private readonly ResizeMainWindowService _resizeMainWindowService;
 
-        public SignUpViewModel(PageService pageService)
+        public SignUpViewModel(
+            PageService pageService,
+            ResizeMainWindowService resizeMainWindowService)
         {
             _pageService = pageService;
+            _resizeMainWindowService = resizeMainWindowService;
         }
     }
 }
