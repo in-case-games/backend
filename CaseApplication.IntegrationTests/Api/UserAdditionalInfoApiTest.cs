@@ -5,21 +5,37 @@ using System.Net;
 
 namespace CaseApplication.IntegrationTests.Api
 {
-    public class UserAdditionalInfoApiTest: IClassFixture<WebApplicationFactory<Program>>
+    public class UserAdditionalInfoApiTest : IClassFixture<WebApplicationFactory<Program>>
     {
         private readonly ResponseHelper _response;
         public UserAdditionalInfoApiTest(WebApplicationFactory<Program> application)
         {
             _response = new ResponseHelper(application.CreateClient());
         }
-        private async Task DeleteUser(params string[] emails)
+        private async Task<UserAdditionalInfo> CreateUserAdditionalInfo()
         {
-            foreach (string email in emails)
+            User user = InitializeUser();
+            await _response.ResponsePost<User>("/User", user);
+            User currentUser = await _response
+                .ResponseGet<User>($"/User?email={user.UserEmail}&hash=123");
+            UserAdditionalInfo userInfo = new UserAdditionalInfo()
             {
-                IEnumerable<User> users = await _response.ResponseGet<List<User>>("/User/GetAll");
-                User? user = users!.FirstOrDefault(x => x.UserEmail == email);
+                UserId = currentUser.Id,
+                UserAge = 999,
+                UserBalance = 99,
+                UserAbleToPay = 9
+            };
+            await _response.ResponsePost<UserAdditionalInfo>("/UserAdditionalInfo", userInfo);
+            UserAdditionalInfo currentUserInfo = await _response.
+                ResponseGet<UserAdditionalInfo>($"/UserAdditionalInfo?userId={currentUser.Id}");
 
-                await _response.ResponseDelete($"/User?id={user!.Id}");
+            return currentUserInfo;
+        }
+        private async Task DeleteUser(params Guid[] userIds)
+        {
+            foreach (Guid userId in userIds)
+            {
+                await _response.ResponseDelete($"/User?id={userId}");
             }
 
         }
@@ -47,10 +63,11 @@ namespace CaseApplication.IntegrationTests.Api
         public async Task GetUserAdditionalInfo()
         {
             // Arrange
-
+            UserAdditionalInfo userInfo = await CreateUserAdditionalInfo();
             // Act
             HttpStatusCode statusCode = await _response
-                .ResponseGetStatusCode("/UserAdditionalInfo?userId=82360739-e711-4100-aa52-9e3b6ef5e045");
+                .ResponseGetStatusCode($"/UserAdditionalInfo?userId={userInfo.UserId}");
+            await DeleteUser(userInfo!.UserId);
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, statusCode);
@@ -82,11 +99,11 @@ namespace CaseApplication.IntegrationTests.Api
                 UserBalance = 99,
                 UserAbleToPay = 9
             };
-            
+
             // Act
             HttpStatusCode statusCode = await _response
                 .ResponsePost<UserAdditionalInfo>("/UserAdditionalInfo", userInfo);
-            await DeleteUser(user!.UserEmail!);
+            await DeleteUser(userInfo.UserId);
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, statusCode);
@@ -108,17 +125,13 @@ namespace CaseApplication.IntegrationTests.Api
         public async Task PutUserAdditionalInfo()
         {
             // Arrange
-            UserAdditionalInfo userInfo = new UserAdditionalInfo()
-            {
-                UserId = new Guid("82360739-e711-4100-aa52-9e3b6ef5e045"),
-                UserBalance = new Random().Next(10),
-                UserAbleToPay = new Random().Next(10),
-                UserAge = new Random().Next(10),
-            };
+
+            UserAdditionalInfo userInfo = await CreateUserAdditionalInfo();
 
             // Act
             HttpStatusCode statusCode = await _response
                 .ResponsePut<UserAdditionalInfo>("/UserAdditionalInfo?hash=123", userInfo);
+            await DeleteUser(userInfo.UserId);
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, statusCode);
@@ -140,26 +153,27 @@ namespace CaseApplication.IntegrationTests.Api
         public async Task DeleteUserAdditionalInfo()
         {
             // Arrange
-            User user = InitializeUser();
-            await _response.ResponsePost<User>("/User", user);
-            User currentUser = await _response
-                .ResponseGet<User>($"/User?email={user.UserEmail}&hash=123");
-            UserAdditionalInfo userInfo = new UserAdditionalInfo()
-            {
-                UserId = currentUser.Id,
-                UserAge = 999,
-                UserBalance = 99,
-                UserAbleToPay = 9
-            };
-            UserAdditionalInfo currentUserInfo = await _response.
-                ResponseGet<UserAdditionalInfo>($"/UserAdditionalInfo?userId={currentUser.Id}");
+            UserAdditionalInfo userInfo = await CreateUserAdditionalInfo();
 
             // Act
-            HttpStatusCode statusCode = await _response.
-                ResponseDelete($"/UserAdditionalInfo?id={currentUserInfo.Id}");
+            HttpStatusCode statusCode = await _response
+                .ResponseDelete($"/UserAdditionalInfo?id={userInfo.Id}");
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, statusCode);
+        }
+        [Fact]
+        public async Task DeleteNotExistUserAdditionalInfo()
+        {
+            // Arrange
+            UserAdditionalInfo userInfo = new UserAdditionalInfo();
+
+            // Act
+            HttpStatusCode statusCode = await _response
+                .ResponseDelete($"/UserAdditionalInfo?id={userInfo.Id}");
+
+            // Assert
+            Assert.NotEqual(HttpStatusCode.OK, statusCode);
         }
     }
 }

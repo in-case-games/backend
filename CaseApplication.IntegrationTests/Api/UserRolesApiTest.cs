@@ -37,7 +37,8 @@ namespace CaseApplication.IntegrationTests.Api
             string roleName = "' SELECT * FROM User --%20";
 
             // Act 
-            HttpStatusCode statusCode = await _response.ResponseGetStatusCode($"/Role?roleName={roleName}");
+            HttpStatusCode statusCode = await _response
+                .ResponseGetStatusCode($"/Role?roleName={roleName}");
 
             // Assert
             Assert.NotEqual(HttpStatusCode.OK, statusCode);
@@ -87,7 +88,7 @@ namespace CaseApplication.IntegrationTests.Api
             // Arrange
             UserRole userRole = new UserRole
             {
-                Id = new Guid("c5caab96-6f55-4624-77ab-08dafd062585"),
+                Id = new Guid("44cf1d77-16bc-4921-7c0d-08dafd2d9cdd"),
                 RoleName = "puttest" + GenerateString()
             };
             // Act

@@ -16,8 +16,8 @@ namespace CaseApplication.EntityFramework.Repositories
         {
             using ApplicationDbContext _context = _contextFactory.CreateDbContext();
 
-            return await _context.User.FirstOrDefaultAsync(x => x.UserEmail == email) 
-                ?? throw new Exception("There is no such user in the database, " +
+            return await _context.User.FirstOrDefaultAsync(x => x.UserEmail == email)
+                ?? throw new("There is no such user in the database, " +
                 "review what data comes from the api");
         }
 
@@ -32,8 +32,7 @@ namespace CaseApplication.EntityFramework.Repositories
         {
             using ApplicationDbContext _context = _contextFactory.CreateDbContext();
 
-            if (user.UserEmail is not null &&
-                await GetUser(user.UserEmail) is null) throw new("There is such user in the database, " +
+            if (user.UserEmail is null) throw new("There is such user in the database, " +
                 "review what data comes from the api");
 
             user.Id = Guid.NewGuid();

@@ -56,13 +56,10 @@ namespace CaseApplication.IntegrationTests.Api
         public async Task GetUserTest()
         {
             // Arrange
-            User user = InitializeUser();
 
             // Act
-            await _response.ResponsePost<User>("/User", user);
             HttpStatusCode statusCode = await _response
-                .ResponseGetStatusCode($"/User?email={user.UserEmail}&hash=123");
-            await DeleteUser(user.UserEmail!);
+                .ResponseGetStatusCode("/User?email=testuser1&hash=123");
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, statusCode);
