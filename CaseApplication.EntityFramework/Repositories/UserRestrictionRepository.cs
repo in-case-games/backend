@@ -45,12 +45,16 @@ namespace CaseApplication.EntityFramework.Repositories
             return true;
         }
 
-        public async Task<bool> UpdateRestriction(UserRestriction userRestriction, Guid id)
+        public async Task<bool> UpdateRestriction(UserRestriction userRestriction)
         {
             using ApplicationDbContext _context = _contextFactory.CreateDbContext();
 
-            UserRestriction? searchRestriction = await _context.UserRestriction.AsNoTracking<UserRestriction>().FirstOrDefaultAsync(x => x.Id == userRestriction.Id);
-            User? searchUser = await _context.User.AsNoTracking<User>().FirstOrDefaultAsync(x => x.Id == userRestriction.UserId);
+            UserRestriction? searchRestriction = await _context
+                .UserRestriction
+                .FirstOrDefaultAsync(x => x.Id == userRestriction.Id);
+            User? searchUser = await _context
+                .User
+                .FirstOrDefaultAsync(x => x.Id == userRestriction.UserId);
 
             if (searchRestriction is null) 
                 throw new Exception("There is no such user restriction in the database, " +
@@ -59,9 +63,7 @@ namespace CaseApplication.EntityFramework.Repositories
                 throw new Exception("There is no such user in the database, " +
                 "review what data comes from the api");
 
-            userRestriction.Id = id;
-            // _context.Entry(searchRestriction).CurrentValues.SetValues(searchUser);
-            _context.UserRestriction.Update(userRestriction);
+            _context.Entry(searchRestriction).CurrentValues.SetValues(userRestriction);
             await _context.SaveChangesAsync();
 
             return true;
