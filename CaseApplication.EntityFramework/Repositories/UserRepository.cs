@@ -32,6 +32,10 @@ namespace CaseApplication.EntityFramework.Repositories
         {
             using ApplicationDbContext _context = _contextFactory.CreateDbContext();
 
+            if (user.UserEmail is not null &&
+                await GetUser(user.UserEmail) is null) throw new("There is such user in the database, " +
+                "review what data comes from the api");
+
             user.Id = Guid.NewGuid();
 
             await _context.User.AddAsync(user);

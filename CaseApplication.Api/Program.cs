@@ -1,3 +1,4 @@
+using CaseApplication.Api.Services;
 using CaseApplication.DomainLayer.Repositories;
 using CaseApplication.EntityFramework.Data;
 using CaseApplication.EntityFramework.Repositories;
