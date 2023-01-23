@@ -11,16 +11,20 @@ namespace CaseApplication.WPF
     {
         private static ServiceProvider? _provider;
 
-        public MainWindowViewModel MainViewModel => _provider!.GetRequiredService<MainWindowViewModel>();
-        public AuthorizationPageViewModel AuthViewModel => _provider!.GetRequiredService<AuthorizationPageViewModel>();
-        
+        public MainViewModel MainViewModel => _provider!.GetRequiredService<MainViewModel>();
+        public AuthorizationViewModel AuthViewModel => _provider!.GetRequiredService<AuthorizationViewModel>();
+        public SignInViewModel SignInViewModel => _provider!.GetRequiredService<SignInViewModel>();
+        public SignUpViewModel SignUpViewModel => _provider!.GetRequiredService<SignUpViewModel>();
+
+
         public static void Init()
         {
             var services = new ServiceCollection();
             
-            services.AddTransient<MainWindowViewModel>();
-
-            services.AddScoped<AuthorizationPageViewModel>();
+            services.AddTransient<MainViewModel>();
+            services.AddTransient<AuthorizationViewModel>();
+            services.AddTransient<SignInViewModel>();
+            services.AddTransient<SignUpViewModel>();
 
             services.AddSingleton<PageService>();
             services.AddSingleton<ResponseHelper>();

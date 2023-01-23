@@ -5,7 +5,7 @@ using System.Windows.Controls;
 
 namespace CaseApplication.WPF.ViewModel
 {
-    public class MainWindowViewModel : ObservableObject
+    public class MainViewModel : ObservableObject
     {
         private readonly PageService _pageService;
 
@@ -19,7 +19,7 @@ namespace CaseApplication.WPF.ViewModel
             } 
         }
 
-        public MainWindowViewModel(PageService pageService)
+        public MainViewModel(PageService pageService)
         {
             _pageService = pageService;
 
