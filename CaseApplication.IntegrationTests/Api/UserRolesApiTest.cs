@@ -48,7 +48,8 @@ namespace CaseApplication.IntegrationTests.Api
             // Arrange
 
             // Act
-            HttpStatusCode statusCode = await _response.ResponseGetStatusCode("/Role?roleName=gettest");
+            HttpStatusCode statusCode = await _response
+                .ResponseGetStatusCode("/Role?roleName=user");
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, statusCode);
@@ -86,7 +87,7 @@ namespace CaseApplication.IntegrationTests.Api
             // Arrange
             UserRole userRole = new UserRole
             {
-                Id = new Guid("622f6996-5def-410c-9247-08dafc600a5b"),
+                Id = new Guid("c5caab96-6f55-4624-77ab-08dafd062585"),
                 RoleName = "puttest" + GenerateString()
             };
             // Act

@@ -45,7 +45,7 @@ namespace CaseApplication.EntityFramework.Repositories
         {
             using ApplicationDbContext _context = _contextFactory.CreateDbContext();
 
-            UserAdditionalInfo? searchInfo = await _context.UserAdditionalInfo.FirstOrDefaultAsync(x => x.UserId == info.Id);
+            UserAdditionalInfo? searchInfo = await _context.UserAdditionalInfo.FirstOrDefaultAsync(x => x.UserId == info.UserId);
 
             if(searchInfo is null) throw new Exception("There is no such information in the database, " +
                 "review what data comes from the api");

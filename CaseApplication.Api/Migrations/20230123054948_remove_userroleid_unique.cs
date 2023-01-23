@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace CaseApplication.Api.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class removeuserroleidunique : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -17,9 +17,9 @@ namespace CaseApplication.Api.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     GameCaseName = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
-                    GameCaseCost = table.Column<decimal>(type: "DECIMAL(7,5)", nullable: false),
+                    GameCaseCost = table.Column<decimal>(type: "DECIMAL(18,5)", nullable: false),
                     GameCaseImage = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    RevenuePrecentage = table.Column<decimal>(type: "DECIMAL(6,5)", nullable: false)
+                    RevenuePrecentage = table.Column<decimal>(type: "DECIMAL(18,5)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -32,7 +32,7 @@ namespace CaseApplication.Api.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     GameItemName = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
-                    GameItemCost = table.Column<decimal>(type: "DECIMAL(7,5)", nullable: false),
+                    GameItemCost = table.Column<decimal>(type: "DECIMAL(18,5)", nullable: false),
                     GameItemImage = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     GameItemRarity = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false)
                 },
@@ -77,7 +77,7 @@ namespace CaseApplication.Api.Migrations
                     GameCaseId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     GameItemId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     NumberItemsCase = table.Column<int>(type: "int", nullable: false),
-                    LossChance = table.Column<decimal>(type: "DECIMAL(6,5)", nullable: false)
+                    LossChance = table.Column<decimal>(type: "DECIMAL(18,5)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -149,8 +149,8 @@ namespace CaseApplication.Api.Migrations
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     UserRoleId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     UserAge = table.Column<int>(type: "int", nullable: false),
-                    UserBalance = table.Column<decimal>(type: "DECIMAL(6,5)", nullable: false),
-                    UserAbleToPay = table.Column<decimal>(type: "DECIMAL(6,5)", nullable: false)
+                    UserBalance = table.Column<decimal>(type: "DECIMAL(18,5)", nullable: false),
+                    UserAbleToPay = table.Column<decimal>(type: "DECIMAL(18,5)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -172,19 +172,23 @@ namespace CaseApplication.Api.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_CaseInventory_GameCaseId",
                 table: "CaseInventory",
-                column: "GameCaseId",
-                unique: true);
+                column: "GameCaseId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_CaseInventory_GameItemId",
                 table: "CaseInventory",
-                column: "GameItemId",
-                unique: true);
+                column: "GameItemId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_CaseInventory_Id",
                 table: "CaseInventory",
                 column: "Id",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_GameCase_GameCaseName",
+                table: "GameCase",
+                column: "GameCaseName",
                 unique: true);
 
             migrationBuilder.CreateIndex(

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CaseApplication.Api.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230121085952_SomeChanges_2")]
-    partial class SomeChanges2
+    [Migration("20230123054948_remove_userroleid_unique")]
+    partial class removeuserroleidunique
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -39,7 +39,7 @@ namespace CaseApplication.Api.Migrations
 
                     b.Property<decimal?>("LossChance")
                         .IsRequired()
-                        .HasColumnType("DECIMAL(6, 5)");
+                        .HasColumnType("DECIMAL(18, 5)");
 
                     b.Property<int>("NumberItemsCase")
                         .HasColumnType("int");
@@ -63,7 +63,7 @@ namespace CaseApplication.Api.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<decimal>("GameCaseCost")
-                        .HasColumnType("DECIMAL(7, 5)");
+                        .HasColumnType("DECIMAL(18, 5)");
 
                     b.Property<string>("GameCaseImage")
                         .IsRequired()
@@ -75,7 +75,7 @@ namespace CaseApplication.Api.Migrations
                         .HasColumnType("nvarchar(30)");
 
                     b.Property<decimal>("RevenuePrecentage")
-                        .HasColumnType("DECIMAL(6, 5)");
+                        .HasColumnType("DECIMAL(18, 5)");
 
                     b.HasKey("Id");
 
@@ -95,7 +95,7 @@ namespace CaseApplication.Api.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<decimal>("GameItemCost")
-                        .HasColumnType("DECIMAL(7, 5)");
+                        .HasColumnType("DECIMAL(18, 5)");
 
                     b.Property<string>("GameItemImage")
                         .IsRequired()
@@ -165,13 +165,13 @@ namespace CaseApplication.Api.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<decimal>("UserAbleToPay")
-                        .HasColumnType("DECIMAL(6, 5)");
+                        .HasColumnType("DECIMAL(18, 5)");
 
                     b.Property<int>("UserAge")
                         .HasColumnType("int");
 
                     b.Property<decimal>("UserBalance")
-                        .HasColumnType("DECIMAL(6, 5)");
+                        .HasColumnType("DECIMAL(18, 5)");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
