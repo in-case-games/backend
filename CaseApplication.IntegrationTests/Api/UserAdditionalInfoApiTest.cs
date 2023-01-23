@@ -60,7 +60,7 @@ namespace CaseApplication.IntegrationTests.Api
             return Convert.ToBase64String(bytes);
         }
         [Fact]
-        public async Task GetUserAdditionalInfo()
+        public async Task GetUserAdditionalInfoTest()
         {
             // Arrange
             UserAdditionalInfo userInfo = await CreateUserAdditionalInfo();
@@ -73,7 +73,7 @@ namespace CaseApplication.IntegrationTests.Api
             Assert.Equal(HttpStatusCode.OK, statusCode);
         }
         [Fact]
-        public async Task GetNotExistedUserAdditionalInfo()
+        public async Task GetNotExistedUserAdditionalInfoTest()
         {
             // Arrange 
 
@@ -85,7 +85,7 @@ namespace CaseApplication.IntegrationTests.Api
             Assert.NotEqual(HttpStatusCode.OK, statusCode);
         }
         [Fact]
-        public async Task PostUserAdditionalInfo()
+        public async Task PostUserAdditionalInfoTest()
         {
             // Arrange
             User user = InitializeUser();
@@ -109,7 +109,7 @@ namespace CaseApplication.IntegrationTests.Api
             Assert.Equal(HttpStatusCode.OK, statusCode);
         }
         [Fact]
-        public async Task PostEmptyUserAdditionalInfo()
+        public async Task PostEmptyUserAdditionalInfoTest()
         {
             // Arrange
             UserAdditionalInfo userInfo = new UserAdditionalInfo();
@@ -122,7 +122,7 @@ namespace CaseApplication.IntegrationTests.Api
             Assert.NotEqual(HttpStatusCode.OK, statusCode);
         }
         [Fact]
-        public async Task PutUserAdditionalInfo()
+        public async Task PutUserAdditionalInfoTest()
         {
             // Arrange
 
@@ -137,7 +137,7 @@ namespace CaseApplication.IntegrationTests.Api
             Assert.Equal(HttpStatusCode.OK, statusCode);
         }
         [Fact]
-        public async Task PutEmptyUserAdditionalInfo()
+        public async Task PutEmptyUserAdditionalInfoTest()
         {
             // Arrange
             UserAdditionalInfo userInfo = new UserAdditionalInfo();
@@ -150,7 +150,7 @@ namespace CaseApplication.IntegrationTests.Api
             Assert.NotEqual(HttpStatusCode.OK, statusCode);
         }
         [Fact]
-        public async Task DeleteUserAdditionalInfo()
+        public async Task DeleteUserAdditionalInfoTest()
         {
             // Arrange
             UserAdditionalInfo userInfo = await CreateUserAdditionalInfo();
@@ -164,7 +164,7 @@ namespace CaseApplication.IntegrationTests.Api
             Assert.Equal(HttpStatusCode.OK, statusCode);
         }
         [Fact]
-        public async Task DeleteNotExistUserAdditionalInfo()
+        public async Task DeleteNotExistUserAdditionalInfoTest()
         {
             // Arrange
             UserAdditionalInfo userInfo = new UserAdditionalInfo();

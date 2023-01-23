@@ -34,9 +34,9 @@ namespace CaseApplication.Api.Controllers
         }
 
         [HttpPut]
-        public async Task<bool> UpdateRestriction(UserRestriction userRestriction)
+        public async Task<bool> UpdateRestriction(UserRestriction userRestriction, Guid id)
         {
-            return await _userRestrictionRepository.UpdateRestriction(userRestriction);
+            return await _userRestrictionRepository.UpdateRestriction(userRestriction, id);
         }
 
         [HttpDelete]
