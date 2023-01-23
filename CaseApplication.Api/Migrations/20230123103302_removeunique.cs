@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace CaseApplication.Api.Migrations
 {
     /// <inheritdoc />
-    public partial class removeuserroleidunique : Migration
+    public partial class removeunique : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -236,8 +236,7 @@ namespace CaseApplication.Api.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_UserAdditionalInfo_UserRoleId",
                 table: "UserAdditionalInfo",
-                column: "UserRoleId",
-                unique: true);
+                column: "UserRoleId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserInventory_GameItemId",

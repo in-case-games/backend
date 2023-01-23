@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CaseApplication.Api.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230123054948_remove_userroleid_unique")]
-    partial class removeuserroleidunique
+    [Migration("20230123103302_removeunique")]
+    partial class removeunique
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -187,8 +187,7 @@ namespace CaseApplication.Api.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.HasIndex("UserRoleId")
-                        .IsUnique();
+                    b.HasIndex("UserRoleId");
 
                     b.ToTable("UserAdditionalInfo");
                 });

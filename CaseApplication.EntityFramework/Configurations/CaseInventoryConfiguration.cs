@@ -14,8 +14,10 @@ namespace CaseApplication.EntityFramework.Configurations
                 .HasColumnType("DECIMAL(18, 5)")
                 .IsRequired();
 
-            builder.HasIndex(k => k.GameCaseId);
-            builder.HasIndex(k => k.GameItemId);
+            builder.HasIndex(k => k.GameCaseId)
+                .IsUnique(false);
+            builder.HasIndex(k => k.GameItemId)
+                .IsUnique(false);
         }
     }
 }

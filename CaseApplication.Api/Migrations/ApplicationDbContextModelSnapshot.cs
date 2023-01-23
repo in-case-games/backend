@@ -184,8 +184,7 @@ namespace CaseApplication.Api.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.HasIndex("UserRoleId")
-                        .IsUnique();
+                    b.HasIndex("UserRoleId");
 
                     b.ToTable("UserAdditionalInfo");
                 });
