@@ -9,11 +9,17 @@ namespace CaseApplication.WebClient.Services
     {
         private readonly HttpClient _httpClient;
         private readonly string baseUrl = "https://localhost:7053";
-        
+
+        public ResponseHelper()
+        {
+            _httpClient = new HttpClient();
+        }
+
         public ResponseHelper(HttpClient httpClient)
         {
             _httpClient = httpClient;
         }
+
         public async Task<HttpStatusCode> ResponseGetStatusCode(string uri)
         {
             HttpResponseMessage response = await _httpClient.GetAsync(baseUrl + uri);
