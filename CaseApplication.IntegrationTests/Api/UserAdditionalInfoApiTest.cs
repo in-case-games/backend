@@ -158,6 +158,7 @@ namespace CaseApplication.IntegrationTests.Api
             // Act
             HttpStatusCode statusCode = await _response
                 .ResponseDelete($"/UserAdditionalInfo?id={userInfo.Id}");
+            await DeleteUser(userInfo.UserId);
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, statusCode);
