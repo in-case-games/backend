@@ -1,5 +1,5 @@
 ﻿using CaseApplication.WebClient.Services;
-using CaseApplication.WPF.Service;
+using CaseApplication.WPF.Services;
 using CaseApplication.WPF.ViewModel;
 using CaseApplication.WPF.ViewModel.StartUp;
 using Microsoft.Extensions.DependencyInjection;

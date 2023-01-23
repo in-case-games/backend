@@ -1,5 +1,5 @@
 ﻿using CaseApplication.WPF.Core;
-using CaseApplication.WPF.Service;
+using CaseApplication.WPF.Services;
 using CaseApplication.WPF.View.StartUp;
 using System.Windows.Controls;
 

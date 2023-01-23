@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Controls;
 
-namespace CaseApplication.WPF.Service
+namespace CaseApplication.WPF.Services
 {
     public class PageService
     {

@@ -1,4 +1,4 @@
-﻿using CaseApplication.WPF.Service;
+﻿using CaseApplication.WPF.Services;
 
 namespace CaseApplication.WPF.ViewModel.StartUp
 {
