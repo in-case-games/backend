@@ -17,7 +17,9 @@ namespace CaseApplication.EntityFramework.Repositories
         {
             using ApplicationDbContext _context = _contextFactory.CreateDbContext();
 
-            UserRestriction? searchRestriction = await _context.UserRestriction.FirstOrDefaultAsync(x => x.Id == id);
+            UserRestriction? searchRestriction = await _context
+                .UserRestriction
+                .FirstOrDefaultAsync(x => x.Id == id);
             
             return searchRestriction 
                 ?? throw new Exception("There is no such user restriction in the database, " +
@@ -34,7 +36,9 @@ namespace CaseApplication.EntityFramework.Repositories
         {
             using ApplicationDbContext _context = _contextFactory.CreateDbContext();
 
-            User? searchUser = await _context.User.FirstOrDefaultAsync(x => x.Id == userRestriction.UserId);
+            User? searchUser = await _context
+                .User
+                .FirstOrDefaultAsync(x => x.Id == userRestriction.UserId);
             
             if (searchUser is null) throw new Exception("There is no such user in the database, " +
                 "review what data comes from the api");
@@ -73,7 +77,9 @@ namespace CaseApplication.EntityFramework.Repositories
         {
             using ApplicationDbContext _context = _contextFactory.CreateDbContext();
 
-            UserRestriction? searchRestriction = await _context.UserRestriction.FirstOrDefaultAsync(x => x.Id == id);
+            UserRestriction? searchRestriction = await _context
+                .UserRestriction
+                .FirstOrDefaultAsync(x => x.Id == id);
 
             if (searchRestriction is null)
                 throw new Exception("There is no such user restriction in the database, " +

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace CaseApplication.Api.Migrations
 {
     /// <inheritdoc />
-    public partial class removeunique : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -92,6 +92,38 @@ namespace CaseApplication.Api.Migrations
                         name: "FK_CaseInventory_GameItem_GameItemId",
                         column: x => x.GameItemId,
                         principalTable: "GameItem",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserHistoryOpeningCases",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    GameItemId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    GameCaseId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserHistoryOpeningCases", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_UserHistoryOpeningCases_GameCase_GameCaseId",
+                        column: x => x.GameCaseId,
+                        principalTable: "GameCase",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_UserHistoryOpeningCases_GameItem_GameItemId",
+                        column: x => x.GameItemId,
+                        principalTable: "GameItem",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_UserHistoryOpeningCases_User_UserId",
+                        column: x => x.UserId,
+                        principalTable: "User",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -239,6 +271,27 @@ namespace CaseApplication.Api.Migrations
                 column: "UserRoleId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_UserHistoryOpeningCases_GameCaseId",
+                table: "UserHistoryOpeningCases",
+                column: "GameCaseId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserHistoryOpeningCases_GameItemId",
+                table: "UserHistoryOpeningCases",
+                column: "GameItemId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserHistoryOpeningCases_Id",
+                table: "UserHistoryOpeningCases",
+                column: "Id",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserHistoryOpeningCases_UserId",
+                table: "UserHistoryOpeningCases",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_UserInventory_GameItemId",
                 table: "UserInventory",
                 column: "GameItemId");
@@ -282,16 +335,19 @@ namespace CaseApplication.Api.Migrations
                 name: "UserAdditionalInfo");
 
             migrationBuilder.DropTable(
+                name: "UserHistoryOpeningCases");
+
+            migrationBuilder.DropTable(
                 name: "UserInventory");
 
             migrationBuilder.DropTable(
                 name: "UserRestriction");
 
             migrationBuilder.DropTable(
-                name: "GameCase");
+                name: "UserRole");
 
             migrationBuilder.DropTable(
-                name: "UserRole");
+                name: "GameCase");
 
             migrationBuilder.DropTable(
                 name: "GameItem");

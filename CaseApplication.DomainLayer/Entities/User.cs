@@ -16,5 +16,7 @@ namespace CaseApplication.DomainLayer.Entities
         public List<UserRestriction>? UserRestrictions { get; set; }
         [JsonIgnore]
         public List<UserInventory>? UserInventories { get; set; }
+        [JsonIgnore]
+        public List<UserHistoryOpeningCases>? UserHistoryOpeningCases { get; set; }
     }
 }

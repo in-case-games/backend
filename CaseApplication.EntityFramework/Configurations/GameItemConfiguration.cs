@@ -36,6 +36,11 @@ namespace CaseApplication.EntityFramework.Configurations
                 .WithOne(P => P.GameItem)
                 .HasForeignKey(p => p.GameItemId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasMany(p => p.UserHistoryOpeningCases)
+                .WithOne(P => P.GameItem)
+                .HasForeignKey(p => p.GameItemId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

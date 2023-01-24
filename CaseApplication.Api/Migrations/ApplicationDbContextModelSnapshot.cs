@@ -189,6 +189,35 @@ namespace CaseApplication.Api.Migrations
                     b.ToTable("UserAdditionalInfo");
                 });
 
+            modelBuilder.Entity("CaseApplication.DomainLayer.Entities.UserHistoryOpeningCases", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("GameCaseId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("GameItemId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GameCaseId");
+
+                    b.HasIndex("GameItemId");
+
+                    b.HasIndex("Id")
+                        .IsUnique();
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserHistoryOpeningCases");
+                });
+
             modelBuilder.Entity("CaseApplication.DomainLayer.Entities.UserInventory", b =>
                 {
                     b.Property<Guid>("Id")
@@ -297,6 +326,33 @@ namespace CaseApplication.Api.Migrations
                     b.Navigation("UserRole");
                 });
 
+            modelBuilder.Entity("CaseApplication.DomainLayer.Entities.UserHistoryOpeningCases", b =>
+                {
+                    b.HasOne("CaseApplication.DomainLayer.Entities.GameCase", "GameCase")
+                        .WithMany("UserHistoryOpeningCases")
+                        .HasForeignKey("GameCaseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CaseApplication.DomainLayer.Entities.GameItem", "GameItem")
+                        .WithMany("UserHistoryOpeningCases")
+                        .HasForeignKey("GameItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CaseApplication.DomainLayer.Entities.User", "User")
+                        .WithMany("UserHistoryOpeningCases")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("GameCase");
+
+                    b.Navigation("GameItem");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("CaseApplication.DomainLayer.Entities.UserInventory", b =>
                 {
                     b.HasOne("CaseApplication.DomainLayer.Entities.GameItem", "GameItem")
@@ -329,6 +385,8 @@ namespace CaseApplication.Api.Migrations
 
             modelBuilder.Entity("CaseApplication.DomainLayer.Entities.GameCase", b =>
                 {
+                    b.Navigation("UserHistoryOpeningCases");
+
                     b.Navigation("СaseInventories");
                 });
 
@@ -336,12 +394,16 @@ namespace CaseApplication.Api.Migrations
                 {
                     b.Navigation("CaseInventories");
 
+                    b.Navigation("UserHistoryOpeningCases");
+
                     b.Navigation("UserInventories");
                 });
 
             modelBuilder.Entity("CaseApplication.DomainLayer.Entities.User", b =>
                 {
                     b.Navigation("UserAdditionalInfo");
+
+                    b.Navigation("UserHistoryOpeningCases");
 
                     b.Navigation("UserInventories");
 

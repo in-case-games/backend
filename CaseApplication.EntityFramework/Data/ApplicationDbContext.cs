@@ -14,6 +14,7 @@ namespace CaseApplication.EntityFramework.Data
         internal DbSet<GameCase> GameCase => Set<GameCase>();
         internal DbSet<GameItem> GameItem => Set<GameItem>();
         internal DbSet<CaseInventory> CaseInventory => Set<CaseInventory>();
+        internal DbSet<UserHistoryOpeningCases> UserHistoryOpeningCases => Set<UserHistoryOpeningCases>();
 
         public ApplicationDbContext(DbContextOptions options) : base(options) {}
 
@@ -27,6 +28,7 @@ namespace CaseApplication.EntityFramework.Data
             modelBuilder.ApplyConfiguration(new UserInventoryConfiguration());
             modelBuilder.ApplyConfiguration(new UserRestrictionConfiguration());
             modelBuilder.ApplyConfiguration(new UserRoleConfiguration());
+            modelBuilder.ApplyConfiguration(new UserHistoryOpeningCasesConfiguration());
         }
     }
 }

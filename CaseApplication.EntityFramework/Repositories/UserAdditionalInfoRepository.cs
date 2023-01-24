@@ -16,7 +16,9 @@ namespace CaseApplication.EntityFramework.Repositories
         {
             using ApplicationDbContext _context = _contextFactory.CreateDbContext();
 
-            UserAdditionalInfo? searchInfo = await _context.UserAdditionalInfo.FirstOrDefaultAsync(x => x.UserId == userId);
+            UserAdditionalInfo? searchInfo = await _context
+                .UserAdditionalInfo
+                .FirstOrDefaultAsync(x => x.UserId == userId);
 
             return searchInfo ?? throw new Exception("There is no such information in the database, " +
                 "review what data comes from the api");
@@ -30,8 +32,10 @@ namespace CaseApplication.EntityFramework.Repositories
             UserRole? searchRole = await _context.UserRole.FirstOrDefaultAsync(x => x.RoleName == "user");
 
             if (searchRole is null) throw new Exception("Add standard roles to the database");
-            if (searchUser is null) throw new Exception("There is no user with this Guid in the database, " +
-                "review what data comes from the api");
+            if (searchUser is null) {
+                throw new Exception("There is no user with this Guid in the database, " +
+                    "review what data comes from the api");
+            }
 
             info.Id = Guid.NewGuid();
             info.UserRoleId = searchRole!.Id;
@@ -45,10 +49,14 @@ namespace CaseApplication.EntityFramework.Repositories
         {
             using ApplicationDbContext _context = _contextFactory.CreateDbContext();
 
-            UserAdditionalInfo? searchInfo = await _context.UserAdditionalInfo.FirstOrDefaultAsync(x => x.UserId == info.UserId);
+            UserAdditionalInfo? searchInfo = await _context
+                .UserAdditionalInfo
+                .FirstOrDefaultAsync(x => x.UserId == info.UserId);
 
-            if(searchInfo is null) throw new Exception("There is no such information in the database, " +
-                "review what data comes from the api");
+            if(searchInfo is null) {
+                throw new Exception("There is no such information in the database, " + 
+                    "review what data comes from the api");
+            }
 
             _context.Entry(searchInfo).CurrentValues.SetValues(info);
             await _context.SaveChangesAsync();
@@ -60,10 +68,14 @@ namespace CaseApplication.EntityFramework.Repositories
         {
             using ApplicationDbContext _context = _contextFactory.CreateDbContext();
 
-            UserAdditionalInfo? searchInfo = await _context.UserAdditionalInfo.FirstOrDefaultAsync(x => x.Id == id);
+            UserAdditionalInfo? searchInfo = await _context
+                .UserAdditionalInfo
+                .FirstOrDefaultAsync(x => x.Id == id);
 
-            if(searchInfo is null) throw new Exception("There is no such information in the database, " +
-                "review what data comes from the api");
+            if(searchInfo is null) {
+                throw new Exception("There is no such information in the database, " + 
+                    "review what data comes from the api");
+            }
 
             _context.UserAdditionalInfo.Remove(searchInfo);
             await _context.SaveChangesAsync();

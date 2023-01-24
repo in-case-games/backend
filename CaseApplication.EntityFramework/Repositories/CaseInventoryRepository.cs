@@ -18,7 +18,9 @@ namespace CaseApplication.EntityFramework.Repositories
         {
             using ApplicationDbContext _context = _contextFactory.CreateDbContext();
 
-            CaseInventory? searchCaseInventory = await _context.CaseInventory.FirstOrDefaultAsync(x => x.Id == id);
+            CaseInventory? searchCaseInventory = await _context
+                .CaseInventory
+                .FirstOrDefaultAsync(x => x.Id == id);
 
             return searchCaseInventory ?? throw new Exception("There is no such case inventory, " +
                 "review what data comes from the api");
@@ -28,7 +30,10 @@ namespace CaseApplication.EntityFramework.Repositories
         {
             using ApplicationDbContext _context = _contextFactory.CreateDbContext();
 
-            List<CaseInventory> caseInventories = await _context.CaseInventory.ToListAsync();
+            List<CaseInventory> caseInventories = await _context
+                .CaseInventory
+                .Where(x => x.GameCaseId == caseId)
+                .ToListAsync();
 
             return caseInventories;
         }
@@ -37,12 +42,17 @@ namespace CaseApplication.EntityFramework.Repositories
         {
             using ApplicationDbContext _context = _contextFactory.CreateDbContext();
 
-            GameCase? searchGameCase = await _context.GameCase.FirstOrDefaultAsync(x => x.Id == caseInventory.GameCaseId);
-            GameItem? searchGameItem = await _context.GameItem.FirstOrDefaultAsync(x => x.Id == caseInventory.GameItemId);
+            GameCase? searchGameCase = await _context
+                .GameCase
+                .FirstOrDefaultAsync(x => x.Id == caseInventory.GameCaseId);
+
+            GameItem? searchGameItem = await _context
+                .GameItem
+                .FirstOrDefaultAsync(x => x.Id == caseInventory.GameItemId);
 
             if (searchGameCase is null) throw new Exception("There is no such case, " +
                 "review what data comes from the api");
-            if (searchGameCase is null) throw new Exception("There is no such item, " +
+            if (searchGameItem is null) throw new Exception("There is no such item, " +
                 "review what data comes from the api");
 
             await _context.CaseInventory.AddAsync(caseInventory);
@@ -54,10 +64,14 @@ namespace CaseApplication.EntityFramework.Repositories
         {
             using ApplicationDbContext _context = _contextFactory.CreateDbContext();
 
-            CaseInventory? searchCaseInventory = await _context.CaseInventory.FirstOrDefaultAsync(x => x.Id == caseInventory.Id);
+            CaseInventory? searchCaseInventory = await _context
+                .CaseInventory
+                .FirstOrDefaultAsync(x => x.Id == caseInventory.Id);
 
-            if (searchCaseInventory is null) throw new Exception("There is no such case inventory in the database, " +
-                "review what data comes from the api");
+            if (searchCaseInventory is null) {
+                throw new Exception("There is no such case inventory in the database, " +
+                    "review what data comes from the api");
+            }
 
             _context.Entry(searchCaseInventory).CurrentValues.SetValues(caseInventory);
             await _context.SaveChangesAsync();
@@ -69,10 +83,14 @@ namespace CaseApplication.EntityFramework.Repositories
         {
             using ApplicationDbContext _context = _contextFactory.CreateDbContext();
 
-            CaseInventory? searchCaseInventory = await _context.CaseInventory.FirstOrDefaultAsync(x => x.Id == id);
+            CaseInventory? searchCaseInventory = await _context
+                .CaseInventory
+                .FirstOrDefaultAsync(x => x.Id == id);
 
-            if (searchCaseInventory is null) throw new Exception("There is no such case inventory in the database, " +
-                "review what data comes from the api");
+            if (searchCaseInventory is null) {
+                throw new Exception("There is no such case inventory in the database, " +
+                    "review what data comes from the api");
+            }
 
             _context.CaseInventory.Remove(searchCaseInventory);
             await _context.SaveChangesAsync();
