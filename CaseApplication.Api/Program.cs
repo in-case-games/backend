@@ -26,7 +26,7 @@ builder.Services.AddTransient<ICaseInventoryRepository, CaseInventoryRepository>
 builder.Services.AddTransient<IUserRoleRepository, UserRoleRepository>();
 builder.Services.AddTransient<IUserRestrictionRepository, UserRestrictionRepository>();
 builder.Services.AddTransient<IUserInventoryRepository, UserInventoryRepository>();
-builder.Services.AddTransient<IUserHistoryOpeningCases, UserHistoryOpeningCasesRepository>();
+builder.Services.AddTransient<IUserHistoryOpeningCasesRepository, UserHistoryOpeningCasesRepository>();
 
 var app = builder.Build();
 

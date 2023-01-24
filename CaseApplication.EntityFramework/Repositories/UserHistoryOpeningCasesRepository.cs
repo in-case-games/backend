@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CaseApplication.EntityFramework.Repositories
 {
-    public class UserHistoryOpeningCasesRepository : IUserHistoryOpeningCases
+    public class UserHistoryOpeningCasesRepository : IUserHistoryOpeningCasesRepository
     {
         private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
 
@@ -95,6 +95,23 @@ namespace CaseApplication.EntityFramework.Repositories
                 "review what data comes from the api");
 
             _context.UserHistoryOpeningCases.Remove(searchUserHistory);
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
+
+        public async Task<bool> DeleteAllUserHistories(Guid userId)
+        {
+            using ApplicationDbContext _context = _contextFactory.CreateDbContext();
+
+            List<UserHistoryOpeningCases>? searchUserHistories = await _context
+                .UserHistoryOpeningCases
+                .Where(x => x.UserId == userId).ToListAsync();
+
+            if(searchUserHistories.Count == 0) throw new Exception("There is no such user history, " +
+                "review what data comes from the api");
+
+            _context.UserHistoryOpeningCases.RemoveRange(searchUserHistories);
             await _context.SaveChangesAsync();
 
             return true;
