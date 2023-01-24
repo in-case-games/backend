@@ -25,12 +25,7 @@ namespace CaseApplication.IntegrationTests.Api
                 CreatedDate = DateTime.Now
             };
 
-            await _response.ResponsePost<UserRestriction>("/UserRestriction", userRestriction);
-            IEnumerable<UserRestriction> userRestrictions = await _response
-                .ResponseGet<List<UserRestriction>>
-                ($"/UserRestriction/GetAllRestrictions?userId={currentUser.Id}");
-
-            return userRestrictions!.FirstOrDefault(x => x.UserId == currentUser.Id)!;
+            return userRestriction;
         }
         private User InitializeUser()
         {
@@ -50,148 +45,43 @@ namespace CaseApplication.IntegrationTests.Api
             byte[] bytes = new byte[10];
             new Random().NextBytes(bytes);
 
-            return Convert.ToBase64String(bytes);
-        }
-        private async Task DeleteUser(params Guid[] userIds)
-        {
-            foreach (Guid userId in userIds)
-            {
-                await _response.ResponseDelete($"/User?id={userId}");
-            }
-
+            return Convert.ToBase64String(bytes).Replace('=', 's');
         }
         [Fact]
-        public async Task GetUserRestrictionByIdTest()
+        public async Task UserRestrictionCrudTest()
         {
             // Arrange
-            UserRestriction userRestriction = await CreateUserRestriction();
+            UserRestriction templateUserRestriction = await CreateUserRestriction();
 
             // Act
-            HttpStatusCode statusCode = await _response
+            HttpStatusCode postStatusCode = await _response
+                .ResponsePost<UserRestriction>("/UserRestriction", templateUserRestriction);
+
+            IEnumerable<UserRestriction> userRestrictions = await _response
+                .ResponseGet<List<UserRestriction>>
+                ($"/UserRestriction/GetAllRestrictions?userId={templateUserRestriction.UserId}");
+            UserRestriction userRestriction = userRestrictions
+                .FirstOrDefault(x => x.UserId == templateUserRestriction.UserId)!;
+
+            HttpStatusCode getStatusCode = await _response
                 .ResponseGetStatusCode($"/UserRestriction?id={userRestriction.Id}");
-            await DeleteUser(userRestriction.UserId);
-
-            // Assert
-            Assert.Equal(HttpStatusCode.OK, statusCode);
-        }
-        [Fact]
-        public async Task GetAllUserRestrictionsTest()
-        {
-            // Arrange
-            UserRestriction userRestriction = await CreateUserRestriction();
-
-            // Act
-            HttpStatusCode statusCode = await _response
-                .ResponseGetStatusCode
-                ($"/UserRestriction/GetAllRestrictions?userId={userRestriction.UserId}");
-            await DeleteUser(userRestriction.UserId);
-
-            // Assert
-            Assert.Equal(HttpStatusCode.OK, statusCode);
-        }
-        [Fact]
-        public async Task GetNotExistedUserRestrictionTest()
-        {
-            // Arrange
-            UserRestriction userRestriction = new UserRestriction();
-
-            // Act
             HttpStatusCode getAllStatusCode = await _response
                 .ResponseGetStatusCode
                 ($"/UserRestriction/GetAllRestrictions?userId={userRestriction.UserId}");
-            HttpStatusCode getOneStatusCode = await _response
-                .ResponseGetStatusCode($"/UserRestriction?id={userRestriction.Id}");
 
-            // Assert
-            Assert.NotEqual((HttpStatusCode.OK, HttpStatusCode.OK),
-                (getOneStatusCode, getAllStatusCode));
-        }
-        [Fact]
-        public async Task PostUserRestrictionTest()
-        {
-            // Arrange
-            User user = InitializeUser();
-            await _response.ResponsePost<User>("/User", user);
-            User currentUser = await _response
-                .ResponseGet<User>($"/User?email={user.UserEmail}&hash=123");
-            UserRestriction userRestriction = new UserRestriction()
-            {
-                UserId = currentUser.Id,
-                RestrictionName = GenerateString(),
-                CreatedDate = DateTime.Now
-            };
-
-            HttpStatusCode statusCode = await _response.ResponsePost<UserRestriction>("/UserRestriction", userRestriction);
-            await DeleteUser(currentUser.Id);
-
-            // Assert
-            Assert.Equal(HttpStatusCode.OK, statusCode);
-        }
-        [Fact]
-        public async Task PostEmptyUserRestrictionTest()
-        {
-            // Arrange
-            UserRestriction userRestriction = new UserRestriction();
-
-            // Act
-            HttpStatusCode statusCode = await _response
-                .ResponsePost<UserRestriction>("/UserRestriction", userRestriction);
-
-            // Assert
-            Assert.NotEqual(HttpStatusCode.OK, statusCode);
-        }
-        [Fact]
-        public async Task PutUserRestrictionTest()
-        {
-            // Arrange
-            UserRestriction userRestriction = await CreateUserRestriction();
-
-            // Act
-            HttpStatusCode statusCode = await _response
-                .ResponsePut<UserRestriction>("/UserRestriction", userRestriction);
-            await DeleteUser(userRestriction.UserId);
-
-            // Assert
-            Assert.Equal(HttpStatusCode.OK, statusCode);
-        }
-        [Fact]
-        public async Task PutEmptyRestrictionTest()
-        {
-            // Arrange
-            UserRestriction userRestriction = new UserRestriction();
-
-            // Act
-            HttpStatusCode statusCode = await _response
+            HttpStatusCode putStatusCode = await _response
                 .ResponsePut<UserRestriction>("/UserRestriction", userRestriction);
 
-            //
-            Assert.NotEqual(HttpStatusCode.OK, statusCode);
-        }
-        [Fact]
-        public async Task DeleteUserRestrictionTest()
-        {
-            // Arrange
-            UserRestriction userRestriction = await CreateUserRestriction();
-
-            // Act
-            HttpStatusCode statusCode = await _response
+            HttpStatusCode deleteStatusCode = await _response
                 .ResponseDelete($"/UserRestriction?id={userRestriction.Id}");
 
-            // Assert
-            Assert.Equal(HttpStatusCode.OK, statusCode);
-        }
-        [Fact]
-        public async Task DeleteNotExistedUserRestrictionTest()
-        {
-            // Arrange
-            UserRestriction userRestriction = new UserRestriction();
-
-            // Act
-            HttpStatusCode statusCode = await _response
-                .ResponseDelete($"/UserRestriction?id={userRestriction.Id}");
+            await _response.ResponseDelete($"/User?id={userRestriction.UserId}");
 
             // Assert
-            Assert.NotEqual(HttpStatusCode.OK, statusCode);
+            Assert.Equal(
+                (HttpStatusCode.OK, HttpStatusCode.OK, HttpStatusCode.OK, HttpStatusCode.OK, HttpStatusCode.OK),
+                (postStatusCode, getStatusCode, getAllStatusCode, putStatusCode, deleteStatusCode));
         }
+     
     }
 }

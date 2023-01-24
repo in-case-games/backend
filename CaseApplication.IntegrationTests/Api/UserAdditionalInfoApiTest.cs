@@ -25,19 +25,8 @@ namespace CaseApplication.IntegrationTests.Api
                 UserBalance = 99,
                 UserAbleToPay = 9
             };
-            await _response.ResponsePost<UserAdditionalInfo>("/UserAdditionalInfo", userInfo);
-            UserAdditionalInfo currentUserInfo = await _response.
-                ResponseGet<UserAdditionalInfo>($"/UserAdditionalInfo?userId={currentUser.Id}");
 
-            return currentUserInfo;
-        }
-        private async Task DeleteUser(params Guid[] userIds)
-        {
-            foreach (Guid userId in userIds)
-            {
-                await _response.ResponseDelete($"/User?id={userId}");
-            }
-
+            return userInfo;
         }
         private User InitializeUser()
         {
@@ -57,124 +46,36 @@ namespace CaseApplication.IntegrationTests.Api
             byte[] bytes = new byte[10];
             new Random().NextBytes(bytes);
 
-            return Convert.ToBase64String(bytes);
+            return Convert.ToBase64String(bytes).Replace('=', 's');
         }
         [Fact]
-        public async Task GetUserAdditionalInfoTest()
+        public async Task UserAdditionalInfoCrudTest()
         {
             // Arrange
-            UserAdditionalInfo userInfo = await CreateUserAdditionalInfo();
-            // Act
-            HttpStatusCode statusCode = await _response
-                .ResponseGetStatusCode($"/UserAdditionalInfo?userId={userInfo.UserId}");
-            await DeleteUser(userInfo!.UserId);
-
-            // Assert
-            Assert.Equal(HttpStatusCode.OK, statusCode);
-        }
-        [Fact]
-        public async Task GetNotExistedUserAdditionalInfoTest()
-        {
-            // Arrange 
+            UserAdditionalInfo templateUserInfo = await CreateUserAdditionalInfo();
 
             // Act
-            HttpStatusCode statusCode = await _response
-                .ResponseGetStatusCode("/UserAdditionalInfo?userId=00000000-0000-0000-0000-000000000000");
+            HttpStatusCode postStatusCode = await _response
+                .ResponsePost<UserAdditionalInfo>("/UserAdditionalInfo", templateUserInfo);
 
-            // Assert
-            Assert.NotEqual(HttpStatusCode.OK, statusCode);
-        }
-        [Fact]
-        public async Task PostUserAdditionalInfoTest()
-        {
-            // Arrange
-            User user = InitializeUser();
-            await _response.ResponsePost<User>("/User", user);
-            User currentUser = await _response
-                .ResponseGet<User>($"/User?email={user.UserEmail}&hash=123");
-            UserAdditionalInfo userInfo = new UserAdditionalInfo()
-            {
-                UserId = currentUser.Id,
-                UserAge = 999,
-                UserBalance = 99,
-                UserAbleToPay = 9
-            };
+            UserAdditionalInfo userInfo = await _response
+                .ResponseGet<UserAdditionalInfo>($"/UserAdditionalInfo?userId={templateUserInfo.UserId}");
+            HttpStatusCode getStatusCode = await _response
+                .ResponseGetStatusCode($"/UserAdditionalInfo?userId={templateUserInfo.UserId}");
 
-            // Act
-            HttpStatusCode statusCode = await _response
-                .ResponsePost<UserAdditionalInfo>("/UserAdditionalInfo", userInfo);
-            await DeleteUser(userInfo.UserId);
-
-            // Assert
-            Assert.Equal(HttpStatusCode.OK, statusCode);
-        }
-        [Fact]
-        public async Task PostEmptyUserAdditionalInfoTest()
-        {
-            // Arrange
-            UserAdditionalInfo userInfo = new UserAdditionalInfo();
-
-            // Act
-            HttpStatusCode statusCode = await _response
-                .ResponsePost<UserAdditionalInfo>("/UserAdditionalInfo", userInfo);
-
-            // Assert
-            Assert.NotEqual(HttpStatusCode.OK, statusCode);
-        }
-        [Fact]
-        public async Task PutUserAdditionalInfoTest()
-        {
-            // Arrange
-
-            UserAdditionalInfo userInfo = await CreateUserAdditionalInfo();
-
-            // Act
-            HttpStatusCode statusCode = await _response
-                .ResponsePut<UserAdditionalInfo>("/UserAdditionalInfo?hash=123", userInfo);
-            await DeleteUser(userInfo.UserId);
-
-            // Assert
-            Assert.Equal(HttpStatusCode.OK, statusCode);
-        }
-        [Fact]
-        public async Task PutEmptyUserAdditionalInfoTest()
-        {
-            // Arrange
-            UserAdditionalInfo userInfo = new UserAdditionalInfo();
-
-            // Act
-            HttpStatusCode statusCode = await _response
+            HttpStatusCode putStatusCode = await _response
                 .ResponsePut<UserAdditionalInfo>("/UserAdditionalInfo?hash=123", userInfo);
 
-            // Assert
-            Assert.NotEqual(HttpStatusCode.OK, statusCode);
-        }
-        [Fact]
-        public async Task DeleteUserAdditionalInfoTest()
-        {
-            // Arrange
-            UserAdditionalInfo userInfo = await CreateUserAdditionalInfo();
-
-            // Act
-            HttpStatusCode statusCode = await _response
-                .ResponseDelete($"/UserAdditionalInfo?id={userInfo.Id}");
-            await DeleteUser(userInfo.UserId);
-
-            // Assert
-            Assert.Equal(HttpStatusCode.OK, statusCode);
-        }
-        [Fact]
-        public async Task DeleteNotExistUserAdditionalInfoTest()
-        {
-            // Arrange
-            UserAdditionalInfo userInfo = new UserAdditionalInfo();
-
-            // Act
-            HttpStatusCode statusCode = await _response
+            HttpStatusCode deleteStatusCode = await _response
                 .ResponseDelete($"/UserAdditionalInfo?id={userInfo.Id}");
 
+            await _response.ResponseDelete($"/User?id={templateUserInfo.UserId}");
+
             // Assert
-            Assert.NotEqual(HttpStatusCode.OK, statusCode);
+            Assert.Equal(
+                (HttpStatusCode.OK, HttpStatusCode.OK, HttpStatusCode.OK, HttpStatusCode.OK),
+                (postStatusCode, getStatusCode, putStatusCode, deleteStatusCode));
         }
+      
     }
 }

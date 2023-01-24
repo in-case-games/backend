@@ -32,7 +32,12 @@ namespace CaseApplication.WebClient.Services
 
             if (!response.IsSuccessStatusCode)
             {
-                throw new Exception(response.StatusCode.ToString());
+                throw new Exception(
+                    response.StatusCode.ToString() +
+                    response.RequestMessage!.ToString() + 
+                    response.Headers.ToString() +
+                    response.ReasonPhrase!.ToString() + 
+                    response.Content.ToString());
             }
 
             return await response.Content.ReadFromJsonAsync<T>(
