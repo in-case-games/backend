@@ -72,7 +72,7 @@ namespace CaseApplication.IntegrationTests.Api
 
         private async Task<CaseInventory> SearchCaseInventory(Guid caseId, Guid itemId)
         {
-            var caseInventories = await _clientApi.ResponseGet<List<CaseInventory>>($"/CaseInventory/GetAllCaseInventories?caseId={caseId}");
+            var caseInventories = await _clientApi.ResponseGet<List<CaseInventory>>($"/CaseInventory/GetAll?caseId={caseId}");
 
             CaseInventory? caseInventory = caseInventories.FirstOrDefault(x => x.GameItemId == itemId);
 
@@ -131,14 +131,14 @@ namespace CaseApplication.IntegrationTests.Api
 
         private async Task<Guid> SearchIdItem(string name)
         {
-            List<GameItem> items = await _clientApi.ResponseGet<List<GameItem>>("/GameItem/GetAllItems");
+            List<GameItem> items = await _clientApi.ResponseGet<List<GameItem>>("/GameItem/GetAll");
 
             return items.FirstOrDefault(x => x.GameItemName == name)!.Id;
         }
 
         private async Task<Guid> SearchIdCase(string name)
         {
-            List<GameCase> items = await _clientApi.ResponseGet<List<GameCase>>("/GameCase/GetAllCases");
+            List<GameCase> items = await _clientApi.ResponseGet<List<GameCase>>("/GameCase/GetAll");
 
             return items.FirstOrDefault(x => x.GameCaseName == name)!.Id;
         }

@@ -59,6 +59,9 @@ namespace CaseApplication.Api.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<decimal>("GameCaseBalance")
+                        .HasColumnType("DECIMAL(18, 5)");
+
                     b.Property<decimal>("GameCaseCost")
                         .HasColumnType("DECIMAL(18, 5)");
 
@@ -139,7 +142,7 @@ namespace CaseApplication.Api.Migrations
                     b.Property<string>("UserImage")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UserName")
+                    b.Property<string>("UserLogin")
                         .IsRequired()
                         .HasMaxLength(40)
                         .HasColumnType("nvarchar(40)");
@@ -150,6 +153,9 @@ namespace CaseApplication.Api.Migrations
                         .IsUnique();
 
                     b.HasIndex("UserEmail")
+                        .IsUnique();
+
+                    b.HasIndex("UserLogin")
                         .IsUnique();
 
                     b.ToTable("User");

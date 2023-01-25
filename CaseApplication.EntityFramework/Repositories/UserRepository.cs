@@ -21,6 +21,15 @@ namespace CaseApplication.EntityFramework.Repositories
                 "review what data comes from the api");
         }
 
+        public async Task<User> GetUserByLogin(string login)
+        {
+            using ApplicationDbContext _context = _contextFactory.CreateDbContext();
+
+            return await _context.User.FirstOrDefaultAsync(x => x.UserLogin == login)
+                ?? throw new("There is no such user in the database, " +
+                "review what data comes from the api");
+        }
+
         public async Task<IEnumerable<User>> GetAllUsers()
         {
             using ApplicationDbContext _context = _contextFactory.CreateDbContext();

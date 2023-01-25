@@ -23,7 +23,7 @@ namespace CaseApplication.Api.Controllers
             return await _userInventoryRepository.GetUserInventory(id);
         }
 
-        [HttpGet("GetAllUserInventories")]
+        [HttpGet("GetAll")]
         public async Task<IEnumerable<UserInventory>> GetAllUserInventories(Guid userId)
         {
             return await _userInventoryRepository.GetAllUserInventories(userId);

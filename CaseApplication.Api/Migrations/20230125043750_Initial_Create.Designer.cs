@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CaseApplication.Api.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230124043812_Initial_Create")]
+    [Migration("20230125043750_Initial_Create")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -61,6 +61,9 @@ namespace CaseApplication.Api.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("GameCaseBalance")
+                        .HasColumnType("DECIMAL(18, 5)");
 
                     b.Property<decimal>("GameCaseCost")
                         .HasColumnType("DECIMAL(18, 5)");
@@ -142,7 +145,7 @@ namespace CaseApplication.Api.Migrations
                     b.Property<string>("UserImage")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UserName")
+                    b.Property<string>("UserLogin")
                         .IsRequired()
                         .HasMaxLength(40)
                         .HasColumnType("nvarchar(40)");
@@ -153,6 +156,9 @@ namespace CaseApplication.Api.Migrations
                         .IsUnique();
 
                     b.HasIndex("UserEmail")
+                        .IsUnique();
+
+                    b.HasIndex("UserLogin")
                         .IsUnique();
 
                     b.ToTable("User");

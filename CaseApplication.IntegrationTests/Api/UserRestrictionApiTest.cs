@@ -31,7 +31,7 @@ namespace CaseApplication.IntegrationTests.Api
         {
             User user = new User
             {
-                UserName = GenerateString(),
+                UserLogin = GenerateString(),
                 UserEmail = GenerateString(),
                 UserImage = GenerateString(),
                 PasswordHash = GenerateString(),
@@ -59,7 +59,7 @@ namespace CaseApplication.IntegrationTests.Api
 
             IEnumerable<UserRestriction> userRestrictions = await _response
                 .ResponseGet<List<UserRestriction>>
-                ($"/UserRestriction/GetAllRestrictions?userId={templateUserRestriction.UserId}");
+                ($"/UserRestriction/GetAll?userId={templateUserRestriction.UserId}");
             UserRestriction userRestriction = userRestrictions
                 .FirstOrDefault(x => x.UserId == templateUserRestriction.UserId)!;
 
@@ -67,7 +67,7 @@ namespace CaseApplication.IntegrationTests.Api
                 .ResponseGetStatusCode($"/UserRestriction?id={userRestriction.Id}");
             HttpStatusCode getAllStatusCode = await _response
                 .ResponseGetStatusCode
-                ($"/UserRestriction/GetAllRestrictions?userId={userRestriction.UserId}");
+                ($"/UserRestriction/GetAll?userId={userRestriction.UserId}");
 
             HttpStatusCode putStatusCode = await _response
                 .ResponsePut<UserRestriction>("/UserRestriction", userRestriction);

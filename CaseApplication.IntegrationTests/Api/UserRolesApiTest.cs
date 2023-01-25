@@ -38,7 +38,7 @@ namespace CaseApplication.IntegrationTests.Api
             HttpStatusCode getStatusCode = await _response
                 .ResponseGetStatusCode($"/Role?roleName={templateUserRole.RoleName}");
             HttpStatusCode getAllStatusCode = await _response
-                .ResponseGetStatusCode("/Role/GetAllRoles");
+                .ResponseGetStatusCode("/Role/GetAll");
 
             HttpStatusCode putStatusCode = await _response
                 .ResponsePut<UserRole>("/Role", userRole);

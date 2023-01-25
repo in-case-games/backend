@@ -21,7 +21,7 @@ namespace CaseApplication.Api.Controllers
             return await _gameItemRepository.GetCurrentItem(id);
         }
 
-        [HttpGet("GetAllItems")]
+        [HttpGet("GetAll")]
         public async Task<IEnumerable<GameItem>> GetAllItems()
         {
             return await _gameItemRepository.GetAllItems();

@@ -21,7 +21,7 @@ namespace CaseApplication.Api.Controllers
             return await _caseInventoryRepository.GetCurrentCaseInventory(id);
         }
 
-        [HttpGet("GetAllCaseInventories")]
+        [HttpGet("GetAll")]
         public async Task<IEnumerable<CaseInventory>> GetAllCaseInventories(Guid caseId)
         {
             return await _caseInventoryRepository.GetAllCaseInventory(caseId);

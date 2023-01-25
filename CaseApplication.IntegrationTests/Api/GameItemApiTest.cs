@@ -50,7 +50,7 @@ namespace CaseApplication.IntegrationTests.Api
 
         private async Task<Guid> SearchIdItemByName(string name)
         {
-            List<GameItem> gameItems = await _clientApi.ResponseGet<List<GameItem>>("/GameItem/GetAllItems");
+            List<GameItem> gameItems = await _clientApi.ResponseGet<List<GameItem>>("/GameItem/GetAll");
 
             GameItem gameItem = gameItems.FirstOrDefault(x => x.GameItemName == name) ?? new();
 

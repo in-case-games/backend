@@ -29,7 +29,7 @@ namespace CaseApplication.IntegrationTests.Api
             };
             await _response.ResponsePost<GameItem>("/GameItem", gameItem);
             IEnumerable<GameItem> gameItems = await _response
-                .ResponseGet<List<GameItem>>("/GameItem/GetAllItems");
+                .ResponseGet<List<GameItem>>("/GameItem/GetAll");
             GameItem currentGameItem = gameItems.FirstOrDefault(x => x.GameItemName == gameItem.GameItemName)!;
 
             UserInventory userInventory = new UserInventory()
@@ -44,7 +44,7 @@ namespace CaseApplication.IntegrationTests.Api
         {
             User user = new User
             {
-                UserName = GenerateString(),
+                UserLogin = GenerateString(),
                 UserEmail = GenerateString(),
                 UserImage = GenerateString(),
                 PasswordHash = GenerateString(),
@@ -72,7 +72,7 @@ namespace CaseApplication.IntegrationTests.Api
 
             IEnumerable<UserInventory> userInventories = await _response
                 .ResponseGet<List<UserInventory>>
-                ($"/UserInventory/GetAllUserInventories?userId={templateUserInventory.UserId}");
+                ($"/UserInventory/GetAll?userId={templateUserInventory.UserId}");
             UserInventory userInventory = userInventories
                 .FirstOrDefault(x =>
                     x.UserId == templateUserInventory.UserId &&
@@ -82,7 +82,7 @@ namespace CaseApplication.IntegrationTests.Api
                 .ResponseGetStatusCode($"/UserInventory?id={userInventory.Id}");
             HttpStatusCode getAllStatusCode = await _response
                 .ResponseGetStatusCode
-                ($"/UserInventory/GetAllUserInventories?userId={templateUserInventory.UserId}");
+                ($"/UserInventory/GetAll?userId={templateUserInventory.UserId}");
 
             HttpStatusCode putStatusCode = await _response
                 .ResponsePut<UserInventory>("/UserInventory", userInventory);
