@@ -27,6 +27,10 @@ namespace CaseApplication.EntityFramework.Configurations
                 .HasColumnType("DECIMAL(18, 5)")
                 .IsRequired();
 
+            builder.Property(p => p.GameCaseBalance)
+                .HasColumnType("DECIMAL(18, 5)")
+                .IsRequired();
+
             builder.Property(p => p.RevenuePrecentage)
                 .HasColumnType("DECIMAL(18, 5)")
                 .IsRequired();

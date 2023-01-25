@@ -8,7 +8,7 @@
       mc:Ignorable="d"
       Title="AuthorizationPage" Height="450" Width="450">
 
-    <Grid Background="Black">
+    <Grid>
         
     </Grid>
 </Page>

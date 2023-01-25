@@ -10,7 +10,7 @@ namespace CaseApplication.EntityFramework.Configurations
         {
             base.Configure(builder);
 
-            builder.Property(p => p.UserName)
+            builder.Property(p => p.UserLogin)
                 .HasMaxLength(40)
                 .IsRequired();
 
@@ -19,6 +19,9 @@ namespace CaseApplication.EntityFramework.Configurations
                 .IsRequired();
 
             builder.HasIndex(i => i.UserEmail)
+                .IsUnique();
+
+            builder.HasIndex(i => i.UserLogin)
                 .IsUnique();
 
             builder.HasOne(o => o.UserAdditionalInfo)

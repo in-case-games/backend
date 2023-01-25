@@ -21,7 +21,7 @@ namespace CaseApplication.Api.Controllers
             return await _userRoleRepository.GetRole(role);
         }
 
-        [HttpGet("GetAllRoles")]
+        [HttpGet("GetAll")]
         public async Task<IEnumerable<UserRole>> GetAllRoles()
         {
             return await _userRoleRepository.GetAllRoles();

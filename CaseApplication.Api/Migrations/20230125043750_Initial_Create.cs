@@ -18,6 +18,7 @@ namespace CaseApplication.Api.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     GameCaseName = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
                     GameCaseCost = table.Column<decimal>(type: "DECIMAL(18,5)", nullable: false),
+                    GameCaseBalance = table.Column<decimal>(type: "DECIMAL(18,5)", nullable: false),
                     GameCaseImage = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     RevenuePrecentage = table.Column<decimal>(type: "DECIMAL(18,5)", nullable: false)
                 },
@@ -46,7 +47,7 @@ namespace CaseApplication.Api.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    UserName = table.Column<string>(type: "nvarchar(40)", maxLength: 40, nullable: false),
+                    UserLogin = table.Column<string>(type: "nvarchar(40)", maxLength: 40, nullable: false),
                     UserImage = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UserEmail = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     PasswordSalt = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -251,6 +252,12 @@ namespace CaseApplication.Api.Migrations
                 name: "IX_User_UserEmail",
                 table: "User",
                 column: "UserEmail",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_User_UserLogin",
+                table: "User",
+                column: "UserLogin",
                 unique: true);
 
             migrationBuilder.CreateIndex(

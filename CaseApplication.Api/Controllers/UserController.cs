@@ -20,6 +20,12 @@ namespace CaseApplication.API.Controllers
             return await _userRepository.GetUser(email);
         }
 
+        [HttpGet("GetByLogin")]
+        public async Task<User> GetUserByLogin(string login, string hash)
+        {
+            return await _userRepository.GetUserByLogin(login);
+        }
+
         [HttpGet("GetAll")]
         public async Task<IEnumerable<User>> GetUsers()
         {

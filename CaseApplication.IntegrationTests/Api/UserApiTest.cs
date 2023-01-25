@@ -16,7 +16,7 @@ namespace CaseApplication.IntegrationTests.Api
         {
             User user = new User
             {
-                UserName = GenerateString(),
+                UserLogin = GenerateString(),
                 UserEmail = GenerateString(),
                 UserImage = GenerateString(),
                 PasswordHash = GenerateString(),

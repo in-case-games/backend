@@ -57,7 +57,7 @@ namespace CaseApplication.IntegrationTests.Api
         {
             List<UserHistoryOpeningCases> caseInventories = await _clientApi
                 .ResponseGet<List<UserHistoryOpeningCases>>
-                ($"/UserHistoryOpeningCases/GetAllUserHistories?userId={userId}");
+                ($"/UserHistoryOpeningCases/GetAll?userId={userId}");
 
             return caseInventories ?? throw new Exception("No such case inventory");
         }
@@ -101,7 +101,7 @@ namespace CaseApplication.IntegrationTests.Api
 
             User user = new()
             {
-                UserName = "UHOCUserName",
+                UserLogin = "UHOCUserName",
                 UserEmail = "UHOCUserEmail@mail.ru",
                 UserImage = "UHOCUserImage",
             };
@@ -120,14 +120,14 @@ namespace CaseApplication.IntegrationTests.Api
 
         private async Task<Guid> SearchIdItem(string name)
         {
-            List<GameItem> items = await _clientApi.ResponseGet<List<GameItem>>("/GameItem/GetAllItems");
+            List<GameItem> items = await _clientApi.ResponseGet<List<GameItem>>("/GameItem/GetAll");
 
             return items.FirstOrDefault(x => x.GameItemName == name)!.Id;
         }
 
         private async Task<Guid> SearchIdCase(string name)
         {
-            List<GameCase> items = await _clientApi.ResponseGet<List<GameCase>>("/GameCase/GetAllCases");
+            List<GameCase> items = await _clientApi.ResponseGet<List<GameCase>>("/GameCase/GetAll");
 
             return items.FirstOrDefault(x => x.GameCaseName == name)!.Id;
         }

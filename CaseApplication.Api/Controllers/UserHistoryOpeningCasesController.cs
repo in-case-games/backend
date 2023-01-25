@@ -22,7 +22,7 @@ namespace CaseApplication.Api.Controllers
             return await _userHistoryRepository.GetUserHistory(id);
         }
 
-        [HttpGet("GetAllUserHistories")]
+        [HttpGet("GetAll")]
         public async Task<IEnumerable<UserHistoryOpeningCases>> GetAllUserHistories(Guid userId)
         {
             return await _userHistoryRepository.GetAllUserHistories(userId);
@@ -46,7 +46,7 @@ namespace CaseApplication.Api.Controllers
             return Ok(await _userHistoryRepository.DeleteUserHistory(id));
         }
 
-        [HttpDelete("DeleteAllUserHistories")]
+        [HttpDelete("DeleteAll")]
         public async Task<IActionResult> DeleteAllUserHistories(Guid userId)
         {
             return Ok(await _userHistoryRepository.DeleteAllUserHistories(userId));

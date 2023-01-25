@@ -53,7 +53,7 @@ namespace CaseApplication.IntegrationTests.Api
 
         private async Task<Guid> SearchIdCaseByName(string name)
         {
-            List<GameCase> gameCases = await _clientApi.ResponseGet<List<GameCase>>("/GameCase/GetAllCases");
+            List<GameCase> gameCases = await _clientApi.ResponseGet<List<GameCase>>("/GameCase/GetAll");
             
             GameCase gameCase = gameCases.FirstOrDefault(x => x.GameCaseName == name) ?? new();
 
