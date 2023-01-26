@@ -2,7 +2,7 @@
 using CaseApplication.DomainLayer.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
-namespace CaseApplication.API.Controllers
+namespace CaseApplication.Api.Controllers
 {
     [ApiController]
     [Route("[controller]")]

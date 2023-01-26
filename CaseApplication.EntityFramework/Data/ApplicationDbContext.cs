@@ -24,6 +24,7 @@ namespace CaseApplication.EntityFramework.Data
             modelBuilder.ApplyConfiguration(new CaseInventoryConfiguration());
             modelBuilder.ApplyConfiguration(new GameCaseConfiguration());
             modelBuilder.ApplyConfiguration(new GameItemConfiguration());
+            modelBuilder.ApplyConfiguration(new NewsConfiguration());
             modelBuilder.ApplyConfiguration(new UserAdditionalInfoConfiguration());
             modelBuilder.ApplyConfiguration(new UserConfiguration());
             modelBuilder.ApplyConfiguration(new UserInventoryConfiguration());

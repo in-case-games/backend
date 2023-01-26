@@ -1,7 +1,6 @@
 ﻿using CaseApplication.DomainLayer.Entities;
 using CaseApplication.WebClient.Services;
 using Microsoft.AspNetCore.Mvc.Testing;
-using System;
 using System.Net;
 
 namespace CaseApplication.IntegrationTests.Api
