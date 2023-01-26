@@ -10,6 +10,7 @@ namespace CaseApplication.WPF
         public MainWindow()
         {
             InitializeComponent();
+            this.SizeToContent = SizeToContent.Width;
         }
     }
 }

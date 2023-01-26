@@ -385,6 +385,8 @@ FodyWeavers.xsd
 *.code-workspace
 
 .CaseApplication.IntegrationTests/*
+CaseApplication.IntegrationTests/*
+CaseApplication.IntegrationTests
 
 # Local History for Visual Studio Code
 .history/

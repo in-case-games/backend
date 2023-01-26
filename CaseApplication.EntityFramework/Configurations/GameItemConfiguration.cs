@@ -18,7 +18,7 @@ namespace CaseApplication.EntityFramework.Configurations
                 .IsUnique();
 
             builder.Property(p => p.GameItemCost)
-                .HasColumnType("DECIMAL(7, 5)")
+                .HasColumnType("DECIMAL(18, 5)")
                 .IsRequired();
 
             builder.Property(p => p.GameItemImage)
@@ -27,6 +27,20 @@ namespace CaseApplication.EntityFramework.Configurations
             builder.Property(p => p.GameItemRarity)
                 .HasMaxLength(30)
                 .IsRequired();
+
+            builder.HasMany(p => p.UserInventories)
+                .WithOne(p => p.GameItem)
+                .HasForeignKey(p => p.GameItemId);
+
+            builder.HasMany(p => p.CaseInventories)
+                .WithOne(P => P.GameItem)
+                .HasForeignKey(p => p.GameItemId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasMany(p => p.UserHistoryOpeningCases)
+                .WithOne(P => P.GameItem)
+                .HasForeignKey(p => p.GameItemId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

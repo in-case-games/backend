@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using CaseApplication.DomainLayer.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace CaseApplication.EntityFramework.Configurations
 {
@@ -9,7 +10,7 @@ namespace CaseApplication.EntityFramework.Configurations
         {
             base.Configure(builder);
 
-            builder.Property(p => p.UserName)
+            builder.Property(p => p.UserLogin)
                 .HasMaxLength(40)
                 .IsRequired();
 
@@ -20,6 +21,28 @@ namespace CaseApplication.EntityFramework.Configurations
             builder.HasIndex(i => i.UserEmail)
                 .IsUnique();
 
+            builder.HasIndex(i => i.UserLogin)
+                .IsUnique();
+
+            builder.HasOne(o => o.UserAdditionalInfo)
+                .WithOne(o => o.User)
+                .HasForeignKey<UserAdditionalInfo>(fk => fk.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasMany(o => o.UserRestrictions)
+                .WithOne(o => o.User)
+                .HasForeignKey(fk => fk.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasMany(o => o.UserInventories)
+                .WithOne(o => o.User)
+                .HasForeignKey(fk => fk.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasMany(o => o.UserHistoryOpeningCases)
+                .WithOne(o => o.User)
+                .HasForeignKey(fk => fk.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

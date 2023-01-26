@@ -14,16 +14,37 @@ namespace CaseApplication.EntityFramework.Configurations
                 .HasMaxLength(30)
                 .IsRequired();
 
+            builder.Property(p => p.GroupCasesName)
+                .HasMaxLength(30)
+                .IsRequired();
+
+            builder.HasIndex(p => p.GameCaseName)
+                .IsUnique();
+
             builder.Property(p => p.GameCaseImage)
                 .IsRequired();
 
             builder.Property(p => p.GameCaseCost)
-                .HasColumnType("DECIMAL(7, 5)")
+                .HasColumnType("DECIMAL(18, 5)")
+                .IsRequired();
+
+            builder.Property(p => p.GameCaseBalance)
+                .HasColumnType("DECIMAL(18, 5)")
                 .IsRequired();
 
             builder.Property(p => p.RevenuePrecentage)
-                .HasColumnType("DECIMAL(6, 5)")
+                .HasColumnType("DECIMAL(18, 5)")
                 .IsRequired();
+
+            builder.HasMany(p => p.СaseInventories)
+                .WithOne(p => p.GameCase)
+                .HasForeignKey(p => p.GameCaseId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasMany(p => p.UserHistoryOpeningCases)
+                .WithOne(p => p.GameCase)
+                .HasForeignKey(p => p.GameCaseId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

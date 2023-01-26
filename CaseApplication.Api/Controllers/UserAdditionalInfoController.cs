@@ -1,11 +1,8 @@
-﻿using CaseApplication.DomainLayer.Dtos;
-using CaseApplication.DomainLayer.Entities;
+﻿using CaseApplication.DomainLayer.Entities;
 using CaseApplication.DomainLayer.Repositories;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.Runtime.CompilerServices;
 
-namespace CaseApplication.API.Controllers
+namespace CaseApplication.Api.Controllers
 {
     [Route("[controller]")]
     [ApiController]
@@ -19,27 +16,27 @@ namespace CaseApplication.API.Controllers
         }
 
         [HttpGet]
-        public async Task<UserAdditionalInfo> GetInfo(Guid userId)
+        public async Task<UserAdditionalInfo> Get(Guid userId)
         {
-            return await _userInfoRepository.GetInfo(userId);
+            return await _userInfoRepository.Get(userId);
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateInfo(UserAdditionalInfo userInfo)
+        public async Task<IActionResult> Create(UserAdditionalInfo userInfo)
         {
-            return Ok(await _userInfoRepository.CreateInfo(userInfo));
+            return Ok(await _userInfoRepository.Create(userInfo));
         }
 
-        [HttpPost("UpdateInfo")]
-        public async Task<IActionResult> UpdateInfo(UserAdditionalInfo userInfo, string hash)
+        [HttpPut]
+        public async Task<IActionResult> Update(UserAdditionalInfo userInfo, string hash)
         {
-            return Ok(await _userInfoRepository.UpdateInfo(userInfo));
+            return Ok(await _userInfoRepository.Update(userInfo));
         }
 
         [HttpDelete]
-        public async Task<IActionResult> DeleteInfo(Guid infoId, User userRemoving)
+        public async Task<IActionResult> Delete(Guid id)
         {
-            return Ok(await _userInfoRepository.DeleteInfo(infoId));
+            return Ok(await _userInfoRepository.Delete(id));
         }
     }
 }

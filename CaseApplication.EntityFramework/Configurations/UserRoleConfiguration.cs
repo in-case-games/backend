@@ -12,6 +12,10 @@ namespace CaseApplication.EntityFramework.Configurations
             builder.Property(p => p.RoleName)
                 .HasMaxLength(30)
                 .IsRequired();
+
+            builder.HasOne(o => o.UserAdditionalInfo)
+                .WithOne(o => o.UserRole)
+                .HasForeignKey<UserAdditionalInfo>(fk => fk.UserRoleId);
         }
     }
 }

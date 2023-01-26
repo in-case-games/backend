@@ -11,15 +11,16 @@ namespace CaseApplication.EntityFramework.Configurations
             base.Configure(builder);
 
             builder.Property(p => p.UserAbleToPay)
-                .HasColumnType("DECIMAL(6, 5)")
+                .HasColumnType("DECIMAL(18, 5)")
                 .IsRequired();
 
             builder.Property(p => p.UserBalance)
-                .HasColumnType("DECIMAL(6, 5)")
+                .HasColumnType("DECIMAL(18, 5)")
                 .IsRequired();
 
-            builder.HasIndex(k => k.RoleId).IsUnique();
-            builder.HasIndex(k => k.UserId).IsUnique();
+            builder.HasIndex(k => k.UserRoleId)
+                .IsUnique(false);
+
         }
     }
 }

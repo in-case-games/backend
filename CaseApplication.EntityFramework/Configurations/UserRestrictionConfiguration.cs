@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
+﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using CaseApplication.DomainLayer.Entities;
 
 namespace CaseApplication.EntityFramework.Configurations
@@ -13,8 +12,6 @@ namespace CaseApplication.EntityFramework.Configurations
             builder.Property(p => p.RestrictionName)
                 .HasMaxLength(30)
                 .IsRequired();
-
-            builder.HasIndex(k => k.UserId).IsUnique();
         }
     }
 }

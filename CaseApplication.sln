@@ -9,7 +9,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CaseApplication.EntityFrame
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CaseApplication.DomainLayer", "CaseApplication.DomainLayer\CaseApplication.DomainLayer.csproj", "{A180E89D-D2E2-4F6F-89F7-E47E5182D0EB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CaseApplication.API", "CaseApplication.API\CaseApplication.API.csproj", "{5DC1DD14-6E97-48D7-821F-F41CFC9CEB93}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CaseApplication.Api", "CaseApplication.API\CaseApplication.Api.csproj", "{5DC1DD14-6E97-48D7-821F-F41CFC9CEB93}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CaseApplication.IntegrationTests", "CaseApplication.IntegrationTests\CaseApplication.IntegrationTests.csproj", "{205F46BA-15AD-4375-B950-45EA488407B4}"
+	ProjectSection(ProjectDependencies) = postProject
+		{5DC1DD14-6E97-48D7-821F-F41CFC9CEB93} = {5DC1DD14-6E97-48D7-821F-F41CFC9CEB93}
+		{EDBD36F2-946C-417B-9D5C-9A8514B24435} = {EDBD36F2-946C-417B-9D5C-9A8514B24435}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CaseApplication.WebClient", "CaseApplication.WebClient\CaseApplication.WebClient.csproj", "{EDBD36F2-946C-417B-9D5C-9A8514B24435}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +41,14 @@ Global
 		{5DC1DD14-6E97-48D7-821F-F41CFC9CEB93}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5DC1DD14-6E97-48D7-821F-F41CFC9CEB93}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5DC1DD14-6E97-48D7-821F-F41CFC9CEB93}.Release|Any CPU.Build.0 = Release|Any CPU
+		{205F46BA-15AD-4375-B950-45EA488407B4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{205F46BA-15AD-4375-B950-45EA488407B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{205F46BA-15AD-4375-B950-45EA488407B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{205F46BA-15AD-4375-B950-45EA488407B4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EDBD36F2-946C-417B-9D5C-9A8514B24435}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EDBD36F2-946C-417B-9D5C-9A8514B24435}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EDBD36F2-946C-417B-9D5C-9A8514B24435}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EDBD36F2-946C-417B-9D5C-9A8514B24435}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

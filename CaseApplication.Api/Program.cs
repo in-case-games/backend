@@ -7,8 +7,12 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContextFactory<ApplicationDbContext>(
     options => options.UseSqlServer(
+#if DEBUG
         builder.Configuration["CaseApp:DevelopmentConnection"],
-        b => b.MigrationsAssembly("CaseApplication.API"))
+#else
+        builder.Configuration["CaseApp:ProductionConnection"],
+#endif
+        b => b.MigrationsAssembly("CaseApplication.Api"))
 );
 
 builder.Services.AddControllers();
@@ -19,6 +23,12 @@ builder.Services.AddTransient<IUserAdditionalInfoRepository, UserAdditionalInfoR
 builder.Services.AddTransient<IGameItemRepository, GameItemRepository>();
 builder.Services.AddTransient<IGameCaseRepository, GameCaseRepository>();
 builder.Services.AddTransient<ICaseInventoryRepository, CaseInventoryRepository>();
+builder.Services.AddTransient<IUserRoleRepository, UserRoleRepository>();
+builder.Services.AddTransient<IUserRestrictionRepository, UserRestrictionRepository>();
+builder.Services.AddTransient<IUserInventoryRepository, UserInventoryRepository>();
+builder.Services.AddTransient<IUserHistoryOpeningCasesRepository, UserHistoryOpeningCasesRepository>();
+builder.Services.AddTransient<INewsRepository, NewsRepository>();
+builder.Services.AddTransient<ISiteStatisticsRepository, SiteStatisticsRepository>();
 
 var app = builder.Build();
 
@@ -35,3 +45,5 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+public partial class Program {}
