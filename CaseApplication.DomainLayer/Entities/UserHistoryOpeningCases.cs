@@ -7,6 +7,7 @@ namespace CaseApplication.DomainLayer.Entities
         public Guid UserId { get; set; }
         public Guid GameItemId { get; set; }
         public Guid GameCaseId { get; set; }
+        public DateTime? CaseOpenAt { get; set; }
 
         [JsonIgnore]
         public User? User { get; set; }

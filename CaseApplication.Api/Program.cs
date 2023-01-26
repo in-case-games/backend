@@ -27,6 +27,7 @@ builder.Services.AddTransient<IUserRoleRepository, UserRoleRepository>();
 builder.Services.AddTransient<IUserRestrictionRepository, UserRestrictionRepository>();
 builder.Services.AddTransient<IUserInventoryRepository, UserInventoryRepository>();
 builder.Services.AddTransient<IUserHistoryOpeningCasesRepository, UserHistoryOpeningCasesRepository>();
+builder.Services.AddTransient<INewsRepository, NewsRepository>();
 
 var app = builder.Build();
 

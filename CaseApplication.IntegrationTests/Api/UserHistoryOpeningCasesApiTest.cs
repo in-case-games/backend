@@ -32,7 +32,8 @@ namespace CaseApplication.IntegrationTests.Api
                 {
                     GameCaseId = caseId,
                     GameItemId = itemId,
-                    UserId = userId
+                    UserId = userId,
+                    CaseOpenAt = DateTime.Now
                 };
 
                 //Create

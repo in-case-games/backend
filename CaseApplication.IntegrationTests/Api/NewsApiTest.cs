@@ -1,9 +1,7 @@
 ﻿using CaseApplication.DomainLayer.Entities;
 using CaseApplication.WebClient.Services;
 using Microsoft.AspNetCore.Mvc.Testing;
-using System.Collections.Generic;
 using System.Net;
-using System.Runtime.CompilerServices;
 
 namespace CaseApplication.IntegrationTests.Api
 {

@@ -1,6 +1,5 @@
 ﻿using CaseApplication.DomainLayer.Entities;
-using CaseApplication.EntityFramework.Repositories;
-using Microsoft.AspNetCore.Http;
+using CaseApplication.DomainLayer.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CaseApplication.Api.Controllers
@@ -9,9 +8,9 @@ namespace CaseApplication.Api.Controllers
     [ApiController]
     public class NewsController : ControllerBase
     {
-        private readonly NewsRepository _newsRepository;
+        private readonly INewsRepository _newsRepository;
 
-        public NewsController(NewsRepository newsRepository)
+        public NewsController(INewsRepository newsRepository)
         {
             _newsRepository = newsRepository;
         }

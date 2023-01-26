@@ -47,6 +47,8 @@ namespace CaseApplication.IntegrationTests.Api
 
             HttpStatusCode getStatusCode = await _response
                 .ResponseGetStatusCode($"/User?email={templateUser.UserEmail}&hash=123");
+            HttpStatusCode getByLoginStatusCode = await _response
+                .ResponseGetStatusCode($"/User/GetByLogin?login={user.UserLogin}&hash=123");
             HttpStatusCode getAllStatusCode = await _response
                 .ResponseGetStatusCode("/User/GetAll");
 
