@@ -17,7 +17,7 @@ namespace CaseApplication.IntegrationTests.Api
             byte[] bytes = new byte[2];
             new Random().NextBytes(bytes);
 
-            return Convert.ToBase64String(bytes).Replace('=', 's');
+            return Convert.ToBase64String(bytes).Replace('=', 's').Replace('+', ' ');
         }
         [Fact]
         public async Task UserRoleCrudTest()

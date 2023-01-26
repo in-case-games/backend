@@ -16,11 +16,11 @@ namespace CaseApplication.IntegrationTests.Api
         {
             User user = new User
             {
-                UserLogin = GenerateString(),
-                UserEmail = GenerateString(),
-                UserImage = GenerateString(),
-                PasswordHash = GenerateString(),
-                PasswordSalt = GenerateString(),
+                UserLogin = "testuser1",
+                UserEmail = "testuser1",
+                UserImage = "testuser1",
+                PasswordHash = "testuser1",
+                PasswordSalt = "testuser1",
             };
 
             return user;
@@ -43,7 +43,7 @@ namespace CaseApplication.IntegrationTests.Api
                 .ResponsePost<User>("/User", templateUser);
 
             User user = await _response
-                .ResponseGet<User>($"/User?email={templateUser.UserEmail}&hash=123");
+                .ResponseGet<User>($"/User/GetByLogin?login={templateUser.UserLogin}&hash=123");
 
             HttpStatusCode getStatusCode = await _response
                 .ResponseGetStatusCode($"/User?email={templateUser.UserEmail}&hash=123");
@@ -60,8 +60,8 @@ namespace CaseApplication.IntegrationTests.Api
 
             // Assert
             Assert.Equal(
-                (HttpStatusCode.OK, HttpStatusCode.OK, HttpStatusCode.OK, HttpStatusCode.OK, HttpStatusCode.OK),
-                (postStatusCode, getStatusCode, getAllStatusCode, putStatusCode, deleteStatusCode));
+                (HttpStatusCode.OK, HttpStatusCode.OK, HttpStatusCode.OK, HttpStatusCode.OK, HttpStatusCode.OK, HttpStatusCode.OK),
+                (postStatusCode, getStatusCode, getAllStatusCode, getByLoginStatusCode, putStatusCode, deleteStatusCode));
         }
     }
 }

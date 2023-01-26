@@ -43,11 +43,11 @@ namespace CaseApplication.IntegrationTests.Api
         {
             User user = new User
             {
-                UserLogin = GenerateString(),
-                UserEmail = GenerateString(),
-                UserImage = GenerateString(),
-                PasswordHash = GenerateString(),
-                PasswordSalt = GenerateString(),
+                UserLogin = "testinv1",
+                UserEmail = "testinv1",
+                UserImage = "testinv1",
+                PasswordHash = "testinv1",
+                PasswordSalt = "testinv1",
             };
 
             return user;

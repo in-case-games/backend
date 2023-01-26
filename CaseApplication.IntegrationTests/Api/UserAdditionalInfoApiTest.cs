@@ -17,7 +17,7 @@ namespace CaseApplication.IntegrationTests.Api
             User user = InitializeUser();
             await _response.ResponsePost<User>("/User", user);
             User currentUser = await _response
-                .ResponseGet<User>($"/User?email={user.UserEmail}&hash=123");
+                .ResponseGet<User>($"/User/GetByLogin?login={user.UserLogin}&hash=123");
             UserAdditionalInfo userInfo = new UserAdditionalInfo()
             {
                 UserId = currentUser.Id,
@@ -32,21 +32,14 @@ namespace CaseApplication.IntegrationTests.Api
         {
             User user = new User
             {
-                UserLogin = GenerateString(),
-                UserEmail = GenerateString(),
-                UserImage = GenerateString(),
-                PasswordHash = GenerateString(),
-                PasswordSalt = GenerateString(),
+                UserLogin = "testlogin1",
+                UserEmail = "testemail1",
+                UserImage = "testimage1",
+                PasswordHash = "test1",
+                PasswordSalt = "test1",
             };
 
             return user;
-        }
-        private string GenerateString()
-        {
-            byte[] bytes = new byte[10];
-            new Random().NextBytes(bytes);
-
-            return Convert.ToBase64String(bytes).Replace('=', 's');
         }
         [Fact]
         public async Task UserAdditionalInfoCrudTest()

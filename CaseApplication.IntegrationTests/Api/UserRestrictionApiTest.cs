@@ -21,7 +21,7 @@ namespace CaseApplication.IntegrationTests.Api
             UserRestriction userRestriction = new UserRestriction()
             {
                 UserId = currentUser.Id,
-                RestrictionName = GenerateString(),
+                RestrictionName = "testrest1",
                 CreatedDate = DateTime.Now
             };
 
@@ -31,21 +31,14 @@ namespace CaseApplication.IntegrationTests.Api
         {
             User user = new User
             {
-                UserLogin = GenerateString(),
-                UserEmail = GenerateString(),
-                UserImage = GenerateString(),
-                PasswordHash = GenerateString(),
-                PasswordSalt = GenerateString(),
+                UserLogin = "testlogin2",
+                UserEmail = "testlogin2",
+                UserImage = "testlogin2",
+                PasswordHash = "testlogin2",
+                PasswordSalt = "testlogin2",
             };
 
             return user;
-        }
-        private string GenerateString()
-        {
-            byte[] bytes = new byte[10];
-            new Random().NextBytes(bytes);
-
-            return Convert.ToBase64String(bytes).Replace('=', 's');
         }
         [Fact]
         public async Task UserRestrictionCrudTest()
