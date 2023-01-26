@@ -4,10 +4,10 @@ namespace CaseApplication.DomainLayer.Repositories
 {
     public interface IUserInventoryRepository
     {
-        public Task<UserInventory> GetUserInventory(Guid id);
-        public Task<IEnumerable<UserInventory>> GetAllUserInventories(Guid userId);
-        public Task<bool> CreateUserInventory(UserInventory userInventory);
-        public Task<bool> UpdateUserInventory(UserInventory userInventory);
-        public Task<bool> DeleteUserInventory(Guid id);
+        public Task<UserInventory> Get(Guid id);
+        public Task<IEnumerable<UserInventory>> GetAll(Guid userId);
+        public Task<bool> Create(UserInventory userInventory);
+        public Task<bool> Update(UserInventory userInventory);
+        public Task<bool> Delete(Guid id);
     }
 }

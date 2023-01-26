@@ -17,6 +17,7 @@ namespace CaseApplication.Api.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     GameCaseName = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
+                    GroupCasesName = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
                     GameCaseCost = table.Column<decimal>(type: "DECIMAL(18,5)", nullable: false),
                     GameCaseBalance = table.Column<decimal>(type: "DECIMAL(18,5)", nullable: false),
                     GameCaseImage = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -40,6 +41,21 @@ namespace CaseApplication.Api.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_GameItem", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "News",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    NewsName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    NewsDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    NewsContent = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    NewsImage = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_News", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -337,6 +353,9 @@ namespace CaseApplication.Api.Migrations
         {
             migrationBuilder.DropTable(
                 name: "CaseInventory");
+
+            migrationBuilder.DropTable(
+                name: "News");
 
             migrationBuilder.DropTable(
                 name: "UserAdditionalInfo");

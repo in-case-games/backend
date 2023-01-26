@@ -15,21 +15,21 @@ namespace CaseApplication.API.Controllers
         }
 
         [HttpGet]
-        public async Task<User> GetUser(string email, string hash)
+        public async Task<User> Get(string email, string hash)
         {
-            return await _userRepository.GetUser(email);
+            return await _userRepository.Get(email);
         }
 
         [HttpGet("GetByLogin")]
         public async Task<User> GetUserByLogin(string login, string hash)
         {
-            return await _userRepository.GetUserByLogin(login);
+            return await _userRepository.GetByLogin(login);
         }
 
         [HttpGet("GetAll")]
-        public async Task<IEnumerable<User>> GetUsers()
+        public async Task<IEnumerable<User>> GetAll()
         {
-            List<User> users = (await _userRepository.GetAllUsers()).ToList();
+            List<User> users = (await _userRepository.GetAll()).ToList();
             for(int i = 0; i < users.Count; i++)
             {
                 users[i].PasswordSalt = "";
@@ -38,21 +38,21 @@ namespace CaseApplication.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateUser(User user)
+        public async Task<IActionResult> Create(User user)
         {
-            return Ok(await _userRepository.CreateUser(user));
+            return Ok(await _userRepository.Create(user));
         }
 
         [HttpPut]
-        public async Task<IActionResult> UpdateUser(User user, string hash)
+        public async Task<IActionResult> Update(User user, string hash)
         {
-            return Ok(await _userRepository.UpdateUser(user));
+            return Ok(await _userRepository.Update(user));
         }
 
         [HttpDelete]
-        public async Task<IActionResult> DeleteUser(Guid id)
+        public async Task<IActionResult> Delete(Guid id)
         {
-            return Ok(await _userRepository.DeleteUser(id));
+            return Ok(await _userRepository.Delete(id));
         }
     }
 }

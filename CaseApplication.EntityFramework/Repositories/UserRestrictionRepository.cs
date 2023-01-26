@@ -13,7 +13,7 @@ namespace CaseApplication.EntityFramework.Repositories
         {
             _contextFactory = contextFactory;
         }
-        public async Task<UserRestriction> GetRestriction(Guid id)
+        public async Task<UserRestriction> Get(Guid id)
         {
             using ApplicationDbContext _context = _contextFactory.CreateDbContext();
 
@@ -25,14 +25,14 @@ namespace CaseApplication.EntityFramework.Repositories
                 ?? throw new Exception("There is no such user restriction in the database, " +
                 "review what data comes from the api");
         }
-        public async Task<IEnumerable<UserRestriction>> GetAllRestrictions(Guid userId)
+        public async Task<IEnumerable<UserRestriction>> GetAll(Guid userId)
         {
             using ApplicationDbContext _context = _contextFactory.CreateDbContext();
 
             return await _context.UserRestriction.Where(x => x.UserId == userId).ToListAsync();
         }
 
-        public async Task<bool> CreateRestriction(UserRestriction userRestriction)
+        public async Task<bool> Create(UserRestriction userRestriction)
         {
             using ApplicationDbContext _context = _contextFactory.CreateDbContext();
 
@@ -49,7 +49,7 @@ namespace CaseApplication.EntityFramework.Repositories
             return true;
         }
 
-        public async Task<bool> UpdateRestriction(UserRestriction userRestriction)
+        public async Task<bool> Update(UserRestriction userRestriction)
         {
             using ApplicationDbContext _context = _contextFactory.CreateDbContext();
 
@@ -73,7 +73,7 @@ namespace CaseApplication.EntityFramework.Repositories
             return true;
         }
 
-        public async Task<bool> DeleteRestriction(Guid id)
+        public async Task<bool> Delete(Guid id)
         {
             using ApplicationDbContext _context = _contextFactory.CreateDbContext();
 

@@ -12,7 +12,7 @@ namespace CaseApplication.EntityFramework.Repositories
         {
             _contextFactory = contextFactory;
         }
-        public async Task<UserRole> GetRole(UserRole role)
+        public async Task<UserRole> Get(UserRole role)
         {
             using ApplicationDbContext _context = _contextFactory.CreateDbContext();
 
@@ -24,7 +24,7 @@ namespace CaseApplication.EntityFramework.Repositories
                 "review what data comes from the api");
         }
 
-        public async Task<IEnumerable<UserRole>> GetAllRoles()
+        public async Task<IEnumerable<UserRole>> GetAll()
         {
             using ApplicationDbContext _context = _contextFactory.CreateDbContext();
 
@@ -33,7 +33,7 @@ namespace CaseApplication.EntityFramework.Repositories
             return searchRoles;
         }
 
-        public async Task<bool> CreateRole(UserRole role)
+        public async Task<bool> Create(UserRole role)
         {
             using ApplicationDbContext _context = _contextFactory.CreateDbContext();
 
@@ -49,7 +49,7 @@ namespace CaseApplication.EntityFramework.Repositories
             return true;
         }
         
-        public async Task<bool> UpdateRole(UserRole role)
+        public async Task<bool> Update(UserRole role)
         {
             using ApplicationDbContext _context = _contextFactory.CreateDbContext();
 
@@ -64,7 +64,7 @@ namespace CaseApplication.EntityFramework.Repositories
             return true;
         }
 
-        public async Task<bool> DeleteRole(Guid id)
+        public async Task<bool> Delete(Guid id)
         {
             using ApplicationDbContext _context = _contextFactory.CreateDbContext();
 

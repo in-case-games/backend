@@ -14,10 +14,11 @@ namespace CaseApplication.EntityFramework.Configurations
                 .HasMaxLength(30)
                 .IsRequired();
 
-            builder.HasIndex(p => p.GameCaseName)
-                .IsUnique();
+            builder.Property(p => p.GroupCasesName)
+                .HasMaxLength(30)
+                .IsRequired();
 
-            builder.HasIndex(i => i.GameCaseName)
+            builder.HasIndex(p => p.GameCaseName)
                 .IsUnique();
 
             builder.Property(p => p.GameCaseImage)

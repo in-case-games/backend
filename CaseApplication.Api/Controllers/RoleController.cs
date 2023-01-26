@@ -15,34 +15,34 @@ namespace CaseApplication.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<UserRole> GetRole(Guid roleId = new(), string? roleName = null)
+        public async Task<UserRole> Get(Guid roleId = new(), string? roleName = null)
         {
             UserRole role = new() { Id = roleId, RoleName = roleName };
-            return await _userRoleRepository.GetRole(role);
+            return await _userRoleRepository.Get(role);
         }
 
         [HttpGet("GetAll")]
-        public async Task<IEnumerable<UserRole>> GetAllRoles()
+        public async Task<IEnumerable<UserRole>> GetAll()
         {
-            return await _userRoleRepository.GetAllRoles();
+            return await _userRoleRepository.GetAll();
         }
 
         [HttpPost]
-        public async Task<bool> CreateRole(UserRole userRole)
+        public async Task<bool> Create(UserRole userRole)
         {
-            return await _userRoleRepository.CreateRole(userRole);
+            return await _userRoleRepository.Create(userRole);
         }
 
         [HttpPut]
-        public async Task<bool> UpdateRole(UserRole userRole)
+        public async Task<bool> Update(UserRole userRole)
         {
-            return await _userRoleRepository.UpdateRole(userRole);
+            return await _userRoleRepository.Update(userRole);
         }
 
         [HttpDelete]
-        public async Task<bool> DeleteRole(Guid id)
+        public async Task<bool> Delete(Guid id)
         {
-            return await _userRoleRepository.DeleteRole(id);
+            return await _userRoleRepository.Delete(id);
         }
     }
 }

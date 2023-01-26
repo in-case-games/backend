@@ -14,7 +14,7 @@ namespace CaseApplication.EntityFramework.Repositories
             _contextFactory = contextFactory;
         }
 
-        public async Task<UserHistoryOpeningCases> GetUserHistory(Guid id)
+        public async Task<UserHistoryOpeningCases> Get(Guid id)
         {
             using ApplicationDbContext _context = _contextFactory.CreateDbContext();
 
@@ -25,7 +25,7 @@ namespace CaseApplication.EntityFramework.Repositories
             return searchUserHistory ?? throw new("There is no such user history in the database, " +
                 "review what data comes from the api");
         }
-        public async Task<IEnumerable<UserHistoryOpeningCases>> GetAllUserHistories(Guid userId)
+        public async Task<IEnumerable<UserHistoryOpeningCases>> GetAll(Guid userId)
         {
             using ApplicationDbContext _context = _contextFactory.CreateDbContext();
 
@@ -37,7 +37,7 @@ namespace CaseApplication.EntityFramework.Repositories
             return userHistoryOpeningCases;
         }
 
-        public async Task<bool> CreateUserHisory(UserHistoryOpeningCases userHistory)
+        public async Task<bool> Create(UserHistoryOpeningCases userHistory)
         {
             using ApplicationDbContext _context = _contextFactory.CreateDbContext();
 
@@ -66,7 +66,7 @@ namespace CaseApplication.EntityFramework.Repositories
             return true;
         }
 
-        public async Task<bool> UpdateUserHistory(UserHistoryOpeningCases userHistory)
+        public async Task<bool> Update(UserHistoryOpeningCases userHistory)
         {
             using ApplicationDbContext _context = _contextFactory.CreateDbContext();
 
@@ -83,7 +83,7 @@ namespace CaseApplication.EntityFramework.Repositories
             return true;
         }
 
-        public async Task<bool> DeleteUserHistory(Guid id)
+        public async Task<bool> Delete(Guid id)
         {
             using ApplicationDbContext _context = _contextFactory.CreateDbContext();
 
@@ -100,7 +100,7 @@ namespace CaseApplication.EntityFramework.Repositories
             return true;
         }
 
-        public async Task<bool> DeleteAllUserHistories(Guid userId)
+        public async Task<bool> DeleteAll(Guid userId)
         {
             using ApplicationDbContext _context = _contextFactory.CreateDbContext();
 

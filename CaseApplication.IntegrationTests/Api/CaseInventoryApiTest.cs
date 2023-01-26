@@ -113,6 +113,7 @@ namespace CaseApplication.IntegrationTests.Api
 
             GameCase gameCase = new()
             {
+                GroupCasesName = "Бедные кейсы",
                 GameCaseName = "Все или ничего",
                 GameCaseCost = 20,
                 GameCaseImage = "asd",

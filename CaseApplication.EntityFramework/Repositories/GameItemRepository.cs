@@ -13,7 +13,7 @@ namespace CaseApplication.EntityFramework.Repositories
             _contextFactory = contextFactory;
         }
 
-        public async Task<GameItem> GetCurrentItem(Guid id)
+        public async Task<GameItem> Get(Guid id)
         {
             using ApplicationDbContext _context = _contextFactory.CreateDbContext();
 
@@ -23,14 +23,14 @@ namespace CaseApplication.EntityFramework.Repositories
                 "review what data comes from the api");
         }
 
-        public async Task<IEnumerable<GameItem>> GetAllItems()
+        public async Task<IEnumerable<GameItem>> GetAll()
         {
             using ApplicationDbContext _context = _contextFactory.CreateDbContext();
 
             return await _context.GameItem.ToListAsync();
         }
 
-        public async Task<bool> CreateItem(GameItem item)
+        public async Task<bool> Create(GameItem item)
         {
             using ApplicationDbContext _context = _contextFactory.CreateDbContext();
 
@@ -42,7 +42,7 @@ namespace CaseApplication.EntityFramework.Repositories
             return true;
         }
 
-        public async Task<bool> UpdateItem(GameItem item)
+        public async Task<bool> Update(GameItem item)
         {
             using ApplicationDbContext _context = _contextFactory.CreateDbContext();
 
@@ -57,7 +57,7 @@ namespace CaseApplication.EntityFramework.Repositories
             return true;
         }
 
-        public async Task<bool> DeleteItem(Guid id)
+        public async Task<bool> Delete(Guid id)
         {
             using ApplicationDbContext _context = _contextFactory.CreateDbContext();
 

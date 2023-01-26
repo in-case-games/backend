@@ -4,10 +4,11 @@ namespace CaseApplication.DomainLayer.Repositories
 {
     public interface IGameCaseRepository
     {
-        public Task<GameCase> GetCurrentCase(Guid id);
-        public Task<IEnumerable<GameCase>> GetAllCases();
-        public Task<bool> CreateCase(GameCase gameCase);
-        public Task<bool> UpdateCase(GameCase gameCase);
-        public Task<bool> DeleteCase(Guid id);
+        public Task<GameCase> Get(Guid id);
+        public Task<IEnumerable<GameCase>> GetAll();
+        public Task<IEnumerable<GameCase>> GetAllByGroupName(string name);
+        public Task<bool> Create(GameCase gameCase);
+        public Task<bool> Update(GameCase gameCase);
+        public Task<bool> Delete(Guid id);
     }
 }

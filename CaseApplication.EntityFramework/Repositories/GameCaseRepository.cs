@@ -14,7 +14,7 @@ namespace CaseApplication.EntityFramework.Repositories
             _contextFactory = contextFactory;
         }
 
-        public async Task<GameCase> GetCurrentCase(Guid id)
+        public async Task<GameCase> Get(Guid id)
         {
             using ApplicationDbContext _context = _contextFactory.CreateDbContext();
 
@@ -24,14 +24,21 @@ namespace CaseApplication.EntityFramework.Repositories
                 "review what data comes from the api");
         }
 
-        public async Task<IEnumerable<GameCase>> GetAllCases()
+        public async Task<IEnumerable<GameCase>> GetAll()
         {
             using ApplicationDbContext _context = _contextFactory.CreateDbContext();
 
             return await _context.GameCase.ToListAsync();
         }
 
-        public async Task<bool> CreateCase(GameCase gameCase)
+        public async Task<IEnumerable<GameCase>> GetAllByGroupName(string name)
+        {
+            using ApplicationDbContext _context = _contextFactory.CreateDbContext();
+
+            return await _context.GameCase.ToListAsync();
+        }
+
+        public async Task<bool> Create(GameCase gameCase)
         {
             using ApplicationDbContext _context = _contextFactory.CreateDbContext();
 
@@ -41,7 +48,7 @@ namespace CaseApplication.EntityFramework.Repositories
             return true;
         }
 
-        public async Task<bool> UpdateCase(GameCase gameCase)
+        public async Task<bool> Update(GameCase gameCase)
         {
             using ApplicationDbContext _context = _contextFactory.CreateDbContext();
 
@@ -56,7 +63,7 @@ namespace CaseApplication.EntityFramework.Repositories
             return true;
         }
 
-        public async Task<bool> DeleteCase(Guid id)
+        public async Task<bool> Delete(Guid id)
         {
             using ApplicationDbContext _context = _contextFactory.CreateDbContext();
 

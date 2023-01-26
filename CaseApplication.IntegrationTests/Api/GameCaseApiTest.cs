@@ -24,6 +24,7 @@ namespace CaseApplication.IntegrationTests.Api
             //Post
             GameCase gameCase = new()
             {
+                GroupCasesName = "Бедные кейсы",
                 GameCaseCost = 200M,
                 GameCaseName = $"Test {random.Next(1, 1000000)}",
                 GameCaseImage = "image541",

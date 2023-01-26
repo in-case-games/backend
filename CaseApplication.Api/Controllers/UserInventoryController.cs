@@ -18,33 +18,33 @@ namespace CaseApplication.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<UserInventory> GetUserInventory(Guid id) 
+        public async Task<UserInventory> Get(Guid id) 
         { 
-            return await _userInventoryRepository.GetUserInventory(id);
+            return await _userInventoryRepository.Get(id);
         }
 
         [HttpGet("GetAll")]
-        public async Task<IEnumerable<UserInventory>> GetAllUserInventories(Guid userId)
+        public async Task<IEnumerable<UserInventory>> GetAll(Guid userId)
         {
-            return await _userInventoryRepository.GetAllUserInventories(userId);
+            return await _userInventoryRepository.GetAll(userId);
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateUserInventory(UserInventory userInventory)
+        public async Task<IActionResult> Create(UserInventory userInventory)
         {
-            return Ok(await _userInventoryRepository.CreateUserInventory(userInventory));
+            return Ok(await _userInventoryRepository.Create(userInventory));
         }
 
         [HttpPut]
-        public async Task<IActionResult> UpdateUserInventory(UserInventory userInventory)
+        public async Task<IActionResult> Update(UserInventory userInventory)
         {
-            return Ok(await _userInventoryRepository.UpdateUserInventory(userInventory));
+            return Ok(await _userInventoryRepository.Update(userInventory));
         }
 
         [HttpDelete]
-        public async Task<IActionResult> DeleteUserInventory(Guid id)
+        public async Task<IActionResult> Delete(Guid id)
         {
-            return Ok(await _userInventoryRepository.DeleteUserInventory(id));
+            return Ok(await _userInventoryRepository.Delete(id));
         }
     }
 }

@@ -16,33 +16,33 @@ namespace CaseApplication.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<UserRestriction> GetRestriction(Guid id)
+        public async Task<UserRestriction> Get(Guid id)
         {
-            return await _userRestrictionRepository.GetRestriction(id);
+            return await _userRestrictionRepository.Get(id);
         }
 
         [HttpGet("GetAll")]
-        public async Task<IEnumerable<UserRestriction>> GetAllRestrictions(Guid userId)
+        public async Task<IEnumerable<UserRestriction>> GetAll(Guid userId)
         {
-            return await _userRestrictionRepository.GetAllRestrictions(userId);
+            return await _userRestrictionRepository.GetAll(userId);
         }
 
         [HttpPost]
-        public async Task<bool> CreateRestriction(UserRestriction userRestriction)
+        public async Task<bool> Create(UserRestriction userRestriction)
         {
-            return await _userRestrictionRepository.CreateRestriction(userRestriction);
+            return await _userRestrictionRepository.Create(userRestriction);
         }
 
         [HttpPut]
-        public async Task<bool> UpdateRestriction(UserRestriction userRestriction)
+        public async Task<bool> Update(UserRestriction userRestriction)
         {
-            return await _userRestrictionRepository.UpdateRestriction(userRestriction);
+            return await _userRestrictionRepository.Update(userRestriction);
         }
 
         [HttpDelete]
-        public async Task<bool> DeleteRestriction(Guid id)
+        public async Task<bool> Delete(Guid id)
         {
-            return await _userRestrictionRepository.DeleteRestriction(id);
+            return await _userRestrictionRepository.Delete(id);
         }
     }
 }

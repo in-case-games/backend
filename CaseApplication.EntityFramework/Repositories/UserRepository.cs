@@ -12,7 +12,7 @@ namespace CaseApplication.EntityFramework.Repositories
         {
             _contextFactory = context;
         }
-        public async Task<User> GetUser(string email)
+        public async Task<User> Get(string email)
         {
             using ApplicationDbContext _context = _contextFactory.CreateDbContext();
 
@@ -21,7 +21,7 @@ namespace CaseApplication.EntityFramework.Repositories
                 "review what data comes from the api");
         }
 
-        public async Task<User> GetUserByLogin(string login)
+        public async Task<User> GetByLogin(string login)
         {
             using ApplicationDbContext _context = _contextFactory.CreateDbContext();
 
@@ -30,14 +30,14 @@ namespace CaseApplication.EntityFramework.Repositories
                 "review what data comes from the api");
         }
 
-        public async Task<IEnumerable<User>> GetAllUsers()
+        public async Task<IEnumerable<User>> GetAll()
         {
             using ApplicationDbContext _context = _contextFactory.CreateDbContext();
 
             return await _context.User.ToListAsync();
         }
 
-        public async Task<bool> CreateUser(User user)
+        public async Task<bool> Create(User user)
         {
             using ApplicationDbContext _context = _contextFactory.CreateDbContext();
 
@@ -52,7 +52,7 @@ namespace CaseApplication.EntityFramework.Repositories
             return true;
         }
 
-        public async Task<bool> UpdateUser(User user)
+        public async Task<bool> Update(User user)
         {
             using ApplicationDbContext _context = _contextFactory.CreateDbContext();
 
@@ -66,7 +66,7 @@ namespace CaseApplication.EntityFramework.Repositories
 
             return true;
         }
-        public async Task<bool> DeleteUser(Guid id)
+        public async Task<bool> Delete(Guid id)
         {
             using ApplicationDbContext _context = _contextFactory.CreateDbContext();
 

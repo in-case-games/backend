@@ -16,33 +16,33 @@ namespace CaseApplication.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<GameItem> GetItem(Guid id)
+        public async Task<GameItem> Get(Guid id)
         {
-            return await _gameItemRepository.GetCurrentItem(id);
+            return await _gameItemRepository.Get(id);
         }
 
         [HttpGet("GetAll")]
-        public async Task<IEnumerable<GameItem>> GetAllItems()
+        public async Task<IEnumerable<GameItem>> GetAll()
         {
-            return await _gameItemRepository.GetAllItems();
+            return await _gameItemRepository.GetAll();
         }
 
         [HttpPost]
-        public async Task<bool> CreateItem(GameItem item)
+        public async Task<bool> Create(GameItem item)
         {
-            return await _gameItemRepository.CreateItem(item);
+            return await _gameItemRepository.Create(item);
         }
 
         [HttpPut]
-        public async Task<bool> UpdateItem(GameItem item)
+        public async Task<bool> Update(GameItem item)
         {
-            return await _gameItemRepository.UpdateItem(item);
+            return await _gameItemRepository.Update(item);
         }
 
         [HttpDelete]
-        public async Task<bool> DeleteItem(Guid id)
+        public async Task<bool> Delete(Guid id)
         {
-            return await _gameItemRepository.DeleteItem(id);
+            return await _gameItemRepository.Delete(id);
         }
     }
 }

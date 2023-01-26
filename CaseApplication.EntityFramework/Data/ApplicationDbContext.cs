@@ -15,6 +15,7 @@ namespace CaseApplication.EntityFramework.Data
         internal DbSet<GameItem> GameItem => Set<GameItem>();
         internal DbSet<CaseInventory> CaseInventory => Set<CaseInventory>();
         internal DbSet<UserHistoryOpeningCases> UserHistoryOpeningCases => Set<UserHistoryOpeningCases>();
+        internal DbSet<News> News => Set<News>();
 
         public ApplicationDbContext(DbContextOptions options) : base(options) {}
 

@@ -5,6 +5,7 @@ namespace CaseApplication.DomainLayer.Entities
     public class GameCase : BaseEntity
     {
         public string? GameCaseName { get; set; }
+        public string? GroupCasesName { get; set; }
         public decimal GameCaseCost { get; set; }
         public decimal GameCaseBalance { get; set; } = 0M;
         public string? GameCaseImage { get; set; }

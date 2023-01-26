@@ -12,7 +12,7 @@ namespace CaseApplication.EntityFramework.Repositories
         {
             _contextFactory = contextFactory;
         }
-        public async Task<UserInventory> GetUserInventory(Guid id)
+        public async Task<UserInventory> Get(Guid id)
         {
             using ApplicationDbContext _context = _contextFactory.CreateDbContext();
 
@@ -24,13 +24,13 @@ namespace CaseApplication.EntityFramework.Repositories
                 "review what data comes from the api");
         }
 
-        public async Task<IEnumerable<UserInventory>> GetAllUserInventories(Guid userId)
+        public async Task<IEnumerable<UserInventory>> GetAll(Guid userId)
         {
             using ApplicationDbContext _context = _contextFactory.CreateDbContext();
 
             return await _context.UserInventory.ToListAsync();
         }
-        public async Task<bool> CreateUserInventory(UserInventory userInventory)
+        public async Task<bool> Create(UserInventory userInventory)
         {
             using ApplicationDbContext _context = _contextFactory.CreateDbContext();
 
@@ -53,7 +53,7 @@ namespace CaseApplication.EntityFramework.Repositories
             return true;
         }
 
-        public async Task<bool> UpdateUserInventory(UserInventory userInventory)
+        public async Task<bool> Update(UserInventory userInventory)
         {
             using ApplicationDbContext _context = _contextFactory.CreateDbContext();
 
@@ -70,7 +70,7 @@ namespace CaseApplication.EntityFramework.Repositories
             return true;
         }
 
-        public async Task<bool> DeleteUserInventory(Guid id)
+        public async Task<bool> Delete(Guid id)
         {
             using ApplicationDbContext _context = _contextFactory.CreateDbContext();
 

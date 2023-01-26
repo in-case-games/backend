@@ -16,33 +16,33 @@ namespace CaseApplication.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<CaseInventory> GetCaseInventory(Guid id)
+        public async Task<CaseInventory> Get(Guid id)
         {
-            return await _caseInventoryRepository.GetCurrentCaseInventory(id);
+            return await _caseInventoryRepository.Get(id);
         }
 
         [HttpGet("GetAll")]
-        public async Task<IEnumerable<CaseInventory>> GetAllCaseInventories(Guid caseId)
+        public async Task<IEnumerable<CaseInventory>> GetAll(Guid caseId)
         {
-            return await _caseInventoryRepository.GetAllCaseInventory(caseId);
+            return await _caseInventoryRepository.GetAll(caseId);
         }
 
         [HttpPost]
-        public async Task<bool> CreateCaseInventory(CaseInventory caseInventory)
+        public async Task<bool> Create(CaseInventory caseInventory)
         {
-            return await _caseInventoryRepository.CaseInventoryCreate(caseInventory);
+            return await _caseInventoryRepository.Create(caseInventory);
         }
 
         [HttpPut]
-        public async Task<bool> UpdateCaseInventory(CaseInventory caseInventory)
+        public async Task<bool> Update(CaseInventory caseInventory)
         {
-            return await _caseInventoryRepository.CaseInventoryUpdate(caseInventory);
+            return await _caseInventoryRepository.Update(caseInventory);
         }
 
         [HttpDelete]
-        public async Task<bool> DeleteCaseInventory(Guid id)
+        public async Task<bool> Delete(Guid id)
         {
-            return await _caseInventoryRepository.CaseInventoryDelete(id);
+            return await _caseInventoryRepository.Delete(id);
         }
     }
 }

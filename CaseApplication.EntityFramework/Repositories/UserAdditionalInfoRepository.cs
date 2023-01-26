@@ -12,7 +12,7 @@ namespace CaseApplication.EntityFramework.Repositories
             _contextFactory = contextFactory;
         }
 
-        public async Task<UserAdditionalInfo> GetInfo(Guid userId)
+        public async Task<UserAdditionalInfo> Get(Guid userId)
         {
             using ApplicationDbContext _context = _contextFactory.CreateDbContext();
 
@@ -24,7 +24,7 @@ namespace CaseApplication.EntityFramework.Repositories
                 "review what data comes from the api");
         }
 
-        public async Task<bool> CreateInfo(UserAdditionalInfo info)
+        public async Task<bool> Create(UserAdditionalInfo info)
         {
             using ApplicationDbContext _context = _contextFactory.CreateDbContext();
 
@@ -45,7 +45,7 @@ namespace CaseApplication.EntityFramework.Repositories
 
             return true;
         }
-        public async Task<bool> UpdateInfo(UserAdditionalInfo info)
+        public async Task<bool> Update(UserAdditionalInfo info)
         {
             using ApplicationDbContext _context = _contextFactory.CreateDbContext();
 
@@ -64,7 +64,7 @@ namespace CaseApplication.EntityFramework.Repositories
             return true;
         }
 
-        public async Task<bool> DeleteInfo(Guid id)
+        public async Task<bool> Delete(Guid id)
         {
             using ApplicationDbContext _context = _contextFactory.CreateDbContext();
 

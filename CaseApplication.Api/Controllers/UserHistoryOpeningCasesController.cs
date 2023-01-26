@@ -17,39 +17,39 @@ namespace CaseApplication.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<UserHistoryOpeningCases> GetUserHistory(Guid id)
+        public async Task<UserHistoryOpeningCases> Get(Guid id)
         {
-            return await _userHistoryRepository.GetUserHistory(id);
+            return await _userHistoryRepository.Get(id);
         }
 
         [HttpGet("GetAll")]
-        public async Task<IEnumerable<UserHistoryOpeningCases>> GetAllUserHistories(Guid userId)
+        public async Task<IEnumerable<UserHistoryOpeningCases>> GetAll(Guid userId)
         {
-            return await _userHistoryRepository.GetAllUserHistories(userId);
+            return await _userHistoryRepository.GetAll(userId);
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateUserHistory(UserHistoryOpeningCases userHistory)
+        public async Task<IActionResult> Create(UserHistoryOpeningCases userHistory)
         {
-            return Ok(await _userHistoryRepository.CreateUserHisory(userHistory));
+            return Ok(await _userHistoryRepository.Create(userHistory));
         }
 
         [HttpPut]
-        public async Task<IActionResult> UpdateUserHistory(UserHistoryOpeningCases userHistory)
+        public async Task<IActionResult> Update(UserHistoryOpeningCases userHistory)
         {
-            return Ok(await _userHistoryRepository.UpdateUserHistory(userHistory));
+            return Ok(await _userHistoryRepository.Update(userHistory));
         }
 
         [HttpDelete]
-        public async Task<IActionResult> DeleteUserHistory(Guid id)
+        public async Task<IActionResult> Delete(Guid id)
         {
-            return Ok(await _userHistoryRepository.DeleteUserHistory(id));
+            return Ok(await _userHistoryRepository.Delete(id));
         }
 
         [HttpDelete("DeleteAll")]
-        public async Task<IActionResult> DeleteAllUserHistories(Guid userId)
+        public async Task<IActionResult> DeleteAll(Guid userId)
         {
-            return Ok(await _userHistoryRepository.DeleteAllUserHistories(userId));
+            return Ok(await _userHistoryRepository.DeleteAll(userId));
         }
     }
 }

@@ -4,11 +4,11 @@ namespace CaseApplication.DomainLayer.Repositories
 {
     public interface IUserRepository
     {
-        public Task<User> GetUser(string email);
-        public Task<User> GetUserByLogin(string login);
-        public Task<IEnumerable<User>> GetAllUsers();
-        public Task<bool> CreateUser(User user);
-        public Task<bool> UpdateUser(User user);
-        public Task<bool> DeleteUser(Guid id);
+        public Task<User> Get(string email);
+        public Task<User> GetByLogin(string login);
+        public Task<IEnumerable<User>> GetAll();
+        public Task<bool> Create(User user);
+        public Task<bool> Update(User user);
+        public Task<bool> Delete(Guid id);
     }
 }

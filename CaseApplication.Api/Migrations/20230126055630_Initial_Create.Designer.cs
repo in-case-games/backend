@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CaseApplication.Api.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230125043750_Initial_Create")]
+    [Migration("20230126055630_Initial_Create")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -77,6 +77,11 @@ namespace CaseApplication.Api.Migrations
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)");
 
+                    b.Property<string>("GroupCasesName")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
                     b.Property<decimal>("RevenuePrecentage")
                         .HasColumnType("DECIMAL(18, 5)");
 
@@ -123,6 +128,29 @@ namespace CaseApplication.Api.Migrations
                         .IsUnique();
 
                     b.ToTable("GameItem");
+                });
+
+            modelBuilder.Entity("CaseApplication.DomainLayer.Entities.News", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("NewsContent")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("NewsDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("NewsImage")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NewsName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("News");
                 });
 
             modelBuilder.Entity("CaseApplication.DomainLayer.Entities.User", b =>

@@ -16,33 +16,33 @@ namespace CaseApplication.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<GameCase> GetCase(Guid id)
+        public async Task<GameCase> Get(Guid id)
         {
-            return await _gameCaseRepository.GetCurrentCase(id);
+            return await _gameCaseRepository.Get(id);
         }
 
         [HttpGet("GetAll")]
-        public async Task<IEnumerable<GameCase>> GetAllCases()
+        public async Task<IEnumerable<GameCase>> GetAll()
         {
-            return await _gameCaseRepository.GetAllCases();
+            return await _gameCaseRepository.GetAll();
         }
 
         [HttpPost]
-        public async Task<bool> CreateCase(GameCase gameCase)
+        public async Task<bool> Create(GameCase gameCase)
         {
-            return await _gameCaseRepository.CreateCase(gameCase);
+            return await _gameCaseRepository.Create(gameCase);
         }
 
         [HttpPut]
-        public async Task<bool> UpdateCase(GameCase gameCase)
+        public async Task<bool> Update(GameCase gameCase)
         {
-            return await _gameCaseRepository.UpdateCase(gameCase);
+            return await _gameCaseRepository.Update(gameCase);
         }
 
         [HttpDelete]
-        public async Task<bool> DeleteCase(Guid id)
+        public async Task<bool> Delete(Guid id)
         {
-            return await _gameCaseRepository.DeleteCase(id);
+            return await _gameCaseRepository.Delete(id);
         }
     }
 }
