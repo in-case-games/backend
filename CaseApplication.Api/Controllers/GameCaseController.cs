@@ -26,6 +26,11 @@ namespace CaseApplication.Api.Controllers
         {
             return await _gameCaseRepository.GetAll();
         }
+        [HttpGet("GetAllByGroupName")]
+        public async Task<IEnumerable<GameCase>> GetAllByGroupName(string name)
+        {
+            return await _gameCaseRepository.GetAllByGroupName(name);
+        }
 
         [HttpPost]
         public async Task<bool> Create(GameCase gameCase)

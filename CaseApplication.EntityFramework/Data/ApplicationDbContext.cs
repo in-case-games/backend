@@ -13,6 +13,7 @@ namespace CaseApplication.EntityFramework.Data
         internal DbSet<UserInventory> UserInventory => Set<UserInventory>();
         internal DbSet<GameCase> GameCase => Set<GameCase>();
         internal DbSet<GameItem> GameItem => Set<GameItem>();
+        internal DbSet<SiteStatistics> SiteStatistics => Set<SiteStatistics>();
         internal DbSet<CaseInventory> CaseInventory => Set<CaseInventory>();
         internal DbSet<UserHistoryOpeningCases> UserHistoryOpeningCases => Set<UserHistoryOpeningCases>();
         internal DbSet<News> News => Set<News>();
@@ -31,6 +32,7 @@ namespace CaseApplication.EntityFramework.Data
             modelBuilder.ApplyConfiguration(new UserRestrictionConfiguration());
             modelBuilder.ApplyConfiguration(new UserRoleConfiguration());
             modelBuilder.ApplyConfiguration(new UserHistoryOpeningCasesConfiguration());
+            modelBuilder.ApplyConfiguration(new SiteStatisticsConfiguration());
         }
     }
 }

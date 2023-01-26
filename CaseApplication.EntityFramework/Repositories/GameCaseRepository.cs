@@ -34,8 +34,12 @@ namespace CaseApplication.EntityFramework.Repositories
         public async Task<IEnumerable<GameCase>> GetAllByGroupName(string name)
         {
             using ApplicationDbContext _context = _contextFactory.CreateDbContext();
+            IEnumerable<GameCase> gameCases = await _context
+                .GameCase
+                .Where(x => x.GroupCasesName == name)
+                .ToListAsync();
 
-            return await _context.GameCase.ToListAsync();
+            return gameCases;
         }
 
         public async Task<bool> Create(GameCase gameCase)

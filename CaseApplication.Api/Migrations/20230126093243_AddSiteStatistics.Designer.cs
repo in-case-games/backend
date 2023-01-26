@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CaseApplication.Api.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230126081839_updateUserHistory")]
-    partial class updateUserHistory
+    [Migration("20230126093243_AddSiteStatistics")]
+    partial class AddSiteStatistics
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -150,7 +150,39 @@ namespace CaseApplication.Api.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Id")
+                        .IsUnique();
+
                     b.ToTable("News");
+                });
+
+            modelBuilder.Entity("CaseApplication.DomainLayer.Entities.SiteStatistics", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("CasesOpened")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ItemWithdrawn")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ReviewsWriten")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("SiteBalance")
+                        .HasColumnType("DECIMAL(18, 5)");
+
+                    b.Property<int>("UsersCount")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Id")
+                        .IsUnique();
+
+                    b.ToTable("SiteStatistics");
                 });
 
             modelBuilder.Entity("CaseApplication.DomainLayer.Entities.User", b =>

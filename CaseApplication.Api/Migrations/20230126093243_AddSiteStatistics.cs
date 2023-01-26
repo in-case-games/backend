@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace CaseApplication.Api.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class AddSiteStatistics : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -56,6 +56,22 @@ namespace CaseApplication.Api.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_News", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SiteStatistics",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UsersCount = table.Column<int>(type: "int", nullable: false),
+                    SiteBalance = table.Column<decimal>(type: "DECIMAL(18,5)", nullable: false),
+                    CasesOpened = table.Column<int>(type: "int", nullable: false),
+                    ItemWithdrawn = table.Column<int>(type: "int", nullable: false),
+                    ReviewsWriten = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SiteStatistics", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -120,7 +136,8 @@ namespace CaseApplication.Api.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     GameItemId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    GameCaseId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    GameCaseId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CaseOpenAt = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -259,6 +276,18 @@ namespace CaseApplication.Api.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_News_Id",
+                table: "News",
+                column: "Id",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SiteStatistics_Id",
+                table: "SiteStatistics",
+                column: "Id",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_User_Id",
                 table: "User",
                 column: "Id",
@@ -356,6 +385,9 @@ namespace CaseApplication.Api.Migrations
 
             migrationBuilder.DropTable(
                 name: "News");
+
+            migrationBuilder.DropTable(
+                name: "SiteStatistics");
 
             migrationBuilder.DropTable(
                 name: "UserAdditionalInfo");

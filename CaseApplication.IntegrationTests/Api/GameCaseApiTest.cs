@@ -33,6 +33,8 @@ namespace CaseApplication.IntegrationTests.Api
             
             //Get && Get All
             Guid caseId = await SearchIdCaseByName(gameCase.GameCaseName);
+            HttpStatusCode getByGroupNameStatusCode = await _clientApi
+                .ResponseGetStatusCode("/GameCase/GetAllByGroupName?name=Бедные кейсы");
 
             //Put
             gameCase.Id = caseId;
@@ -45,7 +47,8 @@ namespace CaseApplication.IntegrationTests.Api
 
             bool IsPassedTests = (statusCodeCreate == HttpStatusCode.OK) &&
                 (statusCodePut == HttpStatusCode.OK) &&
-                (statusCodeDelete == HttpStatusCode.OK);
+                (statusCodeDelete == HttpStatusCode.OK) &&
+                (getByGroupNameStatusCode == HttpStatusCode.OK);
 
             Assert.True(IsPassedTests);
         }
