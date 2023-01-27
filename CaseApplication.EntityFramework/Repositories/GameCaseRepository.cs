@@ -81,5 +81,37 @@ namespace CaseApplication.EntityFramework.Repositories
 
             return true;
         }
+
+        public async Task<GameItem> OpenCase(Guid userId, Guid caseId)
+        {
+            using ApplicationDbContext _context = _contextFactory.CreateDbContext();
+
+            User? user = await _context.User.FirstOrDefaultAsync(x => x.Id == userId);
+            GameCase? gameCase = await _context.GameCase.FirstOrDefaultAsync(x => x.Id == caseId);
+
+            if (user is null) throw new Exception("There is no such user in the database, " +
+                "review what data comes from the api");
+            if (gameCase is null) throw new Exception("There is no such game case in the database, " +
+                "review what data comes from the api");
+
+            List<CaseInventory> casesInventories = await _context
+                .CaseInventory
+                .Where(x => x.Id == caseId)
+                .ToListAsync();
+
+            List<decimal> lossChance = new();
+
+            foreach (CaseInventory inventory in casesInventories)
+                lossChance.Add(inventory.LossChance);
+
+            UserHistoryOpeningCases historyOpeningCases = new() { 
+                UserId = userId,
+                GameCaseId = caseId,
+                GameItemId = new Guid(),
+                CaseOpenAt = DateTime.Now,
+            };
+
+            return new GameItem();
+        }
     }
 }
