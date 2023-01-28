@@ -34,8 +34,7 @@ namespace CaseApplication.Api.Migrations
                     b.Property<Guid>("GameItemId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<decimal?>("LossChance")
-                        .IsRequired()
+                    b.Property<decimal>("LossChance")
                         .HasColumnType("DECIMAL(18, 5)");
 
                     b.Property<int>("NumberItemsCase")

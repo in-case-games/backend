@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CaseApplication.Api.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230126093243_AddSiteStatistics")]
-    partial class AddSiteStatistics
+    [Migration("20230128071456_Initial_Create")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -37,8 +37,7 @@ namespace CaseApplication.Api.Migrations
                     b.Property<Guid>("GameItemId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<decimal?>("LossChance")
-                        .IsRequired()
+                    b.Property<decimal>("LossChance")
                         .HasColumnType("DECIMAL(18, 5)");
 
                     b.Property<int>("NumberItemsCase")

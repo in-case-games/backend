@@ -13,6 +13,6 @@ namespace CaseApplication.DomainLayer.Entities
         public GameItem? GameItem { get; set; }
 
         public int NumberItemsCase { get; set; }
-        public decimal? LossChance { get; set; }
+        public int LossChance { get; set; }
     }
 }

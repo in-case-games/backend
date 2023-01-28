@@ -30,7 +30,7 @@ namespace CaseApplication.IntegrationTests.Api
                 {
                     GameCaseId = caseId,
                     GameItemId = firstItemId,
-                    LossChance = 0.01M,
+                    LossChance = 1,
                     NumberItemsCase = 1
                 };
                 //Create
@@ -38,7 +38,7 @@ namespace CaseApplication.IntegrationTests.Api
                 await CreateCaseInventory(caseInventory);
 
                 caseInventory.GameItemId = secondItemId;
-                caseInventory.LossChance = 0.99M;
+                caseInventory.LossChance = 99;
 
                 await CreateCaseInventory(caseInventory);
 

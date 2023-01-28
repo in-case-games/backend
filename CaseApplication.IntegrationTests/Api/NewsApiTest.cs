@@ -41,7 +41,7 @@ namespace CaseApplication.IntegrationTests.Api
             {
                 NewsName = "NSATName",
                 NewsContent = "NSATContent",
-                NewsDate = DateTime.Now,
+                NewsDate = DateTime.UtcNow,
                 NewsImage = "NSATImage"
             };
 
