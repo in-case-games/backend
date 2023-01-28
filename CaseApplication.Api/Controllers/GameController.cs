@@ -89,7 +89,9 @@ namespace CaseApplication.Api.Controllers
                     }
                 }
             }
-
+            gameCase.GameCaseBalance -= winGameItem.GameItemCost;
+            gameCase.GameCaseBalance -= gameCase.GameCaseCost * gameCase.RevenuePrecentage;
+            await _gameCaseRepository.Update(gameCase);
             //Add history and add inventory user
             UserHistoryOpeningCases historyCase = new()
             {

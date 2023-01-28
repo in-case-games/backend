@@ -11,7 +11,7 @@ namespace CaseApplication.EntityFramework.Configurations
             base.Configure(builder);
 
             builder.Property(p => p.GameItemName)
-                .HasMaxLength(30)
+                .HasMaxLength(100)
                 .IsRequired();
 
             builder.HasIndex(i => i.GameItemName)

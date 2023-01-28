@@ -4,6 +4,7 @@ using CaseApplication.EntityFramework.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CaseApplication.Api.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230128084331_Initial_Create1")]
+    partial class InitialCreate1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -34,8 +37,8 @@ namespace CaseApplication.Api.Migrations
                     b.Property<Guid>("GameItemId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("LossChance")
-                        .HasColumnType("int");
+                    b.Property<decimal>("LossChance")
+                        .HasColumnType("DECIMAL(18, 5)");
 
                     b.Property<int>("NumberItemsCase")
                         .HasColumnType("int");

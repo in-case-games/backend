@@ -21,7 +21,7 @@ namespace CaseApplication.Api.Controllers
         }
 
         [HttpGet("GetByLogin")]
-        public async Task<User> GetUserByLogin(string login, string hash)
+        public async Task<User> GetByLogin(string login, string hash)
         {
             return await _userRepository.GetByLogin(login);
         }

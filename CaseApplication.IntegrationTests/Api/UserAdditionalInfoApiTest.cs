@@ -21,9 +21,9 @@ namespace CaseApplication.IntegrationTests.Api
             UserAdditionalInfo userInfo = new UserAdditionalInfo()
             {
                 UserId = currentUser.Id,
-                UserAge = 999,
+                UserAge = 18,
                 UserBalance = 99,
-                UserAbleToPay = 9
+                UserAbleToPay = 0
             };
 
             return userInfo;
