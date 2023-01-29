@@ -68,7 +68,7 @@ namespace CaseApplication.Api.Controllers
             //Check is profit case
             if(IsProfitCase(winGameItem, gameCase) is false)
             {
-                List<GameItem> gameItems = new List<GameItem>();
+                List<GameItem> gameItems = new();
                 GameItem searchItem;
 
                 foreach (CaseInventory invetory in casesInventories)
@@ -78,8 +78,9 @@ namespace CaseApplication.Api.Controllers
                 }
 
                 gameItems = gameItems.OrderByDescending(g => g.GameItemCost).ToList();
-
-                foreach(GameItem gameItem in gameItems)
+                winIdGameItem = gameItems[^1].Id;
+                winGameItem = gameItems[^1];
+/*                foreach(GameItem gameItem in gameItems)
                 {
                     if(IsProfitCase(gameItem, gameCase) && 
                         gameItem.GameItemCost <= winGameItem.GameItemCost)
@@ -87,11 +88,14 @@ namespace CaseApplication.Api.Controllers
                         winIdGameItem = gameItem.Id;
                         winGameItem = gameItem;
                     }
-                }
+                }*/
             }
+
+            //Update User and Case Balance
             gameCase.GameCaseBalance -= winGameItem.GameItemCost;
             gameCase.GameCaseBalance -= gameCase.GameCaseCost * gameCase.RevenuePrecentage;
             await _gameCaseRepository.Update(gameCase);
+
             //Add history and add inventory user
             UserHistoryOpeningCases historyCase = new()
             {
@@ -105,6 +109,7 @@ namespace CaseApplication.Api.Controllers
                 UserId = userId,
                 GameItemId = winIdGameItem
             };
+
             await _userHistory.Create(historyCase);
             await _userInventoryRepository.Create(userInventory);
 
