@@ -12,7 +12,16 @@ namespace CaseApplication.EntityFramework.Repositories
         {
             _contextFactory = contextFactory;
         }
-        public async Task<UserRole> Get(UserRole role)
+        public async Task<UserRole> Get(Guid id)
+        {
+            using ApplicationDbContext _context = _contextFactory.CreateDbContext();
+
+            return await _context.UserRole.FirstOrDefaultAsync(x => x.Id == id)
+                ?? throw new("There is no such role in the database, " +
+                "review what data comes from the api");
+        }
+
+        public async Task<UserRole> GetByRole(UserRole role)
         {
             using ApplicationDbContext _context = _contextFactory.CreateDbContext();
 

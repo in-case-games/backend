@@ -2,12 +2,8 @@
 
 namespace CaseApplication.DomainLayer.Repositories
 {
-    public interface INewsRepository
+    public interface INewsRepository : IBaseRepository<News>
     {
-        public Task<News> Get(Guid id);
         public Task<IEnumerable<News>> GetAll();
-        public Task<bool> Create(News news);
-        public Task<bool> Update(News news);
-        public Task<bool> Delete(Guid id);
     }
 }

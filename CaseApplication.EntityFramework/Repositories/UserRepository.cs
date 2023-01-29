@@ -12,7 +12,17 @@ namespace CaseApplication.EntityFramework.Repositories
         {
             _contextFactory = context;
         }
-        public async Task<User> Get(string email)
+
+        public async Task<User> Get(Guid id)
+        {
+            using ApplicationDbContext _context = _contextFactory.CreateDbContext();
+
+            return await _context.User.FirstOrDefaultAsync(x => x.Id == id)
+                ?? throw new("There is no such user in the database, " +
+                "review what data comes from the api");
+        }
+
+        public async Task<User> GetByEmail(string email)
         {
             using ApplicationDbContext _context = _contextFactory.CreateDbContext();
 
@@ -29,14 +39,7 @@ namespace CaseApplication.EntityFramework.Repositories
                 ?? throw new("There is no such user in the database, " +
                 "review what data comes from the api");
         }
-        public async Task<User> GetById(Guid id)
-        {
-            using ApplicationDbContext _context = _contextFactory.CreateDbContext();
 
-            return await _context.User.FirstOrDefaultAsync(x => x.Id == id)
-                ?? throw new("There is no such user in the database, " +
-                "review what data comes from the api");
-        }
         public async Task<IEnumerable<User>> GetAll()
         {
             using ApplicationDbContext _context = _contextFactory.CreateDbContext();

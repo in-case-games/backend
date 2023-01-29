@@ -3,6 +3,7 @@ using CaseApplication.DomainLayer.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.ComponentModel;
 
 namespace CaseApplication.Api.Controllers
 {
@@ -42,15 +43,13 @@ namespace CaseApplication.Api.Controllers
             UserAdditionalInfo userAdditionalInfo = await _userInfoRepository.Get(userId);
             GameCase gameCase = await _gameCaseRepository.Get(caseId);
 
-            if (userAdditionalInfo.UserBalance < gameCase.GameCaseCost)
+            bool IsValidBalance = (userAdditionalInfo.UserBalance < gameCase.GameCaseCost);
+
+            if (IsValidBalance is false)
                 throw new Exception("Your balance is less than the cost of the case" +
                     "Top up your balance or open a case cheaper");
 
             //Update Balance Case and User
-            userAdditionalInfo.UserBalance -= gameCase.GameCaseCost;
-            gameCase.GameCaseBalance += gameCase.GameCaseCost;
-            await _userInfoRepository.Update(userAdditionalInfo);
-            await _gameCaseRepository.Update(gameCase);
 
             //Get All the chances of items from the case 
             List<CaseInventory> casesInventories = (await _caseInventoryRepository
@@ -115,7 +114,15 @@ namespace CaseApplication.Api.Controllers
 
             return winGameItem;
         }
-
+        private async void UpdateBalance(
+            UserAdditionalInfo userAdditionalInfo,
+            GameCase gameCase)
+        {
+            userAdditionalInfo.UserBalance -= gameCase.GameCaseCost;
+            gameCase.GameCaseBalance += gameCase.GameCaseCost;
+            await _userInfoRepository.Update(userAdditionalInfo);
+            await _gameCaseRepository.Update(gameCase);
+        }
         private static bool IsProfitCase(GameItem gameItem, GameCase gameCase)
         {
             decimal RevenuePrecentage = gameCase.GameCaseBalance * gameCase.RevenuePrecentage;

@@ -15,9 +15,15 @@ namespace CaseApplication.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<User> Get(string email, string hash)
+        public async Task<User> Get(Guid id, string hash)
         {
-            return await _userRepository.Get(email);
+            return await _userRepository.Get(id);
+        }
+
+        [HttpGet("GetByEmail")]
+        public async Task<User> GetByEmail(string email, string hash)
+        {
+            return await _userRepository.GetByEmail(email);
         }
 
         [HttpGet("GetByLogin")]

@@ -41,7 +41,7 @@ namespace CaseApplication.IntegrationTests.Api
             gameItems = gameItems.OrderByDescending(g => g.GameItemCost).ToList();
             gameItems.ForEach(x => winIndexes.Add(0));
 
-            for (int i = 1; i <= 100; i++)
+            for (int i = 1; i <= 1000; i++)
             {
                 //Open Cases
                 GameItem winItem = await _clientApi
