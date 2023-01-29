@@ -25,13 +25,14 @@ namespace CaseApplication.IntegrationTests.Api
         {
             await CreateDependencies();
 
+            //Search
             Guid caseId = (await _clientApi
                 .ResponseGet<List<GameCase>>("/GameCase/GetAll"))
-                .FirstOrDefault(x => x.GameCaseName == "Балансный")!
-                .Id;
+                .FirstOrDefault(x => x.GameCaseName == "Балансный")!.Id;
             Guid userId = (await _clientApi
                 .ResponseGet<User>($"/User/GetByLogin?login=testuser2&hash=123"))
                 .Id;
+
             List<GameItem> gameItems = await _clientApi
                 .ResponseGet<List<GameItem>>("/GameItem/GetAll");
 
@@ -42,14 +43,30 @@ namespace CaseApplication.IntegrationTests.Api
 
             for (int i = 1; i <= 1000; i++)
             {
+                //Open Cases
                 GameItem winItem = await _clientApi
                     .ResponseGet<GameItem>($"/Game?userId={userId}&caseId={caseId}");
-                GameCase gameCase = (await _clientApi
+                
+                //Counter wins
+                for (int j = 0; j < gameItems.Count; j++)
+                {
+                    if (gameItems[j].GameItemName == winItem.GameItemName)
+                        winIndexes[j]++;
+                }
+                /*
+                  _output.WriteLine($"{winItem.GameItemName} - {winItem.GameItemCost}\n" +
+                  $"Баланс: {gameCase.GameCaseBalance} Профит: {i * gameCase.GameCaseCost * gameCase.RevenuePrecentage}");
+                */
+            }
+
+            for(int i = 0; i<winIndexes.Count; i++)
+                _output.WriteLine($"{gameItems[i].GameItemName} - {winIndexes[i]}");
+            
+            GameCase gameCase = gameCase = (await _clientApi
                 .ResponseGet<List<GameCase>>("/GameCase/GetAll"))
                 .FirstOrDefault(x => x.GameCaseName == "Балансный")!;
-                _output.WriteLine($"{winItem.GameItemName} - {winItem.GameItemCost}\n" +
-                    $"Баланс: {gameCase.GameCaseBalance} Профит: {i * gameCase.GameCaseCost * gameCase.RevenuePrecentage}");
-            }
+            
+            _output.WriteLine($"Баланс: {gameCase.GameCaseBalance}");
 
             await DeleteDependencies();
         }
@@ -131,58 +148,60 @@ namespace CaseApplication.IntegrationTests.Api
                 .Id;
 
             List<Guid> itemsGuid = new();
+
             gameItems = await _clientApi.ResponseGet<List<GameItem>>("/GameItem/GetAll");
+            gameItems = gameItems.OrderByDescending(g => g.GameItemCost).ToList();
 
             foreach (GameItem item in gameItems)
                 itemsGuid.Add(item.Id);
 
             //Create CaseInventory
-            CaseInventory inventory1 = new() {
+            CaseInventory inventory1 = new()
+            {
                 GameCaseId = caseId,
                 GameItemId = gameItems[0].Id,
-                LossChance = 3200,
+                LossChance = 375,
                 NumberItemsCase = 1
             };
             CaseInventory inventory2 = new()
             {
                 GameCaseId = caseId,
                 GameItemId = gameItems[1].Id,
-                LossChance = 1500,
+                LossChance = 309,
                 NumberItemsCase = 1
             };
             CaseInventory inventory3 = new()
             {
                 GameCaseId = caseId,
                 GameItemId = gameItems[2].Id,
-                LossChance = 294,
+                LossChance = 356,
                 NumberItemsCase = 1
             };
             CaseInventory inventory4 = new()
             {
                 GameCaseId = caseId,
                 GameItemId = gameItems[3].Id,
-                LossChance = 250,
+                LossChance = 3989,
                 NumberItemsCase = 1
             };
-            CaseInventory inventory5 = new()
-            {
+            CaseInventory inventory5 = new() {
                 GameCaseId = caseId,
                 GameItemId = gameItems[4].Id,
-                LossChance = 1000,
+                LossChance = 10250,
                 NumberItemsCase = 1
             };
             CaseInventory inventory6 = new()
             {
                 GameCaseId = caseId,
                 GameItemId = gameItems[5].Id,
-                LossChance = 20886,
+                LossChance = 20545,
                 NumberItemsCase = 1
             };
             CaseInventory inventory7 = new()
             {
                 GameCaseId = caseId,
                 GameItemId = gameItems[6].Id,
-                LossChance = 20000,
+                LossChance = 20918,
                 NumberItemsCase = 1
             };
 
