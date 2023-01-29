@@ -1,7 +1,6 @@
 ﻿using CaseApplication.DomainLayer.Entities;
 using CaseApplication.WebClient.Services;
 using Microsoft.AspNetCore.Mvc.Testing;
-using System.Net;
 using Xunit.Abstractions;
 
 namespace CaseApplication.IntegrationTests.Api
@@ -21,7 +20,7 @@ namespace CaseApplication.IntegrationTests.Api
         }
 
         [Fact]
-        public async Task GameOpeningCasesSpeedApiTest()
+        public async Task GameOpeningCasesApiTest()
         {
             await CreateDependencies();
 
@@ -70,7 +69,6 @@ namespace CaseApplication.IntegrationTests.Api
 
             await DeleteDependencies();
         }
-
         private async Task CreateDependencies()
         {
             GameItem item1 = new()

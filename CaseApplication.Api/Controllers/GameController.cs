@@ -35,6 +35,7 @@ namespace CaseApplication.Api.Controllers
         }
 
         [HttpGet]
+
         public async Task<GameItem> GetOpeningCase(Guid userId, Guid caseId)
         {
             //Check Balance
@@ -58,9 +59,9 @@ namespace CaseApplication.Api.Controllers
                 .ToList();
 
             //Calling random
-            // 1)GameItem winGameItem = await RandomizeBySmallest(lossChances, casesInventories, gameCase);
+            // 1) GameItem winGameItem = await RandomizeBySmallest(lossChances, casesInventories, gameCase);
 
-            // 2)GameItem winGameItem = await RandomizeByLadder(lossChances, casesInventories, gameCase);
+            // 2) GameItem winGameItem = await RandomizeByLadder(lossChances, casesInventories, gameCase);
             GameItem winGameItem = await RandomizeByConstraints(casesInventories, gameCase.GameCaseBalance);
 
             //Update User and Case Balance
@@ -154,38 +155,25 @@ namespace CaseApplication.Api.Controllers
         }
         private async Task<GameItem> RandomizeByConstraints(List<CaseInventory> casesInventories, decimal balance)
         {
-            List<CaseInventory> caseInventories = new List<CaseInventory>();
-            List<int> lossChances = new List<int>();
-            List<Guid> gameItemsId = casesInventories
-                .Where(x => true)
-                .Select(x => x.GameItemId)
+            IEnumerable<GameItem> gameItems = await _gameItemRepository.GetAll();
+
+            gameItems = (from i in gameItems
+                         from j in casesInventories
+                         orderby i.GameItemCost descending
+                         where i.GameItemCost < balance
+                         && i.Id == j.GameItemId
+                         select i);
+
+            casesInventories = (from i in casesInventories
+                               from j in gameItems
+                               where i.GameItemId == j.Id
+                               select i).ToList();
+
+            List<int> lossChances = casesInventories
+                .Select(x => x.LossChance)
                 .ToList();
 
-            List<GameItem> gameItems = await GetFilterOutGameItem(gameItemsId, balance);
-            
-            foreach (GameItem gameItem in gameItems)
-            {
-                CaseInventory caseInventory = casesInventories.First(x => x.GameItemId == gameItem.Id);
-                lossChances.Add(caseInventory.LossChance);
-                caseInventories.Add(caseInventory);
-            }
-
-            Guid winGameItemId = caseInventories[Randomizer(lossChances)].GameItemId;
-
-            return gameItems.First(x => x.Id == winGameItemId);
-        }
-        private async Task<List<GameItem>> GetFilterOutGameItem(List<Guid> gameItemsId, decimal caseBalance)
-        {
-            List<GameItem> gameItems = new List<GameItem>();
-
-            for (int i = 0; i < gameItemsId.Count; i++)
-            {
-                GameItem gameItem = await _gameItemRepository.Get(gameItemsId[i]);
-                if (gameItem.GameItemCost <= caseBalance)
-                    gameItems.Add(gameItem);
-            }
-
-            return gameItems;
+            return gameItems.ElementAt(Randomizer(lossChances));
         }
         
         private async Task<UserAdditionalInfo> UpdateUserBalance(UserAdditionalInfo info, decimal value)
