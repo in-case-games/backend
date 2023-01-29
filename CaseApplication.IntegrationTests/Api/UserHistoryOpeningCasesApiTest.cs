@@ -136,7 +136,7 @@ namespace CaseApplication.IntegrationTests.Api
 
         private async Task<Guid> SearchIdUser(string email)
         {
-            User user = await _clientApi.ResponseGet<User>($"/User?email={email}&hash=123");
+            User user = await _clientApi.ResponseGet<User>($"/User/GetByEmail?email={email}&hash=123");
 
             return user.Id;
         }

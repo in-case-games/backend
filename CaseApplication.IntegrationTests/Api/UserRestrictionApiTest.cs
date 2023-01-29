@@ -17,7 +17,7 @@ namespace CaseApplication.IntegrationTests.Api
             User user = InitializeUser();
             await _response.ResponsePost<User>("/User", user);
             User currentUser = await _response
-                .ResponseGet<User>($"/User?email={user.UserEmail}&hash=123");
+                .ResponseGet<User>($"/User/GetByEmail?email={user.UserEmail}&hash=123");
             UserRestriction userRestriction = new UserRestriction()
             {
                 UserId = currentUser.Id,
