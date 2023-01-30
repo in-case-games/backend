@@ -16,7 +16,7 @@ namespace CaseApplication.EntityFramework.Repositories
 
         public async Task<CaseInventory> Get(Guid id)
         {
-            using ApplicationDbContext context = _contextFactory.CreateDbContext();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             CaseInventory? searchCaseInventory = await context
                 .CaseInventory
@@ -28,7 +28,7 @@ namespace CaseApplication.EntityFramework.Repositories
 
         public async Task<IEnumerable<CaseInventory>> GetAll(Guid caseId)
         {
-            using ApplicationDbContext context = _contextFactory.CreateDbContext();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             List<CaseInventory> caseInventories = await context
                 .CaseInventory
@@ -40,7 +40,7 @@ namespace CaseApplication.EntityFramework.Repositories
 
         public async Task<bool> Create(CaseInventory caseInventory)
         {
-            using ApplicationDbContext context = _contextFactory.CreateDbContext();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             await context.CaseInventory.AddAsync(caseInventory);
             await context.SaveChangesAsync();
@@ -49,7 +49,7 @@ namespace CaseApplication.EntityFramework.Repositories
         }
         public async Task<bool> Update(CaseInventory caseInventory)
         {
-            using ApplicationDbContext context = _contextFactory.CreateDbContext();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             CaseInventory? searchCaseInventory = await context
                 .CaseInventory
@@ -67,7 +67,7 @@ namespace CaseApplication.EntityFramework.Repositories
 
         public async Task<bool> Delete(Guid id)
         {
-            using ApplicationDbContext context = _contextFactory.CreateDbContext();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             CaseInventory? searchCaseInventory = await context
                 .CaseInventory

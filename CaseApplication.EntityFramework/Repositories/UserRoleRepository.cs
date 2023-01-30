@@ -14,7 +14,7 @@ namespace CaseApplication.EntityFramework.Repositories
         }
         public async Task<UserRole> Get(Guid id)
         {
-            using ApplicationDbContext context = _contextFactory.CreateDbContext();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             return await context.UserRole.FirstOrDefaultAsync(x => x.Id == id) ?? 
                 throw new("There is no such role in the database, " +
@@ -23,7 +23,7 @@ namespace CaseApplication.EntityFramework.Repositories
 
         public async Task<UserRole> GetByRole(UserRole role)
         {
-            using ApplicationDbContext context = _contextFactory.CreateDbContext();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             UserRole? searchRole = await context.UserRole.FirstOrDefaultAsync(x => x.Id == role.Id);
 
@@ -35,7 +35,7 @@ namespace CaseApplication.EntityFramework.Repositories
 
         public async Task<IEnumerable<UserRole>> GetAll()
         {
-            using ApplicationDbContext context = _contextFactory.CreateDbContext();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             List<UserRole> searchRoles = await context.UserRole.ToListAsync();
 
@@ -44,7 +44,7 @@ namespace CaseApplication.EntityFramework.Repositories
 
         public async Task<bool> Create(UserRole role)
         {
-            using ApplicationDbContext context = _contextFactory.CreateDbContext();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             role.Id = new Guid();
 
@@ -56,7 +56,7 @@ namespace CaseApplication.EntityFramework.Repositories
         
         public async Task<bool> Update(UserRole role)
         {
-            using ApplicationDbContext context = _contextFactory.CreateDbContext();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             UserRole? searchUserRole = await context.UserRole.FirstOrDefaultAsync(x => x.Id == role.Id);
 
@@ -71,7 +71,7 @@ namespace CaseApplication.EntityFramework.Repositories
 
         public async Task<bool> Delete(Guid id)
         {
-            using ApplicationDbContext context = _contextFactory.CreateDbContext();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             UserRole? searchUserRole = await context.UserRole.FirstOrDefaultAsync(x => x.Id == id);
 

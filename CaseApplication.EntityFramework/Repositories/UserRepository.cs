@@ -16,7 +16,7 @@ namespace CaseApplication.EntityFramework.Repositories
 
         public async Task<User> Get(Guid id)
         {
-            using ApplicationDbContext context = _contextFactory.CreateDbContext();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             return await context.User.FirstOrDefaultAsync(x => x.Id == id) ?? 
                 throw new("There is no such user in the database, " +
@@ -25,7 +25,7 @@ namespace CaseApplication.EntityFramework.Repositories
 
         public async Task<User> GetByEmail(string email)
         {
-            using ApplicationDbContext context = _contextFactory.CreateDbContext();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             return await context.User.FirstOrDefaultAsync(x => x.UserEmail == email) ?? 
                 throw new("There is no such user in the database, " +
@@ -34,7 +34,7 @@ namespace CaseApplication.EntityFramework.Repositories
 
         public async Task<User> GetByLogin(string login)
         {
-            using ApplicationDbContext context = _contextFactory.CreateDbContext();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             return await context.User.FirstOrDefaultAsync(x => x.UserLogin == login) ?? 
                 throw new("There is no such user in the database, " + 
@@ -43,14 +43,14 @@ namespace CaseApplication.EntityFramework.Repositories
 
         public async Task<IEnumerable<User>> GetAll()
         {
-            using ApplicationDbContext context = _contextFactory.CreateDbContext();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             return await context.User.ToListAsync();
         }
 
         public async Task<bool> Create(User user)
         {
-            using ApplicationDbContext context = _contextFactory.CreateDbContext();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             user.Id = Guid.NewGuid();
 
@@ -62,7 +62,7 @@ namespace CaseApplication.EntityFramework.Repositories
 
         public async Task<bool> Update(User user)
         {
-            using ApplicationDbContext context = _contextFactory.CreateDbContext();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             User? searchUser = await context.User.FirstOrDefaultAsync(x => x.Id == user.Id);
 
@@ -76,7 +76,7 @@ namespace CaseApplication.EntityFramework.Repositories
         }
         public async Task<bool> Delete(Guid id)
         {
-            using ApplicationDbContext context = _contextFactory.CreateDbContext();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             User? searchUser = await context.User.FirstOrDefaultAsync(x => x.Id == id);
 

@@ -15,7 +15,7 @@ namespace CaseApplication.EntityFramework.Repositories
 
         public async Task<GameItem> Get(Guid id)
         {
-            using ApplicationDbContext context = _contextFactory.CreateDbContext();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             GameItem? searchGameItem = await context.GameItem.FirstOrDefaultAsync(x => x.Id == id);
 
@@ -25,15 +25,15 @@ namespace CaseApplication.EntityFramework.Repositories
 
         public async Task<IEnumerable<GameItem>> GetAll()
         {
-            using ApplicationDbContext context = _contextFactory.CreateDbContext();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             return await context.GameItem.ToListAsync();
         }
 
         public async Task<bool> Create(GameItem item)
         {
-            using ApplicationDbContext context = _contextFactory.CreateDbContext();
-
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+            
             item.Id = Guid.NewGuid();
 
             await context.GameItem.AddAsync(item);
@@ -44,7 +44,7 @@ namespace CaseApplication.EntityFramework.Repositories
 
         public async Task<bool> Update(GameItem item)
         {
-            using ApplicationDbContext context = _contextFactory.CreateDbContext();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             GameItem? searchItem = await context.GameItem.FirstOrDefaultAsync(x => x.Id == item.Id);
 
@@ -59,7 +59,7 @@ namespace CaseApplication.EntityFramework.Repositories
 
         public async Task<bool> Delete(Guid id)
         {
-            using ApplicationDbContext context = _contextFactory.CreateDbContext();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             GameItem? searchItem = await context.GameItem.FirstOrDefaultAsync(x => x.Id == id);
 

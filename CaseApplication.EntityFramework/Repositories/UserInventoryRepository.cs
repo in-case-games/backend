@@ -14,7 +14,7 @@ namespace CaseApplication.EntityFramework.Repositories
         }
         public async Task<UserInventory> Get(Guid id)
         {
-            using ApplicationDbContext context = _contextFactory.CreateDbContext();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             UserInventory? userInventory = await context
                 .UserInventory
@@ -26,13 +26,13 @@ namespace CaseApplication.EntityFramework.Repositories
 
         public async Task<IEnumerable<UserInventory>> GetAll(Guid userId)
         {
-            using ApplicationDbContext context = _contextFactory.CreateDbContext();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             return await context.UserInventory.ToListAsync();
         }
         public async Task<bool> Create(UserInventory userInventory)
         {
-            using ApplicationDbContext context = _contextFactory.CreateDbContext();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             await context.UserInventory.AddAsync(userInventory);
             await context.SaveChangesAsync();
@@ -42,7 +42,7 @@ namespace CaseApplication.EntityFramework.Repositories
 
         public async Task<bool> Update(UserInventory userInventory)
         {
-            using ApplicationDbContext context = _contextFactory.CreateDbContext();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             UserInventory? searchUserInventory = await context
                 .UserInventory
@@ -59,7 +59,7 @@ namespace CaseApplication.EntityFramework.Repositories
 
         public async Task<bool> Delete(Guid id)
         {
-            using ApplicationDbContext context = _contextFactory.CreateDbContext();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             UserInventory? searchUserInventory = await context
                 .UserInventory

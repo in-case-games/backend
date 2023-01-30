@@ -14,7 +14,7 @@ namespace CaseApplication.EntityFramework.Repositories
 
         public async Task<UserAdditionalInfo> Get(Guid userId)
         {
-            using ApplicationDbContext context = _contextFactory.CreateDbContext();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             UserAdditionalInfo? searchInfo = await context
                 .UserAdditionalInfo
@@ -26,7 +26,7 @@ namespace CaseApplication.EntityFramework.Repositories
 
         public async Task<bool> Create(UserAdditionalInfo info)
         {
-            using ApplicationDbContext context = _contextFactory.CreateDbContext();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             UserRole? searchRole = await context.UserRole.FirstOrDefaultAsync(x => x.RoleName == "user");
 
@@ -42,7 +42,7 @@ namespace CaseApplication.EntityFramework.Repositories
         }
         public async Task<bool> Update(UserAdditionalInfo info)
         {
-            using ApplicationDbContext context = _contextFactory.CreateDbContext();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             UserAdditionalInfo? searchInfo = await context
                 .UserAdditionalInfo
@@ -61,7 +61,7 @@ namespace CaseApplication.EntityFramework.Repositories
 
         public async Task<bool> Delete(Guid id)
         {
-            using ApplicationDbContext context = _contextFactory.CreateDbContext();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             UserAdditionalInfo? searchInfo = await context
                 .UserAdditionalInfo

@@ -15,7 +15,7 @@ namespace CaseApplication.EntityFramework.Repositories
         }
         public async Task<PromocodeType> Get(Guid id)
         {
-            using ApplicationDbContext context = _contextFactory.CreateDbContext();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             return await context.PromocodeType
                     .FirstOrDefaultAsync(x => x.Id == id) ?? 
@@ -25,7 +25,7 @@ namespace CaseApplication.EntityFramework.Repositories
 
         public async Task<bool> Create(PromocodeType promocodeType)
         {
-            using ApplicationDbContext context = _contextFactory.CreateDbContext();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
         
             promocodeType.Id = Guid.NewGuid();
         
@@ -37,7 +37,7 @@ namespace CaseApplication.EntityFramework.Repositories
 
         public async Task<bool> Update(PromocodeType promocodeType)
         {
-            using ApplicationDbContext context = _contextFactory.CreateDbContext();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             PromocodeType? promoType = await context
                 .PromocodeType
@@ -54,7 +54,7 @@ namespace CaseApplication.EntityFramework.Repositories
 
         public async Task<bool> Delete(Guid id)
         {
-            using ApplicationDbContext context = _contextFactory.CreateDbContext();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             PromocodeType? promocodeType = await context
                 .PromocodeType
@@ -71,14 +71,14 @@ namespace CaseApplication.EntityFramework.Repositories
 
         public async Task<IEnumerable<PromocodeType>> GetAll()
         {
-            using ApplicationDbContext context = _contextFactory.CreateDbContext();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             return await context.PromocodeType.ToListAsync();
         }
 
         public async Task<PromocodeType> GetByName(string name)
         {
-            using ApplicationDbContext context = _contextFactory.CreateDbContext();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             return await context.PromocodeType
                     .FirstOrDefaultAsync(x => x.PromocodeTypeName == name) ?? 

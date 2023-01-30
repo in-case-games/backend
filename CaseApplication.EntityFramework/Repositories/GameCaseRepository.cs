@@ -16,7 +16,7 @@ namespace CaseApplication.EntityFramework.Repositories
 
         public async Task<GameCase> Get(Guid id)
         {
-            using ApplicationDbContext context = _contextFactory.CreateDbContext();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             GameCase? searchCase = await context.GameCase.FirstOrDefaultAsync(x => x.Id == id);
 
@@ -26,14 +26,14 @@ namespace CaseApplication.EntityFramework.Repositories
 
         public async Task<IEnumerable<GameCase>> GetAll()
         {
-            using ApplicationDbContext context = _contextFactory.CreateDbContext();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             return await context.GameCase.ToListAsync();
         }
 
         public async Task<IEnumerable<GameCase>> GetAllByGroupName(string name)
         {
-            using ApplicationDbContext context = _contextFactory.CreateDbContext();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
             IEnumerable<GameCase> gameCases = await context
                 .GameCase
                 .Where(x => x.GroupCasesName == name)
@@ -44,7 +44,7 @@ namespace CaseApplication.EntityFramework.Repositories
 
         public async Task<bool> Create(GameCase gameCase)
         {
-            using ApplicationDbContext context = _contextFactory.CreateDbContext();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             await context.GameCase.AddAsync(gameCase);
             await context.SaveChangesAsync();
@@ -54,7 +54,7 @@ namespace CaseApplication.EntityFramework.Repositories
 
         public async Task<bool> Update(GameCase gameCase)
         {
-            using ApplicationDbContext context = _contextFactory.CreateDbContext();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             GameCase? searchCase = await context.GameCase.FirstOrDefaultAsync(x => x.Id == gameCase.Id);
 
@@ -69,7 +69,7 @@ namespace CaseApplication.EntityFramework.Repositories
 
         public async Task<bool> Delete(Guid id)
         {
-            using ApplicationDbContext context = _contextFactory.CreateDbContext();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             GameCase? searchCase = await context.GameCase.FirstOrDefaultAsync(x => x.Id == id);
 

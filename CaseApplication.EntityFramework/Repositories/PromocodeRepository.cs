@@ -16,7 +16,7 @@ namespace CaseApplication.EntityFramework.Repositories
 
         public async Task<Promocode> Get(Guid id)
         {
-            using ApplicationDbContext context = _contextFactory.CreateDbContext();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
         
             return await context.Promocode.FirstOrDefaultAsync(x => x.Id == id) ?? 
                 throw new("There is no such promocode in the database, " +
@@ -25,7 +25,7 @@ namespace CaseApplication.EntityFramework.Repositories
 
         public async Task<Promocode> GetByName(string name)
         {
-            using ApplicationDbContext context = _contextFactory.CreateDbContext();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             return await context.Promocode.FirstOrDefaultAsync(x => x.PromocodeName == name) ?? 
                 throw new("There is no such promocode in the database, " +
@@ -34,7 +34,7 @@ namespace CaseApplication.EntityFramework.Repositories
 
         public async Task<bool> Create(Promocode promocode)
         {
-            using ApplicationDbContext context = _contextFactory.CreateDbContext();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             promocode.Id = new Guid();
 
@@ -46,7 +46,7 @@ namespace CaseApplication.EntityFramework.Repositories
 
         public async Task<bool> Update(Promocode promocode)
         {
-            using ApplicationDbContext context = _contextFactory.CreateDbContext();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             Promocode? searchPromocode = await context
                 .Promocode
@@ -64,7 +64,7 @@ namespace CaseApplication.EntityFramework.Repositories
 
         public async Task<bool> Delete(Guid id)
         {
-            using ApplicationDbContext context = _contextFactory.CreateDbContext();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             Promocode? searchPromocode = await context
                 .Promocode

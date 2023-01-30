@@ -16,7 +16,7 @@ namespace CaseApplication.EntityFramework.Repositories
 
         public async Task<News> Get(Guid id)
         {
-            using ApplicationDbContext context = _contextFactory.CreateDbContext();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             News? searchNews = await context.News.FirstOrDefaultAsync(x => x.Id == id);
 
@@ -26,14 +26,14 @@ namespace CaseApplication.EntityFramework.Repositories
 
         public async Task<IEnumerable<News>> GetAll()
         {
-            using ApplicationDbContext context = _contextFactory.CreateDbContext();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             return await context.News.ToListAsync();
         }
 
         public async Task<bool> Create(News news)
         {
-            using ApplicationDbContext context = _contextFactory.CreateDbContext();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             await context.News.AddAsync(news);
             await context.SaveChangesAsync();
@@ -43,7 +43,7 @@ namespace CaseApplication.EntityFramework.Repositories
 
         public async Task<bool> Update(News news)
         {
-            using ApplicationDbContext context = _contextFactory.CreateDbContext();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
             
             News? searchNews = await context.News.FirstOrDefaultAsync(x => x.Id == news.Id);
 
@@ -58,7 +58,7 @@ namespace CaseApplication.EntityFramework.Repositories
 
         public async Task<bool> Delete(Guid id)
         {
-            using ApplicationDbContext context = _contextFactory.CreateDbContext();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             News? searchNews = await context.News.FirstOrDefaultAsync(x => x.Id == id);
 

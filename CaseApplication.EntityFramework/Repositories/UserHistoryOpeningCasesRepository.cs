@@ -16,7 +16,7 @@ namespace CaseApplication.EntityFramework.Repositories
 
         public async Task<UserHistoryOpeningCases> Get(Guid id)
         {
-            using ApplicationDbContext context = _contextFactory.CreateDbContext();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             UserHistoryOpeningCases? searchUserHistory = await context
                 .UserHistoryOpeningCases
@@ -27,7 +27,7 @@ namespace CaseApplication.EntityFramework.Repositories
         }
         public async Task<IEnumerable<UserHistoryOpeningCases>> GetAll(Guid userId)
         {
-            using ApplicationDbContext context = _contextFactory.CreateDbContext();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             IEnumerable<UserHistoryOpeningCases> userHistoryOpeningCases = await context
                 .UserHistoryOpeningCases
@@ -39,7 +39,7 @@ namespace CaseApplication.EntityFramework.Repositories
 
         public async Task<bool> Create(UserHistoryOpeningCases userHistory)
         {
-            using ApplicationDbContext context = _contextFactory.CreateDbContext();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             await context.UserHistoryOpeningCases.AddAsync(userHistory);
             await context.SaveChangesAsync();
@@ -49,7 +49,7 @@ namespace CaseApplication.EntityFramework.Repositories
 
         public async Task<bool> Update(UserHistoryOpeningCases userHistory)
         {
-            using ApplicationDbContext context = _contextFactory.CreateDbContext();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             UserHistoryOpeningCases? searchUserHistory = await context
                 .UserHistoryOpeningCases
@@ -66,7 +66,7 @@ namespace CaseApplication.EntityFramework.Repositories
 
         public async Task<bool> Delete(Guid id)
         {
-            using ApplicationDbContext context = _contextFactory.CreateDbContext();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             UserHistoryOpeningCases? searchUserHistory = await context
                 .UserHistoryOpeningCases
@@ -83,7 +83,7 @@ namespace CaseApplication.EntityFramework.Repositories
 
         public async Task<bool> DeleteAll(Guid userId)
         {
-            using ApplicationDbContext context = _contextFactory.CreateDbContext();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             List<UserHistoryOpeningCases>? searchUserHistories = await context
                 .UserHistoryOpeningCases

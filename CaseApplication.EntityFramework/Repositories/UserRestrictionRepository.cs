@@ -15,7 +15,7 @@ namespace CaseApplication.EntityFramework.Repositories
         }
         public async Task<UserRestriction> Get(Guid id)
         {
-            using ApplicationDbContext context = _contextFactory.CreateDbContext();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             UserRestriction? searchRestriction = await context
                 .UserRestriction
@@ -27,14 +27,14 @@ namespace CaseApplication.EntityFramework.Repositories
         }
         public async Task<IEnumerable<UserRestriction>> GetAll(Guid userId)
         {
-            using ApplicationDbContext context = _contextFactory.CreateDbContext();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             return await context.UserRestriction.Where(x => x.UserId == userId).ToListAsync();
         }
 
         public async Task<bool> Create(UserRestriction userRestriction)
         {
-            using ApplicationDbContext context = _contextFactory.CreateDbContext();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             await context.UserRestriction.AddAsync(userRestriction);
             await context.SaveChangesAsync();
@@ -44,7 +44,7 @@ namespace CaseApplication.EntityFramework.Repositories
 
         public async Task<bool> Update(UserRestriction userRestriction)
         {
-            using ApplicationDbContext context = _contextFactory.CreateDbContext();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             UserRestriction? searchRestriction = await context
                 .UserRestriction
@@ -68,7 +68,7 @@ namespace CaseApplication.EntityFramework.Repositories
 
         public async Task<bool> Delete(Guid id)
         {
-            using ApplicationDbContext context = _contextFactory.CreateDbContext();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             UserRestriction? searchRestriction = await context
                 .UserRestriction

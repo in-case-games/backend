@@ -15,7 +15,7 @@ namespace CaseApplication.EntityFramework.Repositories
         }
         public async Task<PromocodesUsedByUser> Get(Guid id)
         {
-            using ApplicationDbContext context = _contextFactory.CreateDbContext();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
         
             return await context
                     .PromocodeUsedByUsers.FirstOrDefaultAsync(x => x.Id == id) ??
@@ -25,7 +25,7 @@ namespace CaseApplication.EntityFramework.Repositories
 
         public async Task<bool> Create(PromocodesUsedByUser promocodesUsedByUser)
         {
-            using ApplicationDbContext context = _contextFactory.CreateDbContext();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             promocodesUsedByUser.Id = new Guid();
         
@@ -37,7 +37,7 @@ namespace CaseApplication.EntityFramework.Repositories
 
         public async Task<bool> Update(PromocodesUsedByUser promocodesUsedByUser)
         {
-            using ApplicationDbContext context = _contextFactory.CreateDbContext();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             PromocodesUsedByUser? searchPromocode = await context
                 .PromocodeUsedByUsers
@@ -56,7 +56,7 @@ namespace CaseApplication.EntityFramework.Repositories
 
         public async Task<bool> Delete(Guid id)
         {
-            using ApplicationDbContext context = _contextFactory.CreateDbContext();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             PromocodesUsedByUser? promocodeType = await context
                 .PromocodeUsedByUsers
@@ -73,7 +73,7 @@ namespace CaseApplication.EntityFramework.Repositories
 
         public async Task<IEnumerable<PromocodesUsedByUser>> GetAll(Guid userId)
         {
-            using ApplicationDbContext context = _contextFactory.CreateDbContext();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
         
             return await context.PromocodeUsedByUsers
                     .Where(x => x.UserId == userId).ToListAsync() ?? 
