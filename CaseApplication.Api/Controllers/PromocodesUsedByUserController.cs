@@ -1,13 +1,17 @@
 ﻿using CaseApplication.DomainLayer.Repositories;
+using Microsoft.AspNetCore.Mvc;
 
-namespace CaseApplication.Api.Controllers;
-
-public class PromocodesUsedByUserController
+namespace CaseApplication.Api.Controllers 
 {
-    private readonly IPromocodeUserByUserRepository _promocodeUserByUserRepository;
-
-    public PromocodesUsedByUserController(IPromocodeUserByUserRepository promocodeUserByUserRepository)
+    [Route("[controller]")]
+    [ApiController]
+    public class PromocodesUsedByUserController
     {
-        _promocodeUserByUserRepository = promocodeUserByUserRepository;
+        private readonly IPromocodeUserByUserRepository _promocodeUserByUserRepository;
+
+        public PromocodesUsedByUserController(IPromocodeUserByUserRepository promocodeUserByUserRepository)
+        {
+            _promocodeUserByUserRepository = promocodeUserByUserRepository;
+        }
     }
 }

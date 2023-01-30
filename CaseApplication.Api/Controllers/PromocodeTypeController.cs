@@ -2,50 +2,53 @@
 using CaseApplication.DomainLayer.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
-namespace CaseApplication.Api.Controllers;
-
-public class PromocodeTypeController
+namespace CaseApplication.Api.Controllers
 {
-    private readonly IPromocodeTypeRepository _promocodeTypeRepository;
-
-    public PromocodeTypeController(IPromocodeTypeRepository promocodeTypeRepository)
+    [Route("[controller]")]
+    [ApiController]
+    public class PromocodeTypeController
     {
-        _promocodeTypeRepository = promocodeTypeRepository;
-    }
+        private readonly IPromocodeTypeRepository _promocodeTypeRepository;
 
-    [HttpGet]
-    public async Task<PromocodeType> Get(Guid id)
-    {
-        return await _promocodeTypeRepository.Get(id);
-    }
+        public PromocodeTypeController(IPromocodeTypeRepository promocodeTypeRepository)
+        {
+            _promocodeTypeRepository = promocodeTypeRepository;
+        }
 
-    [HttpGet("GetByName")]
-    public async Task<PromocodeType> GetByName(string name)
-    {
-        return await _promocodeTypeRepository.GetByName(name);
-    }
+        [HttpGet]
+        public async Task<PromocodeType> Get(Guid id)
+        {
+            return await _promocodeTypeRepository.Get(id);
+        }
 
-    [HttpGet("GetAll")]
-    public async Task<IEnumerable<PromocodeType>> GetAll()
-    {
-        return await _promocodeTypeRepository.GetAll();
-    }
+        [HttpGet("GetByName")]
+        public async Task<PromocodeType> GetByName(string name)
+        {
+            return await _promocodeTypeRepository.GetByName(name);
+        }
 
-    [HttpPost]
-    public async Task<bool> Create(PromocodeType promocodeType)
-    {
-        return await _promocodeTypeRepository.Create(promocodeType);
-    }
+        [HttpGet("GetAll")]
+        public async Task<IEnumerable<PromocodeType>> GetAll()
+        {
+            return await _promocodeTypeRepository.GetAll();
+        }
 
-    [HttpPut]
-    public async Task<bool> Update(PromocodeType promocodeType)
-    {
-        return await _promocodeTypeRepository.Update(promocodeType);
-    }
+        [HttpPost]
+        public async Task<bool> Create(PromocodeType promocodeType)
+        {
+            return await _promocodeTypeRepository.Create(promocodeType);
+        }
 
-    [HttpDelete]
-    public async Task<bool> Delete(Guid id)
-    {
-        return await _promocodeTypeRepository.Delete(id);
+        [HttpPut]
+        public async Task<bool> Update(PromocodeType promocodeType)
+        {
+            return await _promocodeTypeRepository.Update(promocodeType);
+        }
+
+        [HttpDelete]
+        public async Task<bool> Delete(Guid id)
+        {
+            return await _promocodeTypeRepository.Delete(id);
+        }
     }
 }
