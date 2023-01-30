@@ -8,7 +8,7 @@ namespace CaseApplication.Api.Controllers
     [ApiController]
     public class GameCaseController : ControllerBase
     {
-        public readonly IGameCaseRepository _gameCaseRepository;
+        private readonly IGameCaseRepository _gameCaseRepository;
 
         public GameCaseController(IGameCaseRepository gameCaseRepository)
         {

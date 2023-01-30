@@ -8,7 +8,7 @@ namespace CaseApplication.Api.Controllers
     [ApiController]
     public class CaseInventoryController : ControllerBase
     {
-        public readonly ICaseInventoryRepository _caseInventoryRepository;
+        private readonly ICaseInventoryRepository _caseInventoryRepository;
 
         public CaseInventoryController(ICaseInventoryRepository caseInventoryRepository)
         {

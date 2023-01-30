@@ -16,9 +16,9 @@ namespace CaseApplication.EntityFramework.Repositories
 
         public async Task<UserHistoryOpeningCases> Get(Guid id)
         {
-            using ApplicationDbContext _context = _contextFactory.CreateDbContext();
+            using ApplicationDbContext context = _contextFactory.CreateDbContext();
 
-            UserHistoryOpeningCases? searchUserHistory = await _context
+            UserHistoryOpeningCases? searchUserHistory = await context
                 .UserHistoryOpeningCases
                 .FirstOrDefaultAsync(x => x.Id == id);
 
@@ -27,9 +27,9 @@ namespace CaseApplication.EntityFramework.Repositories
         }
         public async Task<IEnumerable<UserHistoryOpeningCases>> GetAll(Guid userId)
         {
-            using ApplicationDbContext _context = _contextFactory.CreateDbContext();
+            using ApplicationDbContext context = _contextFactory.CreateDbContext();
 
-            IEnumerable<UserHistoryOpeningCases> userHistoryOpeningCases = await _context
+            IEnumerable<UserHistoryOpeningCases> userHistoryOpeningCases = await context
                 .UserHistoryOpeningCases
                 .Where(x => x.UserId == userId)
                 .ToListAsync();
@@ -39,17 +39,17 @@ namespace CaseApplication.EntityFramework.Repositories
 
         public async Task<bool> Create(UserHistoryOpeningCases userHistory)
         {
-            using ApplicationDbContext _context = _contextFactory.CreateDbContext();
+            using ApplicationDbContext context = _contextFactory.CreateDbContext();
 
-            GameCase? searchGameCase = await _context
+            GameCase? searchGameCase = await context
                 .GameCase
                 .FirstOrDefaultAsync(x => x.Id == userHistory.GameCaseId);
 
-            GameItem? searchGameItem = await _context
+            GameItem? searchGameItem = await context
                 .GameItem
                 .FirstOrDefaultAsync(x => x.Id == userHistory.GameItemId);
 
-            User? searchUser = await _context
+            User? searchUser = await context
                 .User
                 .FirstOrDefaultAsync(x => x.Id == userHistory.UserId);
 
@@ -60,59 +60,59 @@ namespace CaseApplication.EntityFramework.Repositories
             if (searchUser is null) throw new Exception("There is no such user, " +
                 "review what data comes from the api");
 
-            await _context.UserHistoryOpeningCases.AddAsync(userHistory);
-            await _context.SaveChangesAsync();
+            await context.UserHistoryOpeningCases.AddAsync(userHistory);
+            await context.SaveChangesAsync();
 
             return true;
         }
 
         public async Task<bool> Update(UserHistoryOpeningCases userHistory)
         {
-            using ApplicationDbContext _context = _contextFactory.CreateDbContext();
+            using ApplicationDbContext context = _contextFactory.CreateDbContext();
 
-            UserHistoryOpeningCases? searchUserHistory = await _context
+            UserHistoryOpeningCases? searchUserHistory = await context
                 .UserHistoryOpeningCases
                 .FirstOrDefaultAsync(x => x.Id == userHistory.Id);
 
             if (searchUserHistory is null) throw new Exception("There is no such user history, " +
                 "review what data comes from the api");
 
-            _context.Entry(searchUserHistory).CurrentValues.SetValues(userHistory);
-            await _context.SaveChangesAsync();
+            context.Entry(searchUserHistory).CurrentValues.SetValues(userHistory);
+            await context.SaveChangesAsync();
 
             return true;
         }
 
         public async Task<bool> Delete(Guid id)
         {
-            using ApplicationDbContext _context = _contextFactory.CreateDbContext();
+            using ApplicationDbContext context = _contextFactory.CreateDbContext();
 
-            UserHistoryOpeningCases? searchUserHistory = await _context
+            UserHistoryOpeningCases? searchUserHistory = await context
                 .UserHistoryOpeningCases
                 .FirstOrDefaultAsync(x => x.Id == id);
 
             if (searchUserHistory is null) throw new Exception("There is no such user history, " +
                 "review what data comes from the api");
 
-            _context.UserHistoryOpeningCases.Remove(searchUserHistory);
-            await _context.SaveChangesAsync();
+            context.UserHistoryOpeningCases.Remove(searchUserHistory);
+            await context.SaveChangesAsync();
 
             return true;
         }
 
         public async Task<bool> DeleteAll(Guid userId)
         {
-            using ApplicationDbContext _context = _contextFactory.CreateDbContext();
+            using ApplicationDbContext context = _contextFactory.CreateDbContext();
 
-            List<UserHistoryOpeningCases>? searchUserHistories = await _context
+            List<UserHistoryOpeningCases>? searchUserHistories = await context
                 .UserHistoryOpeningCases
                 .Where(x => x.UserId == userId).ToListAsync();
 
             if(searchUserHistories.Count == 0) throw new Exception("There is no such user history, " +
                 "review what data comes from the api");
 
-            _context.UserHistoryOpeningCases.RemoveRange(searchUserHistories);
-            await _context.SaveChangesAsync();
+            context.UserHistoryOpeningCases.RemoveRange(searchUserHistories);
+            await context.SaveChangesAsync();
 
             return true;
         }

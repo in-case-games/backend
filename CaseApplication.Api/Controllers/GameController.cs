@@ -1,7 +1,6 @@
 ﻿using CaseApplication.DomainLayer.Entities;
 using CaseApplication.DomainLayer.Repositories;
 using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
 
 namespace CaseApplication.Api.Controllers
 {
@@ -9,7 +8,7 @@ namespace CaseApplication.Api.Controllers
     [ApiController]
     public class GameController : ControllerBase
     {
-        private static readonly Random random = new();
+        private static readonly Random _random = new();
 
         private readonly IUserAdditionalInfoRepository _userInfoRepository;
         private readonly IGameCaseRepository _gameCaseRepository;
@@ -41,9 +40,9 @@ namespace CaseApplication.Api.Controllers
             UserAdditionalInfo userAdditionalInfo = await _userInfoRepository.Get(userId);
             GameCase gameCase = await _gameCaseRepository.Get(caseId);
 
-            bool IsValidBalance = (userAdditionalInfo.UserBalance >= gameCase.GameCaseCost);
+            bool isValidBalance = (userAdditionalInfo.UserBalance >= gameCase.GameCaseCost);
 
-            if (IsValidBalance is false)
+            if (isValidBalance is false)
                 throw new Exception("Your balance is less than the cost of the case" +
                     "Top up your balance or open a case cheaper");
 
@@ -135,7 +134,7 @@ namespace CaseApplication.Api.Controllers
                 startParts += lengthPart;
             }
             maxRandomValue = partsCaseChance[^1][1];
-            randomNumber = random.Next(0, maxRandomValue + 1);
+            randomNumber = _random.Next(0, maxRandomValue + 1);
 
             for (int i = 0; i < partsCaseChance.Count; i++)
             {

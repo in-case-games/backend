@@ -15,7 +15,7 @@ namespace CaseApplication.IntegrationTests.Api
         private async Task<UserRestriction> CreateUserRestriction()
         {
             User user = InitializeUser();
-            await _response.ResponsePost<User>("/User", user);
+            await _response.ResponsePost("/User", user);
             User currentUser = await _response
                 .ResponseGet<User>($"/User/GetByEmail?email={user.UserEmail}&hash=123");
             UserRestriction userRestriction = new UserRestriction()
@@ -48,7 +48,7 @@ namespace CaseApplication.IntegrationTests.Api
 
             // Act
             HttpStatusCode postStatusCode = await _response
-                .ResponsePost<UserRestriction>("/UserRestriction", templateUserRestriction);
+                .ResponsePost("/UserRestriction", templateUserRestriction);
 
             IEnumerable<UserRestriction> userRestrictions = await _response
                 .ResponseGet<List<UserRestriction>>
@@ -63,7 +63,7 @@ namespace CaseApplication.IntegrationTests.Api
                 ($"/UserRestriction/GetAll?userId={userRestriction.UserId}");
 
             HttpStatusCode putStatusCode = await _response
-                .ResponsePut<UserRestriction>("/UserRestriction", userRestriction);
+                .ResponsePut("/UserRestriction", userRestriction);
 
             HttpStatusCode deleteStatusCode = await _response
                 .ResponseDelete($"/UserRestriction?id={userRestriction.Id}");

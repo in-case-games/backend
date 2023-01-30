@@ -8,46 +8,43 @@ namespace CaseApplication.WebClient.Services
     public class ResponseHelper
     {
         private readonly HttpClient _httpClient;
-        private readonly string baseUrl = "https://localhost:7053";
+        private readonly string _baseUrl = "https://localhost:7053";
 
         public ResponseHelper()
         {
             _httpClient = new HttpClient();
         }
-
         public ResponseHelper(HttpClient httpClient)
         {
             _httpClient = httpClient;
         }
-
         public async Task<HttpStatusCode> ResponseGetStatusCode(string uri)
         {
-            HttpResponseMessage response = await _httpClient.GetAsync(baseUrl + uri);
+            HttpResponseMessage response = await _httpClient.GetAsync(_baseUrl + uri);
 
             return response.StatusCode;
         }
         public async Task<T> ResponseGet<T>(string uri) where T: new()
         {
-            HttpResponseMessage response = await _httpClient.GetAsync(baseUrl + uri);
+            HttpResponseMessage response = await _httpClient.GetAsync(_baseUrl + uri);
 
             if (!response.IsSuccessStatusCode)
             {
                 throw new Exception(
                     response.StatusCode.ToString() +
-                    response.RequestMessage!.ToString() + 
-                    response.Headers.ToString() +
-                    response.ReasonPhrase!.ToString() + 
-                    response.Content.ToString());
+                    response.RequestMessage! + 
+                    response.Headers +
+                    response.ReasonPhrase! + 
+                    response.Content);
             }
 
             return await response.Content.ReadFromJsonAsync<T>(
                     new JsonSerializerOptions(JsonSerializerDefaults.Web)) ?? new();
         }
-
         public async Task<HttpStatusCode> ResponsePost<T>(string uri, T entity) where T: BaseEntity
         {
             JsonContent json = JsonContent.Create(entity);
-            HttpResponseMessage response = await _httpClient.PostAsync(baseUrl + uri, json);
+            HttpResponseMessage response = await _httpClient.PostAsync(_baseUrl + uri, json);
 
             return response.StatusCode;
         }
@@ -55,13 +52,13 @@ namespace CaseApplication.WebClient.Services
         public async Task<HttpStatusCode> ResponsePut<T>(string uri, T entity) where T: BaseEntity
         {
             JsonContent json = JsonContent.Create(entity);
-            HttpResponseMessage response = await _httpClient.PutAsync(baseUrl + uri, json);
+            HttpResponseMessage response = await _httpClient.PutAsync(_baseUrl + uri, json);
 
             return response.StatusCode;
         }
         public async Task<HttpStatusCode> ResponseDelete(string uri)
         {
-            HttpResponseMessage response = await _httpClient.DeleteAsync(baseUrl + uri);
+            HttpResponseMessage response = await _httpClient.DeleteAsync(_baseUrl + uri);
 
             return response.StatusCode;
         }

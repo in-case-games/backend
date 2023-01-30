@@ -15,9 +15,9 @@ namespace CaseApplication.EntityFramework.Repositories
         }
         public async Task<UserRestriction> Get(Guid id)
         {
-            using ApplicationDbContext _context = _contextFactory.CreateDbContext();
+            using ApplicationDbContext context = _contextFactory.CreateDbContext();
 
-            UserRestriction? searchRestriction = await _context
+            UserRestriction? searchRestriction = await context
                 .UserRestriction
                 .FirstOrDefaultAsync(x => x.Id == id);
             
@@ -27,36 +27,36 @@ namespace CaseApplication.EntityFramework.Repositories
         }
         public async Task<IEnumerable<UserRestriction>> GetAll(Guid userId)
         {
-            using ApplicationDbContext _context = _contextFactory.CreateDbContext();
+            using ApplicationDbContext context = _contextFactory.CreateDbContext();
 
-            return await _context.UserRestriction.Where(x => x.UserId == userId).ToListAsync();
+            return await context.UserRestriction.Where(x => x.UserId == userId).ToListAsync();
         }
 
         public async Task<bool> Create(UserRestriction userRestriction)
         {
-            using ApplicationDbContext _context = _contextFactory.CreateDbContext();
+            using ApplicationDbContext context = _contextFactory.CreateDbContext();
 
-            User? searchUser = await _context
+            User? searchUser = await context
                 .User
                 .FirstOrDefaultAsync(x => x.Id == userRestriction.UserId);
             
             if (searchUser is null) throw new Exception("There is no such user in the database, " +
                 "review what data comes from the api");
 
-            await _context.UserRestriction.AddAsync(userRestriction);
-            await _context.SaveChangesAsync();
+            await context.UserRestriction.AddAsync(userRestriction);
+            await context.SaveChangesAsync();
 
             return true;
         }
 
         public async Task<bool> Update(UserRestriction userRestriction)
         {
-            using ApplicationDbContext _context = _contextFactory.CreateDbContext();
+            using ApplicationDbContext context = _contextFactory.CreateDbContext();
 
-            UserRestriction? searchRestriction = await _context
+            UserRestriction? searchRestriction = await context
                 .UserRestriction
                 .FirstOrDefaultAsync(x => x.Id == userRestriction.Id);
-            User? searchUser = await _context
+            User? searchUser = await context
                 .User
                 .FirstOrDefaultAsync(x => x.Id == userRestriction.UserId);
 
@@ -67,17 +67,17 @@ namespace CaseApplication.EntityFramework.Repositories
                 throw new Exception("There is no such user in the database, " +
                 "review what data comes from the api");
 
-            _context.Entry(searchRestriction).CurrentValues.SetValues(userRestriction);
-            await _context.SaveChangesAsync();
+            context.Entry(searchRestriction).CurrentValues.SetValues(userRestriction);
+            await context.SaveChangesAsync();
 
             return true;
         }
 
         public async Task<bool> Delete(Guid id)
         {
-            using ApplicationDbContext _context = _contextFactory.CreateDbContext();
+            using ApplicationDbContext context = _contextFactory.CreateDbContext();
 
-            UserRestriction? searchRestriction = await _context
+            UserRestriction? searchRestriction = await context
                 .UserRestriction
                 .FirstOrDefaultAsync(x => x.Id == id);
 
@@ -85,8 +85,8 @@ namespace CaseApplication.EntityFramework.Repositories
                 throw new Exception("There is no such user restriction in the database, " +
                 "review what data comes from the api");
 
-            _context.UserRestriction.Remove(searchRestriction);
-            await _context.SaveChangesAsync();
+            context.UserRestriction.Remove(searchRestriction);
+            await context.SaveChangesAsync();
 
             return true;
         }

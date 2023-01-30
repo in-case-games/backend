@@ -14,9 +14,9 @@ namespace CaseApplication.EntityFramework.Repositories
         }
         public async Task<UserInventory> Get(Guid id)
         {
-            using ApplicationDbContext _context = _contextFactory.CreateDbContext();
+            using ApplicationDbContext context = _contextFactory.CreateDbContext();
 
-            UserInventory? userInventory = await _context
+            UserInventory? userInventory = await context
                 .UserInventory
                 .FirstOrDefaultAsync(x => x.Id == id);
 
@@ -26,19 +26,19 @@ namespace CaseApplication.EntityFramework.Repositories
 
         public async Task<IEnumerable<UserInventory>> GetAll(Guid userId)
         {
-            using ApplicationDbContext _context = _contextFactory.CreateDbContext();
+            using ApplicationDbContext context = _contextFactory.CreateDbContext();
 
-            return await _context.UserInventory.ToListAsync();
+            return await context.UserInventory.ToListAsync();
         }
         public async Task<bool> Create(UserInventory userInventory)
         {
-            using ApplicationDbContext _context = _contextFactory.CreateDbContext();
+            using ApplicationDbContext context = _contextFactory.CreateDbContext();
 
-            User? searchUser = await _context
+            User? searchUser = await context
                 .User
                 .FirstOrDefaultAsync(x => x.Id == userInventory.UserId);
 
-            GameItem? searchItem = await _context
+            GameItem? searchItem = await context
                 .GameItem
                 .FirstOrDefaultAsync(x => x.Id == userInventory.GameItemId);
             
@@ -47,42 +47,42 @@ namespace CaseApplication.EntityFramework.Repositories
             if (searchItem is null) throw new Exception("There is no such game item, " +
                 "review what data comes from the api");
 
-            await _context.UserInventory.AddAsync(userInventory);
-            await _context.SaveChangesAsync();
+            await context.UserInventory.AddAsync(userInventory);
+            await context.SaveChangesAsync();
 
             return true;
         }
 
         public async Task<bool> Update(UserInventory userInventory)
         {
-            using ApplicationDbContext _context = _contextFactory.CreateDbContext();
+            using ApplicationDbContext context = _contextFactory.CreateDbContext();
 
-            UserInventory? searchUserInventory = await _context
+            UserInventory? searchUserInventory = await context
                 .UserInventory
                 .FirstOrDefaultAsync(x => x.Id == userInventory.Id);
 
             if(searchUserInventory is null) throw new Exception("There is no such user inventory, " +
                 "review what data comes from the api");
 
-            _context.Entry(searchUserInventory).CurrentValues.SetValues(userInventory);
-            await _context.SaveChangesAsync();
+            context.Entry(searchUserInventory).CurrentValues.SetValues(userInventory);
+            await context.SaveChangesAsync();
 
             return true;
         }
 
         public async Task<bool> Delete(Guid id)
         {
-            using ApplicationDbContext _context = _contextFactory.CreateDbContext();
+            using ApplicationDbContext context = _contextFactory.CreateDbContext();
 
-            UserInventory? searchUserInventory = await _context
+            UserInventory? searchUserInventory = await context
                 .UserInventory
                 .FirstOrDefaultAsync(x => x.Id == id);
 
             if (searchUserInventory is null) throw new Exception("There is no such user inventory, " +
                 "review what data comes from the api");
 
-            _context.UserInventory.Remove(searchUserInventory);
-            await _context.SaveChangesAsync();
+            context.UserInventory.Remove(searchUserInventory);
+            await context.SaveChangesAsync();
 
             return true;
         }

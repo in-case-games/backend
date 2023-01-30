@@ -14,20 +14,20 @@ namespace CaseApplication.EntityFramework.Repositories
         }
         public async Task<UserRole> Get(Guid id)
         {
-            using ApplicationDbContext _context = _contextFactory.CreateDbContext();
+            using ApplicationDbContext context = _contextFactory.CreateDbContext();
 
-            return await _context.UserRole.FirstOrDefaultAsync(x => x.Id == id)
+            return await context.UserRole.FirstOrDefaultAsync(x => x.Id == id)
                 ?? throw new("There is no such role in the database, " +
                 "review what data comes from the api");
         }
 
         public async Task<UserRole> GetByRole(UserRole role)
         {
-            using ApplicationDbContext _context = _contextFactory.CreateDbContext();
+            using ApplicationDbContext context = _contextFactory.CreateDbContext();
 
-            UserRole? searchRole = await _context.UserRole.FirstOrDefaultAsync(x => x.Id == role.Id);
+            UserRole? searchRole = await context.UserRole.FirstOrDefaultAsync(x => x.Id == role.Id);
 
-            searchRole ??= await _context.UserRole.FirstOrDefaultAsync(x => x.RoleName == role.RoleName);
+            searchRole ??= await context.UserRole.FirstOrDefaultAsync(x => x.RoleName == role.RoleName);
 
             return searchRole ?? throw new Exception("There is no such role in the database, " +
                 "review what data comes from the api");
@@ -35,55 +35,55 @@ namespace CaseApplication.EntityFramework.Repositories
 
         public async Task<IEnumerable<UserRole>> GetAll()
         {
-            using ApplicationDbContext _context = _contextFactory.CreateDbContext();
+            using ApplicationDbContext context = _contextFactory.CreateDbContext();
 
-            List<UserRole> searchRoles = await _context.UserRole.ToListAsync();
+            List<UserRole> searchRoles = await context.UserRole.ToListAsync();
 
             return searchRoles;
         }
 
         public async Task<bool> Create(UserRole role)
         {
-            using ApplicationDbContext _context = _contextFactory.CreateDbContext();
+            using ApplicationDbContext context = _contextFactory.CreateDbContext();
 
-            UserRole? searchRole = await _context.UserRole.FirstOrDefaultAsync(x => x.RoleName == role.RoleName);
+            UserRole? searchRole = await context.UserRole.FirstOrDefaultAsync(x => x.RoleName == role.RoleName);
             if(searchRole is not null) throw new Exception("There is such role in the database, " +
                 "review what data comes from the api");
 
             role.Id = new Guid();
 
-            await _context.UserRole.AddAsync(role);
-            await _context.SaveChangesAsync();
+            await context.UserRole.AddAsync(role);
+            await context.SaveChangesAsync();
 
             return true;
         }
         
         public async Task<bool> Update(UserRole role)
         {
-            using ApplicationDbContext _context = _contextFactory.CreateDbContext();
+            using ApplicationDbContext context = _contextFactory.CreateDbContext();
 
-            UserRole? searchUserRole = await _context.UserRole.FirstOrDefaultAsync(x => x.Id == role.Id);
+            UserRole? searchUserRole = await context.UserRole.FirstOrDefaultAsync(x => x.Id == role.Id);
 
             if (searchUserRole is null) throw new Exception("There is no such role in the database, " +
                 "review what data comes from the api");
 
-            _context.Entry(searchUserRole).CurrentValues.SetValues(role);
-            await _context.SaveChangesAsync();
+            context.Entry(searchUserRole).CurrentValues.SetValues(role);
+            await context.SaveChangesAsync();
 
             return true;
         }
 
         public async Task<bool> Delete(Guid id)
         {
-            using ApplicationDbContext _context = _contextFactory.CreateDbContext();
+            using ApplicationDbContext context = _contextFactory.CreateDbContext();
 
-            UserRole? searchUserRole = await _context.UserRole.FirstOrDefaultAsync(x => x.Id == id);
+            UserRole? searchUserRole = await context.UserRole.FirstOrDefaultAsync(x => x.Id == id);
 
             if (searchUserRole is null) throw new Exception("There is no such role in the database, " +
                 "review what data comes from the api");
 
-            _context.UserRole.Remove(searchUserRole);
-            await _context.SaveChangesAsync();
+            context.UserRole.Remove(searchUserRole);
+            await context.SaveChangesAsync();
 
             return true;
         }

@@ -15,7 +15,7 @@ namespace CaseApplication.IntegrationTests.Api
         private async Task<UserInventory> InitializeUserInventory()
         {
             User user = InitializeUser();
-            await _response.ResponsePost<User>("/User", user);
+            await _response.ResponsePost("/User", user);
             User currentUser = await _response
                 .ResponseGet<User>($"/User/GetByEmail?email={user.UserEmail}&hash=123");
 
@@ -26,7 +26,7 @@ namespace CaseApplication.IntegrationTests.Api
                 GameItemName = GenerateString(),
                 GameItemRarity = GenerateString()
             };
-            await _response.ResponsePost<GameItem>("/GameItem", gameItem);
+            await _response.ResponsePost("/GameItem", gameItem);
             IEnumerable<GameItem> gameItems = await _response
                 .ResponseGet<List<GameItem>>("/GameItem/GetAll");
             GameItem currentGameItem = gameItems.FirstOrDefault(x => x.GameItemName == gameItem.GameItemName)!;
@@ -67,7 +67,7 @@ namespace CaseApplication.IntegrationTests.Api
 
             // Act
             HttpStatusCode postStatusCode = await _response
-                .ResponsePost<UserInventory>("/UserInventory", templateUserInventory);
+                .ResponsePost("/UserInventory", templateUserInventory);
 
             IEnumerable<UserInventory> userInventories = await _response
                 .ResponseGet<List<UserInventory>>
@@ -84,7 +84,7 @@ namespace CaseApplication.IntegrationTests.Api
                 ($"/UserInventory/GetAll?userId={templateUserInventory.UserId}");
 
             HttpStatusCode putStatusCode = await _response
-                .ResponsePut<UserInventory>("/UserInventory", userInventory);
+                .ResponsePut("/UserInventory", userInventory);
 
             HttpStatusCode deleteStatusCode = await _response
                 .ResponseDelete($"/UserInventory?id={userInventory.Id}");

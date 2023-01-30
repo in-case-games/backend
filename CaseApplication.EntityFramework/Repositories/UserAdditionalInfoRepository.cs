@@ -14,9 +14,9 @@ namespace CaseApplication.EntityFramework.Repositories
 
         public async Task<UserAdditionalInfo> Get(Guid userId)
         {
-            using ApplicationDbContext _context = _contextFactory.CreateDbContext();
+            using ApplicationDbContext context = _contextFactory.CreateDbContext();
 
-            UserAdditionalInfo? searchInfo = await _context
+            UserAdditionalInfo? searchInfo = await context
                 .UserAdditionalInfo
                 .FirstOrDefaultAsync(x => x.UserId == userId);
 
@@ -26,10 +26,10 @@ namespace CaseApplication.EntityFramework.Repositories
 
         public async Task<bool> Create(UserAdditionalInfo info)
         {
-            using ApplicationDbContext _context = _contextFactory.CreateDbContext();
+            using ApplicationDbContext context = _contextFactory.CreateDbContext();
 
-            User? searchUser = await _context.User.FirstOrDefaultAsync(x => x.Id == info.UserId);
-            UserRole? searchRole = await _context.UserRole.FirstOrDefaultAsync(x => x.RoleName == "user");
+            User? searchUser = await context.User.FirstOrDefaultAsync(x => x.Id == info.UserId);
+            UserRole? searchRole = await context.UserRole.FirstOrDefaultAsync(x => x.RoleName == "user");
 
             if (searchRole is null) throw new Exception("Add standard roles to the database");
             if (searchUser is null) {
@@ -40,16 +40,16 @@ namespace CaseApplication.EntityFramework.Repositories
             info.Id = Guid.NewGuid();
             info.UserRoleId = searchRole!.Id;
 
-            await _context.UserAdditionalInfo.AddAsync(info);
-            await _context.SaveChangesAsync();
+            await context.UserAdditionalInfo.AddAsync(info);
+            await context.SaveChangesAsync();
 
             return true;
         }
         public async Task<bool> Update(UserAdditionalInfo info)
         {
-            using ApplicationDbContext _context = _contextFactory.CreateDbContext();
+            using ApplicationDbContext context = _contextFactory.CreateDbContext();
 
-            UserAdditionalInfo? searchInfo = await _context
+            UserAdditionalInfo? searchInfo = await context
                 .UserAdditionalInfo
                 .FirstOrDefaultAsync(x => x.UserId == info.UserId);
 
@@ -58,17 +58,17 @@ namespace CaseApplication.EntityFramework.Repositories
                     "review what data comes from the api");
             }
 
-            _context.Entry(searchInfo).CurrentValues.SetValues(info);
-            await _context.SaveChangesAsync();
+            context.Entry(searchInfo).CurrentValues.SetValues(info);
+            await context.SaveChangesAsync();
 
             return true;
         }
 
         public async Task<bool> Delete(Guid id)
         {
-            using ApplicationDbContext _context = _contextFactory.CreateDbContext();
+            using ApplicationDbContext context = _contextFactory.CreateDbContext();
 
-            UserAdditionalInfo? searchInfo = await _context
+            UserAdditionalInfo? searchInfo = await context
                 .UserAdditionalInfo
                 .FirstOrDefaultAsync(x => x.Id == id);
 
@@ -77,8 +77,8 @@ namespace CaseApplication.EntityFramework.Repositories
                     "review what data comes from the api");
             }
 
-            _context.UserAdditionalInfo.Remove(searchInfo);
-            await _context.SaveChangesAsync();
+            context.UserAdditionalInfo.Remove(searchInfo);
+            await context.SaveChangesAsync();
             
             return true;
         }

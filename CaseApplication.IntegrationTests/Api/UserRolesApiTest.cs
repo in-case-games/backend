@@ -30,7 +30,7 @@ namespace CaseApplication.IntegrationTests.Api
 
             // Act
             HttpStatusCode postStatusCode = await _response
-                .ResponsePost<UserRole>("/Role", templateUserRole);
+                .ResponsePost("/Role", templateUserRole);
 
             UserRole userRole = await _response
                 .ResponseGet<UserRole>($"/Role/GetByRole?roleName={templateUserRole.RoleName}");
@@ -41,7 +41,7 @@ namespace CaseApplication.IntegrationTests.Api
                 .ResponseGetStatusCode("/Role/GetAll");
 
             HttpStatusCode putStatusCode = await _response
-                .ResponsePut<UserRole>("/Role", userRole);
+                .ResponsePut("/Role", userRole);
 
             HttpStatusCode deleteStatusCode = await _response
                 .ResponseDelete($"/Role?id={userRole.Id}");

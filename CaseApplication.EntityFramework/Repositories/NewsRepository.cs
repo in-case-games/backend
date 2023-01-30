@@ -16,9 +16,9 @@ namespace CaseApplication.EntityFramework.Repositories
 
         public async Task<News> Get(Guid id)
         {
-            using ApplicationDbContext _context = _contextFactory.CreateDbContext();
+            using ApplicationDbContext context = _contextFactory.CreateDbContext();
 
-            News? searchNews = await _context.News.FirstOrDefaultAsync(x => x.Id == id);
+            News? searchNews = await context.News.FirstOrDefaultAsync(x => x.Id == id);
 
             return searchNews ?? throw new("There is no such news in the database, " +
                 "review what data comes from the api");
@@ -26,47 +26,47 @@ namespace CaseApplication.EntityFramework.Repositories
 
         public async Task<IEnumerable<News>> GetAll()
         {
-            using ApplicationDbContext _context = _contextFactory.CreateDbContext();
+            using ApplicationDbContext context = _contextFactory.CreateDbContext();
 
-            return await _context.News.ToListAsync();
+            return await context.News.ToListAsync();
         }
 
         public async Task<bool> Create(News news)
         {
-            using ApplicationDbContext _context = _contextFactory.CreateDbContext();
+            using ApplicationDbContext context = _contextFactory.CreateDbContext();
 
-            await _context.News.AddAsync(news);
-            await _context.SaveChangesAsync();
+            await context.News.AddAsync(news);
+            await context.SaveChangesAsync();
 
             return true;
         }
 
         public async Task<bool> Update(News news)
         {
-            using ApplicationDbContext _context = _contextFactory.CreateDbContext();
+            using ApplicationDbContext context = _contextFactory.CreateDbContext();
             
-            News? searchNews = await _context.News.FirstOrDefaultAsync(x => x.Id == news.Id);
+            News? searchNews = await context.News.FirstOrDefaultAsync(x => x.Id == news.Id);
 
             if(searchNews is null) throw new("There is no such news in the database, " +
                 "review what data comes from the api");
 
-            _context.Entry(searchNews).CurrentValues.SetValues(news);
-            await _context.SaveChangesAsync();
+            context.Entry(searchNews).CurrentValues.SetValues(news);
+            await context.SaveChangesAsync();
 
             return true;
         }
 
         public async Task<bool> Delete(Guid id)
         {
-            using ApplicationDbContext _context = _contextFactory.CreateDbContext();
+            using ApplicationDbContext context = _contextFactory.CreateDbContext();
 
-            News? searchNews = await _context.News.FirstOrDefaultAsync(x => x.Id == id);
+            News? searchNews = await context.News.FirstOrDefaultAsync(x => x.Id == id);
 
             if (searchNews is null) throw new("There is no such news in the database, " +
                 "review what data comes from the api");
 
-            _context.Remove(searchNews);
-            await _context.SaveChangesAsync();
+            context.Remove(searchNews);
+            await context.SaveChangesAsync();
 
             return true;
         }

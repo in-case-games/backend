@@ -16,9 +16,9 @@ namespace CaseApplication.EntityFramework.Repositories
 
         public async Task<CaseInventory> Get(Guid id)
         {
-            using ApplicationDbContext _context = _contextFactory.CreateDbContext();
+            using ApplicationDbContext context = _contextFactory.CreateDbContext();
 
-            CaseInventory? searchCaseInventory = await _context
+            CaseInventory? searchCaseInventory = await context
                 .CaseInventory
                 .FirstOrDefaultAsync(x => x.Id == id);
 
@@ -28,9 +28,9 @@ namespace CaseApplication.EntityFramework.Repositories
 
         public async Task<IEnumerable<CaseInventory>> GetAll(Guid caseId)
         {
-            using ApplicationDbContext _context = _contextFactory.CreateDbContext();
+            using ApplicationDbContext context = _contextFactory.CreateDbContext();
 
-            List<CaseInventory> caseInventories = await _context
+            List<CaseInventory> caseInventories = await context
                 .CaseInventory
                 .Where(x => x.GameCaseId == caseId)
                 .ToListAsync();
@@ -40,13 +40,13 @@ namespace CaseApplication.EntityFramework.Repositories
 
         public async Task<bool> Create(CaseInventory caseInventory)
         {
-            using ApplicationDbContext _context = _contextFactory.CreateDbContext();
+            using ApplicationDbContext context = _contextFactory.CreateDbContext();
 
-            GameCase? searchGameCase = await _context
+            GameCase? searchGameCase = await context
                 .GameCase
                 .FirstOrDefaultAsync(x => x.Id == caseInventory.GameCaseId);
 
-            GameItem? searchGameItem = await _context
+            GameItem? searchGameItem = await context
                 .GameItem
                 .FirstOrDefaultAsync(x => x.Id == caseInventory.GameItemId);
 
@@ -55,16 +55,16 @@ namespace CaseApplication.EntityFramework.Repositories
             if (searchGameItem is null) throw new Exception("There is no such item, " +
                 "review what data comes from the api");
 
-            await _context.CaseInventory.AddAsync(caseInventory);
-            await _context.SaveChangesAsync();
+            await context.CaseInventory.AddAsync(caseInventory);
+            await context.SaveChangesAsync();
 
             return true;
         }
         public async Task<bool> Update(CaseInventory caseInventory)
         {
-            using ApplicationDbContext _context = _contextFactory.CreateDbContext();
+            using ApplicationDbContext context = _contextFactory.CreateDbContext();
 
-            CaseInventory? searchCaseInventory = await _context
+            CaseInventory? searchCaseInventory = await context
                 .CaseInventory
                 .FirstOrDefaultAsync(x => x.Id == caseInventory.Id);
 
@@ -73,17 +73,17 @@ namespace CaseApplication.EntityFramework.Repositories
                     "review what data comes from the api");
             }
 
-            _context.Entry(searchCaseInventory).CurrentValues.SetValues(caseInventory);
-            await _context.SaveChangesAsync();
+            context.Entry(searchCaseInventory).CurrentValues.SetValues(caseInventory);
+            await context.SaveChangesAsync();
 
             return true;
         }
 
         public async Task<bool> Delete(Guid id)
         {
-            using ApplicationDbContext _context = _contextFactory.CreateDbContext();
+            using ApplicationDbContext context = _contextFactory.CreateDbContext();
 
-            CaseInventory? searchCaseInventory = await _context
+            CaseInventory? searchCaseInventory = await context
                 .CaseInventory
                 .FirstOrDefaultAsync(x => x.Id == id);
 
@@ -92,8 +92,8 @@ namespace CaseApplication.EntityFramework.Repositories
                     "review what data comes from the api");
             }
 
-            _context.CaseInventory.Remove(searchCaseInventory);
-            await _context.SaveChangesAsync();
+            context.CaseInventory.Remove(searchCaseInventory);
+            await context.SaveChangesAsync();
 
             return true;
         }

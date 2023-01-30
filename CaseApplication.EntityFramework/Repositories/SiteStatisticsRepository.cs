@@ -15,9 +15,9 @@ namespace CaseApplication.EntityFramework.Repositories
         }
         public async Task<SiteStatistics> Get()
         {
-            using ApplicationDbContext _context = _contextFactory.CreateDbContext();
+            using ApplicationDbContext context = _contextFactory.CreateDbContext();
 
-            SiteStatistics? siteStatistics = await _context
+            SiteStatistics? siteStatistics = await context
                 .SiteStatistics
                 .FirstAsync();
 

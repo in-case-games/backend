@@ -15,7 +15,7 @@ namespace CaseApplication.IntegrationTests.Api
         private async Task<UserAdditionalInfo> CreateUserAdditionalInfo()
         {
             User user = InitializeUser();
-            await _response.ResponsePost<User>("/User", user);
+            await _response.ResponsePost("/User", user);
             User currentUser = await _response
                 .ResponseGet<User>($"/User/GetByLogin?login={user.UserLogin}&hash=123");
             UserAdditionalInfo userInfo = new UserAdditionalInfo()
@@ -49,7 +49,7 @@ namespace CaseApplication.IntegrationTests.Api
 
             // Act
             HttpStatusCode postStatusCode = await _response
-                .ResponsePost<UserAdditionalInfo>("/UserAdditionalInfo", templateUserInfo);
+                .ResponsePost("/UserAdditionalInfo", templateUserInfo);
 
             UserAdditionalInfo userInfo = await _response
                 .ResponseGet<UserAdditionalInfo>($"/UserAdditionalInfo?userId={templateUserInfo.UserId}");
@@ -57,7 +57,7 @@ namespace CaseApplication.IntegrationTests.Api
                 .ResponseGetStatusCode($"/UserAdditionalInfo?userId={templateUserInfo.UserId}");
 
             HttpStatusCode putStatusCode = await _response
-                .ResponsePut<UserAdditionalInfo>("/UserAdditionalInfo?hash=123", userInfo);
+                .ResponsePut("/UserAdditionalInfo?hash=123", userInfo);
 
             HttpStatusCode deleteStatusCode = await _response
                 .ResponseDelete($"/UserAdditionalInfo?id={userInfo.Id}");

@@ -33,12 +33,12 @@ namespace CaseApplication.EntityFramework.Configurations
                 .HasForeignKey(p => p.GameItemId);
 
             builder.HasMany(p => p.CaseInventories)
-                .WithOne(P => P.GameItem)
+                .WithOne(p => p.GameItem)
                 .HasForeignKey(p => p.GameItemId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasMany(p => p.UserHistoryOpeningCases)
-                .WithOne(P => P.GameItem)
+                .WithOne(p => p.GameItem)
                 .HasForeignKey(p => p.GameItemId)
                 .OnDelete(DeleteBehavior.Cascade);
         }

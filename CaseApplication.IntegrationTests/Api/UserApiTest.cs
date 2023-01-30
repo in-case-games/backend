@@ -25,13 +25,6 @@ namespace CaseApplication.IntegrationTests.Api
 
             return user;
         }
-        private string GenerateString()
-        {
-            byte[] bytes = new byte[10];
-            new Random().NextBytes(bytes);
-
-            return Convert.ToBase64String(bytes).Replace('=', 's');
-        }
         [Fact]
         public async Task UserCrudTest()
         {
@@ -40,7 +33,7 @@ namespace CaseApplication.IntegrationTests.Api
 
             // Act
             HttpStatusCode postStatusCode = await _response
-                .ResponsePost<User>("/User", templateUser);
+                .ResponsePost("/User", templateUser);
 
             User user = await _response
                 .ResponseGet<User>($"/User/GetByLogin?login={templateUser.UserLogin}&hash=123");
@@ -53,7 +46,7 @@ namespace CaseApplication.IntegrationTests.Api
                 .ResponseGetStatusCode("/User/GetAll");
 
             HttpStatusCode putStatusCode = await _response
-                .ResponsePut<User>("/User?hash=123", user);
+                .ResponsePut("/User?hash=123", user);
 
             HttpStatusCode deleteStatusCode = await _response
                 .ResponseDelete($"/User?id={user.Id}");

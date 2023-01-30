@@ -36,9 +36,9 @@ namespace CaseApplication.Api.Controllers
         public async Task<IEnumerable<User>> GetAll()
         {
             List<User> users = (await _userRepository.GetAll()).ToList();
-            for(int i = 0; i < users.Count; i++)
+            foreach (User t in users)
             {
-                users[i].PasswordSalt = "";
+                t.PasswordSalt = "";
             }
             return users;
         }
