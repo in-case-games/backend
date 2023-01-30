@@ -23,30 +23,30 @@ public class PromocodeTypeRepository: IPromocodeTypeRepository
                                "review what data comes from the api");
     }
 
-    public async Task<bool> Create(PromocodeType entity)
+    public async Task<bool> Create(PromocodeType promocodeType)
     {
         using ApplicationDbContext context = _contextFactory.CreateDbContext();
         
-        entity.Id = Guid.NewGuid();
+        promocodeType.Id = Guid.NewGuid();
         
-        await context.PromocodeType.AddAsync(entity);
+        await context.PromocodeType.AddAsync(promocodeType);
         await context.SaveChangesAsync();
 
         return true;
     }
 
-    public async Task<bool> Update(PromocodeType entity)
+    public async Task<bool> Update(PromocodeType promocodeType)
     {
         using ApplicationDbContext context = _contextFactory.CreateDbContext();
 
-        PromocodeType? promocodeType = await context
+        PromocodeType? promoType = await context
             .PromocodeType
-            .FirstOrDefaultAsync(x => x.Id == entity.Id);
+            .FirstOrDefaultAsync(x => x.Id == promocodeType.Id);
         
-        if (promocodeType is null) 
+        if (promoType is null) 
             throw new Exception("PromocodeType, which you search, is not found!");
         
-        context.Entry(promocodeType).CurrentValues.SetValues(entity);
+        context.Entry(promoType).CurrentValues.SetValues(promocodeType);
         await context.SaveChangesAsync();
 
         return true;
