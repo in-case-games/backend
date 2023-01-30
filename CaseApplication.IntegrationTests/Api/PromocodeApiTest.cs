@@ -6,7 +6,7 @@ namespace CaseApplication.IntegrationTests.Api
 {
     public class PromocodeApiTest : IClassFixture<WebApplicationFactory<Program>>
     {
-        private ResponseHelper _clientApi;
+        private readonly ResponseHelper _clientApi;
 
         public PromocodeApiTest(WebApplicationFactory<Program> applicationFactory) 
         {
