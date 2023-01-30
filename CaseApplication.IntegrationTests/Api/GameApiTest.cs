@@ -1,6 +1,7 @@
 ﻿using CaseApplication.DomainLayer.Entities;
 using CaseApplication.WebClient.Services;
 using Microsoft.AspNetCore.Mvc.Testing;
+using System.Diagnostics;
 using Xunit.Abstractions;
 
 namespace CaseApplication.IntegrationTests.Api
@@ -40,12 +41,15 @@ namespace CaseApplication.IntegrationTests.Api
             gameItems = gameItems.OrderByDescending(g => g.GameItemCost).ToList();
             gameItems.ForEach(x => winIndexes.Add(0));
 
+            //Start Time
+            Stopwatch startTime = Stopwatch.StartNew();
+
             for (int i = 1; i <= 1000; i++)
             {
                 //Open Cases
                 GameItem winItem = await _clientApi
                     .ResponseGet<GameItem>($"/Game?userId={userId}&caseId={caseId}");
-                
+
                 //Counter wins
                 for (int j = 0; j < gameItems.Count; j++)
                 {
@@ -58,14 +62,24 @@ namespace CaseApplication.IntegrationTests.Api
                 */
             }
 
-            for(int i = 0; i<winIndexes.Count; i++)
+            //End Time
+            startTime.Stop();
+            var resultTime = startTime.Elapsed;
+
+            //Output
+            for (int i = 0; i < winIndexes.Count; i++)
                 _output.WriteLine($"{gameItems[i].GameItemName} - {winIndexes[i]}");
-            
+
             GameCase gameCase = gameCase = (await _clientApi
                 .ResponseGet<List<GameCase>>("/GameCase/GetAll"))
                 .FirstOrDefault(x => x.GameCaseName == "Балансный")!;
-            
-            _output.WriteLine($"Баланс: {gameCase.GameCaseBalance}");
+
+            string elapsedTime = String.Format("{0:00}.{1:000}",
+                resultTime.Seconds,
+                resultTime.Milliseconds);
+
+            _output.WriteLine($"Баланс: {gameCase.GameCaseBalance}\n" +
+                $"Алгоритм: {elapsedTime}");
 
             await DeleteDependencies();
         }

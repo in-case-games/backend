@@ -35,34 +35,24 @@ namespace CaseApplication.Api.Controllers
         }
 
         [HttpGet]
-
         public async Task<GameItem> GetOpeningCase(Guid userId, Guid caseId)
         {
             //Check Balance
             UserAdditionalInfo userAdditionalInfo = await _userInfoRepository.Get(userId);
             GameCase gameCase = await _gameCaseRepository.Get(caseId);
 
-            CheckErrorBalance(userAdditionalInfo, gameCase);
+            bool IsValidBalance = (userAdditionalInfo.UserBalance >= gameCase.GameCaseCost);
+
+            if (IsValidBalance is false)
+                throw new Exception("Your balance is less than the cost of the case" +
+                    "Top up your balance or open a case cheaper");
 
             //Update Balance Case and User
-            userAdditionalInfo = await UpdateUserBalance(userAdditionalInfo, -gameCase.GameCaseCost);
+            await UpdateUserBalance(userAdditionalInfo, -gameCase.GameCaseCost);
             gameCase = await UpdateCaseBalance(gameCase, gameCase.GameCaseCost);
 
-            //Get All the chances of items from the case 
-            List<CaseInventory> casesInventories = (await _caseInventoryRepository
-                .GetAll(caseId))
-                .ToList();
-
-            List<int> lossChances = casesInventories
-                .Where(x => true)
-                .Select(x => x.LossChance)
-                .ToList();
-
             //Calling random
-            // 1) GameItem winGameItem = await RandomizeBySmallest(lossChances, casesInventories, gameCase);
-
-            // 2) GameItem winGameItem = await RandomizeByLadder(lossChances, casesInventories, gameCase);
-            GameItem winGameItem = await RandomizeByConstraints(casesInventories, gameCase.GameCaseBalance);
+            GameItem winGameItem = await RandomizeByConstraints(caseId, gameCase.GameCaseBalance);
 
             //Update User and Case Balance
             decimal expensesCase = winGameItem.GameItemCost + (gameCase.GameCaseCost 
@@ -88,73 +78,13 @@ namespace CaseApplication.Api.Controllers
 
             return winGameItem;
         }
-        private async Task<GameItem> RandomizeBySmallest(
-            List<int> lossChances,
-            List<CaseInventory> casesInventories,
-            GameCase gameCase)
+
+        private async Task<GameItem> RandomizeByConstraints(Guid caseId, decimal balance)
         {
-            int winIndexItem = Randomizer(lossChances);
-            Guid winIdGameItem = casesInventories[winIndexItem].GameItemId;
-            GameItem winGameItem = await _gameItemRepository.Get(winIdGameItem);
+            List<CaseInventory> casesInventories = (await _caseInventoryRepository
+                .GetAll(caseId))
+                .ToList();
 
-            //Check it will become negative case balance
-            if (IsProfitCase(winGameItem, gameCase) is false)
-            {
-                List<GameItem> gameItems = new();
-                GameItem searchItem;
-
-                foreach (CaseInventory invetory in casesInventories)
-                {
-                    searchItem = await _gameItemRepository.Get(invetory.GameItemId);
-                    gameItems.Add(searchItem);
-                }
-
-                gameItems = gameItems.OrderByDescending(g => g.GameItemCost).ToList();
-                winIdGameItem = gameItems[^1].Id;
-                winGameItem = gameItems[^1];
-            }
-
-            return winGameItem;
-        }
-
-        private async Task<GameItem> RandomizeByLadder(
-            List<int> lossChances,
-            List<CaseInventory> casesInventories,
-            GameCase gameCase)
-        {
-            int winIndexItem = Randomizer(lossChances);
-            Guid winIdGameItem = casesInventories[winIndexItem].GameItemId;
-            GameItem winGameItem = await _gameItemRepository.Get(winIdGameItem);
-
-            //Check it will become negative case balance
-            if (IsProfitCase(winGameItem, gameCase) is false)
-            {
-                List<GameItem> gameItems = new();
-                GameItem searchItem;
-
-                foreach (CaseInventory invetory in casesInventories)
-                {
-                    searchItem = await _gameItemRepository.Get(invetory.GameItemId);
-                    gameItems.Add(searchItem);
-                }
-
-                gameItems = gameItems.OrderByDescending(g => g.GameItemCost).ToList();
-
-                foreach(GameItem gameItem in gameItems)
-                {
-                    if(IsProfitCase(gameItem, gameCase) && 
-                        gameItem.GameItemCost <= winGameItem.GameItemCost)
-                    {
-                        winIdGameItem = gameItem.Id;
-                        winGameItem = gameItem;
-                    }
-                }
-            }
-
-            return winGameItem;
-        }
-        private async Task<GameItem> RandomizeByConstraints(List<CaseInventory> casesInventories, decimal balance)
-        {
             IEnumerable<GameItem> gameItems = await _gameItemRepository.GetAll();
 
             gameItems = (from i in gameItems
@@ -175,7 +105,6 @@ namespace CaseApplication.Api.Controllers
 
             return gameItems.ElementAt(Randomizer(lossChances));
         }
-        
         private async Task<UserAdditionalInfo> UpdateUserBalance(UserAdditionalInfo info, decimal value)
         {
             info.UserBalance += value;
@@ -190,22 +119,6 @@ namespace CaseApplication.Api.Controllers
 
             return gameCase;
         }
-        private static void CheckErrorBalance(UserAdditionalInfo info, GameCase gameCase)
-        {
-            bool IsValidBalance = (info.UserBalance >= gameCase.GameCaseCost);
-
-            if (IsValidBalance is false)
-                throw new Exception("Your balance is less than the cost of the case" +
-                    "Top up your balance or open a case cheaper");
-        }
-        private static bool IsProfitCase(GameItem gameItem, GameCase gameCase)
-        {
-            decimal RevenuePrecentage = gameCase.GameCaseBalance * gameCase.RevenuePrecentage;
-            decimal AvailableBalance = gameCase.GameCaseBalance - RevenuePrecentage;
-
-            return gameItem.GameItemCost <= AvailableBalance;
-        }
-
         private static int Randomizer(List<int> lossChance)
         {
             List<List<int>> partsCaseChance = new();
