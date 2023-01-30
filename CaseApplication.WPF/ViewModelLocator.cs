@@ -3,7 +3,6 @@ using CaseApplication.WPF.Services;
 using CaseApplication.WPF.ViewModel;
 using CaseApplication.WPF.ViewModel.StartUp;
 using Microsoft.Extensions.DependencyInjection;
-using System.Net;
 
 namespace CaseApplication.WPF
 {

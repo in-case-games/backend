@@ -8,6 +8,9 @@ namespace CaseApplication.EntityFramework.Data
     {
         internal DbSet<User> User => Set<User>();
         internal DbSet<UserRole> UserRole => Set<UserRole>();
+        internal DbSet<Promocode> Promocode => Set<Promocode>();
+        internal DbSet<PromocodesUsedByUser> PromocodeUsedByUsers => Set<PromocodesUsedByUser>();
+        internal DbSet<PromocodeType> PromocodeType => Set<PromocodeType>();
         internal DbSet<UserRestriction> UserRestriction => Set<UserRestriction>();
         internal DbSet<UserAdditionalInfo> UserAdditionalInfo => Set<UserAdditionalInfo>();
         internal DbSet<UserInventory> UserInventory => Set<UserInventory>();
@@ -33,6 +36,9 @@ namespace CaseApplication.EntityFramework.Data
             modelBuilder.ApplyConfiguration(new UserRoleConfiguration());
             modelBuilder.ApplyConfiguration(new UserHistoryOpeningCasesConfiguration());
             modelBuilder.ApplyConfiguration(new SiteStatisticsConfiguration());
+            modelBuilder.ApplyConfiguration(new PromocodeConfiguration());
+            modelBuilder.ApplyConfiguration(new PromocodeTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new PromocodesUsedByUserConfiguration());
         }
     }
 }

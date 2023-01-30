@@ -18,5 +18,7 @@ namespace CaseApplication.DomainLayer.Entities
         public List<UserInventory>? UserInventories { get; set; }
         [JsonIgnore]
         public List<UserHistoryOpeningCases>? UserHistoryOpeningCases { get; set; }
+        [JsonIgnore]
+        public List<PromocodesUsedByUser>? PromocodesUsedByUsers { get; set; }
     }
 }

@@ -1,9 +1,10 @@
+using CaseApplication.DomainLayer.Entities;
 using CaseApplication.DomainLayer.Repositories;
 using CaseApplication.EntityFramework.Data;
 using CaseApplication.EntityFramework.Repositories;
 using Microsoft.EntityFrameworkCore;
 
-var builder = WebApplication.CreateBuilder(args);
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContextFactory<ApplicationDbContext>(
     options => options.UseSqlServer(
@@ -29,8 +30,11 @@ builder.Services.AddTransient<IUserInventoryRepository, UserInventoryRepository>
 builder.Services.AddTransient<IUserHistoryOpeningCasesRepository, UserHistoryOpeningCasesRepository>();
 builder.Services.AddTransient<INewsRepository, NewsRepository>();
 builder.Services.AddTransient<ISiteStatisticsRepository, SiteStatisticsRepository>();
+builder.Services.AddTransient<IPromocodeRepository, PromocodeRepository>();
+builder.Services.AddTransient<IPromocodeUserByUserRepository, PromocodesUsedByUserRepository>();
+builder.Services.AddTransient<IPromocodeTypeRepository, PromocodeTypeRepository>();
 
-var app = builder.Build();
+WebApplication app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
