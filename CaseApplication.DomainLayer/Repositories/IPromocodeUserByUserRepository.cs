@@ -1,8 +1,9 @@
 ﻿using CaseApplication.DomainLayer.Entities;
 
-namespace CaseApplication.DomainLayer.Repositories;
-
-public interface IPromocodeUserByUserRepository: IBaseRepository<PromocodesUsedByUser>
+namespace CaseApplication.DomainLayer.Repositories
 {
-    public Task<IEnumerable<PromocodesUsedByUser>> GetAll(Guid userId);
+    public interface IPromocodeUserByUserRepository: IBaseRepository<PromocodesUsedByUser>
+    {
+        public Task<IEnumerable<PromocodesUsedByUser>> GetAll(Guid userId);
+    }
 }

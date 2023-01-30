@@ -3,81 +3,82 @@ using CaseApplication.DomainLayer.Repositories;
 using CaseApplication.EntityFramework.Data;
 using Microsoft.EntityFrameworkCore;
 
-namespace CaseApplication.EntityFramework.Repositories;
-
-public class PromocodesUsedByUserRepository: IPromocodeUserByUserRepository
+namespace CaseApplication.EntityFramework.Repositories
 {
-    private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
+    public class PromocodesUsedByUserRepository: IPromocodeUserByUserRepository
+    {
+        private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
 
-    public PromocodesUsedByUserRepository(IDbContextFactory<ApplicationDbContext> contextFactory)
-    {
-        _contextFactory = contextFactory;
-    }
-    public async Task<PromocodesUsedByUser> Get(Guid id)
-    {
-        using ApplicationDbContext context = _contextFactory.CreateDbContext();
+        public PromocodesUsedByUserRepository(IDbContextFactory<ApplicationDbContext> contextFactory)
+        {
+            _contextFactory = contextFactory;
+        }
+        public async Task<PromocodesUsedByUser> Get(Guid id)
+        {
+            using ApplicationDbContext context = _contextFactory.CreateDbContext();
         
-        return await context
-            .PromocodeUsedByUsers.FirstOrDefaultAsync(x => x.Id == id) ??
-               throw new Exception("There is no such PromocodesUsedByUser in the database, " +
-                         "review what data comes from the api");
-    }
+            return await context
+                    .PromocodeUsedByUsers.FirstOrDefaultAsync(x => x.Id == id) ??
+                throw new Exception("There is no such PromocodesUsedByUser in the database, " +
+                    "review what data comes from the api");
+        }
 
-    public async Task<bool> Create(PromocodesUsedByUser promocodesUsedByUser)
-    {
-        using ApplicationDbContext context = _contextFactory.CreateDbContext();
+        public async Task<bool> Create(PromocodesUsedByUser promocodesUsedByUser)
+        {
+            using ApplicationDbContext context = _contextFactory.CreateDbContext();
 
-        promocodesUsedByUser.Id = new Guid();
+            promocodesUsedByUser.Id = new Guid();
         
-        await context.PromocodeUsedByUsers.AddAsync(promocodesUsedByUser);
-        await context.SaveChangesAsync();
+            await context.PromocodeUsedByUsers.AddAsync(promocodesUsedByUser);
+            await context.SaveChangesAsync();
 
-        return true;
-    }
+            return true;
+        }
 
-    public async Task<bool> Update(PromocodesUsedByUser promocodesUsedByUser)
-    {
-        using ApplicationDbContext context = _contextFactory.CreateDbContext();
+        public async Task<bool> Update(PromocodesUsedByUser promocodesUsedByUser)
+        {
+            using ApplicationDbContext context = _contextFactory.CreateDbContext();
 
-        PromocodesUsedByUser? searchPromocode = await context
-            .PromocodeUsedByUsers
-            .FirstOrDefaultAsync(x => x.Id == promocodesUsedByUser.Id);
+            PromocodesUsedByUser? searchPromocode = await context
+                .PromocodeUsedByUsers
+                .FirstOrDefaultAsync(x => x.Id == promocodesUsedByUser.Id);
 
-        if (searchPromocode is null) 
-            throw new("There is no such PromocodesUsedByUser in the database, " +
-                                               "review what data comes from the api");
+            if (searchPromocode is null) 
+                throw new("There is no such PromocodesUsedByUser in the database, " +
+                    "review what data comes from the api");
 
-        context.Entry(searchPromocode).CurrentValues.SetValues(promocodesUsedByUser);
+            context.Entry(searchPromocode).CurrentValues.SetValues(promocodesUsedByUser);
 
-        await context.SaveChangesAsync();
+            await context.SaveChangesAsync();
 
-        return true;
-    }
+            return true;
+        }
 
-    public async Task<bool> Delete(Guid id)
-    {
-        using ApplicationDbContext context = _contextFactory.CreateDbContext();
+        public async Task<bool> Delete(Guid id)
+        {
+            using ApplicationDbContext context = _contextFactory.CreateDbContext();
 
-        PromocodesUsedByUser? promocodeType = await context
-            .PromocodeUsedByUsers
-            .FirstOrDefaultAsync(x => x.Id == id);
+            PromocodesUsedByUser? promocodeType = await context
+                .PromocodeUsedByUsers
+                .FirstOrDefaultAsync(x => x.Id == id);
         
-        if (promocodeType is null) 
-            throw new Exception("PromocodesUsedByUser, which you search, is not found!");
+            if (promocodeType is null) 
+                throw new Exception("PromocodesUsedByUser, which you search, is not found!");
 
-        context.PromocodeUsedByUsers.Remove(promocodeType);
-        await context.SaveChangesAsync();
+            context.PromocodeUsedByUsers.Remove(promocodeType);
+            await context.SaveChangesAsync();
         
-        return true;
-    }
+            return true;
+        }
 
-    public async Task<IEnumerable<PromocodesUsedByUser>> GetAll(Guid userId)
-    {
-        using ApplicationDbContext context = _contextFactory.CreateDbContext();
+        public async Task<IEnumerable<PromocodesUsedByUser>> GetAll(Guid userId)
+        {
+            using ApplicationDbContext context = _contextFactory.CreateDbContext();
         
-        return await context.PromocodeUsedByUsers
-                   .Where(x => x.UserId == userId).ToListAsync() ?? 
-               throw new Exception("There is no such PromocodeUsedByUsers in the database, " +
-                                   "review what data comes from the api");
+            return await context.PromocodeUsedByUsers
+                    .Where(x => x.UserId == userId).ToListAsync() ?? 
+                throw new Exception("There is no such PromocodeUsedByUsers in the database, " +
+                    "review what data comes from the api");
+        }
     }
 }

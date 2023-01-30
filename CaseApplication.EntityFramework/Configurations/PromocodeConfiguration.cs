@@ -2,27 +2,28 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace CaseApplication.EntityFramework.Configurations;
-
-internal class PromocodeConfiguration: BaseEntityConfiguration<Promocode>
+namespace CaseApplication.EntityFramework.Configurations
 {
-    public override void Configure(EntityTypeBuilder<Promocode> builder)
+    internal class PromocodeConfiguration: BaseEntityConfiguration<Promocode>
     {
-        base.Configure(builder);
+        public override void Configure(EntityTypeBuilder<Promocode> builder)
+        {
+            base.Configure(builder);
 
-        builder.HasIndex(i => i.PromocodeName)
-            .IsUnique();
+            builder.HasIndex(i => i.PromocodeName)
+                .IsUnique();
         
-        builder.Property(p => p.PromocodeDiscount)
-            .HasColumnType("DECIMAL(18, 5)")
-            .IsRequired();
+            builder.Property(p => p.PromocodeDiscount)
+                .HasColumnType("DECIMAL(18, 5)")
+                .IsRequired();
         
-        builder.HasMany(o => o.PromocodesUsedByUsers)
-            .WithOne(o => o.Promocode)
-            .HasForeignKey(fk => fk.PromocodeId)
-            .OnDelete(DeleteBehavior.Cascade);
+            builder.HasMany(o => o.PromocodesUsedByUsers)
+                .WithOne(o => o.Promocode)
+                .HasForeignKey(fk => fk.PromocodeId)
+                .OnDelete(DeleteBehavior.Cascade);
         
-        builder.HasIndex(i => i.PromocodeTypeId)
-            .IsUnique(false);
+            builder.HasIndex(i => i.PromocodeTypeId)
+                .IsUnique(false);
+        }
     }
 }

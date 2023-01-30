@@ -1,15 +1,16 @@
 ﻿using CaseApplication.DomainLayer.Entities;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace CaseApplication.EntityFramework.Configurations;
-
-internal class PromocodeTypeConfiguration: BaseEntityConfiguration<PromocodeType>
+namespace CaseApplication.EntityFramework.Configurations
 {
-    public override void Configure(EntityTypeBuilder<PromocodeType> builder)
+    internal class PromocodeTypeConfiguration: BaseEntityConfiguration<PromocodeType>
     {
-        base.Configure(builder);
+        public override void Configure(EntityTypeBuilder<PromocodeType> builder)
+        {
+            base.Configure(builder);
 
-        builder.HasIndex(i => i.PromocodeTypeName)
-            .IsUnique();
+            builder.HasIndex(i => i.PromocodeTypeName)
+                .IsUnique();
+        }
     }
 }

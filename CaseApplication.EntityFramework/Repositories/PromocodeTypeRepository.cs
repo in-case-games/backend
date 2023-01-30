@@ -3,86 +3,87 @@ using CaseApplication.DomainLayer.Repositories;
 using CaseApplication.EntityFramework.Data;
 using Microsoft.EntityFrameworkCore;
 
-namespace CaseApplication.EntityFramework.Repositories;
-
-public class PromocodeTypeRepository: IPromocodeTypeRepository
+namespace CaseApplication.EntityFramework.Repositories
 {
-    private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
-
-    public PromocodeTypeRepository(IDbContextFactory<ApplicationDbContext> contextFactory)
+    public class PromocodeTypeRepository: IPromocodeTypeRepository
     {
-        _contextFactory = contextFactory;
-    }
-    public async Task<PromocodeType> Get(Guid id)
-    {
-        using ApplicationDbContext context = _contextFactory.CreateDbContext();
+        private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
 
-        return await context.PromocodeType
-            .FirstOrDefaultAsync(x => x.Id == id) ?? 
-            throw new Exception("There is no such promocodeType in the database, " +
-                               "review what data comes from the api");
-    }
+        public PromocodeTypeRepository(IDbContextFactory<ApplicationDbContext> contextFactory)
+        {
+            _contextFactory = contextFactory;
+        }
+        public async Task<PromocodeType> Get(Guid id)
+        {
+            using ApplicationDbContext context = _contextFactory.CreateDbContext();
 
-    public async Task<bool> Create(PromocodeType promocodeType)
-    {
-        using ApplicationDbContext context = _contextFactory.CreateDbContext();
+            return await context.PromocodeType
+                    .FirstOrDefaultAsync(x => x.Id == id) ?? 
+                throw new Exception("There is no such promocodeType in the database, " +
+                    "review what data comes from the api");
+        }
+
+        public async Task<bool> Create(PromocodeType promocodeType)
+        {
+            using ApplicationDbContext context = _contextFactory.CreateDbContext();
         
-        promocodeType.Id = Guid.NewGuid();
+            promocodeType.Id = Guid.NewGuid();
         
-        await context.PromocodeType.AddAsync(promocodeType);
-        await context.SaveChangesAsync();
+            await context.PromocodeType.AddAsync(promocodeType);
+            await context.SaveChangesAsync();
 
-        return true;
-    }
+            return true;
+        }
 
-    public async Task<bool> Update(PromocodeType promocodeType)
-    {
-        using ApplicationDbContext context = _contextFactory.CreateDbContext();
+        public async Task<bool> Update(PromocodeType promocodeType)
+        {
+            using ApplicationDbContext context = _contextFactory.CreateDbContext();
 
-        PromocodeType? promoType = await context
-            .PromocodeType
-            .FirstOrDefaultAsync(x => x.Id == promocodeType.Id);
+            PromocodeType? promoType = await context
+                .PromocodeType
+                .FirstOrDefaultAsync(x => x.Id == promocodeType.Id);
         
-        if (promoType is null) 
-            throw new Exception("PromocodeType, which you search, is not found!");
+            if (promoType is null) 
+                throw new Exception("PromocodeType, which you search, is not found!");
         
-        context.Entry(promoType).CurrentValues.SetValues(promocodeType);
-        await context.SaveChangesAsync();
+            context.Entry(promoType).CurrentValues.SetValues(promocodeType);
+            await context.SaveChangesAsync();
 
-        return true;
-    }
+            return true;
+        }
 
-    public async Task<bool> Delete(Guid id)
-    {
-        using ApplicationDbContext context = _contextFactory.CreateDbContext();
+        public async Task<bool> Delete(Guid id)
+        {
+            using ApplicationDbContext context = _contextFactory.CreateDbContext();
 
-        PromocodeType? promocodeType = await context
-            .PromocodeType
-            .FirstOrDefaultAsync(x => x.Id == id);
+            PromocodeType? promocodeType = await context
+                .PromocodeType
+                .FirstOrDefaultAsync(x => x.Id == id);
         
-        if (promocodeType is null) 
-            throw new Exception("PromocodeType, which you search, is not found!");
+            if (promocodeType is null) 
+                throw new Exception("PromocodeType, which you search, is not found!");
 
-        context.PromocodeType.Remove(promocodeType);
-        await context.SaveChangesAsync();
+            context.PromocodeType.Remove(promocodeType);
+            await context.SaveChangesAsync();
         
-        return true;
-    }
+            return true;
+        }
 
-    public async Task<IEnumerable<PromocodeType>> GetAll()
-    {
-        using ApplicationDbContext context = _contextFactory.CreateDbContext();
+        public async Task<IEnumerable<PromocodeType>> GetAll()
+        {
+            using ApplicationDbContext context = _contextFactory.CreateDbContext();
 
-        return await context.PromocodeType.ToListAsync();
-    }
+            return await context.PromocodeType.ToListAsync();
+        }
 
-    public async Task<PromocodeType> GetByName(string name)
-    {
-        using ApplicationDbContext context = _contextFactory.CreateDbContext();
+        public async Task<PromocodeType> GetByName(string name)
+        {
+            using ApplicationDbContext context = _contextFactory.CreateDbContext();
 
-        return await context.PromocodeType
-                   .FirstOrDefaultAsync(x => x.PromocodeTypeName == name) ?? 
-               throw new Exception("There is no such promocodeType in the database, " +
-                                   "review what data comes from the api");
+            return await context.PromocodeType
+                    .FirstOrDefaultAsync(x => x.PromocodeTypeName == name) ?? 
+                throw new Exception("There is no such promocodeType in the database, " +
+                    "review what data comes from the api");
+        }
     }
 }
