@@ -51,8 +51,8 @@ namespace CaseApplication.EntityFramework.Repositories
         {
             using ApplicationDbContext context = _contextFactory.CreateDbContext();
 
-            if (user.UserEmail is null) throw new("There is such user in the database, " +
-                "review what data comes from the api");
+            if (user.UserEmail is null) 
+                throw new("Missing parameter {PromocodeTypeName}");
 
             user.Id = Guid.NewGuid();
 
