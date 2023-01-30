@@ -19,10 +19,10 @@ namespace CaseApplication.EntityFramework.Repositories
 
             SiteStatistics? siteStatistics = await context
                 .SiteStatistics
-                .FirstAsync();
+                .FirstOrDefaultAsync();
 
-            return siteStatistics;
-                
+            return siteStatistics ?? throw new("There is no such statistics in the database, " +
+                "review what data comes from the api");
         }
     }
 }

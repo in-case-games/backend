@@ -79,7 +79,7 @@ namespace CaseApplication.IntegrationTests.Api
                 resultTime.Milliseconds);
 
             _output.WriteLine($"Баланс: {gameCase.GameCaseBalance}\n" +
-                $"Алгоритм: {elapsedTime}");
+                $"Скорость алгоритма: {elapsedTime}");
 
             await DeleteDependencies();
         }

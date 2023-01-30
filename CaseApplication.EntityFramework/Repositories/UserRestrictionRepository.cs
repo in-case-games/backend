@@ -21,8 +21,8 @@ namespace CaseApplication.EntityFramework.Repositories
                 .UserRestriction
                 .FirstOrDefaultAsync(x => x.Id == id);
             
-            return searchRestriction 
-                ?? throw new Exception("There is no such user restriction in the database, " +
+            return searchRestriction ?? 
+                throw new Exception("There is no such user restriction in the database, " +
                 "review what data comes from the api");
         }
         public async Task<IEnumerable<UserRestriction>> GetAll(Guid userId)
@@ -35,13 +35,6 @@ namespace CaseApplication.EntityFramework.Repositories
         public async Task<bool> Create(UserRestriction userRestriction)
         {
             using ApplicationDbContext context = _contextFactory.CreateDbContext();
-
-            User? searchUser = await context
-                .User
-                .FirstOrDefaultAsync(x => x.Id == userRestriction.UserId);
-            
-            if (searchUser is null) throw new Exception("There is no such user in the database, " +
-                "review what data comes from the api");
 
             await context.UserRestriction.AddAsync(userRestriction);
             await context.SaveChangesAsync();
@@ -63,7 +56,7 @@ namespace CaseApplication.EntityFramework.Repositories
             if (searchRestriction is null) 
                 throw new Exception("There is no such user restriction in the database, " +
                 "review what data comes from the api");
-            if(searchUser is null)
+            if (searchUser is null)
                 throw new Exception("There is no such user in the database, " +
                 "review what data comes from the api");
 

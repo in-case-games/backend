@@ -28,14 +28,9 @@ namespace CaseApplication.EntityFramework.Repositories
         {
             using ApplicationDbContext context = _contextFactory.CreateDbContext();
 
-            User? searchUser = await context.User.FirstOrDefaultAsync(x => x.Id == info.UserId);
             UserRole? searchRole = await context.UserRole.FirstOrDefaultAsync(x => x.RoleName == "user");
 
             if (searchRole is null) throw new Exception("Add standard roles to the database");
-            if (searchUser is null) {
-                throw new Exception("There is no user with this Guid in the database, " +
-                    "review what data comes from the api");
-            }
 
             info.Id = Guid.NewGuid();
             info.UserRoleId = searchRole!.Id;

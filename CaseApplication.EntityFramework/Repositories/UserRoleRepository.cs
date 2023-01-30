@@ -16,8 +16,8 @@ namespace CaseApplication.EntityFramework.Repositories
         {
             using ApplicationDbContext context = _contextFactory.CreateDbContext();
 
-            return await context.UserRole.FirstOrDefaultAsync(x => x.Id == id)
-                ?? throw new("There is no such role in the database, " +
+            return await context.UserRole.FirstOrDefaultAsync(x => x.Id == id) ?? 
+                throw new("There is no such role in the database, " +
                 "review what data comes from the api");
         }
 
@@ -45,10 +45,6 @@ namespace CaseApplication.EntityFramework.Repositories
         public async Task<bool> Create(UserRole role)
         {
             using ApplicationDbContext context = _contextFactory.CreateDbContext();
-
-            UserRole? searchRole = await context.UserRole.FirstOrDefaultAsync(x => x.RoleName == role.RoleName);
-            if(searchRole is not null) throw new Exception("There is such role in the database, " +
-                "review what data comes from the api");
 
             role.Id = new Guid();
 

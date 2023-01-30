@@ -34,19 +34,6 @@ namespace CaseApplication.EntityFramework.Repositories
         {
             using ApplicationDbContext context = _contextFactory.CreateDbContext();
 
-            User? searchUser = await context
-                .User
-                .FirstOrDefaultAsync(x => x.Id == userInventory.UserId);
-
-            GameItem? searchItem = await context
-                .GameItem
-                .FirstOrDefaultAsync(x => x.Id == userInventory.GameItemId);
-            
-            if(searchUser is null) throw new Exception("There is no such user, " +
-                "review what data comes from the api");
-            if (searchItem is null) throw new Exception("There is no such game item, " +
-                "review what data comes from the api");
-
             await context.UserInventory.AddAsync(userInventory);
             await context.SaveChangesAsync();
 

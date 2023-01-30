@@ -8,6 +8,7 @@ namespace CaseApplication.EntityFramework.Repositories
     public class UserRepository : IUserRepository
     {
         private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
+
         public UserRepository(IDbContextFactory<ApplicationDbContext> context)
         {
             _contextFactory = context;
@@ -17,8 +18,8 @@ namespace CaseApplication.EntityFramework.Repositories
         {
             using ApplicationDbContext context = _contextFactory.CreateDbContext();
 
-            return await context.User.FirstOrDefaultAsync(x => x.Id == id)
-                ?? throw new("There is no such user in the database, " +
+            return await context.User.FirstOrDefaultAsync(x => x.Id == id) ?? 
+                throw new("There is no such user in the database, " +
                 "review what data comes from the api");
         }
 
@@ -26,8 +27,8 @@ namespace CaseApplication.EntityFramework.Repositories
         {
             using ApplicationDbContext context = _contextFactory.CreateDbContext();
 
-            return await context.User.FirstOrDefaultAsync(x => x.UserEmail == email)
-                ?? throw new("There is no such user in the database, " +
+            return await context.User.FirstOrDefaultAsync(x => x.UserEmail == email) ?? 
+                throw new("There is no such user in the database, " +
                 "review what data comes from the api");
         }
 
@@ -35,8 +36,8 @@ namespace CaseApplication.EntityFramework.Repositories
         {
             using ApplicationDbContext context = _contextFactory.CreateDbContext();
 
-            return await context.User.FirstOrDefaultAsync(x => x.UserLogin == login)
-                ?? throw new("There is no such user in the database, " +
+            return await context.User.FirstOrDefaultAsync(x => x.UserLogin == login) ?? 
+                throw new("There is no such user in the database, " + 
                 "review what data comes from the api");
         }
 
@@ -50,9 +51,6 @@ namespace CaseApplication.EntityFramework.Repositories
         public async Task<bool> Create(User user)
         {
             using ApplicationDbContext context = _contextFactory.CreateDbContext();
-
-            if (user.UserEmail is null) 
-                throw new("Missing parameter {PromocodeTypeName}");
 
             user.Id = Guid.NewGuid();
 
