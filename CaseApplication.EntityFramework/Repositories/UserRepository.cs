@@ -21,6 +21,18 @@ namespace CaseApplication.EntityFramework.Repositories
             return searchUser is null;
         }
 
+        public async Task<User> GetByParameters(User user)
+        {
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            User? searchUser = await context.User.FirstOrDefaultAsync(x => x.Id == user.Id);
+            searchUser ??= await context.User.FirstOrDefaultAsync(x => x.UserEmail == user.UserEmail);
+            searchUser ??= await context.User.FirstOrDefaultAsync(x => x.UserLogin == user.UserLogin);
+
+            return searchUser ?? throw new("There is no such user in the database, " +
+                "review what data comes from the api");
+        }
+
         public async Task<User> Get(Guid id)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();

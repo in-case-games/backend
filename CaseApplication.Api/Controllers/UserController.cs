@@ -1,7 +1,9 @@
-﻿using CaseApplication.DomainLayer.Entities;
+﻿using CaseApplication.Api.Services;
+using CaseApplication.DomainLayer.Entities;
 using CaseApplication.DomainLayer.Repositories;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -12,9 +14,14 @@ namespace CaseApplication.Api.Controllers
     public class UserController : Controller
     {
         private readonly IUserRepository _userRepository;
-        public UserController(IUserRepository userRepository)
+        private readonly EncryptorHelper _encryptorHelper;
+
+        public UserController(
+            IUserRepository userRepository, 
+            EncryptorHelper encryptorHelper)
         {
-            _userRepository= userRepository;
+            _userRepository = userRepository;
+            _encryptorHelper = encryptorHelper;
         }
 
         [HttpGet]
@@ -50,31 +57,24 @@ namespace CaseApplication.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(User user, string password)
         {
-            byte[] salt;
-            string saltEncoding;
+            string salt;
             int countIteration = 10000;
 
             do
             {
                 if (countIteration == 0) throw new Exception("Request exceeded the waiting time");
 
-                salt = RandomNumberGenerator.GetBytes(256 / 8);
-                saltEncoding = Convert.ToBase64String(salt);
+                salt = _encryptorHelper.GenerationSaltTo64Bytes();
 
                 --countIteration;
             }
-            while (!await _userRepository.IsUniqueSalt(saltEncoding));
+            while (!await _userRepository.IsUniqueSalt(salt));
 
-            string hashed = Convert.ToBase64String(KeyDerivation.Pbkdf2(
-                    password: password,
-                    salt: salt,
-                    prf: KeyDerivationPrf.HMACSHA512,
-                    iterationCount: 10000,
-                    numBytesRequested: 256 / 8
-                ));
+            byte[] saltEncoding = Convert.FromBase64String(salt);
+            string hash = _encryptorHelper.EncryptorPassword(password, saltEncoding);
 
-            user.PasswordHash = hashed;
-            user.PasswordSalt = saltEncoding;
+            user.PasswordHash = hash;
+            user.PasswordSalt = salt;
 
             return Ok(await _userRepository.Create(user));
         }

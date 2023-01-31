@@ -1,8 +1,12 @@
-using CaseApplication.DomainLayer.Entities;
+using CaseApplication.Api.Services;
 using CaseApplication.DomainLayer.Repositories;
 using CaseApplication.EntityFramework.Data;
 using CaseApplication.EntityFramework.Repositories;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +23,29 @@ builder.Services.AddDbContextFactory<ApplicationDbContext>(
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options => {
+        options.SaveToken = true;
+
+        options.TokenValidationParameters = new TokenValidationParameters()
+        {
+            ValidateIssuer = true,
+            ValidIssuer = builder.Configuration["CaseApp:Issuer"]!,
+
+            ValidateAudience = true,
+            ValidAudience = builder.Configuration["CaseApp:Audience"]!,
+
+            ValidateLifetime = true,
+
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(builder.Configuration["CaseApp:JWTToken"]!)),
+
+            ValidateIssuerSigningKey = true,
+        };
+    });
+
+builder.Services.AddAuthorization();
+
 builder.Services.AddTransient<IUserRepository, UserRepository>();
 builder.Services.AddTransient<IUserAdditionalInfoRepository, UserAdditionalInfoRepository>();
 builder.Services.AddTransient<IGameItemRepository, GameItemRepository>();
@@ -34,6 +61,9 @@ builder.Services.AddTransient<IPromocodeRepository, PromocodeRepository>();
 builder.Services.AddTransient<IPromocodeUserByUserRepository, PromocodesUsedByUserRepository>();
 builder.Services.AddTransient<IPromocodeTypeRepository, PromocodeTypeRepository>();
 
+builder.Services.AddSingleton<EncryptorHelper>();
+builder.Services.AddSingleton<JwtHelper>();
+
 WebApplication app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -44,7 +74,10 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseStaticFiles();
 
 app.MapControllers();
 
