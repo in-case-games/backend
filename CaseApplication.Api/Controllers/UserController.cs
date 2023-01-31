@@ -52,10 +52,16 @@ namespace CaseApplication.Api.Controllers
         {
             byte[] salt;
             string saltEncoding;
+            int countIteration = 10000;
+
             do
             {
+                if (countIteration == 0) throw new Exception("Request exceeded the waiting time");
+
                 salt = RandomNumberGenerator.GetBytes(256 / 8);
                 saltEncoding = Convert.ToBase64String(salt);
+
+                --countIteration;
             }
             while (!await _userRepository.IsUniqueSalt(saltEncoding));
 
