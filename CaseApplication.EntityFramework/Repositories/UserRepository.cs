@@ -13,6 +13,13 @@ namespace CaseApplication.EntityFramework.Repositories
         {
             _contextFactory = context;
         }
+        public async Task<bool> IsUniqueSalt(string salt)
+        {
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+            User? searchUser = await context.User.FirstOrDefaultAsync(x => x.PasswordSalt == salt);
+
+            return searchUser is null;
+        }
 
         public async Task<User> Get(Guid id)
         {
@@ -69,11 +76,15 @@ namespace CaseApplication.EntityFramework.Repositories
             if(searchUser is null) throw new Exception("You cannot change the guid, " +
                 "review what data comes from the api");
 
+            user.PasswordHash = searchUser.PasswordHash;
+            user.PasswordSalt = searchUser.PasswordSalt;
+
             context.Entry(searchUser).CurrentValues.SetValues(user);
             await context.SaveChangesAsync();
 
             return true;
         }
+
         public async Task<bool> Delete(Guid id)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();

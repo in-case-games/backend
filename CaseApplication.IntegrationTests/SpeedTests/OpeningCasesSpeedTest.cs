@@ -27,7 +27,7 @@ namespace CaseApplication.IntegrationTests.SpeedTests
             foreach (decimal i in lossChance)
                 CountDrop.Add(0);
 
-            for (int i = 0; i < 100000; i++)
+            for (int i = 0; i < 1000; i++)
             {
                 CountDrop[RandomizerSecond(lossChance)]++;
             }

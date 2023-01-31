@@ -10,11 +10,11 @@ namespace CaseApplication.EntityFramework.Configurations
         {
             base.Configure(builder);
 
-            builder.HasIndex(k => k.UserId)
+            builder.HasIndex(i => i.UserId)
                 .IsUnique(false);
-            builder.HasIndex(k => k.GameCaseId)
+            builder.HasIndex(i => i.GameCaseId)
                 .IsUnique(false);
-            builder.HasIndex(k => k.GameItemId)
+            builder.HasIndex(i => i.GameItemId)
                 .IsUnique(false);
         }
     }

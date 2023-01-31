@@ -24,8 +24,7 @@ namespace CaseApplication.IntegrationTests.Api
             await _clientApi.ResponsePost("/PromocodeType", promocodeType);
 
             //Get and GetAll
-            List<PromocodeType> promocodeTypes = await _clientApi
-                .ResponseGet<List<PromocodeType>>("/PromocodeType/GetAll");
+            await _clientApi.ResponseGet<List<PromocodeType>>("/PromocodeType/GetAll");
 
             promocodeType = await _clientApi
                 .ResponseGet<PromocodeType>("/PromocodeType/GetByName?name=Test");

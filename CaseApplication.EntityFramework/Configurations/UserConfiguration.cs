@@ -10,6 +10,13 @@ namespace CaseApplication.EntityFramework.Configurations
         {
             base.Configure(builder);
 
+            builder.HasIndex(i => i.UserEmail).IsUnique();
+            builder.HasIndex(i => i.UserLogin).IsUnique();
+            builder.HasIndex(i => i.PasswordSalt).IsUnique();
+
+            builder.Property(p => p.PasswordHash).IsRequired();
+            builder.Property(p => p.PasswordSalt).IsRequired();
+
             builder.Property(p => p.UserLogin)
                 .HasMaxLength(40)
                 .IsRequired();
@@ -18,33 +25,27 @@ namespace CaseApplication.EntityFramework.Configurations
                 .HasMaxLength(100)
                 .IsRequired();
 
-            builder.HasIndex(i => i.UserEmail)
-                .IsUnique();
-
-            builder.HasIndex(i => i.UserLogin)
-                .IsUnique();
-
             builder.HasOne(o => o.UserAdditionalInfo)
                 .WithOne(o => o.User)
                 .HasForeignKey<UserAdditionalInfo>(fk => fk.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            builder.HasMany(o => o.UserRestrictions)
+            builder.HasMany(m => m.UserRestrictions)
                 .WithOne(o => o.User)
                 .HasForeignKey(fk => fk.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            builder.HasMany(o => o.UserInventories)
+            builder.HasMany(m => m.UserInventories)
                 .WithOne(o => o.User)
                 .HasForeignKey(fk => fk.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            builder.HasMany(o => o.UserHistoryOpeningCases)
+            builder.HasMany(m => m.UserHistoryOpeningCases)
                 .WithOne(o => o.User)
                 .HasForeignKey(fk => fk.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            builder.HasMany(o => o.PromocodesUsedByUsers)
+            builder.HasMany(m => m.PromocodesUsedByUsers)
                 .WithOne(o => o.User)
                 .HasForeignKey(fk => fk.UserId)
                 .OnDelete(DeleteBehavior.Cascade);

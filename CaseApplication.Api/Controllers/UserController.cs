@@ -1,6 +1,9 @@
 ﻿using CaseApplication.DomainLayer.Entities;
 using CaseApplication.DomainLayer.Repositories;
+using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace CaseApplication.Api.Controllers
 {
@@ -39,13 +42,34 @@ namespace CaseApplication.Api.Controllers
             foreach (User t in users)
             {
                 t.PasswordSalt = "";
+                t.PasswordHash = "";
             }
             return users;
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(User user)
+        public async Task<IActionResult> Create(User user, string password)
         {
+            byte[] salt;
+            string saltEncoding;
+            do
+            {
+                salt = RandomNumberGenerator.GetBytes(256 / 8);
+                saltEncoding = Convert.ToBase64String(salt);
+            }
+            while (!await _userRepository.IsUniqueSalt(saltEncoding));
+
+            string hashed = Convert.ToBase64String(KeyDerivation.Pbkdf2(
+                    password: password,
+                    salt: salt,
+                    prf: KeyDerivationPrf.HMACSHA512,
+                    iterationCount: 10000,
+                    numBytesRequested: 256 / 8
+                ));
+
+            user.PasswordHash = hashed;
+            user.PasswordSalt = saltEncoding;
+
             return Ok(await _userRepository.Create(user));
         }
 

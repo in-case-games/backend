@@ -12,9 +12,9 @@ namespace CaseApplication.EntityFramework.Configurations
             builder.Property(p => p.LossChance)
                 .IsRequired();
 
-            builder.HasIndex(k => k.GameCaseId)
+            builder.HasIndex(i => i.GameCaseId)
                 .IsUnique(false);
-            builder.HasIndex(k => k.GameItemId)
+            builder.HasIndex(i => i.GameItemId)
                 .IsUnique(false);
         }
     }

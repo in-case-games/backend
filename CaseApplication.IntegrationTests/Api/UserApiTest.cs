@@ -33,7 +33,7 @@ namespace CaseApplication.IntegrationTests.Api
 
             // Act
             HttpStatusCode postStatusCode = await _response
-                .ResponsePost("/User", templateUser);
+                .ResponsePost("/User?password=1234", templateUser);
 
             User user = await _response
                 .ResponseGet<User>($"/User/GetByLogin?login={templateUser.UserLogin}&hash=123");

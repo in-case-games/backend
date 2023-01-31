@@ -238,7 +238,7 @@ namespace CaseApplication.IntegrationTests.Api
                 PasswordHash = "testuser2",
                 PasswordSalt = "testuser2",
             };
-            await _clientApi.ResponsePost("/User", user);
+            await _clientApi.ResponsePost("/User?password=1234", user);
             user = await _clientApi
                 .ResponseGet<User>($"/User/GetByLogin?login=testuser2&hash=123");
 

@@ -17,7 +17,7 @@ namespace CaseApplication.EntityFramework.Configurations
                 .HasColumnType("DECIMAL(18, 5)")
                 .IsRequired();
         
-            builder.HasMany(o => o.PromocodesUsedByUsers)
+            builder.HasMany(m => m.PromocodesUsedByUsers)
                 .WithOne(o => o.Promocode)
                 .HasForeignKey(fk => fk.PromocodeId)
                 .OnDelete(DeleteBehavior.Cascade);

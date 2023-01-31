@@ -6,6 +6,7 @@ namespace CaseApplication.DomainLayer.Repositories
     {
         public Task<User> GetByEmail(string email);
         public Task<User> GetByLogin(string login);
+        public Task<bool> IsUniqueSalt(string salt);
         public Task<IEnumerable<User>> GetAll();
     }
 }

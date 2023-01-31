@@ -15,7 +15,7 @@ namespace CaseApplication.IntegrationTests.Api
         private async Task<UserAdditionalInfo> CreateUserAdditionalInfo()
         {
             User user = InitializeUser();
-            await _response.ResponsePost("/User", user);
+            await _response.ResponsePost("/User?password=1234", user);
             User currentUser = await _response
                 .ResponseGet<User>($"/User/GetByLogin?login={user.UserLogin}&hash=123");
             UserAdditionalInfo userInfo = new UserAdditionalInfo()

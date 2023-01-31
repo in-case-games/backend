@@ -108,7 +108,7 @@ namespace CaseApplication.IntegrationTests.Api
                 UserImage = "UHOCUserImage",
             };
 
-            HttpStatusCode createUser = await _clientApi.ResponsePost("/User", user);
+            HttpStatusCode createUser = await _clientApi.ResponsePost("/User?password=1234", user);
             HttpStatusCode createFirstItem = await _clientApi.ResponsePost("/GameItem", gameItemFirst);
             HttpStatusCode createSecondItem = await _clientApi.ResponsePost("/GameItem", gameItemSecond);
             HttpStatusCode createGameCase = await _clientApi.ResponsePost("/GameCase", gameCase);
