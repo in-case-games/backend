@@ -14,27 +14,21 @@ namespace CaseApplication.EntityFramework.Repositories
             _contextFactory = contextFactory;
         }
 
-        public async Task<UserHistoryOpeningCases> Get(Guid id)
+        public async Task<UserHistoryOpeningCases?> Get(Guid id)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            UserHistoryOpeningCases? searchUserHistory = await context
-                .UserHistoryOpeningCases
+            return await context.UserHistoryOpeningCases
                 .FirstOrDefaultAsync(x => x.Id == id);
-
-            return searchUserHistory ?? throw new("There is no such user history in the database, " +
-                "review what data comes from the api");
         }
-        public async Task<IEnumerable<UserHistoryOpeningCases>> GetAll(Guid userId)
+
+        public async Task<List<UserHistoryOpeningCases>> GetAll(Guid userId)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            IEnumerable<UserHistoryOpeningCases> userHistoryOpeningCases = await context
-                .UserHistoryOpeningCases
+            return await context.UserHistoryOpeningCases
                 .Where(x => x.UserId == userId)
                 .ToListAsync();
-
-            return userHistoryOpeningCases;
         }
 
         public async Task<bool> Create(UserHistoryOpeningCases userHistory)
@@ -85,14 +79,14 @@ namespace CaseApplication.EntityFramework.Repositories
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            List<UserHistoryOpeningCases>? searchUserHistories = await context
-                .UserHistoryOpeningCases
-                .Where(x => x.UserId == userId).ToListAsync();
+            List<UserHistoryOpeningCases>? userHistories = await context.UserHistoryOpeningCases
+                .Where(x => x.UserId == userId)
+                .ToListAsync();
 
-            if(searchUserHistories.Count == 0) throw new Exception("There is no such user history, " +
+            if(userHistories.Count == 0) throw new Exception("There is no such user history, " +
                 "review what data comes from the api");
 
-            context.UserHistoryOpeningCases.RemoveRange(searchUserHistories);
+            context.UserHistoryOpeningCases.RemoveRange(userHistories);
             await context.SaveChangesAsync();
 
             return true;

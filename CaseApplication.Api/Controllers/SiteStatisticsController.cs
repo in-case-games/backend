@@ -6,7 +6,7 @@ namespace CaseApplication.Api.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    public class SiteStatisticsController : Controller
+    public class SiteStatisticsController : ControllerBase
     {
         private readonly ISiteStatisticsRepository _siteStatisticsRepository;
         public SiteStatisticsController(ISiteStatisticsRepository siteStatisticsRepository)
@@ -14,9 +14,16 @@ namespace CaseApplication.Api.Controllers
             _siteStatisticsRepository = siteStatisticsRepository;
         }
         [HttpGet]
-        public async Task<SiteStatistics> Get()
+        public async Task<IActionResult> Get()
         {
-            return await _siteStatisticsRepository.Get();
+            SiteStatistics? siteStatistics = await _siteStatisticsRepository.Get();
+
+            if(siteStatistics != null)
+            {
+                return Ok(siteStatistics);
+            }
+
+            return NotFound();
         }
     }
 }

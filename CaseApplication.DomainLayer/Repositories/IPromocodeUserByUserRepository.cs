@@ -4,6 +4,6 @@ namespace CaseApplication.DomainLayer.Repositories
 {
     public interface IPromocodeUserByUserRepository: IBaseRepository<PromocodesUsedByUser>
     {
-        public Task<IEnumerable<PromocodesUsedByUser>> GetAll(Guid userId);
+        public Task<List<PromocodesUsedByUser>> GetAll(Guid userId);
     }
 }

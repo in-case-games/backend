@@ -14,32 +14,27 @@ namespace CaseApplication.EntityFramework.Repositories
             _contextFactory = contextFactory;
         }
 
-        public async Task<GameCase> Get(Guid id)
+        public async Task<GameCase?> Get(Guid id)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            GameCase? searchCase = await context.GameCase.FirstOrDefaultAsync(x => x.Id == id);
-
-            return searchCase ?? throw new Exception("There is no such case, " +
-                "review what data comes from the api");
+            return await context.GameCase.FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public async Task<IEnumerable<GameCase>> GetAll()
+        public async Task<List<GameCase>> GetAll()
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             return await context.GameCase.ToListAsync();
         }
 
-        public async Task<IEnumerable<GameCase>> GetAllByGroupName(string name)
+        public async Task<List<GameCase>> GetAllByGroupName(string name)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
-            IEnumerable<GameCase> gameCases = await context
-                .GameCase
+
+            return await context.GameCase
                 .Where(x => x.GroupCasesName == name)
                 .ToListAsync();
-
-            return gameCases;
         }
 
         public async Task<bool> Create(GameCase gameCase)

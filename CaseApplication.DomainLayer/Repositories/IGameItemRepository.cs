@@ -4,6 +4,6 @@ namespace CaseApplication.DomainLayer.Repositories
 {
     public interface IGameItemRepository : IBaseRepository<GameItem>
     {
-        public Task<IEnumerable<GameItem>> GetAll();
+        public Task<List<GameItem>> GetAll();
     }
 }

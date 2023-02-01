@@ -14,17 +14,14 @@ namespace CaseApplication.EntityFramework.Repositories
             _contextFactory = contextFactory;
         }
 
-        public async Task<News> Get(Guid id)
+        public async Task<News?> Get(Guid id)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            News? searchNews = await context.News.FirstOrDefaultAsync(x => x.Id == id);
-
-            return searchNews ?? throw new("There is no such news in the database, " +
-                "review what data comes from the api");
+            return await context.News.FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public async Task<IEnumerable<News>> GetAll()
+        public async Task<List<News>> GetAll()
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 

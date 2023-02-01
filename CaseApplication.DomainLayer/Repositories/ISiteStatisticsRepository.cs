@@ -4,6 +4,6 @@ namespace CaseApplication.DomainLayer.Repositories
 {
     public interface ISiteStatisticsRepository
     {
-        public Task<SiteStatistics> Get();
+        public Task<SiteStatistics?> Get();
     }
 }

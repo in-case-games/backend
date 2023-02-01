@@ -16,15 +16,22 @@ namespace CaseApplication.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<News> Get(Guid id)
+        public async Task<IActionResult> Get(Guid id)
         {
-            return await _newsRepository.Get(id);
+            News? news = await _newsRepository.Get(id);
+
+            if(news is not null)
+            {
+                return Ok(news);
+            }
+
+            return NotFound();
         }
 
         [HttpGet("GetAll")]
-        public async Task<IEnumerable<News>> GetAll()
+        public async Task<IActionResult> GetAll()
         {
-            return await _newsRepository.GetAll();
+            return Ok(await _newsRepository.GetAll());
         }
 
         [HttpPost]

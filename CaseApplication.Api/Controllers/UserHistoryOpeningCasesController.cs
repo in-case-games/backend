@@ -16,15 +16,22 @@ namespace CaseApplication.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<UserHistoryOpeningCases> Get(Guid id)
+        public async Task<IActionResult> Get(Guid id)
         {
-            return await _userHistoryRepository.Get(id);
+            UserHistoryOpeningCases? userHistoryOpening = await _userHistoryRepository.Get(id);
+
+            if(userHistoryOpening != null)
+            {
+                return Ok(userHistoryOpening);
+            }
+
+            return NotFound();
         }
 
         [HttpGet("GetAll")]
-        public async Task<IEnumerable<UserHistoryOpeningCases>> GetAll(Guid userId)
+        public async Task<IActionResult> GetAll(Guid userId)
         {
-            return await _userHistoryRepository.GetAll(userId);
+            return Ok(await _userHistoryRepository.GetAll(userId));
         }
 
         [HttpPost]

@@ -14,22 +14,18 @@ namespace CaseApplication.EntityFramework.Repositories
             _contextFactory = contextFactory;
         }
 
-        public async Task<Promocode> Get(Guid id)
+        public async Task<Promocode?> Get(Guid id)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
         
-            return await context.Promocode.FirstOrDefaultAsync(x => x.Id == id) ?? 
-                throw new("There is no such promocode in the database, " +
-                    "review what data comes from the api");
+            return await context.Promocode.FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public async Task<Promocode> GetByName(string name)
+        public async Task<Promocode?> GetByName(string name)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            return await context.Promocode.FirstOrDefaultAsync(x => x.PromocodeName == name) ?? 
-                throw new("There is no such promocode in the database, " +
-                    "review what data comes from the api");
+            return await context.Promocode.FirstOrDefaultAsync(x => x.PromocodeName == name);
         }
 
         public async Task<bool> Create(Promocode promocode)

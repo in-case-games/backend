@@ -14,7 +14,7 @@ namespace CaseApplication.EntityFramework.Repositories
             _contextFactory = contextFactory;
         }
 
-        public async Task<CaseInventory> Get(Guid id)
+        public async Task<CaseInventory?> Get(Guid id)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
@@ -22,11 +22,10 @@ namespace CaseApplication.EntityFramework.Repositories
                 .CaseInventory
                 .FirstOrDefaultAsync(x => x.Id == id);
 
-            return searchCaseInventory ?? throw new Exception("There is no such case inventory, " +
-                "review what data comes from the api");
+            return searchCaseInventory;
         }
 
-        public async Task<IEnumerable<CaseInventory>> GetAll(Guid caseId)
+        public async Task<List<CaseInventory>> GetAll(Guid caseId)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 

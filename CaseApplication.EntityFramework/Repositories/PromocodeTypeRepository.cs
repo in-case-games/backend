@@ -13,14 +13,26 @@ namespace CaseApplication.EntityFramework.Repositories
         {
             _contextFactory = contextFactory;
         }
-        public async Task<PromocodeType> Get(Guid id)
+        public async Task<PromocodeType?> Get(Guid id)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             return await context.PromocodeType
-                    .FirstOrDefaultAsync(x => x.Id == id) ?? 
-                throw new Exception("There is no such promocodeType in the database, " +
-                    "review what data comes from the api");
+                    .FirstOrDefaultAsync(x => x.Id == id);
+        }
+        public async Task<PromocodeType?> GetByName(string name)
+        {
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            return await context.PromocodeType
+                    .FirstOrDefaultAsync(x => x.PromocodeTypeName == name);
+        }
+
+        public async Task<List<PromocodeType>> GetAll()
+        {
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            return await context.PromocodeType.ToListAsync();
         }
 
         public async Task<bool> Create(PromocodeType promocodeType)
@@ -67,23 +79,6 @@ namespace CaseApplication.EntityFramework.Repositories
             await context.SaveChangesAsync();
         
             return true;
-        }
-
-        public async Task<IEnumerable<PromocodeType>> GetAll()
-        {
-            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
-
-            return await context.PromocodeType.ToListAsync();
-        }
-
-        public async Task<PromocodeType> GetByName(string name)
-        {
-            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
-
-            return await context.PromocodeType
-                    .FirstOrDefaultAsync(x => x.PromocodeTypeName == name) ?? 
-                throw new Exception("There is no such promocodeType in the database, " +
-                    "review what data comes from the api");
         }
     }
 }

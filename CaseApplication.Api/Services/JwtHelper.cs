@@ -20,7 +20,7 @@ namespace CaseApplication.Api.Services
                 _configuration["CaseApp:JWTKey"]!));
             SigningCredentials credentials = new(securityKey, SecurityAlgorithms.HmacSha256);
 
-            JwtSecurityToken token = new JwtSecurityToken(
+            JwtSecurityToken token = new(
                 _configuration["CaseApp:Issuer"],
                 _configuration["CaseApp:Audience"]!,
                 additionalClaims,

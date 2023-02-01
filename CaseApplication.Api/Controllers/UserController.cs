@@ -11,7 +11,7 @@ namespace CaseApplication.Api.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class UserController : Controller
+    public class UserController : ControllerBase
     {
         private readonly IUserRepository _userRepository;
         private readonly EncryptorHelper _encryptorHelper;
@@ -25,33 +25,54 @@ namespace CaseApplication.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<User> Get(Guid id, string hash)
+        public async Task<IActionResult> Get(Guid id, string hash)
         {
-            return await _userRepository.Get(id);
+            User? user = await _userRepository.Get(id);
+
+            if(user != null)
+            {
+                return Ok(user);
+            }
+
+            return NotFound();
         }
 
         [HttpGet("GetByEmail")]
-        public async Task<User> GetByEmail(string email, string hash)
+        public async Task<IActionResult> GetByEmail(string email, string hash)
         {
-            return await _userRepository.GetByEmail(email);
+            User? user = await _userRepository.GetByEmail(email);
+
+            if (user != null)
+            {
+                return Ok(user);
+            }
+
+            return NotFound();
         }
 
         [HttpGet("GetByLogin")]
-        public async Task<User> GetByLogin(string login, string hash)
+        public async Task<IActionResult> GetByLogin(string login, string hash)
         {
-            return await _userRepository.GetByLogin(login);
+            User? user = await _userRepository.GetByLogin(login);
+
+            if (user != null)
+            {
+                return Ok(user);
+            }
+
+            return NotFound();
         }
 
         [HttpGet("GetAll")]
-        public async Task<IEnumerable<User>> GetAll()
+        public async Task<IActionResult> GetAll()
         {
-            List<User> users = (await _userRepository.GetAll()).ToList();
+            List<User> users = await _userRepository.GetAll();
             foreach (User t in users)
             {
                 t.PasswordSalt = "";
                 t.PasswordHash = "";
             }
-            return users;
+            return Ok(users);
         }
 
         [HttpPost]

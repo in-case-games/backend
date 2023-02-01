@@ -6,7 +6,7 @@ namespace CaseApplication.Api.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    public class PromocodeTypeController
+    public class PromocodeTypeController : ControllerBase
     {
         private readonly IPromocodeTypeRepository _promocodeTypeRepository;
 
@@ -16,39 +16,53 @@ namespace CaseApplication.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<PromocodeType> Get(Guid id)
+        public async Task<IActionResult> Get(Guid id)
         {
-            return await _promocodeTypeRepository.Get(id);
+            PromocodeType? promocodeType = await _promocodeTypeRepository.Get(id);
+
+            if(promocodeType != null)
+            {
+                return Ok(promocodeType);
+            }
+
+            return NotFound();
         }
 
         [HttpGet("GetByName")]
-        public async Task<PromocodeType> GetByName(string name)
+        public async Task<IActionResult> GetByName(string name)
         {
-            return await _promocodeTypeRepository.GetByName(name);
+            PromocodeType? promocodeType = await _promocodeTypeRepository.GetByName(name);
+
+            if (promocodeType != null)
+            {
+                return Ok(promocodeType);
+            }
+
+            return NotFound();
         }
 
         [HttpGet("GetAll")]
-        public async Task<IEnumerable<PromocodeType>> GetAll()
+        public async Task<IActionResult> GetAll()
         {
-            return await _promocodeTypeRepository.GetAll();
+            return Ok(await _promocodeTypeRepository.GetAll());
         }
 
         [HttpPost]
-        public async Task<bool> Create(PromocodeType promocodeType)
+        public async Task<IActionResult> Create(PromocodeType promocodeType)
         {
-            return await _promocodeTypeRepository.Create(promocodeType);
+            return Ok(await _promocodeTypeRepository.Create(promocodeType));
         }
 
         [HttpPut]
-        public async Task<bool> Update(PromocodeType promocodeType)
+        public async Task<IActionResult> Update(PromocodeType promocodeType)
         {
-            return await _promocodeTypeRepository.Update(promocodeType);
+            return Ok(await _promocodeTypeRepository.Update(promocodeType));
         }
 
         [HttpDelete]
-        public async Task<bool> Delete(Guid id)
+        public async Task<IActionResult> Delete(Guid id)
         {
-            return await _promocodeTypeRepository.Delete(id);
+            return Ok(await _promocodeTypeRepository.Delete(id));
         }
     }
 }

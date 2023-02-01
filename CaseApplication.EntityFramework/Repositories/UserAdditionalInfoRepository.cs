@@ -12,16 +12,12 @@ namespace CaseApplication.EntityFramework.Repositories
             _contextFactory = contextFactory;
         }
 
-        public async Task<UserAdditionalInfo> Get(Guid userId)
+        public async Task<UserAdditionalInfo?> Get(Guid userId)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            UserAdditionalInfo? searchInfo = await context
-                .UserAdditionalInfo
+            return await context.UserAdditionalInfo
                 .FirstOrDefaultAsync(x => x.UserId == userId);
-
-            return searchInfo ?? throw new Exception("There is no such information in the database, " +
-                "review what data comes from the api");
         }
 
         public async Task<bool> Create(UserAdditionalInfo info)

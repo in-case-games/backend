@@ -16,40 +16,53 @@ namespace CaseApplication.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<UserRole> Get(Guid id)
+        public async Task<IActionResult> Get(Guid id)
         {
-            return await _userRoleRepository.Get(id);
+            UserRole? userRole = await _userRoleRepository.Get(id);
+
+            if (userRole != null)
+            {
+                Ok(userRole);
+            }
+
+            return NotFound();
         }
 
-        [HttpGet("GetByRole")]
-        public async Task<UserRole> GetByRole(Guid roleId = new(), string? roleName = null)
+        [HttpGet("GetByName")]
+        public async Task<IActionResult> GetByName(string name)
         {
-            UserRole role = new() { Id = roleId, RoleName = roleName };
-            return await _userRoleRepository.GetByRole(role);
+            UserRole? userRole = await _userRoleRepository.GetByName(name);
+
+            if (userRole != null)
+            {
+                return Ok(userRole);
+            }
+
+            return NotFound();
         }
 
         [HttpGet("GetAll")]
-        public async Task<IEnumerable<UserRole>> GetAll()
+        public async Task<IActionResult> GetAll()
         {
-            return await _userRoleRepository.GetAll();
+            return Ok(await _userRoleRepository.GetAll());
         }
 
         [HttpPost]
-        public async Task<bool> Create(UserRole userRole)
+        public async Task<IActionResult> Create(UserRole userRole)
         {
-            return await _userRoleRepository.Create(userRole);
+            return Ok(await _userRoleRepository.Create(userRole));
         }
 
         [HttpPut]
-        public async Task<bool> Update(UserRole userRole)
+        public async Task<IActionResult> Update(UserRole userRole)
         {
-            return await _userRoleRepository.Update(userRole);
+            return Ok(await _userRoleRepository.Update(userRole));
         }
 
         [HttpDelete]
-        public async Task<bool> Delete(Guid id)
+        public async Task<IActionResult> Delete(Guid id)
         {
-            return await _userRoleRepository.Delete(id);
+            return Ok(await _userRoleRepository.Delete(id));
         }
     }
 }

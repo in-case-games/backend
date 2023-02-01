@@ -13,14 +13,20 @@ namespace CaseApplication.EntityFramework.Repositories
         {
             _contextFactory = contextFactory;
         }
-        public async Task<PromocodesUsedByUser> Get(Guid id)
+        public async Task<PromocodesUsedByUser?> Get(Guid id)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
         
-            return await context
-                    .PromocodeUsedByUsers.FirstOrDefaultAsync(x => x.Id == id) ??
-                throw new Exception("There is no such PromocodesUsedByUser in the database, " +
-                    "review what data comes from the api");
+            return await context.PromocodeUsedByUsers.FirstOrDefaultAsync(x => x.Id == id);
+        }
+
+        public async Task<List<PromocodesUsedByUser>> GetAll(Guid userId)
+        {
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            return await context.PromocodeUsedByUsers
+                    .Where(x => x.UserId == userId)
+                    .ToListAsync();
         }
 
         public async Task<bool> Create(PromocodesUsedByUser promocodesUsedByUser)
@@ -69,16 +75,6 @@ namespace CaseApplication.EntityFramework.Repositories
             await context.SaveChangesAsync();
         
             return true;
-        }
-
-        public async Task<IEnumerable<PromocodesUsedByUser>> GetAll(Guid userId)
-        {
-            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
-        
-            return await context.PromocodeUsedByUsers
-                    .Where(x => x.UserId == userId).ToListAsync() ?? 
-                throw new Exception("There is no such PromocodeUsedByUsers in the database, " +
-                    "review what data comes from the api");
         }
     }
 }

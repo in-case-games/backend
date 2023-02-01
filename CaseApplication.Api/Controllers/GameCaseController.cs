@@ -16,38 +16,45 @@ namespace CaseApplication.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<GameCase> Get(Guid id)
+        public async Task<IActionResult> Get(Guid id)
         {
-            return await _gameCaseRepository.Get(id);
+            GameCase? gameCase = await _gameCaseRepository.Get(id);
+
+            if (gameCase != null)
+            {
+                return Ok(await _gameCaseRepository.Get(id));
+            }
+            return NotFound();
         }
 
         [HttpGet("GetAll")]
-        public async Task<IEnumerable<GameCase>> GetAll()
+        public async Task<IActionResult> GetAll()
         {
-            return await _gameCaseRepository.GetAll();
+            return Ok(await _gameCaseRepository.GetAll());
         }
+
         [HttpGet("GetAllByGroupName")]
-        public async Task<IEnumerable<GameCase>> GetAllByGroupName(string name)
+        public async Task<IActionResult> GetAllByGroupName(string name)
         {
-            return await _gameCaseRepository.GetAllByGroupName(name);
+            return Ok(await _gameCaseRepository.GetAllByGroupName(name));
         }
 
         [HttpPost]
-        public async Task<bool> Create(GameCase gameCase)
+        public async Task<IActionResult> Create(GameCase gameCase)
         {
-            return await _gameCaseRepository.Create(gameCase);
+            return Ok(await _gameCaseRepository.Create(gameCase));
         }
 
         [HttpPut]
-        public async Task<bool> Update(GameCase gameCase)
+        public async Task<IActionResult> Update(GameCase gameCase)
         {
-            return await _gameCaseRepository.Update(gameCase);
+            return Ok(await _gameCaseRepository.Update(gameCase));
         }
 
         [HttpDelete]
-        public async Task<bool> Delete(Guid id)
+        public async Task<IActionResult> Delete(Guid id)
         {
-            return await _gameCaseRepository.Delete(id);
+            return Ok(await _gameCaseRepository.Delete(id));
         }
     }
 }

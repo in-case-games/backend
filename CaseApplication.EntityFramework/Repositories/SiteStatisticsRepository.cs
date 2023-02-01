@@ -13,16 +13,11 @@ namespace CaseApplication.EntityFramework.Repositories
         {
             _contextFactory = contextFactory;
         }
-        public async Task<SiteStatistics> Get()
+        public async Task<SiteStatistics?> Get()
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            SiteStatistics? siteStatistics = await context
-                .SiteStatistics
-                .FirstOrDefaultAsync();
-
-            return siteStatistics ?? throw new("There is no such statistics in the database, " +
-                "review what data comes from the api");
+            return await context.SiteStatistics.FirstOrDefaultAsync(); ;
         }
     }
 }

@@ -12,9 +12,9 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContextFactory<ApplicationDbContext>(
     options => options.UseSqlServer(
 #if DEBUG
-        builder.Configuration["CaseApp:DevelopmentConnection"],
+        builder.Configuration["ConnectionStrings:DevelopmentConnection"],
 #else
-        builder.Configuration["CaseApp:ProductionConnection"],
+        builder.Configuration["ConnectionStrings:ProductionConnection"],
 #endif
         b => b.MigrationsAssembly("CaseApplication.Api"))
 );
@@ -23,21 +23,22 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options => {
+    .AddJwtBearer(options => 
+    {
         options.SaveToken = true;
 
         options.TokenValidationParameters = new TokenValidationParameters()
         {
             ValidateIssuer = true,
-            ValidIssuer = builder.Configuration["CaseApp:Issuer"]!,
+            ValidIssuer = builder.Configuration["JWT:ValidIssuer"]!,
 
             ValidateAudience = true,
-            ValidAudience = builder.Configuration["CaseApp:Audience"]!,
+            ValidAudience = builder.Configuration["JWT:ValidAudience"]!,
 
             ValidateLifetime = true,
 
             IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(builder.Configuration["CaseApp:JWTToken"]!)),
+                Encoding.UTF8.GetBytes(builder.Configuration["JWT:Secret"]!)),
 
             ValidateIssuerSigningKey = true,
         };

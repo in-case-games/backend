@@ -4,7 +4,7 @@ namespace CaseApplication.DomainLayer.Repositories
 {
     public interface IUserRoleRepository : IBaseRepository<UserRole>
     {
-        public Task<UserRole> GetByRole(UserRole role);
-        public Task<IEnumerable<UserRole>> GetAll();
+        public Task<UserRole?> GetByName(string name);
+        public Task<List<UserRole>> GetAll();
     }
 }

@@ -34,17 +34,20 @@ namespace CaseApplication.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<GameItem> GetOpeningCase(Guid userId, Guid caseId)
+        public async Task<IActionResult> GetOpeningCase(Guid userId, Guid caseId)
         {
             //Check Balance
-            UserAdditionalInfo userAdditionalInfo = await _userInfoRepository.Get(userId);
-            GameCase gameCase = await _gameCaseRepository.Get(caseId);
+            UserAdditionalInfo? userAdditionalInfo = await _userInfoRepository.Get(userId);
+            GameCase? gameCase = await _gameCaseRepository.Get(caseId);
+
+            if(userAdditionalInfo is null || gameCase is null) return NotFound();
 
             bool isValidBalance = (userAdditionalInfo.UserBalance >= gameCase.GameCaseCost);
 
-            if (isValidBalance is false)
-                throw new Exception("Your balance is less than the cost of the case" +
+            if (isValidBalance is false) {
+                return BadRequest("Your balance is less than the cost of the case" +
                     "Top up your balance or open a case cheaper");
+            }
 
             //Update Balance Case and User
             await UpdateUserBalance(userAdditionalInfo, -gameCase.GameCaseCost);
@@ -75,7 +78,7 @@ namespace CaseApplication.Api.Controllers
             await _userHistory.Create(historyCase);
             await _userInventoryRepository.Create(userInventory);
 
-            return winGameItem;
+            return Ok(winGameItem);
         }
 
         private async Task<GameItem> RandomizeByConstraints(Guid caseId, decimal balance)

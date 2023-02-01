@@ -21,46 +21,39 @@ namespace CaseApplication.EntityFramework.Repositories
             return searchUser is null;
         }
 
-        public async Task<User> GetByParameters(User user)
+        public async Task<User?> GetByParameters(User user)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            User? searchUser = await context.User.FirstOrDefaultAsync(x => x.Id == user.Id);
-            searchUser ??= await context.User.FirstOrDefaultAsync(x => x.UserEmail == user.UserEmail);
-            searchUser ??= await context.User.FirstOrDefaultAsync(x => x.UserLogin == user.UserLogin);
-
-            return searchUser ?? throw new("There is no such user in the database, " +
-                "review what data comes from the api");
+            return await context.User
+                .FirstOrDefaultAsync(x => 
+                x.UserEmail == user.UserEmail || 
+                x.Id == user.Id ||
+                x.UserLogin == user.UserLogin);
         }
 
-        public async Task<User> Get(Guid id)
+        public async Task<User?> Get(Guid id)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            return await context.User.FirstOrDefaultAsync(x => x.Id == id) ?? 
-                throw new("There is no such user in the database, " +
-                "review what data comes from the api");
+            return await context.User.FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public async Task<User> GetByEmail(string email)
+        public async Task<User?> GetByEmail(string email)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            return await context.User.FirstOrDefaultAsync(x => x.UserEmail == email) ?? 
-                throw new("There is no such user in the database, " +
-                "review what data comes from the api");
+            return await context.User.FirstOrDefaultAsync(x => x.UserEmail == email);
         }
 
-        public async Task<User> GetByLogin(string login)
+        public async Task<User?> GetByLogin(string login)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            return await context.User.FirstOrDefaultAsync(x => x.UserLogin == login) ?? 
-                throw new("There is no such user in the database, " + 
-                "review what data comes from the api");
+            return await context.User.FirstOrDefaultAsync(x => x.UserLogin == login);
         }
 
-        public async Task<IEnumerable<User>> GetAll()
+        public async Task<List<User>> GetAll()
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 

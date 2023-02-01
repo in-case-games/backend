@@ -6,7 +6,7 @@ namespace CaseApplication.Api.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    public class PromocodesUsedByUserController
+    public class PromocodesUsedByUserController : ControllerBase
     {
         private readonly IPromocodeUserByUserRepository _promocodeUserByUserRepository;
 
@@ -16,33 +16,40 @@ namespace CaseApplication.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<PromocodesUsedByUser> Get(Guid id)
+        public async Task<IActionResult> Get(Guid id)
         {
-            return await _promocodeUserByUserRepository.Get(id);
+            PromocodesUsedByUser? promocodesUsed = await _promocodeUserByUserRepository.Get(id);
+
+            if(promocodesUsed != null)
+            {
+                return Ok(promocodesUsed);
+            }
+
+            return NotFound();
         }
 
         [HttpGet("GetAll")]
-        public async Task<IEnumerable<PromocodesUsedByUser>> GetAll(Guid userId)
+        public async Task<IActionResult> GetAll(Guid userId)
         {
-            return await _promocodeUserByUserRepository.GetAll(userId);
+            return Ok(await _promocodeUserByUserRepository.GetAll(userId));
         }
 
         [HttpPost]
-        public async Task<bool> Create(PromocodesUsedByUser promocodesUsedByUser)
+        public async Task<IActionResult> Create(PromocodesUsedByUser promocodesUsedByUser)
         {
-            return await _promocodeUserByUserRepository.Create(promocodesUsedByUser);
+            return Ok(await _promocodeUserByUserRepository.Create(promocodesUsedByUser));
         }
 
         [HttpPut]
-        public async Task<bool> Update(PromocodesUsedByUser promocodesUsedByUser)
+        public async Task<IActionResult> Update(PromocodesUsedByUser promocodesUsedByUser)
         {
-            return await _promocodeUserByUserRepository.Update(promocodesUsedByUser);
+            return Ok(await _promocodeUserByUserRepository.Update(promocodesUsedByUser));
         }
 
         [HttpDelete]
-        public async Task<bool> Delete(Guid id)
+        public async Task<IActionResult> Delete(Guid id)
         {
-            return await _promocodeUserByUserRepository.Delete(id);
+            return Ok(await _promocodeUserByUserRepository.Delete(id));
         }
     }
 }

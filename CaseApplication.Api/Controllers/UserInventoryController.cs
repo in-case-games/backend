@@ -16,15 +16,22 @@ namespace CaseApplication.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<UserInventory> Get(Guid id) 
-        { 
-            return await _userInventoryRepository.Get(id);
+        public async Task<IActionResult> Get(Guid id) 
+        {
+            UserInventory? userInventory = await _userInventoryRepository.Get(id);
+
+            if(userInventory != null)
+            {
+                return Ok(userInventory);
+            }
+
+            return NotFound();
         }
 
         [HttpGet("GetAll")]
-        public async Task<IEnumerable<UserInventory>> GetAll(Guid userId)
+        public async Task<IActionResult> GetAll(Guid userId)
         {
-            return await _userInventoryRepository.GetAll(userId);
+            return Ok(await _userInventoryRepository.GetAll(userId));
         }
 
         [HttpPost]

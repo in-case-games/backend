@@ -4,6 +4,6 @@ namespace CaseApplication.DomainLayer.Repositories
 {
     public interface IUserInventoryRepository : IBaseRepository<UserInventory>
     {
-        public Task<IEnumerable<UserInventory>> GetAll(Guid userId);
+        public Task<List<UserInventory>> GetAll(Guid userId);
     }
 }

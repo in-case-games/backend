@@ -33,10 +33,10 @@ namespace CaseApplication.IntegrationTests.Api
                 .ResponsePost("/Role", templateUserRole);
 
             UserRole userRole = await _response
-                .ResponseGet<UserRole>($"/Role/GetByRole?roleName={templateUserRole.RoleName}");
+                .ResponseGet<UserRole>($"/Role/GetByName?name={templateUserRole.RoleName}");
 
             HttpStatusCode getStatusCode = await _response
-                .ResponseGetStatusCode($"/Role/GetByRole?roleName={templateUserRole.RoleName}");
+                .ResponseGetStatusCode($"/Role/GetByName?name={templateUserRole.RoleName}");
             HttpStatusCode getAllStatusCode = await _response
                 .ResponseGetStatusCode("/Role/GetAll");
 

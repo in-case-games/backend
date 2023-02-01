@@ -16,33 +16,40 @@ namespace CaseApplication.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<UserRestriction> Get(Guid id)
+        public async Task<IActionResult> Get(Guid id)
         {
-            return await _userRestrictionRepository.Get(id);
+            UserRestriction? userRestriction = await _userRestrictionRepository.Get(id);
+
+            if (userRestriction != null)
+            {
+                return Ok(userRestriction);
+            }
+
+            return NotFound();
         }
 
         [HttpGet("GetAll")]
-        public async Task<IEnumerable<UserRestriction>> GetAll(Guid userId)
+        public async Task<IActionResult> GetAll(Guid userId)
         {
-            return await _userRestrictionRepository.GetAll(userId);
+            return Ok(await _userRestrictionRepository.GetAll(userId));
         }
 
         [HttpPost]
-        public async Task<bool> Create(UserRestriction userRestriction)
+        public async Task<IActionResult> Create(UserRestriction userRestriction)
         {
-            return await _userRestrictionRepository.Create(userRestriction);
+            return Ok(await _userRestrictionRepository.Create(userRestriction));
         }
 
         [HttpPut]
-        public async Task<bool> Update(UserRestriction userRestriction)
+        public async Task<IActionResult> Update(UserRestriction userRestriction)
         {
-            return await _userRestrictionRepository.Update(userRestriction);
+            return Ok(await _userRestrictionRepository.Update(userRestriction));
         }
 
         [HttpDelete]
-        public async Task<bool> Delete(Guid id)
+        public async Task<IActionResult> Delete(Guid id)
         {
-            return await _userRestrictionRepository.Delete(id);
+            return Ok(await _userRestrictionRepository.Delete(id));
         }
     }
 }

@@ -40,33 +40,33 @@ namespace CaseApplication.Api.Controllers
         }
         #endregion
         [AllowAnonymous]
-        [HttpPost]
-        public async Task<object> Authenticate(User user, string password)
+        [HttpPost("Authenticate")]
+        public async Task<IActionResult> Authenticate(User user, string password)
         {
-            User searchUser = await _userRepository.GetByParameters(user);
+            User? searchUser = await _userRepository.GetByParameters(user);
 
-            string hash = _encryptorHelper.EncryptorPassword(password, 
+            if (searchUser is null) return Unauthorized();
+
+            string hash = _encryptorHelper.EncryptorPassword(password,
                 Convert.FromBase64String(searchUser.PasswordSalt!));
 
-            if (hash != searchUser.PasswordHash) 
-                throw new Exception("Invalid login/email/id or password");
+            if (hash != searchUser.PasswordHash) return Unauthorized();
 
-            List<Claim> claims = await GetClaims(user);
+            List<Claim> claims = await GetClaims(searchUser);
 
             TimeSpan expirationJwt = TimeSpan.FromMinutes(
-                double.Parse(_configuration["CaseApp:TokenLifetime"]!));
+                double.Parse(_configuration["JWT:TokenValidityInMinutes"]!));
 
             JwtSecurityToken token = _jwtHelper.GenerateJwt(expirationJwt, claims.ToArray());
 
-            return new
-            {
+            return Ok(new {
                 token = new JwtSecurityTokenHandler().WriteToken(token),
                 expires = token.ValidTo
-            };
+            });
         }
 
-        [HttpPost]
-        public async Task<bool> Logout(User user)
+        [HttpPost("Logout")]
+        public bool Logout(User user)
         {
             return true;
         }
@@ -74,18 +74,18 @@ namespace CaseApplication.Api.Controllers
         private async Task<List<Claim>> GetClaims(User user)
         {
             //Find future data for claims
-            List<Claim> claims = new List<Claim>();
-            UserAdditionalInfo userAdditionalInfo = await _userAdditionalInfoRepository.Get(user.Id);
+            List<Claim> claims = new();
+            UserAdditionalInfo? userAdditionalInfo = await _userAdditionalInfoRepository.Get(user.Id);
 
-            Guid roleId = userAdditionalInfo.UserRoleId;
-            string roleName = (await _userRoleRepository.Get(roleId)).RoleName!;
+            Guid roleId = userAdditionalInfo!.UserRoleId;
+            string roleName = (await _userRoleRepository.Get(roleId))!.RoleName!;
 
             //Add claims
             claims.Add(new Claim("UserId", user.Id.ToString()));
             claims.Add(new Claim(ClaimTypes.Role, roleName));
-            claims.Add(new Claim(ClaimTypes.Name, user.UserLogin!));
-            claims.Add(new Claim(ClaimTypes.Email, user.UserEmail!));
-            claims.Add(new Claim(ClaimTypes.Hash, user.PasswordHash!));
+            claims.Add(new Claim("UserLogin", user.UserLogin!));
+            claims.Add(new Claim("UserEmail", user.UserEmail!));
+            claims.Add(new Claim("PasswordHash", user.PasswordHash!));
 
             return claims;
         }

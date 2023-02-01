@@ -13,17 +13,14 @@ namespace CaseApplication.EntityFramework.Repositories
             _contextFactory = contextFactory;
         }
 
-        public async Task<GameItem> Get(Guid id)
+        public async Task<GameItem?> Get(Guid id)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            GameItem? searchGameItem = await context.GameItem.FirstOrDefaultAsync(x => x.Id == id);
-
-            return searchGameItem ?? throw new Exception("There is no such item, " +
-                "review what data comes from the api");
+            return await context.GameItem.FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public async Task<IEnumerable<GameItem>> GetAll()
+        public async Task<List<GameItem>> GetAll()
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 

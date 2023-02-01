@@ -12,34 +12,25 @@ namespace CaseApplication.EntityFramework.Repositories
         {
             _contextFactory = contextFactory;
         }
-        public async Task<UserRole> Get(Guid id)
+        public async Task<UserRole?> Get(Guid id)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            return await context.UserRole.FirstOrDefaultAsync(x => x.Id == id) ?? 
-                throw new("There is no such role in the database, " +
-                "review what data comes from the api");
+            return await context.UserRole.FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public async Task<UserRole> GetByRole(UserRole role)
+        public async Task<UserRole?> GetByName(string name)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            UserRole? searchRole = await context.UserRole.FirstOrDefaultAsync(x => x.Id == role.Id);
-
-            searchRole ??= await context.UserRole.FirstOrDefaultAsync(x => x.RoleName == role.RoleName);
-
-            return searchRole ?? throw new Exception("There is no such role in the database, " +
-                "review what data comes from the api");
+            return await context.UserRole.FirstOrDefaultAsync(x => x.RoleName == name);
         }
 
-        public async Task<IEnumerable<UserRole>> GetAll()
+        public async Task<List<UserRole>> GetAll()
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            List<UserRole> searchRoles = await context.UserRole.ToListAsync();
-
-            return searchRoles;
+            return await context.UserRole.ToListAsync();
         }
 
         public async Task<bool> Create(UserRole role)
