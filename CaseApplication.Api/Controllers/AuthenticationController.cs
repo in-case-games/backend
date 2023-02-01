@@ -1,12 +1,15 @@
-﻿using CaseApplication.Api.Services;
+﻿using CaseApplication.Api.Models;
+using CaseApplication.Api.Services;
 using CaseApplication.DomainLayer.Entities;
 using CaseApplication.DomainLayer.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Text;
 
 namespace CaseApplication.Api.Controllers
 {
@@ -40,8 +43,8 @@ namespace CaseApplication.Api.Controllers
         }
         #endregion
         [AllowAnonymous]
-        [HttpPost("Authenticate")]
-        public async Task<IActionResult> Authenticate(User user, string password)
+        [HttpPost("SignIn")]
+        public async Task<IActionResult> SignIn(User user, string password)
         {
             User? searchUser = await _userRepository.GetByParameters(user);
 
@@ -54,14 +57,77 @@ namespace CaseApplication.Api.Controllers
 
             List<Claim> claims = await GetClaims(searchUser);
 
-            TimeSpan expirationJwt = TimeSpan.FromMinutes(
-                double.Parse(_configuration["JWT:TokenValidityInMinutes"]!));
-
-            JwtSecurityToken token = _jwtHelper.GenerateJwt(expirationJwt, claims.ToArray());
+            JwtSecurityToken token = _jwtHelper.CreateToken(claims.ToArray());
 
             return Ok(new {
                 token = new JwtSecurityTokenHandler().WriteToken(token),
                 expires = token.ValidTo
+            });
+        }
+
+        [AllowAnonymous]
+        [HttpPost("SignUp")]
+        public async Task<IActionResult> SignUp(User user, string password)
+        {
+            user.Id = new Guid();
+            User? userExists = await _userRepository.GetByParameters(user);
+            if (userExists is not null) return BadRequest("User already exists!");
+
+            string salt;
+            int countIteration = 10000;
+
+            do
+            {
+                if (countIteration == 0) throw new Exception("Request exceeded the waiting time");
+
+                salt = _encryptorHelper.GenerationSaltTo64Bytes();
+
+                --countIteration;
+            }
+            while (!await _userRepository.IsUniqueSalt(salt));
+
+            byte[] saltEncoding = Convert.FromBase64String(salt);
+            string hash = _encryptorHelper.EncryptorPassword(password, saltEncoding);
+
+            user.PasswordHash = hash;
+            user.PasswordSalt = salt;
+
+            return Ok(await _userRepository.Create(user));
+        }
+
+        [HttpPost("RefreshToken")]
+        public async Task<IActionResult> RefreshToken(TokenModel tokenModel)
+        {
+            string? accessToken = tokenModel.AccessToken;
+            string? refreshToken = tokenModel.RefreshToken;
+
+            ClaimsPrincipal? principal = _jwtHelper.GetPrincipalFromExpiredToken(accessToken);
+
+            if(principal is null)
+                return BadRequest("Invalid access token or refresh token");
+
+            string userLogin = principal.Identity!.Name!;
+
+            User? user = await _userRepository.GetByLogin(userLogin);
+
+            if (
+                user == null || 
+                user.RefreshToken != refreshToken || 
+                user.RefreshTokenExpiryTime <= DateTime.Now)
+            {
+                return BadRequest("Invalid access token or refresh token");
+            }
+
+            JwtSecurityToken newAccessToken = _jwtHelper.CreateToken(principal.Claims.ToArray());
+            string newRefreshToken = _jwtHelper.GenerateRefreshToken();
+
+            user.RefreshToken = newRefreshToken;
+            await _userRepository.Update(user!);
+
+            return new ObjectResult(new
+            {
+                accessToken = new JwtSecurityTokenHandler().WriteToken(newAccessToken),
+                refreshToken = newRefreshToken
             });
         }
 
@@ -83,7 +149,7 @@ namespace CaseApplication.Api.Controllers
             //Add claims
             claims.Add(new Claim("UserId", user.Id.ToString()));
             claims.Add(new Claim(ClaimTypes.Role, roleName));
-            claims.Add(new Claim("UserLogin", user.UserLogin!));
+            claims.Add(new Claim(ClaimTypes.Name, user.UserLogin!));
             claims.Add(new Claim("UserEmail", user.UserEmail!));
             claims.Add(new Claim("PasswordHash", user.PasswordHash!));
 

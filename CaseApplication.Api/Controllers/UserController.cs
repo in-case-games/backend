@@ -75,31 +75,6 @@ namespace CaseApplication.Api.Controllers
             return Ok(users);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Create(User user, string password)
-        {
-            string salt;
-            int countIteration = 10000;
-
-            do
-            {
-                if (countIteration == 0) throw new Exception("Request exceeded the waiting time");
-
-                salt = _encryptorHelper.GenerationSaltTo64Bytes();
-
-                --countIteration;
-            }
-            while (!await _userRepository.IsUniqueSalt(salt));
-
-            byte[] saltEncoding = Convert.FromBase64String(salt);
-            string hash = _encryptorHelper.EncryptorPassword(password, saltEncoding);
-
-            user.PasswordHash = hash;
-            user.PasswordSalt = salt;
-
-            return Ok(await _userRepository.Create(user));
-        }
-
         [HttpPut]
         public async Task<IActionResult> Update(User user, string hash)
         {
