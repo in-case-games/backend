@@ -14,13 +14,15 @@ namespace CaseApplication.Api.Controllers
     [ApiController]
     public class AuthenticationController : ControllerBase
     {
+        #region injections
         private readonly IUserRepository _userRepository;
         private readonly IUserAdditionalInfoRepository _userAdditionalInfoRepository;
         private readonly IUserRoleRepository _userRoleRepository;
         private readonly EncryptorHelper _encryptorHelper;
         private readonly JwtHelper _jwtHelper;
         private readonly IConfiguration _configuration;
-
+        #endregion
+        #region ctor
         public AuthenticationController(
             IUserRepository userRepository, 
             IUserAdditionalInfoRepository userAdditionalInfoRepository,
@@ -36,7 +38,7 @@ namespace CaseApplication.Api.Controllers
             _jwtHelper = jwtHelper;
             _configuration = configuration;
         }
-
+        #endregion
         [AllowAnonymous]
         [HttpPost]
         public async Task<object> Authenticate(User user, string password)

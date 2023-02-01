@@ -4,7 +4,6 @@ using CaseApplication.EntityFramework.Data;
 using CaseApplication.EntityFramework.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
@@ -19,7 +18,7 @@ builder.Services.AddDbContextFactory<ApplicationDbContext>(
 #endif
         b => b.MigrationsAssembly("CaseApplication.Api"))
 );
-
+// TODO: Configure CORS
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
