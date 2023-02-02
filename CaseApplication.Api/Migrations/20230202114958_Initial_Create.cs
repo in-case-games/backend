@@ -94,8 +94,8 @@ namespace CaseApplication.Api.Migrations
                     UserLogin = table.Column<string>(type: "nvarchar(40)", maxLength: 40, nullable: false),
                     UserImage = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UserEmail = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    PasswordSalt = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    PasswordSalt = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -234,6 +234,27 @@ namespace CaseApplication.Api.Migrations
                     table.PrimaryKey("PK_UserRestriction", x => x.Id);
                     table.ForeignKey(
                         name: "FK_UserRestriction_User_UserId",
+                        column: x => x.UserId,
+                        principalTable: "User",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserToken",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    RefreshToken = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    RefreshTokenExpiryTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UserIpAddress = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserToken", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_UserToken_User_UserId",
                         column: x => x.UserId,
                         principalTable: "User",
                         principalColumn: "Id",
@@ -399,6 +420,12 @@ namespace CaseApplication.Api.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_User_PasswordSalt",
+                table: "User",
+                column: "PasswordSalt",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_User_UserEmail",
                 table: "User",
                 column: "UserEmail",
@@ -480,6 +507,11 @@ namespace CaseApplication.Api.Migrations
                 table: "UserRole",
                 column: "Id",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserToken_UserId",
+                table: "UserToken",
+                column: "UserId");
         }
 
         /// <inheritdoc />
@@ -508,6 +540,9 @@ namespace CaseApplication.Api.Migrations
 
             migrationBuilder.DropTable(
                 name: "UserRestriction");
+
+            migrationBuilder.DropTable(
+                name: "UserToken");
 
             migrationBuilder.DropTable(
                 name: "Promocode");

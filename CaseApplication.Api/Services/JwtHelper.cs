@@ -15,7 +15,7 @@ namespace CaseApplication.Api.Services
             _configuration = configuration;
         }
 
-        public JwtSecurityToken CreateToken(Claim[] additionalClaims)
+        public JwtSecurityToken CreateAccessToken(Claim[] additionalClaims)
         {
             TimeSpan expiration = TimeSpan.FromMinutes(
                 double.Parse(_configuration["JWT:TokenValidityInMinutes"]!));
@@ -34,10 +34,23 @@ namespace CaseApplication.Api.Services
             return token;
         }
 
-        public string GenerateRefreshToken()
+        public JwtSecurityToken CreateRefreshToken(Claim[] additionalClaims)
         {
-            byte[] salt = RandomNumberGenerator.GetBytes(64);
-            return Convert.ToBase64String(salt);
+            TimeSpan expiration = TimeSpan.FromDays(
+                double.Parse(_configuration["JWT:RefreshTokenValidityInDays"]!));
+
+            SymmetricSecurityKey securityKey = new(Encoding.ASCII.GetBytes(
+                _configuration["JWT:Secret"]!));
+            SigningCredentials credentials = new(securityKey, SecurityAlgorithms.HmacSha256);
+
+            JwtSecurityToken token = new(
+                _configuration["JWT:ValidIssuer"],
+                _configuration["JWT:ValidAudience"]!,
+                additionalClaims,
+                expires: DateTime.UtcNow.Add(expiration),
+                signingCredentials: credentials);
+
+            return token;
         }
 
         public ClaimsPrincipal? GetPrincipalFromExpiredToken(string? token)

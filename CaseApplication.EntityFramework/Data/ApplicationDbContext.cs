@@ -20,6 +20,7 @@ namespace CaseApplication.EntityFramework.Data
         internal DbSet<CaseInventory> CaseInventory => Set<CaseInventory>();
         internal DbSet<UserHistoryOpeningCases> UserHistoryOpeningCases => Set<UserHistoryOpeningCases>();
         internal DbSet<News> News => Set<News>();
+        internal DbSet<UserToken> UserToken => Set<UserToken>();
 
         public ApplicationDbContext(DbContextOptions options) : base(options) {}
 

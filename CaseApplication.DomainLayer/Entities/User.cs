@@ -20,5 +20,7 @@ namespace CaseApplication.DomainLayer.Entities
         public List<UserHistoryOpeningCases>? UserHistoryOpeningCases { get; set; }
         [JsonIgnore]
         public List<PromocodesUsedByUser>? PromocodesUsedByUsers { get; set; }
+        [JsonIgnore]
+        public List<UserToken>? UserTokens { get; set; }
     }
 }

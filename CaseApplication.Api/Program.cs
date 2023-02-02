@@ -60,6 +60,7 @@ builder.Services.AddTransient<ISiteStatisticsRepository, SiteStatisticsRepositor
 builder.Services.AddTransient<IPromocodeRepository, PromocodeRepository>();
 builder.Services.AddTransient<IPromocodeUserByUserRepository, PromocodesUsedByUserRepository>();
 builder.Services.AddTransient<IPromocodeTypeRepository, PromocodeTypeRepository>();
+builder.Services.AddTransient<IUserTokensRepository, UserTokensRepository>();
 
 builder.Services.AddSingleton<EncryptorHelper>();
 builder.Services.AddSingleton<JwtHelper>();

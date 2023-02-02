@@ -50,6 +50,10 @@ namespace CaseApplication.EntityFramework.Configurations
                 .HasForeignKey(fk => fk.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            builder.HasMany(m => m.UserTokens)
+                .WithOne(o => o.User)
+                .HasForeignKey(fk => fk.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

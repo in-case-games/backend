@@ -438,6 +438,31 @@ namespace CaseApplication.Api.Migrations
                     b.ToTable("UserRole");
                 });
 
+            modelBuilder.Entity("CaseApplication.DomainLayer.Entities.UserToken", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("RefreshToken")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("RefreshTokenExpiryTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("UserIpAddress")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserToken");
+                });
+
             modelBuilder.Entity("CaseApplication.DomainLayer.Entities.CaseInventory", b =>
                 {
                     b.HasOne("CaseApplication.DomainLayer.Entities.GameCase", "GameCase")
@@ -563,6 +588,17 @@ namespace CaseApplication.Api.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("CaseApplication.DomainLayer.Entities.UserToken", b =>
+                {
+                    b.HasOne("CaseApplication.DomainLayer.Entities.User", "User")
+                        .WithMany("UserTokens")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("CaseApplication.DomainLayer.Entities.GameCase", b =>
                 {
                     b.Navigation("UserHistoryOpeningCases");
@@ -600,6 +636,8 @@ namespace CaseApplication.Api.Migrations
                     b.Navigation("UserInventories");
 
                     b.Navigation("UserRestrictions");
+
+                    b.Navigation("UserTokens");
                 });
 
             modelBuilder.Entity("CaseApplication.DomainLayer.Entities.UserRole", b =>

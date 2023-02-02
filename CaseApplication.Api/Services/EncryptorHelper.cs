@@ -20,10 +20,9 @@ namespace CaseApplication.Api.Services
             return hashed;
         }
 
-        public string GenerationSaltTo64Bytes()
+        public byte[] GenerationSaltTo64Bytes()
         {
-            byte[] salt = RandomNumberGenerator.GetBytes(64);
-            return Convert.ToBase64String(salt);
+            return RandomNumberGenerator.GetBytes(64);
         }
     }
 }
