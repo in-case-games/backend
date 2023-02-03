@@ -19,9 +19,9 @@ namespace CaseApplication.Api.Controllers
         private readonly IUserRoleRepository _userRoleRepository;
         private readonly EncryptorHelper _encryptorHelper;
         private readonly JwtHelper _jwtHelper;
-        private readonly IConfiguration _configuration;
         private readonly IUserTokensRepository _userTokensRepository;
-        private Guid UserId => Guid.Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
+        private Guid UserId => Guid
+            .Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
         #endregion
         #region ctor
         public AuthenticationController(
@@ -30,7 +30,6 @@ namespace CaseApplication.Api.Controllers
             IUserRoleRepository userRoleRepository,
             EncryptorHelper encryptorHelper,
             JwtHelper jwtHelper,
-            IConfiguration configuration,
             IUserTokensRepository userTokensRepository)
         {
             _userRepository = userRepository;
@@ -38,7 +37,6 @@ namespace CaseApplication.Api.Controllers
             _userRoleRepository = userRoleRepository;
             _encryptorHelper = encryptorHelper;
             _jwtHelper = jwtHelper;
-            _configuration = configuration;
             _userTokensRepository = userTokensRepository;
         }
         #endregion

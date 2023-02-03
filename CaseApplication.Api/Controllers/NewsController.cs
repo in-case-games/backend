@@ -1,5 +1,6 @@
 ﻿using CaseApplication.DomainLayer.Entities;
 using CaseApplication.DomainLayer.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CaseApplication.Api.Controllers
@@ -15,6 +16,7 @@ namespace CaseApplication.Api.Controllers
             _newsRepository = newsRepository;
         }
 
+        [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> Get(Guid id)
         {
@@ -28,24 +30,28 @@ namespace CaseApplication.Api.Controllers
             return NotFound();
         }
 
+        [AllowAnonymous]
         [HttpGet("GetAll")]
         public async Task<IActionResult> GetAll()
         {
             return Ok(await _newsRepository.GetAll());
         }
 
+        [Authorize(Roles = "admin")]
         [HttpPost]
         public async Task<IActionResult> Create(News news)
         {
             return Ok(await _newsRepository.Create(news));
         }
 
+        [Authorize(Roles = "admin")]
         [HttpPut]
         public async Task<IActionResult> Update(News news)
         {
             return Ok(await _newsRepository.Update(news));
         }
 
+        [Authorize(Roles = "admin")]
         [HttpDelete]
         public async Task<IActionResult> Delete(Guid id)
         {

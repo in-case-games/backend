@@ -1,6 +1,7 @@
 ﻿using CaseApplication.DomainLayer.Entities;
 using CaseApplication.DomainLayer.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace CaseApplication.Api.Controllers 
 {
@@ -8,9 +9,11 @@ namespace CaseApplication.Api.Controllers
     [ApiController]
     public class PromocodesUsedByUserController : ControllerBase
     {
-        private readonly IPromocodeUserByUserRepository _promocodeUserByUserRepository;
+        private readonly IPromocodeUsedByUserRepository _promocodeUserByUserRepository;
+        private Guid UserId => Guid
+            .Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
 
-        public PromocodesUsedByUserController(IPromocodeUserByUserRepository promocodeUserByUserRepository)
+        public PromocodesUsedByUserController(IPromocodeUsedByUserRepository promocodeUserByUserRepository)
         {
             _promocodeUserByUserRepository = promocodeUserByUserRepository;
         }

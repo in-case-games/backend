@@ -1,6 +1,7 @@
 ﻿using CaseApplication.DomainLayer.Entities;
 using CaseApplication.DomainLayer.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace CaseApplication.Api.Controllers
 {
@@ -9,6 +10,8 @@ namespace CaseApplication.Api.Controllers
     public class UserAdditionalInfoController : ControllerBase
     {
         private readonly IUserAdditionalInfoRepository _userInfoRepository;
+        private Guid UserId => Guid
+            .Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
 
         public UserAdditionalInfoController(IUserAdditionalInfoRepository userInfoRepository)
         {

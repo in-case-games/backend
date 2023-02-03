@@ -2,6 +2,7 @@
 using CaseApplication.DomainLayer.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace CaseApplication.Api.Controllers
 {
@@ -10,55 +11,36 @@ namespace CaseApplication.Api.Controllers
     public class RoleController : ControllerBase
     {
         private readonly IUserRoleRepository _userRoleRepository;
+        private Guid UserId => Guid
+            .Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
+
         public RoleController(IUserRoleRepository userRoleRepository)
         {
             _userRoleRepository = userRoleRepository;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> Get(Guid id)
-        {
-            UserRole? userRole = await _userRoleRepository.Get(id);
-
-            if (userRole != null)
-            {
-                Ok(userRole);
-            }
-
-            return NotFound();
-        }
-
-        [HttpGet("GetByName")]
-        public async Task<IActionResult> GetByName(string name)
-        {
-            UserRole? userRole = await _userRoleRepository.GetByName(name);
-
-            if (userRole != null)
-            {
-                return Ok(userRole);
-            }
-
-            return NotFound();
-        }
-
+        [AllowAnonymous]
         [HttpGet("GetAll")]
         public async Task<IActionResult> GetAll()
         {
             return Ok(await _userRoleRepository.GetAll());
         }
 
+        [Authorize(Roles = "admin")]
         [HttpPost]
         public async Task<IActionResult> Create(UserRole userRole)
         {
             return Ok(await _userRoleRepository.Create(userRole));
         }
 
+        [Authorize(Roles = "admin")]
         [HttpPut]
         public async Task<IActionResult> Update(UserRole userRole)
         {
             return Ok(await _userRoleRepository.Update(userRole));
         }
 
+        [Authorize(Roles = "admin")]
         [HttpDelete]
         public async Task<IActionResult> Delete(Guid id)
         {

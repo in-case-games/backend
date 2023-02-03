@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CaseApplication.EntityFramework.Repositories
 {
-    public class PromocodesUsedByUserRepository: IPromocodeUserByUserRepository
+    public class PromocodesUsedByUserRepository: IPromocodeUsedByUserRepository
     {
         private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
 

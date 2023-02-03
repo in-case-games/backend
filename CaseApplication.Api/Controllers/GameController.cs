@@ -1,6 +1,8 @@
 ﻿using CaseApplication.DomainLayer.Entities;
 using CaseApplication.DomainLayer.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace CaseApplication.Api.Controllers
 {
@@ -16,6 +18,8 @@ namespace CaseApplication.Api.Controllers
         private readonly IUserHistoryOpeningCasesRepository _userHistory;
         private readonly IGameItemRepository _gameItemRepository;
         private readonly IUserInventoryRepository _userInventoryRepository;
+        private Guid UserId => Guid
+            .Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
 
         public GameController(
             IUserAdditionalInfoRepository userInfoRepository,
@@ -33,11 +37,12 @@ namespace CaseApplication.Api.Controllers
             _userInventoryRepository = userInventoryRepository;
         }
 
+        [Authorize]
         [HttpGet]
-        public async Task<IActionResult> GetOpeningCase(Guid userId, Guid caseId)
+        public async Task<IActionResult> GetOpeningCase(Guid caseId)
         {
             //Check Balance
-            UserAdditionalInfo? userAdditionalInfo = await _userInfoRepository.Get(userId);
+            UserAdditionalInfo? userAdditionalInfo = await _userInfoRepository.Get(UserId);
             GameCase? gameCase = await _gameCaseRepository.Get(caseId);
 
             if(userAdditionalInfo is null || gameCase is null) return NotFound();
@@ -64,14 +69,14 @@ namespace CaseApplication.Api.Controllers
             //Add history and add inventory user
             UserHistoryOpeningCases historyCase = new()
             {
-                UserId = userId,
+                UserId = UserId,
                 GameCaseId = gameCase.Id,
                 GameItemId = winGameItem.Id,
                 CaseOpenAt = DateTime.UtcNow
             };
             UserInventory userInventory = new()
             {
-                UserId = userId,
+                UserId = UserId,
                 GameItemId = winGameItem.Id
             };
 

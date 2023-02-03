@@ -19,15 +19,22 @@ namespace CaseApplication.WebClient.Services
             _httpClient = httpClient;
         }
 
-        public async Task<HttpStatusCode> ResponseGetStatusCode(string uri)
+        public async Task<HttpStatusCode> ResponseGetStatusCode(string uri, string token = "")
         {
+            _httpClient.DefaultRequestHeaders
+                .Add("Authorization", "Bearer " + token);
+
             HttpResponseMessage response = await _httpClient.GetAsync(_baseUrl + uri);
 
             return response.StatusCode;
         }
 
-        public async Task<T> ResponseGet<T>(string uri) where T: new()
+        public async Task<T> ResponseGet<T>(string uri, string token = "") 
+            where T: new()
         {
+            _httpClient.DefaultRequestHeaders
+                .Add("Authorization", "Bearer " + token);
+
             HttpResponseMessage response = await _httpClient.GetAsync(_baseUrl + uri);
 
             if (!response.IsSuccessStatusCode)
@@ -40,26 +47,38 @@ namespace CaseApplication.WebClient.Services
                     response.Content);
             }
 
-            return await response.Content.ReadFromJsonAsync<T>(
-                    new JsonSerializerOptions(JsonSerializerDefaults.Web)) ?? new();
+            return await response.Content
+                .ReadFromJsonAsync<T>(new JsonSerializerOptions(JsonSerializerDefaults.Web)) ?? 
+                new();
         }
-        public async Task<HttpStatusCode> ResponsePost<T>(string uri, T entity) where T: BaseEntity
+        public async Task<HttpStatusCode> ResponsePost<T>(string uri,T entity, string token = "") 
+            where T: BaseEntity
         {
+            _httpClient.DefaultRequestHeaders
+                .Add("Authorization", "Bearer " + token);
+
             JsonContent json = JsonContent.Create(entity);
             HttpResponseMessage response = await _httpClient.PostAsync(_baseUrl + uri, json);
 
             return response.StatusCode;
         }
 
-        public async Task<HttpStatusCode> ResponsePut<T>(string uri, T entity) where T: BaseEntity
+        public async Task<HttpStatusCode> ResponsePut<T>(string uri,T entity, string token = "") 
+            where T: BaseEntity
         {
+            _httpClient.DefaultRequestHeaders
+                .Add("Authorization", "Bearer " + token);
+
             JsonContent json = JsonContent.Create(entity);
             HttpResponseMessage response = await _httpClient.PutAsync(_baseUrl + uri, json);
 
             return response.StatusCode;
         }
-        public async Task<HttpStatusCode> ResponseDelete(string uri)
+        public async Task<HttpStatusCode> ResponseDelete(string uri, string token = "")
         {
+            _httpClient.DefaultRequestHeaders
+                .Add("Authorization", "Bearer " + token);
+
             HttpResponseMessage response = await _httpClient.DeleteAsync(_baseUrl + uri);
 
             return response.StatusCode;
