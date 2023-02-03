@@ -129,8 +129,7 @@ namespace CaseApplication.Api.Controllers
 
             if (userToken == null ||
                 refreshToken != userToken.RefreshToken || 
-                userToken.RefreshTokenExpiryTime <= DateTime.Now ||
-                userToken.UserIpAddress != ip)
+                userToken.RefreshTokenExpiryTime <= DateTime.Now)
             {
                 return BadRequest("Invalid refresh token");
             }

@@ -268,7 +268,6 @@ namespace CaseApplication.Api.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     UserRoleId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    UserAge = table.Column<int>(type: "int", nullable: false),
                     UserBalance = table.Column<decimal>(type: "DECIMAL(18,5)", nullable: false),
                     UserAbleToPay = table.Column<decimal>(type: "DECIMAL(18,5)", nullable: false)
                 },

@@ -1,5 +1,6 @@
 ﻿using CaseApplication.DomainLayer.Entities;
 using CaseApplication.DomainLayer.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
@@ -18,34 +19,17 @@ namespace CaseApplication.Api.Controllers
             _userInfoRepository = userInfoRepository;
         }
 
+        [Authorize]
         [HttpGet]
-        public async Task<IActionResult> Get(Guid userId)
+        public async Task<IActionResult> Get()
         {
-            UserAdditionalInfo? userAdditionalInfo = await _userInfoRepository.Get(userId);
+            UserAdditionalInfo? userAdditionalInfo = await _userInfoRepository.Get(UserId);
 
             if (userAdditionalInfo != null) {
                 return Ok(userAdditionalInfo);
             }
 
             return NotFound();
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Create(UserAdditionalInfo userInfo)
-        {
-            return Ok(await _userInfoRepository.Create(userInfo));
-        }
-
-        [HttpPut]
-        public async Task<IActionResult> Update(UserAdditionalInfo userInfo, string hash)
-        {
-            return Ok(await _userInfoRepository.Update(userInfo));
-        }
-
-        [HttpDelete]
-        public async Task<IActionResult> Delete(Guid id)
-        {
-            return Ok(await _userInfoRepository.Delete(id));
         }
     }
 }

@@ -21,8 +21,14 @@ namespace CaseApplication.EntityFramework.Repositories
             return await context.UserHistoryOpeningCases
                 .FirstOrDefaultAsync(x => x.Id == id);
         }
+        public async Task<List<UserHistoryOpeningCases>> GetAll()
+        {
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-        public async Task<List<UserHistoryOpeningCases>> GetAll(Guid userId)
+            return await context.UserHistoryOpeningCases.ToListAsync();
+        }
+
+        public async Task<List<UserHistoryOpeningCases>> GetAllById(Guid userId)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 

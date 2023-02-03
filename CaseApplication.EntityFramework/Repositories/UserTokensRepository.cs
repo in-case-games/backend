@@ -61,12 +61,30 @@ namespace CaseApplication.EntityFramework.Repositories
 
             return true;
         }
-
         public async Task<bool> Delete(Guid id)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             UserToken? userToken = await context.UserToken.FirstOrDefaultAsync(x => x.Id == id);
+
+            if (userToken == null)
+            {
+                throw new Exception("There is no such token, " +
+                    "review what data comes from the api");
+            }
+
+            context.UserToken.Remove(userToken);
+            await context.SaveChangesAsync();
+
+            return true;
+        }
+
+        public async Task<bool> DeleteByToken(Guid userId, string refreshToken)
+        {
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            UserToken? userToken = await context.UserToken
+                .FirstOrDefaultAsync(x => x.Id == userId && x.RefreshToken == refreshToken);
 
             if (userToken == null)
             {

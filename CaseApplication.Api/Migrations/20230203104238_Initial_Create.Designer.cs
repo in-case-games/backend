@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CaseApplication.Api.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230202114958_Initial_Create")]
+    [Migration("20230203104238_Initial_Create")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -313,9 +313,6 @@ namespace CaseApplication.Api.Migrations
 
                     b.Property<decimal>("UserAbleToPay")
                         .HasColumnType("DECIMAL(18, 5)");
-
-                    b.Property<int>("UserAge")
-                        .HasColumnType("int");
 
                     b.Property<decimal>("UserBalance")
                         .HasColumnType("DECIMAL(18, 5)");

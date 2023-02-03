@@ -1,6 +1,8 @@
 ﻿using CaseApplication.DomainLayer.Entities;
 using CaseApplication.DomainLayer.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace CaseApplication.Api.Controllers
 {
@@ -9,12 +11,15 @@ namespace CaseApplication.Api.Controllers
     public class UserInventoryController : ControllerBase
     {
         private readonly IUserInventoryRepository _userInventoryRepository;
+        private Guid UserId => Guid
+            .Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
 
         public UserInventoryController(IUserInventoryRepository userInventoryRepository)
         {
             _userInventoryRepository = userInventoryRepository;
         }
 
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> Get(Guid id) 
         {
@@ -28,28 +33,13 @@ namespace CaseApplication.Api.Controllers
             return NotFound();
         }
 
+        [Authorize]
         [HttpGet("GetAll")]
-        public async Task<IActionResult> GetAll(Guid userId)
+        public async Task<IActionResult> GetAll(Guid? userId = null)
         {
-            return Ok(await _userInventoryRepository.GetAll(userId));
+            return Ok(await _userInventoryRepository.GetAll(userId ?? UserId));
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Create(UserInventory userInventory)
-        {
-            return Ok(await _userInventoryRepository.Create(userInventory));
-        }
-
-        [HttpPut]
-        public async Task<IActionResult> Update(UserInventory userInventory)
-        {
-            return Ok(await _userInventoryRepository.Update(userInventory));
-        }
-
-        [HttpDelete]
-        public async Task<IActionResult> Delete(Guid id)
-        {
-            return Ok(await _userInventoryRepository.Delete(id));
-        }
+        //TODO Sell and Withdrawn
     }
 }

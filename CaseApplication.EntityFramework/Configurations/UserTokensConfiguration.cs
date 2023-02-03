@@ -11,6 +11,8 @@ namespace CaseApplication.EntityFramework.Configurations
 
             builder.HasIndex(i => i.UserId)
                 .IsUnique(false);
+            builder.HasIndex(i => i.RefreshToken)
+                .IsUnique();
             builder.HasIndex(i => i.UserIpAddress)
                 .IsUnique();
             builder.Property(p => p.UserIpAddress)

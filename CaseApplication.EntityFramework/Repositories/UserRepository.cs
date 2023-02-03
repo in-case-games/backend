@@ -20,18 +20,6 @@ namespace CaseApplication.EntityFramework.Repositories
 
             return searchUser is null;
         }
-
-        public async Task<User?> GetByParameters(User user)
-        {
-            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
-
-            return await context.User
-                .FirstOrDefaultAsync(x => 
-                x.UserEmail == user.UserEmail || 
-                x.Id == user.Id ||
-                x.UserLogin == user.UserLogin);
-        }
-
         public async Task<User?> Get(Guid id)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
@@ -53,11 +41,15 @@ namespace CaseApplication.EntityFramework.Repositories
             return await context.User.FirstOrDefaultAsync(x => x.UserLogin == login);
         }
 
-        public async Task<List<User>> GetAll()
+        public async Task<User?> GetByParameters(User user)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            return await context.User.ToListAsync();
+            return await context.User
+                .FirstOrDefaultAsync(x => 
+                x.UserEmail == user.UserEmail || 
+                x.Id == user.Id ||
+                x.UserLogin == user.UserLogin);
         }
 
         public async Task<bool> Create(User user)
@@ -72,19 +64,11 @@ namespace CaseApplication.EntityFramework.Repositories
             return true;
         }
 
-        public async Task<bool> Update(User user)
+        public async Task<bool> Update(User oldUser, User newUser)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            User? searchUser = await context.User.FirstOrDefaultAsync(x => x.Id == user.Id);
-
-            if(searchUser is null) throw new Exception("You cannot change the guid, " +
-                "review what data comes from the api");
-
-            user.PasswordHash = searchUser.PasswordHash;
-            user.PasswordSalt = searchUser.PasswordSalt;
-
-            context.Entry(searchUser).CurrentValues.SetValues(user);
+            context.Entry(oldUser).CurrentValues.SetValues(newUser);
             await context.SaveChangesAsync();
 
             return true;

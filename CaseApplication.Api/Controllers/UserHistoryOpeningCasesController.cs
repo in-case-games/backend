@@ -1,6 +1,8 @@
 ﻿using CaseApplication.DomainLayer.Entities;
 using CaseApplication.DomainLayer.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace CaseApplication.Api.Controllers
 {
@@ -9,12 +11,15 @@ namespace CaseApplication.Api.Controllers
     public class UserHistoryOpeningCasesController : ControllerBase
     {
         private readonly IUserHistoryOpeningCasesRepository _userHistoryRepository;
+        private Guid UserId => Guid
+            .Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
 
         public UserHistoryOpeningCasesController(IUserHistoryOpeningCasesRepository userHistoryRepository)
         {
             _userHistoryRepository = userHistoryRepository;
         }
 
+        [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> Get(Guid id)
         {
@@ -28,30 +33,21 @@ namespace CaseApplication.Api.Controllers
             return NotFound();
         }
 
-        [HttpGet("GetAll")]
-        public async Task<IActionResult> GetAll(Guid userId)
+        [AllowAnonymous]
+        [HttpGet("GetAllById")]
+        public async Task<IActionResult> GetAllById(Guid userId)
         {
-            return Ok(await _userHistoryRepository.GetAll(userId));
+            return Ok(await _userHistoryRepository.GetAllById(userId));
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Create(UserHistoryOpeningCases userHistory)
-        {
-            return Ok(await _userHistoryRepository.Create(userHistory));
-        }
-
-        [HttpPut]
-        public async Task<IActionResult> Update(UserHistoryOpeningCases userHistory)
-        {
-            return Ok(await _userHistoryRepository.Update(userHistory));
-        }
-
+        [Authorize]
         [HttpDelete]
         public async Task<IActionResult> Delete(Guid id)
         {
             return Ok(await _userHistoryRepository.Delete(id));
         }
 
+        [Authorize]
         [HttpDelete("DeleteAll")]
         public async Task<IActionResult> DeleteAll(Guid userId)
         {
