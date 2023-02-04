@@ -35,6 +35,34 @@ namespace CaseApplication.Api.Services
             return CreateToken(claims, credentials, expiration);
         }
 
+        public ClaimsPrincipal? GetClaimsToken(
+            string token,
+            byte[] secret,
+            string securityAlgorithm)
+        {
+            TokenValidationParameters tokenValidationParameters = new()
+            {
+                ValidateAudience = false,
+                ValidateIssuer = false,
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(secret),
+                ValidateLifetime = false
+            };
+
+            JwtSecurityTokenHandler tokenHandler = new();
+            ClaimsPrincipal principal = tokenHandler.ValidateToken(
+                token, 
+                tokenValidationParameters, 
+                out SecurityToken securityToken);
+            
+            if (securityToken is not JwtSecurityToken jwtSecurityToken || 
+                !jwtSecurityToken.Header.Alg.Equals(securityAlgorithm, 
+                StringComparison.InvariantCultureIgnoreCase))
+                return null;
+
+            return principal;
+        }
+
         private JwtSecurityToken CreateToken(
             Claim[] claims,
             SigningCredentials credentials,
@@ -46,62 +74,6 @@ namespace CaseApplication.Api.Services
                 claims,
                 expires: DateTime.UtcNow.Add(expiration),
                 signingCredentials: credentials);
-        }
-
-        public ClaimsPrincipal? GetClaimsOneTimeToken(
-            string token,
-            string secret)
-        {
-            TokenValidationParameters tokenValidationParameters = new()
-            {
-                ValidateAudience = false,
-                ValidateIssuer = false,
-                ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(
-                    Encoding.UTF8.GetBytes(secret)),
-                ValidateLifetime = false
-            };
-
-            JwtSecurityTokenHandler tokenHandler = new();
-            ClaimsPrincipal principal = tokenHandler.ValidateToken(
-                token,
-                tokenValidationParameters,
-                out SecurityToken securityToken);
-
-            if (securityToken is not JwtSecurityToken jwtSecurityToken ||
-                !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha512,
-                StringComparison.InvariantCultureIgnoreCase))
-                return null;
-
-            return principal;
-        }
-
-        public ClaimsPrincipal? GetClaimsToken(
-            string token,
-            string secret)
-        {
-            TokenValidationParameters tokenValidationParameters = new()
-            {
-                ValidateAudience = false,
-                ValidateIssuer = false,
-                ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(
-                    Encoding.ASCII.GetBytes(secret)),
-                ValidateLifetime = false
-            };
-
-            JwtSecurityTokenHandler tokenHandler = new();
-            ClaimsPrincipal principal = tokenHandler.ValidateToken(
-                token, 
-                tokenValidationParameters, 
-                out SecurityToken securityToken);
-            
-            if (securityToken is not JwtSecurityToken jwtSecurityToken || 
-                !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, 
-                StringComparison.InvariantCultureIgnoreCase))
-                return null;
-
-            return principal;
         }
     }
 }

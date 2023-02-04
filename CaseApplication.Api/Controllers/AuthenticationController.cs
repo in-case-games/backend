@@ -3,9 +3,11 @@ using CaseApplication.Api.Services;
 using CaseApplication.DomainLayer.Entities;
 using CaseApplication.DomainLayer.Repositories;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Text;
 
 namespace CaseApplication.Api.Controllers
 {
@@ -117,10 +119,11 @@ namespace CaseApplication.Api.Controllers
         [HttpPost("RefreshToken")]
         public async Task<IActionResult> RefreshToken(string refreshToken, string ip)
         {
+            byte[] secretBytes = Encoding.ASCII.GetBytes(_configuration["JWT:Secret"]!);
             ClaimsPrincipal? principal = _jwtHelper
-                .GetClaimsToken(refreshToken, _configuration["JWT:Secret"]!);
+                .GetClaimsToken(refreshToken, secretBytes, "HS256");
 
-            if(principal is null)
+            if (principal is null)
                 return BadRequest("Invalid refresh token");
 
             string getUserId = principal.Claims

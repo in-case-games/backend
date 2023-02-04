@@ -5,6 +5,7 @@ using CaseApplication.DomainLayer.Repositories;
 using CaseApplication.EntityFramework.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
 using System.IdentityModel.Tokens.Jwt;
@@ -125,9 +126,9 @@ namespace CaseApplication.Api.Controllers
             User? user = await _userRepository.Get(userId);
 
             if (user == null) return NotFound();
-
+            byte[] secretBytes = Encoding.UTF8.GetBytes(user.PasswordHash!);
             ClaimsPrincipal? principal = _jwtHelper
-                .GetClaimsOneTimeToken(token, user.PasswordHash!);
+                .GetClaimsToken(token, secretBytes, "HS512");
 
             if (principal is null)
                 return BadRequest("Invalid OneTime token");
