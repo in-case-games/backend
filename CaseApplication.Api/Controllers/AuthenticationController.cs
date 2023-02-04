@@ -91,7 +91,6 @@ namespace CaseApplication.Api.Controllers
             }
 
             //TODO Notify by email
-            await _emailHelper.SendConfirmAccountToEmail("zxc.danil@inbox.ru", "12345");
             return Ok(tokenModel);
         }
 
