@@ -1,10 +1,13 @@
-﻿using CaseApplication.Api.Services;
+﻿using Azure.Core;
+using CaseApplication.Api.Services;
 using CaseApplication.DomainLayer.Entities;
 using CaseApplication.DomainLayer.Repositories;
+using CaseApplication.EntityFramework.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
@@ -18,7 +21,7 @@ namespace CaseApplication.Api.Controllers
         private readonly IUserRepository _userRepository;
         private readonly EncryptorHelper _encryptorHelper;
         private readonly JwtHelper _jwtHelper;
-        private readonly IUserTokensRepository _userTokensRepository;
+        private readonly EmailHelper _emailHelper;
         private Guid UserId => Guid
             .Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
 
@@ -26,12 +29,12 @@ namespace CaseApplication.Api.Controllers
             IUserRepository userRepository, 
             EncryptorHelper encryptorHelper,
             JwtHelper jwtHelper,
-            IUserTokensRepository userTokensRepository)
+            EmailHelper emailHelper)
         {
             _userRepository = userRepository;
             _encryptorHelper = encryptorHelper;
             _jwtHelper = jwtHelper;
-            _userTokensRepository = userTokensRepository;
+            _emailHelper = emailHelper;
         }
 
         [Authorize]
@@ -70,7 +73,7 @@ namespace CaseApplication.Api.Controllers
 
         [Authorize]
         [HttpPut("UpdateLogin")]
-        public async Task<IActionResult> Update(string login)
+        public async Task<IActionResult> UpdateLogin(string login)
         {
             User? searchUserByLogin = await _userRepository.GetByLogin(login);
             User? searchUserById = await _userRepository.Get(UserId);
@@ -103,21 +106,28 @@ namespace CaseApplication.Api.Controllers
 
             if (genHash != user.PasswordHash) return BadRequest("Incorrect password");
 
+            Claim[] claims = {
+                new Claim("UserId", user.Id.ToString())
+            };
 
+            JwtSecurityToken token = _jwtHelper.CreateOneTimeToken(claims, genHash);
+            string oneTimeToken = new JwtSecurityTokenHandler().WriteToken(token);
+
+            await _emailHelper.SendDeleteAccountToEmail(user.UserEmail!, user.Id.ToString(), oneTimeToken);
 
             return BadRequest();
         }
 
         [AllowAnonymous]
         [HttpDelete("DeleteConfirmation")]
-        public async Task<IActionResult> DeleteConfirmation(Guid userId, string oneTimeToken)
+        public async Task<IActionResult> DeleteConfirmation(Guid userId, string token)
         {
             User? user = await _userRepository.Get(userId);
 
             if (user == null) return NotFound();
 
             ClaimsPrincipal? principal = _jwtHelper
-                .GetClaimsOneTimeToken(oneTimeToken, user.PasswordHash!);
+                .GetClaimsOneTimeToken(token, user.PasswordHash!);
 
             if (principal is null)
                 return BadRequest("Invalid OneTime token");

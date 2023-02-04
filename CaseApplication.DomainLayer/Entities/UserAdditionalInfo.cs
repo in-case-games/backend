@@ -9,7 +9,7 @@ namespace CaseApplication.DomainLayer.Entities
 
         public decimal UserBalance { get; set; }
         public decimal UserAbleToPay { get; set; }
-
+        public bool IsConfirmedAccount { get; set; }
 
         [JsonIgnore]
         public User? User { get; set; }

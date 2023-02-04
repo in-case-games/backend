@@ -63,10 +63,11 @@ builder.Services.AddTransient<IPromocodeUsedByUserRepository, PromocodesUsedByUs
 builder.Services.AddTransient<IPromocodeTypeRepository, PromocodeTypeRepository>();
 builder.Services.AddTransient<IUserTokensRepository, UserTokensRepository>();
 
-builder.Services.AddSingleton<EncryptorHelper>();
-builder.Services.AddSingleton<JwtHelper>();
 builder.Services.AddSingleton<EmailService>();
 builder.Services.AddSingleton<EmailHelper>();
+
+builder.Services.AddSingleton<EncryptorHelper>();
+builder.Services.AddSingleton<JwtHelper>();
 
 builder.Services.AddSwaggerGen(options =>
 {
