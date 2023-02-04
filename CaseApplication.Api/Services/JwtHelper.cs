@@ -15,7 +15,7 @@ namespace CaseApplication.Api.Services
             _configuration = configuration;
         }
 
-        public JwtSecurityToken CreateAccessToken(Claim[] additionalClaims)
+        public JwtSecurityToken CreateAccessToken(Claim[] claims)
         {
             TimeSpan expiration = TimeSpan.FromMinutes(
                 double.Parse(_configuration["JWT:TokenValidityInMinutes"]!));
@@ -24,17 +24,10 @@ namespace CaseApplication.Api.Services
                 _configuration["JWT:Secret"]!));
             SigningCredentials credentials = new(securityKey, SecurityAlgorithms.HmacSha256);
 
-            JwtSecurityToken token = new(
-                _configuration["JWT:ValidIssuer"],
-                _configuration["JWT:ValidAudience"]!,
-                additionalClaims,
-                expires: DateTime.UtcNow.Add(expiration),
-                signingCredentials: credentials);
-
-            return token;
+            return CreateToken(claims, credentials, expiration);
         }
 
-        public JwtSecurityToken CreateRefreshToken(Claim[] additionalClaims)
+        public JwtSecurityToken CreateRefreshToken(Claim[] claims)
         {
             TimeSpan expiration = TimeSpan.FromDays(
                 double.Parse(_configuration["JWT:RefreshTokenValidityInDays"]!));
@@ -43,18 +36,11 @@ namespace CaseApplication.Api.Services
                 _configuration["JWT:Secret"]!));
             SigningCredentials credentials = new(securityKey, SecurityAlgorithms.HmacSha256);
 
-            JwtSecurityToken token = new(
-                _configuration["JWT:ValidIssuer"],
-                _configuration["JWT:ValidAudience"]!,
-                additionalClaims,
-                expires: DateTime.UtcNow.Add(expiration),
-                signingCredentials: credentials);
-
-            return token;
+            return CreateToken(claims, credentials, expiration);
         }
 
         public JwtSecurityToken CreateOneTimeToken(
-            Claim[] additionalClaims,
+            Claim[] claims,
             string secret)
         {
             TimeSpan expiration = TimeSpan.FromMinutes(5);
@@ -62,14 +48,20 @@ namespace CaseApplication.Api.Services
             SymmetricSecurityKey securityKey = new(Encoding.UTF8.GetBytes(secret));
             SigningCredentials credentials = new(securityKey, SecurityAlgorithms.HmacSha512);
 
-            JwtSecurityToken token = new(
+            return CreateToken(claims, credentials, expiration);
+        }
+
+        private JwtSecurityToken CreateToken(
+            Claim[] claims,
+            SigningCredentials credentials,
+            TimeSpan expiration)
+        {
+            return new(
                 _configuration["JWT:ValidIssuer"],
                 _configuration["JWT:ValidAudience"]!,
-                additionalClaims,
+                claims,
                 expires: DateTime.UtcNow.Add(expiration),
                 signingCredentials: credentials);
-
-            return token;
         }
 
         public ClaimsPrincipal? GetClaimsOneTimeToken(
