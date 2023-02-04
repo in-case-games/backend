@@ -90,29 +90,55 @@ namespace CaseApplication.Api.Controllers
             return Ok(await _userRepository.Update(searchUserById, newUser));
         }
 
-        //TODO Delete admin for user
-
         [Authorize]
-        [HttpDelete]
-        public async Task<IActionResult> Delete(string refreshToken, string ip)
+        [HttpPost("SendDeleteAccount")]
+        public async Task<IActionResult> SendDeleteAccount(string password)
         {
-            ClaimsPrincipal? principal = _jwtHelper.GetPrincipalFromExpiredToken(refreshToken);
+            User? user = await _userRepository.Get(UserId);
+
+            if (user == null) return NotFound();
+
+            string genHash = _encryptorHelper.EncryptorPassword(password, Convert
+                .FromBase64String(user.PasswordSalt!));
+
+            if (genHash != user.PasswordHash) return BadRequest("Incorrect password");
+
+
+
+            return BadRequest();
+        }
+
+        [AllowAnonymous]
+        [HttpDelete("DeleteConfirmation")]
+        public async Task<IActionResult> DeleteConfirmation(Guid userId, string oneTimeToken)
+        {
+            User? user = await _userRepository.Get(userId);
+
+            if (user == null) return NotFound();
+
+            ClaimsPrincipal? principal = _jwtHelper
+                .GetClaimsOneTimeToken(oneTimeToken, user.PasswordHash!);
 
             if (principal is null)
-                return BadRequest("Invalid refresh token");
+                return BadRequest("Invalid OneTime token");
 
-            UserToken? userToken = await _userTokensRepository.GetByIp(UserId, ip);
+            //TODO Answer user by email
+            //TODO No delete give the user 30 days
 
-            if (userToken == null ||
-                refreshToken != userToken.RefreshToken ||
-                userToken.RefreshTokenExpiryTime <= DateTime.Now)
-            {
-                await _userTokensRepository.DeleteByToken(UserId, refreshToken);
-                //TODO Answer user by email HACK!
-                return BadRequest("Invalid refresh token");
-            }
+            return Ok(await _userRepository.Delete(userId));
+        }
 
-            return Ok(await _userRepository.Delete(UserId));
+        [Authorize(Roles = "admin")]
+        [HttpDelete("DeleteByAdmin")]
+        public async Task<IActionResult> DeleteByAdmin(Guid userId)
+        {
+            User? user = await _userRepository.Get(userId);
+
+            if (user != null) {
+                return Ok(await _userRepository.Delete(userId));
+            };
+
+            return NotFound();
         }
     }
 }

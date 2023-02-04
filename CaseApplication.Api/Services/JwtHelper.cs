@@ -53,7 +53,28 @@ namespace CaseApplication.Api.Services
             return token;
         }
 
-        public ClaimsPrincipal? GetPrincipalFromExpiredToken(string? token)
+        public JwtSecurityToken CreateOneTimeToken(
+            Claim[] additionalClaims,
+            string secret)
+        {
+            TimeSpan expiration = TimeSpan.FromMinutes(5);
+
+            SymmetricSecurityKey securityKey = new(Encoding.UTF8.GetBytes(secret));
+            SigningCredentials credentials = new(securityKey, SecurityAlgorithms.HmacSha512);
+
+            JwtSecurityToken token = new(
+                _configuration["JWT:ValidIssuer"],
+                _configuration["JWT:ValidAudience"]!,
+                additionalClaims,
+                expires: DateTime.UtcNow.Add(expiration),
+                signingCredentials: credentials);
+
+            return token;
+        }
+
+        public ClaimsPrincipal? GetClaimsOneTimeToken(
+            string token,
+            string secret)
         {
             TokenValidationParameters tokenValidationParameters = new()
             {
@@ -61,7 +82,35 @@ namespace CaseApplication.Api.Services
                 ValidateIssuer = false,
                 ValidateIssuerSigningKey = true,
                 IssuerSigningKey = new SymmetricSecurityKey(
-                    Encoding.ASCII.GetBytes(_configuration["JWT:Secret"]!)),
+                    Encoding.UTF8.GetBytes(secret)),
+                ValidateLifetime = false
+            };
+
+            JwtSecurityTokenHandler tokenHandler = new();
+            ClaimsPrincipal principal = tokenHandler.ValidateToken(
+                token,
+                tokenValidationParameters,
+                out SecurityToken securityToken);
+
+            if (securityToken is not JwtSecurityToken jwtSecurityToken ||
+                !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha512,
+                StringComparison.InvariantCultureIgnoreCase))
+                return null;
+
+            return principal;
+        }
+
+        public ClaimsPrincipal? GetClaimsToken(
+            string token,
+            string secret)
+        {
+            TokenValidationParameters tokenValidationParameters = new()
+            {
+                ValidateAudience = false,
+                ValidateIssuer = false,
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(
+                    Encoding.ASCII.GetBytes(secret)),
                 ValidateLifetime = false
             };
 
@@ -74,7 +123,7 @@ namespace CaseApplication.Api.Services
             if (securityToken is not JwtSecurityToken jwtSecurityToken || 
                 !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, 
                 StringComparison.InvariantCultureIgnoreCase))
-                throw new SecurityTokenException("Invalid token");
+                return null;
 
             return principal;
         }

@@ -65,6 +65,9 @@ builder.Services.AddTransient<IUserTokensRepository, UserTokensRepository>();
 
 builder.Services.AddSingleton<EncryptorHelper>();
 builder.Services.AddSingleton<JwtHelper>();
+builder.Services.AddSingleton<EmailService>();
+builder.Services.AddSingleton<EmailHelper>();
+
 builder.Services.AddSwaggerGen(options =>
 {
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()

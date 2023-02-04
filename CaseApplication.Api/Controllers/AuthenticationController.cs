@@ -14,6 +14,7 @@ namespace CaseApplication.Api.Controllers
     public class AuthenticationController : ControllerBase
     {
         #region injections
+        private readonly IConfiguration _configuration;
         private readonly IUserRepository _userRepository;
         private readonly IUserAdditionalInfoRepository _userAdditionalInfoRepository;
         private readonly IUserRoleRepository _userRoleRepository;
@@ -25,6 +26,7 @@ namespace CaseApplication.Api.Controllers
         #endregion
         #region ctor
         public AuthenticationController(
+            IConfiguration configuration,
             IUserRepository userRepository, 
             IUserAdditionalInfoRepository userAdditionalInfoRepository,
             IUserRoleRepository userRoleRepository,
@@ -38,6 +40,7 @@ namespace CaseApplication.Api.Controllers
             _encryptorHelper = encryptorHelper;
             _jwtHelper = jwtHelper;
             _userTokensRepository = userTokensRepository;
+            _configuration = configuration;
         }
         #endregion
 
@@ -114,7 +117,8 @@ namespace CaseApplication.Api.Controllers
         [HttpPost("RefreshToken")]
         public async Task<IActionResult> RefreshToken(string refreshToken, string ip)
         {
-            ClaimsPrincipal? principal = _jwtHelper.GetPrincipalFromExpiredToken(refreshToken);
+            ClaimsPrincipal? principal = _jwtHelper
+                .GetClaimsToken(refreshToken, _configuration["JWT:Secret"]!);
 
             if(principal is null)
                 return BadRequest("Invalid refresh token");
