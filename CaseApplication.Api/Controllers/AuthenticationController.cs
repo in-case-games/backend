@@ -50,21 +50,25 @@ namespace CaseApplication.Api.Controllers
         [HttpPost("SignIn")]
         public async Task<IActionResult> SignIn(User user, string password, string ip)
         {
+            //FindUser
             User? searchUser = await _userRepository.GetByParameters(user);
 
-            if (searchUser is null) return Unauthorized();
+            if (searchUser is null) return BadRequest();
 
             string hash = _encryptorHelper.EncryptorPassword(password,
                 Convert.FromBase64String(searchUser.PasswordSalt!));
 
-            if (hash != searchUser.PasswordHash) return Unauthorized();
+            if (hash != searchUser.PasswordHash) return BadRequest();
 
+            //Gen tokens
             Claim[] claimsAccessToken = await GetClaimsAccessToken(searchUser);
             Claim[] claimsRefreshToken = {
                 new Claim(ClaimTypes.NameIdentifier, searchUser.Id.ToString())
             };
 
             TokenModel tokenModel = CreateTokenPair(claimsAccessToken, claimsRefreshToken);
+
+            //Search refresh token by ip
             List<UserToken> userTokens = await _userTokensRepository.GetAll(searchUser.Id);
             UserToken? userTokenByIp = userTokens.FirstOrDefault(x => x.UserIpAddress == ip);
 
@@ -92,12 +96,11 @@ namespace CaseApplication.Api.Controllers
         [HttpPost("SignUp")]
         public async Task<IActionResult> SignUp(User user, string password)
         {
-            user.Id = new Guid();
-
             User? userExists = await _userRepository.GetByParameters(user);
 
             if (userExists is not null) return BadRequest("User already exists!");
 
+            //Gen hash and salt
             byte[] salt = _encryptorHelper.GenerationSaltTo64Bytes();
             string hash = _encryptorHelper.EncryptorPassword(password, salt);
 
@@ -106,6 +109,7 @@ namespace CaseApplication.Api.Controllers
 
             await _userRepository.Create(user);
 
+            //Create Add info
             user = (await _userRepository.GetByLogin(user.UserLogin!))!;
 
             await _userAdditionalInfoRepository.Create(new UserAdditionalInfo()

@@ -126,7 +126,9 @@ namespace CaseApplication.Api.Controllers
             User? user = await _userRepository.Get(userId);
 
             if (user == null) return NotFound();
+
             byte[] secretBytes = Encoding.UTF8.GetBytes(user.PasswordHash!);
+
             ClaimsPrincipal? principal = _jwtHelper
                 .GetClaimsToken(token, secretBytes, "HS512");
 
