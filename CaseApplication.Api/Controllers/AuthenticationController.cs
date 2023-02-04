@@ -191,8 +191,15 @@ namespace CaseApplication.Api.Controllers
 
         private TokenModel CreateTokenPair(Claim[] claimsAccess, Claim[] claimsRefresh)
         {
-            JwtSecurityToken accessToken = _jwtHelper.CreateAccessToken(claimsAccess);
-            JwtSecurityToken refreshToken = _jwtHelper.CreateRefreshToken(claimsRefresh);
+            TimeSpan expirationRefresh = TimeSpan.FromDays(
+                double.Parse(_configuration["JWT:RefreshTokenValidityInDays"]!));
+            TimeSpan expirationAccess = TimeSpan.FromMinutes(
+                double.Parse(_configuration["JWT:TokenValidityInMinutes"]!));
+
+            JwtSecurityToken accessToken = _jwtHelper
+                .CreateResuableToken(claimsAccess, expirationAccess);
+            JwtSecurityToken refreshToken = _jwtHelper
+                .CreateResuableToken(claimsRefresh, expirationRefresh);
 
             return new TokenModel { 
                 AccessToken = new JwtSecurityTokenHandler().WriteToken(accessToken),
