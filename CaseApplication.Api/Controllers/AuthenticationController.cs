@@ -69,8 +69,7 @@ namespace CaseApplication.Api.Controllers
             TokenModel tokenModel = CreateTokenPair(claimsAccessToken, claimsRefreshToken);
 
             //Search refresh token by ip
-            List<UserToken> userTokens = await _userTokensRepository.GetAll(searchUser.Id);
-            UserToken? userTokenByIp = userTokens.FirstOrDefault(x => x.UserIpAddress == ip);
+            UserToken? userTokenByIp = await _userTokensRepository.GetByIp(user.Id, ip);
 
             if (userTokenByIp == null)
             {
@@ -88,6 +87,8 @@ namespace CaseApplication.Api.Controllers
                 userTokenByIp.RefreshTokenExpiryTime = tokenModel.ExpiresRefreshIn;
                 await _userTokensRepository.Update(userTokenByIp);
             }
+
+            //TODO Notify by email
 
             return Ok(tokenModel);
         }
@@ -120,9 +121,11 @@ namespace CaseApplication.Api.Controllers
             return Ok();
         }
 
+        [AllowAnonymous]
         [HttpPost("RefreshToken")]
         public async Task<IActionResult> RefreshToken(string refreshToken, string ip)
         {
+            //Get claims by refresh token
             byte[] secretBytes = Encoding.ASCII.GetBytes(_configuration["JWT:Secret"]!);
             ClaimsPrincipal? principal = _jwtHelper
                 .GetClaimsToken(refreshToken, secretBytes, "HS256");
@@ -130,18 +133,26 @@ namespace CaseApplication.Api.Controllers
             if (principal is null)
                 return BadRequest("Invalid refresh token");
 
+            //Get user id
             string getUserId = principal.Claims
                 .Single(x => x.Type == ClaimTypes.NameIdentifier)
                 .Value;
 
             _ = Guid.TryParse(getUserId, out Guid userId);
 
+            //Check exists ip
             UserToken? userToken = await _userTokensRepository.GetByIp(userId, ip);
+
+            if(userToken == null)
+            {
+                //TODO Notify by email(edit password)
+            }
 
             if (userToken == null ||
                 refreshToken != userToken.RefreshToken || 
                 userToken.RefreshTokenExpiryTime <= DateTime.Now)
             {
+                await _userTokensRepository.DeleteByToken(userId, refreshToken);
                 return BadRequest("Invalid refresh token");
             }
 
@@ -162,11 +173,13 @@ namespace CaseApplication.Api.Controllers
 
         [Authorize]
         [HttpPost("Logout")]
-        public async Task<IActionResult> Logout(string ip)
+        public async Task<IActionResult> Logout(string refreshToken)
         {
-            UserToken? userToken = await _userTokensRepository.GetByIp(UserId, ip);
-            
-            await _userTokensRepository.Delete(userToken!.Id);
+            UserToken? userToken = await _userTokensRepository.GetByToken(UserId, refreshToken);
+
+            if (userToken == null) return NotFound("Invalid token");
+
+            await _userTokensRepository.Delete(userToken.Id);
             
             return NoContent();
         }

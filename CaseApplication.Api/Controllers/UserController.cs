@@ -23,6 +23,7 @@ namespace CaseApplication.Api.Controllers
         private readonly EncryptorHelper _encryptorHelper;
         private readonly JwtHelper _jwtHelper;
         private readonly EmailHelper _emailHelper;
+        private readonly IUserTokensRepository _userTokensRepository;
         private Guid UserId => Guid
             .Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
 
@@ -30,12 +31,14 @@ namespace CaseApplication.Api.Controllers
             IUserRepository userRepository, 
             EncryptorHelper encryptorHelper,
             JwtHelper jwtHelper,
-            EmailHelper emailHelper)
+            EmailHelper emailHelper,
+            IUserTokensRepository userTokensRepository)
         {
             _userRepository = userRepository;
             _encryptorHelper = encryptorHelper;
             _jwtHelper = jwtHelper;
             _emailHelper = emailHelper;
+            _userTokensRepository = userTokensRepository;
         }
 
         [Authorize]
@@ -137,8 +140,10 @@ namespace CaseApplication.Api.Controllers
 
             //TODO Answer user by email
             //TODO No delete give the user 30 days
+            
+            await _userTokensRepository.DeleteAll(UserId);
 
-            return Ok(await _userRepository.Delete(userId));
+            return Ok();
         }
 
         [Authorize(Roles = "admin")]

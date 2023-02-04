@@ -19,6 +19,14 @@ namespace CaseApplication.EntityFramework.Repositories
 
             return await context.UserToken.FirstOrDefaultAsync(x => x.Id == id);
         }
+        public async Task<UserToken?> GetByToken(Guid userId, string token)
+        {
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            return await context.UserToken
+                .FirstOrDefaultAsync(x => x.UserId == userId && x.RefreshToken == token);
+        }
+
         public async Task<UserToken?> GetByIp(Guid userId, string ip)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();

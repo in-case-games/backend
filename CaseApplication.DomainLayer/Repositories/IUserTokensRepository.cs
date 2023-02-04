@@ -4,6 +4,7 @@ namespace CaseApplication.DomainLayer.Repositories
 {
     public interface IUserTokensRepository : IBaseRepository<UserToken>
     {
+        public Task<UserToken?> GetByToken(Guid userId, string token);
         public Task<UserToken?> GetByIp(Guid userId, string ip);
         public Task<List<UserToken>> GetAll(Guid userId);
         public Task<bool> DeleteByToken(Guid userId, string token);
