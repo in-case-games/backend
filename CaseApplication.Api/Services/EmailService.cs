@@ -19,7 +19,7 @@ namespace CaseApplication.Api.Services
             _smtpPassword = configuration["EmailConfig:Password"]!;
         }
 
-        public async Task<string?> SendToEmail(string email, string subject, string body)
+        public async Task SendToEmail(string email, string subject, string body)
         {
             using (var client = new SmtpClient())
             {
@@ -43,7 +43,6 @@ namespace CaseApplication.Api.Services
                     client.Dispose();
                 }
             }
-            return null;
         }
     }
 }

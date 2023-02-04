@@ -3,7 +3,6 @@ using CaseApplication.Api.Services;
 using CaseApplication.DomainLayer.Entities;
 using CaseApplication.DomainLayer.Repositories;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -23,6 +22,7 @@ namespace CaseApplication.Api.Controllers
         private readonly EncryptorHelper _encryptorHelper;
         private readonly JwtHelper _jwtHelper;
         private readonly IUserTokensRepository _userTokensRepository;
+        private readonly EmailHelper _emailHelper;
         private Guid UserId => Guid
             .Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
         #endregion
@@ -34,7 +34,8 @@ namespace CaseApplication.Api.Controllers
             IUserRoleRepository userRoleRepository,
             EncryptorHelper encryptorHelper,
             JwtHelper jwtHelper,
-            IUserTokensRepository userTokensRepository)
+            IUserTokensRepository userTokensRepository,
+            EmailHelper emailHelper)
         {
             _userRepository = userRepository;
             _userAdditionalInfoRepository = userAdditionalInfoRepository;
@@ -43,6 +44,7 @@ namespace CaseApplication.Api.Controllers
             _jwtHelper = jwtHelper;
             _userTokensRepository = userTokensRepository;
             _configuration = configuration;
+            _emailHelper = emailHelper;
         }
         #endregion
 
@@ -53,15 +55,15 @@ namespace CaseApplication.Api.Controllers
             //FindUser
             User? searchUser = await _userRepository.GetByParameters(user);
 
-            if (searchUser is null) return BadRequest();
+            if (searchUser is null) return NotFound();
 
             string hash = _encryptorHelper.EncryptorPassword(password,
                 Convert.FromBase64String(searchUser.PasswordSalt!));
 
-            if (hash != searchUser.PasswordHash) return BadRequest();
+            if (hash != searchUser.PasswordHash) return Forbid();
 
-            //Gen tokens
-            Claim[] claimsAccessToken = await GetClaimsAccessToken(searchUser);
+            //Generate tokens
+            Claim[] claimsAccessToken = await GetClaimsForAccessToken(searchUser);
             Claim[] claimsRefreshToken = {
                 new Claim(ClaimTypes.NameIdentifier, searchUser.Id.ToString())
             };
@@ -89,7 +91,7 @@ namespace CaseApplication.Api.Controllers
             }
 
             //TODO Notify by email
-
+            await _emailHelper.SendConfirmAccountToEmail("zxc.danil@inbox.ru", "12345");
             return Ok(tokenModel);
         }
 
@@ -99,7 +101,7 @@ namespace CaseApplication.Api.Controllers
         {
             User? userExists = await _userRepository.GetByParameters(user);
 
-            if (userExists is not null) return BadRequest("User already exists!");
+            if (userExists is not null) return Conflict("User already exists!");
 
             //Gen hash and salt
             byte[] salt = _encryptorHelper.GenerationSaltTo64Bytes();
@@ -131,7 +133,7 @@ namespace CaseApplication.Api.Controllers
                 .GetClaimsToken(refreshToken, secretBytes, "HS256");
 
             if (principal is null)
-                return BadRequest("Invalid refresh token");
+                return Forbid("Invalid refresh token");
 
             //Get user id
             string getUserId = principal.Claims
@@ -153,12 +155,12 @@ namespace CaseApplication.Api.Controllers
                 userToken.RefreshTokenExpiryTime <= DateTime.Now)
             {
                 await _userTokensRepository.DeleteByToken(userId, refreshToken);
-                return BadRequest("Invalid refresh token");
+                return Forbid("Invalid refresh token");
             }
 
             User user = (await _userRepository.Get(userId))!;
 
-            Claim[] claimsAccess = await GetClaimsAccessToken(user);
+            Claim[] claimsAccess = await GetClaimsForAccessToken(user);
             Claim[] claimsRefresh = principal.Claims.ToArray();
 
             TokenModel tokenModel = CreateTokenPair(claimsAccess, claimsRefresh);
@@ -177,7 +179,7 @@ namespace CaseApplication.Api.Controllers
         {
             UserToken? userToken = await _userTokensRepository.GetByToken(UserId, refreshToken);
 
-            if (userToken == null) return NotFound("Invalid token");
+            if (userToken == null) return Forbid("Invalid token");
 
             await _userTokensRepository.Delete(userToken.Id);
             
@@ -193,7 +195,7 @@ namespace CaseApplication.Api.Controllers
             return NoContent();
         }
 
-        private async Task<Claim[]> GetClaimsAccessToken(User user)
+        private async Task<Claim[]> GetClaimsForAccessToken(User user)
         {
             //Find future data for claims
             UserAdditionalInfo? userAdditionalInfo = await _userAdditionalInfoRepository.Get(user.Id);

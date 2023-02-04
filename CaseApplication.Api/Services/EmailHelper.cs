@@ -11,40 +11,32 @@
             _emailService = emailService;
         }
 
-        public async Task<bool> SendNotifyToEmail(string email, string subject, string body)
+        public async Task SendNotifyToEmail(string email, string subject, string body)
         {
-            string? answer = await _emailService.SendToEmail(email, subject, body);
-
-            return answer == null;
+            await _emailService.SendToEmail(email, subject, body);
         }
 
-        public async Task<bool> SendDeleteAccountToEmail(string email, string userId, string token)
+        public async Task SendDeleteAccountToEmail(string email, string userId, string token)
         {
             string subject = "Подтвердите удаление аккаунта";
             string body = $"<b>Link: {_requestUrl}/User/DeleteConfirmation?" +
                 $"userId={userId}&token={token}</b>";
 
-            string? answer = await _emailService.SendToEmail(email, subject, body);
-
-            return answer == null;
+            await _emailService.SendToEmail(email, subject, body);
         }
 
-        public async Task<bool> SendConfirmAccountToEmail(string email, string token)
+        public async Task SendConfirmAccountToEmail(string email, string token)
         {
             string subject = "Подтвердите вход в аккаунт";
             string body = "<b>This is some html text</b>";
-            string? answer = await _emailService.SendToEmail(email, subject, body);
-
-            return answer == null;
+            await _emailService.SendToEmail(email, subject, body);
         }
 
-        public async Task<bool> SendActivationAccountToEmail(string email, string token)
+        public async Task SendActivationAccountToEmail(string email, string token)
         {
             string subject = "Подтвердите свой аккаунт";
             string body = "<b>This is some html text</b>";
-            string? answer = await _emailService.SendToEmail(email, subject, body);
-
-            return answer == null;
+            await _emailService.SendToEmail(email, subject, body);
         }
     }
 }
