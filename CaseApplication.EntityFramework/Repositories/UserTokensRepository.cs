@@ -64,7 +64,7 @@ namespace CaseApplication.EntityFramework.Repositories
                     "review what data comes from the api");
             }
 
-            context.Entry(token).CurrentValues.SetValues(token);
+            context.Entry(userToken).CurrentValues.SetValues(token);
             await context.SaveChangesAsync();
 
             return true;
