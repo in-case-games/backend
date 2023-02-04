@@ -108,7 +108,7 @@ namespace CaseApplication.Api.Controllers
             string genHash = _encryptorHelper.EncryptorPassword(password, Convert
                 .FromBase64String(user.PasswordSalt!));
 
-            if (genHash != user.PasswordHash) return BadRequest("Incorrect password");
+            if (genHash != user.PasswordHash) return Forbid("Incorrect password");
 
             Claim[] claims = {
                 new Claim("UserId", user.Id.ToString())
@@ -119,7 +119,7 @@ namespace CaseApplication.Api.Controllers
 
             await _emailHelper.SendDeleteAccountToEmail(user.UserEmail!, user.Id.ToString(), oneTimeToken);
 
-            return BadRequest();
+            return Accepted();
         }
 
         [AllowAnonymous]

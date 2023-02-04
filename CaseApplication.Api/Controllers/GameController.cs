@@ -50,7 +50,7 @@ namespace CaseApplication.Api.Controllers
             bool isValidBalance = (userAdditionalInfo.UserBalance >= gameCase.GameCaseCost);
 
             if (isValidBalance is false) {
-                return BadRequest("Your balance is less than the cost of the case" +
+                return Forbid("Your balance is less than the cost of the case" +
                     "Top up your balance or open a case cheaper");
             }
 

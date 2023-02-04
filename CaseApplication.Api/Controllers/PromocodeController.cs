@@ -39,7 +39,7 @@ namespace CaseApplication.Api.Controllers
             bool isExistPromocode = promocodesUsed.Exists(x => x.PromocodeId == promocode.Id);
 
             if (isExistPromocode)
-                return BadRequest("Promocode used");
+                return UnprocessableEntity("Promocode is used");
 
             await _promocodeUsedRepository.Create(new PromocodesUsedByUser()
             {
