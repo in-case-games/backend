@@ -20,6 +20,18 @@ namespace CaseApplication.Api.Controllers
         }
 
         [AllowAnonymous]
+        [HttpGet]
+        public async Task<IActionResult> Get(string name)
+        {
+            UserRole? searchRole = await _userRoleRepository.GetByName(name);
+
+            if (searchRole != null) 
+                return Ok(searchRole);
+
+            return NotFound();
+        }
+
+        [AllowAnonymous]
         [HttpGet("GetAll")]
         public async Task<IActionResult> GetAll()
         {

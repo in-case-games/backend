@@ -12,7 +12,15 @@ namespace CaseApplication.EntityFramework.Repositories
             _contextFactory = contextFactory;
         }
 
-        public async Task<UserAdditionalInfo?> Get(Guid userId)
+        public async Task<UserAdditionalInfo?> Get(Guid id)
+        {
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            return await context.UserAdditionalInfo
+                .FirstOrDefaultAsync(x => x.Id == id);
+        }
+
+        public async Task<UserAdditionalInfo?> GetByUserId(Guid userId)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
@@ -36,6 +44,7 @@ namespace CaseApplication.EntityFramework.Repositories
 
             return true;
         }
+
         public async Task<bool> Update(UserAdditionalInfo info)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();

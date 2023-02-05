@@ -4,5 +4,6 @@ namespace CaseApplication.DomainLayer.Repositories
 {
     public interface IUserAdditionalInfoRepository : IBaseRepository<UserAdditionalInfo>
     {
+        public Task<UserAdditionalInfo?> GetByUserId(Guid userId);
     }
 }

@@ -144,9 +144,9 @@ namespace CaseApplication.Api.Controllers
         [HttpDelete("DeleteByAdmin")]
         public async Task<IActionResult> DeleteByAdmin(Guid userId)
         {
-            User? user = await _userRepository.Get(userId);
+            User? searchUser = await _userRepository.Get(userId);
 
-            if (user != null) {
+            if (searchUser != null) {
                 return Ok(await _userRepository.Delete(userId));
             };
 

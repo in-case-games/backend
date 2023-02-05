@@ -73,6 +73,16 @@ namespace CaseApplication.WebClient.Services
             JsonContent json = JsonContent.Create(entity);
             HttpResponseMessage response = await _httpClient.PostAsync(_baseUrl + uri, json);
 
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception(
+                    response.StatusCode.ToString() +
+                    response.RequestMessage! +
+                    response.Headers +
+                    response.ReasonPhrase! +
+                    response.Content);
+            }
+
             return await response.Content
                 .ReadFromJsonAsync<O>(new JsonSerializerOptions(JsonSerializerDefaults.Web));
         }
