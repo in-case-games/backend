@@ -1,16 +1,10 @@
-﻿using Azure.Core;
-using CaseApplication.Api.Services;
+﻿using CaseApplication.Api.Services;
 using CaseApplication.DomainLayer.Entities;
 using CaseApplication.DomainLayer.Repositories;
-using CaseApplication.EntityFramework.Repositories;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Cryptography.KeyDerivation;
-using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Security.Cryptography;
 using System.Text;
 
 namespace CaseApplication.Api.Controllers

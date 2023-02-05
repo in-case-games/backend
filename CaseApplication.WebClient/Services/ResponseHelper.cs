@@ -29,6 +29,18 @@ namespace CaseApplication.WebClient.Services
             return response.StatusCode;
         }
 
+        public async Task<HttpStatusCode> ResponsePostStatusCode<T>(string uri, T entity, string token = "")
+            where T : BaseEntity
+        {
+            _httpClient.DefaultRequestHeaders
+                .Add("Authorization", "Bearer " + token);
+
+            JsonContent json = JsonContent.Create(entity);
+            HttpResponseMessage response = await _httpClient.PostAsync(_baseUrl + uri, json);
+
+            return response.StatusCode;
+        }
+
         public async Task<T> ResponseGet<T>(string uri, string token = "") 
             where T: new()
         {
@@ -51,8 +63,9 @@ namespace CaseApplication.WebClient.Services
                 .ReadFromJsonAsync<T>(new JsonSerializerOptions(JsonSerializerDefaults.Web)) ?? 
                 new();
         }
-        public async Task<HttpStatusCode> ResponsePost<T>(string uri,T entity, string token = "") 
-            where T: BaseEntity
+
+        public async Task<O?> ResponsePost<T, O>(string uri, T entity, string token = "")
+            where T : BaseEntity
         {
             _httpClient.DefaultRequestHeaders
                 .Add("Authorization", "Bearer " + token);
@@ -60,7 +73,8 @@ namespace CaseApplication.WebClient.Services
             JsonContent json = JsonContent.Create(entity);
             HttpResponseMessage response = await _httpClient.PostAsync(_baseUrl + uri, json);
 
-            return response.StatusCode;
+            return await response.Content
+                .ReadFromJsonAsync<O>(new JsonSerializerOptions(JsonSerializerDefaults.Web));
         }
 
         public async Task<HttpStatusCode> ResponsePut<T>(string uri,T entity, string token = "") 

@@ -1,3 +1,4 @@
+using CaseApplication.Api.Models;
 using CaseApplication.DomainLayer.Entities;
 using CaseApplication.WebClient.Services;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -19,6 +20,10 @@ namespace CaseApplication.IntegrationTests.Api
         public async Task GameItemSimpleTests()
         {
             //Post
+            Authentication authentication = new Authentication();
+            TokenModel userTokens = await authentication.SignInUser("101");
+            TokenModel adminTokens = await authentication.SignInAdmin("105");
+
             GameItem gameItem = new()
             {
                 GameItemCost = 100M,

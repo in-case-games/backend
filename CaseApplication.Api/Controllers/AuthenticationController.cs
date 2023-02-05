@@ -91,6 +91,7 @@ namespace CaseApplication.Api.Controllers
             }
 
             //TODO Notify by email
+
             return Ok(tokenModel);
         }
 
@@ -119,12 +120,14 @@ namespace CaseApplication.Api.Controllers
                 UserId = user.Id,
             });
 
+            //TODO Notify by email
+
             return Ok();
         }
 
         [AllowAnonymous]
-        [HttpPost("RefreshToken")]
-        public async Task<IActionResult> RefreshToken(string refreshToken, string ip)
+        [HttpGet("RefreshTokens")]
+        public async Task<IActionResult> RefreshTokens(string refreshToken, string ip)
         {
             //Get claims by refresh token
             byte[] secretBytes = Encoding.ASCII.GetBytes(_configuration["JWT:Secret"]!);
@@ -157,6 +160,7 @@ namespace CaseApplication.Api.Controllers
                 return Forbid("Invalid refresh token");
             }
 
+            //Generation Token
             User user = (await _userRepository.Get(userId))!;
 
             Claim[] claimsAccess = await GetClaimsForAccessToken(user);
@@ -164,6 +168,7 @@ namespace CaseApplication.Api.Controllers
 
             TokenModel tokenModel = CreateTokenPair(claimsAccess, claimsRefresh);
 
+            //Update Token
             userToken.RefreshToken = tokenModel.RefreshToken;
             userToken.RefreshTokenExpiryTime = tokenModel.ExpiresRefreshIn;
 
@@ -187,8 +192,12 @@ namespace CaseApplication.Api.Controllers
 
         [Authorize]
         [HttpPost("LogoutAll")]
-        public async Task<IActionResult> LogoutAll()
+        public async Task<IActionResult> LogoutAll(string refreshToken)
         {
+            UserToken? userToken = await _userTokensRepository.GetByToken(UserId, refreshToken);
+
+            if (userToken == null) return Forbid("Invalid token");
+
             await _userTokensRepository.DeleteAll(UserId);
 
             return NoContent();
