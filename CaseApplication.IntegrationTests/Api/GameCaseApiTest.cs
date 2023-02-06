@@ -11,9 +11,7 @@ namespace CaseApplication.IntegrationTests.Api
     {
         private readonly ResponseHelper _clientApi;
         private readonly AuthenticationTestHelper _authHelper = new();
-        private TokenModel UserTokens { get; set; } = new();
         private TokenModel AdminTokens { get; set; } = new();
-        private User User { get; set; } = new();
         private User Admin { get; set; } = new();
 
         private GameCase GameCase { get; set; } = new();
@@ -34,33 +32,26 @@ namespace CaseApplication.IntegrationTests.Api
             };
         }
 
-        private async Task InitializeOneTimeAccounts(string ipUser, string ipAdmin)
+        private async Task InitializeOneTimeAccount(string ipAdmin)
         {
-            User = new()
-            {
-                UserLogin = $"ULGCST{ipUser}User",
-                UserEmail = $"UEGCST{ipUser}User"
-            };
             Admin = new()
             {
                 UserLogin = $"ULGCST{ipAdmin}Admin",
                 UserEmail = $"UEGCST{ipAdmin}Admin"
             };
 
-            UserTokens = await _authHelper.SignInUser(User, ipUser);
             AdminTokens = await _authHelper.SignInAdmin(Admin, ipAdmin);
         }
 
-        private async Task DeleteOneTimeAccounts(string ipUser, string ipAdmin)
+        private async Task DeleteOneTimeAccount(string ipAdmin)
         {
-            await _authHelper.DeleteUserByAdmin($"ULGCST{ipUser}User");
             await _authHelper.DeleteUserByAdmin($"ULGCST{ipAdmin}Admin");
         }
 
         [Fact]
         public async Task GameCaseSimpleTests()
         {
-            await InitializeOneTimeAccounts("0.1.0", "0.1.1");
+            await InitializeOneTimeAccount("0.1.0");
 
             //Post
             HttpStatusCode statusCodeCreate = await _clientApi.ResponsePostStatusCode(
@@ -89,7 +80,7 @@ namespace CaseApplication.IntegrationTests.Api
                 (statusCodeDelete == HttpStatusCode.OK) &&
                 (getByGroupNameStatusCode == HttpStatusCode.OK);
 
-            await DeleteOneTimeAccounts("0.1.0", "0.1.1");
+            await DeleteOneTimeAccount("0.1.0");
 
             Assert.True(IsPassedTests);
         }

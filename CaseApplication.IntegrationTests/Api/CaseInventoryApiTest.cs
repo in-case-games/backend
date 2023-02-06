@@ -10,10 +10,10 @@ namespace CaseApplication.IntegrationTests.Api
     {
         private readonly ResponseHelper _clientApi;
         private readonly AuthenticationTestHelper _authHelper = new();
-        private TokenModel UserTokens { get; set; } = new();
+
         private TokenModel AdminTokens { get; set; } = new();
-        private User User { get; set; } = new();
         private User Admin { get; set; } = new();
+
         private GameCase GameCase { get; set; } = new();
         private GameItem GameItemFirst { get; set; } = new();
         private GameItem GameItemSecond { get; set; } = new();
@@ -48,33 +48,26 @@ namespace CaseApplication.IntegrationTests.Api
             };
         }
 
-        private async Task InitializeOneTimeAccounts(string ipUser, string ipAdmin)
+        private async Task InitializeOneTimeAccount(string ipAdmin)
         {
-            User = new()
-            {
-                UserLogin = $"ULCIST{ipUser}User",
-                UserEmail = $"UECIST{ipUser}User"
-            };
             Admin = new()
             {
                 UserLogin = $"ULCIST{ipAdmin}Admin",
                 UserEmail = $"UECIST{ipAdmin}Admin"
             };
 
-            UserTokens = await _authHelper.SignInUser(User, ipUser);
             AdminTokens = await _authHelper.SignInAdmin(Admin, ipAdmin);
         }
 
-        private async Task DeleteOneTimeAccounts(string ipUser, string ipAdmin)
+        private async Task DeleteOneTimeAccount(string ipAdmin)
         {
-            await _authHelper.DeleteUserByAdmin($"ULCIST{ipUser}User");
             await _authHelper.DeleteUserByAdmin($"ULCIST{ipAdmin}Admin");
         }
 
         [Fact]
         public async Task CaseInventorySimpleTests()
         {
-            await InitializeOneTimeAccounts("0.2.0", "0.2.1");
+            await InitializeOneTimeAccount("0.2.0");
 
             await CreateDependenciesInventory();
             
@@ -116,7 +109,7 @@ namespace CaseApplication.IntegrationTests.Api
             
             await DeleteDependenciesInventory(new() { caseInventoryFirst, caseInventorySecond });
 
-            await DeleteOneTimeAccounts("0.2.0", "0.2.1");
+            await DeleteOneTimeAccount("0.2.0");
         }
 
         private async Task<bool> CreateCaseInventory(CaseInventory caseInventory)

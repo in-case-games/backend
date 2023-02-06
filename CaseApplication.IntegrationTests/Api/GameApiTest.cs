@@ -12,9 +12,7 @@ namespace CaseApplication.IntegrationTests.Api
         private readonly ITestOutputHelper _output;
         private readonly ResponseHelper _clientApi;
         private readonly AuthenticationTestHelper _authHelper = new();
-        private TokenModel UserTokens { get; set; } = new();
         private TokenModel AdminTokens { get; set; } = new();
-        private User User { get; set; } = new();
         private User Admin { get; set; } = new();
         private GameCase GameCase { get; set; } = new();
         private List<GameItem> GameItems { get; set; } = new();
@@ -36,33 +34,26 @@ namespace CaseApplication.IntegrationTests.Api
             };
         }
 
-        private async Task InitializeOneTimeAccounts(string ipUser, string ipAdmin)
+        private async Task InitializeOneTimeAccount(string ipAdmin)
         {
-            User = new()
-            {
-                UserLogin = $"ULGOCAT{ipUser}User",
-                UserEmail = $"UEGOCAT{ipUser}User"
-            };
             Admin = new()
             {
                 UserLogin = $"ULGOCAT{ipAdmin}Admin",
                 UserEmail = $"UEGOCAT{ipAdmin}Admin"
             };
 
-            UserTokens = await _authHelper.SignInUser(User, ipUser);
             AdminTokens = await _authHelper.SignInAdmin(Admin, ipAdmin);
         }
 
-        private async Task DeleteOneTimeAccounts(string ipUser, string ipAdmin)
+        private async Task DeleteOneTimeAccounts(string ipAdmin)
         {
-            await _authHelper.DeleteUserByAdmin($"ULGOCAT{ipUser}User");
             await _authHelper.DeleteUserByAdmin($"ULGOCAT{ipAdmin}Admin");
         }
 
         [Fact]
         public async Task GameOpeningCasesApiTest()
         {
-            await InitializeOneTimeAccounts("0.3.0", "0.3.1");
+            await InitializeOneTimeAccount("0.3.0");
             await CreateDependencies();
 
             //Create Counter
@@ -109,7 +100,7 @@ namespace CaseApplication.IntegrationTests.Api
 
             await DeleteDependencies();
 
-            await DeleteOneTimeAccounts("0.3.0", "0.3.1");
+            await DeleteOneTimeAccounts("0.3.0");
         }
 
         private async Task CreateDependencies()
