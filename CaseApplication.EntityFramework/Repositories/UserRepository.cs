@@ -27,6 +27,13 @@ namespace CaseApplication.EntityFramework.Repositories
             return await context.User.FirstOrDefaultAsync(x => x.Id == id);
         }
 
+        public async Task<List<User>> GetAll()
+        {
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            return await context.User.ToListAsync();
+        }
+
         public async Task<User?> GetByEmail(string email)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();

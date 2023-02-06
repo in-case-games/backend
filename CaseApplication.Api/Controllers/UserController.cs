@@ -70,6 +70,21 @@ namespace CaseApplication.Api.Controllers
         }
 
         [Authorize]
+        [HttpGet("GetAll")]
+        public async Task<IActionResult> GetAll()
+        {
+            List<User> users = await _userRepository.GetAll();
+
+            foreach(User user in users)
+            {
+                user.PasswordHash = "";
+                user.PasswordSalt = "";
+            }
+
+            return Ok(users);
+        }
+
+        [Authorize]
         [HttpPut("UpdateLogin")]
         public async Task<IActionResult> UpdateLogin(string login)
         {
