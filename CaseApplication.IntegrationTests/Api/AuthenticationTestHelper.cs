@@ -59,6 +59,7 @@ namespace CaseApplication.IntegrationTests.Api
             UserRole? userRole = await _responseHelper.ResponseGet<UserRole?>("/Role?name=admin");
 
             userInfo!.UserRoleId = userRole!.Id;
+            userInfo!.UserBalance = 9999999999M;
 
             await _responseHelper.ResponsePut(
                 $"/UserAdditionalInfo/UpdateInfoByAdmin", 

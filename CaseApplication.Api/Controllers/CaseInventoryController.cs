@@ -34,6 +34,20 @@ namespace CaseApplication.Api.Controllers
         }
 
         [AllowAnonymous]
+        [HttpGet("GetById")]
+        public async Task<IActionResult> GetById(Guid caseId, Guid itemId)
+        {
+            CaseInventory? caseInventory = await _caseInventoryRepository.GetById(caseId, itemId);
+
+            if (caseInventory != null)
+            {
+                return Ok(caseInventory);
+            }
+
+            return NotFound();
+        }
+
+        [AllowAnonymous]
         [HttpGet("GetAll")]
         public async Task<IActionResult> GetAll(Guid caseId)
         {

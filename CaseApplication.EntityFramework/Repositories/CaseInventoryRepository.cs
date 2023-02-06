@@ -24,13 +24,23 @@ namespace CaseApplication.EntityFramework.Repositories
 
             return searchCaseInventory;
         }
+        public async Task<CaseInventory?> GetById(Guid caseId, Guid itemId)
+        {
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            CaseInventory? searchCaseInventory = await context.CaseInventory.FirstOrDefaultAsync(
+                x => 
+                x.GameCaseId == caseId && 
+                x.GameItemId == itemId);
+
+            return searchCaseInventory;
+        }
 
         public async Task<List<CaseInventory>> GetAll(Guid caseId)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            List<CaseInventory> caseInventories = await context
-                .CaseInventory
+            List<CaseInventory> caseInventories = await context.CaseInventory
                 .Where(x => x.GameCaseId == caseId)
                 .ToListAsync();
 
