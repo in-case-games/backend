@@ -163,16 +163,24 @@ namespace CaseApplication.IntegrationTests.Api
 
         private async Task<Guid> SearchIdItem(string name)
         {
-            GameItem items = await _clientApi.ResponseGet<GameItem>("/GameItem/GetAll");
+            GameItem? item = await _clientApi.ResponseGet<GameItem?>(
+                $"/GameItem/GetByName?" +
+                $"name={name}");
 
-            return items.FirstOrDefault(x => x.GameItemName == name)!.Id;
+            if (item == null) throw new Exception("No such item"); 
+
+            return item.Id;
         }
 
         private async Task<Guid> SearchIdCase(string name)
         {
-            List<GameCase> items = await _clientApi.ResponseGet<List<GameCase>>("/GameCase/GetAll");
+            GameCase? gameCase = await _clientApi.ResponseGet<GameCase?>(
+                $"/GameCase/GetByName?" +
+                $"name={name}");
 
-            return items.FirstOrDefault(x => x.GameCaseName == name)!.Id;
+            if (gameCase == null) throw new Exception("No such game case");
+
+            return gameCase.Id;
         }
 
         private async Task<bool> DeleteDependenciesInventory(List<CaseInventory> caseInventories)

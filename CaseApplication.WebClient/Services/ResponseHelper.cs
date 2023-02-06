@@ -41,7 +41,7 @@ namespace CaseApplication.WebClient.Services
             return response.StatusCode;
         }
 
-        public async Task<T> ResponseGet<T>(string uri, string token = "") 
+        public async Task<T?> ResponseGet<T>(string uri, string token = "") 
             where T: new()
         {
             _httpClient.DefaultRequestHeaders
@@ -60,8 +60,7 @@ namespace CaseApplication.WebClient.Services
             }
 
             return await response.Content
-                .ReadFromJsonAsync<T>(new JsonSerializerOptions(JsonSerializerDefaults.Web)) ?? 
-                new();
+                .ReadFromJsonAsync<T>(new JsonSerializerOptions(JsonSerializerDefaults.Web));
         }
 
         public async Task<O?> ResponsePost<T, O>(string uri, T entity, string token = "")
