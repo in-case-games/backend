@@ -20,7 +20,7 @@ namespace CaseApplication.Api.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("GetByName")]
+        [HttpGet("{name}")]
         public async Task<IActionResult> GetByName(string name)
         {
             PromocodeType? promocodeType = await _promocodeTypeRepository.GetByName(name);
@@ -34,7 +34,7 @@ namespace CaseApplication.Api.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("GetAll")]
+        [HttpGet]
         public async Task<IActionResult> GetAll()
         {
             return Ok(await _promocodeTypeRepository.GetAll());
@@ -55,7 +55,7 @@ namespace CaseApplication.Api.Controllers
         }
 
         [Authorize(Roles = "admin")]
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
             return Ok(await _promocodeTypeRepository.Delete(id));

@@ -55,7 +55,7 @@ namespace CaseApplication.Api.Controllers
         }
 
         [Authorize(Roles = "admin")]
-        [HttpPut("UpdateInfoByAdmin")]
+        [HttpPut]
         public async Task<IActionResult> UpdateInfoByAdmin(UserAdditionalInfo userAdditionalInfo)
         {
             return Ok(await _userInfoRepository.Update(userAdditionalInfo));

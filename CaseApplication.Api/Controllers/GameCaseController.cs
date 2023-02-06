@@ -20,7 +20,7 @@ namespace CaseApplication.Api.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet]
+        [HttpGet("{id}")]
         public async Task<IActionResult> Get(Guid id)
         {
             GameCase? gameCase = await _gameCaseRepository.Get(id);
@@ -37,7 +37,7 @@ namespace CaseApplication.Api.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("GetByName")]
+        [HttpGet("{name}")]
         public async Task<IActionResult> GetByName(string name)
         {
             GameCase? gameCase = await _gameCaseRepository.GetByName(name);
@@ -54,7 +54,7 @@ namespace CaseApplication.Api.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("GetAll")]
+        [HttpGet]
         public async Task<IActionResult> GetAll()
         {
             List<GameCase> gameCases = await _gameCaseRepository.GetAll();
@@ -69,10 +69,10 @@ namespace CaseApplication.Api.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("GetAllByGroupName")]
-        public async Task<IActionResult> GetAllByGroupName(string name)
+        [HttpGet("{groupName}")]
+        public async Task<IActionResult> GetAllByGroupName(string groupName)
         {
-            List<GameCase> gameCases = await _gameCaseRepository.GetAllByGroupName(name);
+            List<GameCase> gameCases = await _gameCaseRepository.GetAllByGroupName(groupName);
 
             foreach (GameCase gameCase in gameCases)
             {
@@ -98,7 +98,7 @@ namespace CaseApplication.Api.Controllers
         }
 
         [Authorize(Roles = "admin")]
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
             return Ok(await _gameCaseRepository.Delete(id));

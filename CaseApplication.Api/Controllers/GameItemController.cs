@@ -20,7 +20,7 @@ namespace CaseApplication.Api.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet]
+        [HttpGet("{id}")]
         public async Task<IActionResult> Get(Guid id)
         {
             GameItem? gameItem = await _gameItemRepository.Get(id);
@@ -33,7 +33,7 @@ namespace CaseApplication.Api.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("GetByName")]
+        [HttpGet("{name}")]
         public async Task<IActionResult> GetByName(string name)
         {
             GameItem? gameItem = await _gameItemRepository.GetByName(name);
@@ -47,7 +47,7 @@ namespace CaseApplication.Api.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("GetAll")]
+        [HttpGet]
         public async Task<IActionResult> GetAll()
         {
             return Ok(await _gameItemRepository.GetAll());
@@ -68,7 +68,7 @@ namespace CaseApplication.Api.Controllers
         }
 
         [Authorize(Roles = "admin")]
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
             return Ok(await _gameItemRepository.Delete(id));

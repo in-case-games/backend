@@ -20,7 +20,7 @@ namespace CaseApplication.Api.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet]
+        [HttpGet("{name}")]
         public async Task<IActionResult> Get(string name)
         {
             UserRole? searchRole = await _userRoleRepository.GetByName(name);
@@ -32,7 +32,7 @@ namespace CaseApplication.Api.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("GetAll")]
+        [HttpGet]
         public async Task<IActionResult> GetAll()
         {
             return Ok(await _userRoleRepository.GetAll());
@@ -53,7 +53,7 @@ namespace CaseApplication.Api.Controllers
         }
 
         [Authorize(Roles = "admin")]
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
             return Ok(await _userRoleRepository.Delete(id));

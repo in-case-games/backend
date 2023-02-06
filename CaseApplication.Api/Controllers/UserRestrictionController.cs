@@ -20,10 +20,16 @@ namespace CaseApplication.Api.Controllers
         }
 
         [Authorize]
-        [HttpGet("GetAll")]
-        public async Task<IActionResult> GetAll()
+        [HttpGet("{userId}")]
+        public async Task<IActionResult> GetAll(Guid userId)
         {
-            return Ok(await _userRestrictionRepository.GetAll(UserId));
+            return Ok(await _userRestrictionRepository.GetAll(userId));
+        }
+        [Authorize]
+        [HttpGet("{name}")]
+        public async Task<IActionResult> GetByName(string name)
+        {
+            return Ok(await _userRestrictionRepository.GetByNameAndUserId(UserId, name));
         }
 
         [Authorize(Roles = "admin")]
@@ -41,7 +47,7 @@ namespace CaseApplication.Api.Controllers
         }
 
         [Authorize(Roles = "admin")]
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
             return Ok(await _userRestrictionRepository.Delete(id));

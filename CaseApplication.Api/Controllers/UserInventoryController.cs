@@ -20,7 +20,7 @@ namespace CaseApplication.Api.Controllers
         }
 
         [Authorize]
-        [HttpGet]
+        [HttpGet("{id}")]
         public async Task<IActionResult> Get(Guid id) 
         {
             UserInventory? userInventory = await _userInventoryRepository.Get(id);
@@ -34,7 +34,7 @@ namespace CaseApplication.Api.Controllers
         }
 
         [Authorize]
-        [HttpGet("GetAll")]
+        [HttpGet("all/{userId}")]
         public async Task<IActionResult> GetAll(Guid? userId = null)
         {
             return Ok(await _userInventoryRepository.GetAll(userId ?? UserId));

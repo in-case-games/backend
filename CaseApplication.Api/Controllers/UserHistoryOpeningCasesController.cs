@@ -20,7 +20,7 @@ namespace CaseApplication.Api.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet]
+        [HttpGet("{id}")]
         public async Task<IActionResult> Get(Guid id)
         {
             UserHistoryOpeningCases? userHistoryOpening = await _userHistoryRepository.Get(id);
@@ -34,30 +34,34 @@ namespace CaseApplication.Api.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("GetAllById")]
-        public async Task<IActionResult> GetAllById(Guid userId)
+        [HttpGet("all/{userId}")]
+        public async Task<IActionResult> GetAllByUserId(Guid userId)
         {
             return Ok(await _userHistoryRepository.GetAllById(userId));
         }
         [Authorize]
-        [HttpGet("GetAll")]
+        [HttpGet]
         public async Task<IActionResult> GetAll()
         {
             return Ok(await _userHistoryRepository.GetAll());
         }
 
         [Authorize]
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
+            UserHistoryOpeningCases? userHistoryOpening = await _userHistoryRepository.Get(id);
+
+            if (!userHistoryOpening!.UserId.Equals(UserId))
+                return Forbid("Invalid operation");
             return Ok(await _userHistoryRepository.Delete(id));
         }
 
         [Authorize]
-        [HttpDelete("DeleteAll")]
-        public async Task<IActionResult> DeleteAll(Guid userId)
+        [HttpDelete]
+        public async Task<IActionResult> DeleteAll()
         {
-            return Ok(await _userHistoryRepository.DeleteAll(userId));
+            return Ok(await _userHistoryRepository.DeleteAll(UserId));
         }
     }
 }

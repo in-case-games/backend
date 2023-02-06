@@ -20,6 +20,13 @@ namespace CaseApplication.EntityFramework.Repositories
             return await context.UserRestriction
                 .FirstOrDefaultAsync(x => x.Id == id);
         }
+        public async Task<UserRestriction?> GetByNameAndUserId(Guid userId, string name)
+        {
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            return await context.UserRestriction
+                .FirstOrDefaultAsync(x => x.RestrictionName == name && x.UserId == userId);
+        }
         public async Task<List<UserRestriction>> GetAll(Guid userId)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();

@@ -36,7 +36,7 @@ namespace CaseApplication.Api.Controllers
         }
 
         [Authorize]
-        [HttpGet]
+        [HttpGet("{userId}")]
         public async Task<IActionResult> Get(Guid? userId = null)
         {
             User? user = await _userRepository.Get(userId ?? UserId);
@@ -53,7 +53,7 @@ namespace CaseApplication.Api.Controllers
         }
 
         [Authorize]
-        [HttpGet("GetByLogin")]
+        [HttpGet("{login}")]
         public async Task<IActionResult> GetByLogin(string login)
         {
             User? user = await _userRepository.GetByLogin(login);
@@ -70,7 +70,7 @@ namespace CaseApplication.Api.Controllers
         }
 
         [Authorize]
-        [HttpGet("GetAll")]
+        [HttpGet]
         public async Task<IActionResult> GetAll()
         {
             List<User> users = await _userRepository.GetAll();
@@ -85,7 +85,7 @@ namespace CaseApplication.Api.Controllers
         }
 
         [Authorize]
-        [HttpPut("UpdateLogin")]
+        [HttpPut]
         public async Task<IActionResult> UpdateLogin(string login)
         {
             User? searchUserByLogin = await _userRepository.GetByLogin(login);
@@ -107,7 +107,7 @@ namespace CaseApplication.Api.Controllers
         }
 
         [Authorize]
-        [HttpPost("SendDeleteAccount")]
+        [HttpPost]
         public async Task<IActionResult> SendDeleteAccount(string password)
         {
             User? user = await _userRepository.Get(UserId);
@@ -132,7 +132,7 @@ namespace CaseApplication.Api.Controllers
         }
 
         [AllowAnonymous]
-        [HttpDelete("DeleteConfirmation")]
+        [HttpDelete("{userId}&{token}")]
         public async Task<IActionResult> DeleteConfirmation(Guid userId, string token)
         {
             User? user = await _userRepository.Get(userId);
@@ -156,7 +156,7 @@ namespace CaseApplication.Api.Controllers
         }
 
         [Authorize(Roles = "admin")]
-        [HttpDelete("DeleteByAdmin")]
+        [HttpDelete("{userId}")]
         public async Task<IActionResult> DeleteByAdmin(Guid userId)
         {
             User? searchUser = await _userRepository.Get(userId);

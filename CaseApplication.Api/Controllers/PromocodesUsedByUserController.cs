@@ -20,7 +20,7 @@ namespace CaseApplication.Api.Controllers
         }
 
         [Authorize]
-        [HttpGet]
+        [HttpGet("{id}")]
         public async Task<IActionResult> Get(Guid id)
         {
             PromocodesUsedByUser? promocodesUsed = await _promocodeUserByUserRepository.Get(id);
@@ -34,8 +34,8 @@ namespace CaseApplication.Api.Controllers
         }
 
         [Authorize]
-        [HttpGet("GetAll")]
-        public async Task<IActionResult> GetAll(Guid userId)
+        [HttpGet("{userId}")]
+        public async Task<IActionResult> GetUsedPromocodes(Guid userId)
         {
             return Ok(await _promocodeUserByUserRepository.GetAll(userId));
         }

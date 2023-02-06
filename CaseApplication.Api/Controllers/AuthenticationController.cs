@@ -49,7 +49,7 @@ namespace CaseApplication.Api.Controllers
         #endregion
 
         [AllowAnonymous]
-        [HttpPost("SignIn")]
+        [HttpPost("signin/{password}&{ip}")]
         public async Task<IActionResult> SignIn(User user, string password, string ip)
         {
             //FindUser
@@ -71,7 +71,7 @@ namespace CaseApplication.Api.Controllers
             TokenModel tokenModel = CreateTokenPair(claimsAccessToken, claimsRefreshToken);
 
             //Search refresh token by ip
-            UserToken? userTokenByIp = await _userTokensRepository.GetByIp(user.Id, ip);
+            UserToken? userTokenByIp = await _userTokensRepository.GetByIp(searchUser.Id, ip);
 
             if (userTokenByIp == null)
             {
@@ -96,7 +96,7 @@ namespace CaseApplication.Api.Controllers
         }
 
         [AllowAnonymous]
-        [HttpPost("SignUp")]
+        [HttpPost("signup/{password}")]
         public async Task<IActionResult> SignUp(User user, string password)
         {
             User? userExists = await _userRepository.GetByParameters(user);
@@ -126,7 +126,7 @@ namespace CaseApplication.Api.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("RefreshTokens")]
+        [HttpGet("refresh/{refreshToken}&{ip}")]
         public async Task<IActionResult> RefreshTokens(string refreshToken, string ip)
         {
             //Get claims by refresh token
@@ -178,7 +178,7 @@ namespace CaseApplication.Api.Controllers
         }
 
         [Authorize]
-        [HttpPost("Logout")]
+        [HttpPost("logout/{refreshToken}")]
         public async Task<IActionResult> Logout(string refreshToken)
         {
             UserToken? userToken = await _userTokensRepository.GetByToken(UserId, refreshToken);
@@ -191,7 +191,7 @@ namespace CaseApplication.Api.Controllers
         }
 
         [Authorize]
-        [HttpPost("LogoutAll")]
+        [HttpPost("logoutall/{refreshToken}")]
         public async Task<IActionResult> LogoutAll(string refreshToken)
         {
             UserToken? userToken = await _userTokensRepository.GetByToken(UserId, refreshToken);

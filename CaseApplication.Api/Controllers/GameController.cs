@@ -11,7 +11,7 @@ namespace CaseApplication.Api.Controllers
     public class GameController : ControllerBase
     {
         private static readonly Random _random = new();
-
+        #region injections
         private readonly IUserAdditionalInfoRepository _userInfoRepository;
         private readonly IGameCaseRepository _gameCaseRepository;
         private readonly ICaseInventoryRepository _caseInventoryRepository;
@@ -20,7 +20,8 @@ namespace CaseApplication.Api.Controllers
         private readonly IUserInventoryRepository _userInventoryRepository;
         private Guid UserId => Guid
             .Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
-
+        #endregion
+        #region ctor
         public GameController(
             IUserAdditionalInfoRepository userInfoRepository,
             ICaseInventoryRepository caseInventoryRepository,
@@ -36,9 +37,9 @@ namespace CaseApplication.Api.Controllers
             _gameItemRepository = gameItemRepository;
             _userInventoryRepository = userInventoryRepository;
         }
-
+        #endregion
         [Authorize]
-        [HttpGet]
+        [HttpGet("{caseId}")]
         public async Task<IActionResult> GetOpeningCase(Guid caseId)
         {
             //Check Balance
@@ -85,7 +86,7 @@ namespace CaseApplication.Api.Controllers
 
             return Ok(winGameItem);
         }
-
+        #region nonAction
         private async Task<GameItem> RandomizeByConstraints(Guid caseId, decimal balance)
         {
             List<CaseInventory> casesInventories = (await _caseInventoryRepository
@@ -155,5 +156,6 @@ namespace CaseApplication.Api.Controllers
 
             return winIndex;
         }
+        #endregion
     }
 }

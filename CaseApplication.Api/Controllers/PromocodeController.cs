@@ -25,17 +25,17 @@ namespace CaseApplication.Api.Controllers
         }
 
         [Authorize]
-        [HttpPost("UsePromocode")]
-        public async Task<IActionResult> UsePromocode(Promocode promocode)
+        [HttpGet("use/{name}")]
+        public async Task<IActionResult> UsePromocode(string name)
         {
-            Promocode? searchPromocode = await _promocodeRepository.GetByName(promocode.PromocodeName!);
+            Promocode? searchPromocode = await _promocodeRepository.GetByName(name);
 
-            if (promocode == null) return NotFound();
+            if (searchPromocode == null) return NotFound();
 
             List<PromocodesUsedByUser> promocodesUsed = await _promocodeUsedRepository
                 .GetAll(UserId);
 
-            bool isExistPromocode = promocodesUsed.Exists(x => x.PromocodeId == promocode.Id);
+            bool isExistPromocode = promocodesUsed.Exists(x => x.PromocodeId == searchPromocode.Id);
 
             if (isExistPromocode)
                 return UnprocessableEntity("Promocode is used");
@@ -43,14 +43,14 @@ namespace CaseApplication.Api.Controllers
             await _promocodeUsedRepository.Create(new PromocodesUsedByUser()
             {
                 UserId = UserId,
-                PromocodeId = promocode.Id
+                PromocodeId = searchPromocode.Id
             });
 
             return Ok();
         }
 
         [Authorize(Roles = "admin")]
-        [HttpGet("GetByName")]
+        [HttpGet("{name}")]
         public async Task<IActionResult> GetByName(string name)
         {
             Promocode? promocode = await _promocodeRepository.GetByName(name);
@@ -76,7 +76,7 @@ namespace CaseApplication.Api.Controllers
         }
 
         [Authorize(Roles = "admin")]
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
             return Ok(await _promocodeRepository.Delete(id));

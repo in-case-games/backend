@@ -20,7 +20,7 @@ namespace CaseApplication.Api.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet]
+        [HttpGet("{id}")]
         public async Task<IActionResult> Get(Guid id)
         {
             CaseInventory? caseInventory = await _caseInventoryRepository.Get(id);
@@ -34,8 +34,8 @@ namespace CaseApplication.Api.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("GetById")]
-        public async Task<IActionResult> GetById(Guid caseId, Guid itemId)
+        [HttpGet("{caseId}&{itemId}")]
+        public async Task<IActionResult> GetByIds(Guid caseId, Guid itemId)
         {
             CaseInventory? caseInventory = await _caseInventoryRepository.GetById(caseId, itemId);
 
@@ -48,7 +48,7 @@ namespace CaseApplication.Api.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("GetAll")]
+        [HttpGet("all/{caseId}")]
         public async Task<IActionResult> GetAll(Guid caseId)
         {
             return Ok(await _caseInventoryRepository.GetAll(caseId));
@@ -69,7 +69,7 @@ namespace CaseApplication.Api.Controllers
         }
 
         [Authorize(Roles = "admin")]
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
             return Ok(await _caseInventoryRepository.Delete(id));
