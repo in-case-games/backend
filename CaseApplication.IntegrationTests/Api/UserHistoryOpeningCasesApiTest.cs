@@ -1,4 +1,5 @@
-﻿using CaseApplication.Api.Models;
+﻿using Azure;
+using CaseApplication.Api.Models;
 using CaseApplication.DomainLayer.Entities;
 using CaseApplication.WebClient.Services;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -14,11 +15,10 @@ namespace CaseApplication.IntegrationTests.Api
         private User User { get; set; } = new();
         private AuthenticationTestHelper _authHelper;
 
-        public UserHistoryOpeningCasesApiTest(WebApplicationFactory<Program> applicationFactory,
-            AuthenticationTestHelper helper)
+        public UserHistoryOpeningCasesApiTest(WebApplicationFactory<Program> applicationFactory)
         {
             _clientApi = new(applicationFactory.CreateClient());
-            _authHelper = helper;
+            _authHelper = new AuthenticationTestHelper(_clientApi);
         }
         private async Task InitializeOneTimeAccounts(string ipUser, string ipAdmin)
         {
@@ -37,7 +37,7 @@ namespace CaseApplication.IntegrationTests.Api
         }
         private async Task DeleteOneTimeAccounts(string ipUser, string ipAdmin)
         {
-            await _authHelper.DeleteUserByAdmin($"UEUIAT{ipAdmin}Admin");
+            await _authHelper.DeleteUserByAdmin($"ULUIAT{ipAdmin}Admin");
         }
 
         [Fact]
@@ -47,7 +47,7 @@ namespace CaseApplication.IntegrationTests.Api
             bool IsCreatedDependencies = await CreateDependenciesUserHistory();
             bool IsDeletedDependencies = false;
 
-            Guid userId = await SearchIdUser(User!.UserEmail!);
+            Guid userId = await SearchIdUser(Admin!.UserLogin!);
 
             if (IsCreatedDependencies)
             {
@@ -184,7 +184,7 @@ namespace CaseApplication.IntegrationTests.Api
 
         private async Task<Guid> SearchIdUser(string login)
         {
-            User? user = await _clientApi.ResponseGet<User>($"/User/GetByLogin?email={login}&hash=123",
+            User? user = await _clientApi.ResponseGet<User>($"/User/GetByLogin?login={login}",
                 token: AdminToken.AccessToken!);
 
             return user!.Id;
@@ -204,7 +204,7 @@ namespace CaseApplication.IntegrationTests.Api
                 .ResponseDelete($"/GameCase?id={userHistories[0].GameCaseId}",
                 token: AdminToken.AccessToken!);
             statusCodeDeleteDependents = await _clientApi
-                .ResponseDelete($"/User?id={userHistories[0].UserId}",
+                .ResponseDelete($"/User/DeleteByAdmin?userId={userHistories[0].UserId}",
                 token: AdminToken.AccessToken!);
 
             return statusCodeDeleteDependents == HttpStatusCode.OK;

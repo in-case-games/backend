@@ -7,7 +7,7 @@ namespace CaseApplication.IntegrationTests.Api
 {
     public class AuthenticationTestHelper
     {
-        private readonly ResponseHelper _responseHelper = new();
+        private readonly ResponseHelper _responseHelper;
 
         private readonly User SuperAdminModel = new() { 
             UserEmail = "yt_ferbray@mail.ru",
@@ -15,6 +15,10 @@ namespace CaseApplication.IntegrationTests.Api
         };
         private readonly string Password = "1234";
         private TokenModel? SuperAdminTokens;
+        public AuthenticationTestHelper(ResponseHelper responseHelper)
+        {
+            _responseHelper = responseHelper;
+        }
 
         public async Task<TokenModel> SignInUser(User user, string ip)
         {

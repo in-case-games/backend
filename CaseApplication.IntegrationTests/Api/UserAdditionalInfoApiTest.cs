@@ -14,10 +14,10 @@ namespace CaseApplication.IntegrationTests.Api
         private User User { get; set; } = new();
         private TokenModel UserToken { get; set; } = new();
         private User Admin { get; set; } = new();
-        public UserAdditionalInfoApiTest(WebApplicationFactory<Program> application, AuthenticationTestHelper helper)
+        public UserAdditionalInfoApiTest(WebApplicationFactory<Program> application)
         {
             _response = new ResponseHelper(application.CreateClient());
-            _authHelper = helper;
+            _authHelper = new AuthenticationTestHelper(_response);
         }
         private async Task InitializeOneTimeAccounts(string ipUser, string ipAdmin)
         {
@@ -42,7 +42,7 @@ namespace CaseApplication.IntegrationTests.Api
         private async Task<UserAdditionalInfo> CreateUserAdditionalInfo()
         {
             User? currentUser = await _response
-                .ResponseGet<User>($"/User/GetByLogin?login={User.UserLogin}&hash=123");
+                .ResponseGet<User>($"/User/GetByLogin?login={User.UserLogin}");
             UserAdditionalInfo userInfo = new UserAdditionalInfo()
             {
                 UserId = currentUser!.Id,

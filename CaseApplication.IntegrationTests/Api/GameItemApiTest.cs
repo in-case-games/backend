@@ -1,3 +1,4 @@
+using Azure;
 using CaseApplication.Api.Models;
 using CaseApplication.DomainLayer.Entities;
 using CaseApplication.WebClient.Services;
@@ -9,7 +10,7 @@ namespace CaseApplication.IntegrationTests.Api
     public class GameItemApiTest : IClassFixture<WebApplicationFactory<Program>>
     {
         private readonly ResponseHelper _clientApi;
-        private readonly AuthenticationTestHelper _authHelper = new();
+        private readonly AuthenticationTestHelper _authHelper;
         private TokenModel UserTokens { get; set; } = new();
         private TokenModel AdminTokens { get; set; } = new();
         private User User { get; set; } = new();
@@ -21,6 +22,7 @@ namespace CaseApplication.IntegrationTests.Api
         public GameItemApiTest(WebApplicationFactory<Program> applicationFactory)
         {
             _clientApi = new(applicationFactory.CreateClient());
+            _authHelper = new AuthenticationTestHelper(_clientApi);
 
             GameItem = new()
             {

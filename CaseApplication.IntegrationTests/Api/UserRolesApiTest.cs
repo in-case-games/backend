@@ -11,25 +11,25 @@ namespace CaseApplication.IntegrationTests.Api
     {
         private readonly ResponseHelper _response;
         private AuthenticationTestHelper _authHelper;
-        public UserRolesApiTest(WebApplicationFactory<Program> application, AuthenticationTestHelper authHelper)
+        public UserRolesApiTest(WebApplicationFactory<Program> application)
         {
             _response = new ResponseHelper(application.CreateClient());
-            _authHelper = authHelper;
+            _authHelper = new AuthenticationTestHelper(_response);
         }
         private string GenerateString()
         {
             byte[] bytes = new byte[2];
             new Random().NextBytes(bytes);
 
-            return Convert.ToBase64String(bytes).Replace('=', 's').Replace('+', ' ');
+            return Convert.ToBase64String(bytes).Replace('=', 's').Replace('+', '1');
         }
         [Fact]
         public async Task UserRoleCrudTest()
         {
             User admin = new User()
             {
-                UserLogin = $"ULURAT0.9.0Admin",
-                UserEmail = $"UEURAT0.9.1Admin"
+                UserLogin = $"ULUIAT0.14.0Admin",
+                UserEmail = $"UEUIAT0.14.0Admin"
             }; ;
             TokenModel adminToken = await _authHelper.SignInAdmin(admin, "0.14.0");
             // Arrange
@@ -43,11 +43,11 @@ namespace CaseApplication.IntegrationTests.Api
                 .ResponsePostStatusCode("/Role", templateUserRole, token: adminToken.AccessToken!);
 
             UserRole? userRole = await _response
-                .ResponseGet<UserRole>($"/Role/GetByName?name={templateUserRole.RoleName}",
+                .ResponseGet<UserRole>($"/Role?name={templateUserRole.RoleName}",
                 token: adminToken.AccessToken!);
 
             HttpStatusCode getStatusCode = await _response
-                .ResponseGetStatusCode($"/Role/GetByName?name={templateUserRole.RoleName}",
+                .ResponseGetStatusCode($"/Role?name={templateUserRole.RoleName}",
                 token: adminToken.AccessToken!);
             HttpStatusCode getAllStatusCode = await _response
                 .ResponseGetStatusCode("/Role/GetAll", token: adminToken.AccessToken!);
@@ -57,7 +57,7 @@ namespace CaseApplication.IntegrationTests.Api
 
             HttpStatusCode deleteStatusCode = await _response
                 .ResponseDelete($"/Role?id={userRole!.Id}", token: adminToken.AccessToken!);
-            await _authHelper.DeleteUserByAdmin($"UEUIAT0.14.0Admin");
+            await _authHelper.DeleteUserByAdmin($"ULUIAT0.14.0Admin");
             // Assert
             Assert.Equal(
                 (HttpStatusCode.OK, HttpStatusCode.OK, HttpStatusCode.OK, HttpStatusCode.OK, HttpStatusCode.OK),

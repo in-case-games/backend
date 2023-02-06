@@ -206,7 +206,7 @@ namespace CaseApplication.Api.Controllers
         private async Task<Claim[]> GetClaimsForAccessToken(User user)
         {
             //Find future data for claims
-            UserAdditionalInfo? userAdditionalInfo = await _userAdditionalInfoRepository.Get(user.Id);
+            UserAdditionalInfo? userAdditionalInfo = await _userAdditionalInfoRepository.GetByUserId(user.Id);
 
             Guid roleId = userAdditionalInfo!.UserRoleId;
             string roleName = (await _userRoleRepository.Get(roleId))!.RoleName!;

@@ -11,7 +11,7 @@ namespace CaseApplication.IntegrationTests.Api
     {
         private readonly ITestOutputHelper _output;
         private readonly ResponseHelper _clientApi;
-        private readonly AuthenticationTestHelper _authHelper = new();
+        private readonly AuthenticationTestHelper _authHelper;
         private TokenModel AdminTokens { get; set; } = new();
         private User Admin { get; set; } = new();
         private GameCase GameCase { get; set; } = new();
@@ -22,6 +22,7 @@ namespace CaseApplication.IntegrationTests.Api
             ITestOutputHelper output)
         {
             _clientApi = new(applicationFactory.CreateClient());
+            _authHelper = new AuthenticationTestHelper(_clientApi);
             _output = output;
 
             GameCase = new()

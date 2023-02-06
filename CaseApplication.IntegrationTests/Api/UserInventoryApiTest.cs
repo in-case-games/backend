@@ -13,10 +13,10 @@ namespace CaseApplication.IntegrationTests.Api
         private TokenModel AdminToken { get; set; } = new();
         private User User { get; set; } = new();
         private User Admin { get; set; } = new();
-        public UserInventoryApiTest(WebApplicationFactory<Program> application, AuthenticationTestHelper helper)
+        public UserInventoryApiTest(WebApplicationFactory<Program> application)
         {
             _response = new ResponseHelper(application.CreateClient());
-            _authHelper = helper;
+            _authHelper = new AuthenticationTestHelper(_response);
         }
         private async Task InitializeOneTimeAccounts(string ipUser, string ipAdmin)
         {
@@ -35,12 +35,12 @@ namespace CaseApplication.IntegrationTests.Api
         }
         private async Task DeleteOneTimeAccounts(string ipUser, string ipAdmin)
         {
-            await _authHelper.DeleteUserByAdmin($"UEUIAT{ipAdmin}Admin");
+            await _authHelper.DeleteUserByAdmin($"ULUIAT{ipAdmin}Admin");
         }
         private async Task<UserInventory> InitializeUserInventory()
         {
             User? currentUser = await _response
-                .ResponseGet<User>($"/User/GetByLogin?login=ULUIAT0.7.1Admin");
+                .ResponseGet<User>($"/User/GetByLogin?login=ULUIAT0.12.1Admin");
 
             GameItem gameItem = new GameItem()
             {
@@ -62,25 +62,12 @@ namespace CaseApplication.IntegrationTests.Api
 
             return userInventory;
         }
-        private User InitializeUser()
-        {
-            User user = new User
-            {
-                UserLogin = "testinv1",
-                UserEmail = "testinv1",
-                UserImage = "testinv1",
-                PasswordHash = "testinv1",
-                PasswordSalt = "testinv1",
-            };
-
-            return user;
-        }
         private string GenerateString()
         {
             byte[] bytes = new byte[10];
             new Random().NextBytes(bytes);
 
-            return Convert.ToBase64String(bytes).Replace('=', 's');
+            return Convert.ToBase64String(bytes).Replace('=', 's').Replace('+', '1');
         }
         [Fact]
         public async Task UserInventoryCrudTest()
@@ -102,7 +89,6 @@ namespace CaseApplication.IntegrationTests.Api
                 .FirstOrDefault(x =>
                     x.UserId == templateUserInventory.UserId &&
                     x.GameItemId == templateUserInventory.GameItemId)!;
-
             HttpStatusCode getStatusCode = await _response
                 .ResponseGetStatusCode($"/UserInventory?id={userInventory.Id}",
                 token: AdminToken.AccessToken!);

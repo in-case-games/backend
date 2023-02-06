@@ -14,10 +14,10 @@ namespace CaseApplication.IntegrationTests.Api
         private User User { get; set; } = new();
         private TokenModel UserToken { get; set; } = new();
         private User Admin { get; set; } = new();
-        public UserApiTest(WebApplicationFactory<Program> application, AuthenticationTestHelper helper)
+        public UserApiTest(WebApplicationFactory<Program> application)
         {
             _response = new ResponseHelper(application.CreateClient());
-            _authHelper = helper;
+            _authHelper = new AuthenticationTestHelper(_response);
         }
         private async Task InitializeOneTimeAccounts(string ipUser, string ipAdmin)
         {

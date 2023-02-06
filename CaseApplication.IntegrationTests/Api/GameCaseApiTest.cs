@@ -10,7 +10,7 @@ namespace CaseApplication.IntegrationTests.Api
     public class GameCaseApiTest : IClassFixture<WebApplicationFactory<Program>>
     {
         private readonly ResponseHelper _clientApi;
-        private readonly AuthenticationTestHelper _authHelper = new();
+        private readonly AuthenticationTestHelper _authHelper;
         private TokenModel AdminTokens { get; set; } = new();
         private User Admin { get; set; } = new();
 
@@ -21,6 +21,7 @@ namespace CaseApplication.IntegrationTests.Api
         public GameCaseApiTest(WebApplicationFactory<Program> applicationFactory)
         {
             _clientApi = new(applicationFactory.CreateClient());
+            _authHelper = new AuthenticationTestHelper(_clientApi);
 
             GameCase = new()
             {

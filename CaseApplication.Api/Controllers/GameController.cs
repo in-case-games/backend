@@ -42,7 +42,7 @@ namespace CaseApplication.Api.Controllers
         public async Task<IActionResult> GetOpeningCase(Guid caseId)
         {
             //Check Balance
-            UserAdditionalInfo? userAdditionalInfo = await _userInfoRepository.Get(UserId);
+            UserAdditionalInfo? userAdditionalInfo = await _userInfoRepository.GetByUserId(UserId);
             GameCase? gameCase = await _gameCaseRepository.Get(caseId);
 
             if(userAdditionalInfo is null || gameCase is null) return NotFound();

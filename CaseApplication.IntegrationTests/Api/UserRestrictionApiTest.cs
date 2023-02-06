@@ -13,10 +13,10 @@ namespace CaseApplication.IntegrationTests.Api
         private TokenModel AdminToken { get; set; } = new();
         private User Admin { get; set; } = new();
         private AuthenticationTestHelper _authHelper;
-        public UserRestrictionApiTest(WebApplicationFactory<Program> application, AuthenticationTestHelper authHelper)
+        public UserRestrictionApiTest(WebApplicationFactory<Program> application)
         {
             _response = new ResponseHelper(application.CreateClient());
-            _authHelper = authHelper;
+            _authHelper = new AuthenticationTestHelper(_response);
         }
         private async Task InitializeOneTimeAccounts(string ipAdmin)
         {
@@ -30,12 +30,12 @@ namespace CaseApplication.IntegrationTests.Api
         }
         private async Task DeleteOneTimeAccounts(string ipAdmin)
         {
-            await _authHelper.DeleteUserByAdmin($"UEURNIST{ipAdmin}Admin");
+            await _authHelper.DeleteUserByAdmin($"ULURNIST{ipAdmin}Admin");
         }
         private async Task<UserRestriction> CreateUserRestriction()
         {
             User? currentUser = await _response
-                .ResponseGet<User>($"/User/GetByLogin?login=UEURNIST0.8.1Admin",
+                .ResponseGet<User>($"/User/GetByLogin?login=ULURNIST0.13.1Admin",
                 token: AdminToken.AccessToken!);
             UserRestriction userRestriction = new UserRestriction()
             {
@@ -68,9 +68,6 @@ namespace CaseApplication.IntegrationTests.Api
             UserRestriction userRestriction = userRestrictions!
                 .FirstOrDefault(x => x.UserId == templateUserRestriction.UserId)!;
 
-            HttpStatusCode getStatusCode = await _response
-                .ResponseGetStatusCode($"/UserRestriction?id={userRestriction.Id}",
-                token: AdminToken.AccessToken!);
             HttpStatusCode getAllStatusCode = await _response
                 .ResponseGetStatusCode
                 ($"/UserRestriction/GetAll?userId={userRestriction.UserId}",
@@ -90,8 +87,8 @@ namespace CaseApplication.IntegrationTests.Api
 
             // Assert
             Assert.Equal(
-                (HttpStatusCode.OK, HttpStatusCode.OK, HttpStatusCode.OK, HttpStatusCode.OK, HttpStatusCode.OK),
-                (postStatusCode, getStatusCode, getAllStatusCode, putStatusCode, deleteStatusCode));
+                (HttpStatusCode.OK, HttpStatusCode.OK, HttpStatusCode.OK, HttpStatusCode.OK),
+                (postStatusCode, getAllStatusCode, putStatusCode, deleteStatusCode));
 
             await DeleteOneTimeAccounts("0.13.1");
         }

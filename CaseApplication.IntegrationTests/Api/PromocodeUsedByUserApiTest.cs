@@ -9,7 +9,7 @@ namespace CaseApplication.IntegrationTests.Api
     public class PromocodeUsedByUserApiTest: IClassFixture<WebApplicationFactory<Program>>
     {
         private readonly ResponseHelper _response;
-        private readonly AuthenticationTestHelper _authHelper = new();
+        private readonly AuthenticationTestHelper _authHelper;
         private TokenModel UserTokens { get; set; } = new();
         private TokenModel AdminTokens { get; set; } = new();
         private User User { get; set; } = new();
@@ -19,6 +19,7 @@ namespace CaseApplication.IntegrationTests.Api
         public PromocodeUsedByUserApiTest(WebApplicationFactory<Program> application)
         {
             _response = new ResponseHelper(application.CreateClient());
+            _authHelper = new AuthenticationTestHelper(_response);
         }
 
         private async Task InitializeOneTimeAccounts(string ipUser, string ipAdmin)

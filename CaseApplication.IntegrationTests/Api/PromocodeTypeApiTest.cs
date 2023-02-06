@@ -1,4 +1,5 @@
-﻿using CaseApplication.Api.Models;
+﻿using Azure;
+using CaseApplication.Api.Models;
 using CaseApplication.DomainLayer.Entities;
 using CaseApplication.WebClient.Services;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -8,7 +9,7 @@ namespace CaseApplication.IntegrationTests.Api
     public class PromocodeTypeApiTest : IClassFixture<WebApplicationFactory<Program>>
     {
         private readonly ResponseHelper _clientApi;
-        private readonly AuthenticationTestHelper _authHelper = new();
+        private readonly AuthenticationTestHelper _authHelper;
         private TokenModel UserTokens { get; set; } = new();
         private TokenModel AdminTokens { get; set; } = new();
         private User User { get; set; } = new();
@@ -17,6 +18,7 @@ namespace CaseApplication.IntegrationTests.Api
         public PromocodeTypeApiTest(WebApplicationFactory<Program> applicationBuilder)
         {
             _clientApi = new(applicationBuilder.CreateClient());
+            _authHelper = new AuthenticationTestHelper(_clientApi);
         }
         private async Task InitializeOneTimeAccounts(string ipUser, string ipAdmin)
         {

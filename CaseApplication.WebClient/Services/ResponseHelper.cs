@@ -1,6 +1,8 @@
 ﻿using CaseApplication.DomainLayer.Entities;
 using System.Net;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Text;
 using System.Text.Json;
 
 namespace CaseApplication.WebClient.Services
@@ -21,8 +23,12 @@ namespace CaseApplication.WebClient.Services
 
         public async Task<HttpStatusCode> ResponseGetStatusCode(string uri, string token = "")
         {
-            _httpClient.DefaultRequestHeaders
-                .Add("Authorization", "Bearer " + token);
+            if (!String.IsNullOrEmpty(token)) 
+            {
+                _httpClient.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", token);
+            }
+            
 
             HttpResponseMessage response = await _httpClient.GetAsync(_baseUrl + uri);
 
@@ -32,10 +38,13 @@ namespace CaseApplication.WebClient.Services
         public async Task<HttpStatusCode> ResponsePostStatusCode<T>(string uri, T entity, string token = "")
             where T : BaseEntity
         {
-            _httpClient.DefaultRequestHeaders
-                .Add("Authorization", "Bearer " + token);
-
+            if (!String.IsNullOrEmpty(token))
+            {
+                _httpClient.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", token);
+            }
             JsonContent json = JsonContent.Create(entity);
+
             HttpResponseMessage response = await _httpClient.PostAsync(_baseUrl + uri, json);
 
             return response.StatusCode;
@@ -44,8 +53,11 @@ namespace CaseApplication.WebClient.Services
         public async Task<T?> ResponseGet<T>(string uri, string token = "") 
             where T: new()
         {
-            _httpClient.DefaultRequestHeaders
-                .Add("Authorization", "Bearer " + token);
+            if (!String.IsNullOrEmpty(token))
+            {
+                _httpClient.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", token);
+            }
 
             HttpResponseMessage response = await _httpClient.GetAsync(_baseUrl + uri);
 
@@ -66,8 +78,11 @@ namespace CaseApplication.WebClient.Services
         public async Task<O?> ResponsePost<T, O>(string uri, T entity, string token = "")
             where T : BaseEntity
         {
-            _httpClient.DefaultRequestHeaders
-                .Add("Authorization", "Bearer " + token);
+            if (!String.IsNullOrEmpty(token))
+            {
+                _httpClient.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", token);
+            }
 
             JsonContent json = JsonContent.Create(entity);
             HttpResponseMessage response = await _httpClient.PostAsync(_baseUrl + uri, json);
@@ -89,8 +104,11 @@ namespace CaseApplication.WebClient.Services
         public async Task<HttpStatusCode> ResponsePut<T>(string uri,T entity, string token = "") 
             where T: BaseEntity
         {
-            _httpClient.DefaultRequestHeaders
-                .Add("Authorization", "Bearer " + token);
+            if (!String.IsNullOrEmpty(token))
+            {
+                _httpClient.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", token);
+            }
 
             JsonContent json = JsonContent.Create(entity);
             HttpResponseMessage response = await _httpClient.PutAsync(_baseUrl + uri, json);
@@ -99,8 +117,11 @@ namespace CaseApplication.WebClient.Services
         }
         public async Task<HttpStatusCode> ResponseDelete(string uri, string token = "")
         {
-            _httpClient.DefaultRequestHeaders
-                .Add("Authorization", "Bearer " + token);
+            if (!String.IsNullOrEmpty(token))
+            {
+                _httpClient.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", token);
+            }
 
             HttpResponseMessage response = await _httpClient.DeleteAsync(_baseUrl + uri);
 

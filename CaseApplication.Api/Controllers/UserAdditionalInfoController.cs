@@ -27,8 +27,7 @@ namespace CaseApplication.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            UserAdditionalInfo? userAdditionalInfo = await _userInfoRepository.Get(UserId);
-
+            UserAdditionalInfo? userAdditionalInfo = await _userInfoRepository.GetByUserId(UserId);
             if (userAdditionalInfo != null) {
                 return Ok(userAdditionalInfo);
             }
