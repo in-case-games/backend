@@ -19,6 +19,12 @@ namespace CaseApplication.EntityFramework.Repositories
 
             return await context.GameItem.FirstOrDefaultAsync(x => x.Id == id);
         }
+        public async Task<GameItem?> GetByName(string name)
+        {
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            return await context.GameItem.FirstOrDefaultAsync(x => x.GameItemName == name);
+        }
 
         public async Task<List<GameItem>> GetAll()
         {

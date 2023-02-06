@@ -4,6 +4,7 @@ namespace CaseApplication.DomainLayer.Repositories
 {
     public interface IGameCaseRepository : IBaseRepository<GameCase>
     {
+        public Task<GameCase?> GetByName(string name);
         public Task<List<GameCase>> GetAll();
         public Task<List<GameCase>> GetAllByGroupName(string name);
     }

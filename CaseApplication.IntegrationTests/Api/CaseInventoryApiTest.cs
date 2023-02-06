@@ -1,4 +1,5 @@
-﻿using CaseApplication.DomainLayer.Entities;
+﻿using CaseApplication.Api.Models;
+using CaseApplication.DomainLayer.Entities;
 using CaseApplication.WebClient.Services;
 using Microsoft.AspNetCore.Mvc.Testing;
 using System.Net;
@@ -8,59 +9,111 @@ namespace CaseApplication.IntegrationTests.Api
     public class CaseInventoryApiTest : IClassFixture<WebApplicationFactory<Program>>
     {
         private readonly ResponseHelper _clientApi;
+        private readonly AuthenticationTestHelper _authHelper = new();
+        private TokenModel UserTokens { get; set; } = new();
+        private TokenModel AdminTokens { get; set; } = new();
+        private User User { get; set; } = new();
+        private User Admin { get; set; } = new();
+        private GameCase GameCase { get; set; } = new();
+        private GameItem GameItemFirst { get; set; } = new();
+        private GameItem GameItemSecond { get; set; } = new();
+        private CaseInventory CaseInventory { get; set; } = new();
 
         public CaseInventoryApiTest(WebApplicationFactory<Program> applicationFactory)
         {
             _clientApi = new(applicationFactory.CreateClient());
+
+            GameItemFirst = new()
+            {
+                GameItemName = "GINCISTName",
+                GameItemCost = 50000M,
+                GameItemImage = "GIICISTImage",
+                GameItemRarity = "Rare"
+            };
+
+            GameItemSecond = new()
+            {
+                GameItemName = "GINCISTName2",
+                GameItemCost = 10M,
+                GameItemImage = "GIICISTImage2",
+                GameItemRarity = "Xyina"
+            };
+
+            GameCase = new()
+            {
+                GroupCasesName = "GCNCISTGroupName",
+                GameCaseName = "GCNCISTName",
+                GameCaseCost = 200M,
+                GameCaseImage = "GCICISTImage",
+                RevenuePrecentage = 10M
+            };
+        }
+        private async Task InitializeOneTimeAccounts(string ipUser, string ipAdmin)
+        {
+            User = new()
+            {
+                UserLogin = $"ULCIST{ipUser}User",
+                UserEmail = $"ULCIST{ipUser}User"
+            };
+            Admin = new()
+            {
+                UserLogin = $"ULCIST{ipAdmin}Admin",
+                UserEmail = $"ULCIST{ipAdmin}Admin"
+            };
+
+            UserTokens = await _authHelper.SignInUser(User, ipUser);
+            AdminTokens = await _authHelper.SignInAdmin(Admin, ipAdmin);
+        }
+
+        private async Task DeleteOneTimeAccounts(string ipUser, string ipAdmin)
+        {
+            await _authHelper.DeleteUserByAdmin($"ULCIST{ipUser}User");
+            await _authHelper.DeleteUserByAdmin($"ULCIST{ipAdmin}Admin");
         }
 
         [Fact]
         public async Task CaseInventorySimpleTests()
         {
-            bool IsCreatedDependencies = await CreateDependenciesInventory();
-            bool IsDeletedDependencies = false;
+            await InitializeOneTimeAccounts("0.2.0", "0.2.1");
 
-            if (IsCreatedDependencies)
+            await CreateDependenciesInventory();
+            
+            Guid caseId = await SearchIdCase("Все или ничего");
+            Guid firstItemId = await SearchIdItem("Драгон лор");
+            Guid secondItemId = await SearchIdItem("Пистолет");
+            
+            CaseInventory caseInventory = new()
             {
-                Guid caseId = await SearchIdCase("Все или ничего");
-                Guid firstItemId = await SearchIdItem("Драгон лор");
-                Guid secondItemId = await SearchIdItem("Пистолет");
+                GameCaseId = caseId,
+                GameItemId = firstItemId,
+                LossChance = 1,
+                NumberItemsCase = 1
+            };
+            
+            //Create
+            await CreateCaseInventory(caseInventory);
 
-                CaseInventory caseInventory = new()
-                {
-                    GameCaseId = caseId,
-                    GameItemId = firstItemId,
-                    LossChance = 1,
-                    NumberItemsCase = 1
-                };
-                //Create
+            caseInventory.GameItemId = secondItemId;
+            caseInventory.LossChance = 99;
+            
+            await CreateCaseInventory(caseInventory);
+            
+            //Get and Get All
+            CaseInventory caseInventoryFirst = await SearchCaseInventory(caseId, firstItemId);
+            CaseInventory caseInventorySecond = await SearchCaseInventory(caseId, secondItemId);
 
-                await CreateCaseInventory(caseInventory);
+            //Update
+            caseInventoryFirst.NumberItemsCase = 2;
+            
+            await UpdateCaseInventory(caseInventoryFirst);
+            
+            //Delete
+            await DeleteCaseInventory(caseInventoryFirst.Id);
+            await DeleteCaseInventory(caseInventorySecond.Id);
+            
+            await DeleteDependenciesInventory(new() { caseInventoryFirst, caseInventorySecond });
 
-                caseInventory.GameItemId = secondItemId;
-                caseInventory.LossChance = 99;
-
-                await CreateCaseInventory(caseInventory);
-
-
-                //Get and Get All
-
-                CaseInventory caseInventoryFirst = await SearchCaseInventory(caseId, firstItemId);
-                CaseInventory caseInventorySecond = await SearchCaseInventory(caseId, secondItemId);
-
-                //Update
-                caseInventoryFirst.NumberItemsCase = 2;
-
-                await UpdateCaseInventory(caseInventoryFirst);
-
-                //Delete
-                await DeleteCaseInventory(caseInventoryFirst.Id);
-                await DeleteCaseInventory(caseInventorySecond.Id);
-
-                IsDeletedDependencies = await DeleteDependenciesInventory(new() { caseInventoryFirst, caseInventorySecond });
-            }
-
-            Assert.True(IsDeletedDependencies);
+            await DeleteOneTimeAccounts("0.2.0", "0.2.1");
         }
 
         private async Task<bool> CreateCaseInventory(CaseInventory caseInventory)
@@ -95,34 +148,12 @@ namespace CaseApplication.IntegrationTests.Api
 
         private async Task<bool> CreateDependenciesInventory()
         {
-            GameItem gameItem = new()
-            {
-                GameItemName = "Драгон лор",
-                GameItemCost = 50000,
-                GameItemImage = "aaa",
-                GameItemRarity = "Редкий"
-            };
-
-            GameItem gameItem2 = new()
-            {
-                GameItemName = "Пистолет",
-                GameItemCost = 10,
-                GameItemImage = "abc",
-                GameItemRarity = "Ширп"
-            };
-
-            GameCase gameCase = new()
-            {
-                GroupCasesName = "Бедные кейсы",
-                GameCaseName = "Все или ничего",
-                GameCaseCost = 20,
-                GameCaseImage = "asd",
-                RevenuePrecentage = 0
-            };
-
-            HttpStatusCode createFirstItem = await _clientApi.ResponsePost("/GameItem", gameItem);
-            HttpStatusCode createSecondItem = await _clientApi.ResponsePost("/GameItem", gameItem2);
-            HttpStatusCode createGameCase = await _clientApi.ResponsePost("/GameCase", gameCase);
+            HttpStatusCode createFirstItem = await _clientApi.ResponsePostStatusCode(
+                "/GameItem", GameItemFirst, AdminTokens.AccessToken!);
+            HttpStatusCode createSecondItem = await _clientApi.ResponsePostStatusCode(
+                "/GameItem", GameItemSecond, AdminTokens.AccessToken!);
+            HttpStatusCode createGameCase = await _clientApi.ResponsePostStatusCode(
+                "/GameCase", GameCase, AdminTokens.AccessToken!);
 
             return (
                 (createFirstItem == HttpStatusCode.OK) && 
@@ -132,7 +163,7 @@ namespace CaseApplication.IntegrationTests.Api
 
         private async Task<Guid> SearchIdItem(string name)
         {
-            List<GameItem> items = await _clientApi.ResponseGet<List<GameItem>>("/GameItem/GetAll");
+            GameItem items = await _clientApi.ResponseGet<GameItem>("/GameItem/GetAll");
 
             return items.FirstOrDefault(x => x.GameItemName == name)!.Id;
         }

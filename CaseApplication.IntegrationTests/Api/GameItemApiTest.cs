@@ -10,76 +10,113 @@ namespace CaseApplication.IntegrationTests.Api
     {
         private readonly ResponseHelper _clientApi;
         private readonly AuthenticationTestHelper _authHelper = new();
-        private TokenModel? UserTokens {get; set;}
-        private TokenModel? AdminTokens { get; set;}
-        private User? User { get; set; }
-        private User? Admin { get; set; }
+        private TokenModel UserTokens { get; set; } = new();
+        private TokenModel AdminTokens { get; set; } = new();
+        private User User { get; set; } = new();
+        private User Admin { get; set; } = new();
+        private GameItem GameItem { get; set; } = new();
 
         private Random random = new();
 
         public GameItemApiTest(WebApplicationFactory<Program> applicationFactory)
         {
             _clientApi = new(applicationFactory.CreateClient());
+
+            GameItem = new()
+            {
+                GameItemCost = 100M,
+                GameItemImage = "GIIGISTImage",
+                GameItemName = $"GIIGISTName",
+                GameItemRarity = "Rare"
+            };
         }
 
-        private async Task InitializeAccounts()
+        private async Task InitializeOneTimeAccounts(string ipUser, string ipAdmin)
         {
             User = new()
             {
-                UserLogin = "ULGIST101User",
-                UserEmail = "UEGIST101User"
+                UserLogin = $"ULGIST{ipUser}User",
+                UserEmail = $"UEGIST{ipUser}User"
             };
             Admin = new()
             {
-                UserLogin = "ULGIST105Admin",
-                UserEmail = "UEGIST105Admin"
+                UserLogin = $"ULGIST{ipAdmin}Admin",
+                UserEmail = $"UEGIST{ipAdmin}Admin"
             };
 
-            UserTokens = await _authHelper.SignInUser(User, "101");
-            AdminTokens = await _authHelper.SignInAdmin(Admin, "105");
+            UserTokens = await _authHelper.SignInUser(User, ipUser);
+            AdminTokens = await _authHelper.SignInAdmin(Admin, ipAdmin);
+        }
+
+        private async Task DeleteOneTimeAccounts(string ipUser, string ipAdmin)
+        {
+            await _authHelper.DeleteUserByAdmin($"ULGIST{ipUser}User");
+            await _authHelper.DeleteUserByAdmin($"ULGIST{ipAdmin}Admin");
         }
 
         [Fact]
         public async Task GameItemSimpleTests()
         {
-            await InitializeAccounts();
+            await InitializeOneTimeAccounts("0.0.0", "0.0.1");
 
             //Post
-            GameItem gameItem = new()
-            {
-                GameItemCost = 100M,
-                GameItemImage = "image200",
-                GameItemName = $"Оружие {random.Next(1, 100000)}",
-                GameItemRarity = "Rare"
-            };
-
-            HttpStatusCode statusCodeCreate = await _clientApi
-                .ResponsePost<GameItem>("/GameItem", gameItem);
+            HttpStatusCode statusCodeCreate = await _clientApi.ResponsePostStatusCode(
+                "/GameItem", GameItem, AdminTokens.AccessToken!);
 
             //Get && Get All
-            Guid itemId = await SearchIdItemByName(gameItem.GameItemName);
+            Guid itemId = await SearchIdItemByName(GameItem.GameItemName!);
 
             //Put
-            gameItem.Id = itemId;
-            gameItem.GameItemImage = "img231231231";
+            GameItem.Id = itemId;
+            GameItem.GameItemCost = 120M;
 
-            HttpStatusCode statusCodePut = await _clientApi.ResponsePut<GameItem>("/GameItem", gameItem);
+            HttpStatusCode statusCodePut = await _clientApi.ResponsePut(
+                "/GameItem", GameItem, AdminTokens.AccessToken!);
 
             //Delete
-            HttpStatusCode statusCodeDelete = await _clientApi.ResponseDelete($"/GameItem?id={itemId}");
-            
+            HttpStatusCode statusCodeDelete = await _clientApi.ResponseDelete(
+                $"/GameItem?id={itemId}", AdminTokens.AccessToken!);
+
             bool IsPassedTests = (statusCodeCreate == HttpStatusCode.OK) &&
                 (statusCodePut == HttpStatusCode.OK) &&
                 (statusCodeDelete == HttpStatusCode.OK);
+
+            await DeleteOneTimeAccounts("0.0.0", "0.0.1");
+
+            Assert.True(IsPassedTests);
+        }
+
+        [Fact]
+        public async Task GameItemCheckRolesTest()
+        {
+            await InitializeOneTimeAccounts("0.0.2", "0.0.3");
+
+            HttpStatusCode statusCodeCreate = await _clientApi.ResponsePostStatusCode(
+                "/GameItem", GameItem, AdminTokens.AccessToken!);
+
+            Guid itemId = await SearchIdItemByName(GameItem.GameItemName!);
+
+            HttpStatusCode statusCodeDeleteUser = await _clientApi.ResponseDelete(
+                $"/GameItem?id={itemId}", UserTokens.AccessToken!);
+            HttpStatusCode statusCodeDeleteAdmin = await _clientApi.ResponseDelete(
+                $"/GameItem?id={itemId}", AdminTokens.AccessToken!);
+
+            await DeleteOneTimeAccounts("0.0.2", "0.0.3");
+
+            bool IsPassedTests = (statusCodeCreate == HttpStatusCode.OK) &&
+                (statusCodeDeleteUser == HttpStatusCode.Forbidden) &&
+                (statusCodeDeleteAdmin == HttpStatusCode.OK);
 
             Assert.True(IsPassedTests);
         }
 
         private async Task<Guid> SearchIdItemByName(string name)
         {
-            List<GameItem> gameItems = await _clientApi.ResponseGet<List<GameItem>>("/GameItem/GetAll");
+            GameItem? gameItem = await _clientApi.ResponseGet<GameItem?>(
+                $"/GameItem/GetByName?" +
+                $"name={name}");
 
-            GameItem gameItem = gameItems.FirstOrDefault(x => x.GameItemName == name) ?? new();
+            if (gameItem == null) throw new Exception("No such item");
 
             return gameItem.Id;
         }

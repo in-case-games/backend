@@ -33,6 +33,20 @@ namespace CaseApplication.Api.Controllers
         }
 
         [AllowAnonymous]
+        [HttpGet("GetByName")]
+        public async Task<IActionResult> GetByName(string name)
+        {
+            GameItem? gameItem = await _gameItemRepository.GetByName(name);
+
+            if (gameItem != null)
+            {
+                return Ok(gameItem);
+            }
+
+            return NotFound();
+        }
+
+        [AllowAnonymous]
         [HttpGet("GetAll")]
         public async Task<IActionResult> GetAll()
         {

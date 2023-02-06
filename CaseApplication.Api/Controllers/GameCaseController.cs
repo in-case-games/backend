@@ -37,6 +37,23 @@ namespace CaseApplication.Api.Controllers
         }
 
         [AllowAnonymous]
+        [HttpGet("GetByName")]
+        public async Task<IActionResult> GetByName(string name)
+        {
+            GameCase? gameCase = await _gameCaseRepository.GetByName(name);
+
+            if (gameCase != null)
+            {
+                gameCase.RevenuePrecentage = 0;
+                gameCase.GameCaseBalance = 0;
+
+                return Ok(gameCase);
+            }
+
+            return NotFound();
+        }
+
+        [AllowAnonymous]
         [HttpGet("GetAll")]
         public async Task<IActionResult> GetAll()
         {
