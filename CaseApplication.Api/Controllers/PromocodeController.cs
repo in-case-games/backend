@@ -51,6 +51,18 @@ namespace CaseApplication.Api.Controllers
         }
 
         [Authorize(Roles = "admin")]
+        [HttpGet("GetByName")]
+        public async Task<IActionResult> GetByName(string name)
+        {
+            Promocode? promocode = await _promocodeRepository.GetByName(name);
+
+            if (promocode == null)
+                return NotFound();
+
+            return Ok(promocode);
+        }
+
+        [Authorize(Roles = "admin")]
         [HttpPost]
         public async Task<IActionResult> Create(Promocode promocode)
         {
