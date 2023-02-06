@@ -84,6 +84,9 @@ namespace CaseApplication.Api.Controllers
             return Ok(users);
         }
 
+        //TODO Change Email
+        //TODO Change Password
+
         [Authorize]
         [HttpPut]
         public async Task<IActionResult> UpdateLogin(string login)
