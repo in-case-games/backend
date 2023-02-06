@@ -1,5 +1,6 @@
 ﻿using CaseApplication.DomainLayer.Entities;
 using CaseApplication.DomainLayer.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
@@ -18,6 +19,7 @@ namespace CaseApplication.Api.Controllers
             _promocodeUserByUserRepository = promocodeUserByUserRepository;
         }
 
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> Get(Guid id)
         {
@@ -31,28 +33,11 @@ namespace CaseApplication.Api.Controllers
             return NotFound();
         }
 
+        [Authorize]
         [HttpGet("GetAll")]
         public async Task<IActionResult> GetAll(Guid userId)
         {
             return Ok(await _promocodeUserByUserRepository.GetAll(userId));
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Create(PromocodesUsedByUser promocodesUsedByUser)
-        {
-            return Ok(await _promocodeUserByUserRepository.Create(promocodesUsedByUser));
-        }
-
-        [HttpPut]
-        public async Task<IActionResult> Update(PromocodesUsedByUser promocodesUsedByUser)
-        {
-            return Ok(await _promocodeUserByUserRepository.Update(promocodesUsedByUser));
-        }
-
-        [HttpDelete]
-        public async Task<IActionResult> Delete(Guid id)
-        {
-            return Ok(await _promocodeUserByUserRepository.Delete(id));
         }
     }
 }

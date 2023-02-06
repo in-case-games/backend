@@ -38,7 +38,7 @@ namespace CaseApplication.IntegrationTests.Api
             Admin = new()
             {
                 UserLogin = $"ULNSAT{ipAdmin}Admin",
-                UserEmail = $"ULNSAT{ipAdmin}Admin"
+                UserEmail = $"UENSAT{ipAdmin}Admin"
             };
 
             UserTokens = await _authHelper.SignInUser(User, ipUser);

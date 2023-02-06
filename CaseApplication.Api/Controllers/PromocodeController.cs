@@ -26,12 +26,11 @@ namespace CaseApplication.Api.Controllers
 
         [Authorize]
         [HttpPost("UsePromocode")]
-        public async Task<IActionResult> UsePromocode(string name)
+        public async Task<IActionResult> UsePromocode(Promocode promocode)
         {
-            Promocode? promocode = await _promocodeRepository.GetByName(name);
+            Promocode? searchPromocode = await _promocodeRepository.GetByName(promocode.PromocodeName!);
 
-            if (promocode == null)
-                return NotFound();
+            if (promocode == null) return NotFound();
 
             List<PromocodesUsedByUser> promocodesUsed = await _promocodeUsedRepository
                 .GetAll(UserId);

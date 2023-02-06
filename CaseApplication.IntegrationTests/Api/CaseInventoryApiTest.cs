@@ -53,12 +53,12 @@ namespace CaseApplication.IntegrationTests.Api
             User = new()
             {
                 UserLogin = $"ULCIST{ipUser}User",
-                UserEmail = $"ULCIST{ipUser}User"
+                UserEmail = $"UECIST{ipUser}User"
             };
             Admin = new()
             {
                 UserLogin = $"ULCIST{ipAdmin}Admin",
-                UserEmail = $"ULCIST{ipAdmin}Admin"
+                UserEmail = $"UECIST{ipAdmin}Admin"
             };
 
             UserTokens = await _authHelper.SignInUser(User, ipUser);

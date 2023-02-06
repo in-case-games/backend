@@ -41,12 +41,12 @@ namespace CaseApplication.IntegrationTests.Api
             User = new()
             {
                 UserLogin = $"ULGOCAT{ipUser}User",
-                UserEmail = $"ULGOCAT{ipUser}User"
+                UserEmail = $"UEGOCAT{ipUser}User"
             };
             Admin = new()
             {
                 UserLogin = $"ULGOCAT{ipAdmin}Admin",
-                UserEmail = $"ULGOCAT{ipAdmin}Admin"
+                UserEmail = $"UEGOCAT{ipAdmin}Admin"
             };
 
             UserTokens = await _authHelper.SignInUser(User, ipUser);

@@ -25,7 +25,7 @@ namespace CaseApplication.IntegrationTests.Api
             Admin = new()
             {
                 UserLogin = $"ULPST{ipAdmin}Admin",
-                UserEmail = $"ULPST{ipAdmin}Admin"
+                UserEmail = $"UEPST{ipAdmin}Admin"
             };
 
             UserTokens = await _authHelper.SignInUser(User, ipUser);

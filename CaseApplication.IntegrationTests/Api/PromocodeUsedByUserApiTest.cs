@@ -1,4 +1,5 @@
-﻿using CaseApplication.DomainLayer.Entities;
+﻿using CaseApplication.Api.Models;
+using CaseApplication.DomainLayer.Entities;
 using CaseApplication.WebClient.Services;
 using Microsoft.AspNetCore.Mvc.Testing;
 using System.Net;
@@ -8,95 +9,98 @@ namespace CaseApplication.IntegrationTests.Api
     public class PromocodeUsedByUserApiTest: IClassFixture<WebApplicationFactory<Program>>
     {
         private readonly ResponseHelper _response;
+        private readonly AuthenticationTestHelper _authHelper = new();
+        private TokenModel UserTokens { get; set; } = new();
+        private TokenModel AdminTokens { get; set; } = new();
+        private User User { get; set; } = new();
+        private User Admin { get; set; } = new();
+        private Promocode Promocode { get; set; } = new();
+
         public PromocodeUsedByUserApiTest(WebApplicationFactory<Program> application)
         {
             _response = new ResponseHelper(application.CreateClient());
         }
-        private async Task<PromocodesUsedByUser> InitializePromocodeUsedByUser()
+
+        private async Task InitializeOneTimeAccounts(string ipUser, string ipAdmin)
         {
-            User user = InitializeUser();
-            await _response.ResponsePost("/User?password=1234", user);
-            User currentUser = await _response
-                .ResponseGet<User>($"/User/GetByLogin?login={user.UserLogin}&hash=123");
-
-            Promocode promocode = await InitializePromocode();
-            await _response.ResponsePost("/Promocode", promocode);
-            Promocode currentPromocode = await _response
-                .ResponseGet<Promocode>($"/Promocode/GetByName?name=Стандарт на пополнение");
-
-            PromocodesUsedByUser promocodesUsedByUser = new PromocodesUsedByUser
+            User = new()
             {
-                PromocodeId = currentPromocode.Id,
-                UserId = currentUser.Id
+                UserLogin = $"ULPUBUST{ipUser}User",
+                UserEmail = $"UEPUBUST{ipUser}User"
+            };
+            Admin = new()
+            {
+                UserLogin = $"ULPUBUST{ipAdmin}Admin",
+                UserEmail = $"UEPUBUST{ipAdmin}Admin"
             };
 
-            return promocodesUsedByUser;
-
+            UserTokens = await _authHelper.SignInUser(User, ipUser);
+            AdminTokens = await _authHelper.SignInAdmin(Admin, ipAdmin);
         }
-        private User InitializeUser()
+        private async Task DeleteOneTimeAccounts(string ipUser, string ipAdmin)
         {
-            User user = new User
-            {
-                UserLogin = "testlogin1",
-                UserEmail = "testemail1",
-                UserImage = "testimage1",
-                PasswordHash = "test1",
-                PasswordSalt = "test1",
-            };
-
-            return user;
+            await _authHelper.DeleteUserByAdmin($"ULPUBUST{ipUser}User");
+            await _authHelper.DeleteUserByAdmin($"ULPUBUST{ipAdmin}Admin");
         }
-        public async Task<Promocode> InitializePromocode()
-        {
-            Guid searchTypePromocodeId = (await _response
-                .ResponseGet<PromocodeType>("/PromocodeType/GetByName?name=balance")).Id;
 
-            Promocode promocode = new()
+        private async Task InitializePromocode()
+        {
+            Guid searchTypePromocodeId = (await _response.ResponseGet<PromocodeType>(
+                "/PromocodeType/GetByName?name=balance"))!
+                .Id;
+
+            Promocode = new()
             {
                 PromocodeDiscount = 10M,
-                PromocodeName = "Стандарт на пополнение",
+                PromocodeName = "PNPUBUSTName",
                 PromocodeTypeId = searchTypePromocodeId,
                 PromocodeUsesCount = 1000000000
             };
 
-            return promocode;
+            await _response.ResponsePostStatusCode("/Promocode", Promocode, AdminTokens.AccessToken!);
+            Promocode.Id = (await _response.ResponseGet<Promocode>(
+                $"/Promocode/GetByName?" +
+                $"name={Promocode.PromocodeName}", AdminTokens.AccessToken!))!.Id;
         }
+
         [Fact]
-        public async Task PromocodeUsedByUserCrudTest()
+        public async Task PromocodeUsedByUserSimpleTest()
         {
+            await InitializeOneTimeAccounts("0.7.0", "0.7.1");
+
             // Arrange
-            PromocodesUsedByUser tempPromocodesUsedByUser = await InitializePromocodeUsedByUser();
+            await InitializePromocode();
+
+            User.Id = (await _response.ResponseGet<User>(
+                $"/User/GetByLogin?login={User.UserLogin}", UserTokens.AccessToken!))!.Id;
 
             // Act
-            HttpStatusCode postStatusCode = await _response
-                .ResponsePost("/PromocodesUsedByUser", tempPromocodesUsedByUser);
+            HttpStatusCode postStatusCode = await _response.ResponsePostStatusCode(
+                $"/Promocode/UsePromocode", Promocode, UserTokens.AccessToken!);
 
-            IEnumerable<PromocodesUsedByUser> promocodesUsedByUser = await _response
+            List<PromocodesUsedByUser> promocodesUsedByUser = (await _response
                 .ResponseGet<List<PromocodesUsedByUser>>
-                ($"/PromocodesUsedByUser/GetAll?userId={tempPromocodesUsedByUser.UserId}");
+                ($"/PromocodesUsedByUser/GetAll?userId={User.Id}"))!;
             PromocodesUsedByUser promocodeUsedByUser = promocodesUsedByUser
-                .FirstOrDefault(x => x.UserId == tempPromocodesUsedByUser.UserId
-                && x.PromocodeId == tempPromocodesUsedByUser.PromocodeId)!;
+                .FirstOrDefault(x => x.PromocodeId == Promocode.Id)!;
 
             HttpStatusCode getStatusCode = await _response
-                .ResponseGetStatusCode($"/PromocodesUsedByUser?id={promocodeUsedByUser.Id!}");
-            HttpStatusCode getAllStatusCode = await _response
-                .ResponseGetStatusCode
-                ($"/PromocodesUsedByUser/GetAll?userId={tempPromocodesUsedByUser.UserId}");
+                .ResponseGetStatusCode(
+                $"/PromocodesUsedByUser?" +
+                $"id={promocodeUsedByUser.Id!}", 
+                UserTokens.AccessToken!);
 
-            HttpStatusCode putStatusCode = await _response
-                .ResponsePut("/PromocodesUsedByUser", promocodeUsedByUser);
+            await _response.ResponseDelete(
+                $"/Promocode?" +
+                $"id={promocodeUsedByUser.PromocodeId}", 
+                AdminTokens.AccessToken!);
 
-            HttpStatusCode deleteStatusCode = await _response
-                .ResponseDelete($"/PromocodesUsedByUser?id={promocodeUsedByUser.Id}");
-
-            await _response.ResponseDelete($"/User?id={promocodeUsedByUser.UserId}");
-            await _response.ResponseDelete($"/Promocode?id={promocodeUsedByUser.PromocodeId}");
+            await DeleteOneTimeAccounts("0.7.0", "0.7.1");
 
             // Assert
             Assert.Equal(
-                (HttpStatusCode.OK, HttpStatusCode.OK, HttpStatusCode.OK, HttpStatusCode.OK, HttpStatusCode.OK),
-                (postStatusCode, getStatusCode, getAllStatusCode, putStatusCode, deleteStatusCode));
+                (HttpStatusCode.OK, HttpStatusCode.OK),
+                (postStatusCode, getStatusCode));
         }
     }
 }

@@ -38,13 +38,13 @@ namespace CaseApplication.IntegrationTests.Api
         {
             User = new()
             {
-                UserLogin = $"GCST{ipUser}User",
-                UserEmail = $"GCST{ipUser}User"
+                UserLogin = $"ULGCST{ipUser}User",
+                UserEmail = $"UEGCST{ipUser}User"
             };
             Admin = new()
             {
-                UserLogin = $"GCST{ipAdmin}Admin",
-                UserEmail = $"GCST{ipAdmin}Admin"
+                UserLogin = $"ULGCST{ipAdmin}Admin",
+                UserEmail = $"UEGCST{ipAdmin}Admin"
             };
 
             UserTokens = await _authHelper.SignInUser(User, ipUser);
@@ -53,8 +53,8 @@ namespace CaseApplication.IntegrationTests.Api
 
         private async Task DeleteOneTimeAccounts(string ipUser, string ipAdmin)
         {
-            await _authHelper.DeleteUserByAdmin($"GCST{ipUser}User");
-            await _authHelper.DeleteUserByAdmin($"GCST{ipAdmin}Admin");
+            await _authHelper.DeleteUserByAdmin($"ULGCST{ipUser}User");
+            await _authHelper.DeleteUserByAdmin($"ULGCST{ipAdmin}Admin");
         }
 
         [Fact]
