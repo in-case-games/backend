@@ -1,4 +1,5 @@
-﻿using CaseApplication.DomainLayer.Entities;
+﻿using CaseApplication.Api.Models;
+using CaseApplication.DomainLayer.Entities;
 using CaseApplication.WebClient.Services;
 using Microsoft.AspNetCore.Mvc.Testing;
 using System.Net;
@@ -8,19 +9,45 @@ namespace CaseApplication.IntegrationTests.Api
     public class UserHistoryOpeningCasesApiTest : IClassFixture<WebApplicationFactory<Program>>
     {
         private readonly ResponseHelper _clientApi;
+        private TokenModel AdminToken { get; set; } = new();
+        private User Admin { get; set; } = new();
+        private User User { get; set; } = new();
+        private AuthenticationTestHelper _authHelper;
 
-        public UserHistoryOpeningCasesApiTest(WebApplicationFactory<Program> applicationFactory)
+        public UserHistoryOpeningCasesApiTest(WebApplicationFactory<Program> applicationFactory,
+            AuthenticationTestHelper helper)
         {
             _clientApi = new(applicationFactory.CreateClient());
+            _authHelper = helper;
+        }
+        private async Task InitializeOneTimeAccounts(string ipUser, string ipAdmin)
+        {
+            User = new()
+            {
+                UserLogin = $"ULUIAT{ipUser}User",
+                UserEmail = $"UEUIAT{ipUser}User"
+            };
+            Admin = new()
+            {
+                UserLogin = $"ULUIAT{ipAdmin}Admin",
+                UserEmail = $"UEUIAT{ipAdmin}Admin"
+            };
+
+            AdminToken = await _authHelper.SignInAdmin(Admin, ipAdmin);
+        }
+        private async Task DeleteOneTimeAccounts(string ipUser, string ipAdmin)
+        {
+            await _authHelper.DeleteUserByAdmin($"UEUIAT{ipAdmin}Admin");
         }
 
         [Fact]
         public async Task UserHistoryOpeningCasesSimpleTest()
         {
+            await InitializeOneTimeAccounts("0.11.0", "0.11.1");
             bool IsCreatedDependencies = await CreateDependenciesUserHistory();
             bool IsDeletedDependencies = false;
 
-            Guid userId = await SearchIdUser("UHOCUserEmail@mail.ru");
+            Guid userId = await SearchIdUser(User!.UserEmail!);
 
             if (IsCreatedDependencies)
             {
@@ -53,26 +80,31 @@ namespace CaseApplication.IntegrationTests.Api
             }
 
             Assert.True(IsDeletedDependencies);
+
+            await DeleteOneTimeAccounts("0.11.0", "0.11.1");
         }
         private async Task<List<UserHistoryOpeningCases>> SearchUserHistory(Guid userId)
         {
-            List<UserHistoryOpeningCases> caseInventories = await _clientApi
+            List<UserHistoryOpeningCases>? caseInventories = await _clientApi
                 .ResponseGet<List<UserHistoryOpeningCases>>
-                ($"/UserHistoryOpeningCases/GetAll?userId={userId}");
+                ($"/UserHistoryOpeningCases/GetAllById?userId={userId}",
+                token: AdminToken.AccessToken!);
 
             return caseInventories ?? throw new Exception("No such case inventory");
         }
         private async Task<bool> CreateUserHistory(UserHistoryOpeningCases userHistory)
         {
-            //HttpStatusCode statusCode = await _clientApi
-            //.ResponsePost<UserHistoryOpeningCases>("/UserHistoryOpeningCases", userHistory);
-            HttpStatusCode statusCode = HttpStatusCode.OK;
+            HttpStatusCode statusCode = await _clientApi
+            .ResponsePostStatusCode<UserHistoryOpeningCases>("/UserHistoryOpeningCases",
+            userHistory,
+            token: AdminToken.AccessToken!);
 
             return statusCode == HttpStatusCode.OK;
         }
         private async Task<bool> DeleteUserHistory(Guid id)
         {
-            HttpStatusCode statusCode = await _clientApi.ResponseDelete($"/UserHistoryOpeningCases?id={id}");
+            HttpStatusCode statusCode = await _clientApi.ResponseDelete($"/UserHistoryOpeningCases?id={id}",
+                token: AdminToken.AccessToken!);
 
             return statusCode == HttpStatusCode.OK;
         }
@@ -109,10 +141,23 @@ namespace CaseApplication.IntegrationTests.Api
                 UserImage = "UHOCUserImage",
             };
 
-            HttpStatusCode createUser = await _clientApi.ResponsePost("/User?password=1234", user);
-            HttpStatusCode createFirstItem = await _clientApi.ResponsePost("/GameItem", gameItemFirst);
-            HttpStatusCode createSecondItem = await _clientApi.ResponsePost("/GameItem", gameItemSecond);
-            HttpStatusCode createGameCase = await _clientApi.ResponsePost("/GameCase", gameCase);
+            HttpStatusCode createUser = await _clientApi
+                .ResponsePostStatusCode(
+                "/User?password=1234",
+                user,
+                token: AdminToken.AccessToken!);
+            HttpStatusCode createFirstItem = await _clientApi
+                .ResponsePostStatusCode("/GameItem",
+                gameItemFirst,
+                token: AdminToken.AccessToken!);
+            HttpStatusCode createSecondItem = await _clientApi
+                .ResponsePostStatusCode("/GameItem",
+                gameItemSecond,
+                token: AdminToken.AccessToken!);
+            HttpStatusCode createGameCase = await _clientApi
+                .ResponsePostStatusCode("/GameCase",
+                gameCase,
+                token: AdminToken.AccessToken!);
 
             return (
                 (createFirstItem == HttpStatusCode.OK) &&
@@ -123,23 +168,26 @@ namespace CaseApplication.IntegrationTests.Api
 
         private async Task<Guid> SearchIdItem(string name)
         {
-            List<GameItem> items = await _clientApi.ResponseGet<List<GameItem>>("/GameItem/GetAll");
+            List<GameItem>? items = await _clientApi.ResponseGet<List<GameItem>>("/GameItem/GetAll",
+                token: AdminToken.AccessToken!);
 
-            return items.FirstOrDefault(x => x.GameItemName == name)!.Id;
+            return items!.FirstOrDefault(x => x.GameItemName == name)!.Id;
         }
 
         private async Task<Guid> SearchIdCase(string name)
         {
-            List<GameCase> items = await _clientApi.ResponseGet<List<GameCase>>("/GameCase/GetAll");
+            List<GameCase>? items = await _clientApi.ResponseGet<List<GameCase>>("/GameCase/GetAll",
+                token: AdminToken.AccessToken!);
 
-            return items.FirstOrDefault(x => x.GameCaseName == name)!.Id;
+            return items!.FirstOrDefault(x => x.GameCaseName == name)!.Id;
         }
 
-        private async Task<Guid> SearchIdUser(string email)
+        private async Task<Guid> SearchIdUser(string login)
         {
-            User user = await _clientApi.ResponseGet<User>($"/User/GetByEmail?email={email}&hash=123");
+            User? user = await _clientApi.ResponseGet<User>($"/User/GetByLogin?email={login}&hash=123",
+                token: AdminToken.AccessToken!);
 
-            return user.Id;
+            return user!.Id;
         }
         private async Task<bool> DeleteDependenciesUserHistory(List<UserHistoryOpeningCases> userHistories)
         {
@@ -148,13 +196,16 @@ namespace CaseApplication.IntegrationTests.Api
             foreach (UserHistoryOpeningCases history in userHistories)
             {
                 statusCodeDeleteDependents = await _clientApi
-                    .ResponseDelete($"/GameItem?id={history.GameItemId}");
+                    .ResponseDelete($"/GameItem?id={history.GameItemId}",
+                    token: AdminToken.AccessToken!);
             }
 
             statusCodeDeleteDependents = await _clientApi
-                .ResponseDelete($"/GameCase?id={userHistories[0].GameCaseId}");
+                .ResponseDelete($"/GameCase?id={userHistories[0].GameCaseId}",
+                token: AdminToken.AccessToken!);
             statusCodeDeleteDependents = await _clientApi
-                .ResponseDelete($"/User?id={userHistories[0].UserId}");
+                .ResponseDelete($"/User?id={userHistories[0].UserId}",
+                token: AdminToken.AccessToken!);
 
             return statusCodeDeleteDependents == HttpStatusCode.OK;
         }

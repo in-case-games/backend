@@ -39,6 +39,12 @@ namespace CaseApplication.Api.Controllers
         {
             return Ok(await _userHistoryRepository.GetAllById(userId));
         }
+        [Authorize]
+        [HttpGet("GetAll")]
+        public async Task<IActionResult> GetAll()
+        {
+            return Ok(await _userHistoryRepository.GetAll());
+        }
 
         [Authorize]
         [HttpDelete]

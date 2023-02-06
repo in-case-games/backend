@@ -1,4 +1,5 @@
-﻿using CaseApplication.DomainLayer.Entities;
+﻿using CaseApplication.Api.Models;
+using CaseApplication.DomainLayer.Entities;
 using CaseApplication.WebClient.Services;
 using Microsoft.AspNetCore.Mvc.Testing;
 using System.Net;
@@ -8,16 +9,38 @@ namespace CaseApplication.IntegrationTests.Api
     public class UserInventoryApiTest: IClassFixture<WebApplicationFactory<Program>>
     {
         private readonly ResponseHelper _response;
-        public UserInventoryApiTest(WebApplicationFactory<Program> application)
+        private AuthenticationTestHelper _authHelper;
+        private TokenModel AdminToken { get; set; } = new();
+        private User User { get; set; } = new();
+        private User Admin { get; set; } = new();
+        public UserInventoryApiTest(WebApplicationFactory<Program> application, AuthenticationTestHelper helper)
         {
             _response = new ResponseHelper(application.CreateClient());
+            _authHelper = helper;
+        }
+        private async Task InitializeOneTimeAccounts(string ipUser, string ipAdmin)
+        {
+            User = new()
+            {
+                UserLogin = $"ULUIAT{ipUser}User",
+                UserEmail = $"UEUIAT{ipUser}User"
+            };
+            Admin = new()
+            {
+                UserLogin = $"ULUIAT{ipAdmin}Admin",
+                UserEmail = $"UEUIAT{ipAdmin}Admin"
+            };
+
+            AdminToken = await _authHelper.SignInAdmin(Admin, ipAdmin);
+        }
+        private async Task DeleteOneTimeAccounts(string ipUser, string ipAdmin)
+        {
+            await _authHelper.DeleteUserByAdmin($"UEUIAT{ipAdmin}Admin");
         }
         private async Task<UserInventory> InitializeUserInventory()
         {
-            User user = InitializeUser();
-            await _response.ResponsePost("/User?password=1234", user);
-            User currentUser = await _response
-                .ResponseGet<User>($"/User/GetByEmail?email={user.UserEmail}&hash=123");
+            User? currentUser = await _response
+                .ResponseGet<User>($"/User/GetByLogin?login=ULUIAT0.7.1Admin");
 
             GameItem gameItem = new GameItem()
             {
@@ -26,14 +49,14 @@ namespace CaseApplication.IntegrationTests.Api
                 GameItemName = GenerateString(),
                 GameItemRarity = GenerateString()
             };
-            await _response.ResponsePost("/GameItem", gameItem);
-            IEnumerable<GameItem> gameItems = await _response
+            await _response.ResponsePostStatusCode("/GameItem", gameItem, token: AdminToken.AccessToken!);
+            IEnumerable<GameItem>? gameItems = await _response
                 .ResponseGet<List<GameItem>>("/GameItem/GetAll");
-            GameItem currentGameItem = gameItems.FirstOrDefault(x => x.GameItemName == gameItem.GameItemName)!;
+            GameItem currentGameItem = gameItems!.FirstOrDefault(x => x.GameItemName == gameItem.GameItemName)!;
 
             UserInventory userInventory = new UserInventory()
             {
-                UserId = currentUser.Id,
+                UserId = currentUser!.Id,
                 GameItemId = currentGameItem.Id
             };
 
@@ -63,39 +86,50 @@ namespace CaseApplication.IntegrationTests.Api
         public async Task UserInventoryCrudTest()
         {
             // Arrange
+            await InitializeOneTimeAccounts("0.12.0", "0.12.1");
             UserInventory templateUserInventory = await InitializeUserInventory();
 
             // Act
             HttpStatusCode postStatusCode = await _response
-                .ResponsePost("/UserInventory", templateUserInventory);
+                .ResponsePostStatusCode("/UserInventory",
+                templateUserInventory,
+                token: AdminToken.AccessToken!);
 
-            IEnumerable<UserInventory> userInventories = await _response
+            IEnumerable<UserInventory>? userInventories = await _response
                 .ResponseGet<List<UserInventory>>
-                ($"/UserInventory/GetAll?userId={templateUserInventory.UserId}");
-            UserInventory userInventory = userInventories
+                ($"/UserInventory/GetAll?userId={templateUserInventory.UserId}", token: AdminToken.AccessToken!);
+            UserInventory userInventory = userInventories!
                 .FirstOrDefault(x =>
                     x.UserId == templateUserInventory.UserId &&
                     x.GameItemId == templateUserInventory.GameItemId)!;
 
             HttpStatusCode getStatusCode = await _response
-                .ResponseGetStatusCode($"/UserInventory?id={userInventory.Id}");
+                .ResponseGetStatusCode($"/UserInventory?id={userInventory.Id}",
+                token: AdminToken.AccessToken!);
             HttpStatusCode getAllStatusCode = await _response
                 .ResponseGetStatusCode
-                ($"/UserInventory/GetAll?userId={templateUserInventory.UserId}");
+                ($"/UserInventory/GetAll?userId={templateUserInventory.UserId}",
+                token: AdminToken.AccessToken!);
 
             HttpStatusCode putStatusCode = await _response
-                .ResponsePut("/UserInventory", userInventory);
+                .ResponsePut("/UserInventory", userInventory,
+                token: AdminToken.AccessToken!);
 
             HttpStatusCode deleteStatusCode = await _response
-                .ResponseDelete($"/UserInventory?id={userInventory.Id}");
+                .ResponseDelete($"/UserInventory?id={userInventory.Id}",
+                token: AdminToken.AccessToken!);
 
-            await _response.ResponseDelete($"/User?id={userInventory.UserId}");
-            await _response.ResponseDelete($"/GameItem?id={userInventory.GameItemId}");
+            await _response.ResponseDelete($"/User?id={userInventory.UserId}",
+                token: AdminToken.AccessToken!);
+            await _response.ResponseDelete($"/GameItem?id={userInventory.GameItemId}",
+                token: AdminToken.AccessToken!);
 
             // Assert
             Assert.Equal(
                 (HttpStatusCode.OK, HttpStatusCode.OK, HttpStatusCode.OK, HttpStatusCode.OK, HttpStatusCode.OK),
                 (postStatusCode, getStatusCode, getAllStatusCode, putStatusCode, deleteStatusCode));
+
+            await DeleteOneTimeAccounts("0.12.0", "0.12.1");
         }
     }
 }
