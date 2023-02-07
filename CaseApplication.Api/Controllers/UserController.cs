@@ -70,7 +70,7 @@ namespace CaseApplication.Api.Controllers
         }
 
         [Authorize]
-        [HttpGet]
+        [HttpGet("all")]
         public async Task<IActionResult> GetAll()
         {
             List<User> users = await _userRepository.GetAll();
@@ -84,11 +84,8 @@ namespace CaseApplication.Api.Controllers
             return Ok(users);
         }
 
-        //TODO Change Email
-        //TODO Change Password
-
         [Authorize]
-        [HttpPut]
+        [HttpPut("login/{login}")]
         public async Task<IActionResult> UpdateLogin(string login)
         {
             User? searchUserByLogin = await _userRepository.GetByLogin(login);
@@ -106,39 +103,53 @@ namespace CaseApplication.Api.Controllers
                 UserLogin = login
             };
 
+            //TODO Answer user by email
+
             return Ok(await _userRepository.Update(searchUserById, newUser));
         }
 
         [Authorize]
-        [HttpPost]
-        public async Task<IActionResult> SendDeleteAccount(string password)
+        [HttpPut("password/{password}&{token}")]
+        public async Task<IActionResult> UpdatePasswordConfirmation(string password, string token)
         {
             User? user = await _userRepository.Get(UserId);
 
             if (user == null) return NotFound();
 
-            string genHash = _encryptorHelper.EncryptorPassword(password, Convert
-                .FromBase64String(user.PasswordSalt!));
+            byte[] secretBytes = Encoding.UTF8.GetBytes(user.PasswordHash!);
 
-            if (genHash != user.PasswordHash) return Forbid("Incorrect password");
+            ClaimsPrincipal? principal = _jwtHelper
+                .GetClaimsToken(token, secretBytes, "HS512");
 
-            Claim[] claims = {
-                new Claim("UserId", user.Id.ToString())
+            if (principal is null)
+                return BadRequest("Invalid OneTime token");
+
+            //Gen hash and salt
+            byte[] salt = _encryptorHelper.GenerationSaltTo64Bytes();
+            string hash = _encryptorHelper.EncryptorPassword(password, salt);
+
+            User newUser = new()
+            {
+                Id = user.Id,
+                UserEmail = user.UserEmail,
+                UserImage = user.UserImage,
+                UserLogin = user.UserLogin,
+                PasswordHash = hash,
+                PasswordSalt = Convert.ToBase64String(salt)
             };
 
-            JwtSecurityToken token = _jwtHelper.CreateOneTimeToken(claims, genHash);
-            string oneTimeToken = new JwtSecurityTokenHandler().WriteToken(token);
+            await _userRepository.Update(user, newUser);
 
-            await _emailHelper.SendDeleteAccountToEmail(user.UserEmail!, user.Id.ToString(), oneTimeToken);
+            //TODO Notify by email
 
-            return Accepted();
+            return Ok();
         }
 
-        [AllowAnonymous]
-        [HttpDelete("{userId}&{token}")]
-        public async Task<IActionResult> DeleteConfirmation(Guid userId, string token)
+        [Authorize]
+        [HttpDelete("{token}")]
+        public async Task<IActionResult> DeleteConfirmation(string token)
         {
-            User? user = await _userRepository.Get(userId);
+            User? user = await _userRepository.Get(UserId);
 
             if (user == null) return NotFound();
 
@@ -159,7 +170,7 @@ namespace CaseApplication.Api.Controllers
         }
 
         [Authorize(Roles = "admin")]
-        [HttpDelete("{userId}")]
+        [HttpDelete("admin/{userId}")]
         public async Task<IActionResult> DeleteByAdmin(Guid userId)
         {
             User? searchUser = await _userRepository.Get(userId);

@@ -19,8 +19,22 @@
         public async Task SendDeleteAccountToEmail(string email, string userId, string token)
         {
             string subject = "Подтвердите удаление аккаунта";
-            string body = $"<b>Link: {_requestUrl}/User/DeleteConfirmation?" +
-                $"userId={userId}&token={token}</b>";
+            string body = $"<b>Link: {_requestUrl}/User/userId={userId}&token={token}</b>";
+
+            await _emailService.SendToEmail(email, subject, body);
+        }
+
+        public async Task SendChangePasswordToEmail(string email, string userId, string token)
+        {
+            string subject = "Подтвердите изменение пароля";
+            string body = $"<b>Link: {_requestUrl}/User/userId={userId}&token={token}</b>";
+
+            await _emailService.SendToEmail(email, subject, body);
+        }
+        public async Task SendChangeEmailToEmail(string email, string userId, string token)
+        {
+            string subject = "Подтвердите изменение пароля";
+            string body = $"<b>Link: {_requestUrl}/User/userId={userId}&token={token}</b>";
 
             await _emailService.SendToEmail(email, subject, body);
         }
@@ -29,6 +43,7 @@
         {
             string subject = "Подтвердите вход в аккаунт";
             string body = "<b>This is some html text</b>";
+
             await _emailService.SendToEmail(email, subject, body);
         }
 
@@ -36,6 +51,7 @@
         {
             string subject = "Подтвердите свой аккаунт";
             string body = "<b>This is some html text</b>";
+
             await _emailService.SendToEmail(email, subject, body);
         }
     }

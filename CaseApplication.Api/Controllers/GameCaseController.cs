@@ -54,7 +54,7 @@ namespace CaseApplication.Api.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet]
+        [HttpGet("all")]
         public async Task<IActionResult> GetAll()
         {
             List<GameCase> gameCases = await _gameCaseRepository.GetAll();

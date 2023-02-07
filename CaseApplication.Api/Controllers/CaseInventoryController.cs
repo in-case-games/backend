@@ -48,7 +48,7 @@ namespace CaseApplication.Api.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("all/{caseId}")]
+        [HttpGet("{caseId}")]
         public async Task<IActionResult> GetAll(Guid caseId)
         {
             return Ok(await _caseInventoryRepository.GetAll(caseId));

@@ -32,7 +32,7 @@ namespace CaseApplication.Api.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet]
+        [HttpGet("all")]
         public async Task<IActionResult> GetAll()
         {
             return Ok(await _userRoleRepository.GetAll());
