@@ -55,21 +55,21 @@ namespace CaseApplication.Api.Controllers
         }
 
         [Authorize(Roles = "admin")]
-        [HttpPost]
+        [HttpPost("admin")]
         public async Task<IActionResult> Create(CaseInventory caseInventory)
         {
             return Ok(await _caseInventoryRepository.Create(caseInventory));
         }
 
         [Authorize(Roles = "admin")]
-        [HttpPut]
+        [HttpPut("admin")]
         public async Task<IActionResult> Update(CaseInventory caseInventory)
         {
             return Ok(await _caseInventoryRepository.Update(caseInventory));
         }
 
         [Authorize(Roles = "admin")]
-        [HttpDelete("{id}")]
+        [HttpDelete("admin/{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
             return Ok(await _caseInventoryRepository.Delete(id));

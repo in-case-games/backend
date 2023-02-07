@@ -84,21 +84,21 @@ namespace CaseApplication.Api.Controllers
         }
 
         [Authorize(Roles = "admin")]
-        [HttpPost]
+        [HttpPost("admin")]
         public async Task<IActionResult> Create(GameCase gameCase)
         {
             return Ok(await _gameCaseRepository.Create(gameCase));
         }
 
         [Authorize(Roles = "admin")]
-        [HttpPut]
+        [HttpPut("admin")]
         public async Task<IActionResult> Update(GameCase gameCase)
         {
             return Ok(await _gameCaseRepository.Update(gameCase));
         }
 
         [Authorize(Roles = "admin")]
-        [HttpDelete("{id}")]
+        [HttpDelete("admin/{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
             return Ok(await _gameCaseRepository.Delete(id));

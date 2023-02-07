@@ -1,4 +1,6 @@
-﻿namespace CaseApplication.Api.Services
+﻿using CaseApplication.DomainLayer.Entities;
+
+namespace CaseApplication.Api.Services
 {
     public class EmailHelper
     {
@@ -39,18 +41,18 @@
             await _emailService.SendToEmail(email, subject, body);
         }
 
-        public async Task SendConfirmAccountToEmail(string email, string token)
+        public async Task SendConfirmAccountToEmail(string email, string userId, string token)
         {
             string subject = "Подтвердите вход в аккаунт";
-            string body = "<b>This is some html text</b>";
+            string body = $"<b>Link: {_requestUrl}/User/userId={userId}&token={token}</b>";
 
             await _emailService.SendToEmail(email, subject, body);
         }
 
-        public async Task SendActivationAccountToEmail(string email, string token)
+        public async Task SendActivateAccountToEmail(string email, string userId, string token)
         {
-            string subject = "Подтвердите свой аккаунт";
-            string body = "<b>This is some html text</b>";
+            string subject = "Подтвердите свой email аккаунт";
+            string body = $"<b>Link: {_requestUrl}/User/userId={userId}&token={token}</b>";
 
             await _emailService.SendToEmail(email, subject, body);
         }

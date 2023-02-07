@@ -41,21 +41,21 @@ namespace CaseApplication.Api.Controllers
         }
 
         [Authorize(Roles = "admin")]
-        [HttpPost]
+        [HttpPost("admin")]
         public async Task<IActionResult> Create(PromocodeType promocodeType)
         {
             return Ok(await _promocodeTypeRepository.Create(promocodeType));
         }
 
         [Authorize(Roles = "admin")]
-        [HttpPut]
+        [HttpPut("admin")]
         public async Task<IActionResult> Update(PromocodeType promocodeType)
         {
             return Ok(await _promocodeTypeRepository.Update(promocodeType));
         }
 
         [Authorize(Roles = "admin")]
-        [HttpDelete("{id}")]
+        [HttpDelete("admin/{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
             return Ok(await _promocodeTypeRepository.Delete(id));

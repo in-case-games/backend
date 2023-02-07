@@ -39,21 +39,21 @@ namespace CaseApplication.Api.Controllers
         }
 
         [Authorize(Roles = "admin")]
-        [HttpPost]
+        [HttpPost("admin")]
         public async Task<IActionResult> Create(UserRole userRole)
         {
             return Ok(await _userRoleRepository.Create(userRole));
         }
 
         [Authorize(Roles = "admin")]
-        [HttpPut]
+        [HttpPut("admin")]
         public async Task<IActionResult> Update(UserRole userRole)
         {
             return Ok(await _userRoleRepository.Update(userRole));
         }
 
         [Authorize(Roles = "admin")]
-        [HttpDelete("{id}")]
+        [HttpDelete("admin/{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
             return Ok(await _userRoleRepository.Delete(id));

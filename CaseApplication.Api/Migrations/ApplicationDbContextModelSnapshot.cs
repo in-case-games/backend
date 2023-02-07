@@ -447,6 +447,9 @@ namespace CaseApplication.Api.Migrations
                     b.Property<string>("RefreshToken")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime>("RefreshTokenCreationTime")
+                        .HasColumnType("datetime2");
+
                     b.Property<DateTime>("RefreshTokenExpiryTime")
                         .HasColumnType("datetime2");
 

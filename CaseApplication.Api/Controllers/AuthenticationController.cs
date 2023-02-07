@@ -78,15 +78,19 @@ namespace CaseApplication.Api.Controllers
                 await _userTokensRepository.Create(new UserToken()
                 {
                     RefreshToken = tokenModel.RefreshToken,
+                    RefreshTokenCreationTime = DateTime.UtcNow,
                     RefreshTokenExpiryTime = tokenModel.ExpiresRefreshIn,
                     UserId = searchUser.Id,
                     UserIpAddress = ip,
                 });
+
+                //Send confirm email
             }
             else
             {
                 userTokenByIp.RefreshToken = tokenModel.RefreshToken;
                 userTokenByIp.RefreshTokenExpiryTime = tokenModel.ExpiresRefreshIn;
+                userTokenByIp.RefreshTokenCreationTime = DateTime.UtcNow;
                 await _userTokensRepository.Update(userTokenByIp);
             }
 
@@ -154,7 +158,7 @@ namespace CaseApplication.Api.Controllers
 
             if (userToken == null ||
                 refreshToken != userToken.RefreshToken || 
-                userToken.RefreshTokenExpiryTime <= DateTime.Now)
+                userToken.RefreshTokenExpiryTime <= DateTime.UtcNow)
             {
                 await _userTokensRepository.DeleteByToken(userId, refreshToken);
                 return Forbid("Invalid refresh token");
@@ -171,10 +175,45 @@ namespace CaseApplication.Api.Controllers
             //Update Token
             userToken.RefreshToken = tokenModel.RefreshToken;
             userToken.RefreshTokenExpiryTime = tokenModel.ExpiresRefreshIn;
+            userToken.RefreshTokenCreationTime = DateTime.UtcNow;
 
             await _userTokensRepository.Update(userToken);
 
             return Ok(tokenModel);
+        }
+
+        [AllowAnonymous]
+        [HttpPost("confirm/{userId}&{token}")]
+        public async Task<IActionResult> ConfirmAccount(Guid userId, string token)
+        {
+            User? user = await _userRepository.Get(userId);
+
+            if (user == null) return NotFound();
+
+            byte[] secretBytes = Encoding.UTF8.GetBytes(user.PasswordHash!);
+
+            ClaimsPrincipal? principal = _jwtHelper
+                .GetClaimsToken(token, secretBytes, "HS512");
+
+            if (principal is null)
+                return BadRequest("Invalid OneTime token");
+
+            UserAdditionalInfo? userInfo = await _userAdditionalInfoRepository.GetByUserId(userId);
+
+            if(userInfo!.IsConfirmedAccount == false)
+            {
+                userInfo!.IsConfirmedAccount = true;
+
+                await _userAdditionalInfoRepository.Update(userInfo);
+
+                //TODO Notify by email(Activate email)
+            }
+            else
+            {
+                //TODO Notify by email(Confirm email)
+            }
+
+            return Ok(userInfo);
         }
 
         [Authorize]

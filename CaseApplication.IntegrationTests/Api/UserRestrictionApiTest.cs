@@ -41,7 +41,7 @@ namespace CaseApplication.IntegrationTests.Api
             {
                 UserId = currentUser!.Id,
                 RestrictionName = "testrest1",
-                CreatedDate = DateTime.Now
+                CreatedDate = DateTime.UtcNow
             };
 
             return userRestriction;

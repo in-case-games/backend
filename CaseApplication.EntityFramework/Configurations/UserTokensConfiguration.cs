@@ -21,6 +21,8 @@ namespace CaseApplication.EntityFramework.Configurations
                 .IsRequired();
             builder.Property(p => p.RefreshTokenExpiryTime)
                 .IsRequired();
+            builder.Property(p => p.RefreshTokenCreationTime)
+                .IsRequired();
         }
     }
 }

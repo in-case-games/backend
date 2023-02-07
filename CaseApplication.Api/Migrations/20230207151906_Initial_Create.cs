@@ -247,6 +247,7 @@ namespace CaseApplication.Api.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     RefreshToken = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    RefreshTokenCreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     RefreshTokenExpiryTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UserIpAddress = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
@@ -269,7 +270,8 @@ namespace CaseApplication.Api.Migrations
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     UserRoleId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     UserBalance = table.Column<decimal>(type: "DECIMAL(18,5)", nullable: false),
-                    UserAbleToPay = table.Column<decimal>(type: "DECIMAL(18,5)", nullable: false)
+                    UserAbleToPay = table.Column<decimal>(type: "DECIMAL(18,5)", nullable: false),
+                    IsConfirmedAccount = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {

@@ -33,21 +33,21 @@ namespace CaseApplication.Api.Controllers
         }
 
         [Authorize(Roles = "admin")]
-        [HttpPost]
+        [HttpPost("admin")]
         public async Task<IActionResult> Create(UserRestriction userRestriction)
         {
             return Ok(await _userRestrictionRepository.Create(userRestriction));
         }
 
         [Authorize(Roles = "admin")]
-        [HttpPut]
+        [HttpPut("admin")]
         public async Task<IActionResult> Update(UserRestriction userRestriction)
         {
             return Ok(await _userRestrictionRepository.Update(userRestriction));
         }
 
         [Authorize(Roles = "admin")]
-        [HttpDelete("{id}")]
+        [HttpDelete("admin/{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
             return Ok(await _userRestrictionRepository.Delete(id));

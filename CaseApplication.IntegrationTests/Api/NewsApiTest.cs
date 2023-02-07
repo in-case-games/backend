@@ -62,7 +62,7 @@ namespace CaseApplication.IntegrationTests.Api
                 "/News", News, AdminTokens.AccessToken!);
 
             News.Id = await GetNewsId();
-            News.NewsDate = DateTime.Now;
+            News.NewsDate = DateTime.UtcNow;
 
             bool IsUpdated = await UpdateNews();
             bool IsDeleted = await DeleteNews();

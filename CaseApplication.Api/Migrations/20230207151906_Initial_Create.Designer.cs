@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CaseApplication.Api.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230204151323_ForZmqp")]
-    partial class ForZmqp
+    [Migration("20230207151906_Initial_Create")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -449,6 +449,9 @@ namespace CaseApplication.Api.Migrations
 
                     b.Property<string>("RefreshToken")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("RefreshTokenCreationTime")
+                        .HasColumnType("datetime2");
 
                     b.Property<DateTime>("RefreshTokenExpiryTime")
                         .HasColumnType("datetime2");

@@ -3,7 +3,6 @@ using CaseApplication.DomainLayer.Entities;
 using CaseApplication.DomainLayer.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
@@ -18,6 +17,7 @@ namespace CaseApplication.Api.Controllers
         private readonly JwtHelper _jwtHelper;
         private readonly EmailHelper _emailHelper;
         private readonly IUserTokensRepository _userTokensRepository;
+        private readonly IUserAdditionalInfoRepository _userInfoRepository;
         private Guid UserId => Guid
             .Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
 
@@ -26,13 +26,15 @@ namespace CaseApplication.Api.Controllers
             EncryptorHelper encryptorHelper,
             JwtHelper jwtHelper,
             EmailHelper emailHelper,
-            IUserTokensRepository userTokensRepository)
+            IUserTokensRepository userTokensRepository,
+            IUserAdditionalInfoRepository userAdditionalInfoRepository)
         {
             _userRepository = userRepository;
             _encryptorHelper = encryptorHelper;
             _jwtHelper = jwtHelper;
             _emailHelper = emailHelper;
             _userTokensRepository = userTokensRepository;
+            _userInfoRepository = userAdditionalInfoRepository;
         }
 
         [Authorize]
@@ -108,11 +110,55 @@ namespace CaseApplication.Api.Controllers
             return Ok(await _userRepository.Update(searchUserById, newUser));
         }
 
-        [Authorize]
-        [HttpPut("password/{password}&{token}")]
-        public async Task<IActionResult> UpdatePasswordConfirmation(string password, string token)
+        [AllowAnonymous]
+        [HttpPut("email/{userId}&{email}&{token}")]
+        public async Task<IActionResult> UpdateEmail(Guid userId, string email, string token)
         {
-            User? user = await _userRepository.Get(UserId);
+            User? user = await _userRepository.Get(userId);
+
+            if (user == null) return NotFound();
+
+            byte[] secretBytes = Encoding.UTF8.GetBytes(user.PasswordHash!);
+
+            ClaimsPrincipal? principal = _jwtHelper
+                .GetClaimsToken(token, secretBytes, "HS512");
+
+            if (principal is null)
+                return BadRequest("Invalid OneTime token");
+
+            User? searchUser = await _userRepository.GetByEmail(email);
+
+            if(searchUser != null) return Forbid("Email is already busy");
+
+            User newUser = new()
+            {
+                Id = user.Id,
+                UserEmail = email,
+                UserImage = user.UserImage,
+                UserLogin = user.UserLogin,
+                PasswordHash = user.PasswordHash,
+                PasswordSalt = user.PasswordSalt,
+            };
+
+            await _userRepository.Update(user, newUser);
+
+            UserAdditionalInfo? userAdditionalInfo = await _userInfoRepository.GetByUserId(user.Id);
+            userAdditionalInfo!.IsConfirmedAccount = false;
+            await _userInfoRepository.Update(userAdditionalInfo);
+
+            //TODO Notify by email
+
+            return Ok();
+        }
+
+        [AllowAnonymous]
+        [HttpPut("password/{userId}&{password}&{token}")]
+        public async Task<IActionResult> UpdatePasswordConfirmation(
+            Guid userId, 
+            string password, 
+            string token)
+        {
+            User? user = await _userRepository.Get(userId);
 
             if (user == null) return NotFound();
 
@@ -145,11 +191,11 @@ namespace CaseApplication.Api.Controllers
             return Ok();
         }
 
-        [Authorize]
-        [HttpDelete("{token}")]
-        public async Task<IActionResult> DeleteConfirmation(string token)
+        [AllowAnonymous]
+        [HttpDelete("{userId}&{token}")]
+        public async Task<IActionResult> DeleteConfirmation(Guid userId, string token)
         {
-            User? user = await _userRepository.Get(UserId);
+            User? user = await _userRepository.Get(userId);
 
             if (user == null) return NotFound();
 
@@ -164,7 +210,7 @@ namespace CaseApplication.Api.Controllers
             //TODO Answer user by email
             //TODO No delete give the user 30 days
             
-            await _userTokensRepository.DeleteAll(UserId);
+            await _userTokensRepository.DeleteAll(userId);
 
             return Ok();
         }

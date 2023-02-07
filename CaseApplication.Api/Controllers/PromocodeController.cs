@@ -1,7 +1,6 @@
 ﻿using CaseApplication.DomainLayer.Entities;
 using CaseApplication.DomainLayer.Repositories;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
@@ -62,21 +61,21 @@ namespace CaseApplication.Api.Controllers
         }
 
         [Authorize(Roles = "admin")]
-        [HttpPost]
+        [HttpPost("admin")]
         public async Task<IActionResult> Create(Promocode promocode)
         {
             return Ok(await _promocodeRepository.Create(promocode));
         }
 
         [Authorize(Roles = "admin")]
-        [HttpPut]
+        [HttpPut("admin")]
         public async Task<IActionResult> Update(Promocode promocode)
         {
             return Ok(await _promocodeRepository.Update(promocode));
         }
 
         [Authorize(Roles = "admin")]
-        [HttpDelete("{id}")]
+        [HttpDelete("admin/{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
             return Ok(await _promocodeRepository.Delete(id));

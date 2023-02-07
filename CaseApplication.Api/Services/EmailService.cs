@@ -1,5 +1,4 @@
 ﻿using MailKit.Net.Smtp;
-using Microsoft.EntityFrameworkCore;
 using MimeKit;
 
 namespace CaseApplication.Api.Services

@@ -1,6 +1,4 @@
-﻿using CaseApplication.DomainLayer.Repositories;
-using Microsoft.AspNetCore.Cryptography.KeyDerivation;
-using Microsoft.EntityFrameworkCore.Query.Internal;
+﻿using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using System.Security.Cryptography;
 
 namespace CaseApplication.Api.Services
