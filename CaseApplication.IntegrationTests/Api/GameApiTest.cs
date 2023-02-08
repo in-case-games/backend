@@ -55,6 +55,9 @@ namespace CaseApplication.IntegrationTests.Api
         public async Task GameOpeningCasesApiTest()
         {
             await InitializeOneTimeAccount("0.3.0");
+
+            AdminTokens = await _authHelper.RefreshTokens(AdminTokens.RefreshToken!, "0.3.0");
+
             await CreateDependencies();
 
             //Create Counter
@@ -103,7 +106,6 @@ namespace CaseApplication.IntegrationTests.Api
                 $"Скорость алгоритма: {elapsedTime}");
 
             await DeleteDependencies();
-
             await DeleteOneTimeAccounts("0.3.0");
         }
 
@@ -189,21 +191,21 @@ namespace CaseApplication.IntegrationTests.Api
             {
                 GameCaseId = GameCase.Id,
                 GameItemId = GameItems[0].Id,
-                LossChance = 375,
+                LossChance = 1000,
                 NumberItemsCase = 1
             };
             CaseInventory inventory2 = new()
             {
                 GameCaseId = GameCase.Id,
                 GameItemId = GameItems[1].Id,
-                LossChance = 356,
+                LossChance = 1000,
                 NumberItemsCase = 1
             };
             CaseInventory inventory3 = new()
             {
                 GameCaseId = GameCase.Id,
                 GameItemId = GameItems[2].Id,
-                LossChance = 309,
+                LossChance = 1000,
                 NumberItemsCase = 1
             };
             CaseInventory inventory4 = new()
@@ -262,11 +264,11 @@ namespace CaseApplication.IntegrationTests.Api
         private async Task DeleteDependencies()
         {
             //Delete Case and Case Inventory
-            await _clientApi.ResponseDelete($"/GameCase/admin/{GameCase.Id}");
+            await _clientApi.ResponseDelete($"/GameCase/admin/{GameCase.Id}", AdminTokens.AccessToken!);
 
             //Delete Items
             foreach (GameItem item in GameItems)
-                await _clientApi.ResponseDelete($"/GameItem/admin/{item.Id}");
+                await _clientApi.ResponseDelete($"/GameItem/admin/{item.Id}", AdminTokens.AccessToken!);
         }
     }
 }
