@@ -1,4 +1,5 @@
-﻿using CaseApplication.Api.Services;
+﻿using CaseApplication.Api.Models;
+using CaseApplication.Api.Services;
 using CaseApplication.DomainLayer.Entities;
 using CaseApplication.DomainLayer.Repositories;
 using Microsoft.AspNetCore.Authorization;
@@ -38,8 +39,8 @@ namespace CaseApplication.Api.Controllers
         }
 
         [AllowAnonymous]
-        [HttpPost("user/confirm/{userId}&{email}")]
-        public async Task<IActionResult> SendConfirmEmail(Guid userId, string email)
+        [HttpPost("user/confirm/{userId}&{email}&{ip}")]
+        public async Task<IActionResult> SendConfirmEmail(Guid userId, string email, string ip)
         {
             User? user = await _userRepository.Get(userId);
 
@@ -48,17 +49,20 @@ namespace CaseApplication.Api.Controllers
 
             string emailToken = _jwtHelper.GenerateEmailToken(user.Id, user.PasswordHash!);
 
-            await _emailHelper.SendConfirmAccountToEmail(
-                user.UserEmail!,
-                user.Id.ToString(),
-                emailToken);
+            await _emailHelper.SendConfirmAccountToEmail(new EmailModel()
+            {
+                UserEmail = user.UserEmail!,
+                UserId = user.Id,
+                UserToken = emailToken,
+                UserIp = ip
+            });
 
             return Accepted();
         }
 
         [AllowAnonymous]
-        [HttpPost("user/activate/{userId}&{email}")]
-        public async Task<IActionResult> SendActivateEmail(Guid userId, string email)
+        [HttpPost("user/activate/{userId}&{email}&{ip}")]
+        public async Task<IActionResult> SendActivateEmail(Guid userId, string email, string ip)
         {
             User? user = await _userRepository.Get(userId);
 
@@ -67,10 +71,13 @@ namespace CaseApplication.Api.Controllers
 
             string emailToken = _jwtHelper.GenerateEmailToken(user.Id, user.PasswordHash!);
 
-            await _emailHelper.SendActivateAccountToEmail(
-                user.UserEmail!,
-                user.Id.ToString(),
-                emailToken);
+            await _emailHelper.SendActivateAccountToEmail(new EmailModel()
+            {
+                UserEmail = user.UserEmail!,
+                UserId = user.Id,
+                UserToken = emailToken,
+                UserIp = ip
+            });
 
             return Accepted();
         }
@@ -86,10 +93,12 @@ namespace CaseApplication.Api.Controllers
             if (_validationService.IsValidUserPassword(in user, password)) {
                 string emailToken = _jwtHelper.GenerateEmailToken(user.Id, user.PasswordHash!);
 
-                await _emailHelper.SendChangeEmailToEmail(
-                    user.UserEmail!,
-                    user.Id.ToString(),
-                    emailToken);
+                await _emailHelper.SendChangeEmailToEmail(new EmailModel()
+                {
+                    UserEmail = user.UserEmail!,
+                    UserId = user.Id,
+                    UserToken = emailToken,
+                });
 
                 return Accepted();
             }
@@ -109,10 +118,12 @@ namespace CaseApplication.Api.Controllers
             {
                 string emailToken = _jwtHelper.GenerateEmailToken(user.Id, user.PasswordHash!);
 
-                await _emailHelper.SendChangePasswordToEmail(
-                    user.UserEmail!,
-                    user.Id.ToString(),
-                    emailToken);
+                await _emailHelper.SendChangePasswordToEmail(new EmailModel()
+                {
+                    UserEmail = user.UserEmail!,
+                    UserId = user.Id,
+                    UserToken = emailToken,
+                });
 
                 return Accepted();
             }
@@ -132,10 +143,12 @@ namespace CaseApplication.Api.Controllers
             {
                 string emailToken = _jwtHelper.GenerateEmailToken(user.Id, user.PasswordHash!);
 
-                await _emailHelper.SendDeleteAccountToEmail(
-                    user.UserEmail!,
-                    user.Id.ToString(),
-                    emailToken);
+                await _emailHelper.SendDeleteAccountToEmail(new EmailModel()
+                {
+                    UserEmail = user.UserEmail!,
+                    UserId = user.Id,
+                    UserToken = emailToken,
+                });
 
                 return Accepted();
             }

@@ -108,9 +108,11 @@ namespace CaseApplication.Api.Controllers
                 UserLogin = login
             };
 
-            //TODO Answer user by email
+            await _userRepository.Update(searchUserById, newUser);
 
-            return Ok(await _userRepository.Update(searchUserById, newUser));
+            await _emailHelper.SendNotifyChangeLogin(searchUserById.UserEmail!, login);
+
+            return Ok();
         }
 
         [AllowAnonymous]
@@ -142,9 +144,11 @@ namespace CaseApplication.Api.Controllers
 
             UserAdditionalInfo? userAdditionalInfo = await _userInfoRepository.GetByUserId(user.Id);
             userAdditionalInfo!.IsConfirmedAccount = false;
-            await _userInfoRepository.Update(userAdditionalInfo);
 
-            //TODO Notify by email
+            await _userInfoRepository.Update(userAdditionalInfo);
+            await _userTokensRepository.DeleteAll(userId);
+
+            await _emailHelper.SendNotifyChangeEmail(email);
 
             return Ok();
         }
@@ -178,8 +182,9 @@ namespace CaseApplication.Api.Controllers
             };
 
             await _userRepository.Update(user, newUser);
+            await _userTokensRepository.DeleteAll(userId);
 
-            //TODO Notify by email
+            await _emailHelper.SendNotifyChangePassword(user.UserEmail!);
 
             return Ok();
         }
@@ -195,7 +200,7 @@ namespace CaseApplication.Api.Controllers
             if (_validationService.IsValidEmailToken(token, user.PasswordHash!) is false)
                 return Forbid("Invalid email token");
 
-            //TODO Answer user by email
+            await _emailHelper.SendNotifyDeleteAccount(user.UserEmail!);
             //TODO No delete give the user 30 days
 
             await _userTokensRepository.DeleteAll(userId);
