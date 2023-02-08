@@ -55,9 +55,6 @@ namespace CaseApplication.IntegrationTests.Api
         public async Task GameOpeningCasesApiTest()
         {
             await InitializeOneTimeAccount("0.3.0");
-
-            AdminTokens = await _authHelper.RefreshTokens(AdminTokens.RefreshToken!, "0.3.0");
-
             await CreateDependencies();
 
             //Create Counter
@@ -99,7 +96,6 @@ namespace CaseApplication.IntegrationTests.Api
                 resultTime.Seconds,
                 resultTime.Milliseconds);
 
-            AdminTokens = await _authHelper.RefreshTokens(AdminTokens.RefreshToken!, "0.3.0");
             GameCase = (await _clientApi.ResponseGet<GameCase?>($"/GameCase/admin/{GameCase.Id}", AdminTokens.AccessToken!))!;
             
             _output.WriteLine($"Баланс: {GameCase.GameCaseBalance}\n" +

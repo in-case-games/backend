@@ -57,8 +57,6 @@ namespace CaseApplication.IntegrationTests.Api
                 $"/UserAdditionalInfo", tokenModel.AccessToken!);
             UserRole? userRole = await _responseHelper.ResponseGet<UserRole?>("/Role/admin");
 
-            tokenModel = await RefreshTokens(tokenModel.RefreshToken!, ip);
-
             userInfo!.UserRoleId = userRole!.Id;
             userInfo!.UserBalance = 9999999999M;
 
@@ -69,7 +67,9 @@ namespace CaseApplication.IntegrationTests.Api
 
             //Save super admin tokens
             SuperAdminTokens = tokenModelAdmin;
-            
+
+            tokenModel = await RefreshTokens(tokenModel.RefreshToken!, ip);
+
             return tokenModel;
         }
 
