@@ -37,7 +37,7 @@ namespace CaseApplication.Api.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("{name}")]
+        [HttpGet("name/{name}")]
         public async Task<IActionResult> GetByName(string name)
         {
             GameCase? gameCase = await _gameCaseRepository.GetByName(name);
@@ -69,7 +69,7 @@ namespace CaseApplication.Api.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("{groupName}")]
+        [HttpGet("groupname/{groupName}")]
         public async Task<IActionResult> GetAllByGroupName(string groupName)
         {
             List<GameCase> gameCases = await _gameCaseRepository.GetAllByGroupName(groupName);
@@ -81,6 +81,20 @@ namespace CaseApplication.Api.Controllers
             }
 
             return Ok(gameCases);
+        }
+
+        [Authorize(Roles = "admin")]
+        [HttpGet("admin/{id}")]
+        public async Task<IActionResult> GetByAdmin(Guid id)
+        {
+            GameCase? gameCase = await _gameCaseRepository.Get(id);
+
+            if (gameCase != null)
+            {
+                return Ok(gameCase);
+            }
+
+            return NotFound();
         }
 
         [Authorize(Roles = "admin")]

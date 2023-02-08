@@ -68,6 +68,7 @@ builder.Services.AddSingleton<EmailHelper>();
 
 builder.Services.AddSingleton<EncryptorHelper>();
 builder.Services.AddSingleton<JwtHelper>();
+builder.Services.AddSingleton<ValidationService>();
 
 builder.Services.AddSwaggerGen(options =>
 {

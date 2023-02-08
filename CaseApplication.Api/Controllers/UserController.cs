@@ -18,6 +18,7 @@ namespace CaseApplication.Api.Controllers
         private readonly EmailHelper _emailHelper;
         private readonly IUserTokensRepository _userTokensRepository;
         private readonly IUserAdditionalInfoRepository _userInfoRepository;
+        private readonly ValidationService _validationService;
         private Guid UserId => Guid
             .Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
 
@@ -27,7 +28,8 @@ namespace CaseApplication.Api.Controllers
             JwtHelper jwtHelper,
             EmailHelper emailHelper,
             IUserTokensRepository userTokensRepository,
-            IUserAdditionalInfoRepository userAdditionalInfoRepository)
+            IUserAdditionalInfoRepository userAdditionalInfoRepository,
+            ValidationService validationService)
         {
             _userRepository = userRepository;
             _encryptorHelper = encryptorHelper;
@@ -35,6 +37,7 @@ namespace CaseApplication.Api.Controllers
             _emailHelper = emailHelper;
             _userTokensRepository = userTokensRepository;
             _userInfoRepository = userAdditionalInfoRepository;
+            _validationService = validationService;
         }
 
         [Authorize]
@@ -55,7 +58,7 @@ namespace CaseApplication.Api.Controllers
         }
 
         [Authorize]
-        [HttpGet("{login}")]
+        [HttpGet("login/{login}")]
         public async Task<IActionResult> GetByLogin(string login)
         {
             User? user = await _userRepository.GetByLogin(login);
@@ -118,13 +121,8 @@ namespace CaseApplication.Api.Controllers
 
             if (user == null) return NotFound();
 
-            byte[] secretBytes = Encoding.UTF8.GetBytes(user.PasswordHash!);
-
-            ClaimsPrincipal? principal = _jwtHelper
-                .GetClaimsToken(token, secretBytes, "HS512");
-
-            if (principal is null)
-                return BadRequest("Invalid OneTime token");
+            if (_validationService.IsValidEmailToken(token, user.PasswordHash!) is false)
+                return Forbid("Invalid email token");
 
             User? searchUser = await _userRepository.GetByEmail(email);
 
@@ -162,13 +160,8 @@ namespace CaseApplication.Api.Controllers
 
             if (user == null) return NotFound();
 
-            byte[] secretBytes = Encoding.UTF8.GetBytes(user.PasswordHash!);
-
-            ClaimsPrincipal? principal = _jwtHelper
-                .GetClaimsToken(token, secretBytes, "HS512");
-
-            if (principal is null)
-                return BadRequest("Invalid OneTime token");
+            if (_validationService.IsValidEmailToken(token, user.PasswordHash!) is false)
+                return Forbid("Invalid email token");
 
             //Gen hash and salt
             byte[] salt = _encryptorHelper.GenerationSaltTo64Bytes();
@@ -199,17 +192,12 @@ namespace CaseApplication.Api.Controllers
 
             if (user == null) return NotFound();
 
-            byte[] secretBytes = Encoding.UTF8.GetBytes(user.PasswordHash!);
-
-            ClaimsPrincipal? principal = _jwtHelper
-                .GetClaimsToken(token, secretBytes, "HS512");
-
-            if (principal is null)
-                return BadRequest("Invalid OneTime token");
+            if (_validationService.IsValidEmailToken(token, user.PasswordHash!) is false)
+                return Forbid("Invalid email token");
 
             //TODO Answer user by email
             //TODO No delete give the user 30 days
-            
+
             await _userTokensRepository.DeleteAll(userId);
 
             return Ok();

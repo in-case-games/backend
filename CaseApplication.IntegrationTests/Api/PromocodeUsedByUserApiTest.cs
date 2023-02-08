@@ -40,8 +40,8 @@ namespace CaseApplication.IntegrationTests.Api
         }
         private async Task DeleteOneTimeAccounts(string ipUser, string ipAdmin)
         {
-            await _authHelper.DeleteUserByAdmin($"ULPUBUST{ipUser}User");
-            await _authHelper.DeleteUserByAdmin($"ULPUBUST{ipAdmin}Admin");
+            await _authHelper.DeleteUserByAdmin($"ULPUBUST{ipUser}User", UserTokens.AccessToken!);
+            await _authHelper.DeleteUserByAdmin($"ULPUBUST{ipAdmin}Admin", AdminTokens.AccessToken!);
         }
 
         private async Task InitializePromocode()

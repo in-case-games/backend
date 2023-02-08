@@ -17,6 +17,7 @@ namespace CaseApplication.Api.Controllers
         private readonly JwtHelper _jwtHelper;
         private readonly IUserRepository _userRepository;
         private readonly IUserTokensRepository _userTokensRepository;
+        private readonly ValidationService _validationService;
         private Guid UserId => Guid
             .Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
 
@@ -25,13 +26,15 @@ namespace CaseApplication.Api.Controllers
             EncryptorHelper encryptorHelper,
             JwtHelper jwtHelper,
             IUserRepository userRepository, 
-            IUserTokensRepository userTokensRepository)
+            IUserTokensRepository userTokensRepository,
+            ValidationService validationService)
         {
             _emailHelper = emailHelper;
             _userRepository = userRepository;
             _userTokensRepository = userTokensRepository;
             _encryptorHelper = encryptorHelper;
             _jwtHelper = jwtHelper;
+            _validationService = validationService;
         }
 
         [AllowAnonymous]
@@ -43,12 +46,12 @@ namespace CaseApplication.Api.Controllers
             if (user == null) return NotFound();
             if (user.UserEmail != email) return Forbid("Incorrect email");
 
-            string oneTimeToken = GenerateOneTimeToken(user.PasswordHash!);
+            string emailToken = _jwtHelper.GenerateEmailToken(user.Id, user.PasswordHash!);
 
             await _emailHelper.SendConfirmAccountToEmail(
                 user.UserEmail!,
                 user.Id.ToString(),
-                oneTimeToken);
+                emailToken);
 
             return Accepted();
         }
@@ -62,12 +65,12 @@ namespace CaseApplication.Api.Controllers
             if (user == null) return NotFound();
             if (user.UserEmail != email) return Forbid("Incorrect email");
 
-            string oneTimeToken = GenerateOneTimeToken(user.PasswordHash!);
+            string emailToken = _jwtHelper.GenerateEmailToken(user.Id, user.PasswordHash!);
 
             await _emailHelper.SendActivateAccountToEmail(
                 user.UserEmail!,
                 user.Id.ToString(),
-                oneTimeToken);
+                emailToken);
 
             return Accepted();
         }
@@ -79,16 +82,19 @@ namespace CaseApplication.Api.Controllers
             User? user = await _userRepository.Get(UserId);
 
             if (user == null) return NotFound();
-            if (IsValidPassword(in user, password) is false) return Forbid("Incorrect password");
 
-            string oneTimeToken = GenerateOneTimeToken(user.PasswordHash!);
+            if (_validationService.IsValidUserPassword(in user, password)) {
+                string emailToken = _jwtHelper.GenerateEmailToken(user.Id, user.PasswordHash!);
 
-            await _emailHelper.SendChangeEmailToEmail(
-                user.UserEmail!,
-                user.Id.ToString(),
-                oneTimeToken);
+                await _emailHelper.SendChangeEmailToEmail(
+                    user.UserEmail!,
+                    user.Id.ToString(),
+                    emailToken);
 
-            return Accepted();
+                return Accepted();
+            }
+
+            return Forbid("Incorrect password");
         }
         
         [Authorize]
@@ -98,16 +104,20 @@ namespace CaseApplication.Api.Controllers
             User? user = await _userRepository.Get(UserId);
 
             if (user == null) return NotFound();
-            if (IsValidPassword(in user, password) is false) return Forbid("Incorrect password");
 
-            string oneTimeToken = GenerateOneTimeToken(user.PasswordHash!);
+            if (_validationService.IsValidUserPassword(in user, password))
+            {
+                string emailToken = _jwtHelper.GenerateEmailToken(user.Id, user.PasswordHash!);
 
-            await _emailHelper.SendChangePasswordToEmail(
-                user.UserEmail!, 
-                user.Id.ToString(), 
-                oneTimeToken);
+                await _emailHelper.SendChangePasswordToEmail(
+                    user.UserEmail!,
+                    user.Id.ToString(),
+                    emailToken);
 
-            return Accepted();
+                return Accepted();
+            }
+
+            return Forbid("Incorrect password");
         }
 
         [Authorize]
@@ -117,35 +127,20 @@ namespace CaseApplication.Api.Controllers
             User? user = await _userRepository.Get(UserId);
 
             if (user == null) return NotFound();
-            if (IsValidPassword(in user, password) is false) return Forbid("Incorrect password");
 
-            string oneTimeToken = GenerateOneTimeToken(user.PasswordHash!);
+            if (_validationService.IsValidUserPassword(in user, password))
+            {
+                string emailToken = _jwtHelper.GenerateEmailToken(user.Id, user.PasswordHash!);
 
-            await _emailHelper.SendDeleteAccountToEmail(
-                user.UserEmail!, 
-                user.Id.ToString(), 
-                oneTimeToken);
+                await _emailHelper.SendDeleteAccountToEmail(
+                    user.UserEmail!,
+                    user.Id.ToString(),
+                    emailToken);
 
-            return Accepted();
-        }
+                return Accepted();
+            }
 
-        private bool IsValidPassword(in User user, string password)
-        {
-            string hash = _encryptorHelper.EncryptorPassword(password, Convert
-                .FromBase64String(user.PasswordSalt!));
-
-            return hash == user.PasswordHash;
-        }
-
-        private string GenerateOneTimeToken(string hash)
-        {
-            Claim[] claims = {
-                new Claim("UserId", UserId.ToString())
-            };
-
-            JwtSecurityToken token = _jwtHelper.CreateOneTimeToken(claims, hash);
-
-            return new JwtSecurityTokenHandler().WriteToken(token);
+            return Forbid("Incorrect password");
         }
     }
 }

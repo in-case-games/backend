@@ -1,4 +1,6 @@
-﻿using Microsoft.IdentityModel.Tokens;
+﻿using CaseApplication.Api.Models;
+using CaseApplication.DomainLayer.Entities;
+using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -22,7 +24,7 @@ namespace CaseApplication.Api.Services
             return CreateToken(claims, credentials, expiration);
         }
 
-        public JwtSecurityToken CreateOneTimeToken(
+        public JwtSecurityToken CreateEmailToken(
             Claim[] claims,
             string secret)
         {
@@ -32,6 +34,36 @@ namespace CaseApplication.Api.Services
             SigningCredentials credentials = new(securityKey, SecurityAlgorithms.HmacSha512);
 
             return CreateToken(claims, credentials, expiration);
+        }
+
+        public string GenerateEmailToken(Guid userId, string hash)
+        {
+            Claim[] claims = {
+                new Claim("UserId", userId.ToString())
+            };
+
+            JwtSecurityToken token = CreateEmailToken(claims, hash);
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        public TokenModel GenerateTokenPair(Claim[] claimsAccess, Claim[] claimsRefresh)
+        {
+            TimeSpan expirationRefresh = TimeSpan.FromDays(
+                double.Parse(_configuration["JWT:RefreshTokenValidityInDays"]!));
+            TimeSpan expirationAccess = TimeSpan.FromMinutes(
+                double.Parse(_configuration["JWT:TokenValidityInMinutes"]!));
+
+            JwtSecurityToken accessToken = CreateResuableToken(claimsAccess, expirationAccess);
+            JwtSecurityToken refreshToken = CreateResuableToken(claimsRefresh, expirationRefresh);
+
+            return new TokenModel
+            {
+                AccessToken = new JwtSecurityTokenHandler().WriteToken(accessToken),
+                RefreshToken = new JwtSecurityTokenHandler().WriteToken(refreshToken),
+                ExpiresAccessIn = accessToken.ValidTo,
+                ExpiresRefreshIn = refreshToken.ValidTo,
+            };
         }
 
         public ClaimsPrincipal? GetClaimsToken(

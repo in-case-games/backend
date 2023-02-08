@@ -57,7 +57,7 @@ namespace CaseApplication.IntegrationTests.Api
 
             HttpStatusCode deleteStatusCode = await _response
                 .ResponseDelete($"/Role?id={userRole!.Id}", token: adminToken.AccessToken!);
-            await _authHelper.DeleteUserByAdmin($"ULUIAT0.14.0Admin");
+            await _authHelper.DeleteUserByAdmin($"ULUIAT0.14.0Admin", adminToken.AccessToken!);
             // Assert
             Assert.Equal(
                 (HttpStatusCode.OK, HttpStatusCode.OK, HttpStatusCode.OK, HttpStatusCode.OK, HttpStatusCode.OK),

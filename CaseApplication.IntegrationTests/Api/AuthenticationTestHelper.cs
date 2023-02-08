@@ -1,6 +1,7 @@
 ﻿using CaseApplication.Api.Models;
 using CaseApplication.DomainLayer.Entities;
 using CaseApplication.WebClient.Services;
+using Microsoft.Extensions.Primitives;
 using System.Net;
 
 namespace CaseApplication.IntegrationTests.Api
@@ -23,13 +24,11 @@ namespace CaseApplication.IntegrationTests.Api
         public async Task<TokenModel> SignInUser(User user, string ip)
         {
             await _responseHelper.ResponsePostStatusCode(
-                $"/Authentication/SignUp?" +
-                $"password={Password}", user);
+                $"/Authentication/signup/{Password}", user);
             await _responseHelper.ResponsePostStatusCode($"/UserAdditionalInfo", user);
 
             TokenModel? tokenModel = await _responseHelper.ResponsePost<User, TokenModel?>(
-                $"/Authentication/SignIn?" +
-                $"password={Password}&ip={ip}", user);
+                $"/Authentication/signin/{Password}&{ip}", user);
 
             if (tokenModel == null) throw new Exception("Error singin it`s null:)");
 
@@ -40,33 +39,31 @@ namespace CaseApplication.IntegrationTests.Api
         {
             //Create User
             await _responseHelper.ResponsePostStatusCode(
-                $"/Authentication/SignUp?" +
-                $"password={Password}", user);
+                $"/Authentication/signup/{Password}", user);
             await _responseHelper.ResponsePostStatusCode($"/UserAdditionalInfo", user);
 
             //Get 2 tokens(user, super admin)
             TokenModel? tokenModel = await _responseHelper.ResponsePost<User, TokenModel?>(
-                $"/Authentication/SignIn?" +
-                $"password={Password}&ip={ip}", user);
+                $"/Authentication/signin/{Password}&{ip}", user);
 
             TokenModel? tokenModelAdmin = await _responseHelper.ResponsePost<User, TokenModel?>(
-                $"/Authentication/SignIn?" +
-                $"password={Password}&ip={ip}", SuperAdminModel);
+                $"/Authentication/signin/{Password}&{ip}", SuperAdminModel);
 
             if (tokenModel == null) throw new Exception("Error singin it`s null:)");
             if (tokenModelAdmin == null) throw new Exception("Error singin admin it`s null:)");
 
             //Change role in admin
             UserAdditionalInfo? userInfo = await _responseHelper.ResponseGet<UserAdditionalInfo?>(
-                $"/UserAdditionalInfo", 
-                tokenModel.AccessToken!);
-            UserRole? userRole = await _responseHelper.ResponseGet<UserRole?>("/Role?name=admin");
+                $"/UserAdditionalInfo", tokenModel.AccessToken!);
+            UserRole? userRole = await _responseHelper.ResponseGet<UserRole?>("/Role/admin");
+
+            tokenModel = await RefreshTokens(tokenModel.RefreshToken!, ip);
 
             userInfo!.UserRoleId = userRole!.Id;
             userInfo!.UserBalance = 9999999999M;
 
             await _responseHelper.ResponsePut(
-                $"/UserAdditionalInfo/UpdateInfoByAdmin", 
+                $"/UserAdditionalInfo/admin", 
                 userInfo, 
                 tokenModelAdmin.AccessToken!);
 
@@ -76,15 +73,14 @@ namespace CaseApplication.IntegrationTests.Api
             return tokenModel;
         }
 
-        public async Task<bool> DeleteUserByAdmin(string login)
+        public async Task<bool> DeleteUserByAdmin(string login, string token)
         {
-            User? user = await _responseHelper.ResponseGet<User?>($"/User/GetByLogin?" +
-                $"login={login}");
+            User? user = await _responseHelper.ResponseGet<User?>($"/User/login/{login}", token);
 
             if(user == null) throw new Exception("Error no such user:)");
 
             HttpStatusCode code = await _responseHelper.ResponseDelete(
-                $"/User/DeleteByAdmin?userId={user.Id}",
+                $"/User/admin/{user.Id}", 
                 SuperAdminTokens!.AccessToken!);
 
             return code == HttpStatusCode.OK;
@@ -93,9 +89,9 @@ namespace CaseApplication.IntegrationTests.Api
         public async Task<TokenModel> RefreshTokens(string refreshToken, string ip)
         {
             TokenModel? tokenModel = await _responseHelper.ResponseGet<TokenModel>(
-                $"/Authentication/RefreshTokens?" +
-                $"refreshToken={refreshToken}&" +
-                $"ip={ip}");
+                $"/Authentication/refresh/" +
+                $"{refreshToken}&" +
+                $"{ip}");
 
             if (tokenModel == null) throw new Exception("Error refresh it`s null:)");
 
@@ -105,8 +101,7 @@ namespace CaseApplication.IntegrationTests.Api
         public async Task<bool> Logout(TokenModel tokenModel)
         {
             HttpStatusCode code = await _responseHelper.ResponseDelete(
-                $"/Authentication/Logout?" +
-                $"refreshToken={tokenModel.RefreshToken}", 
+                $"/Authentication/{tokenModel.RefreshToken}", 
                 tokenModel.AccessToken!);
 
             return code == HttpStatusCode.OK;

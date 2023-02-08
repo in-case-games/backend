@@ -48,7 +48,7 @@ namespace CaseApplication.IntegrationTests.Api
 
         private async Task DeleteOneTimeAccounts(string ipAdmin)
         {
-            await _authHelper.DeleteUserByAdmin($"ULGOCAT{ipAdmin}Admin");
+            await _authHelper.DeleteUserByAdmin($"ULGOCAT{ipAdmin}Admin", AdminTokens.AccessToken!);
         }
 
         [Fact]
@@ -68,7 +68,7 @@ namespace CaseApplication.IntegrationTests.Api
             {
                 //Open Cases
                 GameItem? winItem = await _clientApi
-                    .ResponseGet<GameItem?>($"/Game?caseId={GameCase.Id}", AdminTokens.AccessToken!);
+                    .ResponseGet<GameItem?>($"/Game/{GameCase.Id}", AdminTokens.AccessToken!);
 
                 if (winItem == null) throw new Exception("No opened cases"); 
 
@@ -96,6 +96,9 @@ namespace CaseApplication.IntegrationTests.Api
                 resultTime.Seconds,
                 resultTime.Milliseconds);
 
+            AdminTokens = await _authHelper.RefreshTokens(AdminTokens.RefreshToken!, "0.3.0");
+            GameCase = (await _clientApi.ResponseGet<GameCase?>($"/GameCase/admin/{GameCase.Id}", AdminTokens.AccessToken!))!;
+            
             _output.WriteLine($"Баланс: {GameCase.GameCaseBalance}\n" +
                 $"Скорость алгоритма: {elapsedTime}");
 
@@ -161,10 +164,10 @@ namespace CaseApplication.IntegrationTests.Api
 
             //Create Item
             foreach (GameItem item in GameItems)
-                await _clientApi.ResponsePostStatusCode("/GameItem", item, AdminTokens.AccessToken!);
+                await _clientApi.ResponsePostStatusCode("/GameItem/admin", item, AdminTokens.AccessToken!);
 
             //Create Case
-            await _clientApi.ResponsePostStatusCode("/GameCase", GameCase, AdminTokens.AccessToken!);
+            await _clientApi.ResponsePostStatusCode("/GameCase/admin", GameCase, AdminTokens.AccessToken!);
 
             //Search Case and Items Id
             GameCase.Id = await SearchIdCaseByName(GameCase.GameCaseName!);
@@ -173,7 +176,8 @@ namespace CaseApplication.IntegrationTests.Api
             for(int i = 0; i < GameItems.Count; i++)
             {
                 GameItem? searchItem = await _clientApi.ResponseGet<GameItem?>(
-                    $"/GameItem/GetByName?name={GameItems[i].GameItemName}");
+                    $"/GameItem/name/{GameItems[i].GameItemName}");
+
                 if (searchItem != null)
                 {
                     GameItems[i].Id = searchItem.Id;
@@ -192,27 +196,27 @@ namespace CaseApplication.IntegrationTests.Api
             {
                 GameCaseId = GameCase.Id,
                 GameItemId = GameItems[1].Id,
-                LossChance = 309,
+                LossChance = 356,
                 NumberItemsCase = 1
             };
             CaseInventory inventory3 = new()
             {
                 GameCaseId = GameCase.Id,
                 GameItemId = GameItems[2].Id,
-                LossChance = 356,
+                LossChance = 309,
                 NumberItemsCase = 1
             };
             CaseInventory inventory4 = new()
             {
                 GameCaseId = GameCase.Id,
                 GameItemId = GameItems[3].Id,
-                LossChance = 3989,
+                LossChance = 3000,
                 NumberItemsCase = 1
             };
             CaseInventory inventory5 = new() {
                 GameCaseId = GameCase.Id,
                 GameItemId = GameItems[4].Id,
-                LossChance = 10250,
+                LossChance = 7000,
                 NumberItemsCase = 1
             };
             CaseInventory inventory6 = new()
@@ -243,29 +247,26 @@ namespace CaseApplication.IntegrationTests.Api
             foreach (CaseInventory inventory in caseInventories)
             {
                 await _clientApi.ResponsePostStatusCode(
-                    "/CaseInventory", inventory, AdminTokens.AccessToken!);
+                    "/CaseInventory/admin", inventory, AdminTokens.AccessToken!);
             }
+        }
+        private async Task<Guid> SearchIdCaseByName(string name)
+        {
+            GameCase? gameCase = await _clientApi.ResponseGet<GameCase?>($"/GameCase/name/{name}");
+
+            if (gameCase == null) throw new Exception("No such case :)");
+
+            return gameCase.Id;
         }
 
         private async Task DeleteDependencies()
         {
             //Delete Case and Case Inventory
-            await _clientApi.ResponseDelete($"/GameCase?id={GameCase.Id}");
+            await _clientApi.ResponseDelete($"/GameCase/admin/{GameCase.Id}");
 
             //Delete Items
             foreach (GameItem item in GameItems)
-                await _clientApi.ResponseDelete($"/GameItem?id={item.Id}");
-        }
-
-        private async Task<Guid> SearchIdCaseByName(string name)
-        {
-            GameCase? gameCase = await _clientApi.ResponseGet<GameCase?>(
-                "/GameCase/GetByName?" +
-                $"name={name}");
-
-            if (gameCase == null) throw new Exception("No such case :)");
-
-            return gameCase.Id;
+                await _clientApi.ResponseDelete($"/GameItem/admin/{item.Id}");
         }
     }
 }

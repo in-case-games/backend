@@ -26,7 +26,7 @@ namespace CaseApplication.Api.Controllers
             return Ok(await _userRestrictionRepository.GetAll(userId));
         }
         [Authorize]
-        [HttpGet("{name}")]
+        [HttpGet("name/{name}")]
         public async Task<IActionResult> GetByName(string name)
         {
             return Ok(await _userRestrictionRepository.GetByNameAndUserId(UserId, name));

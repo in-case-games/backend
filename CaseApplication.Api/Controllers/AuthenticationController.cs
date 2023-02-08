@@ -23,6 +23,7 @@ namespace CaseApplication.Api.Controllers
         private readonly JwtHelper _jwtHelper;
         private readonly IUserTokensRepository _userTokensRepository;
         private readonly EmailHelper _emailHelper;
+        private readonly ValidationService _validationService;
         private Guid UserId => Guid
             .Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
         #endregion
@@ -35,7 +36,8 @@ namespace CaseApplication.Api.Controllers
             EncryptorHelper encryptorHelper,
             JwtHelper jwtHelper,
             IUserTokensRepository userTokensRepository,
-            EmailHelper emailHelper)
+            EmailHelper emailHelper,
+            ValidationService validationService)
         {
             _userRepository = userRepository;
             _userAdditionalInfoRepository = userAdditionalInfoRepository;
@@ -45,6 +47,7 @@ namespace CaseApplication.Api.Controllers
             _userTokensRepository = userTokensRepository;
             _configuration = configuration;
             _emailHelper = emailHelper;
+            _validationService = validationService;
         }
         #endregion
 
@@ -56,11 +59,8 @@ namespace CaseApplication.Api.Controllers
             User? searchUser = await _userRepository.GetByParameters(user);
 
             if (searchUser is null) return NotFound();
-
-            string hash = _encryptorHelper.EncryptorPassword(password,
-                Convert.FromBase64String(searchUser.PasswordSalt!));
-
-            if (hash != searchUser.PasswordHash) return Forbid();
+            if (_validationService.IsValidUserPassword(in searchUser, password) is false) 
+                return Forbid();
 
             //Generate tokens
             Claim[] claimsAccessToken = await GetClaimsForAccessToken(searchUser);
@@ -68,7 +68,7 @@ namespace CaseApplication.Api.Controllers
                 new Claim(ClaimTypes.NameIdentifier, searchUser.Id.ToString())
             };
 
-            TokenModel tokenModel = CreateTokenPair(claimsAccessToken, claimsRefreshToken);
+            TokenModel tokenModel = _jwtHelper.GenerateTokenPair(claimsAccessToken, claimsRefreshToken);
 
             //Search refresh token by ip
             UserToken? userTokenByIp = await _userTokensRepository.GetByIp(searchUser.Id, ip);
@@ -91,6 +91,7 @@ namespace CaseApplication.Api.Controllers
                 userTokenByIp.RefreshToken = tokenModel.RefreshToken;
                 userTokenByIp.RefreshTokenExpiryTime = tokenModel.ExpiresRefreshIn;
                 userTokenByIp.RefreshTokenCreationTime = DateTime.UtcNow;
+
                 await _userTokensRepository.Update(userTokenByIp);
             }
 
@@ -103,6 +104,7 @@ namespace CaseApplication.Api.Controllers
         [HttpPost("signup/{password}")]
         public async Task<IActionResult> SignUp(User user, string password)
         {
+            //Find user
             User? userExists = await _userRepository.GetByParameters(user);
 
             if (userExists is not null) return Conflict("User already exists!");
@@ -148,7 +150,7 @@ namespace CaseApplication.Api.Controllers
 
             _ = Guid.TryParse(getUserId, out Guid userId);
 
-            //Check exists ip
+            //Search refresh token by ip
             UserToken? userToken = await _userTokensRepository.GetByIp(userId, ip);
 
             if(userToken == null)
@@ -170,7 +172,7 @@ namespace CaseApplication.Api.Controllers
             Claim[] claimsAccess = await GetClaimsForAccessToken(user);
             Claim[] claimsRefresh = principal.Claims.ToArray();
 
-            TokenModel tokenModel = CreateTokenPair(claimsAccess, claimsRefresh);
+            TokenModel tokenModel = _jwtHelper.GenerateTokenPair(claimsAccess, claimsRefresh);
 
             //Update Token
             userToken.RefreshToken = tokenModel.RefreshToken;
@@ -189,14 +191,8 @@ namespace CaseApplication.Api.Controllers
             User? user = await _userRepository.Get(userId);
 
             if (user == null) return NotFound();
-
-            byte[] secretBytes = Encoding.UTF8.GetBytes(user.PasswordHash!);
-
-            ClaimsPrincipal? principal = _jwtHelper
-                .GetClaimsToken(token, secretBytes, "HS512");
-
-            if (principal is null)
-                return BadRequest("Invalid OneTime token");
+            if (_validationService.IsValidEmailToken(token, user.PasswordHash!) is false)
+                return Forbid("Invalid email token");
 
             UserAdditionalInfo? userInfo = await _userAdditionalInfoRepository.GetByUserId(userId);
 
@@ -217,7 +213,7 @@ namespace CaseApplication.Api.Controllers
         }
 
         [Authorize]
-        [HttpPost("logout/{refreshToken}")]
+        [HttpDelete("{refreshToken}")]
         public async Task<IActionResult> Logout(string refreshToken)
         {
             UserToken? userToken = await _userTokensRepository.GetByToken(UserId, refreshToken);
@@ -230,7 +226,7 @@ namespace CaseApplication.Api.Controllers
         }
 
         [Authorize]
-        [HttpPost("logoutall/{refreshToken}")]
+        [HttpDelete("all/{refreshToken}")]
         public async Task<IActionResult> LogoutAll(string refreshToken)
         {
             UserToken? userToken = await _userTokensRepository.GetByToken(UserId, refreshToken);
@@ -245,7 +241,8 @@ namespace CaseApplication.Api.Controllers
         private async Task<Claim[]> GetClaimsForAccessToken(User user)
         {
             //Find future data for claims
-            UserAdditionalInfo? userAdditionalInfo = await _userAdditionalInfoRepository.GetByUserId(user.Id);
+            UserAdditionalInfo? userAdditionalInfo = await _userAdditionalInfoRepository
+                .GetByUserId(user.Id);
 
             Guid roleId = userAdditionalInfo!.UserRoleId;
             string roleName = (await _userRoleRepository.Get(roleId))!.RoleName!;
@@ -256,26 +253,6 @@ namespace CaseApplication.Api.Controllers
                 new Claim(ClaimTypes.Name, user.UserLogin!),
                 new Claim(ClaimTypes.Email, user.UserEmail!)
             };
-        }
-
-        private TokenModel CreateTokenPair(Claim[] claimsAccess, Claim[] claimsRefresh)
-        {
-            TimeSpan expirationRefresh = TimeSpan.FromDays(
-                double.Parse(_configuration["JWT:RefreshTokenValidityInDays"]!));
-            TimeSpan expirationAccess = TimeSpan.FromMinutes(
-                double.Parse(_configuration["JWT:TokenValidityInMinutes"]!));
-
-            JwtSecurityToken accessToken = _jwtHelper
-                .CreateResuableToken(claimsAccess, expirationAccess);
-            JwtSecurityToken refreshToken = _jwtHelper
-                .CreateResuableToken(claimsRefresh, expirationRefresh);
-
-            return new TokenModel { 
-                AccessToken = new JwtSecurityTokenHandler().WriteToken(accessToken),
-                RefreshToken = new JwtSecurityTokenHandler().WriteToken(refreshToken),
-                ExpiresAccessIn = accessToken.ValidTo,
-                ExpiresRefreshIn = refreshToken.ValidTo,
-        };
         }
     }
 }

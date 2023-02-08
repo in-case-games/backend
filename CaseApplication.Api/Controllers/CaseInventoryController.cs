@@ -34,7 +34,7 @@ namespace CaseApplication.Api.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("{caseId}&{itemId}")]
+        [HttpGet("ids/{caseId}&{itemId}")]
         public async Task<IActionResult> GetByIds(Guid caseId, Guid itemId)
         {
             CaseInventory? caseInventory = await _caseInventoryRepository.GetById(caseId, itemId);
@@ -48,7 +48,7 @@ namespace CaseApplication.Api.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("{caseId}")]
+        [HttpGet("all/{caseId}")]
         public async Task<IActionResult> GetAll(Guid caseId)
         {
             return Ok(await _caseInventoryRepository.GetAll(caseId));

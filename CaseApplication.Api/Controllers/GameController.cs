@@ -62,7 +62,7 @@ namespace CaseApplication.Api.Controllers
             //Calling random
             GameItem winGameItem = await RandomizeByConstraints(caseId, gameCase.GameCaseBalance);
 
-            //Update User and Case Balance
+            //Update Balance Case
             decimal expensesCase = winGameItem.GameItemCost + (gameCase.GameCaseCost 
                 * gameCase.RevenuePrecentage);
             gameCase = await UpdateCaseBalance(gameCase, -expensesCase);

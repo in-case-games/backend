@@ -30,7 +30,7 @@ namespace CaseApplication.IntegrationTests.Api
         }
         private async Task DeleteOneTimeAccounts(string ipAdmin)
         {
-            await _authHelper.DeleteUserByAdmin($"ULURNIST{ipAdmin}Admin");
+            await _authHelper.DeleteUserByAdmin($"ULURNIST{ipAdmin}Admin", AdminToken.AccessToken!);
         }
         private async Task<UserRestriction> CreateUserRestriction()
         {

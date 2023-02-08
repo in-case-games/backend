@@ -34,7 +34,7 @@ namespace CaseApplication.Api.Controllers
         }
 
         [Authorize]
-        [HttpGet("{userId}")]
+        [HttpGet("all/{userId}")]
         public async Task<IActionResult> GetUsedPromocodes(Guid userId)
         {
             return Ok(await _promocodeUserByUserRepository.GetAll(userId));

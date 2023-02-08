@@ -39,8 +39,8 @@ namespace CaseApplication.IntegrationTests.Api
 
         private async Task DeleteOneTimeAccounts(string ipUser, string ipAdmin)
         {
-            await _authHelper.DeleteUserByAdmin($"ULPTST{ipUser}User");
-            await _authHelper.DeleteUserByAdmin($"ULPTST{ipAdmin}Admin");
+            await _authHelper.DeleteUserByAdmin($"ULPTST{ipUser}User", UserTokens.AccessToken!);
+            await _authHelper.DeleteUserByAdmin($"ULPTST{ipAdmin}Admin", AdminTokens.AccessToken!);
         }
 
         [Fact]

@@ -35,8 +35,8 @@ namespace CaseApplication.IntegrationTests.Api
 
         private async Task DeleteOneTimeAccounts(string ipUser, string ipAdmin)
         {
-            await _authHelper.DeleteUserByAdmin($"ULPST{ipUser}User");
-            await _authHelper.DeleteUserByAdmin($"ULPST{ipAdmin}Admin");
+            await _authHelper.DeleteUserByAdmin($"ULPST{ipUser}User", UserTokens.AccessToken!);
+            await _authHelper.DeleteUserByAdmin($"ULPST{ipAdmin}Admin", AdminTokens.AccessToken!);
         }
 
         public PromocodeApiTest(WebApplicationFactory<Program> applicationFactory) 
