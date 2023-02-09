@@ -81,13 +81,9 @@ namespace CaseApplication.Api.Controllers
                 return Unauthorized("Check email");
             }
 
-            //Generate tokens TODO Cut in method
             TokenModel tokenModel = _jwtHelper.GenerateTokenPair(in searchUser);
 
-            userTokenByIp.RefreshToken = tokenModel.RefreshToken;
-            userTokenByIp.RefreshTokenExpiryTime = tokenModel.ExpiresRefreshIn;
-            userTokenByIp.RefreshTokenCreationTime = DateTime.UtcNow;
-            
+            MapUserTokenForUpdate(ref userTokenByIp, tokenModel);
             await _userTokensRepository.Update(userTokenByIp);
 
             await _emailHelper.SendNotifyToEmail(
@@ -180,13 +176,9 @@ namespace CaseApplication.Api.Controllers
                 return Forbid("Invalid refresh token");
             }
 
-            //Generation Token
             TokenModel tokenModel = _jwtHelper.GenerateTokenPair(in user);
 
-            userToken.RefreshToken = tokenModel.RefreshToken;
-            userToken.RefreshTokenExpiryTime = tokenModel.ExpiresRefreshIn;
-            userToken.RefreshTokenCreationTime = DateTime.UtcNow;
-
+            MapUserTokenForUpdate(ref userToken, tokenModel);
             await _userTokensRepository.Update(userToken);
 
             return Ok(tokenModel);
@@ -269,5 +261,11 @@ namespace CaseApplication.Api.Controllers
             return NoContent();
         }
 
+        private void MapUserTokenForUpdate(ref UserToken userToken, TokenModel tokenModel)
+        {
+            userToken.RefreshToken = tokenModel.RefreshToken;
+            userToken.RefreshTokenExpiryTime = tokenModel.ExpiresRefreshIn;
+            userToken.RefreshTokenCreationTime = DateTime.UtcNow;
+        }
     }
 }
