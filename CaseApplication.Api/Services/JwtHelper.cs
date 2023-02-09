@@ -47,8 +47,13 @@ namespace CaseApplication.Api.Services
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        public TokenModel GenerateTokenPair(Claim[] claimsAccess, Claim[] claimsRefresh)
+        public TokenModel GenerateTokenPair(in User user)
         {
+            Claim[] claimsAccess = GenerateClaimsForAccessToken(user);
+            Claim[] claimsRefresh = {
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
+            };
+
             TimeSpan expirationRefresh = TimeSpan.FromDays(
                 double.Parse(_configuration["JWT:RefreshTokenValidityInDays"]!));
             TimeSpan expirationAccess = TimeSpan.FromMinutes(
@@ -105,6 +110,20 @@ namespace CaseApplication.Api.Services
                 claims,
                 expires: DateTime.UtcNow.Add(expiration),
                 signingCredentials: credentials);
+        }
+        private Claim[] GenerateClaimsForAccessToken(User user)
+        {
+            //Find future data for claims
+            Guid roleId = user.UserAdditionalInfo!.UserRoleId;
+
+            string roleName = user.UserAdditionalInfo.UserRole!.RoleName!;
+
+            return new Claim[] {
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.Role, roleName),
+                new Claim(ClaimTypes.Name, user.UserLogin!),
+                new Claim(ClaimTypes.Email, user.UserEmail!)
+            };
         }
     }
 }

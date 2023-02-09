@@ -82,12 +82,7 @@ namespace CaseApplication.Api.Controllers
             }
 
             //Generate tokens TODO Cut in method
-            Claim[] claimsAccessToken = await GetClaimsForAccessToken(searchUser);
-            Claim[] claimsRefreshToken = {
-                new Claim(ClaimTypes.NameIdentifier, searchUser.Id.ToString())
-            };
-
-            TokenModel tokenModel = _jwtHelper.GenerateTokenPair(claimsAccessToken, claimsRefreshToken);
+            TokenModel tokenModel = _jwtHelper.GenerateTokenPair(in searchUser);
 
             userTokenByIp.RefreshToken = tokenModel.RefreshToken;
             userTokenByIp.RefreshTokenExpiryTime = tokenModel.ExpiresRefreshIn;
@@ -185,11 +180,8 @@ namespace CaseApplication.Api.Controllers
                 return Forbid("Invalid refresh token");
             }
 
-            //Generation Token TODO Cut in method
-            Claim[] claimsAccess = await GetClaimsForAccessToken(user);
-            Claim[] claimsRefresh = principal.Claims.ToArray();
-
-            TokenModel tokenModel = _jwtHelper.GenerateTokenPair(claimsAccess, claimsRefresh);
+            //Generation Token
+            TokenModel tokenModel = _jwtHelper.GenerateTokenPair(in user);
 
             userToken.RefreshToken = tokenModel.RefreshToken;
             userToken.RefreshTokenExpiryTime = tokenModel.ExpiresRefreshIn;
@@ -229,12 +221,7 @@ namespace CaseApplication.Api.Controllers
             }
 
             //Generate tokens TODO Cut in method
-            Claim[] claimsAccessToken = await GetClaimsForAccessToken(user);
-            Claim[] claimsRefreshToken = {
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
-            };
-
-            TokenModel tokenModel = _jwtHelper.GenerateTokenPair(claimsAccessToken, claimsRefreshToken);
+            TokenModel tokenModel = _jwtHelper.GenerateTokenPair(in user);
 
             await _userTokensRepository.Create(new UserToken()
             {
@@ -282,21 +269,5 @@ namespace CaseApplication.Api.Controllers
             return NoContent();
         }
 
-        private async Task<Claim[]> GetClaimsForAccessToken(User user)
-        {
-            //Find future data for claims
-            UserAdditionalInfo? userAdditionalInfo = await _userAdditionalInfoRepository
-                .GetByUserId(user.Id);
-
-            Guid roleId = userAdditionalInfo!.UserRoleId;
-            string roleName = (await _userRoleRepository.Get(roleId))!.RoleName!;
-
-            return new Claim[] {
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Role, roleName),
-                new Claim(ClaimTypes.Name, user.UserLogin!),
-                new Claim(ClaimTypes.Email, user.UserEmail!)
-            };
-        }
     }
 }
