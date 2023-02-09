@@ -1,4 +1,6 @@
-﻿using CaseApplication.DomainLayer.Entities;
+﻿using CaseApplication.Api.Models;
+using CaseApplication.DomainLayer.Entities;
+using Microsoft.AspNetCore.Authentication;
 using System.Security.Claims;
 using System.Text;
 
@@ -28,14 +30,20 @@ namespace CaseApplication.Api.Services
             return hash == user.PasswordHash;
         }
 
-        public bool IsValidEmailToken(string token, string hash)
+        public bool IsValidEmailToken(EmailModel emailModel, string hash)
         {
             byte[] secretBytes = Encoding.UTF8.GetBytes(hash + _configuration["JWT:Secret"]!);
 
             ClaimsPrincipal? principal = _jwtHelper
-                .GetClaimsToken(token, secretBytes, "HS512");
+                .GetClaimsToken(emailModel.UserToken, secretBytes, "HS512");
 
-            return (principal is not null);
+            if (principal is null) return false;
+            
+            string ip = principal.Claims
+                .Single(x => x.Type == "UserIp")
+                .Value;
+
+            return (emailModel.UserIp == ip);
         }
     }
 }

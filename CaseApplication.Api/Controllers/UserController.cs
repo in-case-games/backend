@@ -132,17 +132,17 @@ namespace CaseApplication.Api.Controllers
         }
 
         [AllowAnonymous]
-        [HttpPut("email/{userId}&{email}&{token}")]
-        public async Task<IActionResult> UpdateEmail(Guid userId, string email, string token)
+        [HttpPut("email")]
+        public async Task<IActionResult> UpdateEmail(EmailModel emailModel)
         {
-            User? user = await _userRepository.Get(userId);
+            User? user = await _userRepository.Get(emailModel.UserId);
 
             if (user == null) return NotFound();
 
-            if (_validationService.IsValidEmailToken(token, user.PasswordHash!) is false)
+            if (_validationService.IsValidEmailToken(emailModel, user.PasswordHash!) is false)
                 return Forbid("Invalid email token");
 
-            User? searchUser = await _userRepository.GetByEmail(email);
+            User? searchUser = await _userRepository.GetByEmail(emailModel.UserEmail);
 
             if(searchUser != null) return Forbid("Email is already busy");
 
@@ -152,7 +152,7 @@ namespace CaseApplication.Api.Controllers
             UserDto newUser = new()
             {
                 Id = user.Id,
-                UserEmail = email,
+                UserEmail = emailModel.UserEmail,
                 UserImage = user.UserImage,
                 UserLogin = user.UserLogin,
                 PasswordHash = user.PasswordHash,
@@ -165,10 +165,10 @@ namespace CaseApplication.Api.Controllers
             userAdditionalInfo!.IsConfirmedAccount = false;
 
             await _userInfoRepository.Update(userAdditionalInfo);
-            await _userTokensRepository.DeleteAll(userId);
+            await _userTokensRepository.DeleteAll(user.Id);
 
             await _emailHelper.SendNotifyToEmail(
-                email,
+                emailModel.UserEmail,
                 "Администрация сайта",
                 new EmailPatternModel()
                 {
@@ -179,17 +179,14 @@ namespace CaseApplication.Api.Controllers
         }
 
         [AllowAnonymous]
-        [HttpPut("password/{userId}&{password}&{token}")]
-        public async Task<IActionResult> UpdatePasswordConfirmation(
-            Guid userId, 
-            string password, 
-            string token)
+        [HttpPut("password/{password}")]
+        public async Task<IActionResult> UpdatePasswordConfirmation(EmailModel emailModel, string password)
         {
-            User? user = await _userRepository.Get(userId);
+            User? user = await _userRepository.Get(emailModel.UserId);
 
             if (user == null) return NotFound();
 
-            if (_validationService.IsValidEmailToken(token, user.PasswordHash!) is false)
+            if (_validationService.IsValidEmailToken(emailModel, user.PasswordHash!) is false)
                 return Forbid("Invalid email token");
 
             //Gen hash and salt
@@ -210,7 +207,7 @@ namespace CaseApplication.Api.Controllers
             };
 
             await _userRepository.Update(oldUser, newUser);
-            await _userTokensRepository.DeleteAll(userId);
+            await _userTokensRepository.DeleteAll(user.Id);
 
             await _emailHelper.SendNotifyToEmail(
                 user.UserEmail!,
@@ -224,14 +221,14 @@ namespace CaseApplication.Api.Controllers
         }
 
         [AllowAnonymous]
-        [HttpDelete("{userId}&{token}")]
-        public async Task<IActionResult> DeleteConfirmation(Guid userId, string token)
+        [HttpDelete]
+        public async Task<IActionResult> DeleteConfirmation(EmailModel emailModel)
         {
-            User? user = await _userRepository.Get(userId);
+            User? user = await _userRepository.Get(emailModel.UserId);
 
             if (user == null) return NotFound();
 
-            if (_validationService.IsValidEmailToken(token, user.PasswordHash!) is false)
+            if (_validationService.IsValidEmailToken(emailModel, user.PasswordHash!) is false)
                 return Forbid("Invalid email token");
 
             await _emailHelper.SendNotifyToEmail(
@@ -243,7 +240,7 @@ namespace CaseApplication.Api.Controllers
                 });
             //TODO No delete give the user 30 days
 
-            await _userTokensRepository.DeleteAll(userId);
+            await _userTokensRepository.DeleteAll(emailModel.UserId);
 
             return Ok();
         }

@@ -36,13 +36,14 @@ namespace CaseApplication.Api.Services
             return CreateToken(claims, credentials, expiration);
         }
 
-        public string GenerateEmailToken(Guid userId, string hash)
+        public string GenerateEmailToken(User user, string ip)
         {
             Claim[] claims = {
-                new Claim("UserId", userId.ToString())
+                new Claim("UserId", user.Id.ToString()),
+                new Claim("UserIp", ip)
             };
 
-            JwtSecurityToken token = CreateEmailToken(claims, hash);
+            JwtSecurityToken token = CreateEmailToken(claims, user.PasswordHash!);
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
