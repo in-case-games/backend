@@ -16,6 +16,23 @@ namespace CaseApplication.Api.Services
             _configuration = configuration;
         }
 
+        public string? GetIdFromRefreshToken(string refreshToken)
+        {
+            //Get claims
+            byte[] secretBytes = Encoding.ASCII.GetBytes(_configuration["JWT:Secret"]!);
+            ClaimsPrincipal? principal = GetClaimsToken(refreshToken, secretBytes, "HS256");
+
+            if (principal is null)
+                return null;
+
+            //Get user id TODO Cut in method
+            string getUserId = principal.Claims
+                .Single(x => x.Type == ClaimTypes.NameIdentifier)
+                .Value;
+
+            return getUserId;
+        }
+
         public JwtSecurityToken CreateResuableToken(Claim[] claims, TimeSpan expiration)
         {
             SymmetricSecurityKey securityKey = new(Encoding.ASCII.GetBytes(_configuration["JWT:Secret"]!));

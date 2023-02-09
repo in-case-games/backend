@@ -61,18 +61,7 @@ namespace CaseApplication.Api.Services
         {
             string subject = "Подтвердите вход в аккаунт";
             string body = $"<b>" +
-                $"Link: {_requestUrl}/User/" +
-                $"{emailModel.UserId}&{emailModel.UserToken}&{emailModel.UserIp}" +
-                $"</b>";
-
-            await _emailService.SendToEmail(emailModel.UserEmail, subject, body);
-        }
-
-        public async Task SendActivateAccountToEmail(EmailModel emailModel)
-        {
-            string subject = "Подтвердите свой email аккаунт";
-            string body = $"<b>" +
-                $"Link: {_requestUrl}/User/" +
+                $"Link: {_requestUrl}/Authentication/confirm/" +
                 $"{emailModel.UserId}&{emailModel.UserToken}&{emailModel.UserIp}" +
                 $"</b>";
 

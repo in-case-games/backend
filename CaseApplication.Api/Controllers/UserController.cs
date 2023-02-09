@@ -56,8 +56,8 @@ namespace CaseApplication.Api.Controllers
 
             if(user != null)
             {
-                user.PasswordHash = "";
-                user.PasswordSalt = "";
+                user.PasswordHash = "access denied";
+                user.PasswordSalt = "access denied";
 
                 return Ok(user);
             }
@@ -73,8 +73,8 @@ namespace CaseApplication.Api.Controllers
 
             if (user != null)
             {
-                user.PasswordHash = "";
-                user.PasswordSalt = "";
+                user.PasswordHash = "access denied";
+                user.PasswordSalt = "access denied";
 
                 return Ok(user);
             }
@@ -89,8 +89,9 @@ namespace CaseApplication.Api.Controllers
 
             foreach(User user in users)
             {
-                user.PasswordHash = "";
-                user.PasswordSalt = "";
+                user.UserEmail = "access denied";
+                user.PasswordHash = "access denied";
+                user.PasswordSalt = "access denied";
             }
 
             return Ok(users);
@@ -238,6 +239,7 @@ namespace CaseApplication.Api.Controllers
                 {
                     Body = $"Ваш аккаунт будет удален через 30 дней"
                 });
+
             //TODO No delete give the user 30 days
 
             await _userTokensRepository.DeleteAll(emailModel.UserId);

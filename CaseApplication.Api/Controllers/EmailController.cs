@@ -54,22 +54,6 @@ namespace CaseApplication.Api.Controllers
             return Accepted();
         }
 
-        [AllowAnonymous]
-        [HttpPost("user/activate")]
-        public async Task<IActionResult> SendActivateEmail(EmailModel emailModel)
-        {
-            User? user = await _userRepository.Get(emailModel.UserId);
-
-            if (user == null) return NotFound();
-            if (user.UserEmail != emailModel.UserEmail) return Forbid("Incorrect email");
-
-            emailModel.UserToken = _jwtHelper.GenerateEmailToken(user, emailModel.UserIp);
-
-            await _emailHelper.SendActivateAccountToEmail(emailModel);
-
-            return Accepted();
-        }
-
         [Authorize]
         [HttpPut("user/email/{password}")]
         public async Task<IActionResult> SendUpdateEmail(EmailModel emailModel, string password)
@@ -77,7 +61,8 @@ namespace CaseApplication.Api.Controllers
             User? user = await _userRepository.Get(UserId);
             UserToken? userToken = await _userTokensRepository.GetByIp(UserId, emailModel.UserIp);
 
-            //TODO LogoutAll
+            //TODO Give temp password
+
             if (user == null) return NotFound();
             if (userToken == null) return Forbid("Invalid ip");
 
@@ -99,7 +84,8 @@ namespace CaseApplication.Api.Controllers
             User? user = await _userRepository.Get(UserId);
             UserToken? userToken = await _userTokensRepository.GetByIp(UserId, emailModel.UserIp);
 
-            //TODO LogoutAll
+            //TODO Give temp password
+
             if (user == null) return NotFound();
             if (userToken == null) return Forbid("Invalid ip");
 
@@ -121,7 +107,8 @@ namespace CaseApplication.Api.Controllers
             User? user = await _userRepository.Get(UserId);
             UserToken? userToken = await _userTokensRepository.GetByIp(UserId, emailModel.UserIp);
 
-            //TODO LogoutAll
+            //TODO Give temp password
+
             if (user == null) return NotFound();
             if (userToken == null) return Forbid("Invalid ip");
 

@@ -72,7 +72,8 @@ namespace CaseApplication.Api.Controllers
                 {
                     UserEmail = searchUser.UserEmail!,
                     UserId = searchUser.Id,
-                    UserToken = _jwtHelper.GenerateEmailToken(searchUser, ip)
+                    UserToken = _jwtHelper.GenerateEmailToken(searchUser, ip),
+                    UserIp = ip
                 });
 
                 return Unauthorized("Check email");
@@ -135,18 +136,10 @@ namespace CaseApplication.Api.Controllers
         [HttpGet("refresh/{refreshToken}&{ip}")]
         public async Task<IActionResult> RefreshTokens(string refreshToken, string ip)
         {
-            //Get claims by refresh token TODO Cut in method
-            byte[] secretBytes = Encoding.ASCII.GetBytes(_configuration["JWT:Secret"]!);
-            ClaimsPrincipal? principal = _jwtHelper
-                .GetClaimsToken(refreshToken, secretBytes, "HS256");
+            //Get User id
+            string? getUserId = _jwtHelper.GetIdFromRefreshToken(refreshToken);
 
-            if (principal is null)
-                return Forbid("Invalid refresh token");
-
-            //Get user id TODO Cut in method
-            string getUserId = principal.Claims
-                .Single(x => x.Type == ClaimTypes.NameIdentifier)
-                .Value;
+            if(getUserId == null) return Forbid("Invalid refresh token");
 
             _ = Guid.TryParse(getUserId, out Guid userId);
 
@@ -183,9 +176,16 @@ namespace CaseApplication.Api.Controllers
         }
 
         [AllowAnonymous]
-        [HttpPost("confirm")]
-        public async Task<IActionResult> ConfirmAccount(EmailModel emailModel)
+        [HttpGet("confirm/{userId}&{token}&{ip}")]
+        public async Task<IActionResult> ConfirmAccount(Guid userId, string token, string ip)
         {
+            //TODO OneTimeToken
+            EmailModel emailModel = new()
+            {
+                UserId = userId,
+                UserToken = token,
+                UserIp = ip
+            };
             User? user = await _userRepository.Get(emailModel.UserId);
 
             if (user == null) return NotFound();
@@ -227,6 +227,8 @@ namespace CaseApplication.Api.Controllers
                 {
                     Body = $"Вход в аккаунт"
                 });
+
+            await _userTokensRepository.Create(newUserToken);
 
             return Ok(tokenModel);
         }
