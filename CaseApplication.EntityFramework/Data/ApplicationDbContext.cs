@@ -22,7 +22,10 @@ namespace CaseApplication.EntityFramework.Data
         internal DbSet<News> News => Set<News>();
         internal DbSet<UserToken> UserToken => Set<UserToken>();
 
-        public ApplicationDbContext(DbContextOptions options) : base(options) {}
+        public ApplicationDbContext(DbContextOptions options) : base(options)
+        {
+            Database.EnsureCreated();
+        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -40,6 +43,45 @@ namespace CaseApplication.EntityFramework.Data
             modelBuilder.ApplyConfiguration(new PromocodeConfiguration());
             modelBuilder.ApplyConfiguration(new PromocodeTypeConfiguration());
             modelBuilder.ApplyConfiguration(new PromocodesUsedByUserConfiguration());
+
+            #region Модели, создаваемые при разработке
+            UserRole userRole = new UserRole
+            {
+                Id = Guid.NewGuid(),
+                RoleName = "user"
+            };
+            UserRole adminRole = new UserRole
+            {
+                Id = Guid.NewGuid(),
+                RoleName = "admin"
+            };
+
+            modelBuilder.Entity<UserRole>().HasData(
+                new UserRole[]
+                {
+                    userRole,
+                    adminRole
+                });
+
+            PromocodeType promocodeBalance = new PromocodeType
+            {
+                Id = Guid.NewGuid(),
+                PromocodeTypeName = "balance"
+            };
+
+            PromocodeType promocodeCase = new PromocodeType
+            {
+                Id = Guid.NewGuid(),
+                PromocodeTypeName = "case"
+            };
+
+            modelBuilder.Entity<PromocodeType>().HasData(
+               new PromocodeType[]
+               {
+                    promocodeBalance,
+                    promocodeCase
+               });
+            #endregion
         }
     }
 }
