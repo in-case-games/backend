@@ -95,7 +95,13 @@ namespace CaseApplication.Api.Controllers
             
             await _userTokensRepository.Update(userTokenByIp);
 
-            await _emailHelper.SendNotifyAccountSignIn(user.UserEmail!);
+            await _emailHelper.SendNotifyToEmail(
+                searchUser.UserEmail!,
+                "Администрация сайта",
+                new EmailPatternModel()
+                {
+                    Body = $"Вход в аккаунт"
+                });
 
             return Ok(tokenModel);
         }
@@ -126,7 +132,13 @@ namespace CaseApplication.Api.Controllers
                 UserId = createdUser.Id,
             });
 
-            await _emailHelper.SendNotifyAccountSignUp(user.UserEmail!);
+            await _emailHelper.SendNotifyToEmail(
+                user.UserEmail!,
+                "Администрация сайта",
+                new EmailPatternModel()
+                {
+                    Body = $"Поздравляем о регистрации"
+                });
 
             return Ok();
         }
@@ -156,7 +168,13 @@ namespace CaseApplication.Api.Controllers
 
             if(userToken == null)
             {
-                await _emailHelper.SendNotifyAttemptSingIn(user.UserEmail!);
+                await _emailHelper.SendNotifyToEmail(
+                    user.UserEmail!,
+                    "Администрация сайта",
+                    new EmailPatternModel()
+                    {
+                        Body = $"Попытка входа в аккаунт"
+                    });
             }
 
             if (userToken == null ||
@@ -201,7 +219,13 @@ namespace CaseApplication.Api.Controllers
                 userInfo!.IsConfirmedAccount = true;
 
                 await _userAdditionalInfoRepository.Update(userInfo);
-                await _emailHelper.SendNotifyActivateEmail(user.UserEmail!);
+                await _emailHelper.SendNotifyToEmail(
+                    user.UserEmail!,
+                    "Администрация сайта",
+                    new EmailPatternModel()
+                    {
+                        Body = $"Спасибо что подтвердили аккаунт"
+                    });
             }
 
             //Generate tokens TODO Cut in method
@@ -221,7 +245,13 @@ namespace CaseApplication.Api.Controllers
                 UserIpAddress = emailModel.UserIp,
             });
 
-            await _emailHelper.SendNotifyAccountSignIn(user.UserEmail!);
+            await _emailHelper.SendNotifyToEmail(
+                user.UserEmail!,
+                "Администрация сайта",
+                new EmailPatternModel()
+                {
+                    Body = $"Вход в аккаунт"
+                });
 
             return Ok(tokenModel);
         }

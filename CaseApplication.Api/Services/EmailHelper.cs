@@ -8,55 +8,20 @@ namespace CaseApplication.Api.Services
     {
         private readonly EmailService _emailService;
         private readonly string _requestUrl = "https://localhost:7053";
-
         public EmailHelper(EmailService emailService)
         {
 
             _emailService = emailService;
         }
-        public async Task SendNotifyToEmail(string email, string subject, string body)
+        private string CreatePatternBody(EmailPatternModel emailPattern)
         {
+            string patternBody = $"<center class='letter-wrapper' style='width: 100%; table-layout: fixed; text-align: center; -webkit-text-size-adjust: 100%; text-align: center;'><div class='webkit' style='margin: 0 auto; width: 100%; max-width: 600px; -webkit-text-size-adjust: 100%; display: block;'><table class='presentation' cellspacing='0' cellpadding='0' border='0' align='center' style='background-color: #1A1A1D; max-width: 600px; width: 100%; margin: 0 auto; -ms-text-size-adjust: 100%; border-spacing: 0; font-family: Arial, sans-serif; font-style: normal; font-weight: 400; color: #5a5a5a; '><tbody><tr style='text-align: center; padding: 30px 30px;'><td>{emailPattern.Header}</td></tr><tr style='text-align: center; padding: 0px 30px;'><td>{emailPattern.Body}</td></tr><tr style='text-align: center; padding: 30px 30px;'><td>{emailPattern.Footer}</td></tr></tbody></table></div></center>";
+            return patternBody;
+        }
+        public async Task SendNotifyToEmail(string email, string subject, EmailPatternModel emailPattern)
+        {
+            string body = CreatePatternBody(emailPattern);
             await _emailService.SendToEmail(email, subject, body);
-        }
-        public async Task SendNotifyChangeLogin(string email, string login)
-        {
-            await SendNotifyToEmail(
-                email, 
-                "Администрация сайта", 
-                $"<b>Имя вашего акканута измененно на: {login}</b>");
-        }
-
-        public async Task SendNotifyDeleteAccount(string email)
-        {
-            await SendNotifyToEmail(email, "Администрация сайта", "<b>Ваш аккаунт будет удален через 30 дней</b>");
-        }
-
-        public async Task SendNotifyChangeEmail(string email)
-        {
-            await SendNotifyToEmail(email, "Администрация сайта", "<b>Вы изменили email аккаунта</b>");
-        }
-        public async Task SendNotifyActivateEmail(string email)
-        {
-            await SendNotifyToEmail(email, "Администрация сайта", "<b>Спасибо что подтвердили аккаунт</b>");
-        }
-        public async Task SendNotifyAttemptSingIn(string email)
-        {
-            await SendNotifyToEmail(email, "Администрация сайта", "<b>Попытка входа в аккаунт</b>");
-        }
-
-        public async Task SendNotifyChangePassword(string email)
-        {
-            await SendNotifyToEmail(email, "Администрация сайта", "<b>Вы сменили пароль</b>");
-        }
-
-        public async Task SendNotifyAccountSignIn(string email)
-        {
-            await SendNotifyToEmail(email, "Администрация сайта", "<b>Вход в аккаунт</b>");
-        }
-
-        public async Task SendNotifyAccountSignUp(string email)
-        {
-            await SendNotifyToEmail(email, "Администрация сайта", "<b>Поздравляем о регистрации</b>");
         }
 
         public async Task SendDeleteAccountToEmail(EmailModel emailModel)

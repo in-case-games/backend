@@ -40,6 +40,9 @@ namespace CaseApplication.EntityFramework.Repositories
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
+            userRestriction.Id = new Guid();
+            userRestriction.CreatedDate = DateTime.UtcNow;
+
             await context.UserRestriction.AddAsync(userRestriction);
             await context.SaveChangesAsync();
 

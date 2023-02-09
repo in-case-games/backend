@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using CaseApplication.Api.Models;
 using CaseApplication.Api.Services;
 using CaseApplication.DomainLayer.Dtos;
 using CaseApplication.DomainLayer.Entities;
@@ -119,7 +120,13 @@ namespace CaseApplication.Api.Controllers
 
             await _userRepository.Update(user, newUser);
 
-            await _emailHelper.SendNotifyChangeLogin(searchUserById.UserEmail!, login);
+            await _emailHelper.SendNotifyToEmail(
+                searchUserById.UserEmail!, 
+                "Администрация сайта" , 
+                new EmailPatternModel()
+                {
+                    Body = $"Имя вашего акканута измененно на: {login}"
+                });
 
             return Ok();
         }
@@ -160,7 +167,13 @@ namespace CaseApplication.Api.Controllers
             await _userInfoRepository.Update(userAdditionalInfo);
             await _userTokensRepository.DeleteAll(userId);
 
-            await _emailHelper.SendNotifyChangeEmail(email);
+            await _emailHelper.SendNotifyToEmail(
+                email,
+                "Администрация сайта",
+                new EmailPatternModel()
+                {
+                    Body = $"Вы изменили email аккаунта"
+                });
 
             return Ok();
         }
@@ -199,7 +212,13 @@ namespace CaseApplication.Api.Controllers
             await _userRepository.Update(oldUser, newUser);
             await _userTokensRepository.DeleteAll(userId);
 
-            await _emailHelper.SendNotifyChangePassword(user.UserEmail!);
+            await _emailHelper.SendNotifyToEmail(
+                user.UserEmail!,
+                "Администрация сайта",
+                new EmailPatternModel()
+                {
+                    Body = $"Вы сменили пароль"
+                });
 
             return Ok();
         }
@@ -215,7 +234,13 @@ namespace CaseApplication.Api.Controllers
             if (_validationService.IsValidEmailToken(token, user.PasswordHash!) is false)
                 return Forbid("Invalid email token");
 
-            await _emailHelper.SendNotifyDeleteAccount(user.UserEmail!);
+            await _emailHelper.SendNotifyToEmail(
+                user.UserEmail!,
+                "Администрация сайта",
+                new EmailPatternModel()
+                {
+                    Body = $"Ваш аккаунт будет удален через 30 дней"
+                });
             //TODO No delete give the user 30 days
 
             await _userTokensRepository.DeleteAll(userId);

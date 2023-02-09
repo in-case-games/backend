@@ -11,5 +11,6 @@ namespace CaseApplication.DomainLayer.Entities
 
         public string? RestrictionName { get; set; }
         public DateTime? CreatedDate { get; set; }
+        public DateTime? ExpiryDate { get; set; }
     }
 }
