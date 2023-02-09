@@ -39,69 +39,52 @@ namespace CaseApplication.Api.Controllers
         }
 
         [AllowAnonymous]
-        [HttpPost("user/confirm/{userId}&{email}&{ip}")]
-        public async Task<IActionResult> SendConfirmEmail(Guid userId, string email, string ip)
+        [HttpPost("user/confirm")]
+        public async Task<IActionResult> SendConfirmEmail(EmailModel emailModel)
         {
-            User? user = await _userRepository.Get(userId);
+            User? user = await _userRepository.Get(emailModel.UserId);
 
             if (user == null) return NotFound();
-            if (user.UserEmail != email) return Forbid("Incorrect email");
+            if (user.UserEmail != emailModel.UserEmail) return Forbid("Incorrect email");
 
-            string emailToken = _jwtHelper.GenerateEmailToken(user, ip);
+            emailModel.UserToken = _jwtHelper.GenerateEmailToken(user, emailModel.UserIp);
 
-            await _emailHelper.SendConfirmAccountToEmail(new EmailModel()
-            {
-                UserEmail = user.UserEmail!,
-                UserId = user.Id,
-                UserToken = emailToken,
-                UserIp = ip
-            });
+            await _emailHelper.SendConfirmAccountToEmail(emailModel);
 
             return Accepted();
         }
 
         [AllowAnonymous]
-        [HttpPost("user/activate/{userId}&{email}&{ip}")]
-        public async Task<IActionResult> SendActivateEmail(Guid userId, string email, string ip)
+        [HttpPost("user/activate")]
+        public async Task<IActionResult> SendActivateEmail(EmailModel emailModel)
         {
-            User? user = await _userRepository.Get(userId);
+            User? user = await _userRepository.Get(emailModel.UserId);
 
             if (user == null) return NotFound();
-            if (user.UserEmail != email) return Forbid("Incorrect email");
+            if (user.UserEmail != emailModel.UserEmail) return Forbid("Incorrect email");
 
-            string emailToken = _jwtHelper.GenerateEmailToken(user, ip);
+            emailModel.UserToken = _jwtHelper.GenerateEmailToken(user, emailModel.UserIp);
 
-            await _emailHelper.SendActivateAccountToEmail(new EmailModel()
-            {
-                UserEmail = user.UserEmail!,
-                UserId = user.Id,
-                UserToken = emailToken,
-                UserIp = ip
-            });
+            await _emailHelper.SendActivateAccountToEmail(emailModel);
 
             return Accepted();
         }
 
         [Authorize]
-        [HttpPut("user/email/{password}&{ip}")]
-        public async Task<IActionResult> SendUpdateEmail(string password, string ip)
+        [HttpPut("user/email/{password}")]
+        public async Task<IActionResult> SendUpdateEmail(EmailModel emailModel, string password)
         {
             User? user = await _userRepository.Get(UserId);
-            UserToken? userToken = await _userTokensRepository.GetByIp(UserId, ip);
+            UserToken? userToken = await _userTokensRepository.GetByIp(UserId, emailModel.UserIp);
 
             //TODO LogoutAll
             if (user == null) return NotFound();
             if (userToken == null) return Forbid("Invalid ip");
 
             if (_validationService.IsValidUserPassword(in user, password)) {
-                string emailToken = _jwtHelper.GenerateEmailToken(user, ip);
+                MapEmailModelForSend(ref emailModel, user);
 
-                await _emailHelper.SendChangeEmailToEmail(new EmailModel()
-                {
-                    UserEmail = user.UserEmail!,
-                    UserId = user.Id,
-                    UserToken = emailToken,
-                });
+                await _emailHelper.SendChangeEmailToEmail(emailModel);
 
                 return Accepted();
             }
@@ -110,11 +93,11 @@ namespace CaseApplication.Api.Controllers
         }
         
         [Authorize]
-        [HttpPut("user/password/{password}&{ip}")]
-        public async Task<IActionResult> SendUpdatePassword(string password, string ip)
+        [HttpPut("user/password/{password}")]
+        public async Task<IActionResult> SendUpdatePassword(EmailModel emailModel, string password)
         {
             User? user = await _userRepository.Get(UserId);
-            UserToken? userToken = await _userTokensRepository.GetByIp(UserId, ip);
+            UserToken? userToken = await _userTokensRepository.GetByIp(UserId, emailModel.UserIp);
 
             //TODO LogoutAll
             if (user == null) return NotFound();
@@ -122,14 +105,8 @@ namespace CaseApplication.Api.Controllers
 
             if (_validationService.IsValidUserPassword(in user, password))
             {
-                string emailToken = _jwtHelper.GenerateEmailToken(user, ip);
-
-                await _emailHelper.SendChangePasswordToEmail(new EmailModel()
-                {
-                    UserEmail = user.UserEmail!,
-                    UserId = user.Id,
-                    UserToken = emailToken,
-                });
+                MapEmailModelForSend(ref emailModel, user);
+                await _emailHelper.SendChangePasswordToEmail(emailModel);
 
                 return Accepted();
             }
@@ -138,11 +115,11 @@ namespace CaseApplication.Api.Controllers
         }
 
         [Authorize]
-        [HttpDelete("user/{password}&{ip}")]
-        public async Task<IActionResult> SendDeleteAccount(string password, string ip)
+        [HttpDelete("user/{password}")]
+        public async Task<IActionResult> SendDeleteAccount(EmailModel emailModel, string password)
         {
             User? user = await _userRepository.Get(UserId);
-            UserToken? userToken = await _userTokensRepository.GetByIp(UserId, ip);
+            UserToken? userToken = await _userTokensRepository.GetByIp(UserId, emailModel.UserIp);
 
             //TODO LogoutAll
             if (user == null) return NotFound();
@@ -150,19 +127,20 @@ namespace CaseApplication.Api.Controllers
 
             if (_validationService.IsValidUserPassword(in user, password))
             {
-                string emailToken = _jwtHelper.GenerateEmailToken(user, ip);
-
-                await _emailHelper.SendDeleteAccountToEmail(new EmailModel()
-                {
-                    UserEmail = user.UserEmail!,
-                    UserId = user.Id,
-                    UserToken = emailToken,
-                });
+                MapEmailModelForSend(ref emailModel, user);
+                await _emailHelper.SendDeleteAccountToEmail(emailModel);
 
                 return Accepted();
             }
 
             return Forbid("Incorrect password");
+        }
+
+        private void MapEmailModelForSend(ref EmailModel emailModel, User user)
+        {
+            emailModel.UserEmail = user.UserEmail!;
+            emailModel.UserId = user.Id;
+            emailModel.UserToken = _jwtHelper.GenerateEmailToken(user, emailModel.UserIp);
         }
     }
 }
