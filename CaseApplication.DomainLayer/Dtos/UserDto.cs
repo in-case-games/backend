@@ -1,7 +1,9 @@
-﻿using CaseApplication.DomainLayer.Entities;
+﻿using CaseApplication.DomainLayer.Attibutes.Validation;
+using CaseApplication.DomainLayer.Entities;
 
 namespace CaseApplication.DomainLayer.Dtos
 {
+    [UserValidation]
     public class UserDto: BaseEntity
     {
         public string? UserLogin { get; set; }
