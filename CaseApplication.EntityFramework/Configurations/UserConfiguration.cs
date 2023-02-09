@@ -27,8 +27,8 @@ namespace CaseApplication.EntityFramework.Configurations
 
             builder.HasOne(o => o.UserAdditionalInfo)
                 .WithOne(o => o.User)
-                .HasForeignKey<UserAdditionalInfo>(fk => fk.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
+
 
             builder.HasMany(m => m.UserRestrictions)
                 .WithOne(o => o.User)

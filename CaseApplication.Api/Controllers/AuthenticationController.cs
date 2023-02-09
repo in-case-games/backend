@@ -1,5 +1,6 @@
 ﻿using CaseApplication.Api.Models;
 using CaseApplication.Api.Services;
+using CaseApplication.DomainLayer.Dtos;
 using CaseApplication.DomainLayer.Entities;
 using CaseApplication.DomainLayer.Repositories;
 using Microsoft.AspNetCore.Authorization;
@@ -53,7 +54,7 @@ namespace CaseApplication.Api.Controllers
 
         [AllowAnonymous]
         [HttpPost("signin/{password}&{ip}")]
-        public async Task<IActionResult> SignIn(User user, string password, string ip)
+        public async Task<IActionResult> SignIn(UserDto user, string password, string ip)
         {
             //FindUser
             User? searchUser = await _userRepository.GetByParameters(user);
@@ -101,7 +102,7 @@ namespace CaseApplication.Api.Controllers
 
         [AllowAnonymous]
         [HttpPost("signup/{password}")]
-        public async Task<IActionResult> SignUp(User user, string password)
+        public async Task<IActionResult> SignUp(UserDto user, string password)
         {
             //Find user
             User? userExists = await _userRepository.GetByParameters(user);
@@ -118,11 +119,11 @@ namespace CaseApplication.Api.Controllers
             await _userRepository.Create(user);
 
             //Create Add info
-            user = (await _userRepository.GetByLogin(user.UserLogin!))!;
+            User createdUser = (await _userRepository.GetByLogin(user.UserLogin!))!;
 
             await _userAdditionalInfoRepository.Create(new UserAdditionalInfo()
             {
-                UserId = user.Id,
+                UserId = createdUser.Id,
             });
 
             await _emailHelper.SendNotifyAccountSignUp(user.UserEmail!);

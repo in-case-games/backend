@@ -14,8 +14,7 @@ namespace CaseApplication.EntityFramework.Configurations
                 .IsRequired();
 
             builder.HasOne(o => o.UserAdditionalInfo)
-                .WithOne(o => o.UserRole)
-                .HasForeignKey<UserAdditionalInfo>(fk => fk.UserRoleId);
+                .WithOne(o => o.UserRole);
         }
     }
 }

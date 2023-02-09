@@ -1,4 +1,6 @@
-﻿using CaseApplication.Api.Services;
+﻿using AutoMapper;
+using CaseApplication.Api.Services;
+using CaseApplication.DomainLayer.Dtos;
 using CaseApplication.DomainLayer.Entities;
 using CaseApplication.DomainLayer.Repositories;
 using Microsoft.AspNetCore.Authorization;
@@ -19,6 +21,11 @@ namespace CaseApplication.Api.Controllers
         private readonly IUserTokensRepository _userTokensRepository;
         private readonly IUserAdditionalInfoRepository _userInfoRepository;
         private readonly ValidationService _validationService;
+        private MapperConfiguration mapperConfiguration = new MapperConfiguration(configuration =>
+        {
+            configuration.CreateMap<User, UserDto>();
+        }
+        );
         private Guid UserId => Guid
             .Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
 
@@ -73,7 +80,6 @@ namespace CaseApplication.Api.Controllers
 
             return NotFound();
         }
-
         [Authorize]
         [HttpGet("all")]
         public async Task<IActionResult> GetAll()
@@ -96,10 +102,13 @@ namespace CaseApplication.Api.Controllers
             User? searchUserByLogin = await _userRepository.GetByLogin(login);
             User? searchUserById = await _userRepository.Get(UserId);
 
+            IMapper? mapper = mapperConfiguration.CreateMapper();
+            UserDto user = mapper.Map<UserDto>(searchUserById);
+
             if (searchUserByLogin != null) return BadRequest();
             if (searchUserById == null) return NotFound();
 
-            User newUser = new() { 
+            UserDto newUser = new() { 
                 Id = searchUserById.Id,
                 PasswordHash = searchUserById.PasswordHash,
                 PasswordSalt = searchUserById.PasswordSalt,
@@ -108,7 +117,7 @@ namespace CaseApplication.Api.Controllers
                 UserLogin = login
             };
 
-            await _userRepository.Update(searchUserById, newUser);
+            await _userRepository.Update(user, newUser);
 
             await _emailHelper.SendNotifyChangeLogin(searchUserById.UserEmail!, login);
 
@@ -130,7 +139,10 @@ namespace CaseApplication.Api.Controllers
 
             if(searchUser != null) return Forbid("Email is already busy");
 
-            User newUser = new()
+            IMapper? mapper = mapperConfiguration.CreateMapper();
+            UserDto oldUser = mapper.Map<UserDto>(user);
+
+            UserDto newUser = new()
             {
                 Id = user.Id,
                 UserEmail = email,
@@ -140,7 +152,7 @@ namespace CaseApplication.Api.Controllers
                 PasswordSalt = user.PasswordSalt,
             };
 
-            await _userRepository.Update(user, newUser);
+            await _userRepository.Update(oldUser, newUser);
 
             UserAdditionalInfo? userAdditionalInfo = await _userInfoRepository.GetByUserId(user.Id);
             userAdditionalInfo!.IsConfirmedAccount = false;
@@ -171,7 +183,10 @@ namespace CaseApplication.Api.Controllers
             byte[] salt = _encryptorHelper.GenerationSaltTo64Bytes();
             string hash = _encryptorHelper.EncryptorPassword(password, salt);
 
-            User newUser = new()
+            IMapper? mapper = mapperConfiguration.CreateMapper();
+            UserDto oldUser = mapper.Map<UserDto>(user);
+
+            UserDto newUser = new()
             {
                 Id = user.Id,
                 UserEmail = user.UserEmail,
@@ -181,7 +196,7 @@ namespace CaseApplication.Api.Controllers
                 PasswordSalt = Convert.ToBase64String(salt)
             };
 
-            await _userRepository.Update(user, newUser);
+            await _userRepository.Update(oldUser, newUser);
             await _userTokensRepository.DeleteAll(userId);
 
             await _emailHelper.SendNotifyChangePassword(user.UserEmail!);

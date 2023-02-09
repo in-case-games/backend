@@ -15,9 +15,15 @@ namespace CaseApplication.EntityFramework.Repositories
         public async Task<UserAdditionalInfo?> Get(Guid id)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
-
-            return await context.UserAdditionalInfo
+            UserAdditionalInfo? info = await context.UserAdditionalInfo
                 .FirstOrDefaultAsync(x => x.Id == id);
+            if (info is null)
+                throw new Exception("The info is not found");
+
+            UserRole? userRole = await context.UserRole.FindAsync(info.UserRoleId);
+            info.UserRole = userRole;
+
+            return info;
         }
 
         public async Task<UserAdditionalInfo?> GetByUserId(Guid userId)

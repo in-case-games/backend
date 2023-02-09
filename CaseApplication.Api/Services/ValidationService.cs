@@ -8,13 +8,16 @@ namespace CaseApplication.Api.Services
     {
         private readonly EncryptorHelper _encryptorHelper;
         private readonly JwtHelper _jwtHelper;
+        private readonly IConfiguration _configuration;
 
         public ValidationService(
             EncryptorHelper encryptorHelper, 
-            JwtHelper jwtHelper)
+            JwtHelper jwtHelper,
+            IConfiguration configuration)    
         {
             _encryptorHelper = encryptorHelper;
             _jwtHelper = jwtHelper;
+            _configuration = configuration;
         }
 
         public bool IsValidUserPassword(in User user, string password)
@@ -27,7 +30,7 @@ namespace CaseApplication.Api.Services
 
         public bool IsValidEmailToken(string token, string hash)
         {
-            byte[] secretBytes = Encoding.UTF8.GetBytes(hash);
+            byte[] secretBytes = Encoding.UTF8.GetBytes(hash + _configuration["JWT:Secret"]!);
 
             ClaimsPrincipal? principal = _jwtHelper
                 .GetClaimsToken(token, secretBytes, "HS512");

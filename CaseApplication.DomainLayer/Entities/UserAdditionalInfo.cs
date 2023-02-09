@@ -4,7 +4,9 @@ namespace CaseApplication.DomainLayer.Entities
 {
     public class UserAdditionalInfo : BaseEntity
     {
+        [JsonIgnore]
         public Guid UserId { get; set; }
+        [JsonIgnore]
         public Guid UserRoleId { get; set; }
 
         public decimal UserBalance { get; set; }
@@ -13,7 +15,6 @@ namespace CaseApplication.DomainLayer.Entities
 
         [JsonIgnore]
         public User? User { get; set; }
-        [JsonIgnore]
         public UserRole? UserRole { get; set; }
     }
 }

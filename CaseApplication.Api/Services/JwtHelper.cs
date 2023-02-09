@@ -30,7 +30,7 @@ namespace CaseApplication.Api.Services
         {
             TimeSpan expiration = TimeSpan.FromMinutes(5);
 
-            SymmetricSecurityKey securityKey = new(Encoding.UTF8.GetBytes(secret));
+            SymmetricSecurityKey securityKey = new(Encoding.ASCII.GetBytes(secret + _configuration["JWT:Secret"]!));
             SigningCredentials credentials = new(securityKey, SecurityAlgorithms.HmacSha512);
 
             return CreateToken(claims, credentials, expiration);

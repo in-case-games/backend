@@ -1,4 +1,5 @@
-﻿using CaseApplication.DomainLayer.Entities;
+﻿using CaseApplication.DomainLayer.Dtos;
+using CaseApplication.DomainLayer.Entities;
 using CaseApplication.DomainLayer.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -37,7 +38,7 @@ namespace CaseApplication.Api.Controllers
 
         [AllowAnonymous]
         [HttpPost]
-        public async Task<IActionResult> Create(User user)
+        public async Task<IActionResult> Create(UserDto user)
         {
             User? searchUser = await _userRepository.GetByParameters(user);
 
