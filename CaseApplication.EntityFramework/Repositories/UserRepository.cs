@@ -148,6 +148,10 @@ namespace CaseApplication.EntityFramework.Repositories
                 .PromocodeUsedByUsers
                 .Where(x => x.UserId == user.Id)
                 .ToListAsync();
+            List<UserToken> tokens = await context
+                .UserToken
+                .Where(x => x.UserId == user.Id)
+                .ToListAsync();
 
             if (info is not null)
             {
@@ -160,6 +164,7 @@ namespace CaseApplication.EntityFramework.Repositories
             user.UserInventories = inventories;
             user.UserHistoryOpeningCases = history;
             user.PromocodesUsedByUsers = promocodes;
+            user.UserTokens = tokens;
 
             return user;
         }

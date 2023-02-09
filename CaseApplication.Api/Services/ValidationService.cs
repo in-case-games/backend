@@ -30,6 +30,14 @@ namespace CaseApplication.Api.Services
             return hash == user.PasswordHash;
         }
 
+        public bool IsValidRefreshToken(in UserToken? userToken, string refreshToken)
+        {
+            return 
+                (userToken != null &&
+                refreshToken == userToken.RefreshToken &&
+                userToken.RefreshTokenExpiryTime > DateTime.UtcNow);
+        }
+
         public bool IsValidEmailToken(EmailModel emailModel, string hash)
         {
             byte[] secretBytes = Encoding.UTF8.GetBytes(hash + _configuration["JWT:Secret"]!);
@@ -38,12 +46,21 @@ namespace CaseApplication.Api.Services
                 .GetClaimsToken(emailModel.UserToken, secretBytes, "HS512");
 
             if (principal is null) return false;
-            
             string ip = principal.Claims
                 .Single(x => x.Type == "UserIp")
                 .Value;
 
             return (emailModel.UserIp == ip);
+        }
+
+        public bool IsValidEmailTokenSend(in User user, string ip, string password)
+        {
+            UserToken? userToken = user.UserTokens!.FirstOrDefault(
+                x => x.UserIpAddress == ip);
+
+            bool isValidPassword = IsValidUserPassword(in user, password);
+
+            return (userToken != null && isValidPassword);
         }
     }
 }

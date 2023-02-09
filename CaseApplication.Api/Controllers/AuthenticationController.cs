@@ -64,7 +64,7 @@ namespace CaseApplication.Api.Controllers
                 return Forbid();
 
             //Search refresh token by ip
-            UserToken? userTokenByIp = await _userTokensRepository.GetByIp(searchUser.Id, ip);
+            UserToken? userTokenByIp = searchUser.UserTokens!.FirstOrDefault(x => x.UserIpAddress == ip);
 
             if (userTokenByIp == null)
             {
@@ -145,34 +145,28 @@ namespace CaseApplication.Api.Controllers
 
             //Search refresh token by ip TODO Cut in method
             User user = (await _userRepository.Get(userId))!;
-            UserToken? userToken = await _userTokensRepository.GetByIp(userId, ip);
+            UserToken? userToken = user.UserTokens!.FirstOrDefault(x => x.UserIpAddress == ip);
 
-            if(userToken == null)
+            if (_validationService.IsValidRefreshToken(in userToken, refreshToken))
             {
-                await _emailHelper.SendNotifyToEmail(
-                    user.UserEmail!,
-                    "Администрация сайта",
-                    new EmailPatternModel()
-                    {
-                        Body = $"Попытка входа в аккаунт"
-                    });
+                //Generate token
+                TokenModel tokenModel = _jwtHelper.GenerateTokenPair(in user);
+
+                MapUserTokenForUpdate(ref userToken!, tokenModel);
+                await _userTokensRepository.Update(userToken);
+
+                return Ok(tokenModel);
             }
 
-            if (userToken == null ||
-                refreshToken != userToken.RefreshToken || 
-                userToken.RefreshTokenExpiryTime <= DateTime.UtcNow)
-            {
-                await _userTokensRepository.DeleteByToken(userId, refreshToken);
-                return Forbid("Invalid refresh token");
-            }
+            await _emailHelper.SendNotifyToEmail(user.UserEmail!, "Администрация сайта",
+                new EmailPatternModel()
+                {
+                    Body = $"Попытка входа в аккаунт"
+                });
 
-            //Generate token
-            TokenModel tokenModel = _jwtHelper.GenerateTokenPair(in user);
+            await _userTokensRepository.DeleteByToken(userId, refreshToken);
 
-            MapUserTokenForUpdate(ref userToken, tokenModel);
-            await _userTokensRepository.Update(userToken);
-
-            return Ok(tokenModel);
+            return Forbid("Invalid refresh token");
         }
 
         [AllowAnonymous]
@@ -189,15 +183,22 @@ namespace CaseApplication.Api.Controllers
             User? user = await _userRepository.Get(emailModel.UserId);
 
             if (user == null) return NotFound();
-            if (_validationService.IsValidEmailToken(emailModel, user.PasswordHash!) is false)
-                return Forbid("Invalid email token");
 
-            UserAdditionalInfo? userInfo = await _userAdditionalInfoRepository
-                .GetByUserId(emailModel.UserId);
+            bool isValidToken = _validationService.IsValidEmailToken(emailModel, user.PasswordHash!);
 
-            if(userInfo!.IsConfirmedAccount == false)
+            if (isValidToken is false) return Forbid("Invalid email token");
+
+            bool IsTokenUsed = user.UserTokens!.FirstOrDefault(
+                x => x.UserIpAddress == emailModel.UserIp) is not null;
+            
+            if (IsTokenUsed) return Forbid("Invalid token used");
+            
+            UserAdditionalInfo userInfo = user.UserAdditionalInfo!;
+
+            if(userInfo.IsConfirmedAccount == false)
             {
-                userInfo!.IsConfirmedAccount = true;
+                userInfo.IsConfirmedAccount = true;
+
                 await _userAdditionalInfoRepository.Update(userInfo);
 
                 await _emailHelper.SendNotifyToEmail(

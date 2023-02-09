@@ -59,22 +59,19 @@ namespace CaseApplication.Api.Controllers
         public async Task<IActionResult> SendUpdateEmail(EmailModel emailModel, string password)
         {
             User? user = await _userRepository.Get(UserId);
-            UserToken? userToken = await _userTokensRepository.GetByIp(UserId, emailModel.UserIp);
-
-            //TODO Give temp password
 
             if (user == null) return NotFound();
-            if (userToken == null) return Forbid("Invalid ip");
-
-            if (_validationService.IsValidUserPassword(in user, password)) {
+            if (_validationService.IsValidEmailTokenSend(in user, emailModel.UserIp, password))
+            {
                 MapEmailModelForSend(ref emailModel, user);
-
                 await _emailHelper.SendChangeEmailToEmail(emailModel);
 
                 return Accepted();
             }
 
-            return Forbid("Incorrect password");
+            //TODO Give temp password
+
+            return Forbid("Incorrect password/ip");
         }
         
         [Authorize]
@@ -82,14 +79,9 @@ namespace CaseApplication.Api.Controllers
         public async Task<IActionResult> SendUpdatePassword(EmailModel emailModel, string password)
         {
             User? user = await _userRepository.Get(UserId);
-            UserToken? userToken = await _userTokensRepository.GetByIp(UserId, emailModel.UserIp);
-
-            //TODO Give temp password
 
             if (user == null) return NotFound();
-            if (userToken == null) return Forbid("Invalid ip");
-
-            if (_validationService.IsValidUserPassword(in user, password))
+            if (_validationService.IsValidEmailTokenSend(in user, emailModel.UserIp, password))
             {
                 MapEmailModelForSend(ref emailModel, user);
                 await _emailHelper.SendChangePasswordToEmail(emailModel);
@@ -97,7 +89,9 @@ namespace CaseApplication.Api.Controllers
                 return Accepted();
             }
 
-            return Forbid("Incorrect password");
+            //TODO Give temp password
+
+            return Forbid("Incorrect password/ip");
         }
 
         [Authorize]
@@ -105,14 +99,9 @@ namespace CaseApplication.Api.Controllers
         public async Task<IActionResult> SendDeleteAccount(EmailModel emailModel, string password)
         {
             User? user = await _userRepository.Get(UserId);
-            UserToken? userToken = await _userTokensRepository.GetByIp(UserId, emailModel.UserIp);
-
-            //TODO Give temp password
 
             if (user == null) return NotFound();
-            if (userToken == null) return Forbid("Invalid ip");
-
-            if (_validationService.IsValidUserPassword(in user, password))
+            if (_validationService.IsValidEmailTokenSend(in user, emailModel.UserIp, password))
             {
                 MapEmailModelForSend(ref emailModel, user);
                 await _emailHelper.SendDeleteAccountToEmail(emailModel);
@@ -120,7 +109,9 @@ namespace CaseApplication.Api.Controllers
                 return Accepted();
             }
 
-            return Forbid("Incorrect password");
+            //TODO Give temp password
+
+            return Forbid("Incorrect password/ip");
         }
 
         private void MapEmailModelForSend(ref EmailModel emailModel, User user)

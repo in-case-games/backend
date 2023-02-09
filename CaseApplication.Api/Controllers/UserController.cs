@@ -5,6 +5,7 @@ using CaseApplication.DomainLayer.Dtos;
 using CaseApplication.DomainLayer.Entities;
 using CaseApplication.DomainLayer.Repositories;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using System.Text;
@@ -22,7 +23,7 @@ namespace CaseApplication.Api.Controllers
         private readonly IUserTokensRepository _userTokensRepository;
         private readonly IUserAdditionalInfoRepository _userInfoRepository;
         private readonly ValidationService _validationService;
-        private MapperConfiguration mapperConfiguration = new MapperConfiguration(configuration =>
+        private readonly MapperConfiguration _mapperConfiguration = new(configuration =>
         {
             configuration.CreateMap<User, UserDto>();
         }
@@ -75,6 +76,7 @@ namespace CaseApplication.Api.Controllers
             {
                 user.PasswordHash = "access denied";
                 user.PasswordSalt = "access denied";
+                user.UserTokens = null;
 
                 return Ok(user);
             }
@@ -104,20 +106,14 @@ namespace CaseApplication.Api.Controllers
             User? searchUserByLogin = await _userRepository.GetByLogin(login);
             User? searchUserById = await _userRepository.Get(UserId);
 
-            IMapper? mapper = mapperConfiguration.CreateMapper();
-            UserDto user = mapper.Map<UserDto>(searchUserById);
-
             if (searchUserByLogin != null) return BadRequest();
             if (searchUserById == null) return NotFound();
 
-            UserDto newUser = new() { 
-                Id = searchUserById.Id,
-                PasswordHash = searchUserById.PasswordHash,
-                PasswordSalt = searchUserById.PasswordSalt,
-                UserEmail = searchUserById.UserEmail,
-                UserImage = searchUserById.UserImage,
-                UserLogin = login
-            };
+            IMapper? mapper = _mapperConfiguration.CreateMapper();
+
+            UserDto user = mapper.Map<UserDto>(searchUserById);
+            UserDto newUser = mapper.Map<UserDto>(searchUserById);
+            newUser.UserLogin = login;
 
             await _userRepository.Update(user, newUser);
 
@@ -136,36 +132,27 @@ namespace CaseApplication.Api.Controllers
         [HttpPut("email")]
         public async Task<IActionResult> UpdateEmail(EmailModel emailModel)
         {
+            User? searchUser = await _userRepository.GetByEmail(emailModel.UserEmail);
             User? user = await _userRepository.Get(emailModel.UserId);
 
             if (user == null) return NotFound();
 
-            if (_validationService.IsValidEmailToken(emailModel, user.PasswordHash!) is false)
-                return Forbid("Invalid email token");
+            bool isValidToken = _validationService.IsValidEmailToken(emailModel, user.PasswordHash!);
 
-            User? searchUser = await _userRepository.GetByEmail(emailModel.UserEmail);
+            if (isValidToken is false) return Forbid("Invalid email token");
+            if (searchUser != null) return Forbid("Email is already busy");
 
-            if(searchUser != null) return Forbid("Email is already busy");
+            IMapper? mapper = _mapperConfiguration.CreateMapper();
 
-            IMapper? mapper = mapperConfiguration.CreateMapper();
             UserDto oldUser = mapper.Map<UserDto>(user);
+            UserDto newUser = mapper.Map<UserDto>(user);
 
-            UserDto newUser = new()
-            {
-                Id = user.Id,
-                UserEmail = emailModel.UserEmail,
-                UserImage = user.UserImage,
-                UserLogin = user.UserLogin,
-                PasswordHash = user.PasswordHash,
-                PasswordSalt = user.PasswordSalt,
-            };
+            newUser.UserEmail = emailModel.UserEmail;
+            user.UserAdditionalInfo!.IsConfirmedAccount = false;
 
             await _userRepository.Update(oldUser, newUser);
+            await _userInfoRepository.Update(user.UserAdditionalInfo);
 
-            UserAdditionalInfo? userAdditionalInfo = await _userInfoRepository.GetByUserId(user.Id);
-            userAdditionalInfo!.IsConfirmedAccount = false;
-
-            await _userInfoRepository.Update(userAdditionalInfo);
             await _userTokensRepository.DeleteAll(user.Id);
 
             await _emailHelper.SendNotifyToEmail(
@@ -187,25 +174,20 @@ namespace CaseApplication.Api.Controllers
 
             if (user == null) return NotFound();
 
-            if (_validationService.IsValidEmailToken(emailModel, user.PasswordHash!) is false)
-                return Forbid("Invalid email token");
+            bool isValidToken = _validationService.IsValidEmailToken(emailModel, user.PasswordHash!);
+
+            if (isValidToken is false) return Forbid("Invalid email token");
 
             //Gen hash and salt
             byte[] salt = _encryptorHelper.GenerationSaltTo64Bytes();
             string hash = _encryptorHelper.EncryptorPassword(password, salt);
 
-            IMapper? mapper = mapperConfiguration.CreateMapper();
-            UserDto oldUser = mapper.Map<UserDto>(user);
+            IMapper? mapper = _mapperConfiguration.CreateMapper();
 
-            UserDto newUser = new()
-            {
-                Id = user.Id,
-                UserEmail = user.UserEmail,
-                UserImage = user.UserImage,
-                UserLogin = user.UserLogin,
-                PasswordHash = hash,
-                PasswordSalt = Convert.ToBase64String(salt)
-            };
+            UserDto oldUser = mapper.Map<UserDto>(user);
+            UserDto newUser = mapper.Map<UserDto>(user);
+            newUser.PasswordHash = hash;
+            newUser.PasswordSalt = Convert.ToBase64String(salt);
 
             await _userRepository.Update(oldUser, newUser);
             await _userTokensRepository.DeleteAll(user.Id);
@@ -229,8 +211,9 @@ namespace CaseApplication.Api.Controllers
 
             if (user == null) return NotFound();
 
-            if (_validationService.IsValidEmailToken(emailModel, user.PasswordHash!) is false)
-                return Forbid("Invalid email token");
+            bool isValidToken = _validationService.IsValidEmailToken(emailModel, user.PasswordHash!);
+
+            if (isValidToken is false) return Forbid("Invalid email token");
 
             await _emailHelper.SendNotifyToEmail(
                 user.UserEmail!,
