@@ -24,6 +24,7 @@ namespace CaseApplication.EntityFramework.Data
 
         public ApplicationDbContext(DbContextOptions options) : base(options)
         {
+            Database.Migrate();
             Database.EnsureCreated();
         }
 

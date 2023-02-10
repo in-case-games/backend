@@ -8,8 +8,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Services\" />
-    <Folder Include="Новая папка\" />
+    <Compile Remove="Services\**" />
+    <Compile Remove="Новая папка\**" />
+    <EmbeddedResource Remove="Services\**" />
+    <EmbeddedResource Remove="Новая папка\**" />
+    <None Remove="Services\**" />
+    <None Remove="Новая папка\**" />
   </ItemGroup>
 
   <ItemGroup>
