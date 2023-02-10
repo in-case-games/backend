@@ -24,13 +24,16 @@ namespace CaseApplication.EntityFramework.Repositories
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             UserHistoryOpeningCases? userHistory = await context.UserHistoryOpeningCases
+                .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == id);
 
             if(userHistory != null)
             {
                 userHistory.GameCase = await context.GameCase
+                .AsNoTracking()
                     .FirstOrDefaultAsync(x => x.Id == userHistory.GameCaseId);
                 userHistory.GameItem = await context.GameItem
+                .AsNoTracking()
                     .FirstOrDefaultAsync(x => x.Id == userHistory.GameItemId);
             }
 
@@ -46,8 +49,10 @@ namespace CaseApplication.EntityFramework.Repositories
             foreach(UserHistoryOpeningCases userHistory in userHistories)
             {
                 userHistory.GameCase = await context.GameCase
+                .AsNoTracking()
                     .FirstOrDefaultAsync(x => x.Id == userHistory.GameCaseId);
                 userHistory.GameItem = await context.GameItem
+                .AsNoTracking()
                     .FirstOrDefaultAsync(x => x.Id == userHistory.GameItemId);
             }
 
@@ -59,14 +64,17 @@ namespace CaseApplication.EntityFramework.Repositories
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             List<UserHistoryOpeningCases> userHistories = await context.UserHistoryOpeningCases
+                .AsNoTracking()
                 .Where(x => x.UserId == userId)
                 .ToListAsync();
 
             foreach (UserHistoryOpeningCases userHistory in userHistories)
             {
                 userHistory.GameCase = await context.GameCase
+                .AsNoTracking()
                     .FirstOrDefaultAsync(x => x.Id == userHistory.GameCaseId);
                 userHistory.GameItem = await context.GameItem
+                .AsNoTracking()
                     .FirstOrDefaultAsync(x => x.Id == userHistory.GameItemId);
             }
 
@@ -93,6 +101,7 @@ namespace CaseApplication.EntityFramework.Repositories
 
             UserHistoryOpeningCases? searchUserHistory = await context
                 .UserHistoryOpeningCases
+                .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == id);
 
             if (searchUserHistory is null) throw new Exception("There is no such user history, " +
@@ -109,6 +118,7 @@ namespace CaseApplication.EntityFramework.Repositories
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             List<UserHistoryOpeningCases>? userHistories = await context.UserHistoryOpeningCases
+                .AsNoTracking()
                 .Where(x => x.UserId == userId)
                 .ToListAsync();
 

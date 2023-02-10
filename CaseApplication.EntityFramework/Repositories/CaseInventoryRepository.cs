@@ -24,11 +24,13 @@ namespace CaseApplication.EntityFramework.Repositories
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             CaseInventory? caseInventory = await context.CaseInventory
+                .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == id);
 
             if(caseInventory != null)
             {
-                caseInventory.GameItem = await context.GameItem.FirstOrDefaultAsync(
+                caseInventory.GameItem = await context.GameItem
+                .AsNoTracking().FirstOrDefaultAsync(
                     x => x.Id == caseInventory.GameItemId);
             }
 
@@ -39,12 +41,14 @@ namespace CaseApplication.EntityFramework.Repositories
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            CaseInventory? caseInventory = await context.CaseInventory.FirstOrDefaultAsync(
+            CaseInventory? caseInventory = await context.CaseInventory
+                .AsNoTracking().FirstOrDefaultAsync(
                 x => x.GameCaseId == caseId && x.GameItemId == itemId);
 
             if (caseInventory != null)
             {
-                caseInventory.GameItem = await context.GameItem.FirstOrDefaultAsync(
+                caseInventory.GameItem = await context.GameItem
+                .AsNoTracking().FirstOrDefaultAsync(
                     x => x.Id == caseInventory.GameItemId);
             }
 
@@ -56,12 +60,14 @@ namespace CaseApplication.EntityFramework.Repositories
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             List<CaseInventory> caseInventories = await context.CaseInventory
+                .AsNoTracking()
                 .Where(x => x.GameCaseId == caseId)
                 .ToListAsync();
 
             foreach(CaseInventory caseInventory in caseInventories)
             {
-                caseInventory.GameItem = await context.GameItem.FirstOrDefaultAsync(
+                caseInventory.GameItem = await context.GameItem
+                .AsNoTracking().FirstOrDefaultAsync(
                     x => x.Id == caseInventory.GameItemId);
             }
 
@@ -88,6 +94,7 @@ namespace CaseApplication.EntityFramework.Repositories
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             CaseInventory? oldCaseInventory = await context.CaseInventory
+                .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == caseInventoryDto.Id);
 
             if (oldCaseInventory is null) 
@@ -108,6 +115,7 @@ namespace CaseApplication.EntityFramework.Repositories
 
             CaseInventory? searchCaseInventory = await context
                 .CaseInventory
+                .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == id);
 
             if (searchCaseInventory is null) 

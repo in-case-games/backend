@@ -18,6 +18,7 @@ namespace CaseApplication.EntityFramework.Repositories
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             return await context.PromocodeType
+                .AsNoTracking()
                     .FirstOrDefaultAsync(x => x.Id == id);
         }
         public async Task<PromocodeType?> GetByName(string name)
@@ -25,6 +26,7 @@ namespace CaseApplication.EntityFramework.Repositories
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             return await context.PromocodeType
+                .AsNoTracking()
                     .FirstOrDefaultAsync(x => x.PromocodeTypeName == name);
         }
 
@@ -32,7 +34,8 @@ namespace CaseApplication.EntityFramework.Repositories
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            return await context.PromocodeType.ToListAsync();
+            return await context.PromocodeType
+                .AsNoTracking().ToListAsync();
         }
 
         public async Task<bool> Create(PromocodeType promocodeType)
@@ -53,6 +56,7 @@ namespace CaseApplication.EntityFramework.Repositories
 
             PromocodeType? promoType = await context
                 .PromocodeType
+                .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == promocodeType.Id);
         
             if (promoType is null) 
@@ -70,6 +74,7 @@ namespace CaseApplication.EntityFramework.Repositories
 
             PromocodeType? promocodeType = await context
                 .PromocodeType
+                .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == id);
         
             if (promocodeType is null) 

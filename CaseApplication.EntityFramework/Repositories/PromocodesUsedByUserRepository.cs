@@ -25,11 +25,13 @@ namespace CaseApplication.EntityFramework.Repositories
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             PromocodesUsedByUser? promocodeUsed = await context.PromocodeUsedByUsers
+                .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == id);
 
             if (promocodeUsed != null)
             {
-                promocodeUsed.Promocode = await context.Promocode.FirstOrDefaultAsync
+                promocodeUsed.Promocode = await context.Promocode
+                .AsNoTracking().FirstOrDefaultAsync
                     (x => x.Id == promocodeUsed.PromocodeId);
             }
             
@@ -41,6 +43,7 @@ namespace CaseApplication.EntityFramework.Repositories
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             List<PromocodesUsedByUser> promocodesUseds = await context.PromocodeUsedByUsers
+                    .AsNoTracking()
                     .Where(x => x.UserId == userId)
                     .ToListAsync();
 
@@ -78,6 +81,7 @@ namespace CaseApplication.EntityFramework.Repositories
 
             PromocodesUsedByUser? oldPromocodeUsed = await context
                 .PromocodeUsedByUsers
+                .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == promocodesUsedDto.Id);
 
             if (oldPromocodeUsed is null) 
@@ -100,6 +104,7 @@ namespace CaseApplication.EntityFramework.Repositories
 
             PromocodesUsedByUser? promocodeType = await context
                 .PromocodeUsedByUsers
+                .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == id);
         
             if (promocodeType is null) 

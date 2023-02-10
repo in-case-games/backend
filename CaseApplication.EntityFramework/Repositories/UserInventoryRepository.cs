@@ -23,11 +23,13 @@ namespace CaseApplication.EntityFramework.Repositories
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
             
-            UserInventory? inventory = await context.UserInventory.FirstOrDefaultAsync(x => x.Id == id);
+            UserInventory? inventory = await context.UserInventory
+                .AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
             
             if (inventory != null)
             {
-                inventory.GameItem = await context.GameItem.FirstOrDefaultAsync(
+                inventory.GameItem = await context.GameItem
+                .AsNoTracking().FirstOrDefaultAsync(
                     x => x.Id == inventory.GameItemId);
             }
 
@@ -39,6 +41,7 @@ namespace CaseApplication.EntityFramework.Repositories
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             List<UserInventory> inventories = await context.UserInventory
+                .AsNoTracking()
                 .Where(x => x.UserId == userId)
                 .ToListAsync();
 
@@ -72,6 +75,7 @@ namespace CaseApplication.EntityFramework.Repositories
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             UserInventory? oldInventory = await context.UserInventory
+                .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == userInventoryDto.Id);
 
             if(oldInventory is null) throw new Exception("There is no such user inventory, " +
@@ -90,6 +94,7 @@ namespace CaseApplication.EntityFramework.Repositories
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             UserInventory? searchUserInventory = await context.UserInventory
+                .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == id);
 
             if (searchUserInventory is null) throw new Exception("There is no such user inventory, " +

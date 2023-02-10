@@ -17,20 +17,23 @@ namespace CaseApplication.EntityFramework.Repositories
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            return await context.GameItem.FirstOrDefaultAsync(x => x.Id == id);
+            return await context.GameItem
+                .AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
         }
         public async Task<GameItem?> GetByName(string name)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            return await context.GameItem.FirstOrDefaultAsync(x => x.GameItemName == name);
+            return await context.GameItem
+                .AsNoTracking().FirstOrDefaultAsync(x => x.GameItemName == name);
         }
 
         public async Task<List<GameItem>> GetAll()
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            return await context.GameItem.ToListAsync();
+            return await context.GameItem
+                .AsNoTracking().ToListAsync();
         }
 
         public async Task<bool> Create(GameItem item)
@@ -49,7 +52,8 @@ namespace CaseApplication.EntityFramework.Repositories
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            GameItem? searchItem = await context.GameItem.FirstOrDefaultAsync(x => x.Id == item.Id);
+            GameItem? searchItem = await context.GameItem
+                .AsNoTracking().FirstOrDefaultAsync(x => x.Id == item.Id);
 
             if (searchItem is null) throw new Exception("There is no such item in the database, " +
                 "review what data comes from the api");
@@ -64,7 +68,8 @@ namespace CaseApplication.EntityFramework.Repositories
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            GameItem? searchItem = await context.GameItem.FirstOrDefaultAsync(x => x.Id == id);
+            GameItem? searchItem = await context.GameItem
+                .AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
 
             if (searchItem is null) throw new Exception("There is no such item in the database, " +
                 "review what data comes from the api");

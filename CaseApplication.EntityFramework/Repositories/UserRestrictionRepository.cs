@@ -18,6 +18,7 @@ namespace CaseApplication.EntityFramework.Repositories
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
             
             return await context.UserRestriction
+                .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == id);
         }
         public async Task<UserRestriction?> GetByNameAndUserId(Guid userId, string name)
@@ -25,6 +26,7 @@ namespace CaseApplication.EntityFramework.Repositories
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             return await context.UserRestriction
+                .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.RestrictionName == name && x.UserId == userId);
         }
         public async Task<List<UserRestriction>> GetAll(Guid userId)
@@ -32,6 +34,7 @@ namespace CaseApplication.EntityFramework.Repositories
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             return await context.UserRestriction
+                .AsNoTracking()
                 .Where(x => x.UserId == userId)
                 .ToListAsync();
         }
@@ -55,9 +58,11 @@ namespace CaseApplication.EntityFramework.Repositories
 
             UserRestriction? searchRestriction = await context
                 .UserRestriction
+                .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == userRestriction.Id);
             User? searchUser = await context
                 .User
+                .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == userRestriction.UserId);
 
             if (searchRestriction is null) 
@@ -79,6 +84,7 @@ namespace CaseApplication.EntityFramework.Repositories
 
             UserRestriction? searchRestriction = await context
                 .UserRestriction
+                .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == id);
 
             if (searchRestriction is null)

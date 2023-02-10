@@ -18,14 +18,16 @@ namespace CaseApplication.EntityFramework.Repositories
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            return await context.News.FirstOrDefaultAsync(x => x.Id == id);
+            return await context.News
+                .AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
         }
 
         public async Task<List<News>> GetAll()
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            return await context.News.ToListAsync();
+            return await context.News
+                .AsNoTracking().ToListAsync();
         }
 
         public async Task<bool> Create(News news)
@@ -42,7 +44,8 @@ namespace CaseApplication.EntityFramework.Repositories
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
             
-            News? searchNews = await context.News.FirstOrDefaultAsync(x => x.Id == news.Id);
+            News? searchNews = await context.News
+                .AsNoTracking().FirstOrDefaultAsync(x => x.Id == news.Id);
 
             if(searchNews is null) throw new("There is no such news in the database, " +
                 "review what data comes from the api");
@@ -57,7 +60,8 @@ namespace CaseApplication.EntityFramework.Repositories
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            News? searchNews = await context.News.FirstOrDefaultAsync(x => x.Id == id);
+            News? searchNews = await context.News
+                .AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
 
             if (searchNews is null) throw new("There is no such news in the database, " +
                 "review what data comes from the api");

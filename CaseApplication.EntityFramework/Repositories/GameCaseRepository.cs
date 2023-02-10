@@ -23,18 +23,21 @@ namespace CaseApplication.EntityFramework.Repositories
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            GameCase? gameCase = await context.GameCase.FirstOrDefaultAsync(x => x.Id == id);
+            GameCase? gameCase = await context.GameCase
+                .AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
 
             if(gameCase != null)
             {
                 gameCase.СaseInventories = await context.CaseInventory
+                .AsNoTracking()
                     .Where(x => x.GameCaseId == gameCase.Id)
                     .ToListAsync();
 
                 //TODO Check efficiency
                 foreach(CaseInventory caseInventory in gameCase.СaseInventories)
                 {
-                    caseInventory.GameItem = await context.GameItem.FirstOrDefaultAsync(
+                    caseInventory.GameItem = await context.GameItem
+                        .AsNoTracking().FirstOrDefaultAsync(
                         x => x.Id == caseInventory.GameItemId);
                 }
             }
@@ -45,11 +48,13 @@ namespace CaseApplication.EntityFramework.Repositories
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            GameCase? gameCase = await context.GameCase.FirstOrDefaultAsync(x => x.GameCaseName == name);
+            GameCase? gameCase = await context.GameCase
+                .AsNoTracking().FirstOrDefaultAsync(x => x.GameCaseName == name);
 
             if (gameCase != null)
             {
                 gameCase.СaseInventories = await context.CaseInventory
+                    .AsNoTracking()
                     .Where(x => x.GameCaseId == gameCase.Id)
                     .ToListAsync();
             }
@@ -61,7 +66,8 @@ namespace CaseApplication.EntityFramework.Repositories
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            List<GameCase> gameCases = await context.GameCase.ToListAsync();
+            List<GameCase> gameCases = await context.GameCase
+                .AsNoTracking().ToListAsync();
 
             //TODO revise the method may not need to get
 /*            foreach (GameCase gameCase in gameCases)
@@ -79,6 +85,7 @@ namespace CaseApplication.EntityFramework.Repositories
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             List<GameCase> gameCases = await context.GameCase
+                .AsNoTracking()
                 .Where(x => x.GroupCasesName == name)
                 .ToListAsync();
 
@@ -112,7 +119,8 @@ namespace CaseApplication.EntityFramework.Repositories
 
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            GameCase? oldCase = await context.GameCase.FirstOrDefaultAsync(x => x.Id == gameCase.Id);
+            GameCase? oldCase = await context.GameCase
+                .AsNoTracking().FirstOrDefaultAsync(x => x.Id == gameCase.Id);
 
             if (oldCase is null) throw new Exception("There is no such case in the database, " +
                 "review what data comes from the api");
@@ -127,7 +135,8 @@ namespace CaseApplication.EntityFramework.Repositories
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            GameCase? searchCase = await context.GameCase.FirstOrDefaultAsync(x => x.Id == id);
+            GameCase? searchCase = await context.GameCase
+                .AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
 
             if (searchCase is null) throw new Exception("There is no such case in the database, " +
                 "review what data comes from the api");

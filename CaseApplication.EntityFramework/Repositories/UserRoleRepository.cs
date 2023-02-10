@@ -16,21 +16,24 @@ namespace CaseApplication.EntityFramework.Repositories
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            return await context.UserRole.FirstOrDefaultAsync(x => x.Id == id);
+            return await context.UserRole
+                .AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
         }
 
         public async Task<UserRole?> GetByName(string name)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            return await context.UserRole.FirstOrDefaultAsync(x => x.RoleName == name);
+            return await context.UserRole
+                .AsNoTracking().FirstOrDefaultAsync(x => x.RoleName == name);
         }
 
         public async Task<List<UserRole>> GetAll()
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            return await context.UserRole.ToListAsync();
+            return await context.UserRole
+                .AsNoTracking().ToListAsync();
         }
 
         public async Task<bool> Create(UserRole role)
@@ -49,7 +52,8 @@ namespace CaseApplication.EntityFramework.Repositories
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            UserRole? searchUserRole = await context.UserRole.FirstOrDefaultAsync(x => x.Id == role.Id);
+            UserRole? searchUserRole = await context.UserRole
+                .AsNoTracking().FirstOrDefaultAsync(x => x.Id == role.Id);
 
             if (searchUserRole is null) throw new Exception("There is no such role in the database, " +
                 "review what data comes from the api");
@@ -64,7 +68,8 @@ namespace CaseApplication.EntityFramework.Repositories
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            UserRole? searchUserRole = await context.UserRole.FirstOrDefaultAsync(x => x.Id == id);
+            UserRole? searchUserRole = await context.UserRole
+                .AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
 
             if (searchUserRole is null) throw new Exception("There is no such role in the database, " +
                 "review what data comes from the api");

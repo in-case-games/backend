@@ -44,7 +44,8 @@ namespace CaseApplication.EntityFramework.Repositories
         public async Task<List<User>> GetAll()
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
-            List<User> users = await context.User.ToListAsync();
+            List<User> users = await context.User
+                .AsNoTracking().ToListAsync();
 
             return users;
         }
@@ -53,13 +54,16 @@ namespace CaseApplication.EntityFramework.Repositories
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            return await context.User.FirstOrDefaultAsync(x => x.UserEmail == email);
+            return await context.User
+                .AsNoTracking().FirstOrDefaultAsync(x => x.UserEmail == email);
         }
 
         public async Task<User?> GetByLogin(string login)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
-            User? user = await context.User.FirstOrDefaultAsync(x => x.UserLogin == login);
+            User? user = await context.User
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.UserLogin == login);
             if (user is null)
                 return null;
 
@@ -72,6 +76,7 @@ namespace CaseApplication.EntityFramework.Repositories
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
             User? user = await context.User
+                .AsNoTracking()
                 .FirstOrDefaultAsync(x =>
                 x.UserEmail == userDto.UserEmail ||
                 x.Id == userDto.Id ||
@@ -117,7 +122,8 @@ namespace CaseApplication.EntityFramework.Repositories
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            User? searchUser = await context.User.FirstOrDefaultAsync(x => x.Id == id);
+            User? searchUser = await context.User
+                .AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
 
             if (searchUser is null) throw new Exception("There is no such user in the database, " +
                 "review what data comes from the api");
@@ -133,31 +139,39 @@ namespace CaseApplication.EntityFramework.Repositories
 
             UserAdditionalInfo? info = await context
                 .UserAdditionalInfo
+                .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.UserId == user.Id);
             List<UserRestriction> restriction = await context
                 .UserRestriction
+                .AsNoTracking()
                 .Where(x => x.UserId == user.Id)
                 .ToListAsync();
             List<UserInventory> inventories = await context
                 .UserInventory
+                .AsNoTracking()
                 .Where(x => x.UserId == user.Id)
                 .ToListAsync();
             List<UserHistoryOpeningCases> history = await context
                 .UserHistoryOpeningCases
+                .AsNoTracking()
                 .Where(x => x.UserId == user.Id)
                 .ToListAsync();
             List<PromocodesUsedByUser> promocodes = await context
                 .PromocodeUsedByUsers
+                .AsNoTracking()
                 .Where(x => x.UserId == user.Id)
                 .ToListAsync();
             List<UserToken> tokens = await context
                 .UserToken
+                .AsNoTracking()
                 .Where(x => x.UserId == user.Id)
                 .ToListAsync();
 
             if (info is not null)
             {
-                info.UserRole = await context.UserRole
+                info.UserRole = await context
+                    .UserRole
+                    .AsNoTracking()
                     .FirstOrDefaultAsync(x => x.Id == info!.UserRoleId);
             }
             

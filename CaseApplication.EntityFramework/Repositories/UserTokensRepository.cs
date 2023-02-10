@@ -17,13 +17,15 @@ namespace CaseApplication.EntityFramework.Repositories
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            return await context.UserToken.FirstOrDefaultAsync(x => x.Id == id);
+            return await context.UserToken
+                .AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
         }
         public async Task<UserToken?> GetByToken(Guid userId, string token)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             return await context.UserToken
+                .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.UserId == userId && x.RefreshToken == token);
         }
 
@@ -32,6 +34,7 @@ namespace CaseApplication.EntityFramework.Repositories
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             return await context.UserToken
+                .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.UserId == userId && x.UserIpAddress == ip);
         }
 
@@ -39,7 +42,8 @@ namespace CaseApplication.EntityFramework.Repositories
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            return await context.UserToken.Where(x => x.UserId == userId).ToListAsync();
+            return await context.UserToken
+                .AsNoTracking().Where(x => x.UserId == userId).ToListAsync();
         }
         public async Task<bool> Create(UserToken token)
         {
@@ -73,7 +77,8 @@ namespace CaseApplication.EntityFramework.Repositories
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            UserToken? userToken = await context.UserToken.FirstOrDefaultAsync(x => x.Id == id);
+            UserToken? userToken = await context.UserToken
+                .AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
 
             if (userToken == null)
             {
@@ -92,6 +97,7 @@ namespace CaseApplication.EntityFramework.Repositories
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             UserToken? userToken = await context.UserToken
+                .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == userId && x.RefreshToken == refreshToken);
 
             if (userToken == null)
@@ -111,6 +117,7 @@ namespace CaseApplication.EntityFramework.Repositories
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             List<UserToken> userTokens = await context.UserToken
+                .AsNoTracking()
                 .Where(x => x.UserId == userId)
                 .ToListAsync();
 

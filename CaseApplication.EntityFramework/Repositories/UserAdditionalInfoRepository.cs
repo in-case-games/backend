@@ -23,12 +23,14 @@ namespace CaseApplication.EntityFramework.Repositories
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             UserAdditionalInfo? info = await context.UserAdditionalInfo
+                .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == id);
 
             if (info is null)
                 throw new Exception("The info is not found");
 
             info.UserRole = await context.UserRole
+                .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == info.UserRoleId);
 
             return info;
@@ -39,11 +41,13 @@ namespace CaseApplication.EntityFramework.Repositories
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             UserAdditionalInfo? info = await context.UserAdditionalInfo
+                .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.UserId == userId);
 
             if (info is not null)
             {
                 info.UserRole = await context.UserRole
+                .AsNoTracking()
                     .FirstOrDefaultAsync(x => x.Id == info.UserRoleId);
             }
 
@@ -54,7 +58,8 @@ namespace CaseApplication.EntityFramework.Repositories
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            UserRole? searchRole = await context.UserRole.FirstOrDefaultAsync(x => x.RoleName == "user");
+            UserRole? searchRole = await context.UserRole
+                .AsNoTracking().FirstOrDefaultAsync(x => x.RoleName == "user");
 
             if (searchRole is null) throw new Exception("Add standard roles to the database");
 
@@ -74,6 +79,7 @@ namespace CaseApplication.EntityFramework.Repositories
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             UserAdditionalInfo? searchInfo = await context.UserAdditionalInfo
+                .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.UserId == info.UserId);
 
             if(searchInfo is null) {
@@ -92,6 +98,7 @@ namespace CaseApplication.EntityFramework.Repositories
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             UserAdditionalInfo? searchInfo = await context.UserAdditionalInfo
+                .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == id);
 
             if(searchInfo is null) {
