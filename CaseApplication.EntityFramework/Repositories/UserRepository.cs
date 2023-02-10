@@ -10,7 +10,7 @@ namespace CaseApplication.EntityFramework.Repositories
     public class UserRepository : IUserRepository
     {
         private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
-        private MapperConfiguration mapperConfiguration = new MapperConfiguration(configuration =>
+        private readonly MapperConfiguration _mapperConfiguration = new(configuration =>
         {
             configuration.CreateMap<UserDto, User>();
         }
@@ -31,7 +31,7 @@ namespace CaseApplication.EntityFramework.Repositories
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            User? user = await context.User.FindAsync(id);
+            User? user = await context.User.FirstOrDefaultAsync(x => x.Id == id);
 
             if (user is null)
                 return null;
@@ -88,7 +88,9 @@ namespace CaseApplication.EntityFramework.Repositories
         public async Task<bool> Create(UserDto userDto)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
-            IMapper? mapper = mapperConfiguration.CreateMapper();
+
+            IMapper? mapper = _mapperConfiguration.CreateMapper();
+
             User user = mapper.Map<User>(userDto);
             user.Id = Guid.NewGuid();
 
@@ -101,7 +103,7 @@ namespace CaseApplication.EntityFramework.Repositories
         public async Task<bool> Update(UserDto oldUserDto, UserDto newUserDto)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
-            IMapper? mapper = mapperConfiguration.CreateMapper();
+            IMapper? mapper = _mapperConfiguration.CreateMapper();
             User oldUser = mapper.Map<User>(oldUserDto);
             User newUser = mapper.Map<User>(newUserDto);
 
@@ -155,8 +157,8 @@ namespace CaseApplication.EntityFramework.Repositories
 
             if (info is not null)
             {
-                UserRole? userRole = await context.UserRole.FindAsync(info!.UserRoleId);
-                info.UserRole = userRole;
+                info.UserRole = await context.UserRole
+                    .FirstOrDefaultAsync(x => x.Id == info!.UserRoleId);
             }
             
             user.UserAdditionalInfo = info;

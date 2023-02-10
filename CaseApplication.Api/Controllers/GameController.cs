@@ -1,4 +1,6 @@
-﻿using CaseApplication.DomainLayer.Entities;
+﻿using AutoMapper;
+using CaseApplication.DomainLayer.Dtos;
+using CaseApplication.DomainLayer.Entities;
 using CaseApplication.DomainLayer.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -18,6 +20,14 @@ namespace CaseApplication.Api.Controllers
         private readonly IUserHistoryOpeningCasesRepository _userHistory;
         private readonly IGameItemRepository _gameItemRepository;
         private readonly IUserInventoryRepository _userInventoryRepository;
+        private readonly MapperConfiguration _mapperConfigurationInfo = new(configuration =>
+        {
+            configuration.CreateMap<UserAdditionalInfo, UserAdditionalInfoDto>();
+        });
+        private readonly MapperConfiguration _mapperConfigurationCase = new(configuration =>
+        {
+            configuration.CreateMap<GameCase, GameCaseDto>();
+        });
         private Guid UserId => Guid
             .Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
         #endregion
@@ -60,7 +70,7 @@ namespace CaseApplication.Api.Controllers
             gameCase = await UpdateCaseBalance(gameCase, gameCase.GameCaseCost);
 
             //Calling random
-            GameItem winGameItem = await RandomizeBySmallest(gameCase);
+            GameItem winGameItem = RandomizeBySmallest(in gameCase);
 
             //Update Balance Case
             decimal expensesCase = winGameItem.GameItemCost + (gameCase.GameCaseCost 
@@ -68,14 +78,14 @@ namespace CaseApplication.Api.Controllers
             gameCase = await UpdateCaseBalance(gameCase, -expensesCase);
 
             //Add history and add inventory user
-            UserHistoryOpeningCases historyCase = new()
+            UserHistoryOpeningCasesDto historyCase = new()
             {
                 UserId = UserId,
                 GameCaseId = gameCase.Id,
                 GameItemId = winGameItem.Id,
                 CaseOpenAt = DateTime.UtcNow
             };
-            UserInventory userInventory = new()
+            UserInventoryDto userInventory = new()
             {
                 UserId = UserId,
                 GameItemId = winGameItem.Id
@@ -87,32 +97,21 @@ namespace CaseApplication.Api.Controllers
             return Ok(winGameItem);
         }
         #region nonAction
-        private async Task<GameItem> RandomizeBySmallest(GameCase gameCase)
+        private static GameItem RandomizeBySmallest(in GameCase gameCase)
         {
-            List<CaseInventory> casesInventories = (await _caseInventoryRepository
-                .GetAll(gameCase.Id))
-                .ToList();
-
+            List<CaseInventory> casesInventories = gameCase.СaseInventories!;
             List<int> lossChances = casesInventories
-                .Where(x => true)
                 .Select(x => x.LossChance)
                 .ToList();
 
             int winIndexItem = Randomizer(lossChances);
             Guid winIdGameItem = casesInventories[winIndexItem].GameItemId;
-            GameItem winGameItem = (await _gameItemRepository.Get(winIdGameItem))!;
+            GameItem winGameItem = casesInventories[winIndexItem].GameItem!;
 
             //Check it will become negative case balance
             if (IsProfitCase(winGameItem, gameCase) is false)
             {
-                List<GameItem> gameItems = new();
-                GameItem searchItem;
-
-                foreach (CaseInventory invetory in casesInventories)
-                {
-                    searchItem = (await _gameItemRepository.Get(invetory.GameItemId))!;
-                    gameItems.Add(searchItem);
-                }
+                List<GameItem> gameItems = casesInventories.Select(x => x.GameItem).ToList()!;
 
                 gameItems = gameItems.OrderByDescending(g => g.GameItemCost).ToList();
                 winIdGameItem = gameItems[^1].Id;

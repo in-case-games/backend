@@ -1,4 +1,6 @@
-﻿using CaseApplication.DomainLayer.Entities;
+﻿using AutoMapper;
+using CaseApplication.DomainLayer.Dtos;
+using CaseApplication.DomainLayer.Entities;
 using CaseApplication.DomainLayer.Repositories;
 using CaseApplication.EntityFramework.Data;
 using Microsoft.EntityFrameworkCore;
@@ -8,7 +10,10 @@ namespace CaseApplication.EntityFramework.Repositories
     public class CaseInventoryRepository : ICaseInventoryRepository
     {
         private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
-
+        private readonly MapperConfiguration _mapperConfiguration = new(configuration =>
+        {
+            configuration.CreateMap<CaseInventoryDto, CaseInventory>();
+        });
         public CaseInventoryRepository(IDbContextFactory<ApplicationDbContext> contextFactory)
         {
             _contextFactory = contextFactory;
@@ -18,22 +23,32 @@ namespace CaseApplication.EntityFramework.Repositories
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            CaseInventory? searchCaseInventory = await context
-                .CaseInventory
+            CaseInventory? caseInventory = await context.CaseInventory
                 .FirstOrDefaultAsync(x => x.Id == id);
 
-            return searchCaseInventory;
+            if(caseInventory != null)
+            {
+                caseInventory.GameItem = await context.GameItem.FirstOrDefaultAsync(
+                    x => x.Id == caseInventory.GameItemId);
+            }
+
+            return caseInventory;
         }
+
         public async Task<CaseInventory?> GetById(Guid caseId, Guid itemId)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            CaseInventory? searchCaseInventory = await context.CaseInventory.FirstOrDefaultAsync(
-                x => 
-                x.GameCaseId == caseId && 
-                x.GameItemId == itemId);
+            CaseInventory? caseInventory = await context.CaseInventory.FirstOrDefaultAsync(
+                x => x.GameCaseId == caseId && x.GameItemId == itemId);
 
-            return searchCaseInventory;
+            if (caseInventory != null)
+            {
+                caseInventory.GameItem = await context.GameItem.FirstOrDefaultAsync(
+                    x => x.Id == caseInventory.GameItemId);
+            }
+
+            return caseInventory;
         }
 
         public async Task<List<CaseInventory>> GetAll(Guid caseId)
@@ -44,31 +59,44 @@ namespace CaseApplication.EntityFramework.Repositories
                 .Where(x => x.GameCaseId == caseId)
                 .ToListAsync();
 
+            foreach(CaseInventory caseInventory in caseInventories)
+            {
+                caseInventory.GameItem = await context.GameItem.FirstOrDefaultAsync(
+                    x => x.Id == caseInventory.GameItemId);
+            }
+
             return caseInventories;
         }
 
-        public async Task<bool> Create(CaseInventory caseInventory)
+        public async Task<bool> Create(CaseInventoryDto caseInventoryDto)
         {
+            IMapper? mapper = _mapperConfiguration.CreateMapper(); 
+
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            CaseInventory caseInventory = mapper.Map<CaseInventory>(caseInventoryDto);
 
             await context.CaseInventory.AddAsync(caseInventory);
             await context.SaveChangesAsync();
 
             return true;
         }
-        public async Task<bool> Update(CaseInventory caseInventory)
+        public async Task<bool> Update(CaseInventoryDto caseInventoryDto)
         {
+            IMapper? mapper = _mapperConfiguration.CreateMapper();
+
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            CaseInventory? searchCaseInventory = await context
-                .CaseInventory
-                .FirstOrDefaultAsync(x => x.Id == caseInventory.Id);
+            CaseInventory? oldCaseInventory = await context.CaseInventory
+                .FirstOrDefaultAsync(x => x.Id == caseInventoryDto.Id);
 
-            if (searchCaseInventory is null) 
+            if (oldCaseInventory is null) 
                 throw new Exception("There is no such case inventory in the database, " +
                     "review what data comes from the api");
 
-            context.Entry(searchCaseInventory).CurrentValues.SetValues(caseInventory);
+            CaseInventory newCaseInventory = mapper.Map<CaseInventory>(caseInventoryDto);
+
+            context.Entry(oldCaseInventory).CurrentValues.SetValues(newCaseInventory);
             await context.SaveChangesAsync();
 
             return true;

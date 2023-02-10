@@ -1,4 +1,6 @@
-﻿using CaseApplication.DomainLayer.Entities;
+﻿using AutoMapper;
+using CaseApplication.DomainLayer.Dtos;
+using CaseApplication.DomainLayer.Entities;
 using CaseApplication.DomainLayer.Repositories;
 using CaseApplication.EntityFramework.Data;
 using Microsoft.EntityFrameworkCore;
@@ -8,30 +10,57 @@ namespace CaseApplication.EntityFramework.Repositories
     public class PromocodesUsedByUserRepository: IPromocodeUsedByUserRepository
     {
         private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
+        private readonly MapperConfiguration _mapperConfiguration = new(configuration =>
+        {
+            configuration.CreateMap<PromocodesUsedByUserDto, PromocodesUsedByUserDto>();
+        });
 
         public PromocodesUsedByUserRepository(IDbContextFactory<ApplicationDbContext> contextFactory)
         {
             _contextFactory = contextFactory;
         }
+
         public async Task<PromocodesUsedByUser?> Get(Guid id)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
-        
-            return await context.PromocodeUsedByUsers.FirstOrDefaultAsync(x => x.Id == id);
+
+            PromocodesUsedByUser? promocodeUsed = await context.PromocodeUsedByUsers
+                .FirstOrDefaultAsync(x => x.Id == id);
+
+            if (promocodeUsed != null)
+            {
+                promocodeUsed.Promocode = await context.Promocode.FirstOrDefaultAsync
+                    (x => x.Id == promocodeUsed.PromocodeId);
+            }
+            
+            return promocodeUsed;
         }
 
         public async Task<List<PromocodesUsedByUser>> GetAll(Guid userId)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            return await context.PromocodeUsedByUsers
+            List<PromocodesUsedByUser> promocodesUseds = await context.PromocodeUsedByUsers
                     .Where(x => x.UserId == userId)
                     .ToListAsync();
+
+            foreach(PromocodesUsedByUser promocodeUsed in promocodesUseds)
+            {
+                promocodeUsed.Promocode = await context.Promocode.FirstOrDefaultAsync
+                    (x => x.Id == promocodeUsed.PromocodeId);
+            }
+
+            return promocodesUseds;
         }
 
-        public async Task<bool> Create(PromocodesUsedByUser promocodesUsedByUser)
+        public async Task<bool> Create(PromocodesUsedByUserDto promocodesUsedDto)
         {
+            IMapper? mapper = _mapperConfiguration.CreateMapper();
+
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            PromocodesUsedByUser promocodesUsedByUser = mapper
+                .Map<PromocodesUsedByUser>(promocodesUsedDto);
 
             promocodesUsedByUser.Id = new Guid();
         
@@ -41,19 +70,24 @@ namespace CaseApplication.EntityFramework.Repositories
             return true;
         }
 
-        public async Task<bool> Update(PromocodesUsedByUser promocodesUsedByUser)
+        public async Task<bool> Update(PromocodesUsedByUserDto promocodesUsedDto)
         {
+            IMapper? mapper = _mapperConfiguration.CreateMapper();
+
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            PromocodesUsedByUser? searchPromocode = await context
+            PromocodesUsedByUser? oldPromocodeUsed = await context
                 .PromocodeUsedByUsers
-                .FirstOrDefaultAsync(x => x.Id == promocodesUsedByUser.Id);
+                .FirstOrDefaultAsync(x => x.Id == promocodesUsedDto.Id);
 
-            if (searchPromocode is null) 
+            if (oldPromocodeUsed is null) 
                 throw new("There is no such PromocodesUsedByUser in the database, " +
                     "review what data comes from the api");
 
-            context.Entry(searchPromocode).CurrentValues.SetValues(promocodesUsedByUser);
+            PromocodesUsedByUser newPromocodesUsed = mapper
+                .Map<PromocodesUsedByUser>(promocodesUsedDto);
+
+            context.Entry(oldPromocodeUsed).CurrentValues.SetValues(newPromocodesUsed);
 
             await context.SaveChangesAsync();
 

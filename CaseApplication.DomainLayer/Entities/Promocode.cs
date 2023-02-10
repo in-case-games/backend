@@ -9,6 +9,7 @@ namespace CaseApplication.DomainLayer.Entities
         public string? PromocodeName { get; set; }
         public decimal PromocodeDiscount { get; set; }
         public int PromocodeUsesCount { get; set; }
+        public DateTime? PromocodeExpiryTime { get; set; }
         public PromocodeType? PromocodeType { get; set; }
         [JsonIgnore]
         public List<PromocodesUsedByUser>? PromocodesUsedByUsers { get; set; }

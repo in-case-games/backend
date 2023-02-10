@@ -1,4 +1,5 @@
-﻿using CaseApplication.Api.Models;
+﻿using AutoMapper;
+using CaseApplication.Api.Models;
 using CaseApplication.Api.Services;
 using CaseApplication.DomainLayer.Dtos;
 using CaseApplication.DomainLayer.Entities;
@@ -25,6 +26,10 @@ namespace CaseApplication.Api.Controllers
         private readonly IUserTokensRepository _userTokensRepository;
         private readonly EmailHelper _emailHelper;
         private readonly ValidationService _validationService;
+        private MapperConfiguration _mapperConfigurationInfo = new(configuration =>
+        {
+            configuration.CreateMap<UserAdditionalInfo, UserAdditionalInfoDto>();
+        });
         private Guid UserId => Guid
             .Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
         #endregion
@@ -116,7 +121,7 @@ namespace CaseApplication.Api.Controllers
             //Create Add info
             User createdUser = (await _userRepository.GetByLogin(user.UserLogin!))!;
 
-            await _userAdditionalInfoRepository.Create(new UserAdditionalInfo()
+            await _userAdditionalInfoRepository.Create(new()
             {
                 UserId = createdUser.Id,
             });
@@ -192,10 +197,10 @@ namespace CaseApplication.Api.Controllers
                 x => x.UserIpAddress == emailModel.UserIp) is not null;
             
             if (IsTokenUsed) return Forbid("Invalid token used");
-            
+
             UserAdditionalInfo userInfo = user.UserAdditionalInfo!;
 
-            if(userInfo.IsConfirmedAccount == false)
+            if (userInfo.IsConfirmedAccount == false)
             {
                 userInfo.IsConfirmedAccount = true;
 

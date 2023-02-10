@@ -57,9 +57,9 @@ namespace CaseApplication.Api.Controllers
 
         [Authorize(Roles = "admin")]
         [HttpPut("admin")]
-        public async Task<IActionResult> UpdateInfoByAdmin(UserAdditionalInfo userAdditionalInfo)
+        public async Task<IActionResult> UpdateInfoByAdmin(UserAdditionalInfo info)
         {
-            return Ok(await _userInfoRepository.Update(userAdditionalInfo));
+            return Ok(await _userInfoRepository.Update(info));
         }
     }
 }

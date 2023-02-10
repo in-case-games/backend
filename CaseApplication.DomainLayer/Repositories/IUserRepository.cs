@@ -10,8 +10,8 @@ namespace CaseApplication.DomainLayer.Repositories
         public Task<User?> GetByParameters(UserDto user);
         public Task<List<User>> GetAll();
         public Task<bool> IsUniqueSalt(string salt);
-        public Task<bool> Create(UserDto user);
-        public Task<bool> Update(UserDto oldUser, UserDto newUser);
+        public Task<bool> Create(UserDto userDto);
+        public Task<bool> Update(UserDto oldUserDto, UserDto newUserDto);
         public Task<bool> Delete(Guid id);
     }
 }

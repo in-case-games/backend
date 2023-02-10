@@ -1,4 +1,6 @@
-﻿using CaseApplication.DomainLayer.Entities;
+﻿using AutoMapper;
+using CaseApplication.DomainLayer.Dtos;
+using CaseApplication.DomainLayer.Entities;
 using CaseApplication.DomainLayer.Repositories;
 using CaseApplication.EntityFramework.Data;
 using Microsoft.EntityFrameworkCore;
@@ -8,7 +10,10 @@ namespace CaseApplication.EntityFramework.Repositories
     public class UserHistoryOpeningCasesRepository : IUserHistoryOpeningCasesRepository
     {
         private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
-
+        private readonly MapperConfiguration _mapperConfiguration = new(configuration =>
+        {
+            configuration.CreateMap<UserHistoryOpeningCasesDto, UserHistoryOpeningCases>();
+        });
         public UserHistoryOpeningCasesRepository(IDbContextFactory<ApplicationDbContext> contextFactory)
         {
             _contextFactory = contextFactory;
@@ -18,47 +23,65 @@ namespace CaseApplication.EntityFramework.Repositories
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            return await context.UserHistoryOpeningCases
+            UserHistoryOpeningCases? userHistory = await context.UserHistoryOpeningCases
                 .FirstOrDefaultAsync(x => x.Id == id);
+
+            if(userHistory != null)
+            {
+                userHistory.GameCase = await context.GameCase
+                    .FirstOrDefaultAsync(x => x.Id == userHistory.GameCaseId);
+                userHistory.GameItem = await context.GameItem
+                    .FirstOrDefaultAsync(x => x.Id == userHistory.GameItemId);
+            }
+
+            return userHistory;
         }
         public async Task<List<UserHistoryOpeningCases>> GetAll()
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            return await context.UserHistoryOpeningCases.ToListAsync();
+            List<UserHistoryOpeningCases> userHistories = await context.UserHistoryOpeningCases
+                .ToListAsync();
+
+            foreach(UserHistoryOpeningCases userHistory in userHistories)
+            {
+                userHistory.GameCase = await context.GameCase
+                    .FirstOrDefaultAsync(x => x.Id == userHistory.GameCaseId);
+                userHistory.GameItem = await context.GameItem
+                    .FirstOrDefaultAsync(x => x.Id == userHistory.GameItemId);
+            }
+
+            return userHistories;
         }
 
         public async Task<List<UserHistoryOpeningCases>> GetAllById(Guid userId)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            return await context.UserHistoryOpeningCases
+            List<UserHistoryOpeningCases> userHistories = await context.UserHistoryOpeningCases
                 .Where(x => x.UserId == userId)
                 .ToListAsync();
+
+            foreach (UserHistoryOpeningCases userHistory in userHistories)
+            {
+                userHistory.GameCase = await context.GameCase
+                    .FirstOrDefaultAsync(x => x.Id == userHistory.GameCaseId);
+                userHistory.GameItem = await context.GameItem
+                    .FirstOrDefaultAsync(x => x.Id == userHistory.GameItemId);
+            }
+
+            return userHistories;
         }
 
-        public async Task<bool> Create(UserHistoryOpeningCases userHistory)
+        public async Task<bool> Create(UserHistoryOpeningCasesDto userHistoryDto)
         {
+            IMapper? mapper = _mapperConfiguration.CreateMapper();
+
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
+            UserHistoryOpeningCases userHistory = mapper.Map<UserHistoryOpeningCases>(userHistoryDto);
+            
             await context.UserHistoryOpeningCases.AddAsync(userHistory);
-            await context.SaveChangesAsync();
-
-            return true;
-        }
-
-        public async Task<bool> Update(UserHistoryOpeningCases userHistory)
-        {
-            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
-
-            UserHistoryOpeningCases? searchUserHistory = await context
-                .UserHistoryOpeningCases
-                .FirstOrDefaultAsync(x => x.Id == userHistory.Id);
-
-            if (searchUserHistory is null) throw new Exception("There is no such user history, " +
-                "review what data comes from the api");
-
-            context.Entry(searchUserHistory).CurrentValues.SetValues(userHistory);
             await context.SaveChangesAsync();
 
             return true;

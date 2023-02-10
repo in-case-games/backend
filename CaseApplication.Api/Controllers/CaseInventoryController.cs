@@ -1,4 +1,5 @@
-﻿using CaseApplication.DomainLayer.Entities;
+﻿using CaseApplication.DomainLayer.Dtos;
+using CaseApplication.DomainLayer.Entities;
 using CaseApplication.DomainLayer.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -56,14 +57,14 @@ namespace CaseApplication.Api.Controllers
 
         [Authorize(Roles = "admin")]
         [HttpPost("admin")]
-        public async Task<IActionResult> Create(CaseInventory caseInventory)
+        public async Task<IActionResult> Create(CaseInventoryDto caseInventory)
         {
             return Ok(await _caseInventoryRepository.Create(caseInventory));
         }
 
         [Authorize(Roles = "admin")]
         [HttpPut("admin")]
-        public async Task<IActionResult> Update(CaseInventory caseInventory)
+        public async Task<IActionResult> Update(CaseInventoryDto caseInventory)
         {
             return Ok(await _caseInventoryRepository.Update(caseInventory));
         }

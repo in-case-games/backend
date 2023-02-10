@@ -1,4 +1,5 @@
-﻿using CaseApplication.DomainLayer.Entities;
+﻿using CaseApplication.DomainLayer.Dtos;
+using CaseApplication.DomainLayer.Entities;
 using CaseApplication.DomainLayer.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -39,7 +40,7 @@ namespace CaseApplication.Api.Controllers
             if (isExistPromocode)
                 return UnprocessableEntity("Promocode is used");
 
-            await _promocodeUsedRepository.Create(new PromocodesUsedByUser()
+            await _promocodeUsedRepository.Create(new()
             {
                 UserId = UserId,
                 PromocodeId = searchPromocode.Id
@@ -62,14 +63,14 @@ namespace CaseApplication.Api.Controllers
 
         [Authorize(Roles = "admin")]
         [HttpPost("admin")]
-        public async Task<IActionResult> Create(Promocode promocode)
+        public async Task<IActionResult> Create(PromocodeDto promocode)
         {
             return Ok(await _promocodeRepository.Create(promocode));
         }
 
         [Authorize(Roles = "admin")]
         [HttpPut("admin")]
-        public async Task<IActionResult> Update(Promocode promocode)
+        public async Task<IActionResult> Update(PromocodeDto promocode)
         {
             return Ok(await _promocodeRepository.Update(promocode));
         }

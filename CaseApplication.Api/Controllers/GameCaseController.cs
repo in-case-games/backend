@@ -1,4 +1,5 @@
-﻿using CaseApplication.DomainLayer.Entities;
+﻿using CaseApplication.DomainLayer.Dtos;
+using CaseApplication.DomainLayer.Entities;
 using CaseApplication.DomainLayer.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -99,9 +100,9 @@ namespace CaseApplication.Api.Controllers
 
         [Authorize(Roles = "admin")]
         [HttpPost("admin")]
-        public async Task<IActionResult> Create(GameCase gameCase)
+        public async Task<IActionResult> Create(GameCaseDto gameCaseDto)
         {
-            return Ok(await _gameCaseRepository.Create(gameCase));
+            return Ok(await _gameCaseRepository.Create(gameCaseDto));
         }
 
         [Authorize(Roles = "admin")]

@@ -26,8 +26,11 @@ namespace CaseApplication.Api.Controllers
         private readonly MapperConfiguration _mapperConfiguration = new(configuration =>
         {
             configuration.CreateMap<User, UserDto>();
-        }
-        );
+        });
+        private readonly MapperConfiguration _mapperConfigurationInfo = new(configuration =>
+        {
+            configuration.CreateMap<UserAdditionalInfo, UserAdditionalInfoDto>();
+        });
         private Guid UserId => Guid
             .Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
 
@@ -143,6 +146,7 @@ namespace CaseApplication.Api.Controllers
             if (searchUser != null) return Forbid("Email is already busy");
 
             IMapper? mapper = _mapperConfiguration.CreateMapper();
+            IMapper? mapperInfo = _mapperConfigurationInfo.CreateMapper();
 
             UserDto oldUser = mapper.Map<UserDto>(user);
             UserDto newUser = mapper.Map<UserDto>(user);
@@ -150,8 +154,10 @@ namespace CaseApplication.Api.Controllers
             newUser.UserEmail = emailModel.UserEmail;
             user.UserAdditionalInfo!.IsConfirmedAccount = false;
 
+            UserAdditionalInfo info = user.UserAdditionalInfo!;
+
             await _userRepository.Update(oldUser, newUser);
-            await _userInfoRepository.Update(user.UserAdditionalInfo);
+            await _userInfoRepository.Update(info);
 
             await _userTokensRepository.DeleteAll(user.Id);
 

@@ -1,4 +1,5 @@
 ﻿using CaseApplication.Api.Models;
+using CaseApplication.DomainLayer.Dtos;
 using CaseApplication.DomainLayer.Entities;
 using CaseApplication.WebClient.Services;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -14,7 +15,7 @@ namespace CaseApplication.IntegrationTests.Api
         private readonly AuthenticationTestHelper _authHelper;
         private TokenModel AdminTokens { get; set; } = new();
         private User Admin { get; set; } = new();
-        private GameCase GameCase { get; set; } = new();
+        private GameCaseDto GameCase { get; set; } = new();
         private List<GameItem> GameItems { get; set; } = new();
 
         public GameApiTest(
@@ -35,15 +36,15 @@ namespace CaseApplication.IntegrationTests.Api
             };
         }
 
-        private async Task InitializeOneTimeAccount(string ipAdmin)
+        private async Task InitializeOneTimeAccount(string token)
         {
             Admin = new()
             {
-                UserLogin = $"ULGOCAT{ipAdmin}Admin",
-                UserEmail = $"UEGOCAT{ipAdmin}Admin"
+                UserEmail = "yt_ferbray@mail.ru",
+                UserLogin = "GIS"
             };
 
-            AdminTokens = await _authHelper.SignInAdmin(Admin, ipAdmin);
+            AdminTokens = await _authHelper.SignInSuperAdmin(token);
         }
 
         private async Task DeleteOneTimeAccounts(string ipAdmin)
@@ -54,7 +55,7 @@ namespace CaseApplication.IntegrationTests.Api
         [Fact]
         public async Task GameOpeningCasesApiTest()
         {
-            await InitializeOneTimeAccount("0.3.0");
+            await InitializeOneTimeAccount("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjRlYjhjNDYwLWUxOGYtNDEwZi05ZmIzLTNmNGMyNGJkMjJkNCIsImV4cCI6MTY3NjY0MTA4MywiaXNzIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6NzA1MyIsImF1ZCI6Imh0dHBzOi8vbG9jYWxob3N0OjcwNTMifQ.CoAaWtAyKnwI6l7qFrH2JDFW1clvYlcjfqmki9i3IqY");
             await CreateDependencies();
 
             //Create Counter
@@ -96,13 +97,12 @@ namespace CaseApplication.IntegrationTests.Api
                 resultTime.Seconds,
                 resultTime.Milliseconds);
 
-            GameCase = (await _clientApi.ResponseGet<GameCase?>($"/GameCase/admin/{GameCase.Id}", AdminTokens.AccessToken!))!;
+            GameCase gameCase = (await _clientApi.ResponseGet<GameCase?>($"/GameCase/admin/{GameCase.Id}", AdminTokens.AccessToken!))!;
             
-            _output.WriteLine($"Баланс: {GameCase.GameCaseBalance}\n" +
+            _output.WriteLine($"Баланс: {gameCase.GameCaseBalance}\n" +
                 $"Скорость алгоритма: {elapsedTime}");
 
             await DeleteDependencies();
-            await DeleteOneTimeAccounts("0.3.0");
         }
 
         private async Task CreateDependencies()
@@ -183,48 +183,48 @@ namespace CaseApplication.IntegrationTests.Api
             }
 
             //Create CaseInventory
-            CaseInventory inventory1 = new()
+            CaseInventoryDto inventory1 = new()
             {
                 GameCaseId = GameCase.Id,
                 GameItemId = GameItems[0].Id,
                 LossChance = 1000,
                 NumberItemsCase = 1
             };
-            CaseInventory inventory2 = new()
+            CaseInventoryDto inventory2 = new()
             {
                 GameCaseId = GameCase.Id,
                 GameItemId = GameItems[1].Id,
                 LossChance = 1000,
                 NumberItemsCase = 1
             };
-            CaseInventory inventory3 = new()
+            CaseInventoryDto inventory3 = new()
             {
                 GameCaseId = GameCase.Id,
                 GameItemId = GameItems[2].Id,
                 LossChance = 1000,
                 NumberItemsCase = 1
             };
-            CaseInventory inventory4 = new()
+            CaseInventoryDto inventory4 = new()
             {
                 GameCaseId = GameCase.Id,
                 GameItemId = GameItems[3].Id,
                 LossChance = 3000,
                 NumberItemsCase = 1
             };
-            CaseInventory inventory5 = new() {
+            CaseInventoryDto inventory5 = new() {
                 GameCaseId = GameCase.Id,
                 GameItemId = GameItems[4].Id,
                 LossChance = 7000,
                 NumberItemsCase = 1
             };
-            CaseInventory inventory6 = new()
+            CaseInventoryDto inventory6 = new()
             {
                 GameCaseId = GameCase.Id,
                 GameItemId = GameItems[5].Id,
                 LossChance = 20545,
                 NumberItemsCase = 1
             };
-            CaseInventory inventory7 = new()
+            CaseInventoryDto inventory7 = new()
             {
                 GameCaseId = GameCase.Id,
                 GameItemId = GameItems[6].Id,
@@ -232,7 +232,7 @@ namespace CaseApplication.IntegrationTests.Api
                 NumberItemsCase = 1
             };
 
-            List<CaseInventory> caseInventories = new() { 
+            List<CaseInventoryDto> caseInventories = new() { 
                 inventory1, 
                 inventory2, 
                 inventory3, 
@@ -242,7 +242,7 @@ namespace CaseApplication.IntegrationTests.Api
                 inventory7
             };
 
-            foreach (CaseInventory inventory in caseInventories)
+            foreach (CaseInventoryDto inventory in caseInventories)
             {
                 await _clientApi.ResponsePostStatusCode(
                     "/CaseInventory/admin", inventory, AdminTokens.AccessToken!);

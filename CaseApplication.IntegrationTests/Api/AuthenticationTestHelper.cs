@@ -86,6 +86,16 @@ namespace CaseApplication.IntegrationTests.Api
             return code == HttpStatusCode.OK;
         }
 
+        public async Task<TokenModel> SignInSuperAdmin(string token)
+        {
+            TokenModel? tokenModelAdmin = await _responseHelper.ResponseGet<TokenModel>(
+                $"/Authentication/refresh/{token}&100");
+
+            SuperAdminTokens = tokenModelAdmin;
+
+            return tokenModelAdmin!;
+        }
+
         public async Task<TokenModel> RefreshTokens(string refreshToken, string ip)
         {
             TokenModel? tokenModel = await _responseHelper.ResponseGet<TokenModel>(

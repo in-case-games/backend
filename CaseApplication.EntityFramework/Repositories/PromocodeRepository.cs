@@ -1,4 +1,6 @@
-﻿using CaseApplication.DomainLayer.Entities;
+﻿using AutoMapper;
+using CaseApplication.DomainLayer.Dtos;
+using CaseApplication.DomainLayer.Entities;
 using CaseApplication.DomainLayer.Repositories;
 using CaseApplication.EntityFramework.Data;
 using Microsoft.EntityFrameworkCore;
@@ -8,7 +10,10 @@ namespace CaseApplication.EntityFramework.Repositories
     public class PromocodeRepository: IPromocodeRepository
     {
         private IDbContextFactory<ApplicationDbContext> _contextFactory;
-
+        private readonly MapperConfiguration _mapperConfiguration = new(configuration =>
+        {
+            configuration.CreateMap<PromocodeDto, Promocode>();
+        });
         public PromocodeRepository(IDbContextFactory<ApplicationDbContext> contextFactory)
         {
             _contextFactory = contextFactory;
@@ -17,7 +22,15 @@ namespace CaseApplication.EntityFramework.Repositories
         public async Task<Promocode?> Get(Guid id)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
-        
+
+            Promocode? promocode = await context.Promocode.FirstOrDefaultAsync(x => x.Id == id);
+
+            if (promocode != null)
+            {
+                promocode.PromocodeType = await context.PromocodeType.FirstOrDefaultAsync(
+                    x => x.Id == promocode.PromocodeTypeId);
+            }
+
             return await context.Promocode.FirstOrDefaultAsync(x => x.Id == id);
         }
 
@@ -25,12 +38,25 @@ namespace CaseApplication.EntityFramework.Repositories
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            return await context.Promocode.FirstOrDefaultAsync(x => x.PromocodeName == name);
+            Promocode? promocode = await context.Promocode.FirstOrDefaultAsync(
+                x => x.PromocodeName == name);
+
+            if (promocode != null)
+            {
+                promocode.PromocodeType = await context.PromocodeType.FirstOrDefaultAsync(
+                    x => x.Id == promocode.PromocodeTypeId);
+            }
+
+            return promocode;
         }
 
-        public async Task<bool> Create(Promocode promocode)
+        public async Task<bool> Create(PromocodeDto promocodeDto)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            IMapper? mapper = _mapperConfiguration.CreateMapper();
+
+            Promocode promocode = mapper.Map<Promocode>(promocodeDto);
 
             promocode.Id = new Guid();
 
@@ -40,18 +66,21 @@ namespace CaseApplication.EntityFramework.Repositories
             return true;
         }
 
-        public async Task<bool> Update(Promocode promocode)
+        public async Task<bool> Update(PromocodeDto promocodeDto)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            Promocode? searchPromocode = await context
+            Promocode? oldPromocode = await context
                 .Promocode
-                .FirstOrDefaultAsync(x => x.Id == promocode.Id);
+                .FirstOrDefaultAsync(x => x.Id == promocodeDto.Id);
 
-            if (searchPromocode is null) throw new("There is no such promocode in the database, " +
+            if (oldPromocode is null) throw new("There is no such promocode in the database, " +
                 "review what data comes from the api");
 
-            context.Entry(searchPromocode).CurrentValues.SetValues(searchPromocode);
+            IMapper? mapper = _mapperConfiguration.CreateMapper();
+            Promocode newPromocode = mapper.Map<Promocode>(promocodeDto);
+
+            context.Entry(oldPromocode).CurrentValues.SetValues(newPromocode);
 
             await context.SaveChangesAsync();
 

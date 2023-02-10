@@ -2,6 +2,8 @@
 using CaseApplication.DomainLayer.Entities;
 using CaseApplication.DomainLayer.Repositories;
 using CaseApplication.EntityFramework.Data;
+using AutoMapper;
+using CaseApplication.DomainLayer.Dtos;
 
 namespace CaseApplication.EntityFramework.Repositories
 {
@@ -11,17 +13,23 @@ namespace CaseApplication.EntityFramework.Repositories
         public UserAdditionalInfoRepository(IDbContextFactory<ApplicationDbContext> contextFactory) {
             _contextFactory = contextFactory;
         }
+        private readonly MapperConfiguration _mapperConfiguration = new(configuration =>
+        {
+            configuration.CreateMap<UserAdditionalInfoDto, UserAdditionalInfo>();
+        });
 
         public async Task<UserAdditionalInfo?> Get(Guid id)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
             UserAdditionalInfo? info = await context.UserAdditionalInfo
                 .FirstOrDefaultAsync(x => x.Id == id);
+
             if (info is null)
                 throw new Exception("The info is not found");
 
-            UserRole? userRole = await context.UserRole.FindAsync(info.UserRoleId);
-            info.UserRole = userRole;
+            info.UserRole = await context.UserRole
+                .FirstOrDefaultAsync(x => x.Id == info.UserRoleId);
 
             return info;
         }
@@ -30,11 +38,19 @@ namespace CaseApplication.EntityFramework.Repositories
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            return await context.UserAdditionalInfo
+            UserAdditionalInfo? info = await context.UserAdditionalInfo
                 .FirstOrDefaultAsync(x => x.UserId == userId);
+
+            if (info is not null)
+            {
+                info.UserRole = await context.UserRole
+                    .FirstOrDefaultAsync(x => x.Id == info.UserRoleId);
+            }
+
+            return info;
         }
 
-        public async Task<bool> Create(UserAdditionalInfo info)
+        public async Task<bool> Create(UserAdditionalInfoDto infoDto)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
@@ -42,6 +58,8 @@ namespace CaseApplication.EntityFramework.Repositories
 
             if (searchRole is null) throw new Exception("Add standard roles to the database");
 
+            IMapper? mapper = _mapperConfiguration.CreateMapper();
+            UserAdditionalInfo info = mapper.Map<UserAdditionalInfo>(infoDto);
             info.Id = Guid.NewGuid();
             info.UserRoleId = searchRole!.Id;
 
@@ -55,8 +73,7 @@ namespace CaseApplication.EntityFramework.Repositories
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            UserAdditionalInfo? searchInfo = await context
-                .UserAdditionalInfo
+            UserAdditionalInfo? searchInfo = await context.UserAdditionalInfo
                 .FirstOrDefaultAsync(x => x.UserId == info.UserId);
 
             if(searchInfo is null) {
@@ -74,8 +91,7 @@ namespace CaseApplication.EntityFramework.Repositories
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            UserAdditionalInfo? searchInfo = await context
-                .UserAdditionalInfo
+            UserAdditionalInfo? searchInfo = await context.UserAdditionalInfo
                 .FirstOrDefaultAsync(x => x.Id == id);
 
             if(searchInfo is null) {
