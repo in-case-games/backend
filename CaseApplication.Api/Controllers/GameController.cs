@@ -94,8 +94,8 @@ namespace CaseApplication.Api.Controllers
                 .ToList();
 
             int winIndexItem = Randomizer(lossChances);
-            Guid winIdGameItem = gameCase.СaseInventories![winIndexItem].GameItemId;
-            GameItem winGameItem = gameCase.СaseInventories[winIndexItem].GameItem!;
+            GameItem winGameItem = gameCase.СaseInventories![winIndexItem].GameItem!;
+            Guid winIdGameItem = winGameItem.Id;
 
             //Check it will become negative case balance
             if (IsProfitCase(winGameItem, gameCase) is false)
@@ -103,8 +103,8 @@ namespace CaseApplication.Api.Controllers
                 List<GameItem> gameItems = gameCase.СaseInventories.Select(x => x.GameItem).ToList()!;
 
                 gameItems = gameItems.OrderByDescending(g => g.GameItemCost).ToList();
-                winIdGameItem = gameItems[^1].Id;
                 winGameItem = gameItems[^1];
+                winIdGameItem = winGameItem.Id;
             }
 
             return winGameItem;
