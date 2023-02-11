@@ -1,11 +1,6 @@
-﻿using CaseApplication.Api.Controllers;
-using CaseApplication.DomainLayer.Dtos;
-using CaseApplication.DomainLayer.Entities;
-using CaseApplication.DomainLayer.Repositories;
+﻿using CaseApplication.DomainLayer.Entities;
 using CaseApplication.WebClient.Services;
 using Microsoft.AspNetCore.Mvc.Testing;
-using Moq;
-using System;
 using System.Net;
 
 namespace CaseApplication.IntegrationTests.ApiV2
