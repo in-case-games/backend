@@ -53,7 +53,7 @@ namespace CaseApplication.EntityFramework.Repositories
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             GameItem? searchItem = await context.GameItem
-                .AsNoTracking().FirstOrDefaultAsync(x => x.Id == item.Id);
+                .FirstOrDefaultAsync(x => x.Id == item.Id);
 
             if (searchItem is null) throw new Exception("There is no such item in the database, " +
                 "review what data comes from the api");

@@ -73,7 +73,6 @@ namespace CaseApplication.EntityFramework.Repositories
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             CaseInventory? oldCaseInventory = await context.CaseInventory
-                .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == caseInventoryDto.Id);
 
             if (oldCaseInventory is null) 

@@ -44,8 +44,7 @@ namespace CaseApplication.EntityFramework.Repositories
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
             
-            News? searchNews = await context.News
-                .AsNoTracking().FirstOrDefaultAsync(x => x.Id == news.Id);
+            News? searchNews = await context.News.FirstOrDefaultAsync(x => x.Id == news.Id);
 
             if(searchNews is null) throw new("There is no such news in the database, " +
                 "review what data comes from the api");

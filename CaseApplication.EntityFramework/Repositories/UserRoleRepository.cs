@@ -52,13 +52,13 @@ namespace CaseApplication.EntityFramework.Repositories
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            UserRole? searchUserRole = await context.UserRole
-                .AsNoTracking().FirstOrDefaultAsync(x => x.Id == role.Id);
+            UserRole? oldUserRole = await context.UserRole
+                .FirstOrDefaultAsync(x => x.Id == role.Id);
 
-            if (searchUserRole is null) throw new Exception("There is no such role in the database, " +
+            if (oldUserRole is null) throw new Exception("There is no such role in the database, " +
                 "review what data comes from the api");
 
-            context.Entry(searchUserRole).CurrentValues.SetValues(role);
+            context.Entry(oldUserRole).CurrentValues.SetValues(role);
             await context.SaveChangesAsync();
 
             return true;

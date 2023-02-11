@@ -55,7 +55,7 @@ namespace CaseApplication.IntegrationTests.Api
         [Fact]
         public async Task GameOpeningCasesApiTest()
         {
-            await InitializeOneTimeAccount("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6ImY2YzgxMmYzLWIxMTMtNGI1NS1iOTUwLTE3OTQ0NGEzMzBjNSIsImV4cCI6MTY3NjcwNDk2MCwiaXNzIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6NzA1MyIsImF1ZCI6Imh0dHBzOi8vbG9jYWxob3N0OjcwNTMifQ.TqyOccgBEblg_V3Pm3BpxMA6mUPD4ulBFJNJbO666PE");
+            await InitializeOneTimeAccount("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6ImY2YzgxMmYzLWIxMTMtNGI1NS1iOTUwLTE3OTQ0NGEzMzBjNSIsImV4cCI6MTY3NjcwNDk5MCwiaXNzIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6NzA1MyIsImF1ZCI6Imh0dHBzOi8vbG9jYWxob3N0OjcwNTMifQ.8uIcdbBoEM0MzmcN6p5UpxSEYELm0LVBpFlxSOsHyYQ");
             await CreateDependencies();
 
             //Create Counter

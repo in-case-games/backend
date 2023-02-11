@@ -79,9 +79,7 @@ namespace CaseApplication.EntityFramework.Repositories
 
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            PromocodesUsedByUser? oldPromocodeUsed = await context
-                .PromocodeUsedByUsers
-                .AsNoTracking()
+            PromocodesUsedByUser? oldPromocodeUsed = await context.PromocodeUsedByUsers
                 .FirstOrDefaultAsync(x => x.Id == promocodesUsedDto.Id);
 
             if (oldPromocodeUsed is null) 

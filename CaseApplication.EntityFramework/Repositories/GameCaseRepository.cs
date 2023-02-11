@@ -120,7 +120,7 @@ namespace CaseApplication.EntityFramework.Repositories
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             GameCase? oldCase = await context.GameCase
-                .AsNoTracking().FirstOrDefaultAsync(x => x.Id == gameCase.Id);
+                .FirstOrDefaultAsync(x => x.Id == gameCase.Id);
 
             if (oldCase is null) throw new Exception("There is no such case in the database, " +
                 "review what data comes from the api");

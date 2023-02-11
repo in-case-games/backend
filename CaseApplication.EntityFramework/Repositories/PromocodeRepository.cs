@@ -59,9 +59,7 @@ namespace CaseApplication.EntityFramework.Repositories
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            Promocode? oldPromocode = await context
-                .Promocode
-                .AsNoTracking()
+            Promocode? oldPromocode = await context.Promocode
                 .FirstOrDefaultAsync(x => x.Id == promocodeDto.Id);
 
             if (oldPromocode is null) throw new("There is no such promocode in the database, " +

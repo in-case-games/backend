@@ -54,9 +54,7 @@ namespace CaseApplication.EntityFramework.Repositories
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            PromocodeType? promoType = await context
-                .PromocodeType
-                .AsNoTracking()
+            PromocodeType? promoType = await context.PromocodeType
                 .FirstOrDefaultAsync(x => x.Id == promocodeType.Id);
         
             if (promoType is null) 

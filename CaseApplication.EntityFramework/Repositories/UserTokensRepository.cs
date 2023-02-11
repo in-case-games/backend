@@ -60,15 +60,15 @@ namespace CaseApplication.EntityFramework.Repositories
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            UserToken? userToken = await context.UserToken.FirstOrDefaultAsync(x => x.Id == token.Id);
+            UserToken? oldToken = await context.UserToken.FirstOrDefaultAsync(x => x.Id == token.Id);
 
-            if (userToken == null)
+            if (oldToken == null)
             {
                 throw new Exception("There is no such token, " +
                     "review what data comes from the api");
             }
 
-            context.Entry(userToken).CurrentValues.SetValues(token);
+            context.Entry(oldToken).CurrentValues.SetValues(token);
             await context.SaveChangesAsync();
 
             return true;

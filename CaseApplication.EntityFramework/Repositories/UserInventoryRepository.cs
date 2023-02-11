@@ -76,7 +76,6 @@ namespace CaseApplication.EntityFramework.Repositories
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             UserInventory? oldInventory = await context.UserInventory
-                .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == userInventoryDto.Id);
 
             if(oldInventory is null) throw new Exception("There is no such user inventory, " +
