@@ -7,21 +7,21 @@ namespace CaseApplication.EntityFramework.Data
 {
     public class ApplicationDbContext : DbContext
     {
-        internal DbSet<User> User => Set<User>();
-        internal DbSet<UserRole> UserRole => Set<UserRole>();
-        internal DbSet<Promocode> Promocode => Set<Promocode>();
-        internal DbSet<PromocodesUsedByUser> PromocodeUsedByUsers => Set<PromocodesUsedByUser>();
-        internal DbSet<PromocodeType> PromocodeType => Set<PromocodeType>();
-        internal DbSet<UserRestriction> UserRestriction => Set<UserRestriction>();
-        internal DbSet<UserAdditionalInfo> UserAdditionalInfo => Set<UserAdditionalInfo>();
-        internal DbSet<UserInventory> UserInventory => Set<UserInventory>();
-        internal DbSet<GameCase> GameCase => Set<GameCase>();
-        internal DbSet<GameItem> GameItem => Set<GameItem>();
-        internal DbSet<SiteStatistics> SiteStatistics => Set<SiteStatistics>();
-        internal DbSet<CaseInventory> CaseInventory => Set<CaseInventory>();
-        internal DbSet<UserHistoryOpeningCases> UserHistoryOpeningCases => Set<UserHistoryOpeningCases>();
-        internal DbSet<News> News => Set<News>();
-        internal DbSet<UserToken> UserToken => Set<UserToken>();
+        public DbSet<User> User => Set<User>();
+        public DbSet<UserRole> UserRole => Set<UserRole>();
+        public DbSet<Promocode> Promocode => Set<Promocode>();
+        public DbSet<PromocodesUsedByUser> PromocodeUsedByUsers => Set<PromocodesUsedByUser>();
+        public DbSet<PromocodeType> PromocodeType => Set<PromocodeType>();
+        public DbSet<UserRestriction> UserRestriction => Set<UserRestriction>();
+        public DbSet<UserAdditionalInfo> UserAdditionalInfo => Set<UserAdditionalInfo>();
+        public DbSet<UserInventory> UserInventory => Set<UserInventory>();
+        public DbSet<GameCase> GameCase => Set<GameCase>();
+        public DbSet<GameItem> GameItem => Set<GameItem>();
+        public DbSet<SiteStatistics> SiteStatistics => Set<SiteStatistics>();
+        public DbSet<CaseInventory> CaseInventory => Set<CaseInventory>();
+        public DbSet<UserHistoryOpeningCases> UserHistoryOpeningCases => Set<UserHistoryOpeningCases>();
+        public DbSet<News> News => Set<News>();
+        public DbSet<UserToken> UserToken => Set<UserToken>();
 
         public ApplicationDbContext(DbContextOptions options) : base(options)
         {

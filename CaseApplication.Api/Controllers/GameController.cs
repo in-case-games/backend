@@ -2,8 +2,10 @@
 using CaseApplication.DomainLayer.Dtos;
 using CaseApplication.DomainLayer.Entities;
 using CaseApplication.DomainLayer.Repositories;
+using CaseApplication.EntityFramework.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 namespace CaseApplication.Api.Controllers
@@ -13,36 +15,28 @@ namespace CaseApplication.Api.Controllers
     public class GameController : ControllerBase
     {
         private static readonly Random _random = new();
-        #region injections
-        private readonly IUserAdditionalInfoRepository _userInfoRepository;
-        private readonly IGameCaseRepository _gameCaseRepository;
-        private readonly IUserHistoryOpeningCasesRepository _userHistory;
-        private readonly IUserInventoryRepository _userInventoryRepository;
+        private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
+
         private Guid UserId => Guid
             .Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
-        #endregion
-        #region ctor
-        public GameController(
-            IUserAdditionalInfoRepository userInfoRepository,
-            IUserHistoryOpeningCasesRepository userHistory,
-            IGameCaseRepository gameCaseRepository,
-            IUserInventoryRepository userInventoryRepository)
+
+        public GameController(IDbContextFactory<ApplicationDbContext> contextFactory)
         {
-            _userInfoRepository = userInfoRepository;
-            _userHistory = userHistory;
-            _gameCaseRepository = gameCaseRepository;
-            _userInventoryRepository = userInventoryRepository;
+            _contextFactory = contextFactory;
         }
-        #endregion
+
         [Authorize]
         [HttpGet("{caseId}")]
         public async Task<IActionResult> GetOpeningCase(Guid caseId)
         {
-            //Check Balance
-            UserAdditionalInfo? userAdditionalInfo = await _userInfoRepository.GetByUserId(UserId);
-            GameCase? gameCase = await _gameCaseRepository.Get(caseId);
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            if(userAdditionalInfo is null || gameCase is null) return NotFound();
+            UserAdditionalInfo? userAdditionalInfo = await context.UserAdditionalInfo
+                .FirstOrDefaultAsync(x => x.UserId == UserId);
+            GameCase? gameCase = await context.GameCase
+                .FirstOrDefaultAsync(x => x.Id == caseId);
+
+            if (userAdditionalInfo is null || gameCase is null) return NotFound();
 
             bool isValidBalance = (userAdditionalInfo.UserBalance >= gameCase.GameCaseCost);
 
@@ -51,9 +45,15 @@ namespace CaseApplication.Api.Controllers
                     "Top up your balance or open a case cheaper");
             }
 
+            gameCase.СaseInventories = await context.CaseInventory
+                .AsNoTracking()
+                .Include(x => x.GameItem)
+                .Where(x => x.GameCaseId == gameCase.Id)
+                .ToListAsync();
+
             //Update Balance Case and User
-            await UpdateUserBalance(userAdditionalInfo, -gameCase.GameCaseCost);
-            gameCase = await UpdateCaseBalance(gameCase, gameCase.GameCaseCost);
+            userAdditionalInfo.UserBalance -= gameCase.GameCaseCost;
+            gameCase.GameCaseBalance += gameCase.GameCaseCost;
 
             //Calling random
             GameItem winGameItem = RandomizeBySmallest(in gameCase);
@@ -61,24 +61,28 @@ namespace CaseApplication.Api.Controllers
             //Update Balance Case
             decimal expensesCase = winGameItem.GameItemCost + (gameCase.GameCaseCost 
                 * gameCase.RevenuePrecentage);
-            gameCase = await UpdateCaseBalance(gameCase, -expensesCase);
+            gameCase.GameCaseBalance -= expensesCase;
 
             //Add history and add inventory user
-            UserHistoryOpeningCasesDto historyCase = new()
+            UserHistoryOpeningCases userHistory = new()
             {
+                Id = new Guid(),
                 UserId = UserId,
                 GameCaseId = gameCase.Id,
                 GameItemId = winGameItem.Id,
                 CaseOpenAt = DateTime.UtcNow
             };
-            UserInventoryDto userInventory = new()
+            UserInventory userInventory = new()
             {
+                Id = new Guid(),
                 UserId = UserId,
                 GameItemId = winGameItem.Id
             };
 
-            await _userHistory.Create(historyCase);
-            await _userInventoryRepository.Create(userInventory);
+            await context.UserHistoryOpeningCases.AddAsync(userHistory);
+            await context.UserInventory.AddAsync(userInventory);
+
+            await context.SaveChangesAsync();
 
             return Ok(winGameItem);
         }
@@ -113,20 +117,7 @@ namespace CaseApplication.Api.Controllers
 
             return gameItem.GameItemCost <= AvailableBalance;
         }
-        private async Task<UserAdditionalInfo> UpdateUserBalance(UserAdditionalInfo info, decimal value)
-        {
-            info.UserBalance += value;
-            await _userInfoRepository.Update(info);
 
-            return info;
-        }
-        private async Task<GameCase> UpdateCaseBalance(GameCase gameCase, decimal value)
-        {
-            gameCase.GameCaseBalance += value;
-            await _gameCaseRepository.Update(gameCase);
-
-            return gameCase;
-        }
         private static int Randomizer(List<int> lossChance)
         {
             List<List<int>> partsCaseChance = new();
