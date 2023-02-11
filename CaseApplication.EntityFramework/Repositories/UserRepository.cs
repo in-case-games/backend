@@ -34,6 +34,7 @@ namespace CaseApplication.EntityFramework.Repositories
             User? user = await context
                 .User
                 .Include(x => x.UserAdditionalInfo)
+                .Include(x => x.UserAdditionalInfo!.UserRole)
                 .Include(x => x.UserInventories)
                 .Include(x => x.PromocodesUsedByUsers)
                 .Include(x => x.UserRestrictions)
