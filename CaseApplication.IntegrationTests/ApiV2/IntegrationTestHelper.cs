@@ -1,21 +1,31 @@
-﻿using Azure.Core;
-using CaseApplication.Api.Services;
+﻿using CaseApplication.Api.Services;
 using CaseApplication.DomainLayer.Entities;
+using CaseApplication.EntityFramework.Data;
+using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
 namespace CaseApplication.IntegrationTests.ApiV2
 {
-    public class AuthenticationHelper
+    public class IntegrationTestHelper
     {
         private  IConfiguration _configuration = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddUserSecrets<Program>()
             .Build();
         private readonly JwtHelper _jwtHelper;
-        public AuthenticationHelper()
+        protected ApplicationDbContext Context { get; }
+        public IntegrationTestHelper()
         {
+            var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+                .EnableSensitiveDataLogging()
+                .UseSqlServer(_configuration["ConnectionStrings:DevelopmentConnection"])
+                .Options;
+
+            Context = new ApplicationDbContext(options);
+
             _jwtHelper = new(_configuration);
         }
         public string CreateToken()

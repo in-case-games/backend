@@ -1,86 +1,116 @@
 ﻿using CaseApplication.Api.Controllers;
+using CaseApplication.DomainLayer.Dtos;
 using CaseApplication.DomainLayer.Entities;
 using CaseApplication.DomainLayer.Repositories;
 using CaseApplication.WebClient.Services;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Moq;
+using System;
+using System.Net;
 
 namespace CaseApplication.IntegrationTests.ApiV2
 {
-    public class UserApiTest: IClassFixture<WebApplicationFactory<Program>>
+    public class UserApiTest: IntegrationTestHelper, IClassFixture<WebApplicationFactory<Program>>
     {
         private readonly string _accessToken;
-        private readonly AuthenticationHelper _helper = new();
         private readonly ResponseHelper _response;
-        private static readonly Guid guid = Guid.NewGuid();
         public UserApiTest(WebApplicationFactory<Program> app)
         {
             _response = new(app.CreateClient());
-            _accessToken = _helper.CreateToken();
+            _accessToken = CreateToken();
         }
         [Fact]
-        public async Task GET_AllUsers_ShouldBeOk()
+        public async Task GET_AllUsers_ReturnsOk()
         {
             // Arrange
-            throw new Exception(_accessToken);
+            Guid guid = Guid.NewGuid();
+            await InitializeTestUser(guid);
+
             // Act
+            HttpStatusCode statusCode = await _response
+                .ResponseGetStatusCode("/User/all", _accessToken);
 
             // Assert
+            Assert.Equal(HttpStatusCode.OK, statusCode);
+            await RemoveTestUser(guid);
         }
         [Fact]
-        public async Task GET_GetById_ShouldBeOk()
+        public async Task GET_GetById_ReturnsOk()
         {
             // Arrange
+            Guid guid = Guid.NewGuid();
+            await InitializeTestUser(guid);
 
             // Act
+            HttpStatusCode statusCode = await _response
+                .ResponseGetStatusCode($"/User/{guid}", _accessToken);
 
             // Assert
+            Assert.Equal(HttpStatusCode.OK, statusCode);
+            await RemoveTestUser(guid);
         }
         [Fact]
-        public async Task GET_GetByNonExistedId_ShouldBeNotFound()
+        public async Task GET_GetByNonExistedId_ReturnsNotFound()
         {
             // Arrange
+            Guid guid = Guid.NewGuid();
 
             // Act
+            HttpStatusCode statusCode = await _response
+                .ResponseGetStatusCode($"/User/{guid}", _accessToken);
 
             // Assert
+            Assert.Equal(HttpStatusCode.NotFound, statusCode);
         }
         [Fact]
-        public async Task GET_GetByLogin_ShouldBeOk()
+        public async Task GET_GetByLogin_ReturnsOk()
         {
             // Arrange
+            Guid guid = Guid.NewGuid();
+            await InitializeTestUser(guid);
 
             // Act
+            HttpStatusCode statusCode = await _response
+                .ResponseGetStatusCode("/User/login/UserUserForTests1", _accessToken);
 
             // Assert
+            Assert.Equal(HttpStatusCode.OK, statusCode);
+            await RemoveTestUser(guid);
         }
         [Fact]
-        public async Task GET_GetByNonExistedLogin_ShouldBeNotFound()
+        public async Task GET_GetByNonExistedLogin_ReturnsNotFound()
         {
             // Arrange
+            string login = "not-exist-Br0";
 
             // Act
+            HttpStatusCode statusCode = await _response
+                .ResponseGetStatusCode($"/User/login/{login}", _accessToken);
 
             // Assert
+            Assert.Equal(HttpStatusCode.NotFound, statusCode);
         }
-        private static List<User> InitializeUserLibrary()
+        #region Начальные данные
+        private async Task InitializeTestUser(Guid guid)
         {
-            var users = new List<User>();
-
-            UserAdditionalInfo info = new UserAdditionalInfo
-            {
-                UserRole = new UserRole { RoleName = "user" }
-            };
-            users.Add(new User
+            User user = new User
             {
                 Id = guid,
                 UserLogin = "UserUserForTests1",
                 UserEmail = "UserEmailUserForTest1",
-                UserAdditionalInfo = info
-            });
+                PasswordHash = "UserHashForTest1",
+                PasswordSalt = "UserSaltForTest1"
+            };
 
-
-            return users;
+            await Context.User.AddAsync(user);
+            await Context.SaveChangesAsync();
         }
+        private async Task RemoveTestUser(Guid guid)
+        {
+            User? user = await Context.User.FindAsync(guid);
+            Context.User.Remove(user!);
+            await Context.SaveChangesAsync();
+        }
+        #endregion
     }
 }

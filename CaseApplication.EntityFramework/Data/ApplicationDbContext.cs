@@ -25,7 +25,7 @@ namespace CaseApplication.EntityFramework.Data
 
         public ApplicationDbContext(DbContextOptions options) : base(options)
         {
-            Database.Migrate();
+            // Database.Migrate();
             Database.EnsureCreated();
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
