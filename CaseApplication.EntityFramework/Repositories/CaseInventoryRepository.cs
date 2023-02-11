@@ -23,55 +23,34 @@ namespace CaseApplication.EntityFramework.Repositories
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            CaseInventory? caseInventory = await context.CaseInventory
+            return await context.CaseInventory
                 .AsNoTracking()
+                .Include(x => x.GameCase)
+                .Include(x => x.GameItem)
                 .FirstOrDefaultAsync(x => x.Id == id);
-
-            if(caseInventory != null)
-            {
-                caseInventory.GameItem = await context.GameItem
-                .AsNoTracking().FirstOrDefaultAsync(
-                    x => x.Id == caseInventory.GameItemId);
-            }
-
-            return caseInventory;
         }
 
         public async Task<CaseInventory?> GetById(Guid caseId, Guid itemId)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            CaseInventory? caseInventory = await context.CaseInventory
-                .AsNoTracking().FirstOrDefaultAsync(
-                x => x.GameCaseId == caseId && x.GameItemId == itemId);
-
-            if (caseInventory != null)
-            {
-                caseInventory.GameItem = await context.GameItem
-                .AsNoTracking().FirstOrDefaultAsync(
-                    x => x.Id == caseInventory.GameItemId);
-            }
-
-            return caseInventory;
+            return await context.CaseInventory
+                .AsNoTracking()
+                .Include(x => x.GameCase)
+                .Include(x => x.GameItem)
+                .FirstOrDefaultAsync(x => x.GameCaseId == caseId && x.GameItemId == itemId); ;
         }
 
         public async Task<List<CaseInventory>> GetAll(Guid caseId)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            List<CaseInventory> caseInventories = await context.CaseInventory
+            return await context.CaseInventory
                 .AsNoTracking()
+                .Include(x => x.GameCase)
+                .Include(x => x.GameItem)
                 .Where(x => x.GameCaseId == caseId)
-                .ToListAsync();
-
-            foreach(CaseInventory caseInventory in caseInventories)
-            {
-                caseInventory.GameItem = await context.GameItem
-                .AsNoTracking().FirstOrDefaultAsync(
-                    x => x.Id == caseInventory.GameItemId);
-            }
-
-            return caseInventories;
+                .ToListAsync(); ;
         }
 
         public async Task<bool> Create(CaseInventoryDto caseInventoryDto)

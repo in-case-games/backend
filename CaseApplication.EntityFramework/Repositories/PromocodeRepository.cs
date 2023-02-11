@@ -23,36 +23,20 @@ namespace CaseApplication.EntityFramework.Repositories
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            Promocode? promocode = await context.Promocode
-                .AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
-
-            if (promocode != null)
-            {
-                promocode.PromocodeType = await context.PromocodeType
-                .AsNoTracking().FirstOrDefaultAsync(
-                    x => x.Id == promocode.PromocodeTypeId);
-            }
-
             return await context.Promocode
-                .AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
+                .AsNoTracking()
+                .Include(x => x.PromocodeType)
+                .FirstOrDefaultAsync(x => x.Id == id);
         }
 
         public async Task<Promocode?> GetByName(string name)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            Promocode? promocode = await context.Promocode
-                .AsNoTracking().FirstOrDefaultAsync(
-                x => x.PromocodeName == name);
-
-            if (promocode != null)
-            {
-                promocode.PromocodeType = await context.PromocodeType
-                .AsNoTracking().FirstOrDefaultAsync(
-                    x => x.Id == promocode.PromocodeTypeId);
-            }
-
-            return promocode;
+            return await context.Promocode
+                .AsNoTracking()
+                .Include(x => x.PromocodeType)
+                .FirstOrDefaultAsync(x => x.PromocodeName == name); ;
         }
 
         public async Task<bool> Create(PromocodeDto promocodeDto)

@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using CaseApplication.DomainLayer.Entities;
 using CaseApplication.EntityFramework.Configurations;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace CaseApplication.EntityFramework.Data
 {
@@ -27,7 +28,13 @@ namespace CaseApplication.EntityFramework.Data
             Database.Migrate();
             Database.EnsureCreated();
         }
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            base.OnConfiguring(optionsBuilder);
 
+            optionsBuilder
+                .ConfigureWarnings(x => x.Ignore(RelationalEventId.MultipleCollectionIncludeWarning));
+        }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfiguration(new CaseInventoryConfiguration());

@@ -31,12 +31,15 @@ namespace CaseApplication.EntityFramework.Repositories
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            User? user = await context.User.FirstOrDefaultAsync(x => x.Id == id);
-
-            if (user is null)
-                return null;
-
-            user = await MapUser(user);
+            User? user = await context
+                .User
+                .Include(x => x.UserAdditionalInfo)
+                .Include(x => x.UserInventories)
+                .Include(x => x.PromocodesUsedByUsers)
+                .Include(x => x.UserRestrictions)
+                .Include(x => x.UserHistoryOpeningCases)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id == id);
 
             return user;
         }
@@ -44,8 +47,16 @@ namespace CaseApplication.EntityFramework.Repositories
         public async Task<List<User>> GetAll()
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
-            List<User> users = await context.User
-                .AsNoTracking().ToListAsync();
+            List<User> users = await context
+                .User
+                .Include(x => x.UserAdditionalInfo)
+                .Include(x => x.UserAdditionalInfo!.UserRole)
+                .Include(x => x.UserInventories)
+                .Include(x => x.PromocodesUsedByUsers)
+                .Include(x => x.UserRestrictions)
+                .Include(x => x.UserHistoryOpeningCases)
+                .AsNoTracking()
+                .ToListAsync();
 
             return users;
         }
@@ -54,20 +65,30 @@ namespace CaseApplication.EntityFramework.Repositories
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            return await context.User
+            return await context
+                .User
+                .Include(x => x.UserAdditionalInfo)
+                .Include(x => x.UserAdditionalInfo!.UserRole)
+                .Include(x => x.UserInventories)
+                .Include(x => x.PromocodesUsedByUsers)
+                .Include(x => x.UserRestrictions)
+                .Include(x => x.UserHistoryOpeningCases)
                 .AsNoTracking().FirstOrDefaultAsync(x => x.UserEmail == email);
         }
 
         public async Task<User?> GetByLogin(string login)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
-            User? user = await context.User
+            User? user = await context
+                .User
+                .Include(x => x.UserAdditionalInfo)
+                .Include(x => x.UserAdditionalInfo!.UserRole)
+                .Include(x => x.UserInventories)
+                .Include(x => x.PromocodesUsedByUsers)
+                .Include(x => x.UserRestrictions)
+                .Include(x => x.UserHistoryOpeningCases)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.UserLogin == login);
-            if (user is null)
-                return null;
-
-            user = await MapUser(user);
 
             return user;
         }
@@ -75,17 +96,19 @@ namespace CaseApplication.EntityFramework.Repositories
         public async Task<User?> GetByParameters(UserDto userDto)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
-            User? user = await context.User
+            User? user = await context
+                .User
+                .Include(x => x.UserAdditionalInfo)
+                .Include(x => x.UserAdditionalInfo!.UserRole)
+                .Include(x => x.UserInventories)
+                .Include(x => x.PromocodesUsedByUsers)
+                .Include(x => x.UserRestrictions)
+                .Include(x => x.UserHistoryOpeningCases)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x =>
                 x.UserEmail == userDto.UserEmail ||
                 x.Id == userDto.Id ||
                 x.UserLogin == userDto.UserLogin);
-
-            if (user is null)
-                return null;
-
-            user = await MapUser(user);
 
             return user;
         }
@@ -132,57 +155,6 @@ namespace CaseApplication.EntityFramework.Repositories
             await context.SaveChangesAsync();
 
             return true;
-        }
-        private async Task<User> MapUser(User user)
-        {
-            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
-
-            UserAdditionalInfo? info = await context
-                .UserAdditionalInfo
-                .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.UserId == user.Id);
-            List<UserRestriction> restriction = await context
-                .UserRestriction
-                .AsNoTracking()
-                .Where(x => x.UserId == user.Id)
-                .ToListAsync();
-            List<UserInventory> inventories = await context
-                .UserInventory
-                .AsNoTracking()
-                .Where(x => x.UserId == user.Id)
-                .ToListAsync();
-            List<UserHistoryOpeningCases> history = await context
-                .UserHistoryOpeningCases
-                .AsNoTracking()
-                .Where(x => x.UserId == user.Id)
-                .ToListAsync();
-            List<PromocodesUsedByUser> promocodes = await context
-                .PromocodeUsedByUsers
-                .AsNoTracking()
-                .Where(x => x.UserId == user.Id)
-                .ToListAsync();
-            List<UserToken> tokens = await context
-                .UserToken
-                .AsNoTracking()
-                .Where(x => x.UserId == user.Id)
-                .ToListAsync();
-
-            if (info is not null)
-            {
-                info.UserRole = await context
-                    .UserRole
-                    .AsNoTracking()
-                    .FirstOrDefaultAsync(x => x.Id == info!.UserRoleId);
-            }
-            
-            user.UserAdditionalInfo = info;
-            user.UserRestrictions = restriction;
-            user.UserInventories = inventories;
-            user.UserHistoryOpeningCases = history;
-            user.PromocodesUsedByUsers = promocodes;
-            user.UserTokens = tokens;
-
-            return user;
         }
     }
 }

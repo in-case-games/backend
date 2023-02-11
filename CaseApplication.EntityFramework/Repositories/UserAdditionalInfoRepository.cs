@@ -24,14 +24,8 @@ namespace CaseApplication.EntityFramework.Repositories
 
             UserAdditionalInfo? info = await context.UserAdditionalInfo
                 .AsNoTracking()
+                .Include(x => x.UserRole)
                 .FirstOrDefaultAsync(x => x.Id == id);
-
-            if (info is null)
-                throw new Exception("The info is not found");
-
-            info.UserRole = await context.UserRole
-                .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.Id == info.UserRoleId);
 
             return info;
         }
@@ -42,14 +36,8 @@ namespace CaseApplication.EntityFramework.Repositories
 
             UserAdditionalInfo? info = await context.UserAdditionalInfo
                 .AsNoTracking()
+                .Include(x => x.UserRole)
                 .FirstOrDefaultAsync(x => x.UserId == userId);
-
-            if (info is not null)
-            {
-                info.UserRole = await context.UserRole
-                .AsNoTracking()
-                    .FirstOrDefaultAsync(x => x.Id == info.UserRoleId);
-            }
 
             return info;
         }

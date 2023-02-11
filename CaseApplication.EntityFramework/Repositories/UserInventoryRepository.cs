@@ -24,6 +24,7 @@ namespace CaseApplication.EntityFramework.Repositories
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
             
             UserInventory? inventory = await context.UserInventory
+                .Include(x => x.GameItemId)
                 .AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
             
             if (inventory != null)
