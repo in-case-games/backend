@@ -16,35 +16,21 @@ namespace CaseApplication.Api.Controllers
         #region injections
         private readonly IUserAdditionalInfoRepository _userInfoRepository;
         private readonly IGameCaseRepository _gameCaseRepository;
-        private readonly ICaseInventoryRepository _caseInventoryRepository;
         private readonly IUserHistoryOpeningCasesRepository _userHistory;
-        private readonly IGameItemRepository _gameItemRepository;
         private readonly IUserInventoryRepository _userInventoryRepository;
-        private readonly MapperConfiguration _mapperConfigurationInfo = new(configuration =>
-        {
-            configuration.CreateMap<UserAdditionalInfo, UserAdditionalInfoDto>();
-        });
-        private readonly MapperConfiguration _mapperConfigurationCase = new(configuration =>
-        {
-            configuration.CreateMap<GameCase, GameCaseDto>();
-        });
         private Guid UserId => Guid
             .Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
         #endregion
         #region ctor
         public GameController(
             IUserAdditionalInfoRepository userInfoRepository,
-            ICaseInventoryRepository caseInventoryRepository,
             IUserHistoryOpeningCasesRepository userHistory,
             IGameCaseRepository gameCaseRepository,
-            IGameItemRepository gameItemRepository,
             IUserInventoryRepository userInventoryRepository)
         {
             _userInfoRepository = userInfoRepository;
-            _caseInventoryRepository = caseInventoryRepository;
             _userHistory = userHistory;
             _gameCaseRepository = gameCaseRepository;
-            _gameItemRepository = gameItemRepository;
             _userInventoryRepository = userInventoryRepository;
         }
         #endregion
@@ -99,19 +85,18 @@ namespace CaseApplication.Api.Controllers
         #region nonAction
         private static GameItem RandomizeBySmallest(in GameCase gameCase)
         {
-            List<CaseInventory> casesInventories = gameCase.СaseInventories!;
-            List<int> lossChances = casesInventories
+            List<int> lossChances = gameCase.СaseInventories!
                 .Select(x => x.LossChance)
                 .ToList();
 
             int winIndexItem = Randomizer(lossChances);
-            Guid winIdGameItem = casesInventories[winIndexItem].GameItemId;
-            GameItem winGameItem = casesInventories[winIndexItem].GameItem!;
+            Guid winIdGameItem = gameCase.СaseInventories![winIndexItem].GameItemId;
+            GameItem winGameItem = gameCase.СaseInventories[winIndexItem].GameItem!;
 
             //Check it will become negative case balance
             if (IsProfitCase(winGameItem, gameCase) is false)
             {
-                List<GameItem> gameItems = casesInventories.Select(x => x.GameItem).ToList()!;
+                List<GameItem> gameItems = gameCase.СaseInventories.Select(x => x.GameItem).ToList()!;
 
                 gameItems = gameItems.OrderByDescending(g => g.GameItemCost).ToList();
                 winIdGameItem = gameItems[^1].Id;

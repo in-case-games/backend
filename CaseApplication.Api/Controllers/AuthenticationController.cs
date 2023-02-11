@@ -69,7 +69,7 @@ namespace CaseApplication.Api.Controllers
                 return Forbid();
 
             //Search refresh token by ip
-            UserToken? userTokenByIp = searchUser.UserTokens!.FirstOrDefault(x => x.UserIpAddress == ip);
+            UserToken? userTokenByIp = searchUser.UserTokens?.FirstOrDefault(x => x.UserIpAddress == ip);
 
             if (userTokenByIp == null)
             {
@@ -150,7 +150,7 @@ namespace CaseApplication.Api.Controllers
 
             //Search refresh token by ip TODO Cut in method
             User user = (await _userRepository.Get(userId))!;
-            UserToken? userToken = user.UserTokens!.FirstOrDefault(x => x.UserIpAddress == ip);
+            UserToken? userToken = user.UserTokens?.FirstOrDefault(x => x.UserIpAddress == ip);
 
             if (_validationService.IsValidRefreshToken(in userToken, refreshToken))
             {
@@ -193,14 +193,14 @@ namespace CaseApplication.Api.Controllers
 
             if (isValidToken is false) return Forbid("Invalid email token");
 
-            bool IsTokenUsed = user.UserTokens!.FirstOrDefault(
+            bool IsTokenUsed = user.UserTokens?.FirstOrDefault(
                 x => x.UserIpAddress == emailModel.UserIp) is not null;
             
             if (IsTokenUsed) return Forbid("Invalid token used");
 
             UserAdditionalInfo userInfo = user.UserAdditionalInfo!;
 
-            if (userInfo.IsConfirmedAccount == false)
+            if (userInfo.IsConfirmedAccount is false)
             {
                 userInfo.IsConfirmedAccount = true;
 

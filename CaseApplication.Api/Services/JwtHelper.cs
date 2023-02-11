@@ -132,9 +132,7 @@ namespace CaseApplication.Api.Services
         private Claim[] GenerateClaimsForAccessToken(User user)
         {
             //Find future data for claims
-            Guid roleId = user.UserAdditionalInfo!.UserRoleId;
-
-            string roleName = user.UserAdditionalInfo.UserRole!.RoleName!;
+            string roleName = user.UserAdditionalInfo!.UserRole!.RoleName!;
 
             return new Claim[] {
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),

@@ -67,7 +67,6 @@ namespace CaseApplication.EntityFramework.Repositories
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             UserAdditionalInfo? searchInfo = await context.UserAdditionalInfo
-                .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.UserId == info.UserId);
 
             if(searchInfo is null) {
