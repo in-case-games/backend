@@ -62,6 +62,7 @@ namespace CaseApplication.Api.Controllers
             {
                 user.PasswordHash = "access denied";
                 user.PasswordSalt = "access denied";
+                user.UserTokens = null;
 
                 return Ok(user);
             }

@@ -39,6 +39,7 @@ namespace CaseApplication.EntityFramework.Repositories
                 .Include(x => x.PromocodesUsedByUsers)
                 .Include(x => x.UserRestrictions)
                 .Include(x => x.UserHistoryOpeningCases)
+                .Include(x => x.UserTokens)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == id);
 
@@ -74,6 +75,7 @@ namespace CaseApplication.EntityFramework.Repositories
                 .Include(x => x.PromocodesUsedByUsers)
                 .Include(x => x.UserRestrictions)
                 .Include(x => x.UserHistoryOpeningCases)
+                .Include(x => x.UserTokens)
                 .AsNoTracking().FirstOrDefaultAsync(x => x.UserEmail == email);
         }
 
@@ -88,6 +90,7 @@ namespace CaseApplication.EntityFramework.Repositories
                 .Include(x => x.PromocodesUsedByUsers)
                 .Include(x => x.UserRestrictions)
                 .Include(x => x.UserHistoryOpeningCases)
+                .Include(x => x.UserTokens)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.UserLogin == login);
 
@@ -105,6 +108,7 @@ namespace CaseApplication.EntityFramework.Repositories
                 .Include(x => x.PromocodesUsedByUsers)
                 .Include(x => x.UserRestrictions)
                 .Include(x => x.UserHistoryOpeningCases)
+                .Include(x => x.UserTokens)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x =>
                 x.UserEmail == userDto.UserEmail ||
