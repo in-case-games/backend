@@ -4,11 +4,11 @@ using CaseApplication.Api.Services;
 using CaseApplication.DomainLayer.Dtos;
 using CaseApplication.DomainLayer.Entities;
 using CaseApplication.DomainLayer.Repositories;
+using CaseApplication.EntityFramework.Data;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
-using System.Text;
 
 namespace CaseApplication.Api.Controllers
 {
@@ -16,12 +16,10 @@ namespace CaseApplication.Api.Controllers
     [Route("[controller]")]
     public class UserController : ControllerBase
     {
-        private readonly IUserRepository _userRepository;
+        private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
         private readonly EncryptorHelper _encryptorHelper;
         private readonly JwtHelper _jwtHelper;
         private readonly EmailHelper _emailHelper;
-        private readonly IUserTokensRepository _userTokensRepository;
-        private readonly IUserAdditionalInfoRepository _userInfoRepository;
         private readonly ValidationService _validationService;
         private readonly MapperConfiguration _mapperConfiguration = new(configuration =>
         {
@@ -35,20 +33,16 @@ namespace CaseApplication.Api.Controllers
             .Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
 
         public UserController(
-            IUserRepository userRepository, 
+            IDbContextFactory<ApplicationDbContext> contextFactory,
             EncryptorHelper encryptorHelper,
             JwtHelper jwtHelper,
             EmailHelper emailHelper,
-            IUserTokensRepository userTokensRepository,
-            IUserAdditionalInfoRepository userAdditionalInfoRepository,
             ValidationService validationService)
         {
-            _userRepository = userRepository;
+            _contextFactory = contextFactory;
             _encryptorHelper = encryptorHelper;
             _jwtHelper = jwtHelper;
             _emailHelper = emailHelper;
-            _userTokensRepository = userTokensRepository;
-            _userInfoRepository = userAdditionalInfoRepository;
             _validationService = validationService;
         }
 
@@ -56,9 +50,23 @@ namespace CaseApplication.Api.Controllers
         [HttpGet("{userId}")]
         public async Task<IActionResult> Get(Guid? userId = null)
         {
-            User? user = await _userRepository.Get(userId ?? UserId);
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            if(user != null)
+            userId = userId is null ? UserId : userId;
+
+            User? user = await context
+                .User
+                .Include(x => x.UserAdditionalInfo)
+                .Include(x => x.UserAdditionalInfo!.UserRole)
+                .Include(x => x.UserInventories)
+                .Include(x => x.PromocodesUsedByUsers)
+                .Include(x => x.UserRestrictions)
+                .Include(x => x.UserHistoryOpeningCases)
+                .Include(x => x.UserTokens)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id == userId);
+
+            if (user != null)
             {
                 user.PasswordHash = "access denied";
                 user.PasswordSalt = "access denied";
@@ -74,7 +82,19 @@ namespace CaseApplication.Api.Controllers
         [HttpGet("login/{login}")]
         public async Task<IActionResult> GetByLogin(string login)
         {
-            User? user = await _userRepository.GetByLogin(login);
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            User? user = await context
+                .User
+                .Include(x => x.UserAdditionalInfo)
+                .Include(x => x.UserAdditionalInfo!.UserRole)
+                .Include(x => x.UserInventories)
+                .Include(x => x.PromocodesUsedByUsers)
+                .Include(x => x.UserRestrictions)
+                .Include(x => x.UserHistoryOpeningCases)
+                .Include(x => x.UserTokens)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.UserLogin == login);
 
             if (user != null)
             {
@@ -91,9 +111,19 @@ namespace CaseApplication.Api.Controllers
         [HttpGet("all")]
         public async Task<IActionResult> GetAll()
         {
-            List<User> users = await _userRepository.GetAll();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+            List<User> users = await context
+                .User
+                .Include(x => x.UserAdditionalInfo)
+                .Include(x => x.UserAdditionalInfo!.UserRole)
+                .Include(x => x.UserInventories)
+                .Include(x => x.PromocodesUsedByUsers)
+                .Include(x => x.UserRestrictions)
+                .Include(x => x.UserHistoryOpeningCases)
+                .AsNoTracking()
+                .ToListAsync();
 
-            foreach(User user in users)
+            foreach (User user in users)
             {
                 user.UserEmail = "access denied";
                 user.PasswordHash = "access denied";
@@ -107,8 +137,17 @@ namespace CaseApplication.Api.Controllers
         [HttpPut("login/{login}")]
         public async Task<IActionResult> UpdateLogin(string login)
         {
-            User? searchUserByLogin = await _userRepository.GetByLogin(login);
-            User? searchUserById = await _userRepository.Get(UserId);
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            User? searchUserByLogin = await context
+                .User
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.UserLogin == login);
+
+            User? searchUserById = await context
+                .User
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id == UserId);
 
             if (searchUserByLogin != null) return BadRequest();
             if (searchUserById == null) return NotFound();
@@ -119,7 +158,8 @@ namespace CaseApplication.Api.Controllers
             UserDto newUser = mapper.Map<UserDto>(searchUserById);
             newUser.UserLogin = login;
 
-            await _userRepository.Update(user, newUser);
+            context.Entry(user).CurrentValues.SetValues(newUser);
+            await context.SaveChangesAsync();
 
             await _emailHelper.SendNotifyToEmail(
                 searchUserById.UserEmail!, 
@@ -136,8 +176,15 @@ namespace CaseApplication.Api.Controllers
         [HttpPut("email")]
         public async Task<IActionResult> UpdateEmail(EmailModel emailModel)
         {
-            User? searchUser = await _userRepository.GetByEmail(emailModel.UserEmail);
-            User? user = await _userRepository.Get(emailModel.UserId);
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            User? searchUser = await context
+                .User
+                .AsNoTracking().FirstOrDefaultAsync(x => x.UserEmail == emailModel.UserEmail);
+            User? user = await context
+                .User
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id == UserId);
 
             if (user == null) return NotFound();
 
@@ -157,10 +204,21 @@ namespace CaseApplication.Api.Controllers
 
             UserAdditionalInfo info = user.UserAdditionalInfo!;
 
-            await _userRepository.Update(oldUser, newUser);
-            await _userInfoRepository.Update(info);
+            context.Entry(user).CurrentValues.SetValues(newUser);
 
-            await _userTokensRepository.DeleteAll(user.Id);
+            UserAdditionalInfo? searchInfo = await context.UserAdditionalInfo
+               .FirstOrDefaultAsync(x => x.UserId == info.UserId);
+
+            context.Entry(searchInfo!).CurrentValues.SetValues(info);
+
+            List<UserToken> userTokens = await context.UserToken
+                .AsNoTracking()
+                .Where(x => x.UserId == UserId)
+                .ToListAsync();
+
+            context.UserToken.RemoveRange(userTokens);
+
+            await context.SaveChangesAsync();
 
             await _emailHelper.SendNotifyToEmail(
                 emailModel.UserEmail,
@@ -177,7 +235,12 @@ namespace CaseApplication.Api.Controllers
         [HttpPut("password/{password}")]
         public async Task<IActionResult> UpdatePasswordConfirmation(EmailModel emailModel, string password)
         {
-            User? user = await _userRepository.Get(emailModel.UserId);
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            User? user = await context
+                .User
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id == UserId);
 
             if (user == null) return NotFound();
 
@@ -196,8 +259,16 @@ namespace CaseApplication.Api.Controllers
             newUser.PasswordHash = hash;
             newUser.PasswordSalt = Convert.ToBase64String(salt);
 
-            await _userRepository.Update(oldUser, newUser);
-            await _userTokensRepository.DeleteAll(user.Id);
+            context.Entry(user).CurrentValues.SetValues(newUser);
+
+            List<UserToken> userTokens = await context.UserToken
+                .AsNoTracking()
+                .Where(x => x.UserId == UserId)
+                .ToListAsync();
+
+            context.UserToken.RemoveRange(userTokens);
+
+            await context.SaveChangesAsync();
 
             await _emailHelper.SendNotifyToEmail(
                 user.UserEmail!,
@@ -214,7 +285,12 @@ namespace CaseApplication.Api.Controllers
         [HttpDelete]
         public async Task<IActionResult> DeleteConfirmation(EmailModel emailModel)
         {
-            User? user = await _userRepository.Get(emailModel.UserId);
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            User? user = await context
+                .User
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id == UserId);
 
             if (user == null) return NotFound();
 
@@ -232,7 +308,14 @@ namespace CaseApplication.Api.Controllers
 
             //TODO No delete give the user 30 days
 
-            await _userTokensRepository.DeleteAll(emailModel.UserId);
+            List<UserToken> userTokens = await context.UserToken
+                .AsNoTracking()
+                .Where(x => x.UserId == UserId)
+                .ToListAsync();
+
+            context.UserToken.RemoveRange(userTokens);
+
+            await context.SaveChangesAsync();
 
             return Ok();
         }
@@ -241,13 +324,20 @@ namespace CaseApplication.Api.Controllers
         [HttpDelete("admin/{userId}")]
         public async Task<IActionResult> DeleteByAdmin(Guid userId)
         {
-            User? searchUser = await _userRepository.Get(userId);
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            if (searchUser != null) {
-                return Ok(await _userRepository.Delete(userId));
-            };
+            User? user = await context
+                .User
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id == UserId);
 
-            return NotFound();
+            if (user is null)
+                return NotFound();
+
+            context.User.Remove(user);
+            await context.SaveChangesAsync();
+
+            return Ok();
         }
     }
 }

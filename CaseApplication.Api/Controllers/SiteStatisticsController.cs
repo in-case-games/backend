@@ -1,8 +1,9 @@
 ﻿using CaseApplication.DomainLayer.Entities;
 using CaseApplication.DomainLayer.Repositories;
+using CaseApplication.EntityFramework.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
+using Microsoft.EntityFrameworkCore;
 
 namespace CaseApplication.Api.Controllers
 {
@@ -10,25 +11,26 @@ namespace CaseApplication.Api.Controllers
     [ApiController]
     public class SiteStatisticsController : ControllerBase
     {
-        private readonly ISiteStatisticsRepository _siteStatisticsRepository;
-        private Guid UserId => Guid
-            .Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
+        private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
 
-        public SiteStatisticsController(ISiteStatisticsRepository siteStatisticsRepository)
+        public SiteStatisticsController(IDbContextFactory<ApplicationDbContext> contextFactory)
         {
-            _siteStatisticsRepository = siteStatisticsRepository;
+            _contextFactory = contextFactory;
         }
 
         [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            SiteStatistics? siteStatistics = await _siteStatisticsRepository.Get();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            if(siteStatistics != null)
+            SiteStatistics? statistics = await context.SiteStatistics
+                .AsNoTracking().FirstOrDefaultAsync();
+
+            if (statistics != null)
             {
-                siteStatistics.SiteBalance = 0;
-                return Ok(siteStatistics);
+                statistics.SiteBalance = 0;
+                return Ok(statistics);
             }
 
             return NotFound();

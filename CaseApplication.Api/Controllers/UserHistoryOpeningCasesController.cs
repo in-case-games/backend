@@ -1,7 +1,8 @@
 ﻿using CaseApplication.DomainLayer.Entities;
-using CaseApplication.DomainLayer.Repositories;
+using CaseApplication.EntityFramework.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 namespace CaseApplication.Api.Controllers
@@ -10,58 +11,97 @@ namespace CaseApplication.Api.Controllers
     [ApiController]
     public class UserHistoryOpeningCasesController : ControllerBase
     {
-        private readonly IUserHistoryOpeningCasesRepository _userHistoryRepository;
+        private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
         private Guid UserId => Guid
             .Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
 
-        public UserHistoryOpeningCasesController(IUserHistoryOpeningCasesRepository userHistoryRepository)
+        public UserHistoryOpeningCasesController(IDbContextFactory<ApplicationDbContext> contextFactory)
         {
-            _userHistoryRepository = userHistoryRepository;
+            _contextFactory = contextFactory;
         }
 
         [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(Guid id)
         {
-            UserHistoryOpeningCases? userHistoryOpening = await _userHistoryRepository.Get(id);
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            if(userHistoryOpening != null)
-            {
-                return Ok(userHistoryOpening);
-            }
+            UserHistoryOpeningCases? userHistory = await context.UserHistoryOpeningCases
+                .Include(x => x.GameCase)
+                .Include(x => x.GameItem)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id == id);
 
-            return NotFound();
+            return userHistory is null ? NotFound() : Ok();
         }
 
         [AllowAnonymous]
         [HttpGet("all/{userId}")]
         public async Task<IActionResult> GetAllByUserId(Guid userId)
         {
-            return Ok(await _userHistoryRepository.GetAllById(userId));
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            List<UserHistoryOpeningCases> userHistories = await context.UserHistoryOpeningCases
+                .Include(x => x.GameCase)
+                .Include(x => x.GameItem)
+                .AsNoTracking()
+                .Where(x => x.UserId == userId)
+                .ToListAsync();
+
+            return userHistories is null ? NotFound() : Ok();
         }
         [Authorize]
         [HttpGet("all")]
         public async Task<IActionResult> GetAll()
         {
-            return Ok(await _userHistoryRepository.GetAll());
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            List<UserHistoryOpeningCases> userHistories = await context.UserHistoryOpeningCases
+                .Include(x => x.GameCase)
+                .Include(x => x.GameItem)
+                .ToListAsync();
+
+            return userHistories is null ? NoContent() : Ok();
         }
 
         [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            UserHistoryOpeningCases? userHistoryOpening = await _userHistoryRepository.Get(id);
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            if (!userHistoryOpening!.UserId.Equals(UserId))
-                return Forbid("Invalid operation");
-            return Ok(await _userHistoryRepository.Delete(id));
+            UserHistoryOpeningCases? searchUserHistory = await context
+                .UserHistoryOpeningCases
+                .FirstOrDefaultAsync(x => x.Id == id);
+
+            if (searchUserHistory is null)
+                return NotFound("There is no such user history, " +
+                "review what data comes from the api");
+
+            context.UserHistoryOpeningCases.Remove(searchUserHistory);
+            await context.SaveChangesAsync();
+
+            return Ok();
         }
 
         [Authorize]
         [HttpDelete]
         public async Task<IActionResult> DeleteAll()
         {
-            return Ok(await _userHistoryRepository.DeleteAll(UserId));
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            List<UserHistoryOpeningCases>? userHistories = await context.UserHistoryOpeningCases
+                .Where(x => x.UserId == UserId)
+                .ToListAsync();
+
+            if (userHistories.Count == 0)
+                return NotFound("There is no such user history, " +
+                "review what data comes from the api");
+
+            context.UserHistoryOpeningCases.RemoveRange(userHistories);
+            await context.SaveChangesAsync();
+
+            return Ok();
         }
     }
 }

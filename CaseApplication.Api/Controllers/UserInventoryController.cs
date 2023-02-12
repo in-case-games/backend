@@ -1,7 +1,8 @@
 ﻿using CaseApplication.DomainLayer.Entities;
-using CaseApplication.DomainLayer.Repositories;
+using CaseApplication.EntityFramework.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 namespace CaseApplication.Api.Controllers
@@ -10,36 +11,49 @@ namespace CaseApplication.Api.Controllers
     [ApiController]
     public class UserInventoryController : ControllerBase
     {
-        private readonly IUserInventoryRepository _userInventoryRepository;
+        private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
         private Guid UserId => Guid
             .Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
 
-        public UserInventoryController(IUserInventoryRepository userInventoryRepository)
+        public UserInventoryController(IDbContextFactory<ApplicationDbContext> contextFactory)
         {
-            _userInventoryRepository = userInventoryRepository;
+            _contextFactory = contextFactory;
         }
 
         [Authorize]
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(Guid id) 
         {
-            UserInventory? userInventory = await _userInventoryRepository.Get(id);
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            if(userInventory != null)
+            UserInventory? inventory = await context.UserInventory
+                .Include(x => x.GameItem)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id == id);
+
+            if (inventory is null)
             {
-                return Ok(userInventory);
+                return NotFound();
             }
 
-            return NotFound();
+            return Ok();
         }
 
         [Authorize]
         [HttpGet("all/{userId}")]
         public async Task<IActionResult> GetAll(Guid? userId = null)
         {
-            return Ok(await _userInventoryRepository.GetAll(userId ?? UserId));
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            List<UserInventory> inventories = await context.UserInventory
+                .Include(x => x.GameItem)
+                .AsNoTracking()
+                .Where(x => x.UserId == userId)
+                .ToListAsync();
+
+            return Ok();
         }
 
-        //TODO Sell and Withdrawn
+        // TODO Sell and Withdrawn
     }
 }

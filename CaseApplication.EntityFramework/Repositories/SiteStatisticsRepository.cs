@@ -18,7 +18,7 @@ namespace CaseApplication.EntityFramework.Repositories
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             return await context.SiteStatistics
-                .AsNoTracking().FirstOrDefaultAsync(); ;
+                .AsNoTracking().FirstOrDefaultAsync();
         }
     }
 }

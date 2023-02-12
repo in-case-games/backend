@@ -1,8 +1,11 @@
-﻿using CaseApplication.DomainLayer.Dtos;
+﻿using AutoMapper;
+using CaseApplication.DomainLayer.Dtos;
 using CaseApplication.DomainLayer.Entities;
 using CaseApplication.DomainLayer.Repositories;
+using CaseApplication.EntityFramework.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 namespace CaseApplication.Api.Controllers
@@ -11,47 +14,63 @@ namespace CaseApplication.Api.Controllers
     [ApiController]
     public class UserAdditionalInfoController : ControllerBase
     {
-        private readonly IUserAdditionalInfoRepository _userInfoRepository;
-        private readonly IUserRepository _userRepository;
+        private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
         private Guid UserId => Guid
             .Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
 
-        public UserAdditionalInfoController(
-            IUserAdditionalInfoRepository userInfoRepository,
-            IUserRepository userRepository)
+        public UserAdditionalInfoController(IDbContextFactory<ApplicationDbContext> contextFactory)
         {
-            _userInfoRepository = userInfoRepository;
-            _userRepository = userRepository;
+            _contextFactory = contextFactory;
         }
 
         [Authorize]
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            UserAdditionalInfo? userAdditionalInfo = await _userInfoRepository.GetByUserId(UserId);
-            if (userAdditionalInfo != null) {
-                return Ok(userAdditionalInfo);
-            }
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            return NotFound();
+            UserAdditionalInfo? info = await context.UserAdditionalInfo
+                .AsNoTracking()
+                .Include(x => x.UserRole)
+                .FirstOrDefaultAsync(x => x.UserId == UserId);
+
+            return info is null ? NotFound() : Ok();
         }
 
         [AllowAnonymous]
         [HttpPost]
-        public async Task<IActionResult> Create(UserDto user)
+        public async Task<IActionResult> Create(UserDto userDto)
         {
-            User? searchUser = await _userRepository.GetByParameters(user);
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+            User? user = await context
+                .User
+                .FirstOrDefaultAsync(x =>
+                x.UserEmail == userDto.UserEmail ||
+                x.Id == userDto.Id ||
+                x.UserLogin == userDto.UserLogin);
 
-            if (searchUser == null) return NotFound();
+            if (user == null) return NotFound();
 
-            UserAdditionalInfo? userAdditionalInfo = await _userInfoRepository.Get(searchUser.Id);
-
-            if(userAdditionalInfo != null) return BadRequest();
+            UserAdditionalInfo? userAdditionalInfo = await context.UserAdditionalInfo
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.UserId == UserId);
             
-            await _userInfoRepository.Create(new() { 
-                UserId = searchUser!.Id 
-            });
-            
+            if (userAdditionalInfo != null) return BadRequest();
+
+            UserRole? searchRole = await context.UserRole
+                .AsNoTracking().FirstOrDefaultAsync(x => x.RoleName == "user");
+
+            if (searchRole is null) throw new Exception("Add standard roles to the database");
+
+            UserAdditionalInfo info = new UserAdditionalInfo();
+
+            info.Id = Guid.NewGuid();
+            info.UserRoleId = searchRole!.Id;
+            info.UserId = user.Id!;
+
+            await context.UserAdditionalInfo.AddAsync(info);
+            await context.SaveChangesAsync();
+
             return Ok();
         }
 
@@ -59,7 +78,19 @@ namespace CaseApplication.Api.Controllers
         [HttpPut("admin")]
         public async Task<IActionResult> UpdateInfoByAdmin(UserAdditionalInfo info)
         {
-            return Ok(await _userInfoRepository.Update(info));
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            UserAdditionalInfo? searchInfo = await context.UserAdditionalInfo
+                .FirstOrDefaultAsync(x => x.UserId == info.UserId);
+
+            if (searchInfo is null)
+                return NotFound("There is no such information in the database, " +
+                    "review what data comes from the api");
+
+            context.Entry(searchInfo).CurrentValues.SetValues(info);
+            await context.SaveChangesAsync();
+
+            return Ok();
         }
     }
 }
