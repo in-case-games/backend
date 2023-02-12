@@ -36,18 +36,19 @@ namespace CaseApplication.Api.Controllers
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             return Ok(await context.PromocodeType
-                .AsNoTracking().ToListAsync());
+                .AsNoTracking()
+                .ToListAsync());
         }
 
         [Authorize(Roles = "admin")]
         [HttpPost("admin")]
-        public async Task<IActionResult> Create(PromocodeType promocodeType)
+        public async Task<IActionResult> Create(PromocodeType type)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            promocodeType.Id = Guid.NewGuid();
+            type.Id = Guid.NewGuid();
 
-            await context.PromocodeType.AddAsync(promocodeType);
+            await context.PromocodeType.AddAsync(type);
             await context.SaveChangesAsync();
 
             return Ok();
@@ -55,17 +56,16 @@ namespace CaseApplication.Api.Controllers
 
         [Authorize(Roles = "admin")]
         [HttpPut("admin")]
-        public async Task<IActionResult> Update(PromocodeType promocodeType)
+        public async Task<IActionResult> Update(PromocodeType newType)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            PromocodeType? promoType = await context.PromocodeType
-                .FirstOrDefaultAsync(x => x.Id == promocodeType.Id);
+            PromocodeType? oldType = await context.PromocodeType
+                .FirstOrDefaultAsync(x => x.Id == newType.Id);
 
-            if (promoType is null)
-                return Conflict("PromocodeType, which you search, is not found!");
+            if (oldType is null) return NotFound();
 
-            context.Entry(promoType).CurrentValues.SetValues(promocodeType);
+            context.Entry(oldType).CurrentValues.SetValues(newType);
             await context.SaveChangesAsync();
 
             return Ok();
@@ -77,15 +77,13 @@ namespace CaseApplication.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            PromocodeType? promocodeType = await context
-                .PromocodeType
+            PromocodeType? type = await context.PromocodeType
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == id);
 
-            if (promocodeType is null)
-                return NotFound("PromocodeType, which you search, is not found!");
+            if (type is null)return NotFound();
 
-            context.PromocodeType.Remove(promocodeType);
+            context.PromocodeType.Remove(type);
             await context.SaveChangesAsync();
 
             return Ok();

@@ -26,13 +26,13 @@ namespace CaseApplication.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            UserHistoryOpeningCases? userHistory = await context.UserHistoryOpeningCases
+            UserHistoryOpeningCases? history = await context.UserHistoryOpeningCases
                 .Include(x => x.GameCase)
                 .Include(x => x.GameItem)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == id);
 
-            return userHistory is null ? NotFound() : Ok(userHistory);
+            return history is null ? NotFound() : Ok(history);
         }
 
         [AllowAnonymous]
@@ -43,14 +43,14 @@ namespace CaseApplication.Api.Controllers
 
             userId ??= UserId;
 
-            List<UserHistoryOpeningCases> userHistories = await context.UserHistoryOpeningCases
+            List<UserHistoryOpeningCases> histories = await context.UserHistoryOpeningCases
                 .Include(x => x.GameCase)
                 .Include(x => x.GameItem)
                 .AsNoTracking()
                 .Where(x => x.UserId == userId)
                 .ToListAsync();
 
-            return Ok(userHistories);
+            return Ok(histories);
         }
 
         [Authorize]
@@ -59,12 +59,12 @@ namespace CaseApplication.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            List<UserHistoryOpeningCases> userHistories = await context.UserHistoryOpeningCases
+            List<UserHistoryOpeningCases> histories = await context.UserHistoryOpeningCases
                 .Include(x => x.GameCase)
                 .Include(x => x.GameItem)
                 .ToListAsync();
 
-            return Ok(userHistories);
+            return Ok(histories);
         }
 
         [Authorize]
@@ -73,12 +73,12 @@ namespace CaseApplication.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            UserHistoryOpeningCases? searchUserHistory = await context.UserHistoryOpeningCases
+            UserHistoryOpeningCases? history = await context.UserHistoryOpeningCases
                 .FirstOrDefaultAsync(x => x.Id == id && x.UserId == UserId);
 
-            if (searchUserHistory is null) return NotFound();
+            if (history is null) return NotFound();
 
-            context.UserHistoryOpeningCases.Remove(searchUserHistory);
+            context.UserHistoryOpeningCases.Remove(history);
             await context.SaveChangesAsync();
 
             return Ok();
@@ -90,13 +90,13 @@ namespace CaseApplication.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            List<UserHistoryOpeningCases> userHistories = await context.UserHistoryOpeningCases
+            List<UserHistoryOpeningCases> histories = await context.UserHistoryOpeningCases
                 .Where(x => x.UserId == UserId)
                 .ToListAsync();
 
-            if (userHistories.Count == 0) return NotFound();
+            if (histories.Count == 0) return NotFound();
 
-            context.UserHistoryOpeningCases.RemoveRange(userHistories);
+            context.UserHistoryOpeningCases.RemoveRange(histories);
             await context.SaveChangesAsync();
 
             return Ok();

@@ -25,15 +25,14 @@ namespace CaseApplication.Api.Controllers
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             SiteStatistics? statistics = await context.SiteStatistics
-                .AsNoTracking().FirstOrDefaultAsync();
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
 
-            if (statistics != null)
-            {
-                statistics.SiteBalance = 0;
-                return Ok(statistics);
-            }
+            if (statistics == null) return NotFound();
+            
+            statistics.SiteBalance = 0;
 
-            return NotFound();
+            return Ok(statistics);
         }
     }
 }

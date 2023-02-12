@@ -44,14 +44,14 @@ namespace CaseApplication.Api.Controllers
 
         [Authorize(Roles = "admin")]
         [HttpPost("admin")]
-        public async Task<IActionResult> Create(UserRestriction userRestriction)
+        public async Task<IActionResult> Create(UserRestriction restriction)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            userRestriction.Id = new Guid();
-            userRestriction.CreatedDate = DateTime.UtcNow;
+            restriction.Id = new Guid();
+            restriction.CreatedDate = DateTime.UtcNow;
 
-            await context.UserRestriction.AddAsync(userRestriction);
+            await context.UserRestriction.AddAsync(restriction);
             await context.SaveChangesAsync();
 
             return Ok();
@@ -59,19 +59,18 @@ namespace CaseApplication.Api.Controllers
 
         [Authorize(Roles = "admin")]
         [HttpPut("admin")]
-        public async Task<IActionResult> Update(UserRestriction userRestriction)
+        public async Task<IActionResult> Update(UserRestriction newRestriction)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
+            bool isExistUser = await context.User.AnyAsync(x => x.Id == newRestriction.UserId);
+
             UserRestriction? oldRestriction = await context.UserRestriction
-                .FirstOrDefaultAsync(x => x.Id == userRestriction.Id);
-            User? searchUser = await context.User
-                .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.Id == userRestriction.UserId);
+                .FirstOrDefaultAsync(x => x.Id == newRestriction.Id);
 
-            if (oldRestriction is null || searchUser is null) return NotFound();
+            if (oldRestriction is null || isExistUser is false) return NotFound();
 
-            context.Entry(oldRestriction).CurrentValues.SetValues(userRestriction);
+            context.Entry(oldRestriction).CurrentValues.SetValues(newRestriction);
             await context.SaveChangesAsync();
 
             return Ok();
@@ -83,13 +82,13 @@ namespace CaseApplication.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            UserRestriction? searchRestriction = await context.UserRestriction
+            UserRestriction? restriction = await context.UserRestriction
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == id);
 
-            if (searchRestriction is null) return NotFound();
+            if (restriction is null) return NotFound();
 
-            context.UserRestriction.Remove(searchRestriction);
+            context.UserRestriction.Remove(restriction);
             await context.SaveChangesAsync();
 
             return Ok();

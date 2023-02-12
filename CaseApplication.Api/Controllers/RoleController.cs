@@ -29,7 +29,8 @@ namespace CaseApplication.Api.Controllers
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             UserRole? role = await context.UserRole
-                .AsNoTracking().FirstOrDefaultAsync(x => x.RoleName == name);
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.RoleName == name);
 
             return role is null ? NotFound(): Ok();
         }
@@ -41,7 +42,8 @@ namespace CaseApplication.Api.Controllers
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             return Ok(await context.UserRole
-                .AsNoTracking().ToListAsync());
+                .AsNoTracking()
+                .ToListAsync());
         }
 
         [Authorize(Roles = "admin")]
@@ -64,14 +66,12 @@ namespace CaseApplication.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            UserRole? oldUserRole = await context.UserRole
+            UserRole? oldRole = await context.UserRole
                 .FirstOrDefaultAsync(x => x.Id == role.Id);
 
-            if (oldUserRole is null)
-                return NotFound("There is no such role in the database, " +
-                    "review what data comes from the api");
+            if (oldRole is null) return NotFound();
 
-            context.Entry(oldUserRole).CurrentValues.SetValues(role);
+            context.Entry(oldRole).CurrentValues.SetValues(role);
             await context.SaveChangesAsync();
 
             return Ok();
@@ -83,14 +83,13 @@ namespace CaseApplication.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            UserRole? searchUserRole = await context.UserRole
-                .AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
+            UserRole? role = await context.UserRole
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id == id);
 
-            if (searchUserRole is null)
-                return NotFound("There is no such role in the database, " +
-                    "review what data comes from the api");
+            if (role is null) return NotFound();
 
-            context.UserRole.Remove(searchUserRole);
+            context.UserRole.Remove(role);
             await context.SaveChangesAsync();
 
             return Ok();

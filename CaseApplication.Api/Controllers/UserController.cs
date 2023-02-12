@@ -46,12 +46,12 @@ namespace CaseApplication.Api.Controllers
         }
 
         [Authorize]
-        [HttpGet("{userId}")]
-        public async Task<IActionResult> Get(Guid? userId = null)
+        [HttpGet("{id}")]
+        public async Task<IActionResult> Get(Guid? id = null)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            userId ??= UserId;
+            id ??= UserId;
 
             User? user = await context.User
                 .Include(x => x.UserAdditionalInfo)
@@ -61,7 +61,7 @@ namespace CaseApplication.Api.Controllers
                 .Include(x => x.UserRestrictions)
                 .Include(x => x.UserHistoryOpeningCases)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.Id == userId);
+                .FirstOrDefaultAsync(x => x.Id == id);
 
             if (user == null) return NotFound();
             
@@ -135,21 +135,20 @@ namespace CaseApplication.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            User? searchUserByLogin = await context.User
-                .FirstOrDefaultAsync(x => x.UserLogin == login);
+            bool isExistLogin = await context.User.AnyAsync(x => x.UserLogin == login);
 
-            User? searchUserById = await context.User
+            User? user = await context.User
                 .FirstOrDefaultAsync(x => x.Id == UserId);
 
-            if (searchUserByLogin != null) return BadRequest();
-            if (searchUserById == null) return NotFound();
+            if (isExistLogin) return BadRequest();
+            if (user == null) return NotFound();
 
-            searchUserById.UserLogin = login;
+            user.UserLogin = login;
 
             await context.SaveChangesAsync();
 
             await _emailHelper.SendNotifyToEmail(
-                searchUserById.UserEmail!, 
+                user.UserEmail!, 
                 "Администрация сайта" , 
                 new EmailPatternModel()
                 {
@@ -165,14 +164,12 @@ namespace CaseApplication.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            User? searchUser = await context.User
-                .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.UserEmail == emailModel.UserEmail);
+            bool isExistEmail = await context.User.AnyAsync(x => x.UserEmail == emailModel.UserEmail);
             User? user = await context.User
                 .Include(x => x.UserAdditionalInfo)
                 .FirstOrDefaultAsync(x => x.Id == emailModel.UserId);
 
-            if (searchUser != null) return Forbid("Email is already busy");
+            if (isExistEmail) return Forbid("Email is already busy");
             if (user == null) return NotFound();
 
             bool isValidToken = _validationService.IsValidEmailToken(emailModel, user.PasswordHash!);
@@ -282,14 +279,14 @@ namespace CaseApplication.Api.Controllers
         }
 
         [Authorize(Roles = "admin")]
-        [HttpDelete("admin/{userId}")]
-        public async Task<IActionResult> DeleteByAdmin(Guid userId)
+        [HttpDelete("admin/{id}")]
+        public async Task<IActionResult> DeleteByAdmin(Guid id)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             User? user = await context.User
                 .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.Id == userId);
+                .FirstOrDefaultAsync(x => x.Id == id);
 
             if (user is null) return NotFound();
 
