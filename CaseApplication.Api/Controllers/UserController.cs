@@ -140,24 +140,17 @@ namespace CaseApplication.Api.Controllers
 
             User? searchUserByLogin = await context
                 .User
-                .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.UserLogin == login);
 
             User? searchUserById = await context
                 .User
-                .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == UserId);
 
             if (searchUserByLogin != null) return BadRequest();
             if (searchUserById == null) return NotFound();
 
-            IMapper? mapper = _mapperConfiguration.CreateMapper();
+            searchUserById.UserLogin = login;
 
-            UserDto user = mapper.Map<UserDto>(searchUserById);
-            UserDto newUser = mapper.Map<UserDto>(searchUserById);
-            newUser.UserLogin = login;
-
-            context.Entry(user).CurrentValues.SetValues(newUser);
             await context.SaveChangesAsync();
 
             await _emailHelper.SendNotifyToEmail(

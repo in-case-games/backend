@@ -48,14 +48,18 @@ namespace CaseApplication.IntegrationTests.ApiV2
         public async Task GET_GetByNonExistedId_ReturnsNotFound()
         {
             // Arrange
+
             Guid guid = Guid.NewGuid();
+            await InitializeTestUser(guid);
+            Guid guid2 = Guid.NewGuid();
 
             // Act
             HttpStatusCode statusCode = await _response
-                .ResponseGetStatusCode($"/User/{guid}", _accessToken);
+                .ResponseGetStatusCode($"/User/{guid2}", _accessToken);
 
             // Assert
             Assert.Equal(HttpStatusCode.NotFound, statusCode);
+            await RemoveTestUser(guid);
         }
         [Fact]
         public async Task GET_GetByLogin_ReturnsOk()
@@ -76,6 +80,8 @@ namespace CaseApplication.IntegrationTests.ApiV2
         public async Task GET_GetByNonExistedLogin_ReturnsNotFound()
         {
             // Arrange
+            Guid guid = Guid.NewGuid();
+            await InitializeTestUser(guid);
             string login = "not-exist-Br0";
 
             // Act
@@ -84,6 +90,22 @@ namespace CaseApplication.IntegrationTests.ApiV2
 
             // Assert
             Assert.Equal(HttpStatusCode.NotFound, statusCode);
+            await RemoveTestUser(guid);
+        }
+        [Fact]
+        public async Task PUT_UpdateLogin_ReturnsOk()
+        {
+            // Arrange
+            Guid guid = Guid.NewGuid();
+            await InitializeTestUser(guid);
+            string login = "upd4t3-Br0";
+            // Act
+            HttpStatusCode statusCode = await _response
+                .ResponsePut($"/User/login/{login}", new User(), _accessToken);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, statusCode);
+            await RemoveTestUser(guid);
         }
         #region Начальные данные
         private async Task InitializeTestUser(Guid guid)
@@ -100,7 +122,7 @@ namespace CaseApplication.IntegrationTests.ApiV2
             {
                 Id = guid,
                 UserLogin = "UserUserForTests1",
-                UserEmail = "UserEmailUserForTest1",
+                UserEmail = "yt_ferbray@mail.ru",
                 PasswordHash = "UserHashForTest1",
                 PasswordSalt = "UserSaltForTest1",
                 UserAdditionalInfo = userInfo,
