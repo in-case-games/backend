@@ -36,7 +36,7 @@ namespace CaseApplication.Api.Controllers
                 return NotFound();
             }
 
-            return Ok();
+            return Ok(inventory);
         }
 
         [Authorize]
@@ -51,7 +51,7 @@ namespace CaseApplication.Api.Controllers
                 .Where(x => x.UserId == userId)
                 .ToListAsync();
 
-            return Ok();
+            return Ok(inventories);
         }
 
         // TODO Sell and Withdrawn

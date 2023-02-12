@@ -1,8 +1,10 @@
-﻿using CaseApplication.DomainLayer.Dtos;
+﻿using AutoMapper;
+using CaseApplication.DomainLayer.Dtos;
 using CaseApplication.DomainLayer.Entities;
-using CaseApplication.DomainLayer.Repositories;
+using CaseApplication.EntityFramework.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 namespace CaseApplication.Api.Controllers
@@ -11,20 +13,32 @@ namespace CaseApplication.Api.Controllers
     [ApiController]
     public class GameCaseController : ControllerBase
     {
-        private readonly IGameCaseRepository _gameCaseRepository;
+        private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
         private Guid UserId => Guid
             .Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
-
-        public GameCaseController(IGameCaseRepository gameCaseRepository)
+        private readonly MapperConfiguration _mapperConfiguration = new(configuration =>
         {
-            _gameCaseRepository = gameCaseRepository;
+            configuration.CreateMap<GameCaseDto, GameCase>();
+        });
+        public GameCaseController(IDbContextFactory<ApplicationDbContext> contextFactory)
+        {
+            _contextFactory = contextFactory;
         }
 
         [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(Guid id)
         {
-            GameCase? gameCase = await _gameCaseRepository.Get(id);
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            GameCase? gameCase = await context.GameCase
+                .AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
+
+            gameCase!.СaseInventories = await context.CaseInventory
+                .AsNoTracking()
+                .Include(x => x.GameItem)
+                .Where(x => x.GameCaseId == gameCase.Id)
+                .ToListAsync();
 
             if (gameCase != null)
             {
@@ -41,7 +55,16 @@ namespace CaseApplication.Api.Controllers
         [HttpGet("name/{name}")]
         public async Task<IActionResult> GetByName(string name)
         {
-            GameCase? gameCase = await _gameCaseRepository.GetByName(name);
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            GameCase? gameCase = await context.GameCase
+                .AsNoTracking().FirstOrDefaultAsync(x => x.GameCaseName == name);
+
+            gameCase!.СaseInventories = await context.CaseInventory
+                .AsNoTracking()
+                .Include(x => x.GameItem)
+                .Where(x => x.GameCaseId == gameCase.Id)
+                .ToListAsync();
 
             if (gameCase != null)
             {
@@ -58,9 +81,12 @@ namespace CaseApplication.Api.Controllers
         [HttpGet("all")]
         public async Task<IActionResult> GetAll()
         {
-            List<GameCase> gameCases = await _gameCaseRepository.GetAll();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            foreach(GameCase gameCase in gameCases)
+            List<GameCase> gameCases = await context.GameCase
+                .AsNoTracking().ToListAsync();
+
+            foreach (GameCase gameCase in gameCases)
             {
                 gameCase.RevenuePrecentage = 0;
                 gameCase.GameCaseBalance = 0;
@@ -73,7 +99,12 @@ namespace CaseApplication.Api.Controllers
         [HttpGet("groupname/{groupName}")]
         public async Task<IActionResult> GetAllByGroupName(string groupName)
         {
-            List<GameCase> gameCases = await _gameCaseRepository.GetAllByGroupName(groupName);
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            List<GameCase> gameCases = await context.GameCase
+                .AsNoTracking()
+                .Where(x => x.GroupCasesName == groupName)
+                .ToListAsync();
 
             foreach (GameCase gameCase in gameCases)
             {
@@ -88,35 +119,71 @@ namespace CaseApplication.Api.Controllers
         [HttpGet("admin/{id}")]
         public async Task<IActionResult> GetByAdmin(Guid id)
         {
-            GameCase? gameCase = await _gameCaseRepository.Get(id);
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            if (gameCase != null)
-            {
-                return Ok(gameCase);
-            }
+            GameCase? gameCase = await context.GameCase
+                .AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
 
-            return NotFound();
+            gameCase!.СaseInventories = await context.CaseInventory
+                .AsNoTracking()
+                .Include(x => x.GameItem)
+                .Where(x => x.GameCaseId == gameCase.Id)
+                .ToListAsync();
+
+            return gameCase is null ? NotFound(): Ok();
         }
 
         [Authorize(Roles = "admin")]
         [HttpPost("admin")]
         public async Task<IActionResult> Create(GameCaseDto gameCaseDto)
         {
-            return Ok(await _gameCaseRepository.Create(gameCaseDto));
+            IMapper? mapper = _mapperConfiguration.CreateMapper();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            GameCase gameCase = mapper.Map<GameCase>(gameCaseDto);
+
+            await context.GameCase.AddAsync(gameCase);
+            await context.SaveChangesAsync();
+
+            return Ok();
         }
 
         [Authorize(Roles = "admin")]
         [HttpPut("admin")]
         public async Task<IActionResult> Update(GameCase gameCase)
         {
-            return Ok(await _gameCaseRepository.Update(gameCase));
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            GameCase? oldCase = await context.GameCase
+                .FirstOrDefaultAsync(x => x.Id == gameCase.Id);
+
+            if (oldCase is null)
+                return NotFound("There is no such case in the database, " +
+                    "review what data comes from the api");
+
+            context.Entry(oldCase).CurrentValues.SetValues(gameCase);
+            await context.SaveChangesAsync();
+
+            return Ok();
         }
 
         [Authorize(Roles = "admin")]
         [HttpDelete("admin/{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            return Ok(await _gameCaseRepository.Delete(id));
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            GameCase? searchCase = await context.GameCase
+                .AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
+
+            if (searchCase is null)
+                return NotFound("There is no such case in the database, " +
+                    "review what data comes from the api");
+
+            context.GameCase.Remove(searchCase);
+            await context.SaveChangesAsync();
+
+            return Ok();
         }
     }
 }

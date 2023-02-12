@@ -1,8 +1,8 @@
 ﻿using CaseApplication.DomainLayer.Entities;
-using CaseApplication.DomainLayer.Repositories;
+using CaseApplication.EntityFramework.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
+using Microsoft.EntityFrameworkCore;
 
 namespace CaseApplication.Api.Controllers
 {
@@ -10,55 +10,85 @@ namespace CaseApplication.Api.Controllers
     [ApiController]
     public class PromocodeTypeController : ControllerBase
     {
-        private readonly IPromocodeTypeRepository _promocodeTypeRepository;
-        private Guid UserId => Guid
-            .Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
-
-        public PromocodeTypeController(IPromocodeTypeRepository promocodeTypeRepository)
+        private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
+        public PromocodeTypeController(IDbContextFactory<ApplicationDbContext> contextFactory)
         {
-            _promocodeTypeRepository = promocodeTypeRepository;
+            _contextFactory = contextFactory;
         }
 
         [AllowAnonymous]
         [HttpGet("{name}")]
         public async Task<IActionResult> GetByName(string name)
         {
-            PromocodeType? promocodeType = await _promocodeTypeRepository.GetByName(name);
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            if (promocodeType != null)
-            {
-                return Ok(promocodeType);
-            }
+            PromocodeType? promocodeType = await context.PromocodeType
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.PromocodeTypeName == name);
 
-            return NotFound();
+            return promocodeType is null ? NotFound(): Ok(promocodeType);
         }
 
         [AllowAnonymous]
         [HttpGet("all")]
         public async Task<IActionResult> GetAll()
         {
-            return Ok(await _promocodeTypeRepository.GetAll());
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            return Ok(await context.PromocodeType
+                .AsNoTracking().ToListAsync());
         }
 
         [Authorize(Roles = "admin")]
         [HttpPost("admin")]
         public async Task<IActionResult> Create(PromocodeType promocodeType)
         {
-            return Ok(await _promocodeTypeRepository.Create(promocodeType));
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            promocodeType.Id = Guid.NewGuid();
+
+            await context.PromocodeType.AddAsync(promocodeType);
+            await context.SaveChangesAsync();
+
+            return Ok();
         }
 
         [Authorize(Roles = "admin")]
         [HttpPut("admin")]
         public async Task<IActionResult> Update(PromocodeType promocodeType)
         {
-            return Ok(await _promocodeTypeRepository.Update(promocodeType));
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            PromocodeType? promoType = await context.PromocodeType
+                .FirstOrDefaultAsync(x => x.Id == promocodeType.Id);
+
+            if (promoType is null)
+                return Conflict("PromocodeType, which you search, is not found!");
+
+            context.Entry(promoType).CurrentValues.SetValues(promocodeType);
+            await context.SaveChangesAsync();
+
+            return Ok();
         }
 
         [Authorize(Roles = "admin")]
         [HttpDelete("admin/{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            return Ok(await _promocodeTypeRepository.Delete(id));
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            PromocodeType? promocodeType = await context
+                .PromocodeType
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id == id);
+
+            if (promocodeType is null)
+                return NotFound("PromocodeType, which you search, is not found!");
+
+            context.PromocodeType.Remove(promocodeType);
+            await context.SaveChangesAsync();
+
+            return Ok();
         }
     }
 }

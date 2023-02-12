@@ -1,7 +1,5 @@
-﻿using AutoMapper;
-using CaseApplication.DomainLayer.Dtos;
+﻿using CaseApplication.DomainLayer.Dtos;
 using CaseApplication.DomainLayer.Entities;
-using CaseApplication.DomainLayer.Repositories;
 using CaseApplication.EntityFramework.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -34,7 +32,7 @@ namespace CaseApplication.Api.Controllers
                 .Include(x => x.UserRole)
                 .FirstOrDefaultAsync(x => x.UserId == UserId);
 
-            return info is null ? NotFound() : Ok();
+            return info is null ? NotFound() : Ok(info);
         }
 
         [AllowAnonymous]

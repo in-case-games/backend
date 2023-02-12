@@ -1,8 +1,8 @@
 ﻿using CaseApplication.DomainLayer.Entities;
-using CaseApplication.DomainLayer.Repositories;
+using CaseApplication.EntityFramework.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
+using Microsoft.EntityFrameworkCore;
 
 namespace CaseApplication.Api.Controllers 
 {
@@ -10,34 +10,39 @@ namespace CaseApplication.Api.Controllers
     [ApiController]
     public class PromocodesUsedByUserController : ControllerBase
     {
-        private readonly IPromocodeUsedByUserRepository _promocodeUserByUserRepository;
-        private Guid UserId => Guid
-            .Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
-
-        public PromocodesUsedByUserController(IPromocodeUsedByUserRepository promocodeUserByUserRepository)
+        private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
+        public PromocodesUsedByUserController(IDbContextFactory<ApplicationDbContext> contextFactory)
         {
-            _promocodeUserByUserRepository = promocodeUserByUserRepository;
+            _contextFactory = contextFactory;
         }
 
         [Authorize]
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(Guid id)
         {
-            PromocodesUsedByUser? promocodesUsed = await _promocodeUserByUserRepository.Get(id);
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            if(promocodesUsed != null)
-            {
-                return Ok(promocodesUsed);
-            }
+            PromocodesUsedByUser? promocodeUsed = await context.PromocodeUsedByUsers
+                .AsNoTracking()
+                .Include(x => x.Promocode)
+                .FirstOrDefaultAsync(x => x.Id == id);
 
-            return NotFound();
+            return promocodeUsed is null ? NotFound() : Ok(promocodeUsed);
         }
 
         [Authorize]
         [HttpGet("all/{userId}")]
         public async Task<IActionResult> GetUsedPromocodes(Guid userId)
         {
-            return Ok(await _promocodeUserByUserRepository.GetAll(userId));
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            List<PromocodesUsedByUser> promocodesUseds = await context.PromocodeUsedByUsers
+                    .AsNoTracking()
+                    .Include(x => x.Promocode)
+                    .Where(x => x.UserId == userId)
+                    .ToListAsync();
+
+            return Ok(promocodesUseds);
         }
     }
 }

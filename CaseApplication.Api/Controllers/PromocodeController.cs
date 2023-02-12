@@ -1,8 +1,8 @@
-﻿using CaseApplication.DomainLayer.Dtos;
-using CaseApplication.DomainLayer.Entities;
-using CaseApplication.DomainLayer.Repositories;
+﻿using CaseApplication.DomainLayer.Entities;
+using CaseApplication.EntityFramework.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 namespace CaseApplication.Api.Controllers
@@ -11,40 +11,47 @@ namespace CaseApplication.Api.Controllers
     [ApiController]
     public class PromocodeController : ControllerBase
     {
-        private readonly IPromocodeRepository _promocodeRepository;
-        private readonly IPromocodeUsedByUserRepository _promocodeUsedRepository;
+        private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
         private Guid UserId => Guid
             .Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
 
-        public PromocodeController(
-            IPromocodeRepository promocodeRepository, 
-            IPromocodeUsedByUserRepository promocodeUsedRepository)
+        public PromocodeController(IDbContextFactory<ApplicationDbContext> contextFactory)
         {
-            _promocodeRepository = promocodeRepository;
-            _promocodeUsedRepository = promocodeUsedRepository;
+            _contextFactory = contextFactory;
         }
 
         [Authorize]
         [HttpGet("use/{name}")]
         public async Task<IActionResult> UsePromocode(string name)
         {
-            Promocode? searchPromocode = await _promocodeRepository.GetByName(name);
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            if (searchPromocode == null) return NotFound();
+            Promocode? promocode = await context.Promocode
+                .AsNoTracking()
+                .Include(x => x.PromocodeType)
+                .FirstOrDefaultAsync(x => x.PromocodeName == name);
 
-            List<PromocodesUsedByUser> promocodesUsed = await _promocodeUsedRepository
-                .GetAll(UserId);
+            if (promocode == null) return NotFound();
 
-            bool isExistPromocode = promocodesUsed.Exists(x => x.PromocodeId == searchPromocode.Id);
+            List<PromocodesUsedByUser> promocodesUses = await context.PromocodeUsedByUsers
+                     .AsNoTracking()
+                     .Include(x => x.Promocode)
+                     .Where(x => x.UserId == UserId)
+                     .ToListAsync();
+
+            bool isExistPromocode = promocodesUses.Exists(x => x.PromocodeId == promocode.Id);
 
             if (isExistPromocode)
                 return UnprocessableEntity("Promocode is used");
 
-            await _promocodeUsedRepository.Create(new()
-            {
-                UserId = UserId,
-                PromocodeId = searchPromocode.Id
-            });
+            PromocodesUsedByUser promocodesUsedByUser = new PromocodesUsedByUser();
+
+            promocodesUsedByUser.Id = new Guid();
+            promocodesUsedByUser.UserId = UserId;
+            promocodesUsedByUser.PromocodeId = promocode.Id;
+
+            await context.PromocodeUsedByUsers.AddAsync(promocodesUsedByUser);
+            await context.SaveChangesAsync();
 
             return Ok();
         }
@@ -53,33 +60,69 @@ namespace CaseApplication.Api.Controllers
         [HttpGet("{name}")]
         public async Task<IActionResult> GetByName(string name)
         {
-            Promocode? promocode = await _promocodeRepository.GetByName(name);
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            if (promocode == null)
-                return NotFound();
+            Promocode? promocode = await context.Promocode
+                .AsNoTracking()
+                .Include(x => x.PromocodeType)
+                .FirstOrDefaultAsync(x => x.PromocodeName == name);
 
-            return Ok(promocode);
+            return promocode is null ? NotFound() : Ok(promocode);
         }
 
         [Authorize(Roles = "admin")]
         [HttpPost("admin")]
-        public async Task<IActionResult> Create(PromocodeDto promocode)
+        public async Task<IActionResult> Create(Promocode promocode)
         {
-            return Ok(await _promocodeRepository.Create(promocode));
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            promocode.Id = new Guid();
+
+            await context.Promocode.AddAsync(promocode);
+            await context.SaveChangesAsync();
+
+            return Ok();
         }
 
         [Authorize(Roles = "admin")]
         [HttpPut("admin")]
-        public async Task<IActionResult> Update(PromocodeDto promocode)
+        public async Task<IActionResult> Update(Promocode promocode)
         {
-            return Ok(await _promocodeRepository.Update(promocode));
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            Promocode? oldPromocode = await context.Promocode
+                .FirstOrDefaultAsync(x => x.Id == promocode.Id);
+
+            if (oldPromocode is null)
+                return NotFound("There is no such promocode in the database, " +
+                    "review what data comes from the api");
+
+            context.Entry(oldPromocode).CurrentValues.SetValues(promocode);
+
+            await context.SaveChangesAsync();
+
+            return Ok();
         }
 
         [Authorize(Roles = "admin")]
         [HttpDelete("admin/{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            return Ok(await _promocodeRepository.Delete(id));
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            Promocode? searchPromocode = await context
+                .Promocode
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id == id);
+
+            if (searchPromocode is null)
+                return NotFound("There is no such promocode in the database, " +
+                    "review what data comes from the api");
+
+            context.Promocode.Remove(searchPromocode);
+            await context.SaveChangesAsync();
+
+            return Ok();
         }
     }
 }

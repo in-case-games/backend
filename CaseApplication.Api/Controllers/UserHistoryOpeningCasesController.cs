@@ -32,7 +32,7 @@ namespace CaseApplication.Api.Controllers
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == id);
 
-            return userHistory is null ? NotFound() : Ok();
+            return userHistory is null ? NotFound() : Ok(userHistory);
         }
 
         [AllowAnonymous]
@@ -48,7 +48,7 @@ namespace CaseApplication.Api.Controllers
                 .Where(x => x.UserId == userId)
                 .ToListAsync();
 
-            return userHistories is null ? NotFound() : Ok();
+            return userHistories is null ? NotFound() : Ok(userHistories);
         }
         [Authorize]
         [HttpGet("all")]
@@ -61,7 +61,7 @@ namespace CaseApplication.Api.Controllers
                 .Include(x => x.GameItem)
                 .ToListAsync();
 
-            return userHistories is null ? NoContent() : Ok();
+            return userHistories is null ? NoContent() : Ok(userHistories);
         }
 
         [Authorize]

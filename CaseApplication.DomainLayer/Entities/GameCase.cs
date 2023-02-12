@@ -10,7 +10,6 @@ namespace CaseApplication.DomainLayer.Entities
         public decimal GameCaseBalance { get; set; } = 0M;
         public string? GameCaseImage { get; set; }
         public decimal RevenuePrecentage { get; set; } = 0.1M;
-
         public List<CaseInventory>? СaseInventories { get; set; }
         [JsonIgnore]
         public List<UserHistoryOpeningCases>? UserHistoryOpeningCases { get; set; }
