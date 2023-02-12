@@ -31,12 +31,7 @@ namespace CaseApplication.Api.Controllers
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == id);
 
-            if (inventory is null)
-            {
-                return NotFound();
-            }
-
-            return Ok(inventory);
+            return inventory is null ? NotFound() : Ok(inventory);
         }
 
         [Authorize]
@@ -44,6 +39,8 @@ namespace CaseApplication.Api.Controllers
         public async Task<IActionResult> GetAll(Guid? userId = null)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+            
+            userId ??= UserId;
 
             List<UserInventory> inventories = await context.UserInventory
                 .Include(x => x.GameItem)
@@ -53,7 +50,5 @@ namespace CaseApplication.Api.Controllers
 
             return Ok(inventories);
         }
-
-        // TODO Sell and Withdrawn
     }
 }

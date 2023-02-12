@@ -80,7 +80,7 @@ namespace CaseApplication.IntegrationTests.ApiV2
             {
                 Id = guid,
                 UserLogin = "UserUserForTests2",
-                UserEmail = "UserEmailUserForTest2",
+                UserEmail = "sex@mail.ru",
                 PasswordHash = "UserHashForTest2",
                 PasswordSalt = "UserSaltForTest2",
                 UserAdditionalInfo = userInfo,

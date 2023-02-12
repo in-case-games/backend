@@ -135,7 +135,7 @@ namespace CaseApplication.IntegrationTests.ApiV2
             {
                 Id = guid,
                 UserLogin = "UserUserForTests1",
-                UserEmail = "yt_ferbray@mail.ru",
+                UserEmail = "sex@mail.ru",
                 PasswordHash = "UserHashForTest1",
                 PasswordSalt = "UserSaltForTest1",
                 UserAdditionalInfo = userInfo,

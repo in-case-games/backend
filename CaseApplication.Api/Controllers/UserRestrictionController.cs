@@ -66,11 +66,10 @@ namespace CaseApplication.Api.Controllers
             UserRestriction? oldRestriction = await context.UserRestriction
                 .FirstOrDefaultAsync(x => x.Id == userRestriction.Id);
             User? searchUser = await context.User
+                .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == userRestriction.UserId);
 
-            if (oldRestriction is null || searchUser is null)
-                return NotFound("There is no such user restriction in the database, " +
-                "review what data comes from the api");
+            if (oldRestriction is null || searchUser is null) return NotFound();
 
             context.Entry(oldRestriction).CurrentValues.SetValues(userRestriction);
             await context.SaveChangesAsync();
@@ -84,14 +83,11 @@ namespace CaseApplication.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            UserRestriction? searchRestriction = await context
-                .UserRestriction
+            UserRestriction? searchRestriction = await context.UserRestriction
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == id);
 
-            if (searchRestriction is null)
-                return NotFound("There is no such user restriction in the database, " +
-                "review what data comes from the api");
+            if (searchRestriction is null) return NotFound();
 
             context.UserRestriction.Remove(searchRestriction);
             await context.SaveChangesAsync();

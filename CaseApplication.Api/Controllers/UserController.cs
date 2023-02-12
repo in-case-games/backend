@@ -51,30 +51,24 @@ namespace CaseApplication.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            userId = userId is null ? UserId : userId;
+            userId ??= UserId;
 
-            User? user = await context
-                .User
+            User? user = await context.User
                 .Include(x => x.UserAdditionalInfo)
                 .Include(x => x.UserAdditionalInfo!.UserRole)
                 .Include(x => x.UserInventories)
                 .Include(x => x.PromocodesUsedByUsers)
                 .Include(x => x.UserRestrictions)
                 .Include(x => x.UserHistoryOpeningCases)
-                .Include(x => x.UserTokens)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == userId);
 
-            if (user != null)
-            {
-                user.PasswordHash = "access denied";
-                user.PasswordSalt = "access denied";
-                user.UserTokens = null;
-
-                return Ok(user);
-            }
-
-            return NotFound();
+            if (user == null) return NotFound();
+            
+            user.PasswordHash = "access denied";
+            user.PasswordSalt = "access denied";
+            
+            return Ok(user);
         }
 
         [Authorize]
@@ -83,36 +77,31 @@ namespace CaseApplication.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            User? user = await context
-                .User
+            User? user = await context.User
                 .Include(x => x.UserAdditionalInfo)
                 .Include(x => x.UserAdditionalInfo!.UserRole)
                 .Include(x => x.UserInventories)
                 .Include(x => x.PromocodesUsedByUsers)
                 .Include(x => x.UserRestrictions)
                 .Include(x => x.UserHistoryOpeningCases)
-                .Include(x => x.UserTokens)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.UserLogin == login);
 
-            if (user != null)
-            {
-                user.PasswordHash = "access denied";
-                user.PasswordSalt = "access denied";
-                user.UserTokens = null;
-
-                return Ok(user);
-            }
-
-            return NotFound();
+            if (user == null) return NotFound();
+            
+            user.PasswordHash = "access denied";
+            user.PasswordSalt = "access denied";
+            
+            return Ok(user);
         }
+
         [Authorize]
         [HttpGet("all")]
         public async Task<IActionResult> GetAll()
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
-            List<User> users = await context
-                .User
+
+            List<User> users = await context.User
                 .Include(x => x.UserAdditionalInfo)
                 .Include(x => x.UserAdditionalInfo!.UserRole)
                 .Include(x => x.UserInventories)
@@ -122,12 +111,20 @@ namespace CaseApplication.Api.Controllers
                 .AsNoTracking()
                 .ToListAsync();
 
-            foreach (User user in users)
+            for(int i = 0; i < users.Count; i++)
+            {
+                users[i].UserEmail = "access denied";
+                users[i].PasswordHash = "access denied";
+                users[i].PasswordSalt = "access denied";
+            }
+
+            //TODO Testing speed
+/*            foreach (User user in users)
             {
                 user.UserEmail = "access denied";
                 user.PasswordHash = "access denied";
                 user.PasswordSalt = "access denied";
-            }
+            }*/
 
             return Ok(users);
         }
@@ -138,12 +135,10 @@ namespace CaseApplication.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            User? searchUserByLogin = await context
-                .User
+            User? searchUserByLogin = await context.User
                 .FirstOrDefaultAsync(x => x.UserLogin == login);
 
-            User? searchUserById = await context
-                .User
+            User? searchUserById = await context.User
                 .FirstOrDefaultAsync(x => x.Id == UserId);
 
             if (searchUserByLogin != null) return BadRequest();
@@ -170,42 +165,25 @@ namespace CaseApplication.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            User? searchUser = await context
-                .User
-                .AsNoTracking().FirstOrDefaultAsync(x => x.UserEmail == emailModel.UserEmail);
-            User? user = await context
-                .User
+            User? searchUser = await context.User
                 .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.Id == UserId);
+                .FirstOrDefaultAsync(x => x.UserEmail == emailModel.UserEmail);
+            User? user = await context.User
+                .Include(x => x.UserAdditionalInfo)
+                .FirstOrDefaultAsync(x => x.Id == emailModel.UserId);
 
+            if (searchUser != null) return Forbid("Email is already busy");
             if (user == null) return NotFound();
 
             bool isValidToken = _validationService.IsValidEmailToken(emailModel, user.PasswordHash!);
-
             if (isValidToken is false) return Forbid("Invalid email token");
-            if (searchUser != null) return Forbid("Email is already busy");
 
-            IMapper? mapper = _mapperConfiguration.CreateMapper();
-            IMapper? mapperInfo = _mapperConfigurationInfo.CreateMapper();
-
-            UserDto oldUser = mapper.Map<UserDto>(user);
-            UserDto newUser = mapper.Map<UserDto>(user);
-
-            newUser.UserEmail = emailModel.UserEmail;
+            user.UserEmail = emailModel.UserEmail;
             user.UserAdditionalInfo!.IsConfirmedAccount = false;
-
-            UserAdditionalInfo info = user.UserAdditionalInfo!;
-
-            context.Entry(user).CurrentValues.SetValues(newUser);
-
-            UserAdditionalInfo? searchInfo = await context.UserAdditionalInfo
-               .FirstOrDefaultAsync(x => x.UserId == info.UserId);
-
-            context.Entry(searchInfo!).CurrentValues.SetValues(info);
 
             List<UserToken> userTokens = await context.UserToken
                 .AsNoTracking()
-                .Where(x => x.UserId == UserId)
+                .Where(x => x.UserId == emailModel.UserId)
                 .ToListAsync();
 
             context.UserToken.RemoveRange(userTokens);
@@ -229,10 +207,8 @@ namespace CaseApplication.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            User? user = await context
-                .User
-                .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.Id == UserId);
+            User? user = await context.User
+                .FirstOrDefaultAsync(x => x.Id == emailModel.UserId);
 
             if (user == null) return NotFound();
 
@@ -244,18 +220,12 @@ namespace CaseApplication.Api.Controllers
             byte[] salt = _encryptorHelper.GenerationSaltTo64Bytes();
             string hash = _encryptorHelper.EncryptorPassword(password, salt);
 
-            IMapper? mapper = _mapperConfiguration.CreateMapper();
-
-            UserDto oldUser = mapper.Map<UserDto>(user);
-            UserDto newUser = mapper.Map<UserDto>(user);
-            newUser.PasswordHash = hash;
-            newUser.PasswordSalt = Convert.ToBase64String(salt);
-
-            context.Entry(user).CurrentValues.SetValues(newUser);
+            user.PasswordHash = hash;
+            user.PasswordSalt = Convert.ToBase64String(salt);
 
             List<UserToken> userTokens = await context.UserToken
                 .AsNoTracking()
-                .Where(x => x.UserId == UserId)
+                .Where(x => x.UserId == emailModel.UserId)
                 .ToListAsync();
 
             context.UserToken.RemoveRange(userTokens);
@@ -279,10 +249,9 @@ namespace CaseApplication.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            User? user = await context
-                .User
+            User? user = await context.User
                 .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.Id == UserId);
+                .FirstOrDefaultAsync(x => x.Id == emailModel.UserId);
 
             if (user == null) return NotFound();
 
@@ -302,7 +271,7 @@ namespace CaseApplication.Api.Controllers
 
             List<UserToken> userTokens = await context.UserToken
                 .AsNoTracking()
-                .Where(x => x.UserId == UserId)
+                .Where(x => x.UserId == emailModel.UserId)
                 .ToListAsync();
 
             context.UserToken.RemoveRange(userTokens);
@@ -318,13 +287,11 @@ namespace CaseApplication.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            User? user = await context
-                .User
+            User? user = await context.User
                 .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.Id == UserId);
+                .FirstOrDefaultAsync(x => x.Id == userId);
 
-            if (user is null)
-                return NotFound();
+            if (user is null) return NotFound();
 
             context.User.Remove(user);
             await context.SaveChangesAsync();
