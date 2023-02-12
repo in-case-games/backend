@@ -107,6 +107,19 @@ namespace CaseApplication.IntegrationTests.ApiV2
             Assert.Equal(HttpStatusCode.OK, statusCode);
             await RemoveTestUser(guid);
         }
+        [Fact]
+        public async Task DELETE_DeleteByAdmin_ReturnsOk()
+        {
+            // Arrange
+            Guid guid = Guid.NewGuid();
+            await InitializeTestUser(guid);
+            // Act
+            HttpStatusCode statusCode = await _response
+                .ResponseDelete($"/User/admin/{guid}", _accessToken);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, statusCode);
+        }
         #region Начальные данные
         private async Task InitializeTestUser(Guid guid)
         {
@@ -130,7 +143,16 @@ namespace CaseApplication.IntegrationTests.ApiV2
 
             _accessToken = CreateToken(user);
 
-            await Context.User.AddAsync(user);
+            try
+            {
+                await Context.User.AddAsync(user);
+            }
+            catch
+            {
+                Context.User.Remove(user);
+                await Context.User.AddAsync(user);
+            }
+
             await Context.UserAdditionalInfo.AddAsync(userInfo);
             await Context.SaveChangesAsync();
         }
