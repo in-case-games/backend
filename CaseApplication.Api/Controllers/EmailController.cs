@@ -1,10 +1,10 @@
 ﻿using CaseApplication.Api.Models;
 using CaseApplication.Api.Services;
 using CaseApplication.DomainLayer.Entities;
-using CaseApplication.DomainLayer.Repositories;
+using CaseApplication.EntityFramework.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.IdentityModel.Tokens.Jwt;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 namespace CaseApplication.Api.Controllers
@@ -13,27 +13,21 @@ namespace CaseApplication.Api.Controllers
     [ApiController]
     public class EmailController : ControllerBase
     {
+        private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
         private readonly EmailHelper _emailHelper;
-        private readonly EncryptorHelper _encryptorHelper;
         private readonly JwtHelper _jwtHelper;
-        private readonly IUserRepository _userRepository;
-        private readonly IUserTokensRepository _userTokensRepository;
         private readonly ValidationService _validationService;
         private Guid UserId => Guid
             .Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
 
         public EmailController(
+            IDbContextFactory<ApplicationDbContext> contextFactory,
             EmailHelper emailHelper,
-            EncryptorHelper encryptorHelper,
             JwtHelper jwtHelper,
-            IUserRepository userRepository, 
-            IUserTokensRepository userTokensRepository,
             ValidationService validationService)
         {
+            _contextFactory = contextFactory;
             _emailHelper = emailHelper;
-            _userRepository = userRepository;
-            _userTokensRepository = userTokensRepository;
-            _encryptorHelper = encryptorHelper;
             _jwtHelper = jwtHelper;
             _validationService = validationService;
         }
@@ -42,7 +36,19 @@ namespace CaseApplication.Api.Controllers
         [HttpPost("user/confirm")]
         public async Task<IActionResult> SendConfirmEmail(EmailModel emailModel)
         {
-            User? user = await _userRepository.Get(emailModel.UserId);
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            User? user = await context
+                .User
+                .Include(x => x.UserAdditionalInfo)
+                .Include(x => x.UserAdditionalInfo!.UserRole)
+                .Include(x => x.UserInventories)
+                .Include(x => x.PromocodesUsedByUsers)
+                .Include(x => x.UserRestrictions)
+                .Include(x => x.UserHistoryOpeningCases)
+                .Include(x => x.UserTokens)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id == UserId);
 
             if (user == null) return NotFound();
             if (user.UserEmail != emailModel.UserEmail) return Forbid("Incorrect email");
@@ -58,60 +64,84 @@ namespace CaseApplication.Api.Controllers
         [HttpPut("user/email/{password}")]
         public async Task<IActionResult> SendUpdateEmail(EmailModel emailModel, string password)
         {
-            User? user = await _userRepository.Get(UserId);
-
-            if (user == null) return NotFound();
-            if (_validationService.IsValidEmailTokenSend(in user, emailModel.UserIp, password))
+            try
             {
-                MapEmailModelForSend(ref emailModel, user);
-                await _emailHelper.SendChangeEmailToEmail(emailModel);
-
-                return Accepted();
+                await Send(emailModel, password);
+            }
+            catch (ArgumentException ex)
+            {
+                return Forbid(ex.Message);
+            }
+            catch (NullReferenceException ex)
+            {
+                return NotFound(ex.Message);
             }
 
-            //TODO Give temp password
-
-            return Forbid("Incorrect password/ip");
+            return Accepted();
         }
         
         [Authorize]
         [HttpPut("user/password/{password}")]
         public async Task<IActionResult> SendUpdatePassword(EmailModel emailModel, string password)
         {
-            User? user = await _userRepository.Get(UserId);
-
-            if (user == null) return NotFound();
-            if (_validationService.IsValidEmailTokenSend(in user, emailModel.UserIp, password))
+            try
             {
-                MapEmailModelForSend(ref emailModel, user);
-                await _emailHelper.SendChangePasswordToEmail(emailModel);
-
-                return Accepted();
+                await Send(emailModel, password);
+            }
+            catch (ArgumentException ex)
+            {
+                return Forbid(ex.Message);
+            }
+            catch (NullReferenceException ex)
+            {
+                return NotFound(ex.Message);
             }
 
-            //TODO Give temp password
-
-            return Forbid("Incorrect password/ip");
+            return Accepted();
         }
 
         [Authorize]
         [HttpDelete("user/{password}")]
         public async Task<IActionResult> SendDeleteAccount(EmailModel emailModel, string password)
         {
-            User? user = await _userRepository.Get(UserId);
-
-            if (user == null) return NotFound();
-            if (_validationService.IsValidEmailTokenSend(in user, emailModel.UserIp, password))
+            try
             {
-                MapEmailModelForSend(ref emailModel, user);
-                await _emailHelper.SendDeleteAccountToEmail(emailModel);
-
-                return Accepted();
+                await Send(emailModel, password);
+            }
+            catch (ArgumentException ex)
+            {
+                return Forbid(ex.Message);
+            }
+            catch (NullReferenceException ex)
+            {
+                return NotFound(ex.Message);
             }
 
-            //TODO Give temp password
+            return Accepted();
+        }
+        private async Task Send(EmailModel emailModel, string password)
+        {
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            return Forbid("Incorrect password/ip");
+            User? user = await context
+                .User
+                .Include(x => x.UserAdditionalInfo)
+                .Include(x => x.UserAdditionalInfo!.UserRole)
+                .Include(x => x.UserInventories)
+                .Include(x => x.PromocodesUsedByUsers)
+                .Include(x => x.UserRestrictions)
+                .Include(x => x.UserHistoryOpeningCases)
+                .Include(x => x.UserTokens)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id == UserId);
+
+            if (user == null)
+                throw new NullReferenceException("The user was not found");
+            if (!_validationService.IsValidEmailTokenSend(in user, emailModel.UserIp, password))
+                throw new ArgumentException("IncorrectPassword");
+
+            MapEmailModelForSend(ref emailModel, user);
+            await _emailHelper.SendDeleteAccountToEmail(emailModel);
         }
 
         private void MapEmailModelForSend(ref EmailModel emailModel, User user)

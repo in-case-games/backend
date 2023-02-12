@@ -130,7 +130,7 @@ namespace CaseApplication.Api.Controllers
                 .Where(x => x.GameCaseId == gameCase.Id)
                 .ToListAsync();
 
-            return gameCase is null ? NotFound(): Ok();
+            return gameCase is null ? NotFound(): Ok(gameCase);
         }
 
         [Authorize(Roles = "admin")]

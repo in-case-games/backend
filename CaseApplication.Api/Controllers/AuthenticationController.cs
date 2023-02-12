@@ -3,12 +3,11 @@ using CaseApplication.Api.Models;
 using CaseApplication.Api.Services;
 using CaseApplication.DomainLayer.Dtos;
 using CaseApplication.DomainLayer.Entities;
-using CaseApplication.DomainLayer.Repositories;
+using CaseApplication.EntityFramework.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.IdentityModel.Tokens.Jwt;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
-using System.Text;
 
 namespace CaseApplication.Api.Controllers
 {
@@ -17,41 +16,30 @@ namespace CaseApplication.Api.Controllers
     public class AuthenticationController : ControllerBase
     {
         #region injections
-        private readonly IConfiguration _configuration;
-        private readonly IUserRepository _userRepository;
-        private readonly IUserAdditionalInfoRepository _userAdditionalInfoRepository;
-        private readonly IUserRoleRepository _userRoleRepository;
+        private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
         private readonly EncryptorHelper _encryptorHelper;
         private readonly JwtHelper _jwtHelper;
-        private readonly IUserTokensRepository _userTokensRepository;
         private readonly EmailHelper _emailHelper;
         private readonly ValidationService _validationService;
-        private MapperConfiguration _mapperConfigurationInfo = new(configuration =>
+        private MapperConfiguration _mapperConfiguration = new(configuration =>
         {
             configuration.CreateMap<UserAdditionalInfo, UserAdditionalInfoDto>();
+            configuration.CreateMap<UserDto, User>();
         });
         private Guid UserId => Guid
             .Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
         #endregion
         #region ctor
         public AuthenticationController(
-            IConfiguration configuration,
-            IUserRepository userRepository, 
-            IUserAdditionalInfoRepository userAdditionalInfoRepository,
-            IUserRoleRepository userRoleRepository,
+            IDbContextFactory<ApplicationDbContext> contextFactory,
             EncryptorHelper encryptorHelper,
             JwtHelper jwtHelper,
-            IUserTokensRepository userTokensRepository,
             EmailHelper emailHelper,
             ValidationService validationService)
         {
-            _userRepository = userRepository;
-            _userAdditionalInfoRepository = userAdditionalInfoRepository;
-            _userRoleRepository = userRoleRepository;
+            _contextFactory = contextFactory;
             _encryptorHelper = encryptorHelper;
             _jwtHelper = jwtHelper;
-            _userTokensRepository = userTokensRepository;
-            _configuration = configuration;
             _emailHelper = emailHelper;
             _validationService = validationService;
         }
@@ -59,25 +47,39 @@ namespace CaseApplication.Api.Controllers
 
         [AllowAnonymous]
         [HttpPost("signin/{password}&{ip}")]
-        public async Task<IActionResult> SignIn(UserDto user, string password, string ip)
+        public async Task<IActionResult> SignIn(UserDto userDto, string password, string ip)
         {
             //FindUser
-            User? searchUser = await _userRepository.GetByParameters(user);
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            if (searchUser is null) return NotFound();
-            if (_validationService.IsValidUserPassword(in searchUser, password) is false) 
+            User? user = await context
+                .User
+                .Include(x => x.UserAdditionalInfo)
+                .Include(x => x.UserAdditionalInfo!.UserRole)
+                .Include(x => x.UserInventories)
+                .Include(x => x.PromocodesUsedByUsers)
+                .Include(x => x.UserRestrictions)
+                .Include(x => x.UserHistoryOpeningCases)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x =>
+                x.UserEmail == userDto.UserEmail ||
+                x.Id == userDto.Id ||
+                x.UserLogin == userDto.UserLogin);
+
+            if (user is null) return NotFound();
+            if (_validationService.IsValidUserPassword(in user, password) is false) 
                 return Forbid();
 
             //Search refresh token by ip
-            UserToken? userTokenByIp = searchUser.UserTokens?.FirstOrDefault(x => x.UserIpAddress == ip);
+            UserToken? userTokenByIp = user.UserTokens?.FirstOrDefault(x => x.UserIpAddress == ip);
 
             if (userTokenByIp == null)
             {
                 await _emailHelper.SendConfirmAccountToEmail(new EmailModel()
                 {
-                    UserEmail = searchUser.UserEmail!,
-                    UserId = searchUser.Id,
-                    UserToken = _jwtHelper.GenerateEmailToken(searchUser, ip),
+                    UserEmail = user.UserEmail!,
+                    UserId = user.Id,
+                    UserToken = _jwtHelper.GenerateEmailToken(user, ip),
                     UserIp = ip
                 });
 
@@ -85,13 +87,23 @@ namespace CaseApplication.Api.Controllers
             }
 
             //Generation Token
-            TokenModel tokenModel = _jwtHelper.GenerateTokenPair(in searchUser);
+            TokenModel tokenModel = _jwtHelper.GenerateTokenPair(in user);
 
             MapUserTokenForUpdate(ref userTokenByIp, tokenModel);
-            await _userTokensRepository.Update(userTokenByIp);
+
+            UserToken? oldToken = await context.UserToken.FirstOrDefaultAsync(x => x.Id == userTokenByIp.Id);
+
+            if (oldToken == null)
+            {
+                throw new Exception("There is no such token, " +
+                    "review what data comes from the api");
+            }
+
+            context.Entry(oldToken).CurrentValues.SetValues(userTokenByIp);
+            await context.SaveChangesAsync();
 
             await _emailHelper.SendNotifyToEmail(
-                searchUser.UserEmail!,
+                user.UserEmail!,
                 "Администрация сайта",
                 new EmailPatternModel()
                 {
@@ -103,28 +115,51 @@ namespace CaseApplication.Api.Controllers
 
         [AllowAnonymous]
         [HttpPost("signup/{password}")]
-        public async Task<IActionResult> SignUp(UserDto user, string password)
+        public async Task<IActionResult> SignUp(UserDto userDto, string password)
         {
             //Find user
-            User? userExists = await _userRepository.GetByParameters(user);
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            User? userExists = await context
+                .User
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x =>
+                x.UserEmail == userDto.UserEmail ||
+                x.Id == userDto.Id ||
+                x.UserLogin == userDto.UserLogin);
 
             if (userExists is not null) return Conflict("User already exists!");
 
             //Gen hash and salt
             byte[] salt = _encryptorHelper.GenerationSaltTo64Bytes();
 
-            user.PasswordHash = _encryptorHelper.EncryptorPassword(password, salt);
-            user.PasswordSalt = Convert.ToBase64String(salt);
+            userDto.PasswordHash = _encryptorHelper.EncryptorPassword(password, salt);
+            userDto.PasswordSalt = Convert.ToBase64String(salt);
 
-            await _userRepository.Create(user);
+            IMapper? mapper = _mapperConfiguration.CreateMapper();
+
+            User user = mapper.Map<User>(userDto);
+            user.Id = Guid.NewGuid();
+
+            await context.User.AddAsync(user);
 
             //Create Add info
-            User createdUser = (await _userRepository.GetByLogin(user.UserLogin!))!;
+            User? createdUser = await context
+               .User
+               .AsNoTracking()
+               .FirstOrDefaultAsync(x => x.UserLogin == user.UserLogin);
 
-            await _userAdditionalInfoRepository.Create(new()
-            {
-                UserId = createdUser.Id,
-            });
+            UserAdditionalInfo info = new UserAdditionalInfo();
+
+            UserRole? role = await context.UserRole
+                .AsNoTracking().FirstOrDefaultAsync(x => x.RoleName == "user");
+
+            info.Id = Guid.NewGuid();
+            info.UserRoleId = role!.Id;
+            info.UserId = user.Id!;
+
+            await context.UserAdditionalInfo.AddAsync(info);
+            await context.SaveChangesAsync();
 
             await _emailHelper.SendNotifyToEmail(
                 user.UserEmail!,
@@ -141,6 +176,8 @@ namespace CaseApplication.Api.Controllers
         [HttpGet("refresh/{refreshToken}&{ip}")]
         public async Task<IActionResult> RefreshTokens(string refreshToken, string ip)
         {
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
             //Get User id
             string? getUserId = _jwtHelper.GetIdFromRefreshToken(refreshToken);
 
@@ -149,8 +186,12 @@ namespace CaseApplication.Api.Controllers
             _ = Guid.TryParse(getUserId, out Guid userId);
 
             //Search refresh token by ip TODO Cut in method
-            User user = (await _userRepository.Get(userId))!;
-            UserToken? userToken = user.UserTokens?.FirstOrDefault(x => x.UserIpAddress == ip);
+            User? user = await context
+                .User
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id == userId);
+
+            UserToken? userToken = user!.UserTokens?.FirstOrDefault(x => x.UserIpAddress == ip);
 
             if (_validationService.IsValidRefreshToken(in userToken, refreshToken))
             {
@@ -158,7 +199,8 @@ namespace CaseApplication.Api.Controllers
                 TokenModel tokenModel = _jwtHelper.GenerateTokenPair(in user);
 
                 MapUserTokenForUpdate(ref userToken!, tokenModel);
-                await _userTokensRepository.Update(userToken);
+
+                context.Entry(refreshToken).CurrentValues.SetValues(userToken);
 
                 return Ok(tokenModel);
             }
@@ -169,7 +211,11 @@ namespace CaseApplication.Api.Controllers
                     Body = $"Попытка входа в аккаунт"
                 });
 
-            await _userTokensRepository.DeleteByToken(userId, refreshToken);
+            UserToken? refreshModelToken = await context.UserToken
+                .AsNoTracking().FirstOrDefaultAsync(x => x.Id == userId);
+
+            context.UserToken.Remove(refreshModelToken!);
+            await context.SaveChangesAsync();
 
             return Forbid("Invalid refresh token");
         }
@@ -178,6 +224,7 @@ namespace CaseApplication.Api.Controllers
         [HttpGet("confirm/{userId}&{token}&{ip}")]
         public async Task<IActionResult> ConfirmAccount(Guid userId, string token, string ip)
         {
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
             //TODO OneTimeToken
             EmailModel emailModel = new()
             {
@@ -185,7 +232,11 @@ namespace CaseApplication.Api.Controllers
                 UserToken = token,
                 UserIp = ip
             };
-            User? user = await _userRepository.Get(emailModel.UserId);
+
+            User? user = await context
+                .User
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id == userId);
 
             if (user == null) return NotFound();
 
@@ -203,8 +254,6 @@ namespace CaseApplication.Api.Controllers
             if (userInfo.IsConfirmedAccount is false)
             {
                 userInfo.IsConfirmedAccount = true;
-
-                await _userAdditionalInfoRepository.Update(userInfo);
 
                 await _emailHelper.SendNotifyToEmail(
                     user.UserEmail!,
@@ -234,7 +283,8 @@ namespace CaseApplication.Api.Controllers
                     Body = $"Вход в аккаунт"
                 });
 
-            await _userTokensRepository.Create(newUserToken);
+            await context.UserToken.AddAsync(newUserToken);
+            await context.SaveChangesAsync();
 
             return Ok(tokenModel);
         }
@@ -243,12 +293,17 @@ namespace CaseApplication.Api.Controllers
         [HttpDelete("{refreshToken}")]
         public async Task<IActionResult> Logout(string refreshToken)
         {
-            UserToken? userToken = await _userTokensRepository.GetByToken(UserId, refreshToken);
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            UserToken? userToken =  await context.UserToken
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.UserId == UserId && x.RefreshToken == refreshToken);
 
             if (userToken == null) return Forbid("Invalid token");
 
-            await _userTokensRepository.Delete(userToken.Id);
-            
+            context.UserToken.Remove(userToken!);
+            await context.SaveChangesAsync();
+
             return NoContent();
         }
 
@@ -256,11 +311,17 @@ namespace CaseApplication.Api.Controllers
         [HttpDelete("all/{refreshToken}")]
         public async Task<IActionResult> LogoutAll(string refreshToken)
         {
-            UserToken? userToken = await _userTokensRepository.GetByToken(UserId, refreshToken);
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            if (userToken == null) return Forbid("Invalid token");
+            List<UserToken> userTokens = await context.UserToken
+                .AsNoTracking()
+                .Where(x => x.UserId == UserId)
+                .ToListAsync();
 
-            await _userTokensRepository.DeleteAll(UserId);
+            if (userTokens.Count == 0) return Forbid("Invalid token");
+
+            context.UserToken.RemoveRange(userTokens);
+            await context.SaveChangesAsync();
 
             return NoContent();
         }
