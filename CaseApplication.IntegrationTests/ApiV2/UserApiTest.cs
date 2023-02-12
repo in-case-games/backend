@@ -1,18 +1,18 @@
 ﻿using CaseApplication.DomainLayer.Entities;
 using CaseApplication.WebClient.Services;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.EntityFrameworkCore;
 using System.Net;
 
 namespace CaseApplication.IntegrationTests.ApiV2
 {
     public class UserApiTest: IntegrationTestHelper, IClassFixture<WebApplicationFactory<Program>>
     {
-        private readonly string _accessToken;
+        private string _accessToken = string.Empty;
         private readonly ResponseHelper _response;
         public UserApiTest(WebApplicationFactory<Program> app)
         {
             _response = new(app.CreateClient());
-            _accessToken = CreateToken();
         }
         [Fact]
         public async Task GET_AllUsers_ReturnsOk()
@@ -88,16 +88,28 @@ namespace CaseApplication.IntegrationTests.ApiV2
         #region Начальные данные
         private async Task InitializeTestUser(Guid guid)
         {
-            User user = new User
+            UserRole? userRole = await Context.UserRole.FirstOrDefaultAsync(x => x.RoleName == "admin");
+            UserAdditionalInfo userInfo = new()
+            {
+                IsConfirmedAccount = true,
+                UserBalance = 99999999M,
+                UserRole = userRole!,
+                UserRoleId = userRole!.Id
+            };
+            User user = new()
             {
                 Id = guid,
                 UserLogin = "UserUserForTests1",
                 UserEmail = "UserEmailUserForTest1",
                 PasswordHash = "UserHashForTest1",
-                PasswordSalt = "UserSaltForTest1"
+                PasswordSalt = "UserSaltForTest1",
+                UserAdditionalInfo = userInfo,
             };
 
+            _accessToken = CreateToken(user);
+
             await Context.User.AddAsync(user);
+            await Context.UserAdditionalInfo.AddAsync(userInfo);
             await Context.SaveChangesAsync();
         }
         private async Task RemoveTestUser(Guid guid)

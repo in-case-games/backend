@@ -11,12 +11,13 @@ namespace CaseApplication.IntegrationTests.ApiV2
 {
     public class IntegrationTestHelper
     {
-        private  IConfiguration _configuration = new ConfigurationBuilder()
+        private readonly IConfiguration _configuration = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddUserSecrets<Program>()
             .Build();
         private readonly JwtHelper _jwtHelper;
         protected ApplicationDbContext Context { get; }
+
         public IntegrationTestHelper()
         {
             var options = new DbContextOptionsBuilder<ApplicationDbContext>()
@@ -28,20 +29,9 @@ namespace CaseApplication.IntegrationTests.ApiV2
 
             _jwtHelper = new(_configuration);
         }
-        public string CreateToken()
-        {
-            UserAdditionalInfo info = new UserAdditionalInfo
-            {
-                UserRole = new UserRole { RoleName = "admin" }
-            };
-            User user = new User
-            {
-                Id = Guid.NewGuid(),
-                UserLogin = "UserForTests",
-                UserEmail = "UserEmailForTest",
-                UserAdditionalInfo = info
-            };
 
+        public string CreateToken(User user)
+        {
             Claim[] claims = GenerateClaimsForAccessToken(user);
             TimeSpan expiration = TimeSpan.FromMinutes(5);
 
@@ -49,12 +39,11 @@ namespace CaseApplication.IntegrationTests.ApiV2
                 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
-        private Claim[] GenerateClaimsForAccessToken(User user)
+
+        private static Claim[] GenerateClaimsForAccessToken(User user)
         {
             //Find future data for claims
-            Guid roleId = user.UserAdditionalInfo!.UserRoleId;
-
-            string roleName = user.UserAdditionalInfo.UserRole!.RoleName!;
+            string roleName = user.UserAdditionalInfo!.UserRole!.RoleName!;
 
             return new Claim[] {
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
