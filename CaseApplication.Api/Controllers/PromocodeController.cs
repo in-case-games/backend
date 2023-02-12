@@ -28,27 +28,20 @@ namespace CaseApplication.Api.Controllers
 
             Promocode? promocode = await context.Promocode
                 .AsNoTracking()
-                .Include(x => x.PromocodeType)
                 .FirstOrDefaultAsync(x => x.PromocodeName == name);
 
             if (promocode == null) return NotFound();
 
-            List<PromocodesUsedByUser> promocodesUses = await context.PromocodeUsedByUsers
-                     .AsNoTracking()
-                     .Include(x => x.Promocode)
-                     .Where(x => x.UserId == UserId)
-                     .ToListAsync();
+            bool isUsedPromocode = await context.PromocodeUsedByUsers.AnyAsync(
+                x => x.PromocodeId == promocode.Id && x.UserId == UserId);
 
-            bool isExistPromocode = promocodesUses.Exists(x => x.PromocodeId == promocode.Id);
+            if (isUsedPromocode) return UnprocessableEntity("Promocode is used");
 
-            if (isExistPromocode)
-                return UnprocessableEntity("Promocode is used");
-
-            PromocodesUsedByUser promocodesUsedByUser = new PromocodesUsedByUser();
-
-            promocodesUsedByUser.Id = new Guid();
-            promocodesUsedByUser.UserId = UserId;
-            promocodesUsedByUser.PromocodeId = promocode.Id;
+            PromocodesUsedByUser promocodesUsedByUser = new() { 
+                Id = new Guid(),
+                UserId = UserId,
+                PromocodeId = promocode.Id,
+            };
 
             await context.PromocodeUsedByUsers.AddAsync(promocodesUsedByUser);
             await context.SaveChangesAsync();
@@ -93,9 +86,7 @@ namespace CaseApplication.Api.Controllers
             Promocode? oldPromocode = await context.Promocode
                 .FirstOrDefaultAsync(x => x.Id == promocode.Id);
 
-            if (oldPromocode is null)
-                return NotFound("There is no such promocode in the database, " +
-                    "review what data comes from the api");
+            if (oldPromocode is null) return NotFound();
 
             context.Entry(oldPromocode).CurrentValues.SetValues(promocode);
 
@@ -110,16 +101,13 @@ namespace CaseApplication.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            Promocode? searchPromocode = await context
-                .Promocode
+            Promocode? promocode = await context.Promocode
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == id);
 
-            if (searchPromocode is null)
-                return NotFound("There is no such promocode in the database, " +
-                    "review what data comes from the api");
+            if (promocode is null) return NotFound();
 
-            context.Promocode.Remove(searchPromocode);
+            context.Promocode.Remove(promocode);
             await context.SaveChangesAsync();
 
             return Ok();

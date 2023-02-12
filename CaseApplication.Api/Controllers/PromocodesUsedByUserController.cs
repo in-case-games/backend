@@ -36,13 +36,11 @@ namespace CaseApplication.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            List<PromocodesUsedByUser> promocodesUseds = await context.PromocodeUsedByUsers
-                    .AsNoTracking()
-                    .Include(x => x.Promocode)
-                    .Where(x => x.UserId == userId)
-                    .ToListAsync();
-
-            return Ok(promocodesUseds);
+            return Ok(await context.PromocodeUsedByUsers
+                .AsNoTracking()
+                .Include(x => x.Promocode)
+                .Where(x => x.UserId == userId)
+                .ToListAsync());
         }
     }
 }

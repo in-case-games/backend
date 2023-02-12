@@ -1,10 +1,8 @@
 ﻿using CaseApplication.DomainLayer.Entities;
-using CaseApplication.DomainLayer.Repositories;
 using CaseApplication.EntityFramework.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
 
 namespace CaseApplication.Api.Controllers
 {
@@ -26,7 +24,8 @@ namespace CaseApplication.Api.Controllers
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             News? news = await context.News
-                .AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id == id);
 
             return news is null ? NotFound(): Ok(news);
         }
@@ -38,7 +37,8 @@ namespace CaseApplication.Api.Controllers
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             return Ok(await context.News
-                .AsNoTracking().ToListAsync());
+                .AsNoTracking()
+                .ToListAsync());
         }
 
         [Authorize(Roles = "admin")]
@@ -59,13 +59,11 @@ namespace CaseApplication.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            News? searchNews = await context.News.FirstOrDefaultAsync(x => x.Id == news.Id);
+            News? oldNews = await context.News.FirstOrDefaultAsync(x => x.Id == news.Id);
 
-            if (searchNews is null)
-                return NotFound("There is no such news in the database, " +
-                    "review what data comes from the api");
+            if (oldNews is null) return NotFound();
 
-            context.Entry(searchNews).CurrentValues.SetValues(news);
+            context.Entry(oldNews).CurrentValues.SetValues(news);
             await context.SaveChangesAsync();
 
             return Ok();
@@ -77,14 +75,13 @@ namespace CaseApplication.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            News? searchNews = await context.News
-                .AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
+            News? news = await context.News
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id == id);
 
-            if (searchNews is null)
-                return NotFound("There is no such news in the database, " +
-                    "review what data comes from the api");
+            if (news is null) return NotFound();
 
-            context.Remove(searchNews);
+            context.Remove(news);
             await context.SaveChangesAsync();
 
             return Ok();

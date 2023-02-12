@@ -1,7 +1,5 @@
 using CaseApplication.Api.Services;
-using CaseApplication.DomainLayer.Repositories;
 using CaseApplication.EntityFramework.Data;
-using CaseApplication.EntityFramework.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -46,22 +44,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 builder.Services.AddAuthorization();
-
-builder.Services.AddTransient<IUserRepository, UserRepository>();
-builder.Services.AddTransient<IUserAdditionalInfoRepository, UserAdditionalInfoRepository>();
-builder.Services.AddTransient<IGameItemRepository, GameItemRepository>();
-builder.Services.AddTransient<IGameCaseRepository, GameCaseRepository>();
-builder.Services.AddTransient<ICaseInventoryRepository, CaseInventoryRepository>();
-builder.Services.AddTransient<IUserRoleRepository, UserRoleRepository>();
-builder.Services.AddTransient<IUserRestrictionRepository, UserRestrictionRepository>();
-builder.Services.AddTransient<IUserInventoryRepository, UserInventoryRepository>();
-builder.Services.AddTransient<IUserHistoryOpeningCasesRepository, UserHistoryOpeningCasesRepository>();
-builder.Services.AddTransient<INewsRepository, NewsRepository>();
-builder.Services.AddTransient<ISiteStatisticsRepository, SiteStatisticsRepository>();
-builder.Services.AddTransient<IPromocodeRepository, PromocodeRepository>();
-builder.Services.AddTransient<IPromocodeUsedByUserRepository, PromocodesUsedByUserRepository>();
-builder.Services.AddTransient<IPromocodeTypeRepository, PromocodeTypeRepository>();
-builder.Services.AddTransient<IUserTokensRepository, UserTokensRepository>();
 
 builder.Services.AddSingleton<EmailService>();
 builder.Services.AddSingleton<EmailHelper>();

@@ -22,11 +22,11 @@ namespace CaseApplication.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            PromocodeType? promocodeType = await context.PromocodeType
+            PromocodeType? type = await context.PromocodeType
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.PromocodeTypeName == name);
 
-            return promocodeType is null ? NotFound(): Ok(promocodeType);
+            return type is null ? NotFound(): Ok(type);
         }
 
         [AllowAnonymous]

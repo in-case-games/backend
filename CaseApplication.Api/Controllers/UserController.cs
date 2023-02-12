@@ -1,7 +1,5 @@
-﻿using AutoMapper;
-using CaseApplication.Api.Models;
+﻿using CaseApplication.Api.Models;
 using CaseApplication.Api.Services;
-using CaseApplication.DomainLayer.Dtos;
 using CaseApplication.DomainLayer.Entities;
 using CaseApplication.EntityFramework.Data;
 using Microsoft.AspNetCore.Authorization;
@@ -17,30 +15,19 @@ namespace CaseApplication.Api.Controllers
     {
         private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
         private readonly EncryptorHelper _encryptorHelper;
-        private readonly JwtHelper _jwtHelper;
         private readonly EmailHelper _emailHelper;
         private readonly ValidationService _validationService;
-        private readonly MapperConfiguration _mapperConfiguration = new(configuration =>
-        {
-            configuration.CreateMap<User, UserDto>();
-        });
-        private readonly MapperConfiguration _mapperConfigurationInfo = new(configuration =>
-        {
-            configuration.CreateMap<UserAdditionalInfo, UserAdditionalInfoDto>();
-        });
         private Guid UserId => Guid
             .Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
 
         public UserController(
             IDbContextFactory<ApplicationDbContext> contextFactory,
             EncryptorHelper encryptorHelper,
-            JwtHelper jwtHelper,
             EmailHelper emailHelper,
             ValidationService validationService)
         {
             _contextFactory = contextFactory;
             _encryptorHelper = encryptorHelper;
-            _jwtHelper = jwtHelper;
             _emailHelper = emailHelper;
             _validationService = validationService;
         }
