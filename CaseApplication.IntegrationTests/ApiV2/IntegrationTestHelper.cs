@@ -61,6 +61,7 @@ namespace CaseApplication.IntegrationTests.ApiV2
                 new Claim(ClaimTypes.Email, user.UserEmail!)
             };
         }
+
         #region Начальные данные
         protected async Task InitializeTestUser(Guid guid)
         {

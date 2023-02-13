@@ -8,10 +8,12 @@ namespace CaseApplication.IntegrationTests.ApiV2
     public class UserApiTest: IntegrationTestHelper, IClassFixture<WebApplicationFactory<Program>>
     {
         private readonly ResponseHelper _response;
+
         public UserApiTest(WebApplicationFactory<Program> app)
         {
             _response = new(app.CreateClient());
         }
+
         [Fact]
         public async Task GET_AllUsers_ReturnsOk()
         {
@@ -42,6 +44,7 @@ namespace CaseApplication.IntegrationTests.ApiV2
             Assert.Equal(HttpStatusCode.OK, statusCode);
             await RemoveTestUser(guid);
         }
+
         [Fact]
         public async Task GET_GetByNonExistedId_ReturnsNotFound()
         {
@@ -59,6 +62,7 @@ namespace CaseApplication.IntegrationTests.ApiV2
             Assert.Equal(HttpStatusCode.NotFound, statusCode);
             await RemoveTestUser(guid);
         }
+
         [Fact]
         public async Task GET_GetByLogin_ReturnsOk()
         {
@@ -74,6 +78,7 @@ namespace CaseApplication.IntegrationTests.ApiV2
             Assert.Equal(HttpStatusCode.OK, statusCode);
             await RemoveTestUser(guid);
         }
+
         [Fact]
         public async Task GET_GetByNonExistedLogin_ReturnsNotFound()
         {
@@ -90,6 +95,7 @@ namespace CaseApplication.IntegrationTests.ApiV2
             Assert.Equal(HttpStatusCode.NotFound, statusCode);
             await RemoveTestUser(guid);
         }
+
         [Fact]
         public async Task PUT_UpdateLogin_ReturnsOk()
         {
@@ -105,6 +111,7 @@ namespace CaseApplication.IntegrationTests.ApiV2
             Assert.Equal(HttpStatusCode.OK, statusCode);
             await RemoveTestUser(guid);
         }
+
         [Fact]
         public async Task DELETE_DeleteByAdmin_ReturnsOk()
         {

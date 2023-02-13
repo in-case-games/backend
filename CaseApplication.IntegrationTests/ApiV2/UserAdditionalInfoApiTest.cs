@@ -15,6 +15,7 @@ namespace CaseApplication.IntegrationTests.ApiV2
         {
             _response = new(app.CreateClient());
         }
+
         [Fact]
         public async Task GET_GetAuthorizeUserInfo_ReturnsOk()
         {
@@ -30,6 +31,7 @@ namespace CaseApplication.IntegrationTests.ApiV2
             Assert.Equal(HttpStatusCode.OK, statusCode);
             await RemoveTestUser(guid);
         }
+
         [Fact]
         public async Task PUT_UpdateUserByAdmin_ReturnsOk()
         {

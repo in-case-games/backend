@@ -9,6 +9,7 @@ namespace CaseApplication.IntegrationTests.ApiV2
     public class UserRolesApiTest : IntegrationTestHelper, IClassFixture<WebApplicationFactory<Program>>
     {
         private readonly ResponseHelper _response;
+
         public UserRolesApiTest(WebApplicationFactory<Program> app) {
             _response = new(app.CreateClient());
         }
