@@ -38,8 +38,7 @@ namespace CaseApplication.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            User? user = await context
-                .User
+            User? user = await context.User
                 .Include(x => x.UserAdditionalInfo)
                 .Include(x => x.UserAdditionalInfo!.UserRole)
                 .Include(x => x.UserInventories)
@@ -51,7 +50,7 @@ namespace CaseApplication.Api.Controllers
                 .FirstOrDefaultAsync(x => x.Id == UserId);
 
             if (user == null) return NotFound();
-            if (user.UserEmail != emailModel.UserEmail) return Forbid("Incorrect email");
+            if (user.UserEmail != emailModel.UserEmail) return Forbid();
 
             emailModel.UserToken = _jwtHelper.GenerateEmailToken(user, emailModel.UserIp);
 
@@ -123,8 +122,7 @@ namespace CaseApplication.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            User? user = await context
-                .User
+            User? user = await context.User
                 .Include(x => x.UserAdditionalInfo)
                 .Include(x => x.UserAdditionalInfo!.UserRole)
                 .Include(x => x.UserInventories)

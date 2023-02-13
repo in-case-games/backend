@@ -49,28 +49,26 @@ namespace CaseApplication.Api.Controllers
         [HttpPost("signin/{password}&{ip}")]
         public async Task<IActionResult> SignIn(UserDto userDto, string password, string ip)
         {
-            //FindUser
+            //Check is exist user
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            User? user = await context
-                .User
+            User? user = await context.User
                 .Include(x => x.UserAdditionalInfo)
                 .Include(x => x.UserAdditionalInfo!.UserRole)
                 .Include(x => x.UserInventories)
                 .Include(x => x.PromocodesUsedByUsers)
                 .Include(x => x.UserRestrictions)
                 .Include(x => x.UserHistoryOpeningCases)
-                .AsNoTracking()
+                .Include(x => x.UserTokens)
                 .FirstOrDefaultAsync(x =>
-                x.UserEmail == userDto.UserEmail ||
                 x.Id == userDto.Id ||
+                x.UserEmail == userDto.UserEmail ||
                 x.UserLogin == userDto.UserLogin);
 
             if (user is null) return NotFound();
-            if (_validationService.IsValidUserPassword(in user, password) is false) 
-                return Forbid();
+            if (!_validationService.IsValidUserPassword(in user, password)) return Forbid();
 
-            //Search refresh token by ip
+            //Check is auth user by ip
             UserToken? userTokenByIp = user.UserTokens?.FirstOrDefault(x => x.UserIpAddress == ip);
 
             if (userTokenByIp == null)
@@ -86,20 +84,11 @@ namespace CaseApplication.Api.Controllers
                 return Unauthorized("Check email");
             }
 
-            //Generation Token
+            //Send and save new token
             TokenModel tokenModel = _jwtHelper.GenerateTokenPair(in user);
 
             MapUserTokenForUpdate(ref userTokenByIp, tokenModel);
 
-            UserToken? oldToken = await context.UserToken.FirstOrDefaultAsync(x => x.Id == userTokenByIp.Id);
-
-            if (oldToken == null)
-            {
-                throw new Exception("There is no such token, " +
-                    "review what data comes from the api");
-            }
-
-            context.Entry(oldToken).CurrentValues.SetValues(userTokenByIp);
             await context.SaveChangesAsync();
 
             await _emailHelper.SendNotifyToEmail(
@@ -117,20 +106,18 @@ namespace CaseApplication.Api.Controllers
         [HttpPost("signup/{password}")]
         public async Task<IActionResult> SignUp(UserDto userDto, string password)
         {
-            //Find user
+            //Check is exist user
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            User? userExists = await context
-                .User
+            User? userExists = await context.User
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x =>
                 x.UserEmail == userDto.UserEmail ||
-                x.Id == userDto.Id ||
                 x.UserLogin == userDto.UserLogin);
 
-            if (userExists is not null) return Conflict("User already exists!");
+            if (userExists is not null) return Conflict();
 
-            //Gen hash and salt
+            //Encrypting password
             byte[] salt = _encryptorHelper.GenerationSaltTo64Bytes();
 
             userDto.PasswordHash = _encryptorHelper.EncryptorPassword(password, salt);
@@ -144,15 +131,15 @@ namespace CaseApplication.Api.Controllers
             await context.User.AddAsync(user);
 
             //Create Add info
-            User? createdUser = await context
-               .User
+            User? createdUser = await context.User
                .AsNoTracking()
                .FirstOrDefaultAsync(x => x.UserLogin == user.UserLogin);
 
-            UserAdditionalInfo info = new UserAdditionalInfo();
+            UserAdditionalInfo info = new();
 
             UserRole? role = await context.UserRole
-                .AsNoTracking().FirstOrDefaultAsync(x => x.RoleName == "user");
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.RoleName == "user");
 
             info.Id = Guid.NewGuid();
             info.UserRoleId = role!.Id;
@@ -186,35 +173,35 @@ namespace CaseApplication.Api.Controllers
             _ = Guid.TryParse(getUserId, out Guid userId);
 
             //Search refresh token by ip TODO Cut in method
-            User? user = await context
-                .User
-                .AsNoTracking()
+            User? user = await context.User
+                .Include(x => x.UserTokens)
                 .FirstOrDefaultAsync(x => x.Id == userId);
 
-            UserToken? userToken = user!.UserTokens?.FirstOrDefault(x => x.UserIpAddress == ip);
+            UserToken? userToken = user!.UserTokens!.FirstOrDefault(x => x.UserIpAddress == ip);
 
             if (_validationService.IsValidRefreshToken(in userToken, refreshToken))
             {
-                //Generate token
+                //Send and save new token
                 TokenModel tokenModel = _jwtHelper.GenerateTokenPair(in user);
 
                 MapUserTokenForUpdate(ref userToken!, tokenModel);
 
-                context.Entry(refreshToken).CurrentValues.SetValues(userToken);
+                await context.SaveChangesAsync();
 
                 return Ok(tokenModel);
             }
 
-            await _emailHelper.SendNotifyToEmail(user.UserEmail!, "Администрация сайта",
+            await _emailHelper.SendNotifyToEmail(
+                user.UserEmail!, 
+                "Администрация сайта",
                 new EmailPatternModel()
                 {
                     Body = $"Попытка входа в аккаунт"
                 });
 
-            UserToken? refreshModelToken = await context.UserToken
-                .AsNoTracking().FirstOrDefaultAsync(x => x.Id == userId);
+            userToken = user!.UserTokens!.FirstOrDefault(x => x.RefreshToken == refreshToken);
 
-            context.UserToken.Remove(refreshModelToken!);
+            context.UserToken.Remove(userToken!);
             await context.SaveChangesAsync();
 
             return Forbid("Invalid refresh token");
@@ -225,6 +212,7 @@ namespace CaseApplication.Api.Controllers
         public async Task<IActionResult> ConfirmAccount(Guid userId, string token, string ip)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
             //TODO OneTimeToken
             EmailModel emailModel = new()
             {
@@ -233,9 +221,8 @@ namespace CaseApplication.Api.Controllers
                 UserIp = ip
             };
 
-            User? user = await context
-                .User
-                .AsNoTracking()
+            User? user = await context.User
+                .Include(x => x.UserAdditionalInfo)
                 .FirstOrDefaultAsync(x => x.Id == userId);
 
             if (user == null) return NotFound();
@@ -295,21 +282,21 @@ namespace CaseApplication.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            UserToken? userToken =  await context.UserToken
+            UserToken? userToken = await context.UserToken
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.UserId == UserId && x.RefreshToken == refreshToken);
 
             if (userToken == null) return Forbid("Invalid token");
 
-            context.UserToken.Remove(userToken!);
+            context.UserToken.Remove(userToken);
             await context.SaveChangesAsync();
 
             return NoContent();
         }
 
         [Authorize]
-        [HttpDelete("all/{refreshToken}")]
-        public async Task<IActionResult> LogoutAll(string refreshToken)
+        [HttpDelete("all")]
+        public async Task<IActionResult> LogoutAll()
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 

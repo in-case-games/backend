@@ -1,5 +1,4 @@
 ﻿using CaseApplication.DomainLayer.Entities;
-using CaseApplication.DomainLayer.Repositories;
 using CaseApplication.EntityFramework.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

@@ -13,7 +13,6 @@ namespace CaseApplication.Api.Controllers
     {
         private static readonly Random _random = new();
         private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
-
         private Guid UserId => Guid
             .Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
 
@@ -28,19 +27,13 @@ namespace CaseApplication.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            UserAdditionalInfo? userAdditionalInfo = await context.UserAdditionalInfo
+            UserAdditionalInfo? userInfo = await context.UserAdditionalInfo
                 .FirstOrDefaultAsync(x => x.UserId == UserId);
             GameCase? gameCase = await context.GameCase
                 .FirstOrDefaultAsync(x => x.Id == caseId);
 
-            if (userAdditionalInfo is null || gameCase is null) return NotFound();
-
-            bool isValidBalance = (userAdditionalInfo.UserBalance >= gameCase.GameCaseCost);
-
-            if (isValidBalance is false) {
-                return Forbid("Your balance is less than the cost of the case" +
-                    "Top up your balance or open a case cheaper");
-            }
+            if (userInfo is null || gameCase is null) return NotFound();
+            if (userInfo.UserBalance < gameCase.GameCaseCost) return Forbid();
 
             gameCase.СaseInventories = await context.CaseInventory
                 .AsNoTracking()
@@ -49,7 +42,7 @@ namespace CaseApplication.Api.Controllers
                 .ToListAsync();
 
             //Update Balance Case and User
-            userAdditionalInfo.UserBalance -= gameCase.GameCaseCost;
+            userInfo.UserBalance -= gameCase.GameCaseCost;
             gameCase.GameCaseBalance += gameCase.GameCaseCost;
 
             //Calling random
@@ -61,7 +54,7 @@ namespace CaseApplication.Api.Controllers
             gameCase.GameCaseBalance -= expensesCase;
 
             //Add history and add inventory user
-            UserHistoryOpeningCases userHistory = new()
+            UserHistoryOpeningCases history = new()
             {
                 Id = new Guid(),
                 UserId = UserId,
@@ -69,15 +62,15 @@ namespace CaseApplication.Api.Controllers
                 GameItemId = winGameItem.Id,
                 CaseOpenAt = DateTime.UtcNow
             };
-            UserInventory userInventory = new()
+            UserInventory inventory = new()
             {
                 Id = new Guid(),
                 UserId = UserId,
                 GameItemId = winGameItem.Id
             };
 
-            await context.UserHistoryOpeningCases.AddAsync(userHistory);
-            await context.UserInventory.AddAsync(userInventory);
+            await context.UserHistoryOpeningCases.AddAsync(history);
+            await context.UserInventory.AddAsync(inventory);
 
             await context.SaveChangesAsync();
 
@@ -98,9 +91,7 @@ namespace CaseApplication.Api.Controllers
             if (IsProfitCase(winGameItem, gameCase) is false)
             {
                 List<GameItem> gameItems = gameCase.СaseInventories.Select(x => x.GameItem).ToList()!;
-
-                gameItems = gameItems.OrderByDescending(g => g.GameItemCost).ToList();
-                winGameItem = gameItems[^1];
+                winGameItem = gameItems.MinBy(x => x.GameItemCost)!;
                 winIdGameItem = winGameItem.Id;
             }
 

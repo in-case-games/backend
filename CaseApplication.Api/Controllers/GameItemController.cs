@@ -26,10 +26,11 @@ namespace CaseApplication.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            GameItem? gameItem = await context.GameItem
-                .AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
+            GameItem? item = await context.GameItem
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id == id);
 
-            return gameItem is null ? NotFound(): Ok();
+            return item is null ? NotFound(): Ok(item);
         }
 
         [AllowAnonymous]
@@ -38,10 +39,11 @@ namespace CaseApplication.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            GameItem? gameItem = await context.GameItem
-                .AsNoTracking().FirstOrDefaultAsync(x => x.GameItemName == name);
+            GameItem? item = await context.GameItem
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.GameItemName == name);
 
-            return gameItem is null ? NotFound() : Ok();
+            return item is null ? NotFound() : Ok(item);
         }
 
         [AllowAnonymous]
@@ -51,7 +53,8 @@ namespace CaseApplication.Api.Controllers
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             return Ok(await context.GameItem
-                .AsNoTracking().ToListAsync());
+                .AsNoTracking()
+                .ToListAsync());
         }
 
         [Authorize(Roles = "admin")]
@@ -70,18 +73,16 @@ namespace CaseApplication.Api.Controllers
 
         [Authorize(Roles = "admin")]
         [HttpPut("admin")]
-        public async Task<IActionResult> Update(GameItem item)
+        public async Task<IActionResult> Update(GameItem newItem)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            GameItem? searchItem = await context.GameItem
-                .FirstOrDefaultAsync(x => x.Id == item.Id);
+            GameItem? oldItem = await context.GameItem
+                .FirstOrDefaultAsync(x => x.Id == newItem.Id);
 
-            if (searchItem is null)
-                return NotFound("There is no such item in the database, " +
-                    "review what data comes from the api");
+            if (oldItem is null) return NotFound();
 
-            context.Entry(searchItem).CurrentValues.SetValues(item);
+            context.Entry(oldItem).CurrentValues.SetValues(newItem);
             await context.SaveChangesAsync();
 
             return Ok();
@@ -93,14 +94,13 @@ namespace CaseApplication.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            GameItem? searchItem = await context.GameItem
-                .AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
+            GameItem? item = await context.GameItem
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id == id);
 
-            if (searchItem is null)
-                return NotFound("There is no such item in the database, " +
-                    "review what data comes from the api");
+            if (item is null) return NotFound();
 
-            context.GameItem.Remove(searchItem);
+            context.GameItem.Remove(item);
             await context.SaveChangesAsync();
 
             return Ok();

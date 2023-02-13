@@ -1,7 +1,4 @@
-﻿using AutoMapper;
-using CaseApplication.DomainLayer.Dtos;
-using CaseApplication.DomainLayer.Entities;
-using CaseApplication.DomainLayer.Repositories;
+﻿using CaseApplication.DomainLayer.Entities;
 using CaseApplication.EntityFramework.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -17,10 +14,6 @@ namespace CaseApplication.Api.Controllers
         private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
         private Guid UserId => Guid
             .Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
-        private readonly MapperConfiguration _mapperConfiguration = new(configuration =>
-        {
-            configuration.CreateMap<CaseInventoryDto, CaseInventory>();
-        });
         public CaseInventoryController(IDbContextFactory<ApplicationDbContext> contextFactory)
         {
             _contextFactory = contextFactory;
@@ -34,7 +27,6 @@ namespace CaseApplication.Api.Controllers
 
             CaseInventory? caseInventory = await context.CaseInventory
                 .AsNoTracking()
-                .Include(x => x.GameCase)
                 .Include(x => x.GameItem)
                 .FirstOrDefaultAsync(x => x.Id == id);
 
@@ -49,7 +41,6 @@ namespace CaseApplication.Api.Controllers
 
             CaseInventory? caseInventory = await context.CaseInventory
                 .AsNoTracking()
-                .Include(x => x.GameCase)
                 .Include(x => x.GameItem)
                 .FirstOrDefaultAsync(x => x.GameCaseId == caseId && x.GameItemId == itemId);
 
@@ -64,7 +55,6 @@ namespace CaseApplication.Api.Controllers
 
             return Ok(await context.CaseInventory
                 .AsNoTracking()
-                .Include(x => x.GameCase)
                 .Include(x => x.GameItem)
                 .Where(x => x.GameCaseId == caseId)
                 .ToListAsync());
@@ -72,14 +62,11 @@ namespace CaseApplication.Api.Controllers
 
         [Authorize(Roles = "admin")]
         [HttpPost("admin")]
-        public async Task<IActionResult> Create(CaseInventoryDto caseInventoryDto)
+        public async Task<IActionResult> Create(CaseInventory inventory)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            IMapper? mapper = _mapperConfiguration.CreateMapper();
-            CaseInventory caseInventory = mapper.Map<CaseInventory>(caseInventoryDto);
-
-            await context.CaseInventory.AddAsync(caseInventory);
+            await context.CaseInventory.AddAsync(inventory);
             await context.SaveChangesAsync();
 
             return Ok();
@@ -87,21 +74,16 @@ namespace CaseApplication.Api.Controllers
 
         [Authorize(Roles = "admin")]
         [HttpPut("admin")]
-        public async Task<IActionResult> Update(CaseInventoryDto caseInventoryDto)
+        public async Task<IActionResult> Update(CaseInventory inventory)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            CaseInventory? oldCaseInventory = await context.CaseInventory
-                .FirstOrDefaultAsync(x => x.Id == caseInventoryDto.Id);
+            CaseInventory? oldInventory = await context.CaseInventory
+                .FirstOrDefaultAsync(x => x.Id == inventory.Id);
 
-            if (oldCaseInventory is null)
-                return NotFound("There is no such case inventory in the database, " +
-                    "review what data comes from the api");
-            
-            IMapper? mapper = _mapperConfiguration.CreateMapper();
-            CaseInventory newCaseInventory = mapper.Map<CaseInventory>(caseInventoryDto);
+            if (oldInventory is null) return NotFound();
 
-            context.Entry(oldCaseInventory).CurrentValues.SetValues(newCaseInventory);
+            context.Entry(oldInventory).CurrentValues.SetValues(inventory);
             await context.SaveChangesAsync();
 
             return Ok();
@@ -113,16 +95,13 @@ namespace CaseApplication.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            CaseInventory? searchCaseInventory = await context
-                .CaseInventory
+            CaseInventory? inventory = await context.CaseInventory
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == id);
 
-            if (searchCaseInventory is null)
-                return NotFound("There is no such case inventory in the database, " +
-                    "review what data comes from the api");
+            if (inventory is null) return NotFound();
 
-            context.CaseInventory.Remove(searchCaseInventory);
+            context.CaseInventory.Remove(inventory);
             await context.SaveChangesAsync();
 
             return Ok();
