@@ -1,205 +1,239 @@
-﻿using CaseApplication.Api.Models;
+﻿using CaseApplication.DomainLayer.Dtos;
 using CaseApplication.DomainLayer.Entities;
 using CaseApplication.WebClient.Services;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.EntityFrameworkCore;
 using System.Net;
 
-namespace CaseApplication.IntegrationTests.Api
+namespace CaseApplication.IntegrationTests.ApiV2
 {
-    public class CaseInventoryApiTest : IClassFixture<WebApplicationFactory<Program>>
+    public class CaseInventoryApiTest: IntegrationTestHelper, IClassFixture<WebApplicationFactory<Program>>
     {
-        private readonly ResponseHelper _clientApi;
-        private readonly AuthenticationTestHelper _authHelper;
-
-        private TokenModel AdminTokens { get; set; } = new();
-        private User Admin { get; set; } = new();
-
-        private GameCase GameCase { get; set; } = new();
-        private GameItem GameItemFirst { get; set; } = new();
-        private GameItem GameItemSecond { get; set; } = new();
-
-        public CaseInventoryApiTest(WebApplicationFactory<Program> applicationFactory)
+        private readonly ResponseHelper _response;
+        public CaseInventoryApiTest(WebApplicationFactory<Program> app)
         {
-            _clientApi = new(applicationFactory.CreateClient());
-            _authHelper = new AuthenticationTestHelper(_clientApi);
-
-            GameItemFirst = new()
-            {
-                GameItemName = "GINCISTName",
-                GameItemCost = 50000M,
-                GameItemImage = "GIICISTImage",
-                GameItemRarity = "Rare"
-            };
-
-            GameItemSecond = new()
-            {
-                GameItemName = "GINCISTName2",
-                GameItemCost = 10M,
-                GameItemImage = "GIICISTImage2",
-                GameItemRarity = "Xyina"
-            };
-
-            GameCase = new()
-            {
-                GroupCasesName = "GCNCISTGroupName",
-                GameCaseName = "GCNCISTName",
-                GameCaseCost = 200M,
-                GameCaseImage = "GCICISTImage",
-                RevenuePrecentage = 10M
-            };
-        }
-
-        private async Task InitializeOneTimeAccount(string ipAdmin)
-        {
-            Admin = new()
-            {
-                UserLogin = $"ULCIST{ipAdmin}Admin",
-                UserEmail = $"UECIST{ipAdmin}Admin"
-            };
-
-            AdminTokens = await _authHelper.SignInAdmin(Admin, ipAdmin);
-        }
-
-        private async Task DeleteOneTimeAccount(string ipAdmin)
-        {
-            await _authHelper.DeleteUserByAdmin($"ULCIST{ipAdmin}Admin", AdminTokens.AccessToken!);
+            _response = new ResponseHelper(app.CreateClient());
         }
 
         [Fact]
-        public async Task CaseInventorySimpleTests()
+        public async Task GET_GetCaseInventory_ReturnsOk()
         {
-            await InitializeOneTimeAccount("0.2.0");
+            // Arrange
+            Guid gameCaseId = Guid.NewGuid();
+            Guid gameItemId = Guid.NewGuid();
+            Guid caseInvId = Guid.NewGuid();
 
-            await CreateDependenciesInventory();
-            
-            GameCase.Id = await SearchIdCase("GCNCISTName"); ;
-            GameItemFirst.Id = await SearchIdItem("GINCISTName");
-            GameItemSecond.Id = await SearchIdItem("GINCISTName2");
+            await InitializeTestDependencies(gameCaseId, gameItemId, caseInvId);
 
-            CaseInventory caseInventory = new()
+            // Act
+            HttpStatusCode statusCode = await _response
+                .ResponseGetStatusCode($"/CaseInventory/{caseInvId}");
+
+            // Assert
+            await RemoveTestDependencies(gameItemId, gameCaseId);
+            Assert.Equal(HttpStatusCode.OK, statusCode);
+        }
+
+        [Fact]
+        public async Task GET_GetByIds_ReturnsOk()
+        {
+            // Arrange
+            Guid gameCaseId = Guid.NewGuid();
+            Guid gameItemId = Guid.NewGuid();
+            Guid caseInvId = Guid.NewGuid();
+
+            await InitializeTestDependencies(gameCaseId, gameItemId, caseInvId);
+
+            // Act
+            HttpStatusCode statusCode = await _response
+                .ResponseGetStatusCode($"/CaseInventory/ids/{gameCaseId}&{gameItemId}");
+
+            // Assert
+            await RemoveTestDependencies(gameItemId, gameCaseId);
+            Assert.Equal(HttpStatusCode.OK, statusCode);
+        }
+
+        [Fact]
+        public async Task GET_GetAll_ReturnsOk()
+        {
+            // Arrange
+            Guid gameCaseId = Guid.NewGuid();
+            Guid gameItemId = Guid.NewGuid();
+            Guid caseInvId = Guid.NewGuid();
+
+            await InitializeTestDependencies(gameCaseId, gameItemId, caseInvId);
+
+            // Act
+            HttpStatusCode statusCode = await _response
+                .ResponseGetStatusCode($"/CaseInventory/all/{caseInvId}");
+
+            // Assert
+            await RemoveTestDependencies(gameItemId, gameCaseId);
+            Assert.Equal(HttpStatusCode.OK, statusCode);
+        }
+
+        [Fact]
+        public async Task POST_CreateCaseInventory_ReturnsOk()
+        {
+            // Arrange
+            Guid gameCaseId = Guid.NewGuid();
+            Guid gameItemId = Guid.NewGuid();
+            Guid caseInvId = Guid.NewGuid();
+            Guid userId = Guid.NewGuid();
+
+            await InitializeTestUser(userId);
+
+            GameCase gameCase = new()
             {
-                GameCaseId = GameCase.Id,
-                GameItemId = GameItemFirst.Id,
-                LossChance = 1,
+                Id = gameCaseId,
+                GroupCasesName = "GCfoupName",
+                GameCaseName = "GCTName",
+                GameCaseCost = 400,
+                GameCaseImage = "GCATImage",
+                RevenuePrecentage = 0.1M
+            };
+
+            GameItem gameItem = new()
+            {
+                Id = gameItemId,
+                GameItemCost = 1,
+                GameItemName = "CASESEXY",
+                GameItemRarity = "XYU",
+                GameItemImage = "PICTURE"
+            };
+
+            await Context.GameCase.AddAsync(gameCase);
+            await Context.GameItem.AddAsync(gameItem);
+
+            await Context.SaveChangesAsync();
+
+            CaseInventoryDto caseInventory = new()
+            {
+                Id = caseInvId,
+                GameCaseId = gameCaseId,
+                GameItemId = gameItemId,
+                LossChance = 10,
                 NumberItemsCase = 1
             };
-            
-            //Create
-            await CreateCaseInventory(caseInventory);
 
-            caseInventory.GameItemId = GameItemSecond.Id;
-            caseInventory.LossChance = 99;
-            
-            await CreateCaseInventory(caseInventory);
-            
-            //Get and Get All
-            CaseInventory caseInventoryFirst = await SearchCaseInventory(
-                GameCase.Id, 
-                GameItemFirst.Id);
-            CaseInventory caseInventorySecond = await SearchCaseInventory(
-                GameCase.Id, 
-                GameItemSecond.Id);
+            // Act
+            HttpStatusCode statusCode = await _response
+                .ResponsePostStatusCode($"/CaseInventory/admin", caseInventory, AccessToken);
 
-            //Update
-            caseInventoryFirst.LossChance = 2;
-            await UpdateCaseInventory(caseInventoryFirst);
-            
-            //Delete
-            await DeleteCaseInventory(caseInventoryFirst.Id);
-            await DeleteCaseInventory(caseInventorySecond.Id);
-            
-            await DeleteDependenciesInventory(new() { caseInventoryFirst, caseInventorySecond });
-
-            await DeleteOneTimeAccount("0.2.0");
+            // Assert
+            await RemoveTestDependencies(gameItemId, gameCaseId);
+            await RemoveTestUser(userId);
+            Assert.Equal(HttpStatusCode.OK, statusCode);
         }
 
-        private async Task<bool> CreateCaseInventory(CaseInventory caseInventory)
+        [Fact]
+        public async Task PUT_UpdateCaseInventory_ReturnsOk()
         {
-            HttpStatusCode statusCode = await _clientApi.ResponsePostStatusCode(
-                "/CaseInventory", caseInventory, AdminTokens.AccessToken!);
+            // Arrange
+            Guid gameCaseId = Guid.NewGuid();
+            Guid gameItemId = Guid.NewGuid();
+            Guid caseInvId = Guid.NewGuid();
+            Guid userId = Guid.NewGuid();
 
-            return statusCode == HttpStatusCode.OK;
-        }
+            await InitializeTestUser(userId);
+            await InitializeTestDependencies(gameCaseId, gameItemId, caseInvId);
 
-        private async Task<CaseInventory> SearchCaseInventory(Guid caseId, Guid itemId)
-        {
-            CaseInventory? inventory = await _clientApi.ResponseGet<CaseInventory>(
-                $"/CaseInventory/GetById?" +
-                $"caseId={caseId}&" +
-                $"itemId={itemId}");
-
-            if (inventory == null) throw new Exception("No such case inventory");
-
-            return inventory;
-        }
-
-        private async Task<bool> UpdateCaseInventory(CaseInventory caseInventory)
-        {
-            HttpStatusCode statusCode = await _clientApi.ResponsePut(
-                "/CaseInventory", caseInventory, AdminTokens.AccessToken!);
-
-            return statusCode == HttpStatusCode.OK;
-        }
-
-        private async Task<bool> DeleteCaseInventory(Guid id)
-        {
-            HttpStatusCode statusCode = await _clientApi.ResponseDelete(
-                $"/CaseInventory?id={id}", AdminTokens.AccessToken!);
-            
-            return statusCode == HttpStatusCode.OK;
-        }
-
-        private async Task<bool> CreateDependenciesInventory()
-        {
-            HttpStatusCode createFirstItem = await _clientApi.ResponsePostStatusCode(
-                "/GameItem", GameItemFirst, AdminTokens.AccessToken!);
-            HttpStatusCode createSecondItem = await _clientApi.ResponsePostStatusCode(
-                "/GameItem", GameItemSecond, AdminTokens.AccessToken!);
-            HttpStatusCode createGameCase = await _clientApi.ResponsePostStatusCode(
-                "/GameCase", GameCase, AdminTokens.AccessToken!);
-
-            return (
-                (createFirstItem == HttpStatusCode.OK) && 
-                (createSecondItem == HttpStatusCode.OK) && 
-                (createGameCase == HttpStatusCode.OK));
-        }
-
-        private async Task<Guid> SearchIdItem(string name)
-        {
-            GameItem? item = await _clientApi.ResponseGet<GameItem?>(
-                $"/GameItem/GetByName?" +
-                $"name={name}");
-
-            if (item == null) throw new Exception("No such item"); 
-
-            return item.Id;
-        }
-
-        private async Task<Guid> SearchIdCase(string name)
-        {
-            GameCase? gameCase = await _clientApi.ResponseGet<GameCase?>(
-                $"/GameCase/GetByName?" +
-                $"name={name}");
-
-            if (gameCase == null) throw new Exception("No such game case");
-
-            return gameCase.Id;
-        }
-
-        private async Task<bool> DeleteDependenciesInventory(List<CaseInventory> caseInventories)
-        {
-            HttpStatusCode codeDelete;
-
-            foreach (CaseInventory inventory in caseInventories)
+            CaseInventoryDto caseInventory = new()
             {
-                codeDelete = await _clientApi.ResponseDelete(
-                    $"/GameItem?id={inventory.GameItemId}", AdminTokens.AccessToken!);
-            }
+                Id = caseInvId,
+                GameCaseId = gameCaseId,
+                GameItemId = gameItemId,
+                LossChance = 10,
+                NumberItemsCase = 1
+            };
 
-            codeDelete = await _clientApi.ResponseDelete(
-                $"/GameCase?id={caseInventories[0].GameCaseId}", AdminTokens.AccessToken!);
+            // Act
+            HttpStatusCode statusCode = await _response
+                .ResponsePut($"/CaseInventory/admin", caseInventory, AccessToken);
 
-            return codeDelete == HttpStatusCode.OK;
+            // Assert
+            await RemoveTestDependencies(gameItemId, gameCaseId);
+            await RemoveTestUser(userId);
+            Assert.Equal(HttpStatusCode.OK, statusCode);
         }
+
+        [Fact]
+        public async Task DELETE_DeleteCaseInventory_ReturnsOk()
+        {
+            // Arrange
+            Guid gameCaseId = Guid.NewGuid();
+            Guid gameItemId = Guid.NewGuid();
+            Guid caseInvId = Guid.NewGuid();
+            Guid userId = Guid.NewGuid();
+
+            await InitializeTestUser(userId);
+
+            await InitializeTestDependencies(gameCaseId, gameItemId, caseInvId);
+
+            // Act
+            HttpStatusCode statusCode = await _response
+                .ResponseDelete($"/CaseInventory/admin/{caseInvId}", AccessToken);
+
+            await _response.ResponseDelete(
+                $"/GameItem/admin/{gameItemId}", AccessToken);
+            await _response
+                .ResponseDelete($"/GameCase/admin/{gameCaseId}", AccessToken);
+            // Assert
+
+            await RemoveTestUser(userId);
+            Assert.Equal(HttpStatusCode.OK, statusCode);
+        }
+        #region Начальные данные
+
+        private async Task InitializeTestDependencies(Guid gameCaseId, Guid gameItemId, Guid caseInvId)
+        {
+            GameCase gameCase = new()
+            {
+                Id = gameCaseId,
+                GroupCasesName = "GCfoupName",
+                GameCaseName = "GCTName",
+                GameCaseCost = 400,
+                GameCaseImage = "GCATImage",
+                RevenuePrecentage = 0.1M
+            };
+
+            GameItem? gameItem = new()
+            {
+                Id = gameItemId,
+                GameItemCost = 1,
+                GameItemName = "CASESEXY",
+                GameItemRarity = "XYU",
+                GameItemImage = "PICTURE"
+            };
+
+            CaseInventory? caseInventory = new()
+            {
+                Id = caseInvId,
+                GameCaseId = gameCaseId,
+                GameCase = gameCase,
+                GameItem = gameItem,
+                GameItemId = gameItemId,
+                LossChance = 10,
+                NumberItemsCase = 1
+            };
+
+            await Context.GameCase.AddAsync(gameCase);
+            await Context.GameItem.AddAsync(gameItem);
+            await Context.CaseInventory.AddAsync(caseInventory);
+
+            await Context.SaveChangesAsync();
+        }
+
+        private async Task RemoveTestDependencies(Guid gameItemId, Guid gameCaseId)
+        {
+            GameItem? gameItem = await Context.GameItem.FirstOrDefaultAsync(x => x.Id == gameItemId);
+            Context.GameItem.Remove(gameItem!);
+
+            GameCase? gameCase = await Context.GameCase.FirstOrDefaultAsync(x => x.Id == gameCaseId);
+            Context.GameCase.Remove(gameCase!);
+
+            await Context.SaveChangesAsync();
+        }
+        #endregion
     }
 }
