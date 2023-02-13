@@ -1,17 +1,18 @@
 ﻿using AutoMapper;
-using Azure.Core;
 using CaseApplication.Api.Services;
 using CaseApplication.DomainLayer.Dtos;
 using CaseApplication.DomainLayer.Entities;
 using CaseApplication.EntityFramework.Data;
-using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
+[assembly: CollectionBehavior(DisableTestParallelization = true)]
+
 namespace CaseApplication.IntegrationTests.ApiV2
 {
+
     public class IntegrationTestHelper
     {
         private readonly IConfiguration _configuration = new ConfigurationBuilder()
@@ -86,18 +87,11 @@ namespace CaseApplication.IntegrationTests.ApiV2
 
             AccessToken = CreateToken(user);
             User = user;
-            try
-            {
-                await Context.User.AddAsync(user);
-            }
-            catch
-            {
-                Context.User.Remove(user);
-                await Context.User.AddAsync(user);
-            }
 
+            await Context.User.AddAsync(user);
             await Context.UserAdditionalInfo.AddAsync(userInfo);
             await Context.SaveChangesAsync();
+
         }
 
         protected async Task RemoveTestUser(Guid guid)
