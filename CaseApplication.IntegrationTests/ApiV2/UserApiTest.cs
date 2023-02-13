@@ -1,14 +1,12 @@
 ﻿using CaseApplication.DomainLayer.Entities;
 using CaseApplication.WebClient.Services;
 using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.EntityFrameworkCore;
 using System.Net;
 
 namespace CaseApplication.IntegrationTests.ApiV2
 {
     public class UserApiTest: IntegrationTestHelper, IClassFixture<WebApplicationFactory<Program>>
     {
-        private string _accessToken = string.Empty;
         private readonly ResponseHelper _response;
         public UserApiTest(WebApplicationFactory<Program> app)
         {
@@ -23,7 +21,7 @@ namespace CaseApplication.IntegrationTests.ApiV2
 
             // Act
             HttpStatusCode statusCode = await _response
-                .ResponseGetStatusCode("/User/all", _accessToken);
+                .ResponseGetStatusCode("/User/all", AccessToken);
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, statusCode);
@@ -38,7 +36,7 @@ namespace CaseApplication.IntegrationTests.ApiV2
 
             // Act
             HttpStatusCode statusCode = await _response
-                .ResponseGetStatusCode($"/User/{guid}", _accessToken);
+                .ResponseGetStatusCode($"/User/{guid}", AccessToken);
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, statusCode);
@@ -55,7 +53,7 @@ namespace CaseApplication.IntegrationTests.ApiV2
 
             // Act
             HttpStatusCode statusCode = await _response
-                .ResponseGetStatusCode($"/User/{guid2}", _accessToken);
+                .ResponseGetStatusCode($"/User/{guid2}", AccessToken);
 
             // Assert
             Assert.Equal(HttpStatusCode.NotFound, statusCode);
@@ -70,7 +68,7 @@ namespace CaseApplication.IntegrationTests.ApiV2
 
             // Act
             HttpStatusCode statusCode = await _response
-                .ResponseGetStatusCode("/User/login/UserUserForTests1", _accessToken);
+                .ResponseGetStatusCode("/User/login/UserUserForTests1", AccessToken);
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, statusCode);
@@ -86,7 +84,7 @@ namespace CaseApplication.IntegrationTests.ApiV2
 
             // Act
             HttpStatusCode statusCode = await _response
-                .ResponseGetStatusCode($"/User/login/{login}", _accessToken);
+                .ResponseGetStatusCode($"/User/login/{login}", AccessToken);
 
             // Assert
             Assert.Equal(HttpStatusCode.NotFound, statusCode);
@@ -101,7 +99,7 @@ namespace CaseApplication.IntegrationTests.ApiV2
             string login = "upd4t3-Br0";
             // Act
             HttpStatusCode statusCode = await _response
-                .ResponsePut($"/User/login/{login}", new User(), _accessToken);
+                .ResponsePut($"/User/login/{login}", new User(), AccessToken);
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, statusCode);
@@ -115,53 +113,10 @@ namespace CaseApplication.IntegrationTests.ApiV2
             await InitializeTestUser(guid);
             // Act
             HttpStatusCode statusCode = await _response
-                .ResponseDelete($"/User/admin/{guid}", _accessToken);
+                .ResponseDelete($"/User/admin/{guid}", AccessToken);
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, statusCode);
         }
-        #region Начальные данные
-        private async Task InitializeTestUser(Guid guid)
-        {
-            UserRole? userRole = await Context.UserRole.FirstOrDefaultAsync(x => x.RoleName == "admin");
-            UserAdditionalInfo userInfo = new()
-            {
-                IsConfirmedAccount = true,
-                UserBalance = 99999999M,
-                UserRole = userRole!,
-                UserRoleId = userRole!.Id
-            };
-            User user = new()
-            {
-                Id = guid,
-                UserLogin = "UserUserForTests1",
-                UserEmail = "sex@mail.ru",
-                PasswordHash = "UserHashForTest1",
-                PasswordSalt = "UserSaltForTest1",
-                UserAdditionalInfo = userInfo,
-            };
-
-            _accessToken = CreateToken(user);
-
-            try
-            {
-                await Context.User.AddAsync(user);
-            }
-            catch
-            {
-                Context.User.Remove(user);
-                await Context.User.AddAsync(user);
-            }
-
-            await Context.UserAdditionalInfo.AddAsync(userInfo);
-            await Context.SaveChangesAsync();
-        }
-        private async Task RemoveTestUser(Guid guid)
-        {
-            User? user = await Context.User.FindAsync(guid);
-            Context.User.Remove(user!);
-            await Context.SaveChangesAsync();
-        }
-        #endregion
     }
 }

@@ -42,7 +42,7 @@ namespace CaseApplication.Api.Controllers
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             UserAdditionalInfo? oldInfo = await context.UserAdditionalInfo
-                .FirstOrDefaultAsync(x => x.UserId == newInfo.UserId);
+                .FirstOrDefaultAsync(x => x.Id == newInfo.Id);
 
             if (oldInfo is null) return NotFound();
 

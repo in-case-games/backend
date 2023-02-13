@@ -10,7 +10,6 @@ namespace CaseApplication.IntegrationTests.ApiV2
 {
     public class GameApiTest : IntegrationTestHelper, IClassFixture<WebApplicationFactory<Program>>
     {
-        private string _accessToken = string.Empty;
         private readonly ResponseHelper _response;
         private readonly ITestOutputHelper _output;
         public GameApiTest(
@@ -53,8 +52,8 @@ namespace CaseApplication.IntegrationTests.ApiV2
             }
 
             GameCase? gameCase = await _response.ResponseGet<GameCase?>(
-                $"/GameCase/admin/{caseGuid}", 
-                _accessToken);
+                $"/GameCase/admin/{caseGuid}",
+                AccessToken);
 
             _output.WriteLine(
                 $"Профит: {gameCase!.GameCaseCost * gameCase.RevenuePrecentage * 1000} Р\n" +
@@ -66,33 +65,6 @@ namespace CaseApplication.IntegrationTests.ApiV2
         }
 
         #region Начальные данные
-        private async Task InitializeTestUser(Guid guid)
-        {
-            UserRole? userRole = await Context.UserRole.FirstOrDefaultAsync(x => x.RoleName == "admin");
-            UserAdditionalInfo userInfo = new()
-            {
-                IsConfirmedAccount = true,
-                UserBalance = 99999999M,
-                UserRole = userRole!,
-                UserRoleId = userRole!.Id
-            };
-            User user = new()
-            {
-                Id = guid,
-                UserLogin = "UserUserForTests2",
-                UserEmail = "sex@mail.ru",
-                PasswordHash = "UserHashForTest2",
-                PasswordSalt = "UserSaltForTest2",
-                UserAdditionalInfo = userInfo,
-            };
-
-            _accessToken = CreateToken(user);
-
-            await Context.User.AddAsync(user);
-            await Context.UserAdditionalInfo.AddAsync(userInfo);
-            await Context.SaveChangesAsync();
-        }
-
         private async Task<Dictionary<string, int>> GetWiningItems(Guid gameCaseGuid)
         {
             Dictionary<string, int> winItems = new() {
@@ -109,7 +81,7 @@ namespace CaseApplication.IntegrationTests.ApiV2
             {
                 //Open Cases
                 GameItem? winItem = await _response
-                    .ResponseGet<GameItem?>($"/Game/{gameCaseGuid}", _accessToken);
+                    .ResponseGet<GameItem?>($"/Game/{gameCaseGuid}", AccessToken);
                 if (winItem == null) throw new Exception("No opened cases");
 
                 //Counter wins
@@ -275,13 +247,6 @@ namespace CaseApplication.IntegrationTests.ApiV2
             GameCase? gameCase = await Context.GameCase.FirstOrDefaultAsync(x => x.Id == gameCaseGuid);
             Context.GameCase.Remove(gameCase!);
 
-            await Context.SaveChangesAsync();
-        }
-
-        private async Task RemoveTestUser(Guid guid)
-        {
-            User? user = await Context.User.FirstOrDefaultAsync(x => x.Id == guid);
-            Context.User.Remove(user!);
             await Context.SaveChangesAsync();
         }
         #endregion

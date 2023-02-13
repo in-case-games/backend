@@ -1,4 +1,5 @@
-﻿using CaseApplication.Api.Services;
+﻿using Azure.Core;
+using CaseApplication.Api.Services;
 using CaseApplication.DomainLayer.Entities;
 using CaseApplication.EntityFramework.Data;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -16,6 +17,7 @@ namespace CaseApplication.IntegrationTests.ApiV2
             .AddUserSecrets<Program>()
             .Build();
         private readonly JwtHelper _jwtHelper;
+        protected string AccessToken { get; set; } = string.Empty;
         protected ApplicationDbContext Context { get; }
 
         public IntegrationTestHelper()
@@ -52,5 +54,48 @@ namespace CaseApplication.IntegrationTests.ApiV2
                 new Claim(ClaimTypes.Email, user.UserEmail!)
             };
         }
+        #region Начальные данные
+        protected async Task InitializeTestUser(Guid guid)
+        {
+            UserRole? userRole = await Context.UserRole.FirstOrDefaultAsync(x => x.RoleName == "admin");
+            UserAdditionalInfo userInfo = new()
+            {
+                IsConfirmedAccount = true,
+                UserBalance = 99999999M,
+                UserRole = userRole!,
+                UserRoleId = userRole!.Id
+            };
+            User user = new()
+            {
+                Id = guid,
+                UserLogin = "UserUserForTests1",
+                UserEmail = "yt_ferbray@mail.ru",
+                PasswordHash = "UserHashForTest1",
+                PasswordSalt = "UserSaltForTest1",
+                UserAdditionalInfo = userInfo,
+            };
+
+            AccessToken = CreateToken(user);
+
+            try
+            {
+                await Context.User.AddAsync(user);
+            }
+            catch
+            {
+                Context.User.Remove(user);
+                await Context.User.AddAsync(user);
+            }
+
+            await Context.UserAdditionalInfo.AddAsync(userInfo);
+            await Context.SaveChangesAsync();
+        }
+        protected async Task RemoveTestUser(Guid guid)
+        {
+            User? user = await Context.User.FindAsync(guid);
+            Context.User.Remove(user!);
+            await Context.SaveChangesAsync();
+        }
+        #endregion
     }
 }
