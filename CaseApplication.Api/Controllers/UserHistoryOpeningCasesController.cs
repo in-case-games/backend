@@ -35,7 +35,7 @@ namespace CaseApplication.Api.Controllers
             return history is null ? NotFound() : Ok(history);
         }
 
-        [AllowAnonymous]
+        [Authorize]
         [HttpGet("all")]
         public async Task<IActionResult> GetAll()
         {
@@ -99,7 +99,7 @@ namespace CaseApplication.Api.Controllers
         }
 
         [Authorize]
-        [HttpDelete]
+        [HttpDelete("all")]
         public async Task<IActionResult> DeleteAll()
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();

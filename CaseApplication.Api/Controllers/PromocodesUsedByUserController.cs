@@ -3,6 +3,7 @@ using CaseApplication.EntityFramework.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace CaseApplication.Api.Controllers 
 {
@@ -11,6 +12,8 @@ namespace CaseApplication.Api.Controllers
     public class PromocodesUsedByUserController : ControllerBase
     {
         private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
+        private Guid UserId => Guid
+            .Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
         public PromocodesUsedByUserController(IDbContextFactory<ApplicationDbContext> contextFactory)
         {
             _contextFactory = contextFactory;
@@ -31,15 +34,15 @@ namespace CaseApplication.Api.Controllers
         }
 
         [Authorize]
-        [HttpGet("all/{userId}")]
-        public async Task<IActionResult> GetUsedPromocodes(Guid userId)
+        [HttpGet("all")]
+        public async Task<IActionResult> GetUsedPromocodes()
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             return Ok(await context.PromocodeUsedByUsers
                 .AsNoTracking()
                 .Include(x => x.Promocode)
-                .Where(x => x.UserId == userId)
+                .Where(x => x.UserId == UserId)
                 .ToListAsync());
         }
     }

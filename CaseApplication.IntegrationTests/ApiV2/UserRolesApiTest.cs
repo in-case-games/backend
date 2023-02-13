@@ -27,7 +27,7 @@ namespace CaseApplication.IntegrationTests.ApiV2
         }
 
         [Fact]
-        public async Task GET_GetRolesAll_ReturnsOk()
+        public async Task GET_GetAllRoles_ReturnsOk()
         {
             //Arrange
 

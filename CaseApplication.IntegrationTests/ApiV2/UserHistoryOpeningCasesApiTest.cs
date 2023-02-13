@@ -3,21 +3,57 @@ using CaseApplication.WebClient.Services;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace CaseApplication.IntegrationTests.ApiV2
 {
-    public class UserInventoryApiTest : IntegrationTestHelper, IClassFixture<WebApplicationFactory<Program>>
+    public class UserHistoryOpeningCasesApiTest : IntegrationTestHelper, IClassFixture<WebApplicationFactory<Program>>
     {
         private readonly ResponseHelper _response;
 
-        public UserInventoryApiTest(WebApplicationFactory<Program> app)
+        public UserHistoryOpeningCasesApiTest(WebApplicationFactory<Program> app)
         {
             _response = new(app.CreateClient());
         }
 
         [Fact]
-        public async Task GET_GetUserInventory_ReturnsOk()
+        public async Task GET_GetUserHistoryOpeningCases_ReturnsOk()
+        {
+            //Arrange
+            Guid guid = Guid.NewGuid();
+            Guid caseGuid = Guid.NewGuid();
+            List<Guid> gameItemsGuids = new() {
+                Guid.NewGuid(), Guid.NewGuid(),
+                Guid.NewGuid(), Guid.NewGuid(),
+                Guid.NewGuid(), Guid.NewGuid(),
+                Guid.NewGuid(),
+            };
+
+            await InitializeTestUser(guid);
+            await InitializeTestDependencies(gameItemsGuids, caseGuid);
+            
+            await _response.ResponseGetStatusCode($"/Game/{caseGuid}", AccessToken);
+
+            //Act
+            List<UserHistoryOpeningCases> histories = (await _response
+                .ResponseGet<List<UserHistoryOpeningCases>>(
+                "/UserHistoryOpeningCases/all", AccessToken))!;
+            HttpStatusCode statusCodeGet = await _response.ResponseGetStatusCode(
+                $"/UserHistoryOpeningCases/{histories[0].Id}");
+
+            //Assert
+            Assert.Equal(HttpStatusCode.OK, statusCodeGet);
+
+            await RemoveTestDependencies(gameItemsGuids, caseGuid);
+            await RemoveTestUser(guid);
+        }
+
+        [Fact]
+        public async Task GET_GetAllUserHistoryOpeningCases_ReturnsOk()
         {
             //Arrange
             Guid guid = Guid.NewGuid();
@@ -35,10 +71,11 @@ namespace CaseApplication.IntegrationTests.ApiV2
             await _response.ResponseGetStatusCode($"/Game/{caseGuid}", AccessToken);
 
             //Act
-            List<UserInventory> inventories = (await _response.ResponseGet<List<UserInventory>>(
-                "/UserInventory/all", AccessToken))!;
-            HttpStatusCode statusCodeGet = await _response.ResponseGetStatusCode(
-                $"/UserInventory/{inventories[0].Id}", AccessToken);
+            List<UserHistoryOpeningCases> histories = (await _response
+                .ResponseGet<List<UserHistoryOpeningCases>>(
+                "/UserHistoryOpeningCases/all", AccessToken))!;
+            HttpStatusCode statusCodeGet = histories.Count > 0 ? 
+                HttpStatusCode.OK : HttpStatusCode.NotFound;
 
             //Assert
             Assert.Equal(HttpStatusCode.OK, statusCodeGet);
@@ -48,7 +85,7 @@ namespace CaseApplication.IntegrationTests.ApiV2
         }
 
         [Fact]
-        public async Task GET_GetAllUserInventory_ReturnsOk()
+        public async Task GET_GetAllUserHistoryOpeningCasesByUserId_ReturnsOk()
         {
             //Arrange
             Guid guid = Guid.NewGuid();
@@ -63,13 +100,13 @@ namespace CaseApplication.IntegrationTests.ApiV2
             await InitializeTestUser(guid);
             await InitializeTestDependencies(gameItemsGuids, caseGuid);
 
-            for(int i = 0; i < 10; i++)
-                await _response.ResponseGetStatusCode($"/Game/{caseGuid}", AccessToken);
+            await _response.ResponseGetStatusCode($"/Game/{caseGuid}", AccessToken);
 
             //Act
-            List<UserInventory> inventories = (await _response.ResponseGet<List<UserInventory>>(
-                "/UserInventory/all", AccessToken))!;
-            HttpStatusCode statusCodeGet = inventories.Count > 0 ? 
+            List<UserHistoryOpeningCases> histories = (await _response
+                .ResponseGet<List<UserHistoryOpeningCases>>(
+                $"/UserHistoryOpeningCases/all/{User.Id}", AccessToken))!;
+            HttpStatusCode statusCodeGet = histories.Count > 0 ?
                 HttpStatusCode.OK : HttpStatusCode.NotFound;
 
             //Assert
@@ -79,6 +116,98 @@ namespace CaseApplication.IntegrationTests.ApiV2
             await RemoveTestUser(guid);
         }
 
+        [Fact]
+        public async Task GET_GetAllUsersHistoryOpeningCases_ReturnsOk()
+        {
+            //Arrange
+            Guid guid = Guid.NewGuid();
+            Guid caseGuid = Guid.NewGuid();
+            List<Guid> gameItemsGuids = new() {
+                Guid.NewGuid(), Guid.NewGuid(),
+                Guid.NewGuid(), Guid.NewGuid(),
+                Guid.NewGuid(), Guid.NewGuid(),
+                Guid.NewGuid(),
+            };
+
+            await InitializeTestUser(guid);
+            await InitializeTestDependencies(gameItemsGuids, caseGuid);
+
+            await _response.ResponseGetStatusCode($"/Game/{caseGuid}", AccessToken);
+
+            //Act
+            List<UserHistoryOpeningCases> histories = (await _response
+                .ResponseGet<List<UserHistoryOpeningCases>>(
+                $"/UserHistoryOpeningCases/allHistory", AccessToken))!;
+            HttpStatusCode statusCodeGet = histories.Count > 0 ?
+                HttpStatusCode.OK : HttpStatusCode.NotFound;
+
+            //Assert
+            Assert.Equal(HttpStatusCode.OK, statusCodeGet);
+
+            await RemoveTestDependencies(gameItemsGuids, caseGuid);
+            await RemoveTestUser(guid);
+        }
+
+        [Fact]
+        public async Task GET_DeleteUserHistoryOpeningCases_ReturnsOk()
+        {
+            //Arrange
+            Guid guid = Guid.NewGuid();
+            Guid caseGuid = Guid.NewGuid();
+            List<Guid> gameItemsGuids = new() {
+                Guid.NewGuid(), Guid.NewGuid(),
+                Guid.NewGuid(), Guid.NewGuid(),
+                Guid.NewGuid(), Guid.NewGuid(),
+                Guid.NewGuid(),
+            };
+
+            await InitializeTestUser(guid);
+            await InitializeTestDependencies(gameItemsGuids, caseGuid);
+
+            await _response.ResponseGetStatusCode($"/Game/{caseGuid}", AccessToken);
+
+            //Act
+            List<UserHistoryOpeningCases> histories = (await _response
+                .ResponseGet<List<UserHistoryOpeningCases>>(
+                "/UserHistoryOpeningCases/all", AccessToken))!;
+            HttpStatusCode statusCodeDelete = await _response.ResponseDelete(
+                $"/UserHistoryOpeningCases/{histories[0].Id}", AccessToken);
+
+            //Assert
+            Assert.Equal(HttpStatusCode.OK, statusCodeDelete);
+
+            await RemoveTestDependencies(gameItemsGuids, caseGuid);
+            await RemoveTestUser(guid);
+        }
+
+        [Fact]
+        public async Task GET_DeleteAllUserHistoryOpeningCases_ReturnsOk()
+        {
+            //Arrange
+            Guid guid = Guid.NewGuid();
+            Guid caseGuid = Guid.NewGuid();
+            List<Guid> gameItemsGuids = new() {
+                Guid.NewGuid(), Guid.NewGuid(),
+                Guid.NewGuid(), Guid.NewGuid(),
+                Guid.NewGuid(), Guid.NewGuid(),
+                Guid.NewGuid(),
+            };
+
+            await InitializeTestUser(guid);
+            await InitializeTestDependencies(gameItemsGuids, caseGuid);
+
+            await _response.ResponseGetStatusCode($"/Game/{caseGuid}", AccessToken);
+
+            //Act
+            HttpStatusCode statusCodeDelete = await _response.ResponseDelete(
+                $"/UserHistoryOpeningCases/all", AccessToken);
+
+            //Assert
+            Assert.Equal(HttpStatusCode.OK, statusCodeDelete);
+
+            await RemoveTestDependencies(gameItemsGuids, caseGuid);
+            await RemoveTestUser(guid);
+        }
 
         #region Начальные данные
         private async Task InitializeTestDependencies(List<Guid> gameItemsGuids, Guid gameCaseGuid)

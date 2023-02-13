@@ -22,6 +22,7 @@ namespace CaseApplication.IntegrationTests.ApiV2
         protected readonly MapperConfiguration MapperConfiguration = new(configuration =>
         {
             configuration.CreateMap<UserAdditionalInfo, UserAdditionalInfoDto>();
+            configuration.CreateMap<Promocode, PromocodeDto>();
         });
         protected string AccessToken { get; set; } = string.Empty;
         protected User User { get; set; } = new();
