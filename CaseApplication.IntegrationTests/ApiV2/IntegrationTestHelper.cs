@@ -1,5 +1,7 @@
-﻿using Azure.Core;
+﻿using AutoMapper;
+using Azure.Core;
 using CaseApplication.Api.Services;
+using CaseApplication.DomainLayer.Dtos;
 using CaseApplication.DomainLayer.Entities;
 using CaseApplication.EntityFramework.Data;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -17,7 +19,12 @@ namespace CaseApplication.IntegrationTests.ApiV2
             .AddUserSecrets<Program>()
             .Build();
         private readonly JwtHelper _jwtHelper;
+        protected readonly MapperConfiguration MapperConfiguration = new(configuration =>
+        {
+            configuration.CreateMap<UserAdditionalInfo, UserAdditionalInfoDto>();
+        });
         protected string AccessToken { get; set; } = string.Empty;
+        protected User User { get; set; } = new();
         protected ApplicationDbContext Context { get; }
 
         public IntegrationTestHelper()
@@ -69,14 +76,14 @@ namespace CaseApplication.IntegrationTests.ApiV2
             {
                 Id = guid,
                 UserLogin = "UserUserForTests1",
-                UserEmail = "yt_ferbray@mail.ru",
+                UserEmail = "sex@mail.ru",
                 PasswordHash = "UserHashForTest1",
                 PasswordSalt = "UserSaltForTest1",
                 UserAdditionalInfo = userInfo,
             };
 
             AccessToken = CreateToken(user);
-
+            User = user;
             try
             {
                 await Context.User.AddAsync(user);
@@ -90,6 +97,7 @@ namespace CaseApplication.IntegrationTests.ApiV2
             await Context.UserAdditionalInfo.AddAsync(userInfo);
             await Context.SaveChangesAsync();
         }
+
         protected async Task RemoveTestUser(Guid guid)
         {
             User? user = await Context.User.FindAsync(guid);

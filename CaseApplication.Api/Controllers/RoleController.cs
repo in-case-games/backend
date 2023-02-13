@@ -30,7 +30,7 @@ namespace CaseApplication.Api.Controllers
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.RoleName == name);
 
-            return role is null ? NotFound(): Ok();
+            return role is null ? NotFound(): Ok(role);
         }
 
         [AllowAnonymous]

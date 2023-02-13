@@ -21,7 +21,7 @@ namespace CaseApplication.IntegrationTests.ApiV2
         }
 
         [Fact]
-        public async Task GET_OpeningCase_GameItem()
+        public async Task GET_OpeningCase_Output()
         {
             //Arrange
             Guid guid = Guid.NewGuid();

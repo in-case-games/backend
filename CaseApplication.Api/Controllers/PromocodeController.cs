@@ -1,4 +1,6 @@
-﻿using CaseApplication.DomainLayer.Entities;
+﻿using AutoMapper;
+using CaseApplication.DomainLayer.Dtos;
+using CaseApplication.DomainLayer.Entities;
 using CaseApplication.EntityFramework.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,6 +16,10 @@ namespace CaseApplication.Api.Controllers
         private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
         private Guid UserId => Guid
             .Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
+        private readonly MapperConfiguration _mapperConfiguration = new(configuration =>
+        {
+            configuration.CreateMap<PromocodeDto, Promocode>();
+        });
 
         public PromocodeController(IDbContextFactory<ApplicationDbContext> contextFactory)
         {
@@ -65,10 +71,12 @@ namespace CaseApplication.Api.Controllers
 
         [Authorize(Roles = "admin")]
         [HttpPost("admin")]
-        public async Task<IActionResult> Create(Promocode promocode)
+        public async Task<IActionResult> Create(PromocodeDto promocodeDto)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
+            IMapper mapper = _mapperConfiguration.CreateMapper();
+            Promocode promocode = mapper.Map<Promocode>(promocodeDto);
             promocode.Id = new Guid();
 
             await context.Promocode.AddAsync(promocode);
@@ -79,14 +87,17 @@ namespace CaseApplication.Api.Controllers
 
         [Authorize(Roles = "admin")]
         [HttpPut("admin")]
-        public async Task<IActionResult> Update(Promocode promocode)
+        public async Task<IActionResult> Update(PromocodeDto promocodeDto)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             Promocode? oldPromocode = await context.Promocode
-                .FirstOrDefaultAsync(x => x.Id == promocode.Id);
+                .FirstOrDefaultAsync(x => x.Id == promocodeDto.Id);
 
             if (oldPromocode is null) return NotFound();
+
+            IMapper mapper = _mapperConfiguration.CreateMapper();
+            Promocode promocode = mapper.Map<Promocode>(promocodeDto);
 
             context.Entry(oldPromocode).CurrentValues.SetValues(promocode);
 

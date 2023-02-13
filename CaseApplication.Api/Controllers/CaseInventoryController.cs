@@ -1,4 +1,6 @@
-﻿using CaseApplication.DomainLayer.Entities;
+﻿using AutoMapper;
+using CaseApplication.DomainLayer.Dtos;
+using CaseApplication.DomainLayer.Entities;
 using CaseApplication.EntityFramework.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,6 +16,11 @@ namespace CaseApplication.Api.Controllers
         private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
         private Guid UserId => Guid
             .Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
+        private readonly MapperConfiguration _mapperConfiguration = new(configuration =>
+        {
+            configuration.CreateMap<CaseInventoryDto, CaseInventory>();
+        });
+
         public CaseInventoryController(IDbContextFactory<ApplicationDbContext> contextFactory)
         {
             _contextFactory = contextFactory;
@@ -62,9 +69,13 @@ namespace CaseApplication.Api.Controllers
 
         [Authorize(Roles = "admin")]
         [HttpPost("admin")]
-        public async Task<IActionResult> Create(CaseInventory inventory)
+        public async Task<IActionResult> Create(CaseInventoryDto inventoryDto)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            IMapper mapper = _mapperConfiguration.CreateMapper();
+            CaseInventory inventory = mapper.Map<CaseInventory>(inventoryDto);
+            inventory.Id = new Guid();
 
             await context.CaseInventory.AddAsync(inventory);
             await context.SaveChangesAsync();
@@ -74,14 +85,17 @@ namespace CaseApplication.Api.Controllers
 
         [Authorize(Roles = "admin")]
         [HttpPut("admin")]
-        public async Task<IActionResult> Update(CaseInventory inventory)
+        public async Task<IActionResult> Update(CaseInventoryDto inventoryDto)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             CaseInventory? oldInventory = await context.CaseInventory
-                .FirstOrDefaultAsync(x => x.Id == inventory.Id);
+                .FirstOrDefaultAsync(x => x.Id == inventoryDto.Id);
 
             if (oldInventory is null) return NotFound();
+
+            IMapper mapper = _mapperConfiguration.CreateMapper();
+            CaseInventory inventory = mapper.Map<CaseInventory>(inventoryDto);
 
             context.Entry(oldInventory).CurrentValues.SetValues(inventory);
             await context.SaveChangesAsync();

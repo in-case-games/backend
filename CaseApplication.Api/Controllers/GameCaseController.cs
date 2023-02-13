@@ -1,4 +1,6 @@
-﻿using CaseApplication.DomainLayer.Entities;
+﻿using AutoMapper;
+using CaseApplication.DomainLayer.Dtos;
+using CaseApplication.DomainLayer.Entities;
 using CaseApplication.EntityFramework.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,6 +16,11 @@ namespace CaseApplication.Api.Controllers
         private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
         private Guid UserId => Guid
             .Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
+        private readonly MapperConfiguration _mapperConfiguration = new(configuration =>
+        {
+            configuration.CreateMap<GameCaseDto, GameCase>();
+        });
+
         public GameCaseController(IDbContextFactory<ApplicationDbContext> contextFactory)
         {
             _contextFactory = contextFactory;
@@ -129,9 +136,13 @@ namespace CaseApplication.Api.Controllers
 
         [Authorize(Roles = "admin")]
         [HttpPost("admin")]
-        public async Task<IActionResult> Create(GameCase gameCase)
+        public async Task<IActionResult> Create(GameCaseDto gameCaseDto)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            IMapper mapper = _mapperConfiguration.CreateMapper();
+            GameCase gameCase = mapper.Map<GameCase>(gameCaseDto);
+            gameCase.Id = Guid.NewGuid();
 
             await context.GameCase.AddAsync(gameCase);
             await context.SaveChangesAsync();
@@ -141,14 +152,17 @@ namespace CaseApplication.Api.Controllers
 
         [Authorize(Roles = "admin")]
         [HttpPut("admin")]
-        public async Task<IActionResult> Update(GameCase newCase)
+        public async Task<IActionResult> Update(GameCaseDto newCaseDto)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             GameCase? oldCase = await context.GameCase
-                .FirstOrDefaultAsync(x => x.Id == newCase.Id);
+                .FirstOrDefaultAsync(x => x.Id == newCaseDto.Id);
 
             if (oldCase is null) return NotFound();
+
+            IMapper mapper = _mapperConfiguration.CreateMapper();
+            GameCase newCase = mapper.Map<GameCase>(newCaseDto);
 
             context.Entry(oldCase).CurrentValues.SetValues(newCase);
             await context.SaveChangesAsync();

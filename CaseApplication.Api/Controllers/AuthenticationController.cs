@@ -21,9 +21,8 @@ namespace CaseApplication.Api.Controllers
         private readonly JwtHelper _jwtHelper;
         private readonly EmailHelper _emailHelper;
         private readonly ValidationService _validationService;
-        private MapperConfiguration _mapperConfiguration = new(configuration =>
+        private readonly MapperConfiguration _mapperConfiguration = new(configuration =>
         {
-            configuration.CreateMap<UserAdditionalInfo, UserAdditionalInfoDto>();
             configuration.CreateMap<UserDto, User>();
         });
         private Guid UserId => Guid
@@ -223,6 +222,7 @@ namespace CaseApplication.Api.Controllers
 
             User? user = await context.User
                 .Include(x => x.UserAdditionalInfo)
+                .Include(x => x.UserAdditionalInfo!.UserRole)
                 .FirstOrDefaultAsync(x => x.Id == userId);
 
             if (user == null) return NotFound();
@@ -256,6 +256,7 @@ namespace CaseApplication.Api.Controllers
 
             UserToken newUserToken = new()
             {
+                Id = new Guid(),
                 UserId = user.Id,
                 UserIpAddress = emailModel.UserIp,
             };

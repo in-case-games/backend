@@ -1,4 +1,6 @@
-﻿using CaseApplication.DomainLayer.Entities;
+﻿using AutoMapper;
+using CaseApplication.DomainLayer.Dtos;
+using CaseApplication.DomainLayer.Entities;
 using CaseApplication.EntityFramework.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,6 +16,10 @@ namespace CaseApplication.Api.Controllers
         private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
         private Guid UserId => Guid
             .Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
+        private readonly MapperConfiguration _mapperConfiguration = new(configuration =>
+        {
+            configuration.CreateMap<UserAdditionalInfoDto, UserAdditionalInfo>();
+        });
 
         public UserAdditionalInfoController(IDbContextFactory<ApplicationDbContext> contextFactory)
         {
@@ -36,14 +42,17 @@ namespace CaseApplication.Api.Controllers
 
         [Authorize(Roles = "admin")]
         [HttpPut("admin")]
-        public async Task<IActionResult> UpdateInfoByAdmin(UserAdditionalInfo newInfo)
+        public async Task<IActionResult> UpdateInfoByAdmin(UserAdditionalInfoDto newInfoDto)
         {
+            IMapper mapper = _mapperConfiguration.CreateMapper();
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             UserAdditionalInfo? oldInfo = await context.UserAdditionalInfo
-                .FirstOrDefaultAsync(x => x.Id == newInfo.Id);
+                .FirstOrDefaultAsync(x => x.Id == newInfoDto.Id);
 
             if (oldInfo is null) return NotFound();
+
+            UserAdditionalInfo newInfo = mapper.Map<UserAdditionalInfo>(newInfoDto);
 
             context.Entry(oldInfo).CurrentValues.SetValues(newInfo);
             await context.SaveChangesAsync();

@@ -47,6 +47,8 @@ namespace CaseApplication.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
+            news.Id = new Guid();
+
             await context.News.AddAsync(news);
             await context.SaveChangesAsync();
 
