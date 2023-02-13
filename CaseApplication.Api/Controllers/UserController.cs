@@ -33,12 +33,34 @@ namespace CaseApplication.Api.Controllers
         }
 
         [Authorize]
-        [HttpGet("{id}")]
-        public async Task<IActionResult> Get(Guid? id = null)
+        [HttpGet]
+        public async Task<IActionResult> Get()
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            id ??= UserId;
+            User? user = await context.User
+                .Include(x => x.UserAdditionalInfo)
+                .Include(x => x.UserAdditionalInfo!.UserRole)
+                .Include(x => x.UserInventories)
+                .Include(x => x.PromocodesUsedByUsers)
+                .Include(x => x.UserRestrictions)
+                .Include(x => x.UserHistoryOpeningCases)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id == UserId);
+
+            if (user == null) return NotFound();
+            
+            user.PasswordHash = "access denied";
+            user.PasswordSalt = "access denied";
+            
+            return Ok(user);
+        }
+
+        [Authorize]
+        [HttpGet("id/{id}")]
+        public async Task<IActionResult> GetByUserId(Guid id)
+        {
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             User? user = await context.User
                 .Include(x => x.UserAdditionalInfo)
@@ -51,10 +73,10 @@ namespace CaseApplication.Api.Controllers
                 .FirstOrDefaultAsync(x => x.Id == id);
 
             if (user == null) return NotFound();
-            
+
             user.PasswordHash = "access denied";
             user.PasswordSalt = "access denied";
-            
+
             return Ok(user);
         }
 

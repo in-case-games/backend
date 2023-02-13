@@ -38,7 +38,7 @@ namespace CaseApplication.IntegrationTests.ApiV2
 
             // Act
             HttpStatusCode statusCode = await _response
-                .ResponseGetStatusCode($"/User/{guid}", AccessToken);
+                .ResponseGetStatusCode($"/User", AccessToken);
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, statusCode);
