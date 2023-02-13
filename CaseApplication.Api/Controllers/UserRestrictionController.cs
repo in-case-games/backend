@@ -63,12 +63,10 @@ namespace CaseApplication.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            bool isExistUser = await context.User.AnyAsync(x => x.Id == newRestriction.UserId);
+            UserRestriction? oldRestriction = await context.UserRestriction.FirstOrDefaultAsync(
+                x => x.Id == newRestriction.Id && x.UserId == newRestriction.UserId);
 
-            UserRestriction? oldRestriction = await context.UserRestriction
-                .FirstOrDefaultAsync(x => x.Id == newRestriction.Id);
-
-            if (oldRestriction is null || isExistUser is false) return NotFound();
+            if (oldRestriction is null) return NotFound();
 
             context.Entry(oldRestriction).CurrentValues.SetValues(newRestriction);
             await context.SaveChangesAsync();

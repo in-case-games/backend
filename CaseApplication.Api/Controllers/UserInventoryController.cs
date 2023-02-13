@@ -35,12 +35,25 @@ namespace CaseApplication.Api.Controllers
         }
 
         [Authorize]
-        [HttpGet("all/{userId}")]
-        public async Task<IActionResult> GetAll(Guid? userId = null)
+        [HttpGet("all")]
+        public async Task<IActionResult> GetAll()
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
-            
-            userId ??= UserId;
+
+            List<UserInventory> inventories = await context.UserInventory
+                .Include(x => x.GameItem)
+                .AsNoTracking()
+                .Where(x => x.UserId == UserId)
+                .ToListAsync();
+
+            return Ok(inventories);
+        }
+
+        [Authorize]
+        [HttpGet("all/{userId}")]
+        public async Task<IActionResult> GetAllByUserId(Guid userId)
+        {
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             List<UserInventory> inventories = await context.UserInventory
                 .Include(x => x.GameItem)

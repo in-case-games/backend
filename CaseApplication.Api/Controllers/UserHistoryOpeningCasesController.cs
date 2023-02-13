@@ -36,12 +36,26 @@ namespace CaseApplication.Api.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("all/{userId}")]
-        public async Task<IActionResult> GetAllByUserId(Guid? userId = null)
+        [HttpGet("all")]
+        public async Task<IActionResult> GetAll()
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            userId ??= UserId;
+            List<UserHistoryOpeningCases> histories = await context.UserHistoryOpeningCases
+                .Include(x => x.GameCase)
+                .Include(x => x.GameItem)
+                .AsNoTracking()
+                .Where(x => x.UserId == UserId)
+                .ToListAsync();
+
+            return Ok(histories);
+        }
+
+        [AllowAnonymous]
+        [HttpGet("all/{userId}")]
+        public async Task<IActionResult> GetAllByUserId(Guid userId)
+        {
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             List<UserHistoryOpeningCases> histories = await context.UserHistoryOpeningCases
                 .Include(x => x.GameCase)
@@ -54,8 +68,8 @@ namespace CaseApplication.Api.Controllers
         }
 
         [Authorize]
-        [HttpGet("all")]
-        public async Task<IActionResult> GetAll()
+        [HttpGet("allHistory")]
+        public async Task<IActionResult> GetAllHistory()
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
