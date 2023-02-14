@@ -1,6 +1,8 @@
 ﻿using CaseApplication.DomainLayer.Entities;
-using CaseApplication.DomainLayer.Repositories;
+using CaseApplication.EntityFramework.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace CaseApplication.Api.Controllers
 {
@@ -8,41 +10,83 @@ namespace CaseApplication.Api.Controllers
     [ApiController]
     public class NewsController : ControllerBase
     {
-        private readonly INewsRepository _newsRepository;
+        private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
 
-        public NewsController(INewsRepository newsRepository)
+        public NewsController(IDbContextFactory<ApplicationDbContext> contextFactory)
         {
-            _newsRepository = newsRepository;
+            _contextFactory = contextFactory;
         }
 
-        [HttpGet]
-        public async Task<News> Get(Guid id)
+        [AllowAnonymous]
+        [HttpGet("{id}")]
+        public async Task<IActionResult> Get(Guid id)
         {
-            return await _newsRepository.Get(id);
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            News? news = await context.News
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id == id);
+
+            return news is null ? NotFound(): Ok(news);
         }
 
-        [HttpGet("GetAll")]
-        public async Task<IEnumerable<News>> GetAll()
+        [AllowAnonymous]
+        [HttpGet("all")]
+        public async Task<IActionResult> GetAll()
         {
-            return await _newsRepository.GetAll();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            return Ok(await context.News
+                .AsNoTracking()
+                .ToListAsync());
         }
 
-        [HttpPost]
+        [Authorize(Roles = "admin")]
+        [HttpPost("admin")]
         public async Task<IActionResult> Create(News news)
         {
-            return Ok(await _newsRepository.Create(news));
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            news.Id = new Guid();
+
+            await context.News.AddAsync(news);
+            await context.SaveChangesAsync();
+
+            return Ok();
         }
 
-        [HttpPut]
+        [Authorize(Roles = "admin")]
+        [HttpPut("admin")]
         public async Task<IActionResult> Update(News news)
         {
-            return Ok(await _newsRepository.Update(news));
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            News? oldNews = await context.News.FirstOrDefaultAsync(x => x.Id == news.Id);
+
+            if (oldNews is null) return NotFound();
+
+            context.Entry(oldNews).CurrentValues.SetValues(news);
+            await context.SaveChangesAsync();
+
+            return Ok();
         }
 
-        [HttpDelete]
+        [Authorize(Roles = "admin")]
+        [HttpDelete("admin/{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            return Ok(await _newsRepository.Delete(id));
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            News? news = await context.News
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id == id);
+
+            if (news is null) return NotFound();
+
+            context.Remove(news);
+            await context.SaveChangesAsync();
+
+            return Ok();
         }
     }
 }

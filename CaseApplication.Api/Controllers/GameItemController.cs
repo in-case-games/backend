@@ -1,6 +1,9 @@
 ﻿using CaseApplication.DomainLayer.Entities;
-using CaseApplication.DomainLayer.Repositories;
+using CaseApplication.EntityFramework.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace CaseApplication.Api.Controllers
 {
@@ -8,41 +11,99 @@ namespace CaseApplication.Api.Controllers
     [ApiController]
     public class GameItemController : ControllerBase
     {
-        private readonly IGameItemRepository _gameItemRepository;
+        private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
+        private Guid UserId => Guid
+            .Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
 
-        public GameItemController(IGameItemRepository gameItemRepository)
+        public GameItemController(IDbContextFactory<ApplicationDbContext> contextFactory)
         {
-            _gameItemRepository = gameItemRepository;
+            _contextFactory = contextFactory;
         }
 
-        [HttpGet]
-        public async Task<GameItem> Get(Guid id)
+        [AllowAnonymous]
+        [HttpGet("{id}")]
+        public async Task<IActionResult> Get(Guid id)
         {
-            return await _gameItemRepository.Get(id);
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            GameItem? item = await context.GameItem
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id == id);
+
+            return item is null ? NotFound(): Ok(item);
         }
 
-        [HttpGet("GetAll")]
-        public async Task<IEnumerable<GameItem>> GetAll()
+        [AllowAnonymous]
+        [HttpGet("name/{name}")]
+        public async Task<IActionResult> GetByName(string name)
         {
-            return await _gameItemRepository.GetAll();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            GameItem? item = await context.GameItem
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.GameItemName == name);
+
+            return item is null ? NotFound() : Ok(item);
         }
 
-        [HttpPost]
-        public async Task<bool> Create(GameItem item)
+        [AllowAnonymous]
+        [HttpGet("all")]
+        public async Task<IActionResult> GetAll()
         {
-            return await _gameItemRepository.Create(item);
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            return Ok(await context.GameItem
+                .AsNoTracking()
+                .ToListAsync());
         }
 
-        [HttpPut]
-        public async Task<bool> Update(GameItem item)
+        [Authorize(Roles = "admin")]
+        [HttpPost("admin")]
+        public async Task<IActionResult> Create(GameItem item)
         {
-            return await _gameItemRepository.Update(item);
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            item.Id = Guid.NewGuid();
+
+            await context.GameItem.AddAsync(item);
+            await context.SaveChangesAsync();
+
+            return Ok();
         }
 
-        [HttpDelete]
-        public async Task<bool> Delete(Guid id)
+        [Authorize(Roles = "admin")]
+        [HttpPut("admin")]
+        public async Task<IActionResult> Update(GameItem newItem)
         {
-            return await _gameItemRepository.Delete(id);
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            GameItem? oldItem = await context.GameItem
+                .FirstOrDefaultAsync(x => x.Id == newItem.Id);
+
+            if (oldItem is null) return NotFound();
+
+            context.Entry(oldItem).CurrentValues.SetValues(newItem);
+            await context.SaveChangesAsync();
+
+            return Ok();
+        }
+
+        [Authorize(Roles = "admin")]
+        [HttpDelete("admin/{id}")]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            GameItem? item = await context.GameItem
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id == id);
+
+            if (item is null) return NotFound();
+
+            context.GameItem.Remove(item);
+            await context.SaveChangesAsync();
+
+            return Ok();
         }
     }
 }

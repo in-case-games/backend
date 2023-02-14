@@ -1,25 +1,40 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using CaseApplication.DomainLayer.Entities;
 using CaseApplication.EntityFramework.Configurations;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace CaseApplication.EntityFramework.Data
 {
     public class ApplicationDbContext : DbContext
     {
-        internal DbSet<User> User => Set<User>();
-        internal DbSet<UserRole> UserRole => Set<UserRole>();
-        internal DbSet<UserRestriction> UserRestriction => Set<UserRestriction>();
-        internal DbSet<UserAdditionalInfo> UserAdditionalInfo => Set<UserAdditionalInfo>();
-        internal DbSet<UserInventory> UserInventory => Set<UserInventory>();
-        internal DbSet<GameCase> GameCase => Set<GameCase>();
-        internal DbSet<GameItem> GameItem => Set<GameItem>();
-        internal DbSet<SiteStatistics> SiteStatistics => Set<SiteStatistics>();
-        internal DbSet<CaseInventory> CaseInventory => Set<CaseInventory>();
-        internal DbSet<UserHistoryOpeningCases> UserHistoryOpeningCases => Set<UserHistoryOpeningCases>();
-        internal DbSet<News> News => Set<News>();
+        public DbSet<User> User => Set<User>();
+        public DbSet<UserRole> UserRole => Set<UserRole>();
+        public DbSet<Promocode> Promocode => Set<Promocode>();
+        public DbSet<PromocodesUsedByUser> PromocodeUsedByUsers => Set<PromocodesUsedByUser>();
+        public DbSet<PromocodeType> PromocodeType => Set<PromocodeType>();
+        public DbSet<UserRestriction> UserRestriction => Set<UserRestriction>();
+        public DbSet<UserAdditionalInfo> UserAdditionalInfo => Set<UserAdditionalInfo>();
+        public DbSet<UserInventory> UserInventory => Set<UserInventory>();
+        public DbSet<GameCase> GameCase => Set<GameCase>();
+        public DbSet<GameItem> GameItem => Set<GameItem>();
+        public DbSet<SiteStatistics> SiteStatistics => Set<SiteStatistics>();
+        public DbSet<CaseInventory> CaseInventory => Set<CaseInventory>();
+        public DbSet<UserHistoryOpeningCases> UserHistoryOpeningCases => Set<UserHistoryOpeningCases>();
+        public DbSet<News> News => Set<News>();
+        public DbSet<UserToken> UserToken => Set<UserToken>();
 
-        public ApplicationDbContext(DbContextOptions options) : base(options) {}
+        public ApplicationDbContext(DbContextOptions options) : base(options)
+        {
+            // Database.Migrate();
+            Database.EnsureCreated();
+        }
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            base.OnConfiguring(optionsBuilder);
 
+            optionsBuilder
+                .ConfigureWarnings(x => x.Ignore(RelationalEventId.MultipleCollectionIncludeWarning));
+        }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfiguration(new CaseInventoryConfiguration());
@@ -33,6 +48,48 @@ namespace CaseApplication.EntityFramework.Data
             modelBuilder.ApplyConfiguration(new UserRoleConfiguration());
             modelBuilder.ApplyConfiguration(new UserHistoryOpeningCasesConfiguration());
             modelBuilder.ApplyConfiguration(new SiteStatisticsConfiguration());
+            modelBuilder.ApplyConfiguration(new PromocodeConfiguration());
+            modelBuilder.ApplyConfiguration(new PromocodeTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new PromocodesUsedByUserConfiguration());
+
+            #region Модели, создаваемые при разработке
+            UserRole userRole = new UserRole
+            {
+                Id = Guid.NewGuid(),
+                RoleName = "user"
+            };
+            UserRole adminRole = new UserRole
+            {
+                Id = Guid.NewGuid(),
+                RoleName = "admin"
+            };
+
+            modelBuilder.Entity<UserRole>().HasData(
+                new UserRole[]
+                {
+                    userRole,
+                    adminRole
+                });
+
+            PromocodeType promocodeBalance = new PromocodeType
+            {
+                Id = Guid.NewGuid(),
+                PromocodeTypeName = "balance"
+            };
+
+            PromocodeType promocodeCase = new PromocodeType
+            {
+                Id = Guid.NewGuid(),
+                PromocodeTypeName = "case"
+            };
+
+            modelBuilder.Entity<PromocodeType>().HasData(
+               new PromocodeType[]
+               {
+                    promocodeBalance,
+                    promocodeCase
+               });
+            #endregion
         }
     }
 }

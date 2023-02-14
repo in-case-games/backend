@@ -4,16 +4,17 @@ namespace CaseApplication.DomainLayer.Entities
 {
     public class UserHistoryOpeningCases : BaseEntity
     {
+        [JsonIgnore]
         public Guid UserId { get; set; }
+        [JsonIgnore]
         public Guid GameItemId { get; set; }
+        [JsonIgnore]
         public Guid GameCaseId { get; set; }
         public DateTime? CaseOpenAt { get; set; }
 
         [JsonIgnore]
         public User? User { get; set; }
-        [JsonIgnore]
         public GameItem? GameItem { get; set; }
-        [JsonIgnore]
         public GameCase? GameCase { get; set; }
     }
 }

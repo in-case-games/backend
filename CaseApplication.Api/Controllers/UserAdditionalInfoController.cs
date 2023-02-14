@@ -1,6 +1,11 @@
-﻿using CaseApplication.DomainLayer.Entities;
-using CaseApplication.DomainLayer.Repositories;
+﻿using AutoMapper;
+using CaseApplication.DomainLayer.Dtos;
+using CaseApplication.DomainLayer.Entities;
+using CaseApplication.EntityFramework.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace CaseApplication.Api.Controllers
 {
@@ -8,35 +13,51 @@ namespace CaseApplication.Api.Controllers
     [ApiController]
     public class UserAdditionalInfoController : ControllerBase
     {
-        private readonly IUserAdditionalInfoRepository _userInfoRepository;
-
-        public UserAdditionalInfoController(IUserAdditionalInfoRepository userInfoRepository)
+        private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
+        private Guid UserId => Guid
+            .Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
+        private readonly MapperConfiguration _mapperConfiguration = new(configuration =>
         {
-            _userInfoRepository = userInfoRepository;
+            configuration.CreateMap<UserAdditionalInfoDto, UserAdditionalInfo>();
+        });
+
+        public UserAdditionalInfoController(IDbContextFactory<ApplicationDbContext> contextFactory)
+        {
+            _contextFactory = contextFactory;
         }
 
+        [Authorize]
         [HttpGet]
-        public async Task<UserAdditionalInfo> Get(Guid userId)
+        public async Task<IActionResult> Get()
         {
-            return await _userInfoRepository.Get(userId);
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            UserAdditionalInfo? info = await context.UserAdditionalInfo
+                .AsNoTracking()
+                .Include(x => x.UserRole)
+                .FirstOrDefaultAsync(x => x.UserId == UserId);
+
+            return info is null ? NotFound() : Ok(info);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Create(UserAdditionalInfo userInfo)
+        [Authorize(Roles = "admin")]
+        [HttpPut("admin")]
+        public async Task<IActionResult> UpdateInfoByAdmin(UserAdditionalInfoDto newInfoDto)
         {
-            return Ok(await _userInfoRepository.Create(userInfo));
-        }
+            IMapper mapper = _mapperConfiguration.CreateMapper();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-        [HttpPut]
-        public async Task<IActionResult> Update(UserAdditionalInfo userInfo, string hash)
-        {
-            return Ok(await _userInfoRepository.Update(userInfo));
-        }
+            UserAdditionalInfo? oldInfo = await context.UserAdditionalInfo
+                .FirstOrDefaultAsync(x => x.Id == newInfoDto.Id);
 
-        [HttpDelete]
-        public async Task<IActionResult> Delete(Guid id)
-        {
-            return Ok(await _userInfoRepository.Delete(id));
+            if (oldInfo is null) return NotFound();
+
+            UserAdditionalInfo newInfo = mapper.Map<UserAdditionalInfo>(newInfoDto);
+
+            context.Entry(oldInfo).CurrentValues.SetValues(newInfo);
+            await context.SaveChangesAsync();
+
+            return Ok();
         }
     }
 }

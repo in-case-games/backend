@@ -11,7 +11,7 @@ namespace CaseApplication.EntityFramework.Configurations
             base.Configure(builder);
 
             builder.Property(p => p.GameItemName)
-                .HasMaxLength(30)
+                .HasMaxLength(100)
                 .IsRequired();
 
             builder.HasIndex(i => i.GameItemName)
@@ -28,18 +28,18 @@ namespace CaseApplication.EntityFramework.Configurations
                 .HasMaxLength(30)
                 .IsRequired();
 
-            builder.HasMany(p => p.UserInventories)
-                .WithOne(p => p.GameItem)
-                .HasForeignKey(p => p.GameItemId);
+            builder.HasMany(m => m.UserInventories)
+                .WithOne(o => o.GameItem)
+                .HasForeignKey(fk => fk.GameItemId);
 
-            builder.HasMany(p => p.CaseInventories)
-                .WithOne(P => P.GameItem)
-                .HasForeignKey(p => p.GameItemId)
+            builder.HasMany(m => m.CaseInventories)
+                .WithOne(o => o.GameItem)
+                .HasForeignKey(fk => fk.GameItemId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            builder.HasMany(p => p.UserHistoryOpeningCases)
-                .WithOne(P => P.GameItem)
-                .HasForeignKey(p => p.GameItemId)
+            builder.HasMany(m => m.UserHistoryOpeningCases)
+                .WithOne(o => o.GameItem)
+                .HasForeignKey(fk => fk.GameItemId)
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }

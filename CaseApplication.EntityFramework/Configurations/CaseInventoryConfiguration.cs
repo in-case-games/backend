@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
+﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using CaseApplication.DomainLayer.Entities;
 
 namespace CaseApplication.EntityFramework.Configurations
@@ -11,12 +10,11 @@ namespace CaseApplication.EntityFramework.Configurations
             base.Configure(builder);
 
             builder.Property(p => p.LossChance)
-                .HasColumnType("DECIMAL(18, 5)")
                 .IsRequired();
 
-            builder.HasIndex(k => k.GameCaseId)
+            builder.HasIndex(i => i.GameCaseId)
                 .IsUnique(false);
-            builder.HasIndex(k => k.GameItemId)
+            builder.HasIndex(i => i.GameItemId)
                 .IsUnique(false);
         }
     }

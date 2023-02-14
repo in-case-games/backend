@@ -10,7 +10,7 @@ namespace CaseApplication.EntityFramework.Configurations
         public virtual void Configure(EntityTypeBuilder<TEntity> builder)
         {
             builder.HasKey(k => k.Id);
-            builder.HasIndex(k => k.Id).IsUnique();
+            builder.HasIndex(i => i.Id).IsUnique();
             builder.Property(p => p.Id);
         }
     }

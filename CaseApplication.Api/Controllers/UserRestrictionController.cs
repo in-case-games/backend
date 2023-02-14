@@ -1,6 +1,9 @@
 ﻿using CaseApplication.DomainLayer.Entities;
-using CaseApplication.DomainLayer.Repositories;
+using CaseApplication.EntityFramework.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace CaseApplication.Api.Controllers
 {
@@ -8,41 +11,85 @@ namespace CaseApplication.Api.Controllers
     [ApiController]
     public class UserRestrictionController : ControllerBase
     {
-        private readonly IUserRestrictionRepository _userRestrictionRepository;
+        private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
+        private Guid UserId => Guid
+            .Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
 
-        public UserRestrictionController(IUserRestrictionRepository userRestrictionRepository)
+        public UserRestrictionController(IDbContextFactory<ApplicationDbContext> contextFactory)
         {
-            _userRestrictionRepository = userRestrictionRepository;
+            _contextFactory = contextFactory;
         }
 
-        [HttpGet]
-        public async Task<UserRestriction> Get(Guid id)
+        [Authorize]
+        [HttpGet("{userId}")]
+        public async Task<IActionResult> GetAll(Guid userId)
         {
-            return await _userRestrictionRepository.Get(id);
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            return Ok(await context.UserRestriction
+                .AsNoTracking()
+                .Where(x => x.UserId == userId)
+                .ToListAsync());
+        }
+        [Authorize]
+        [HttpGet("name/{name}")]
+        public async Task<IActionResult> GetByName(string name)
+        {
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            return Ok(await context.UserRestriction
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.RestrictionName == name && x.UserId == UserId));
         }
 
-        [HttpGet("GetAll")]
-        public async Task<IEnumerable<UserRestriction>> GetAll(Guid userId)
+        [Authorize(Roles = "admin")]
+        [HttpPost("admin")]
+        public async Task<IActionResult> Create(UserRestriction restriction)
         {
-            return await _userRestrictionRepository.GetAll(userId);
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            restriction.Id = new Guid();
+            restriction.CreatedDate = DateTime.UtcNow;
+
+            await context.UserRestriction.AddAsync(restriction);
+            await context.SaveChangesAsync();
+
+            return Ok();
         }
 
-        [HttpPost]
-        public async Task<bool> Create(UserRestriction userRestriction)
+        [Authorize(Roles = "admin")]
+        [HttpPut("admin")]
+        public async Task<IActionResult> Update(UserRestriction newRestriction)
         {
-            return await _userRestrictionRepository.Create(userRestriction);
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            UserRestriction? oldRestriction = await context.UserRestriction.FirstOrDefaultAsync(
+                x => x.Id == newRestriction.Id && x.UserId == newRestriction.UserId);
+
+            if (oldRestriction is null) return NotFound();
+
+            context.Entry(oldRestriction).CurrentValues.SetValues(newRestriction);
+            await context.SaveChangesAsync();
+
+            return Ok();
         }
 
-        [HttpPut]
-        public async Task<bool> Update(UserRestriction userRestriction)
+        [Authorize(Roles = "admin")]
+        [HttpDelete("admin/{id}")]
+        public async Task<IActionResult> Delete(Guid id)
         {
-            return await _userRestrictionRepository.Update(userRestriction);
-        }
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-        [HttpDelete]
-        public async Task<bool> Delete(Guid id)
-        {
-            return await _userRestrictionRepository.Delete(id);
+            UserRestriction? restriction = await context.UserRestriction
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id == id);
+
+            if (restriction is null) return NotFound();
+
+            context.UserRestriction.Remove(restriction);
+            await context.SaveChangesAsync();
+
+            return Ok();
         }
     }
 }

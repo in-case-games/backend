@@ -17,7 +17,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CaseApplication.Integration
 		{EDBD36F2-946C-417B-9D5C-9A8514B24435} = {EDBD36F2-946C-417B-9D5C-9A8514B24435}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CaseApplication.WebClient", "CaseApplication.WebClient\CaseApplication.WebClient.csproj", "{EDBD36F2-946C-417B-9D5C-9A8514B24435}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CaseApplication.WebClient", "CaseApplication.WebClient\CaseApplication.WebClient.csproj", "{EDBD36F2-946C-417B-9D5C-9A8514B24435}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

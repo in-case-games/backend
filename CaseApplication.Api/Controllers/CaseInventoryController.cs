@@ -1,6 +1,11 @@
-﻿using CaseApplication.DomainLayer.Entities;
-using CaseApplication.DomainLayer.Repositories;
+﻿using AutoMapper;
+using CaseApplication.DomainLayer.Dtos;
+using CaseApplication.DomainLayer.Entities;
+using CaseApplication.EntityFramework.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace CaseApplication.Api.Controllers
 {
@@ -8,41 +13,112 @@ namespace CaseApplication.Api.Controllers
     [ApiController]
     public class CaseInventoryController : ControllerBase
     {
-        public readonly ICaseInventoryRepository _caseInventoryRepository;
-
-        public CaseInventoryController(ICaseInventoryRepository caseInventoryRepository)
+        private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
+        private Guid UserId => Guid
+            .Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
+        private readonly MapperConfiguration _mapperConfiguration = new(configuration =>
         {
-            _caseInventoryRepository = caseInventoryRepository;
+            configuration.CreateMap<CaseInventoryDto, CaseInventory>();
+        });
+
+        public CaseInventoryController(IDbContextFactory<ApplicationDbContext> contextFactory)
+        {
+            _contextFactory = contextFactory;
         }
 
-        [HttpGet]
-        public async Task<CaseInventory> Get(Guid id)
+        [AllowAnonymous]
+        [HttpGet("{id}")]
+        public async Task<IActionResult> Get(Guid id)
         {
-            return await _caseInventoryRepository.Get(id);
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            CaseInventory? caseInventory = await context.CaseInventory
+                .AsNoTracking()
+                .Include(x => x.GameItem)
+                .FirstOrDefaultAsync(x => x.Id == id);
+
+            return caseInventory is null ? NotFound(): Ok(caseInventory);
         }
 
-        [HttpGet("GetAll")]
-        public async Task<IEnumerable<CaseInventory>> GetAll(Guid caseId)
+        [AllowAnonymous]
+        [HttpGet("ids/{caseId}&{itemId}")]
+        public async Task<IActionResult> GetByIds(Guid caseId, Guid itemId)
         {
-            return await _caseInventoryRepository.GetAll(caseId);
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            CaseInventory? caseInventory = await context.CaseInventory
+                .AsNoTracking()
+                .Include(x => x.GameItem)
+                .FirstOrDefaultAsync(x => x.GameCaseId == caseId && x.GameItemId == itemId);
+
+            return caseInventory is null ? NotFound() : Ok(caseInventory);
         }
 
-        [HttpPost]
-        public async Task<bool> Create(CaseInventory caseInventory)
+        [AllowAnonymous]
+        [HttpGet("all/{caseId}")]
+        public async Task<IActionResult> GetAll(Guid caseId)
         {
-            return await _caseInventoryRepository.Create(caseInventory);
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            return Ok(await context.CaseInventory
+                .AsNoTracking()
+                .Include(x => x.GameItem)
+                .Where(x => x.GameCaseId == caseId)
+                .ToListAsync());
         }
 
-        [HttpPut]
-        public async Task<bool> Update(CaseInventory caseInventory)
+        [Authorize(Roles = "admin")]
+        [HttpPost("admin")]
+        public async Task<IActionResult> Create(CaseInventoryDto inventoryDto)
         {
-            return await _caseInventoryRepository.Update(caseInventory);
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            IMapper mapper = _mapperConfiguration.CreateMapper();
+            CaseInventory inventory = mapper.Map<CaseInventory>(inventoryDto);
+            inventory.Id = new Guid();
+
+            await context.CaseInventory.AddAsync(inventory);
+            await context.SaveChangesAsync();
+
+            return Ok();
         }
 
-        [HttpDelete]
-        public async Task<bool> Delete(Guid id)
+        [Authorize(Roles = "admin")]
+        [HttpPut("admin")]
+        public async Task<IActionResult> Update(CaseInventoryDto inventoryDto)
         {
-            return await _caseInventoryRepository.Delete(id);
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            CaseInventory? oldInventory = await context.CaseInventory
+                .FirstOrDefaultAsync(x => x.Id == inventoryDto.Id);
+
+            if (oldInventory is null) return NotFound();
+
+            IMapper mapper = _mapperConfiguration.CreateMapper();
+            CaseInventory inventory = mapper.Map<CaseInventory>(inventoryDto);
+
+            context.Entry(oldInventory).CurrentValues.SetValues(inventory);
+            await context.SaveChangesAsync();
+
+            return Ok();
+        }
+
+        [Authorize(Roles = "admin")]
+        [HttpDelete("admin/{id}")]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            CaseInventory? inventory = await context.CaseInventory
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id == id);
+
+            if (inventory is null) return NotFound();
+
+            context.CaseInventory.Remove(inventory);
+            await context.SaveChangesAsync();
+
+            return Ok();
         }
     }
 }

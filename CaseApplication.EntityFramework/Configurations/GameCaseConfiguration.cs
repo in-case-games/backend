@@ -18,7 +18,7 @@ namespace CaseApplication.EntityFramework.Configurations
                 .HasMaxLength(30)
                 .IsRequired();
 
-            builder.HasIndex(p => p.GameCaseName)
+            builder.HasIndex(i => i.GameCaseName)
                 .IsUnique();
 
             builder.Property(p => p.GameCaseImage)
@@ -36,14 +36,14 @@ namespace CaseApplication.EntityFramework.Configurations
                 .HasColumnType("DECIMAL(18, 5)")
                 .IsRequired();
 
-            builder.HasMany(p => p.СaseInventories)
-                .WithOne(p => p.GameCase)
-                .HasForeignKey(p => p.GameCaseId)
+            builder.HasMany(m => m.СaseInventories)
+                .WithOne(o => o.GameCase)
+                .HasForeignKey(fk => fk.GameCaseId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            builder.HasMany(p => p.UserHistoryOpeningCases)
-                .WithOne(p => p.GameCase)
-                .HasForeignKey(p => p.GameCaseId)
+            builder.HasMany(m => m.UserHistoryOpeningCases)
+                .WithOne(o => o.GameCase)
+                .HasForeignKey(fk => fk.GameCaseId)
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }

@@ -34,9 +34,8 @@ namespace CaseApplication.Api.Migrations
                     b.Property<Guid>("GameItemId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<decimal?>("LossChance")
-                        .IsRequired()
-                        .HasColumnType("DECIMAL(18, 5)");
+                    b.Property<int>("LossChance")
+                        .HasColumnType("int");
 
                     b.Property<int>("NumberItemsCase")
                         .HasColumnType("int");
@@ -108,8 +107,8 @@ namespace CaseApplication.Api.Migrations
 
                     b.Property<string>("GameItemName")
                         .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("GameItemRarity")
                         .IsRequired()
@@ -153,6 +152,98 @@ namespace CaseApplication.Api.Migrations
                     b.ToTable("News");
                 });
 
+            modelBuilder.Entity("CaseApplication.DomainLayer.Entities.Promocode", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("PromocodeDiscount")
+                        .HasColumnType("DECIMAL(18, 5)");
+
+                    b.Property<DateTime?>("PromocodeExpiryTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("PromocodeName")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<Guid>("PromocodeTypeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("PromocodeUsesCount")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Id")
+                        .IsUnique();
+
+                    b.HasIndex("PromocodeName")
+                        .IsUnique()
+                        .HasFilter("[PromocodeName] IS NOT NULL");
+
+                    b.HasIndex("PromocodeTypeId");
+
+                    b.ToTable("Promocode");
+                });
+
+            modelBuilder.Entity("CaseApplication.DomainLayer.Entities.PromocodeType", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("PromocodeTypeName")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Id")
+                        .IsUnique();
+
+                    b.HasIndex("PromocodeTypeName")
+                        .IsUnique()
+                        .HasFilter("[PromocodeTypeName] IS NOT NULL");
+
+                    b.ToTable("PromocodeType");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("476d6f79-bbf6-4f53-844d-b529e21e4239"),
+                            PromocodeTypeName = "balance"
+                        },
+                        new
+                        {
+                            Id = new Guid("3170302a-64d8-41bb-9f4d-c58a2f918b0c"),
+                            PromocodeTypeName = "case"
+                        });
+                });
+
+            modelBuilder.Entity("CaseApplication.DomainLayer.Entities.PromocodesUsedByUser", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("PromocodeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Id")
+                        .IsUnique();
+
+                    b.HasIndex("PromocodeId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("PromocodeUsedByUsers");
+                });
+
             modelBuilder.Entity("CaseApplication.DomainLayer.Entities.SiteStatistics", b =>
                 {
                     b.Property<Guid>("Id")
@@ -189,10 +280,12 @@ namespace CaseApplication.Api.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("PasswordHash")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PasswordSalt")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("UserEmail")
                         .IsRequired()
@@ -212,6 +305,9 @@ namespace CaseApplication.Api.Migrations
                     b.HasIndex("Id")
                         .IsUnique();
 
+                    b.HasIndex("PasswordSalt")
+                        .IsUnique();
+
                     b.HasIndex("UserEmail")
                         .IsUnique();
 
@@ -227,11 +323,11 @@ namespace CaseApplication.Api.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<bool>("IsConfirmedAccount")
+                        .HasColumnType("bit");
+
                     b.Property<decimal>("UserAbleToPay")
                         .HasColumnType("DECIMAL(18, 5)");
-
-                    b.Property<int>("UserAge")
-                        .HasColumnType("int");
 
                     b.Property<decimal>("UserBalance")
                         .HasColumnType("DECIMAL(18, 5)");
@@ -317,7 +413,10 @@ namespace CaseApplication.Api.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime?>("CreatedDate")
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("ExpiryDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("RestrictionName")
@@ -355,6 +454,46 @@ namespace CaseApplication.Api.Migrations
                         .IsUnique();
 
                     b.ToTable("UserRole");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("c6d009c3-bfc3-4749-ad55-eeb84ffb2bd9"),
+                            RoleName = "user"
+                        },
+                        new
+                        {
+                            Id = new Guid("d6a61b91-6cef-4c0b-b17b-da2f36e58c57"),
+                            RoleName = "admin"
+                        });
+                });
+
+            modelBuilder.Entity("CaseApplication.DomainLayer.Entities.UserToken", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("RefreshToken")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("RefreshTokenCreationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("RefreshTokenExpiryTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("UserIpAddress")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserToken");
                 });
 
             modelBuilder.Entity("CaseApplication.DomainLayer.Entities.CaseInventory", b =>
@@ -374,6 +513,36 @@ namespace CaseApplication.Api.Migrations
                     b.Navigation("GameCase");
 
                     b.Navigation("GameItem");
+                });
+
+            modelBuilder.Entity("CaseApplication.DomainLayer.Entities.Promocode", b =>
+                {
+                    b.HasOne("CaseApplication.DomainLayer.Entities.PromocodeType", "PromocodeType")
+                        .WithOne("Promocode")
+                        .HasForeignKey("CaseApplication.DomainLayer.Entities.Promocode", "PromocodeTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("PromocodeType");
+                });
+
+            modelBuilder.Entity("CaseApplication.DomainLayer.Entities.PromocodesUsedByUser", b =>
+                {
+                    b.HasOne("CaseApplication.DomainLayer.Entities.Promocode", "Promocode")
+                        .WithMany("PromocodesUsedByUsers")
+                        .HasForeignKey("PromocodeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CaseApplication.DomainLayer.Entities.User", "User")
+                        .WithMany("PromocodesUsedByUsers")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Promocode");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("CaseApplication.DomainLayer.Entities.UserAdditionalInfo", b =>
@@ -452,6 +621,17 @@ namespace CaseApplication.Api.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("CaseApplication.DomainLayer.Entities.UserToken", b =>
+                {
+                    b.HasOne("CaseApplication.DomainLayer.Entities.User", "User")
+                        .WithMany("UserTokens")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("CaseApplication.DomainLayer.Entities.GameCase", b =>
                 {
                     b.Navigation("UserHistoryOpeningCases");
@@ -468,8 +648,20 @@ namespace CaseApplication.Api.Migrations
                     b.Navigation("UserInventories");
                 });
 
+            modelBuilder.Entity("CaseApplication.DomainLayer.Entities.Promocode", b =>
+                {
+                    b.Navigation("PromocodesUsedByUsers");
+                });
+
+            modelBuilder.Entity("CaseApplication.DomainLayer.Entities.PromocodeType", b =>
+                {
+                    b.Navigation("Promocode");
+                });
+
             modelBuilder.Entity("CaseApplication.DomainLayer.Entities.User", b =>
                 {
+                    b.Navigation("PromocodesUsedByUsers");
+
                     b.Navigation("UserAdditionalInfo");
 
                     b.Navigation("UserHistoryOpeningCases");
@@ -477,6 +669,8 @@ namespace CaseApplication.Api.Migrations
                     b.Navigation("UserInventories");
 
                     b.Navigation("UserRestrictions");
+
+                    b.Navigation("UserTokens");
                 });
 
             modelBuilder.Entity("CaseApplication.DomainLayer.Entities.UserRole", b =>

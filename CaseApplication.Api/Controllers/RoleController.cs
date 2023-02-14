@@ -1,6 +1,9 @@
 ﻿using CaseApplication.DomainLayer.Entities;
-using CaseApplication.DomainLayer.Repositories;
+using CaseApplication.EntityFramework.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace CaseApplication.Api.Controllers
 {
@@ -8,41 +11,86 @@ namespace CaseApplication.Api.Controllers
     [ApiController]
     public class RoleController : ControllerBase
     {
-        private readonly IUserRoleRepository _userRoleRepository;
-        public RoleController(IUserRoleRepository userRoleRepository)
+        private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
+        private Guid UserId => Guid
+            .Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
+
+        public RoleController(IDbContextFactory<ApplicationDbContext> contextFactory)
         {
-            _userRoleRepository = userRoleRepository;
+            _contextFactory = contextFactory;
         }
 
-        [HttpGet]
-        public async Task<UserRole> Get(Guid roleId = new(), string? roleName = null)
+        [AllowAnonymous]
+        [HttpGet("{name}")]
+        public async Task<IActionResult> Get(string name)
         {
-            UserRole role = new() { Id = roleId, RoleName = roleName };
-            return await _userRoleRepository.Get(role);
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            UserRole? role = await context.UserRole
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.RoleName == name);
+
+            return role is null ? NotFound(): Ok(role);
         }
 
-        [HttpGet("GetAll")]
-        public async Task<IEnumerable<UserRole>> GetAll()
+        [AllowAnonymous]
+        [HttpGet("all")]
+        public async Task<IActionResult> GetAll()
         {
-            return await _userRoleRepository.GetAll();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            return Ok(await context.UserRole
+                .AsNoTracking()
+                .ToListAsync());
         }
 
-        [HttpPost]
-        public async Task<bool> Create(UserRole userRole)
+        [Authorize(Roles = "admin")]
+        [HttpPost("admin")]
+        public async Task<IActionResult> Create(UserRole role)
         {
-            return await _userRoleRepository.Create(userRole);
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            role.Id = new Guid();
+
+            await context.UserRole.AddAsync(role);
+            await context.SaveChangesAsync();
+
+            return Ok();
         }
 
-        [HttpPut]
-        public async Task<bool> Update(UserRole userRole)
+        [Authorize(Roles = "admin")]
+        [HttpPut("admin")]
+        public async Task<IActionResult> Update(UserRole role)
         {
-            return await _userRoleRepository.Update(userRole);
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            UserRole? oldRole = await context.UserRole
+                .FirstOrDefaultAsync(x => x.Id == role.Id);
+
+            if (oldRole is null) return NotFound();
+
+            context.Entry(oldRole).CurrentValues.SetValues(role);
+            await context.SaveChangesAsync();
+
+            return Ok();
         }
 
-        [HttpDelete]
-        public async Task<bool> Delete(Guid id)
+        [Authorize(Roles = "admin")]
+        [HttpDelete("admin/{id}")]
+        public async Task<IActionResult> Delete(Guid id)
         {
-            return await _userRoleRepository.Delete(id);
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            UserRole? role = await context.UserRole
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id == id);
+
+            if (role is null) return NotFound();
+
+            context.UserRole.Remove(role);
+            await context.SaveChangesAsync();
+
+            return Ok();
         }
     }
 }

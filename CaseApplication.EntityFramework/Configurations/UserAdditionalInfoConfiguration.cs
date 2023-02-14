@@ -18,7 +18,7 @@ namespace CaseApplication.EntityFramework.Configurations
                 .HasColumnType("DECIMAL(18, 5)")
                 .IsRequired();
 
-            builder.HasIndex(k => k.UserRoleId)
+            builder.HasIndex(i => i.UserRoleId)
                 .IsUnique(false);
 
         }

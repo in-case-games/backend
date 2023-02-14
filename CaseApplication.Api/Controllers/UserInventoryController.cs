@@ -1,6 +1,9 @@
 ﻿using CaseApplication.DomainLayer.Entities;
-using CaseApplication.DomainLayer.Repositories;
+using CaseApplication.EntityFramework.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace CaseApplication.Api.Controllers
 {
@@ -8,41 +11,57 @@ namespace CaseApplication.Api.Controllers
     [ApiController]
     public class UserInventoryController : ControllerBase
     {
-        private readonly IUserInventoryRepository _userInventoryRepository;
+        private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
+        private Guid UserId => Guid
+            .Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
 
-        public UserInventoryController(IUserInventoryRepository userInventoryRepository)
+        public UserInventoryController(IDbContextFactory<ApplicationDbContext> contextFactory)
         {
-            _userInventoryRepository = userInventoryRepository;
+            _contextFactory = contextFactory;
         }
 
-        [HttpGet]
-        public async Task<UserInventory> Get(Guid id) 
-        { 
-            return await _userInventoryRepository.Get(id);
+        [Authorize]
+        [HttpGet("{id}")]
+        public async Task<IActionResult> Get(Guid id) 
+        {
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            UserInventory? inventory = await context.UserInventory
+                .Include(x => x.GameItem)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id == id);
+
+            return inventory is null ? NotFound() : Ok(inventory);
         }
 
-        [HttpGet("GetAll")]
-        public async Task<IEnumerable<UserInventory>> GetAll(Guid userId)
+        [Authorize]
+        [HttpGet("all")]
+        public async Task<IActionResult> GetAll()
         {
-            return await _userInventoryRepository.GetAll(userId);
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            List<UserInventory> inventories = await context.UserInventory
+                .Include(x => x.GameItem)
+                .AsNoTracking()
+                .Where(x => x.UserId == UserId)
+                .ToListAsync();
+
+            return Ok(inventories);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Create(UserInventory userInventory)
+        [Authorize]
+        [HttpGet("all/{userId}")]
+        public async Task<IActionResult> GetAllByUserId(Guid userId)
         {
-            return Ok(await _userInventoryRepository.Create(userInventory));
-        }
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-        [HttpPut]
-        public async Task<IActionResult> Update(UserInventory userInventory)
-        {
-            return Ok(await _userInventoryRepository.Update(userInventory));
-        }
+            List<UserInventory> inventories = await context.UserInventory
+                .Include(x => x.GameItem)
+                .AsNoTracking()
+                .Where(x => x.UserId == userId)
+                .ToListAsync();
 
-        [HttpDelete]
-        public async Task<IActionResult> Delete(Guid id)
-        {
-            return Ok(await _userInventoryRepository.Delete(id));
+            return Ok(inventories);
         }
     }
 }
