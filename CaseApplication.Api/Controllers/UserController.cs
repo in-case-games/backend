@@ -127,14 +127,6 @@ namespace CaseApplication.Api.Controllers
                 users[i].PasswordSalt = "access denied";
             }
 
-            //TODO Testing speed
-/*            foreach (User user in users)
-            {
-                user.UserEmail = "access denied";
-                user.PasswordHash = "access denied";
-                user.PasswordSalt = "access denied";
-            }*/
-
             return Ok(users);
         }
 
@@ -176,23 +168,19 @@ namespace CaseApplication.Api.Controllers
             bool isExistEmail = await context.User.AnyAsync(x => x.UserEmail == emailModel.UserEmail);
             User? user = await context.User
                 .Include(x => x.UserAdditionalInfo)
+                .Include(x => x.UserTokens)
                 .FirstOrDefaultAsync(x => x.Id == emailModel.UserId);
 
             if (isExistEmail) return Forbid("Email is already busy");
             if (user == null) return NotFound();
 
-            bool isValidToken = _validationService.IsValidEmailToken(emailModel, user.PasswordHash!);
+            bool isValidToken = _validationService.IsValidEmailToken(in emailModel, in user);
             if (isValidToken is false) return Forbid("Invalid email token");
 
             user.UserEmail = emailModel.UserEmail;
             user.UserAdditionalInfo!.IsConfirmedAccount = false;
 
-            List<UserToken> userTokens = await context.UserToken
-                .AsNoTracking()
-                .Where(x => x.UserId == emailModel.UserId)
-                .ToListAsync();
-
-            context.UserToken.RemoveRange(userTokens);
+            context.UserToken.RemoveRange(user.UserTokens!);
 
             await context.SaveChangesAsync();
 
@@ -214,11 +202,12 @@ namespace CaseApplication.Api.Controllers
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             User? user = await context.User
+                .Include(x => x.UserTokens)
                 .FirstOrDefaultAsync(x => x.Id == emailModel.UserId);
 
             if (user == null) return NotFound();
 
-            bool isValidToken = _validationService.IsValidEmailToken(emailModel, user.PasswordHash!);
+            bool isValidToken = _validationService.IsValidEmailToken(in emailModel, in user);
 
             if (isValidToken is false) return Forbid("Invalid email token");
 
@@ -229,12 +218,7 @@ namespace CaseApplication.Api.Controllers
             user.PasswordHash = hash;
             user.PasswordSalt = Convert.ToBase64String(salt);
 
-            List<UserToken> userTokens = await context.UserToken
-                .AsNoTracking()
-                .Where(x => x.UserId == emailModel.UserId)
-                .ToListAsync();
-
-            context.UserToken.RemoveRange(userTokens);
+            context.UserToken.RemoveRange(user.UserTokens!);
 
             await context.SaveChangesAsync();
 
@@ -257,11 +241,12 @@ namespace CaseApplication.Api.Controllers
 
             User? user = await context.User
                 .AsNoTracking()
+                .Include(x => x.UserTokens)
                 .FirstOrDefaultAsync(x => x.Id == emailModel.UserId);
 
             if (user == null) return NotFound();
 
-            bool isValidToken = _validationService.IsValidEmailToken(emailModel, user.PasswordHash!);
+            bool isValidToken = _validationService.IsValidEmailToken(in emailModel, in user);
 
             if (isValidToken is false) return Forbid("Invalid email token");
 
@@ -275,12 +260,7 @@ namespace CaseApplication.Api.Controllers
 
             //TODO No delete give the user 30 days
 
-            List<UserToken> userTokens = await context.UserToken
-                .AsNoTracking()
-                .Where(x => x.UserId == emailModel.UserId)
-                .ToListAsync();
-
-            context.UserToken.RemoveRange(userTokens);
+            context.UserToken.RemoveRange(user.UserTokens!);
 
             await context.SaveChangesAsync();
 

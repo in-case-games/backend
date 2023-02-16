@@ -45,8 +45,12 @@ namespace CaseApplication.Api.Controllers
         #endregion
 
         [AllowAnonymous]
-        [HttpPost("signin/{password}&{ip}")]
-        public async Task<IActionResult> SignIn(UserDto userDto, string password, string ip)
+        [HttpPost("signin/{password}")]
+        public async Task<IActionResult> SignIn(
+            UserDto userDto, 
+            string password, 
+            string ip = "", 
+            string platform = "")
         {
             //Check is exist user
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
@@ -67,38 +71,33 @@ namespace CaseApplication.Api.Controllers
             if (user is null) return NotFound();
             if (!_validationService.IsValidUserPassword(in user, password)) return Forbid();
 
-            //Check is auth user by ip
-            UserToken? userTokenByIp = user.UserTokens?.FirstOrDefault(x => x.UserIpAddress == ip);
+            //Check exceeded sessions
+            bool isExceededSessions = user.UserTokens?.Count >= 100;
 
-            if (userTokenByIp == null)
+            if (isExceededSessions)
             {
-                await _emailHelper.SendConfirmAccountToEmail(new EmailModel()
-                {
-                    UserEmail = user.UserEmail!,
-                    UserId = user.Id,
-                    UserToken = _jwtHelper.GenerateEmailToken(user, ip),
-                    UserIp = ip
-                });
+                await _emailHelper.SendNotifyToEmail(
+                    user.UserEmail!,
+                    "Администрация сайта",
+                    new EmailPatternModel()
+                    {
+                        Body = $"Превышенно количество сессий для входа в аккаунт. " +
+                        $"Чтобы войти под новым устройством, выйдите с прошлого"
+                    });
 
-                return Unauthorized("Check email");
+                return Forbid("Exceeded the number of sessions");
             }
 
-            //Send and save new token
-            TokenModel tokenModel = _jwtHelper.GenerateTokenPair(in user);
+            await _emailHelper.SendConfirmAccountToEmail(new EmailModel()
+            {
+                UserEmail = user.UserEmail!,
+                UserId = user.Id,
+                EmailToken = _jwtHelper.GenerateEmailToken(user),
+                UserIp = ip,
+                UserPlatforms = platform,
+            });
 
-            MapUserTokenForUpdate(ref userTokenByIp, tokenModel);
-
-            await context.SaveChangesAsync();
-
-            await _emailHelper.SendNotifyToEmail(
-                user.UserEmail!,
-                "Администрация сайта",
-                new EmailPatternModel()
-                {
-                    Body = $"Вход в аккаунт"
-                });
-
-            return Ok(tokenModel);
+            return Unauthorized("Check email");
         }
 
         [AllowAnonymous]
@@ -159,8 +158,8 @@ namespace CaseApplication.Api.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("refresh/{refreshToken}&{ip}")]
-        public async Task<IActionResult> RefreshTokens(string refreshToken, string ip)
+        [HttpGet("refresh/{refreshToken}")]
+        public async Task<IActionResult> RefreshTokens(string refreshToken)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
@@ -176,39 +175,42 @@ namespace CaseApplication.Api.Controllers
                 .Include(x => x.UserTokens)
                 .FirstOrDefaultAsync(x => x.Id == userId);
 
-            UserToken? userToken = user!.UserTokens!.FirstOrDefault(x => x.UserIpAddress == ip);
+            UserToken? userToken = user!.UserTokens!.FirstOrDefault(x => x.RefreshToken == refreshToken);
 
-            if (_validationService.IsValidRefreshToken(in userToken, refreshToken))
-            {
-                //Send and save new token
-                TokenModel tokenModel = _jwtHelper.GenerateTokenPair(in user);
+            if(userToken == null) return Forbid("Invalid refresh token");
 
-                MapUserTokenForUpdate(ref userToken!, tokenModel);
+            if (userToken.RefreshTokenExpiryTime <= DateTime.UtcNow) {
+                await _emailHelper.SendNotifyToEmail(
+                    user.UserEmail!,
+                    "Администрация сайта",
+                    new EmailPatternModel()
+                    {
+                        Body = $"Попытка входа в аккаунт"
+                    });
 
-                await context.SaveChangesAsync();
+                context.UserToken.Remove(userToken);
 
-                return Ok(tokenModel);
+                return NoContent();
             }
 
-            await _emailHelper.SendNotifyToEmail(
-                user.UserEmail!, 
-                "Администрация сайта",
-                new EmailPatternModel()
-                {
-                    Body = $"Попытка входа в аккаунт"
-                });
+            //Update and send token
+            TokenModel tokenModel = _jwtHelper.GenerateTokenPair(in user);
 
-            userToken = user!.UserTokens!.FirstOrDefault(x => x.RefreshToken == refreshToken);
+            MapUserTokenForUpdate(ref userToken!, tokenModel);
 
-            context.UserToken.Remove(userToken!);
             await context.SaveChangesAsync();
 
-            return Forbid("Invalid refresh token");
+            return Ok(tokenModel);
         }
 
+        //TODO
         [AllowAnonymous]
-        [HttpGet("confirm/{userId}&{token}&{ip}")]
-        public async Task<IActionResult> ConfirmAccount(Guid userId, string token, string ip)
+        [HttpGet("confirm/{userId}&{token}")]
+        public async Task<IActionResult> ConfirmAccount(
+            Guid userId, 
+            string token,
+            string ip = "",
+            string platform = "")
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
@@ -216,25 +218,22 @@ namespace CaseApplication.Api.Controllers
             EmailModel emailModel = new()
             {
                 UserId = userId,
-                UserToken = token,
-                UserIp = ip
+                EmailToken = token,
+                UserIp = ip,
+                UserPlatforms = platform
             };
 
             User? user = await context.User
+                .Include(x => x.UserTokens)
                 .Include(x => x.UserAdditionalInfo)
                 .Include(x => x.UserAdditionalInfo!.UserRole)
-                .FirstOrDefaultAsync(x => x.Id == userId);
+                .FirstOrDefaultAsync(x => x.Id == emailModel.UserId);
 
             if (user == null) return NotFound();
 
-            bool isValidToken = _validationService.IsValidEmailToken(emailModel, user.PasswordHash!);
+            bool isValidToken = _validationService.IsValidEmailToken(in emailModel, in user);
 
             if (isValidToken is false) return Forbid("Invalid email token");
-
-            bool IsTokenUsed = user.UserTokens?.FirstOrDefault(
-                x => x.UserIpAddress == emailModel.UserIp) is not null;
-            
-            if (IsTokenUsed) return Forbid("Invalid token used");
 
             UserAdditionalInfo userInfo = user.UserAdditionalInfo!;
 
@@ -259,6 +258,8 @@ namespace CaseApplication.Api.Controllers
                 Id = new Guid(),
                 UserId = user.Id,
                 UserIpAddress = emailModel.UserIp,
+                UserPlatfrom = emailModel.UserPlatforms,
+                EmailToken = emailModel.EmailToken,
             };
 
             MapUserTokenForUpdate(ref newUserToken, tokenModel);

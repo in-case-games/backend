@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CaseApplication.Api.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230210134204_Initial_Create3")]
-    partial class InitialCreate3
+    [Migration("20230216065927_Initial_Create")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -213,12 +213,12 @@ namespace CaseApplication.Api.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("476d6f79-bbf6-4f53-844d-b529e21e4239"),
+                            Id = new Guid("401c8471-306b-4ee9-9598-65b4aed479e1"),
                             PromocodeTypeName = "balance"
                         },
                         new
                         {
-                            Id = new Guid("3170302a-64d8-41bb-9f4d-c58a2f918b0c"),
+                            Id = new Guid("d2a9c0d7-5508-460c-b244-cf95c2311c50"),
                             PromocodeTypeName = "case"
                         });
                 });
@@ -461,12 +461,12 @@ namespace CaseApplication.Api.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("c6d009c3-bfc3-4749-ad55-eeb84ffb2bd9"),
+                            Id = new Guid("22d463a0-5c31-4aea-a0dd-bce0c7815082"),
                             RoleName = "user"
                         },
                         new
                         {
-                            Id = new Guid("d6a61b91-6cef-4c0b-b17b-da2f36e58c57"),
+                            Id = new Guid("e22655e2-7111-4089-bfe3-f1c546f96091"),
                             RoleName = "admin"
                         });
                 });
@@ -476,6 +476,9 @@ namespace CaseApplication.Api.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("EmailToken")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("RefreshToken")
                         .HasColumnType("nvarchar(max)");
@@ -490,6 +493,9 @@ namespace CaseApplication.Api.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("UserIpAddress")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserPlatfrom")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");

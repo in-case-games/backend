@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace CaseApplication.Api.Migrations
 {
     /// <inheritdoc />
@@ -149,7 +151,8 @@ namespace CaseApplication.Api.Migrations
                     PromocodeTypeId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     PromocodeName = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     PromocodeDiscount = table.Column<decimal>(type: "DECIMAL(18,5)", nullable: false),
-                    PromocodeUsesCount = table.Column<int>(type: "int", nullable: false)
+                    PromocodeUsesCount = table.Column<int>(type: "int", nullable: false),
+                    PromocodeExpiryTime = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -227,7 +230,8 @@ namespace CaseApplication.Api.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     RestrictionName = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
-                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ExpiryDate = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -247,9 +251,11 @@ namespace CaseApplication.Api.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     RefreshToken = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    EmailToken = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     RefreshTokenCreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     RefreshTokenExpiryTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UserIpAddress = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    UserIpAddress = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UserPlatfrom = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -313,6 +319,24 @@ namespace CaseApplication.Api.Migrations
                         principalTable: "User",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.InsertData(
+                table: "PromocodeType",
+                columns: new[] { "Id", "PromocodeTypeName" },
+                values: new object[,]
+                {
+                    { new Guid("401c8471-306b-4ee9-9598-65b4aed479e1"), "balance" },
+                    { new Guid("d2a9c0d7-5508-460c-b244-cf95c2311c50"), "case" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "UserRole",
+                columns: new[] { "Id", "RoleName" },
+                values: new object[,]
+                {
+                    { new Guid("22d463a0-5c31-4aea-a0dd-bce0c7815082"), "user" },
+                    { new Guid("e22655e2-7111-4089-bfe3-f1c546f96091"), "admin" }
                 });
 
             migrationBuilder.CreateIndex(

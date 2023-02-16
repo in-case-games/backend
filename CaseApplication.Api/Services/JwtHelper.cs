@@ -53,11 +53,10 @@ namespace CaseApplication.Api.Services
             return CreateToken(claims, credentials, expiration);
         }
 
-        public string GenerateEmailToken(User user, string ip)
+        public string GenerateEmailToken(User user)
         {
             Claim[] claims = {
                 new Claim("UserId", user.Id.ToString()),
-                new Claim("UserIp", ip)
             };
 
             JwtSecurityToken token = CreateEmailToken(claims, user.PasswordHash!);
@@ -129,7 +128,7 @@ namespace CaseApplication.Api.Services
                 expires: DateTime.UtcNow.Add(expiration),
                 signingCredentials: credentials);
         }
-        private Claim[] GenerateClaimsForAccessToken(User user)
+        private static Claim[] GenerateClaimsForAccessToken(User user)
         {
             //Find future data for claims
             string roleName = user.UserAdditionalInfo!.UserRole!.RoleName!;

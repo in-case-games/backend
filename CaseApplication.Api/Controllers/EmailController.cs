@@ -52,7 +52,7 @@ namespace CaseApplication.Api.Controllers
             if (user == null) return NotFound();
             if (user.UserEmail != emailModel.UserEmail) return Forbid();
 
-            emailModel.UserToken = _jwtHelper.GenerateEmailToken(user, emailModel.UserIp);
+            emailModel.EmailToken = _jwtHelper.GenerateEmailToken(user);
 
             await _emailHelper.SendConfirmAccountToEmail(emailModel);
 
@@ -146,7 +146,7 @@ namespace CaseApplication.Api.Controllers
         {
             emailModel.UserEmail = user.UserEmail!;
             emailModel.UserId = user.Id;
-            emailModel.UserToken = _jwtHelper.GenerateEmailToken(user, emailModel.UserIp);
+            emailModel.EmailToken = _jwtHelper.GenerateEmailToken(user);
         }
     }
 }

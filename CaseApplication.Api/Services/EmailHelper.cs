@@ -30,7 +30,7 @@ namespace CaseApplication.Api.Services
             string body = 
                 $"<b>" +
                 $"Link: {_requestUrl}/User/" +
-                $"{emailModel.UserId}&{emailModel.UserToken}" +
+                $"{emailModel.UserId}&{emailModel.EmailToken}" +
                 $"</b>";
 
             await _emailService.SendToEmail(emailModel.UserEmail, subject, body);
@@ -41,7 +41,7 @@ namespace CaseApplication.Api.Services
             string subject = "Подтвердите изменение пароля";
             string body = 
                 $"<b>" +
-                $"Link: {_requestUrl}/User/{emailModel.UserId}&{emailModel.UserToken}" +
+                $"Link: {_requestUrl}/User/{emailModel.UserId}&{emailModel.EmailToken}" +
                 $"</b>";
 
             await _emailService.SendToEmail(emailModel.UserEmail, subject, body);
@@ -51,7 +51,7 @@ namespace CaseApplication.Api.Services
             string subject = "Подтвердите изменение пароля";
             string body = 
                 $"<b>" +
-                $"Link: {_requestUrl}/User/{emailModel.UserId}&{emailModel.UserToken}" +
+                $"Link: {_requestUrl}/User/{emailModel.UserId}&{emailModel.EmailToken}" +
                 $"</b>";
 
             await _emailService.SendToEmail(emailModel.UserEmail, subject, body);
@@ -62,7 +62,8 @@ namespace CaseApplication.Api.Services
             string subject = "Подтвердите вход в аккаунт";
             string body = $"<b>" +
                 $"Link: {_requestUrl}/Authentication/confirm/" +
-                $"{emailModel.UserId}&{emailModel.UserToken}&{emailModel.UserIp}" +
+                $"{emailModel.UserId}&{emailModel.EmailToken}" +
+                $"?ip={emailModel.UserIp}&platform={emailModel.UserPlatforms}" +
                 $"</b>";
 
             await _emailService.SendToEmail(emailModel.UserEmail, subject, body);

@@ -30,27 +30,17 @@ namespace CaseApplication.Api.Services
             return hash == user.PasswordHash;
         }
 
-        public bool IsValidRefreshToken(in UserToken? userToken, string refreshToken)
+        public bool IsValidEmailToken(in EmailModel emailModel, in User user)
         {
-            return 
-                (userToken != null &&
-                refreshToken == userToken.RefreshToken &&
-                userToken.RefreshTokenExpiryTime > DateTime.UtcNow);
-        }
+            byte[] secretBytes = Encoding.UTF8.GetBytes(user.PasswordHash! + _configuration["JWT:Secret"]!);
+            string token = emailModel.EmailToken;
 
-        public bool IsValidEmailToken(EmailModel emailModel, string hash)
-        {
-            byte[] secretBytes = Encoding.UTF8.GetBytes(hash + _configuration["JWT:Secret"]!);
+            bool IsTokenUsed = user.UserTokens!.Any(x => x.EmailToken == token);
 
             ClaimsPrincipal? principal = _jwtHelper
-                .GetClaimsToken(emailModel.UserToken, secretBytes, "HS512");
+                .GetClaimsToken(token, secretBytes, "HS512");
 
-            if (principal is null) return false;
-            string ip = principal.Claims
-                .Single(x => x.Type == "UserIp")
-                .Value;
-
-            return (emailModel.UserIp == ip);
+            return principal is not null && IsTokenUsed is false;
         }
 
         public bool IsValidEmailTokenSend(in User user, string ip, string password)
