@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CaseApplication.WebClient\CaseApplication.WebClient.csproj" />
+    <ProjectReference Include="..\CaseApplication.Domain\CaseApplication.Domain.csproj" />
   </ItemGroup>
 
 </Project>
