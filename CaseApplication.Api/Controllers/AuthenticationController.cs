@@ -173,6 +173,8 @@ namespace CaseApplication.Api.Controllers
             //Search refresh token by ip TODO Cut in method
             User? user = await context.User
                 .Include(x => x.UserTokens)
+                .Include(x => x.UserAdditionalInfo)
+                .Include(x => x.UserAdditionalInfo!.UserRole)
                 .FirstOrDefaultAsync(x => x.Id == userId);
 
             UserToken? userToken = user!.UserTokens!.FirstOrDefault(x => x.RefreshToken == refreshToken);
