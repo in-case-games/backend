@@ -42,15 +42,5 @@ namespace CaseApplication.Infrastructure.Services
 
             return principal is not null && IsTokenUsed is false;
         }
-
-        public bool IsValidEmailTokenSend(in User user, string ip, string password)
-        {
-            UserToken? userToken = user.UserTokens!.FirstOrDefault(
-                x => x.UserIpAddress == ip);
-
-            bool isValidPassword = IsValidUserPassword(in user, password);
-
-            return (userToken != null && isValidPassword);
-        }
     }
 }

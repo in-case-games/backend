@@ -39,13 +39,6 @@ namespace CaseApplication.Email.Api.Controllers
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             User? user = await context.User
-                .Include(x => x.UserAdditionalInfo)
-                .Include(x => x.UserAdditionalInfo!.UserRole)
-                .Include(x => x.UserInventories)
-                .Include(x => x.PromocodesUsedByUsers)
-                .Include(x => x.UserRestrictions)
-                .Include(x => x.UserHistoryOpeningCases)
-                .Include(x => x.UserTokens)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == UserId);
 
@@ -55,6 +48,26 @@ namespace CaseApplication.Email.Api.Controllers
             emailModel.EmailToken = _jwtHelper.GenerateEmailToken(user);
 
             await _emailHelper.SendConfirmAccountToEmail(emailModel);
+
+            return Accepted();
+        }
+
+        [AllowAnonymous]
+        [HttpPut("password")]
+        public async Task<IActionResult> SendConfirmForgotPassword(EmailModel emailModel)
+        {
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            User? user = await context.User
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id == UserId);
+
+            if (user == null) return NotFound();
+            if (user.UserEmail != emailModel.UserEmail) return Forbid();
+
+            emailModel.EmailToken = _jwtHelper.GenerateEmailToken(user);
+
+            await _emailHelper.SendChangePasswordToEmail(emailModel);
 
             return Accepted();
         }
@@ -124,20 +137,13 @@ namespace CaseApplication.Email.Api.Controllers
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             User? user = await context.User
-                .Include(x => x.UserAdditionalInfo)
-                .Include(x => x.UserAdditionalInfo!.UserRole)
-                .Include(x => x.UserInventories)
-                .Include(x => x.PromocodesUsedByUsers)
-                .Include(x => x.UserRestrictions)
-                .Include(x => x.UserHistoryOpeningCases)
-                .Include(x => x.UserTokens)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == UserId);
 
             if (user == null)
                 throw new NullReferenceException("The user was not found");
-            if (!_validationService.IsValidEmailTokenSend(in user, emailModel.UserIp, password))
-                throw new ArgumentException("IncorrectPassword");
+            if (!_validationService.IsValidUserPassword(in user, password))
+                throw new ArgumentException("Invalid data");
 
             MapEmailModelForSend(ref emailModel, user);
             await _emailHelper.SendDeleteAccountToEmail(emailModel);
