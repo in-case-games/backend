@@ -17,6 +17,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CaseApplication.Email.Api",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CaseApplication.Game.Api", "CaseApplication.Game.Api\CaseApplication.Game.Api.csproj", "{D6BE33F5-6758-420F-874E-DF866D6765A5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CaseApplication.Payment.Api", "CaseApplication.Payment.Api\CaseApplication.Payment.Api.csproj", "{9B48EF57-B162-429C-A87E-3E1B85CCB6EA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +53,10 @@ Global
 		{D6BE33F5-6758-420F-874E-DF866D6765A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D6BE33F5-6758-420F-874E-DF866D6765A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D6BE33F5-6758-420F-874E-DF866D6765A5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9B48EF57-B162-429C-A87E-3E1B85CCB6EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9B48EF57-B162-429C-A87E-3E1B85CCB6EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9B48EF57-B162-429C-A87E-3E1B85CCB6EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9B48EF57-B162-429C-A87E-3E1B85CCB6EA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

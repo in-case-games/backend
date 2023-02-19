@@ -97,7 +97,7 @@ namespace CaseApplication.Api.Controllers
                 UserPlatforms = platform,
             });
 
-            return Unauthorized("Check email");
+            return Ok("Check email");
         }
 
         [AllowAnonymous]
@@ -200,81 +200,6 @@ namespace CaseApplication.Api.Controllers
 
             MapUserTokenForUpdate(ref userToken!, tokenModel);
 
-            await context.SaveChangesAsync();
-
-            return Ok(tokenModel);
-        }
-
-        //TODO
-        [AllowAnonymous]
-        [HttpGet("confirm/{userId}&{token}")]
-        public async Task<IActionResult> ConfirmAccount(
-            Guid userId, 
-            string token,
-            string ip = "",
-            string platform = "")
-        {
-            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
-
-            //TODO OneTimeToken
-            EmailModel emailModel = new()
-            {
-                UserId = userId,
-                EmailToken = token,
-                UserIp = ip,
-                UserPlatforms = platform
-            };
-
-            User? user = await context.User
-                .Include(x => x.UserTokens)
-                .Include(x => x.UserAdditionalInfo)
-                .Include(x => x.UserAdditionalInfo!.UserRole)
-                .FirstOrDefaultAsync(x => x.Id == emailModel.UserId);
-
-            if (user == null) return NotFound();
-
-            bool isValidToken = _validationService.IsValidEmailToken(in emailModel, in user);
-
-            if (isValidToken is false) return Forbid("Invalid email token");
-
-            UserAdditionalInfo userInfo = user.UserAdditionalInfo!;
-
-            if (userInfo.IsConfirmedAccount is false)
-            {
-                userInfo.IsConfirmedAccount = true;
-
-                await _emailHelper.SendNotifyToEmail(
-                    user.UserEmail!,
-                    "Администрация сайта",
-                    new EmailPatternModel()
-                    {
-                        Body = $"Спасибо что подтвердили аккаунт"
-                    });
-            }
-
-            //Generate tokens
-            TokenModel tokenModel = _jwtHelper.GenerateTokenPair(in user);
-
-            UserToken newUserToken = new()
-            {
-                Id = new Guid(),
-                UserId = user.Id,
-                UserIpAddress = emailModel.UserIp,
-                UserPlatfrom = emailModel.UserPlatforms,
-                EmailToken = emailModel.EmailToken,
-            };
-
-            MapUserTokenForUpdate(ref newUserToken, tokenModel);
-
-            await _emailHelper.SendNotifyToEmail(
-                user.UserEmail!,
-                "Администрация сайта",
-                new EmailPatternModel()
-                {
-                    Body = $"Вход в аккаунт"
-                });
-
-            await context.UserToken.AddAsync(newUserToken);
             await context.SaveChangesAsync();
 
             return Ok(tokenModel);

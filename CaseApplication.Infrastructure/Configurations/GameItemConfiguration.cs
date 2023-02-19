@@ -14,6 +14,9 @@ namespace CaseApplication.Infrastructure.Configurations
                 .HasMaxLength(100)
                 .IsRequired();
 
+            builder.Property(p => p.GameItemType)
+                .IsRequired();
+
             builder.HasIndex(i => i.GameItemName)
                 .IsUnique();
 

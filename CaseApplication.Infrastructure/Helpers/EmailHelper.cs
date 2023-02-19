@@ -65,7 +65,7 @@ namespace CaseApplication.Infrastructure.Helpers
         {
             string subject = "Подтвердите вход в аккаунт";
             string body = $"<b>" +
-                $"Link: {_requestUrl}/Authentication/confirm/" +
+                $"Link: {_requestUrl}/email/api/EmailTokenReceive/confirm/" +
                 $"{emailModel.UserId}&{emailModel.EmailToken}" +
                 $"?ip={emailModel.UserIp}&platform={emailModel.UserPlatforms}" +
                 $"</b>";

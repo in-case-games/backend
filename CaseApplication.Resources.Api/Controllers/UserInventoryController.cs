@@ -63,5 +63,36 @@ namespace CaseApplication.Resources.Api.Controllers
 
             return Ok(inventories);
         }
+
+        [Authorize]
+        [HttpPut("exchange/{id}")]
+        public async Task<IActionResult> ExchangeGameItem(GameItem gameItem, Guid id)
+        {
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            UserInventory? searchInventory = await context.UserInventory
+                .Include(x => x.GameItem)
+                .FirstOrDefaultAsync(x => x.UserId == UserId && x.Id == id);
+            GameItem? searchGameItem = await context.GameItem
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id == gameItem.Id);
+
+            if (searchInventory == null) return NotFound();
+            if (searchGameItem == null) return NotFound();
+            decimal differenceCost = searchInventory.GameItem!.GameItemCost - searchGameItem.GameItemCost;
+            if (differenceCost < 0) return Forbid();
+
+            UserAdditionalInfo? info = await context.UserAdditionalInfo
+                .FirstOrDefaultAsync(x => x.UserId == UserId);
+
+            if (info == null) return NotFound();
+
+            searchInventory.GameItemId = searchGameItem.Id;
+            info.UserBalance += differenceCost;
+
+            await context.SaveChangesAsync();
+
+            return Ok();
+        }
     }
 }

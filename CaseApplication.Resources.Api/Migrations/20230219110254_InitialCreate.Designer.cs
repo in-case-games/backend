@@ -9,10 +9,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace CaseApplication.Api.Migrations
+namespace CaseApplication.Resources.Api.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230216065927_Initial_Create")]
+    [Migration("20230219110254_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -20,12 +20,12 @@ namespace CaseApplication.Api.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.2")
+                .HasAnnotation("ProductVersion", "7.0.3")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("CaseApplication.DomainLayer.Entities.CaseInventory", b =>
+            modelBuilder.Entity("CaseApplication.Domain.Entities.CaseInventory", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -55,7 +55,7 @@ namespace CaseApplication.Api.Migrations
                     b.ToTable("CaseInventory");
                 });
 
-            modelBuilder.Entity("CaseApplication.DomainLayer.Entities.GameCase", b =>
+            modelBuilder.Entity("CaseApplication.Domain.Entities.GameCase", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -95,7 +95,7 @@ namespace CaseApplication.Api.Migrations
                     b.ToTable("GameCase");
                 });
 
-            modelBuilder.Entity("CaseApplication.DomainLayer.Entities.GameItem", b =>
+            modelBuilder.Entity("CaseApplication.Domain.Entities.GameItem", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -118,6 +118,10 @@ namespace CaseApplication.Api.Migrations
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)");
 
+                    b.Property<string>("GameItemType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("GameItemName")
@@ -129,7 +133,7 @@ namespace CaseApplication.Api.Migrations
                     b.ToTable("GameItem");
                 });
 
-            modelBuilder.Entity("CaseApplication.DomainLayer.Entities.News", b =>
+            modelBuilder.Entity("CaseApplication.Domain.Entities.News", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -155,7 +159,7 @@ namespace CaseApplication.Api.Migrations
                     b.ToTable("News");
                 });
 
-            modelBuilder.Entity("CaseApplication.DomainLayer.Entities.Promocode", b =>
+            modelBuilder.Entity("CaseApplication.Domain.Entities.Promocode", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -190,7 +194,7 @@ namespace CaseApplication.Api.Migrations
                     b.ToTable("Promocode");
                 });
 
-            modelBuilder.Entity("CaseApplication.DomainLayer.Entities.PromocodeType", b =>
+            modelBuilder.Entity("CaseApplication.Domain.Entities.PromocodeType", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -213,17 +217,17 @@ namespace CaseApplication.Api.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("401c8471-306b-4ee9-9598-65b4aed479e1"),
+                            Id = new Guid("ef0f0877-aa8d-45f9-aa8f-7f5204045de6"),
                             PromocodeTypeName = "balance"
                         },
                         new
                         {
-                            Id = new Guid("d2a9c0d7-5508-460c-b244-cf95c2311c50"),
+                            Id = new Guid("6fef7fdd-0d75-40d0-a65e-91940e433717"),
                             PromocodeTypeName = "case"
                         });
                 });
 
-            modelBuilder.Entity("CaseApplication.DomainLayer.Entities.PromocodesUsedByUser", b =>
+            modelBuilder.Entity("CaseApplication.Domain.Entities.PromocodesUsedByUser", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -247,7 +251,7 @@ namespace CaseApplication.Api.Migrations
                     b.ToTable("PromocodeUsedByUsers");
                 });
 
-            modelBuilder.Entity("CaseApplication.DomainLayer.Entities.SiteStatistics", b =>
+            modelBuilder.Entity("CaseApplication.Domain.Entities.SiteStatistics", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -276,7 +280,7 @@ namespace CaseApplication.Api.Migrations
                     b.ToTable("SiteStatistics");
                 });
 
-            modelBuilder.Entity("CaseApplication.DomainLayer.Entities.User", b =>
+            modelBuilder.Entity("CaseApplication.Domain.Entities.User", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -320,7 +324,7 @@ namespace CaseApplication.Api.Migrations
                     b.ToTable("User");
                 });
 
-            modelBuilder.Entity("CaseApplication.DomainLayer.Entities.UserAdditionalInfo", b =>
+            modelBuilder.Entity("CaseApplication.Domain.Entities.UserAdditionalInfo", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -354,7 +358,7 @@ namespace CaseApplication.Api.Migrations
                     b.ToTable("UserAdditionalInfo");
                 });
 
-            modelBuilder.Entity("CaseApplication.DomainLayer.Entities.UserHistoryOpeningCases", b =>
+            modelBuilder.Entity("CaseApplication.Domain.Entities.UserHistoryOpeningCases", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -386,7 +390,7 @@ namespace CaseApplication.Api.Migrations
                     b.ToTable("UserHistoryOpeningCases");
                 });
 
-            modelBuilder.Entity("CaseApplication.DomainLayer.Entities.UserInventory", b =>
+            modelBuilder.Entity("CaseApplication.Domain.Entities.UserInventory", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -410,7 +414,7 @@ namespace CaseApplication.Api.Migrations
                     b.ToTable("UserInventory");
                 });
 
-            modelBuilder.Entity("CaseApplication.DomainLayer.Entities.UserRestriction", b =>
+            modelBuilder.Entity("CaseApplication.Domain.Entities.UserRestriction", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -440,7 +444,7 @@ namespace CaseApplication.Api.Migrations
                     b.ToTable("UserRestriction");
                 });
 
-            modelBuilder.Entity("CaseApplication.DomainLayer.Entities.UserRole", b =>
+            modelBuilder.Entity("CaseApplication.Domain.Entities.UserRole", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -461,17 +465,17 @@ namespace CaseApplication.Api.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("22d463a0-5c31-4aea-a0dd-bce0c7815082"),
+                            Id = new Guid("17b55ddc-5ff0-452b-b92b-621f6b6e5a4c"),
                             RoleName = "user"
                         },
                         new
                         {
-                            Id = new Guid("e22655e2-7111-4089-bfe3-f1c546f96091"),
+                            Id = new Guid("1b2353ad-d2ca-413c-8fad-ed94ce2ab328"),
                             RoleName = "admin"
                         });
                 });
 
-            modelBuilder.Entity("CaseApplication.DomainLayer.Entities.UserToken", b =>
+            modelBuilder.Entity("CaseApplication.Domain.Entities.UserToken", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -505,15 +509,15 @@ namespace CaseApplication.Api.Migrations
                     b.ToTable("UserToken");
                 });
 
-            modelBuilder.Entity("CaseApplication.DomainLayer.Entities.CaseInventory", b =>
+            modelBuilder.Entity("CaseApplication.Domain.Entities.CaseInventory", b =>
                 {
-                    b.HasOne("CaseApplication.DomainLayer.Entities.GameCase", "GameCase")
+                    b.HasOne("CaseApplication.Domain.Entities.GameCase", "GameCase")
                         .WithMany("СaseInventories")
                         .HasForeignKey("GameCaseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("CaseApplication.DomainLayer.Entities.GameItem", "GameItem")
+                    b.HasOne("CaseApplication.Domain.Entities.GameItem", "GameItem")
                         .WithMany("CaseInventories")
                         .HasForeignKey("GameItemId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -524,26 +528,26 @@ namespace CaseApplication.Api.Migrations
                     b.Navigation("GameItem");
                 });
 
-            modelBuilder.Entity("CaseApplication.DomainLayer.Entities.Promocode", b =>
+            modelBuilder.Entity("CaseApplication.Domain.Entities.Promocode", b =>
                 {
-                    b.HasOne("CaseApplication.DomainLayer.Entities.PromocodeType", "PromocodeType")
+                    b.HasOne("CaseApplication.Domain.Entities.PromocodeType", "PromocodeType")
                         .WithOne("Promocode")
-                        .HasForeignKey("CaseApplication.DomainLayer.Entities.Promocode", "PromocodeTypeId")
+                        .HasForeignKey("CaseApplication.Domain.Entities.Promocode", "PromocodeTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("PromocodeType");
                 });
 
-            modelBuilder.Entity("CaseApplication.DomainLayer.Entities.PromocodesUsedByUser", b =>
+            modelBuilder.Entity("CaseApplication.Domain.Entities.PromocodesUsedByUser", b =>
                 {
-                    b.HasOne("CaseApplication.DomainLayer.Entities.Promocode", "Promocode")
+                    b.HasOne("CaseApplication.Domain.Entities.Promocode", "Promocode")
                         .WithMany("PromocodesUsedByUsers")
                         .HasForeignKey("PromocodeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("CaseApplication.DomainLayer.Entities.User", "User")
+                    b.HasOne("CaseApplication.Domain.Entities.User", "User")
                         .WithMany("PromocodesUsedByUsers")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -554,17 +558,17 @@ namespace CaseApplication.Api.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("CaseApplication.DomainLayer.Entities.UserAdditionalInfo", b =>
+            modelBuilder.Entity("CaseApplication.Domain.Entities.UserAdditionalInfo", b =>
                 {
-                    b.HasOne("CaseApplication.DomainLayer.Entities.User", "User")
+                    b.HasOne("CaseApplication.Domain.Entities.User", "User")
                         .WithOne("UserAdditionalInfo")
-                        .HasForeignKey("CaseApplication.DomainLayer.Entities.UserAdditionalInfo", "UserId")
+                        .HasForeignKey("CaseApplication.Domain.Entities.UserAdditionalInfo", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("CaseApplication.DomainLayer.Entities.UserRole", "UserRole")
+                    b.HasOne("CaseApplication.Domain.Entities.UserRole", "UserRole")
                         .WithOne("UserAdditionalInfo")
-                        .HasForeignKey("CaseApplication.DomainLayer.Entities.UserAdditionalInfo", "UserRoleId")
+                        .HasForeignKey("CaseApplication.Domain.Entities.UserAdditionalInfo", "UserRoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -573,21 +577,21 @@ namespace CaseApplication.Api.Migrations
                     b.Navigation("UserRole");
                 });
 
-            modelBuilder.Entity("CaseApplication.DomainLayer.Entities.UserHistoryOpeningCases", b =>
+            modelBuilder.Entity("CaseApplication.Domain.Entities.UserHistoryOpeningCases", b =>
                 {
-                    b.HasOne("CaseApplication.DomainLayer.Entities.GameCase", "GameCase")
+                    b.HasOne("CaseApplication.Domain.Entities.GameCase", "GameCase")
                         .WithMany("UserHistoryOpeningCases")
                         .HasForeignKey("GameCaseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("CaseApplication.DomainLayer.Entities.GameItem", "GameItem")
+                    b.HasOne("CaseApplication.Domain.Entities.GameItem", "GameItem")
                         .WithMany("UserHistoryOpeningCases")
                         .HasForeignKey("GameItemId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("CaseApplication.DomainLayer.Entities.User", "User")
+                    b.HasOne("CaseApplication.Domain.Entities.User", "User")
                         .WithMany("UserHistoryOpeningCases")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -600,15 +604,15 @@ namespace CaseApplication.Api.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("CaseApplication.DomainLayer.Entities.UserInventory", b =>
+            modelBuilder.Entity("CaseApplication.Domain.Entities.UserInventory", b =>
                 {
-                    b.HasOne("CaseApplication.DomainLayer.Entities.GameItem", "GameItem")
+                    b.HasOne("CaseApplication.Domain.Entities.GameItem", "GameItem")
                         .WithMany("UserInventories")
                         .HasForeignKey("GameItemId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("CaseApplication.DomainLayer.Entities.User", "User")
+                    b.HasOne("CaseApplication.Domain.Entities.User", "User")
                         .WithMany("UserInventories")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -619,9 +623,9 @@ namespace CaseApplication.Api.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("CaseApplication.DomainLayer.Entities.UserRestriction", b =>
+            modelBuilder.Entity("CaseApplication.Domain.Entities.UserRestriction", b =>
                 {
-                    b.HasOne("CaseApplication.DomainLayer.Entities.User", "User")
+                    b.HasOne("CaseApplication.Domain.Entities.User", "User")
                         .WithMany("UserRestrictions")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -630,9 +634,9 @@ namespace CaseApplication.Api.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("CaseApplication.DomainLayer.Entities.UserToken", b =>
+            modelBuilder.Entity("CaseApplication.Domain.Entities.UserToken", b =>
                 {
-                    b.HasOne("CaseApplication.DomainLayer.Entities.User", "User")
+                    b.HasOne("CaseApplication.Domain.Entities.User", "User")
                         .WithMany("UserTokens")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -641,14 +645,14 @@ namespace CaseApplication.Api.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("CaseApplication.DomainLayer.Entities.GameCase", b =>
+            modelBuilder.Entity("CaseApplication.Domain.Entities.GameCase", b =>
                 {
                     b.Navigation("UserHistoryOpeningCases");
 
                     b.Navigation("СaseInventories");
                 });
 
-            modelBuilder.Entity("CaseApplication.DomainLayer.Entities.GameItem", b =>
+            modelBuilder.Entity("CaseApplication.Domain.Entities.GameItem", b =>
                 {
                     b.Navigation("CaseInventories");
 
@@ -657,17 +661,17 @@ namespace CaseApplication.Api.Migrations
                     b.Navigation("UserInventories");
                 });
 
-            modelBuilder.Entity("CaseApplication.DomainLayer.Entities.Promocode", b =>
+            modelBuilder.Entity("CaseApplication.Domain.Entities.Promocode", b =>
                 {
                     b.Navigation("PromocodesUsedByUsers");
                 });
 
-            modelBuilder.Entity("CaseApplication.DomainLayer.Entities.PromocodeType", b =>
+            modelBuilder.Entity("CaseApplication.Domain.Entities.PromocodeType", b =>
                 {
                     b.Navigation("Promocode");
                 });
 
-            modelBuilder.Entity("CaseApplication.DomainLayer.Entities.User", b =>
+            modelBuilder.Entity("CaseApplication.Domain.Entities.User", b =>
                 {
                     b.Navigation("PromocodesUsedByUsers");
 
@@ -682,7 +686,7 @@ namespace CaseApplication.Api.Migrations
                     b.Navigation("UserTokens");
                 });
 
-            modelBuilder.Entity("CaseApplication.DomainLayer.Entities.UserRole", b =>
+            modelBuilder.Entity("CaseApplication.Domain.Entities.UserRole", b =>
                 {
                     b.Navigation("UserAdditionalInfo");
                 });

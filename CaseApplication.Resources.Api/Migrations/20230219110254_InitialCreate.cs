@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
 
-namespace CaseApplication.Api.Migrations
+namespace CaseApplication.Resources.Api.Migrations
 {
     /// <inheritdoc />
     public partial class InitialCreate : Migration
@@ -38,7 +38,8 @@ namespace CaseApplication.Api.Migrations
                     GameItemName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     GameItemCost = table.Column<decimal>(type: "DECIMAL(18,5)", nullable: false),
                     GameItemImage = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    GameItemRarity = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false)
+                    GameItemRarity = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
+                    GameItemType = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -326,8 +327,8 @@ namespace CaseApplication.Api.Migrations
                 columns: new[] { "Id", "PromocodeTypeName" },
                 values: new object[,]
                 {
-                    { new Guid("401c8471-306b-4ee9-9598-65b4aed479e1"), "balance" },
-                    { new Guid("d2a9c0d7-5508-460c-b244-cf95c2311c50"), "case" }
+                    { new Guid("6fef7fdd-0d75-40d0-a65e-91940e433717"), "case" },
+                    { new Guid("ef0f0877-aa8d-45f9-aa8f-7f5204045de6"), "balance" }
                 });
 
             migrationBuilder.InsertData(
@@ -335,8 +336,8 @@ namespace CaseApplication.Api.Migrations
                 columns: new[] { "Id", "RoleName" },
                 values: new object[,]
                 {
-                    { new Guid("22d463a0-5c31-4aea-a0dd-bce0c7815082"), "user" },
-                    { new Guid("e22655e2-7111-4089-bfe3-f1c546f96091"), "admin" }
+                    { new Guid("17b55ddc-5ff0-452b-b92b-621f6b6e5a4c"), "user" },
+                    { new Guid("1b2353ad-d2ca-413c-8fad-ed94ce2ab328"), "admin" }
                 });
 
             migrationBuilder.CreateIndex(

@@ -28,23 +28,10 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         {
             ValidateIssuer = true,
 
-            ValidIssuers = new List<string>()
-            {
-                builder.Configuration["JWT:ValidIssuer"]!,
-                builder.Configuration["JWT:ValidIssuers:1"]!,
-                builder.Configuration["JWT:ValidIssuers:2"]!,
-                builder.Configuration["JWT:ValidIssuers:3"]!,
-            },
+            ValidIssuer = builder.Configuration["JWT:ValidIssuer"]!,
 
             ValidateAudience = true,
-
-            ValidAudiences = new List<string>()
-            {
-                builder.Configuration["JWT:ValidAudience"]!,
-                builder.Configuration["JWT:ValidAudiences:1"]!,
-                builder.Configuration["JWT:ValidAudiences:2"]!,
-                builder.Configuration["JWT:ValidAudiences:3"]!,
-            },
+            ValidAudience = builder.Configuration["JWT:ValidAudience"]!,
 
             ValidateLifetime = true,
 
