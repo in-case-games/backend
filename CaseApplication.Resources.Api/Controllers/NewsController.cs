@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CaseApplication.Resources.Api.Controllers
 {
-    [Route("[controller]")]
+    [Route("resources/api/[controller]")]
     [ApiController]
     public class NewsController : ControllerBase
     {

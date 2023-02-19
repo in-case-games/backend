@@ -11,9 +11,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CaseApplication.Domain", "C
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CaseApplication.Resources.Api", "CaseApplication.Resources.Api\CaseApplication.Resources.Api.csproj", "{5DC1DD14-6E97-48D7-821F-F41CFC9CEB93}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CaseApplication.Auth.Api", "CaseApplication.Auth.Api\CaseApplication.Auth.Api.csproj", "{4607DD47-F555-4AC8-88BF-8936CCF9B23E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CaseApplication.Auth.Api", "CaseApplication.Auth.Api\CaseApplication.Auth.Api.csproj", "{4607DD47-F555-4AC8-88BF-8936CCF9B23E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CaseApplication.Email.Api", "CaseApplication.Email.Api\CaseApplication.Email.Api.csproj", "{8EE88B08-07B2-44FD-8BF7-4F00A5BCCED6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CaseApplication.Email.Api", "CaseApplication.Email.Api\CaseApplication.Email.Api.csproj", "{8EE88B08-07B2-44FD-8BF7-4F00A5BCCED6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CaseApplication.Game.Api", "CaseApplication.Game.Api\CaseApplication.Game.Api.csproj", "{D6BE33F5-6758-420F-874E-DF866D6765A5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +47,10 @@ Global
 		{8EE88B08-07B2-44FD-8BF7-4F00A5BCCED6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8EE88B08-07B2-44FD-8BF7-4F00A5BCCED6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8EE88B08-07B2-44FD-8BF7-4F00A5BCCED6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D6BE33F5-6758-420F-874E-DF866D6765A5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D6BE33F5-6758-420F-874E-DF866D6765A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D6BE33F5-6758-420F-874E-DF866D6765A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D6BE33F5-6758-420F-874E-DF866D6765A5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

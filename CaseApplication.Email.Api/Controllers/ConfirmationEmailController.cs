@@ -9,9 +9,9 @@ using System.Security.Claims;
 
 namespace CaseApplication.Email.Api.Controllers
 {
-    [Route("[controller]")]
+    [Route("email/api/[controller]")]
     [ApiController]
-    public class EmailController : ControllerBase
+    public class ConfirmationEmailController : ControllerBase
     {
         private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
         private readonly EmailHelper _emailHelper;
@@ -20,7 +20,7 @@ namespace CaseApplication.Email.Api.Controllers
         private Guid UserId => Guid
             .Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
 
-        public EmailController(
+        public ConfirmationEmailController(
             IDbContextFactory<ApplicationDbContext> contextFactory,
             EmailHelper emailHelper,
             JwtHelper jwtHelper,
@@ -33,8 +33,8 @@ namespace CaseApplication.Email.Api.Controllers
         }
 
         [AllowAnonymous]
-        [HttpPost("user/confirm")]
-        public async Task<IActionResult> SendConfirmEmail(EmailModel emailModel)
+        [HttpPost]
+        public async Task<IActionResult> SendConfirm(EmailModel emailModel)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
@@ -60,8 +60,8 @@ namespace CaseApplication.Email.Api.Controllers
         }
 
         [Authorize]
-        [HttpPut("user/email/{password}")]
-        public async Task<IActionResult> SendUpdateEmail(EmailModel emailModel, string password)
+        [HttpPut("email/{password}")]
+        public async Task<IActionResult> SendConfirmUpdateEmail(EmailModel emailModel, string password)
         {
             try
             {
@@ -80,8 +80,8 @@ namespace CaseApplication.Email.Api.Controllers
         }
         
         [Authorize]
-        [HttpPut("user/password/{password}")]
-        public async Task<IActionResult> SendUpdatePassword(EmailModel emailModel, string password)
+        [HttpPut("password/{password}")]
+        public async Task<IActionResult> SendConfirmUpdatePassword(EmailModel emailModel, string password)
         {
             try
             {
@@ -100,8 +100,8 @@ namespace CaseApplication.Email.Api.Controllers
         }
 
         [Authorize]
-        [HttpDelete("user/{password}")]
-        public async Task<IActionResult> SendDeleteAccount(EmailModel emailModel, string password)
+        [HttpDelete("{password}")]
+        public async Task<IActionResult> SendConfirmDeleteAccount(EmailModel emailModel, string password)
         {
             try
             {
@@ -118,6 +118,7 @@ namespace CaseApplication.Email.Api.Controllers
 
             return Accepted();
         }
+
         private async Task Send(EmailModel emailModel, string password)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();

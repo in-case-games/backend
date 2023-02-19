@@ -7,7 +7,7 @@ using System.Security.Claims;
 
 namespace CaseApplication.Resources.Api.Controllers
 {
-    [Route("[controller]")]
+    [Route("resources/api/[controller]")]
     [ApiController]
     public class UserRestrictionController : ControllerBase
     {
@@ -31,6 +31,7 @@ namespace CaseApplication.Resources.Api.Controllers
                 .Where(x => x.UserId == userId)
                 .ToListAsync());
         }
+
         [Authorize]
         [HttpGet("name/{name}")]
         public async Task<IActionResult> GetByName(string name)

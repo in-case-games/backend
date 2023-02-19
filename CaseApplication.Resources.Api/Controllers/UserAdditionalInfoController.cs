@@ -9,7 +9,7 @@ using System.Security.Claims;
 
 namespace CaseApplication.Resources.Api.Controllers
 {
-    [Route("[controller]")]
+    [Route("resources/api/[controller]")]
     [ApiController]
     public class UserAdditionalInfoController : ControllerBase
     {

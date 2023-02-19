@@ -11,7 +11,7 @@ using System.Security.Claims;
 
 namespace CaseApplication.Api.Controllers
 {
-    [Route("[controller]")]
+    [Route("auth/api/[controller]")]
     [ApiController]
     public class AuthenticationController : ControllerBase
     {
@@ -281,7 +281,7 @@ namespace CaseApplication.Api.Controllers
         }
 
         [Authorize]
-        [HttpDelete("{refreshToken}")]
+        [HttpDelete("logout/{refreshToken}")]
         public async Task<IActionResult> Logout(string refreshToken)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
@@ -299,7 +299,7 @@ namespace CaseApplication.Api.Controllers
         }
 
         [Authorize]
-        [HttpDelete("all")]
+        [HttpDelete("logout/all")]
         public async Task<IActionResult> LogoutAll()
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();

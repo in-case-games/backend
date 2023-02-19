@@ -5,18 +5,18 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
-namespace CaseApplication.Resources.Api.Controllers
+namespace CaseApplication.Game.Api.Controllers
 {
-    [Route("[controller]")]
+    [Route("game/api/[controller]")]
     [ApiController]
-    public class GameController : ControllerBase
+    public class OpenCaseController : ControllerBase
     {
         private static readonly Random _random = new();
         private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
         private Guid UserId => Guid
             .Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
 
-        public GameController(IDbContextFactory<ApplicationDbContext> contextFactory)
+        public OpenCaseController(IDbContextFactory<ApplicationDbContext> contextFactory)
         {
             _contextFactory = contextFactory;
         }

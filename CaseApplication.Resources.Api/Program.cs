@@ -34,6 +34,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 builder.Configuration["JWT:ValidIssuer"]!,
                 builder.Configuration["JWT:ValidIssuers:1"]!,
                 builder.Configuration["JWT:ValidIssuers:2"]!,
+                builder.Configuration["JWT:ValidIssuers:3"]!,
             },
 
             ValidateAudience = true,
@@ -42,6 +43,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 builder.Configuration["JWT:ValidAudience"]!,
                 builder.Configuration["JWT:ValidAudiences:1"]!,
                 builder.Configuration["JWT:ValidAudiences:2"]!,
+                builder.Configuration["JWT:ValidAudiences:3"]!,
             },
             ValidateLifetime = true,
 
