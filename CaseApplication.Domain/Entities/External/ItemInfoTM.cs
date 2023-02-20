@@ -1,39 +1,39 @@
-﻿using System.ComponentModel;
+﻿using System.Text.Json.Serialization;
 
 namespace CaseApplication.Domain.Entities.External
 {
     public class ItemInfoTM
     {
-        [DisplayName("classid")]
+        [JsonPropertyName("classid")]
         public int ClassId { get; set; }
-        [DisplayName("instanceid")]
+        [JsonPropertyName("instanceid")]
         public int InstanceId { get; set; }
-        [DisplayName("our_market_instanceid")]
+        [JsonPropertyName("our_market_instanceid")]
         public int? OurMarketInstanceId { get; set; }
-        [DisplayName("market_name")]
+        [JsonPropertyName("market_name")]
         public string? MarketName { get; set; }
-        [DisplayName("name")]
+        [JsonPropertyName("name")]
         public string? Name { get; set; }
-        [DisplayName("market_hash_name")]
+        [JsonPropertyName("market_hash_name")]
         public string? MarketHashName { get; set; }
-        [DisplayName("rarity")]
+        [JsonPropertyName("rarity")]
         public string? Rarity { get; set; }
-        [DisplayName("quality")]
+        [JsonPropertyName("quality")]
         public string? Quality { get; set; }
-        [DisplayName("type")]
+        [JsonPropertyName("type")]
         public string? Type { get; set; }
-        [DisplayName("mtype")]
+        [JsonPropertyName("mtype")]
         public string? MType { get; set; }
-        [DisplayName("slot")]
+        [JsonPropertyName("slot")]
         public string? Slot { get; set; }
-        [DisplayName("stickers")]
+        [JsonPropertyName("stickers")]
         public string? Stickers { get; set; }
-        [DisplayName("min_price")]
+        [JsonPropertyName("min_price")]
         public string? MinPrice { get; set; }
 
-        [DisplayName("offers")]
+        [JsonPropertyName("offers")]
         ICollection<ItemOfferTM>? Offers { get; set; }
-        [DisplayName("buy_offers")]
+        [JsonPropertyName("buy_offers")]
         ICollection<ItemBuyOfferTM>? BuyOffers { get; set; }
     }
 }

@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using CaseApplication.Domain.Dtos;
 using CaseApplication.Domain.Entities;
-using CaseApplication.Domain.Entities.Email;
 using CaseApplication.Domain.Entities.External;
 using CaseApplication.Domain.Entities.Internal;
 using CaseApplication.Infrastructure.Data;

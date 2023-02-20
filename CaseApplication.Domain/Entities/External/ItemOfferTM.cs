@@ -1,14 +1,14 @@
-﻿using System.ComponentModel;
+﻿using System.Text.Json.Serialization;
 
 namespace CaseApplication.Domain.Entities.External
 {
     public class ItemOfferTM
     {
-        [DisplayName("price")]
+        [JsonPropertyName("price")]
         public string? Price { get; set; }
-        [DisplayName("count")]
+        [JsonPropertyName("count")]
         public string? Count { get; set; }
-        [DisplayName("my_count")]
+        [JsonPropertyName("my_count")]
         public string? MyCount { get; set; }
     }
 }
