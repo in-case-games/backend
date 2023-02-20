@@ -7,5 +7,6 @@ namespace CaseApplication.Domain.Dtos
     {
         public Guid UserId { get; set; }
         public Guid GameItemId { get; set; }
+        public DateTime? ExpiryTime { get; set; }
     }
 }

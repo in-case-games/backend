@@ -9,6 +9,7 @@ namespace CaseApplication.Domain.Entities
         public string? GameItemImage { get; set; }
         public string? GameItemRarity { get; set; }
         public string? GameItemType { get; set; }
+        public string? GameItemIdForPlatform { get; set; }
 
         [JsonIgnore]
         public List<UserInventory>? UserInventories { get; set; }

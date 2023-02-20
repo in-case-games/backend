@@ -66,7 +66,8 @@ namespace CaseApplication.Game.Api.Controllers
             {
                 Id = new Guid(),
                 UserId = UserId,
-                GameItemId = winGameItem.Id
+                GameItemId = winGameItem.Id,
+                ExpiryTime = DateTime.UtcNow.AddDays(7),
             };
 
             await context.UserHistoryOpeningCases.AddAsync(history);

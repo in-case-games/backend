@@ -8,6 +8,9 @@ namespace CaseApplication.Infrastructure.Configurations
         public override void Configure(EntityTypeBuilder<UserInventory> builder)
         {
             base.Configure(builder);
+
+            builder.Property(p => p.ExpiryTime)
+                .IsRequired();
         }
     }
 }
