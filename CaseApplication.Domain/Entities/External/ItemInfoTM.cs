@@ -30,5 +30,10 @@ namespace CaseApplication.Domain.Entities.External
         public string? Stickers { get; set; }
         [DisplayName("min_price")]
         public string? MinPrice { get; set; }
+
+        [DisplayName("offers")]
+        ICollection<ItemOfferTM>? Offers { get; set; }
+        [DisplayName("buy_offers")]
+        ICollection<ItemBuyOfferTM>? BuyOffers { get; set; }
     }
 }

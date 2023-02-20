@@ -122,8 +122,8 @@ namespace CaseApplication.Payment.Api.Controllers
                     response.Content);
             }
 
-            await response.Content
-                .ReadFromJsonAsync<T>(new JsonSerializerOptions(JsonSerializerDefaults.Web));
+            ItemInfoTM? itemInfoTM = await response.Content
+                .ReadFromJsonAsync<ItemInfoTM>(new JsonSerializerOptions(JsonSerializerDefaults.Web));
 
             return true;
         }
