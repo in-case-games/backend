@@ -37,10 +37,9 @@ namespace CaseApplication.Payment.Api.Controllers
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.GameItemId == withdrawItem.GameItemId && x.UserId == UserId);
 
-            if(userInventory == null) return NotFound();
+            if(userInventory == null) return NotFound("Item is not found in user invetory");
             GameItem gameItem = userInventory.GameItem!;
 
-            //TODO Check valid partner and token and id
             if (gameItem.GameItemIdForPlatform is null)
             {
                 //TODO Notify admin by telegram auto withdrawn no work
@@ -49,14 +48,16 @@ namespace CaseApplication.Payment.Api.Controllers
 
             ItemInfoTM? itemInfoTM = await _marketTMService.GetItemInfoMarket(gameItem);
 
-            if (itemInfoTM == null) return NotFound();
+            if (itemInfoTM == null || itemInfoTM.Offers!.Count <= 0) return NotFound("Item no such in platform");
 
             decimal minItemPriceTM = decimal.Parse(itemInfoTM.MinPrice!) / 100;
 
-            if(minItemPriceTM > gameItem.GameItemCost * 1.1M) return Forbid();
+            if(minItemPriceTM > gameItem.GameItemCost * 1.1M) return Forbid("Item no stability price, exchange");
 
-            await _marketTMService.BuyItemMarket(gameItem, 
+            ItemBuyTM? itemBuyTM = await _marketTMService.BuyItemMarket(gameItem, 
                 withdrawItem.SteamTradePartner!, withdrawItem.SteamTradeToken!);
+
+            if(itemBuyTM is null) return NotFound("Trade url is incorrect");
 
             context.UserInventory.Remove(userInventory);
 

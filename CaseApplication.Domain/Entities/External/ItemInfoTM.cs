@@ -32,8 +32,8 @@ namespace CaseApplication.Domain.Entities.External
         public string? MinPrice { get; set; }
 
         [JsonPropertyName("offers")]
-        ICollection<ItemOfferTM>? Offers { get; set; }
+        public ICollection<ItemOfferTM>? Offers { get; set; }
         [JsonPropertyName("buy_offers")]
-        ICollection<ItemBuyOfferTM>? BuyOffers { get; set; }
+        public ICollection<ItemBuyOfferTM>? BuyOffers { get; set; }
     }
 }
