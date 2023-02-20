@@ -34,19 +34,31 @@ namespace CaseApplication.Payment.Api.Controllers
 
             UserInventory? userInventory = await context.UserInventory
                 .Include(c => c.GameItem)
+                .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.GameItemId == withdrawItem.GameItemId && x.UserId == UserId);
 
             if(userInventory == null) return NotFound();
-            if (userInventory.GameItem!.GameItemIdForPlatform is null)
+            GameItem gameItem = userInventory.GameItem!;
+
+            //TODO Check valid partner and token and id
+            if (gameItem.GameItemIdForPlatform is null)
             {
                 //TODO Notify admin by telegram auto withdrawn no work
                 return Ok();
             }
 
-            ItemInfoTM? itemInfoTM = await _marketTMService.GetItemInfoMarket(userInventory.GameItem!);
+            ItemInfoTM? itemInfoTM = await _marketTMService.GetItemInfoMarket(gameItem);
+
             if (itemInfoTM == null) return NotFound();
+
             decimal minItemPriceTM = decimal.Parse(itemInfoTM.MinPrice!) / 100;
-            if(minItemPriceTM > userInventory.GameItem!.GameItemCost * 1.1M) return Forbid();
+
+            if(minItemPriceTM > gameItem.GameItemCost * 1.1M) return Forbid();
+
+            await _marketTMService.BuyItemMarket(gameItem, 
+                withdrawItem.SteamTradePartner!, withdrawItem.SteamTradeToken!);
+
+            context.UserInventory.Remove(userInventory);
 
             return Ok();
         }
@@ -55,6 +67,8 @@ namespace CaseApplication.Payment.Api.Controllers
         [HttpPost("deposit")] 
         public async Task<IActionResult> TopUpBalance()
         {
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
             return Ok();
         }
 
