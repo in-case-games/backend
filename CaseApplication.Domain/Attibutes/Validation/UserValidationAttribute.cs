@@ -1,5 +1,4 @@
 ﻿using CaseApplication.Domain.Dtos;
-using CaseApplication.Domain.Entities;
 using System.ComponentModel.DataAnnotations;
 using System.Text.RegularExpressions;
 

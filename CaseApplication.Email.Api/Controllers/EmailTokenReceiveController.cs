@@ -1,6 +1,4 @@
-﻿using CaseApplication.Domain.Entities;
-using CaseApplication.Domain.Entities.Email;
-using CaseApplication.Domain.Entities.External;
+﻿using CaseApplication.Domain.Entities.External;
 using CaseApplication.Domain.Entities.Internal;
 using CaseApplication.Infrastructure.Data;
 using CaseApplication.Infrastructure.Helpers;
@@ -145,7 +143,7 @@ namespace CaseApplication.Email.Api.Controllers
                 {
                     Body = $"Вы изменили email аккаунта"
                 });
-            return Ok();
+            return Ok(new { Success = true, Message = "Email was changed" });
         }
 
         [AllowAnonymous]
@@ -181,7 +179,7 @@ namespace CaseApplication.Email.Api.Controllers
                     Body = $"Вы сменили пароль"
                 });
 
-            return Ok();
+            return Ok(new { Success = true, Message = "Password was changed" });
         }
 
         [AllowAnonymous]
@@ -215,7 +213,7 @@ namespace CaseApplication.Email.Api.Controllers
 
             await context.SaveChangesAsync();
 
-            return Ok();
+            return Ok(new { Success = true, Message = "Request for delete account was confirmated." });
         }
 
         private static void MapUserTokenForUpdate(ref UserToken userToken, TokenPattern tokenModel)
