@@ -101,6 +101,9 @@ namespace CaseApplication.Resources.Api.Migrations
                     b.Property<decimal>("GameItemCost")
                         .HasColumnType("DECIMAL(18, 5)");
 
+                    b.Property<string>("GameItemIdForPlatform")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("GameItemImage")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -214,12 +217,12 @@ namespace CaseApplication.Resources.Api.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("ef0f0877-aa8d-45f9-aa8f-7f5204045de6"),
+                            Id = new Guid("373f7c68-9920-4bcf-80c2-4fc2e4996755"),
                             PromocodeTypeName = "balance"
                         },
                         new
                         {
-                            Id = new Guid("6fef7fdd-0d75-40d0-a65e-91940e433717"),
+                            Id = new Guid("d371bbe4-36e6-4c96-80b3-5027c4195f20"),
                             PromocodeTypeName = "case"
                         });
                 });
@@ -393,6 +396,10 @@ namespace CaseApplication.Resources.Api.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<DateTime?>("ExpiryTime")
+                        .IsRequired()
+                        .HasColumnType("datetime2");
+
                     b.Property<Guid>("GameItemId")
                         .HasColumnType("uniqueidentifier");
 
@@ -462,12 +469,12 @@ namespace CaseApplication.Resources.Api.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("17b55ddc-5ff0-452b-b92b-621f6b6e5a4c"),
+                            Id = new Guid("15a080f5-0c6d-4049-a943-778b75a998d9"),
                             RoleName = "user"
                         },
                         new
                         {
-                            Id = new Guid("1b2353ad-d2ca-413c-8fad-ed94ce2ab328"),
+                            Id = new Guid("6fbd45a2-cee8-452a-83db-f797cb48e114"),
                             RoleName = "admin"
                         });
                 });

@@ -39,7 +39,8 @@ namespace CaseApplication.Resources.Api.Migrations
                     GameItemCost = table.Column<decimal>(type: "DECIMAL(18,5)", nullable: false),
                     GameItemImage = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     GameItemRarity = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
-                    GameItemType = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    GameItemType = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    GameItemIdForPlatform = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -205,7 +206,8 @@ namespace CaseApplication.Resources.Api.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    GameItemId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    GameItemId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ExpiryTime = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -327,8 +329,8 @@ namespace CaseApplication.Resources.Api.Migrations
                 columns: new[] { "Id", "PromocodeTypeName" },
                 values: new object[,]
                 {
-                    { new Guid("6fef7fdd-0d75-40d0-a65e-91940e433717"), "case" },
-                    { new Guid("ef0f0877-aa8d-45f9-aa8f-7f5204045de6"), "balance" }
+                    { new Guid("373f7c68-9920-4bcf-80c2-4fc2e4996755"), "balance" },
+                    { new Guid("d371bbe4-36e6-4c96-80b3-5027c4195f20"), "case" }
                 });
 
             migrationBuilder.InsertData(
@@ -336,8 +338,8 @@ namespace CaseApplication.Resources.Api.Migrations
                 columns: new[] { "Id", "RoleName" },
                 values: new object[,]
                 {
-                    { new Guid("17b55ddc-5ff0-452b-b92b-621f6b6e5a4c"), "user" },
-                    { new Guid("1b2353ad-d2ca-413c-8fad-ed94ce2ab328"), "admin" }
+                    { new Guid("15a080f5-0c6d-4049-a943-778b75a998d9"), "user" },
+                    { new Guid("6fbd45a2-cee8-452a-83db-f797cb48e114"), "admin" }
                 });
 
             migrationBuilder.CreateIndex(
