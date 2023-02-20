@@ -44,6 +44,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddSingleton<EmailService>();
 builder.Services.AddSingleton<EmailHelper>();
+builder.Services.AddSingleton<MarketTMService>();
 
 builder.Services.AddSingleton<EncryptorHelper>();
 builder.Services.AddSingleton<JwtHelper>();
