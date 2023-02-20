@@ -115,7 +115,7 @@ namespace CaseApplication.Api.Controllers
                 x.UserEmail == userDto.UserEmail ||
                 x.UserLogin == userDto.UserLogin);
 
-            if (userExists is not null) return Conflict(new { Success = false });
+            if (userExists is not null) return Conflict(new { Success = false, Message = "User already exists!" });
 
             //Encrypting password
             byte[] salt = _encryptorHelper.GenerationSaltTo64Bytes();
