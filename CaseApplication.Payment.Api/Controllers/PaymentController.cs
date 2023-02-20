@@ -1,4 +1,5 @@
-﻿using CaseApplication.Domain.Entities;
+﻿using CaseApplication.Domain.Entities.External;
+using CaseApplication.Domain.Entities.Internal;
 using CaseApplication.Infrastructure.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
