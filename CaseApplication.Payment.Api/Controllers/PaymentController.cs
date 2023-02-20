@@ -108,7 +108,7 @@ namespace CaseApplication.Payment.Api.Controllers
                 }
             };
 
-            string requestUrl = requestUrls.FirstOrDefault(x => x.Key == gameItem.GameItemType).Value;
+            string requestUrl = requestUrls.FirstOrDefault(x => x.Key == gameItem.GameName).Value;
 
             HttpResponseMessage response = await _httpClient.GetAsync(requestUrl);
 

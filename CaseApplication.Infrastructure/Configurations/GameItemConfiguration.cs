@@ -16,6 +16,8 @@ namespace CaseApplication.Infrastructure.Configurations
 
             builder.Property(p => p.GameItemType)
                 .IsRequired();
+            builder.Property(p => p.GameName)
+                .IsRequired();
 
             builder.HasIndex(i => i.GameItemName)
                 .IsUnique();
