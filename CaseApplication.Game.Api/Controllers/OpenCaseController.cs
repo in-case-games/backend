@@ -30,16 +30,11 @@ namespace CaseApplication.Game.Api.Controllers
             UserAdditionalInfo? userInfo = await context.UserAdditionalInfo
                 .FirstOrDefaultAsync(x => x.UserId == UserId);
             GameCase? gameCase = await context.GameCase
+                .Include(x => x.СaseInventories)
                 .FirstOrDefaultAsync(x => x.Id == caseId);
 
             if (userInfo is null || gameCase is null) return NotFound();
             if (userInfo.UserBalance < gameCase.GameCaseCost) return Forbid();
-
-            gameCase.СaseInventories = await context.CaseInventory
-                .AsNoTracking()
-                .Include(x => x.GameItem)
-                .Where(x => x.GameCaseId == gameCase.Id)
-                .ToListAsync();
 
             //Update Balance Case and User
             userInfo.UserBalance -= gameCase.GameCaseCost;
@@ -77,6 +72,7 @@ namespace CaseApplication.Game.Api.Controllers
 
             return Ok(winGameItem);
         }
+        // TODO: Rebase this
         #region nonAction
         private static GameItem RandomizeBySmallest(in GameCase gameCase)
         {

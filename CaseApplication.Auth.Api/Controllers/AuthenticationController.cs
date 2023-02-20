@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using CaseApplication.Domain.Dtos;
-using CaseApplication.Domain.Entities;
 using CaseApplication.Domain.Entities.External;
 using CaseApplication.Domain.Entities.Internal;
 using CaseApplication.Infrastructure.Data;
@@ -99,7 +98,8 @@ namespace CaseApplication.Api.Controllers
                 UserPlatforms = platform,
             });
 
-            return Ok("Check email");
+            return Ok(new { Success = true,
+                Message = "Authentication success. Check your email for the following actions" });
         }
 
         [AllowAnonymous]
@@ -115,7 +115,7 @@ namespace CaseApplication.Api.Controllers
                 x.UserEmail == userDto.UserEmail ||
                 x.UserLogin == userDto.UserLogin);
 
-            if (userExists is not null) return Conflict();
+            if (userExists is not null) return Conflict(new { Success = false });
 
             //Encrypting password
             byte[] salt = _encryptorHelper.GenerationSaltTo64Bytes();
@@ -156,7 +156,8 @@ namespace CaseApplication.Api.Controllers
                     Body = $"Поздравляем о регистрации"
                 });
 
-            return Ok();
+            return Ok(new { Success = "true",
+                Message = "Registation success. Check your email for the following actions" });
         }
 
         [AllowAnonymous]

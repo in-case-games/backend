@@ -149,7 +149,7 @@ namespace CaseApplication.Resources.Api.Controllers
                     Body = $"Имя вашего акканута измененно на: {login}"
                 });
 
-            return Ok();
+            return Ok(new { Success = true, Message = "Account properties was changed.", Changed = "Login" });
         }
 
         [Authorize(Roles = "admin")]
@@ -167,7 +167,7 @@ namespace CaseApplication.Resources.Api.Controllers
             context.User.Remove(user);
             await context.SaveChangesAsync();
 
-            return Ok();
+            return Ok(new { Success = true, Message = "Account succesfully deleted."});
         }
     }
 }

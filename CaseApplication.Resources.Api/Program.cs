@@ -14,7 +14,7 @@ builder.Services.AddDbContextFactory<ApplicationDbContext>(
 #if DEBUG
         builder.Configuration["ConnectionStrings:DevelopmentConnection"],
 #else
-        builder.Configuration["ConnectionStrings:ProductionConnection"],
+        builder.Configuration["ConnectionStrings:ProductionConnection"]
 #endif
         b => b.MigrationsAssembly("CaseApplication.Resources.Api"))
 );
