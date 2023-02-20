@@ -89,14 +89,14 @@ namespace CaseApplication.Api.Controllers
                 return Forbid("Exceeded the number of sessions");
             }
 
-            await _emailHelper.SendConfirmAccountToEmail(new EmailPattern()
+            await _emailHelper.SendSignInAccountToEmail(new EmailPattern()
             {
                 UserEmail = user.UserEmail!,
                 UserId = user.Id,
                 EmailToken = _jwtHelper.GenerateEmailToken(user),
                 UserIp = ip,
                 UserPlatforms = platform,
-            });
+            }, user.UserLogin!);
 
             return Ok(new { Success = true,
                 Message = "Authentication success. Check your email for the following actions" });
@@ -148,13 +148,11 @@ namespace CaseApplication.Api.Controllers
             await context.UserAdditionalInfo.AddAsync(info);
             await context.SaveChangesAsync();
 
-            await _emailHelper.SendNotifyToEmail(
-                user.UserEmail!,
-                "Администрация сайта",
-                new EmailMessagePattern()
+            await _emailHelper.SendSignUpAccountToEmail(
+                new EmailPattern
                 {
-                    Body = $"Поздравляем о регистрации"
-                });
+                    UserEmail = user.UserEmail!
+                }, "https://google.com");
 
             return Ok(new { Success = "true",
                 Message = "Registation success. Check your email for the following actions" });
