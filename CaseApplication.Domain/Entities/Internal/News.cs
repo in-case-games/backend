@@ -1,6 +1,6 @@
-﻿namespace CaseApplication.Domain.Entities
+﻿namespace CaseApplication.Domain.Entities.Internal
 {
-    public class News: BaseEntity
+    public class News : BaseEntity
     {
         public string? NewsName { get; set; }
         public DateTime? NewsDate { get; set; }

@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace CaseApplication.Domain.Entities
+namespace CaseApplication.Domain.Entities.Internal
 {
     public class CaseInventory : BaseEntity
     {
@@ -13,6 +13,6 @@ namespace CaseApplication.Domain.Entities
         [JsonIgnore]
         public GameCase? GameCase { get; set; }
         public GameItem? GameItem { get; set; }
-        
+
     }
 }

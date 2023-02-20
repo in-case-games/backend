@@ -1,4 +1,4 @@
-﻿namespace CaseApplication.Domain.Entities
+﻿namespace CaseApplication.Domain.Entities.External
 {
     public class WithdrawItem
     {

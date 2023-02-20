@@ -1,6 +1,9 @@
 ﻿using AutoMapper;
 using CaseApplication.Domain.Dtos;
 using CaseApplication.Domain.Entities;
+using CaseApplication.Domain.Entities.Email;
+using CaseApplication.Domain.Entities.External;
+using CaseApplication.Domain.Entities.Internal;
 using CaseApplication.Infrastructure.Data;
 using CaseApplication.Infrastructure.Helpers;
 using CaseApplication.Infrastructure.Services;
@@ -79,7 +82,7 @@ namespace CaseApplication.Api.Controllers
                 await _emailHelper.SendNotifyToEmail(
                     user.UserEmail!,
                     "Администрация сайта",
-                    new EmailPatternModel()
+                    new EmailMessagePattern()
                     {
                         Body = $"Превышенно количество сессий для входа в аккаунт. " +
                         $"Чтобы войти под новым устройством, выйдите с прошлого"
@@ -88,7 +91,7 @@ namespace CaseApplication.Api.Controllers
                 return Forbid("Exceeded the number of sessions");
             }
 
-            await _emailHelper.SendConfirmAccountToEmail(new EmailModel()
+            await _emailHelper.SendConfirmAccountToEmail(new EmailPattern()
             {
                 UserEmail = user.UserEmail!,
                 UserId = user.Id,
@@ -149,7 +152,7 @@ namespace CaseApplication.Api.Controllers
             await _emailHelper.SendNotifyToEmail(
                 user.UserEmail!,
                 "Администрация сайта",
-                new EmailPatternModel()
+                new EmailMessagePattern()
                 {
                     Body = $"Поздравляем о регистрации"
                 });
@@ -185,7 +188,7 @@ namespace CaseApplication.Api.Controllers
                 await _emailHelper.SendNotifyToEmail(
                     user.UserEmail!,
                     "Администрация сайта",
-                    new EmailPatternModel()
+                    new EmailMessagePattern()
                     {
                         Body = $"Попытка входа в аккаунт"
                     });
@@ -196,7 +199,7 @@ namespace CaseApplication.Api.Controllers
             }
 
             //Update and send token
-            TokenModel tokenModel = _jwtHelper.GenerateTokenPair(in user);
+            TokenPattern tokenModel = _jwtHelper.GenerateTokenPair(in user);
 
             MapUserTokenForUpdate(ref userToken!, tokenModel);
 
@@ -242,7 +245,7 @@ namespace CaseApplication.Api.Controllers
             return NoContent();
         }
 
-        private static void MapUserTokenForUpdate(ref UserToken userToken, TokenModel tokenModel)
+        private static void MapUserTokenForUpdate(ref UserToken userToken, TokenPattern tokenModel)
         {
             userToken.RefreshToken = tokenModel.RefreshToken;
             userToken.RefreshTokenExpiryTime = tokenModel.ExpiresRefreshIn;

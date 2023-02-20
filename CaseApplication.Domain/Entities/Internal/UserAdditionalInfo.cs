@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace CaseApplication.Domain.Entities
+namespace CaseApplication.Domain.Entities.Internal
 {
     public class UserAdditionalInfo : BaseEntity
     {

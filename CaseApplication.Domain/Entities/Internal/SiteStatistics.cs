@@ -1,6 +1,6 @@
-﻿namespace CaseApplication.Domain.Entities
+﻿namespace CaseApplication.Domain.Entities.Internal
 {
-    public class SiteStatistics: BaseEntity
+    public class SiteStatistics : BaseEntity
     {
         public int UsersCount { get; set; }
         public decimal SiteBalance { get; set; }

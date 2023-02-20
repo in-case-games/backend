@@ -1,6 +1,6 @@
-﻿namespace CaseApplication.Domain.Entities
+﻿namespace CaseApplication.Domain.Entities.External
 {
-    public class TokenModel
+    public class TokenPattern
     {
         public string? AccessToken { get; set; }
         public string? RefreshToken { get; set; }

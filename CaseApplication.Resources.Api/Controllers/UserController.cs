@@ -1,4 +1,5 @@
 ﻿using CaseApplication.Domain.Entities;
+using CaseApplication.Domain.Entities.Internal;
 using CaseApplication.Infrastructure.Data;
 using CaseApplication.Infrastructure.Helpers;
 using Microsoft.AspNetCore.Authorization;
@@ -143,7 +144,7 @@ namespace CaseApplication.Resources.Api.Controllers
             await _emailHelper.SendNotifyToEmail(
                 user.UserEmail!,
                 "Администрация сайта",
-                new EmailPatternModel()
+                new EmailMessagePattern()
                 {
                     Body = $"Имя вашего акканута измененно на: {login}"
                 });

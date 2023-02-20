@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using CaseApplication.Domain.Entities;
+using CaseApplication.Domain.Entities.Internal;
 
 namespace CaseApplication.Infrastructure.Configurations
 {

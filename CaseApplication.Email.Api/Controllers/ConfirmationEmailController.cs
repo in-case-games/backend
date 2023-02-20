@@ -1,4 +1,5 @@
-﻿using CaseApplication.Domain.Entities;
+﻿using CaseApplication.Domain.Entities.External;
+using CaseApplication.Domain.Entities.Internal;
 using CaseApplication.Infrastructure.Data;
 using CaseApplication.Infrastructure.Helpers;
 using CaseApplication.Infrastructure.Services;
@@ -34,7 +35,7 @@ namespace CaseApplication.Email.Api.Controllers
 
         [AllowAnonymous]
         [HttpPost]
-        public async Task<IActionResult> SendConfirm(EmailModel emailModel)
+        public async Task<IActionResult> SendConfirm(EmailPattern emailModel)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
@@ -54,7 +55,7 @@ namespace CaseApplication.Email.Api.Controllers
 
         [AllowAnonymous]
         [HttpPut("password")]
-        public async Task<IActionResult> SendConfirmForgotPassword(EmailModel emailModel)
+        public async Task<IActionResult> SendConfirmForgotPassword(EmailPattern emailModel)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
@@ -74,7 +75,7 @@ namespace CaseApplication.Email.Api.Controllers
 
         [Authorize]
         [HttpPut("email/{password}")]
-        public async Task<IActionResult> SendConfirmUpdateEmail(EmailModel emailModel, string password)
+        public async Task<IActionResult> SendConfirmUpdateEmail(EmailPattern emailModel, string password)
         {
             try
             {
@@ -94,7 +95,7 @@ namespace CaseApplication.Email.Api.Controllers
         
         [Authorize]
         [HttpPut("password/{password}")]
-        public async Task<IActionResult> SendConfirmUpdatePassword(EmailModel emailModel, string password)
+        public async Task<IActionResult> SendConfirmUpdatePassword(EmailPattern emailModel, string password)
         {
             try
             {
@@ -114,7 +115,7 @@ namespace CaseApplication.Email.Api.Controllers
 
         [Authorize]
         [HttpDelete("{password}")]
-        public async Task<IActionResult> SendConfirmDeleteAccount(EmailModel emailModel, string password)
+        public async Task<IActionResult> SendConfirmDeleteAccount(EmailPattern emailModel, string password)
         {
             try
             {
@@ -132,7 +133,7 @@ namespace CaseApplication.Email.Api.Controllers
             return Accepted();
         }
 
-        private async Task Send(EmailModel emailModel, string password)
+        private async Task Send(EmailPattern emailModel, string password)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
@@ -149,7 +150,7 @@ namespace CaseApplication.Email.Api.Controllers
             await _emailHelper.SendDeleteAccountToEmail(emailModel);
         }
 
-        private void MapEmailModelForSend(ref EmailModel emailModel, User user)
+        private void MapEmailModelForSend(ref EmailPattern emailModel, User user)
         {
             emailModel.UserEmail = user.UserEmail!;
             emailModel.UserId = user.Id;

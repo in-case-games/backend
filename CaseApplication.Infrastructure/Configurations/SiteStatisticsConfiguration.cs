@@ -1,4 +1,4 @@
-﻿using CaseApplication.Domain.Entities;
+﻿using CaseApplication.Domain.Entities.Internal;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

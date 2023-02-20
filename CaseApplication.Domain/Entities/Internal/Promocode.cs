@@ -1,8 +1,8 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace CaseApplication.Domain.Entities
+namespace CaseApplication.Domain.Entities.Internal
 {
-    public class Promocode: BaseEntity
+    public class Promocode : BaseEntity
     {
         [JsonIgnore]
         public Guid PromocodeTypeId { get; set; }

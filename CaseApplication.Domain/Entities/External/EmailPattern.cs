@@ -1,6 +1,6 @@
-﻿namespace CaseApplication.Domain.Entities
+﻿namespace CaseApplication.Domain.Entities.External
 {
-    public class EmailModel
+    public class EmailPattern
     {
         public Guid UserId { get; set; }
         public string UserEmail { get; set; } = null!;

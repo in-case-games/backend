@@ -1,4 +1,7 @@
 ﻿using CaseApplication.Domain.Entities;
+using CaseApplication.Domain.Entities.Email;
+using CaseApplication.Domain.Entities.External;
+using CaseApplication.Domain.Entities.Internal;
 using CaseApplication.Infrastructure.Data;
 using CaseApplication.Infrastructure.Helpers;
 using CaseApplication.Infrastructure.Services;
@@ -45,7 +48,7 @@ namespace CaseApplication.Email.Api.Controllers
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             //TODO OneTimeToken
-            EmailModel emailModel = new()
+            EmailPattern emailModel = new()
             {
                 UserId = userId,
                 EmailToken = token,
@@ -74,14 +77,14 @@ namespace CaseApplication.Email.Api.Controllers
                 await _emailHelper.SendNotifyToEmail(
                     user.UserEmail!,
                     "Администрация сайта",
-                    new EmailPatternModel()
+                    new EmailMessagePattern()
                     {
                         Body = $"Спасибо что подтвердили аккаунт"
                     });
             }
 
             //Generate tokens
-            TokenModel tokenModel = _jwtHelper.GenerateTokenPair(in user);
+            TokenPattern tokenModel = _jwtHelper.GenerateTokenPair(in user);
 
             UserToken newUserToken = new()
             {
@@ -97,7 +100,7 @@ namespace CaseApplication.Email.Api.Controllers
             await _emailHelper.SendNotifyToEmail(
                 user.UserEmail!,
                 "Администрация сайта",
-                new EmailPatternModel()
+                new EmailMessagePattern()
                 {
                     Body = $"Вход в аккаунт"
                 });
@@ -110,7 +113,7 @@ namespace CaseApplication.Email.Api.Controllers
 
         [AllowAnonymous]
         [HttpPut("email")]
-        public async Task<IActionResult> UpdateEmail(EmailModel emailModel)
+        public async Task<IActionResult> UpdateEmail(EmailPattern emailModel)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
@@ -138,7 +141,7 @@ namespace CaseApplication.Email.Api.Controllers
             await _emailHelper.SendNotifyToEmail(
                 emailModel.UserEmail,
                 "Администрация сайта",
-                new EmailPatternModel()
+                new EmailMessagePattern()
                 {
                     Body = $"Вы изменили email аккаунта"
                 });
@@ -147,7 +150,7 @@ namespace CaseApplication.Email.Api.Controllers
 
         [AllowAnonymous]
         [HttpPut("password/{password}")]
-        public async Task<IActionResult> UpdatePasswordConfirmation(EmailModel emailModel, string password)
+        public async Task<IActionResult> UpdatePasswordConfirmation(EmailPattern emailModel, string password)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
             User? user = await context.User
@@ -173,7 +176,7 @@ namespace CaseApplication.Email.Api.Controllers
             await _emailHelper.SendNotifyToEmail(
                 user.UserEmail!,
                 "Администрация сайта",
-                new EmailPatternModel()
+                new EmailMessagePattern()
                 {
                     Body = $"Вы сменили пароль"
                 });
@@ -183,7 +186,7 @@ namespace CaseApplication.Email.Api.Controllers
 
         [AllowAnonymous]
         [HttpDelete]
-        public async Task<IActionResult> DeleteConfirmation(EmailModel emailModel)
+        public async Task<IActionResult> DeleteConfirmation(EmailPattern emailModel)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
@@ -201,7 +204,7 @@ namespace CaseApplication.Email.Api.Controllers
             await _emailHelper.SendNotifyToEmail(
                 user.UserEmail!,
                 "Администрация сайта",
-                new EmailPatternModel()
+                new EmailMessagePattern()
                 {
                     Body = $"Ваш аккаунт будет удален через 30 дней"
                 });
@@ -215,7 +218,7 @@ namespace CaseApplication.Email.Api.Controllers
             return Ok();
         }
 
-        private static void MapUserTokenForUpdate(ref UserToken userToken, TokenModel tokenModel)
+        private static void MapUserTokenForUpdate(ref UserToken userToken, TokenPattern tokenModel)
         {
             userToken.RefreshToken = tokenModel.RefreshToken;
             userToken.RefreshTokenExpiryTime = tokenModel.ExpiresRefreshIn;
