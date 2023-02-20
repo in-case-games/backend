@@ -1,11 +1,11 @@
 ﻿using CaseApplication.Domain.Entities.External;
 using CaseApplication.Domain.Entities.Internal;
 using CaseApplication.Infrastructure.Data;
+using CaseApplication.Infrastructure.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
-using System.Text.Json;
 
 namespace CaseApplication.Payment.Api.Controllers
 {
@@ -14,17 +14,16 @@ namespace CaseApplication.Payment.Api.Controllers
     public class PaymentController : ControllerBase
     {
         private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
-        private readonly HttpClient _httpClient = new();
-        private readonly IConfiguration _configuration;
+        private readonly MarketTMService _marketTMService;
         private Guid UserId => Guid
             .Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
 
         public PaymentController(
-            IDbContextFactory<ApplicationDbContext> contextFactory,
-            IConfiguration configuration)
+            IDbContextFactory<ApplicationDbContext> contextFactory, 
+            MarketTMService marketTMService)
         {
             _contextFactory = contextFactory;
-            _configuration = configuration;
+            _marketTMService = marketTMService;
         }
 
         [Authorize]
@@ -43,12 +42,11 @@ namespace CaseApplication.Payment.Api.Controllers
                 //TODO Notify admin by telegram auto withdrawn no work
                 return Ok();
             }
-            if (await InStockMarket(userInventory.GameItem!))
-            {
 
-            }
-
-
+            ItemInfoTM? itemInfoTM = await _marketTMService.GetItemInfoMarket(userInventory.GameItem!);
+            if (itemInfoTM == null) return NotFound();
+            decimal minItemPriceTM = decimal.Parse(itemInfoTM.MinPrice!) / 100;
+            if(minItemPriceTM > userInventory.GameItem!.GameItemCost * 1.1M) return Forbid();
 
             return Ok();
         }
@@ -89,43 +87,6 @@ namespace CaseApplication.Payment.Api.Controllers
             await context.SaveChangesAsync();
 
             return Ok();
-        }
-
-        private async Task<bool> InStockMarket(GameItem gameItem)
-        {
-            Dictionary<string, string> requestUrls = new() {
-                { 
-                    "csgo",
-                    $"https://market.csgo.com/api/ItemInfo/" +
-                    $"{gameItem.GameItemIdForPlatform}/ru/?" +
-                    $"key={_configuration["MarketTM:Secret"]}"
-                },
-                { 
-                    "dota2", 
-                    $"https://market.dota2.net/api/ItemInfo/" +
-                    $"{gameItem.GameItemIdForPlatform}/ru/?" +
-                    $"key={_configuration["MarketTM:Secret"]}"
-                }
-            };
-
-            string requestUrl = requestUrls.FirstOrDefault(x => x.Key == gameItem.GameName).Value;
-
-            HttpResponseMessage response = await _httpClient.GetAsync(requestUrl);
-
-            if(!response.IsSuccessStatusCode)
-            {
-                throw new Exception(
-                    response.StatusCode.ToString() +
-                    response.RequestMessage! +
-                    response.Headers +
-                    response.ReasonPhrase! +
-                    response.Content);
-            }
-
-            ItemInfoTM? itemInfoTM = await response.Content
-                .ReadFromJsonAsync<ItemInfoTM>(new JsonSerializerOptions(JsonSerializerDefaults.Web));
-
-            return true;
         }
     }
 }
