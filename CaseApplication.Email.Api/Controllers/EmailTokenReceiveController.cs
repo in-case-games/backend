@@ -161,8 +161,8 @@ namespace CaseApplication.Email.Api.Controllers
             if (isValidToken is false) return Forbid("Invalid email token");
 
             //Gen hash and salt
-            byte[] salt = _encryptorHelper.GenerationSaltTo64Bytes();
-            string hash = _encryptorHelper.EncryptorPassword(password, salt);
+            byte[] salt = EncryptorHelper.GenerationSaltTo64Bytes();
+            string hash = EncryptorHelper.EncryptorPassword(password, salt);
 
             user.PasswordHash = hash;
             user.PasswordSalt = Convert.ToBase64String(salt);

@@ -118,9 +118,9 @@ namespace CaseApplication.Api.Controllers
             if (userExists is not null) return Conflict(new { Success = false, Message = "User already exists!" });
 
             //Encrypting password
-            byte[] salt = _encryptorHelper.GenerationSaltTo64Bytes();
+            byte[] salt = EncryptorHelper.GenerationSaltTo64Bytes();
 
-            userDto.PasswordHash = _encryptorHelper.EncryptorPassword(password, salt);
+            userDto.PasswordHash = EncryptorHelper.EncryptorPassword(password, salt);
             userDto.PasswordSalt = Convert.ToBase64String(salt);
 
             IMapper? mapper = _mapperConfiguration.CreateMapper();

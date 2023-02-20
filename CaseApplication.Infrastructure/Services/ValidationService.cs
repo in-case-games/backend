@@ -25,7 +25,7 @@ namespace CaseApplication.Infrastructure.Services
 
         public bool IsValidUserPassword(in User user, string password)
         {
-            string hash = _encryptorHelper.EncryptorPassword(password, Convert
+            string hash = EncryptorHelper.EncryptorPassword(password, Convert
                 .FromBase64String(user.PasswordSalt!));
 
             return hash == user.PasswordHash;

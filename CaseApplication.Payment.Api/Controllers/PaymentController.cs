@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
+using System.Text;
 
 namespace CaseApplication.Payment.Api.Controllers
 {
@@ -15,15 +16,21 @@ namespace CaseApplication.Payment.Api.Controllers
     {
         private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
         private readonly MarketTMService _marketTMService;
+        private readonly RSAService _rsaService;
+        private readonly GameMoneyService _gameMoneyService;
         private Guid UserId => Guid
             .Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
 
         public PaymentController(
             IDbContextFactory<ApplicationDbContext> contextFactory, 
-            MarketTMService marketTMService)
+            MarketTMService marketTMService,
+            RSAService rsaService,
+            GameMoneyService gameMoneyService)
         {
             _contextFactory = contextFactory;
             _marketTMService = marketTMService;
+            _rsaService = rsaService;
+            _gameMoneyService = gameMoneyService;
         }
 
         [Authorize]
@@ -43,7 +50,7 @@ namespace CaseApplication.Payment.Api.Controllers
             if (gameItem.GameItemIdForPlatform is null)
             {
                 //TODO Notify admin by telegram auto withdrawn no work
-                return Ok();
+                return Ok("Wait for the admin to accept");
             }
 
             ItemInfoTM? itemInfoTM = await _marketTMService.GetItemInfoMarket(gameItem);
@@ -65,11 +72,53 @@ namespace CaseApplication.Payment.Api.Controllers
         }
 
         [Authorize]
-        [HttpPost("deposit")] 
-        public async Task<IActionResult> TopUpBalance()
+        [HttpGet("hmac")]
+        public async Task<IActionResult> CreateHMAC()
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
+            string hash = 
+                "project:[project];" +
+                "user:[user];" +
+                "currency:[currency];" +
+                "success_url:[success_url];" +
+                "fail_url:[fail_url]";
+
+            string hmac = _rsaService.GenerateHMAC(Encoding.ASCII.GetBytes(hash));
+
+            return Ok(hmac);
+        }
+
+        [AllowAnonymous]
+        [HttpPost("confirm/deposit")] 
+        public async Task<IActionResult> TopUpBalanceConfirm(PaymentAnswerPattern paymentAnswer)
+        {
+            if(paymentAnswer.StatusAnswer != "success") return BadRequest(paymentAnswer.ParametersAnswer);
+
+            string hash = 
+                "project:[project];" + 
+                "user:[user];" + 
+                "currency:[currency];" + 
+                "success_url:[success_url];" + 
+                "fail_url:[fail_url]";
+
+            byte[] hashOfDataInSignIn = Encoding.ASCII.GetBytes(hash);
+            byte[] signature = Encoding.ASCII.GetBytes(paymentAnswer.SignatureRSA!);
+
+            if (!_rsaService.VerifySignature(hashOfDataInSignIn, signature)) return Forbid("Poshel hacker lesom");
+
+            ResponseInvoiceStatusPattern? invoiceInfoStatus = await _gameMoneyService
+                .GetInvoiceStatusInfo(paymentAnswer.Invoice);
+            if (invoiceInfoStatus is null || invoiceInfoStatus.Status != "Paid") return Forbid("Some times");
+
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+            
+            UserAdditionalInfo info = (await context.UserAdditionalInfo
+                .FirstOrDefaultAsync(x => x.UserId == invoiceInfoStatus.UserId))!;
+            info.UserBalance += invoiceInfoStatus.Amount; //TODO Transfer for coin [RUB/UST/BTC/etc] 1/7
+
+            await context.SaveChangesAsync();
+            
             return Ok();
         }
 

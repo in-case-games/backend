@@ -5,7 +5,7 @@ namespace CaseApplication.Infrastructure.Helpers
 {
     public class EncryptorHelper
     {
-        public string EncryptorPassword(string password, byte[] salt)
+        public static string EncryptorPassword(string password, byte[] salt)
         {
             string hashed = Convert.ToBase64String(KeyDerivation.Pbkdf2(
                 password: password,
@@ -18,7 +18,7 @@ namespace CaseApplication.Infrastructure.Helpers
             return hashed;
         }
 
-        public byte[] GenerationSaltTo64Bytes()
+        public static byte[] GenerationSaltTo64Bytes()
         {
             return RandomNumberGenerator.GetBytes(64);
         }
