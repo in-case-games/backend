@@ -24,6 +24,8 @@ namespace CaseApplication.Domain.Entities.External
         public decimal ContractBalance { get; set; }
         [JsonPropertyName("time")]
         public int Time { get; set; }
+        [JsonPropertyName("rand")]
+        public string? Rand { get; set; }
         [JsonPropertyName("signature")]
         public decimal SignatureRSA { get; set; }
     }

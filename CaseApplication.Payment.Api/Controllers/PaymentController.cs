@@ -153,11 +153,22 @@ namespace CaseApplication.Payment.Api.Controllers
         [HttpGet("admin/gamemoney/balance/{currency}")]
         public async Task<IActionResult> GetGameMoneyBalance(string currency)
         {
-            RequestBalanceInfoGM requestBalanceInfo = new() { 
-                Currency = currency,
-                ProjectId = 
-            };
-            return Ok();
+            AnswerBalanceInfoGM? answerBalanceInfoGM = await _gameMoneyService.GetBalanceInfoGM(currency);
+
+            if (answerBalanceInfoGM is null) return BadRequest();
+
+            return Ok(answerBalanceInfoGM);
+        }
+
+        [Authorize(Roles = "admin")]
+        [HttpGet("admin/markettm/balance")]
+        public async Task<IActionResult> GetMarketTMBalance(string currency)
+        {
+            AnswerBalanceInfoGM? answerBalanceInfoGM = await _gameMoneyService.GetBalanceInfoGM(currency);
+
+            if (answerBalanceInfoGM is null) return BadRequest();
+
+            return Ok(answerBalanceInfoGM);
         }
     }
 }

@@ -9,7 +9,7 @@ namespace CaseApplication.Domain.Entities.External
         [JsonPropertyName("invoice")]
         public int InvoiceId { get; set; }
         [JsonPropertyName("signature")]
-        public string? Signature { get; set; }
+        public string? SignatureHMAC { get; set; }
 
         public override string ToString()
         {

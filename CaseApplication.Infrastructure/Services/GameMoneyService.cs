@@ -21,16 +21,48 @@ namespace CaseApplication.Infrastructure.Services
             _configuration = configuration;
         }
 
+        public async Task<AnswerBalanceInfoGM?> GetBalanceInfoGM(string currency)
+        {
+            string url = "https://paygate.gamemoney.com/statistics/balance";
+            RequestBalanceInfoGM requestBalanceInfo = new()
+            {
+                Currency = currency,
+                ProjectId = int.Parse(_configuration["GameMoney:projectId"]!),
+            };
+
+            string hash = requestBalanceInfo.ToString();
+            requestBalanceInfo.SignatureHMAC = _rsaService.GenerateHMAC(Encoding.ASCII.GetBytes(hash));
+
+            JsonContent json = JsonContent.Create(requestBalanceInfo);
+            HttpResponseMessage response = await _httpClient.PostAsync(url, json);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception(
+                    response.StatusCode.ToString() +
+                    response.RequestMessage! +
+                    response.Headers +
+                    response.ReasonPhrase! +
+                    response.Content);
+            }
+
+            return await response.Content
+                .ReadFromJsonAsync<AnswerBalanceInfoGM?>(
+                new JsonSerializerOptions(JsonSerializerDefaults.Web));
+        }
+
         public async Task<InvoiceAnswerStatusGM?> GetInvoiceStatusInfo(int invoice)
         {
             string url = "https://paygate.gamemoney.com/invoice/status";
+
             InvoiceRequestStatusGM requestInvoice = new()
             {
                 InvoiceId = invoice,
                 ProjectId = int.Parse(_configuration["GameMoney:projectId"]!),
             };
+
             string hash = requestInvoice.ToString();
-            requestInvoice.Signature = _rsaService.GenerateHMAC(Encoding.ASCII.GetBytes(hash));
+            requestInvoice.SignatureHMAC = _rsaService.GenerateHMAC(Encoding.ASCII.GetBytes(hash));
 
             JsonContent json = JsonContent.Create(requestInvoice);
             HttpResponseMessage response = await _httpClient.PostAsync(url, json);
