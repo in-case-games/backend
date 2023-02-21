@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using CaseApplication.Infrastructure.Configurations;
 using Microsoft.EntityFrameworkCore.Diagnostics;
-using CaseApplication.Domain.Entities.Internal;
+using CaseApplication.Domain.Entities.Resources;
 
 namespace CaseApplication.Infrastructure.Data
 {

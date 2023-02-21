@@ -1,5 +1,5 @@
-﻿using CaseApplication.Domain.Entities.External;
-using CaseApplication.Domain.Entities.Internal;
+﻿using CaseApplication.Domain.Entities.Payment;
+using CaseApplication.Domain.Entities.Resources;
 using Microsoft.Extensions.Configuration;
 using System.Net;
 using System.Net.Http.Json;
@@ -17,7 +17,7 @@ namespace CaseApplication.Infrastructure.Services
             _configuration = configuration;
         }
 
-        public async Task<ItemBuyTM?> BuyItemMarket(GameItem gameItem, string partner, string token)
+        public async Task<ResponseBuyItemTM?> BuyItemMarket(GameItem gameItem, string partner, string token)
         {
             Dictionary<string, string> requestUrls = new() {
                 {
@@ -52,7 +52,7 @@ namespace CaseApplication.Infrastructure.Services
             }
 
             return await response.Content
-                .ReadFromJsonAsync<ItemBuyTM>(new JsonSerializerOptions(JsonSerializerDefaults.Web));
+                .ReadFromJsonAsync<ResponseBuyItemTM>(new JsonSerializerOptions(JsonSerializerDefaults.Web));
         }
 
         public async Task<ItemInfoTM?> GetItemInfoMarket(GameItem gameItem)

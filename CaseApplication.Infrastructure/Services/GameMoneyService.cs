@@ -1,10 +1,8 @@
-﻿using CaseApplication.Domain.Entities.External;
-using System.Net.Http.Json;
-using System;
+﻿using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
 using Microsoft.Extensions.Configuration;
-using CaseApplication.Domain.Entities.Internal;
+using CaseApplication.Domain.Entities.Payment;
 
 namespace CaseApplication.Infrastructure.Services
 {
@@ -21,10 +19,10 @@ namespace CaseApplication.Infrastructure.Services
             _configuration = configuration;
         }
 
-        public async Task<AnswerBalanceInfoGM?> GetBalanceInfoGM(string currency)
+        public async Task<ResponseBalanceGM?> GetBalanceInfoGM(string currency)
         {
             string url = "https://paygate.gamemoney.com/statistics/balance";
-            RequestBalanceInfoGM requestBalanceInfo = new()
+            RequestBalanceGM requestBalanceInfo = new()
             {
                 Currency = currency,
                 ProjectId = int.Parse(_configuration["GameMoney:projectId"]!),
@@ -47,15 +45,15 @@ namespace CaseApplication.Infrastructure.Services
             }
 
             return await response.Content
-                .ReadFromJsonAsync<AnswerBalanceInfoGM?>(
+                .ReadFromJsonAsync<ResponseBalanceGM?>(
                 new JsonSerializerOptions(JsonSerializerDefaults.Web));
         }
 
-        public async Task<InvoiceAnswerStatusGM?> GetInvoiceStatusInfo(int invoice)
+        public async Task<ResponseInvoiceStatusGM?> GetInvoiceStatusInfo(int invoice)
         {
             string url = "https://paygate.gamemoney.com/invoice/status";
 
-            InvoiceRequestStatusGM requestInvoice = new()
+            RequestInvoiceStatusGM requestInvoice = new()
             {
                 InvoiceId = invoice,
                 ProjectId = int.Parse(_configuration["GameMoney:projectId"]!),
@@ -78,7 +76,7 @@ namespace CaseApplication.Infrastructure.Services
             }
 
             return await response.Content
-                .ReadFromJsonAsync<InvoiceAnswerStatusGM>(
+                .ReadFromJsonAsync<ResponseInvoiceStatusGM>(
                 new JsonSerializerOptions(JsonSerializerDefaults.Web));
         }
 

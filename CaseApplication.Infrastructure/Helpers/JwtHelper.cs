@@ -1,5 +1,5 @@
-﻿using CaseApplication.Domain.Entities.External;
-using CaseApplication.Domain.Entities.Internal;
+﻿using CaseApplication.Domain.Entities.Auth;
+using CaseApplication.Domain.Entities.Resources;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -65,7 +65,7 @@ namespace CaseApplication.Infrastructure.Helpers
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        public TokenPattern GenerateTokenPair(in User user)
+        public DataSendTokens GenerateTokenPair(in User user)
         {
             Claim[] claimsAccess = GenerateClaimsForAccessToken(user);
             Claim[] claimsRefresh = {
@@ -80,7 +80,7 @@ namespace CaseApplication.Infrastructure.Helpers
             JwtSecurityToken accessToken = CreateResuableToken(claimsAccess, expirationAccess);
             JwtSecurityToken refreshToken = CreateResuableToken(claimsRefresh, expirationRefresh);
 
-            return new TokenPattern
+            return new DataSendTokens
             {
                 AccessToken = new JwtSecurityTokenHandler().WriteToken(accessToken),
                 RefreshToken = new JwtSecurityTokenHandler().WriteToken(refreshToken),

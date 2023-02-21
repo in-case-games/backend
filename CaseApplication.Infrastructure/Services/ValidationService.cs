@@ -1,5 +1,5 @@
-﻿using CaseApplication.Domain.Entities.External;
-using CaseApplication.Domain.Entities.Internal;
+﻿using CaseApplication.Domain.Entities.Email;
+using CaseApplication.Domain.Entities.Resources;
 using CaseApplication.Infrastructure.Helpers;
 using Microsoft.Extensions.Configuration;
 using System.Security.Claims;
@@ -31,7 +31,7 @@ namespace CaseApplication.Infrastructure.Services
             return hash == user.PasswordHash;
         }
 
-        public bool IsValidEmailToken(in EmailPattern emailModel, in User user)
+        public bool IsValidEmailToken(in DataMailLink emailModel, in User user)
         {
             byte[] secretBytes = Encoding.UTF8.GetBytes(user.PasswordHash! + _configuration["JWT:Secret"]!);
             string token = emailModel.EmailToken;

@@ -1,7 +1,8 @@
 ﻿using AutoMapper;
 using CaseApplication.Domain.Dtos;
-using CaseApplication.Domain.Entities.External;
-using CaseApplication.Domain.Entities.Internal;
+using CaseApplication.Domain.Entities.Auth;
+using CaseApplication.Domain.Entities.Email;
+using CaseApplication.Domain.Entities.Resources;
 using CaseApplication.Infrastructure.Data;
 using CaseApplication.Infrastructure.Helpers;
 using CaseApplication.Infrastructure.Services;
@@ -80,7 +81,7 @@ namespace CaseApplication.Api.Controllers
                 await _emailHelper.SendNotifyToEmail(
                     user.UserEmail!,
                     "Администрация сайта",
-                    new EmailMessagePattern()
+                    new EmailTemplate()
                     {
                         Body = $"Превышенно количество сессий для входа в аккаунт. " +
                         $"Чтобы войти под новым устройством, выйдите с прошлого"
@@ -89,7 +90,7 @@ namespace CaseApplication.Api.Controllers
                 return Forbid("Exceeded the number of sessions");
             }
 
-            await _emailHelper.SendSignInAccountToEmail(new EmailPattern()
+            await _emailHelper.SendSignInAccountToEmail(new DataMailLink()
             {
                 UserEmail = user.UserEmail!,
                 UserId = user.Id,
@@ -148,7 +149,7 @@ namespace CaseApplication.Api.Controllers
             await context.UserAdditionalInfo.AddAsync(info);
             await context.SaveChangesAsync();
 
-            await _emailHelper.SendSignUpAccountToEmail(new EmailPattern()
+            await _emailHelper.SendSignUpAccountToEmail(new DataMailLink()
             {
                 UserEmail = user.UserEmail!,
                 UserId = user.Id,
@@ -184,7 +185,7 @@ namespace CaseApplication.Api.Controllers
             if(userToken == null) return Forbid("Invalid refresh token");
 
             if (userToken.RefreshTokenExpiryTime <= DateTime.UtcNow) {
-                await _emailHelper.SendSignInAccountToEmail(new EmailPattern()
+                await _emailHelper.SendSignInAccountToEmail(new DataMailLink()
                 {
                     UserEmail = user.UserEmail!,
                     UserId = user.Id,
@@ -197,7 +198,7 @@ namespace CaseApplication.Api.Controllers
             }
 
             //Update and send token
-            TokenPattern tokenModel = _jwtHelper.GenerateTokenPair(in user);
+            DataSendTokens tokenModel = _jwtHelper.GenerateTokenPair(in user);
 
             MapUserTokenForUpdate(ref userToken!, tokenModel);
 
@@ -243,7 +244,7 @@ namespace CaseApplication.Api.Controllers
             return NoContent();
         }
 
-        private static void MapUserTokenForUpdate(ref UserToken userToken, TokenPattern tokenModel)
+        private static void MapUserTokenForUpdate(ref UserToken userToken, DataSendTokens tokenModel)
         {
             userToken.RefreshToken = tokenModel.RefreshToken;
             userToken.RefreshTokenExpiryTime = tokenModel.ExpiresRefreshIn;

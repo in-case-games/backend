@@ -1,5 +1,5 @@
-﻿using CaseApplication.Domain.Entities.External;
-using CaseApplication.Domain.Entities.Internal;
+﻿using CaseApplication.Domain.Entities.Payment;
+using CaseApplication.Domain.Entities.Resources;
 using CaseApplication.Infrastructure.Data;
 using CaseApplication.Infrastructure.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -35,7 +35,7 @@ namespace CaseApplication.Payment.Api.Controllers
 
         [Authorize]
         [HttpGet("withdrawn")]
-        public async Task<IActionResult> WithdrawItem(WithdrawItem withdrawItem)
+        public async Task<IActionResult> WithdrawItem(DataWithdrawItem withdrawItem)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
@@ -62,7 +62,9 @@ namespace CaseApplication.Payment.Api.Controllers
             if(minItemPriceTM > (gameItem.GameItemCost / 7) * 1.1M) 
                 return Forbid("Item no stability price, exchange");
 
-            ItemBuyTM? itemBuyTM = await _marketTMService.BuyItemMarket(gameItem, 
+            //TODO
+
+            ResponseBuyItemTM? itemBuyTM = await _marketTMService.BuyItemMarket(gameItem, 
                 withdrawItem.SteamTradePartner!, withdrawItem.SteamTradeToken!);
 
             if(itemBuyTM is null) return NotFound("Trade url is incorrect");
@@ -86,7 +88,7 @@ namespace CaseApplication.Payment.Api.Controllers
 
         [AllowAnonymous]
         [HttpPost("confirm/deposit")] 
-        public async Task<IActionResult> TopUpBalanceConfirm(PaymentAnswerPattern paymentAnswer)
+        public async Task<IActionResult> TopUpBalanceConfirm(ResponsePaymentGM paymentAnswer)
         {
             if(paymentAnswer.StatusAnswer != "success") return BadRequest(paymentAnswer.ParametersAnswer);
 
@@ -95,7 +97,7 @@ namespace CaseApplication.Payment.Api.Controllers
 
             if (!_rsaService.VerifySignature(hashOfDataInSignIn, signature)) return Forbid("Poshel hacker lesom");
 
-            InvoiceAnswerStatusGM? invoiceInfoStatus = await _gameMoneyService
+            ResponseInvoiceStatusGM? invoiceInfoStatus = await _gameMoneyService
                 .GetInvoiceStatusInfo(paymentAnswer.Invoice);
 
             if (invoiceInfoStatus is null || invoiceInfoStatus.Status != "Paid") return Forbid("Some times");
@@ -153,7 +155,7 @@ namespace CaseApplication.Payment.Api.Controllers
         [HttpGet("admin/gamemoney/balance/{currency}")]
         public async Task<IActionResult> GetGameMoneyBalance(string currency)
         {
-            AnswerBalanceInfoGM? answerBalanceInfoGM = await _gameMoneyService.GetBalanceInfoGM(currency);
+            ResponseBalanceGM? answerBalanceInfoGM = await _gameMoneyService.GetBalanceInfoGM(currency);
 
             if (answerBalanceInfoGM is null) return BadRequest();
 
@@ -164,7 +166,7 @@ namespace CaseApplication.Payment.Api.Controllers
         [HttpGet("admin/markettm/balance")]
         public async Task<IActionResult> GetMarketTMBalance(string currency)
         {
-            AnswerBalanceInfoGM? answerBalanceInfoGM = await _gameMoneyService.GetBalanceInfoGM(currency);
+            ResponseBalanceGM? answerBalanceInfoGM = await _gameMoneyService.GetBalanceInfoGM(currency);
 
             if (answerBalanceInfoGM is null) return BadRequest();
 
