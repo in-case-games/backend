@@ -2,16 +2,16 @@
 
 namespace CaseApplication.Domain.Entities.External
 {
-    public class ResponseInvoiceStatusPattern
+    public class InvoiceAnswerStatusGM
     {
         [JsonPropertyName("user")]
         public Guid UserId { get; set; }
         [JsonPropertyName("state")]
         public string? State { get; set; }
         [JsonPropertyName("project")]
-        public int Project { get; set; }
+        public int ProjectId { get; set; }
         [JsonPropertyName("invoice")]
-        public int Invoice { get; set; }
+        public int InvoiceId { get; set; }
         [JsonPropertyName("status")]
         public string? Status { get; set; }
         [JsonPropertyName("amount")]
@@ -37,6 +37,11 @@ namespace CaseApplication.Domain.Entities.External
         [JsonPropertyName("rate")]
         public decimal? Rate { get; set; }
         [JsonPropertyName("signature")]
-        public string? Signature { get; set; }
+        public string? SignatureRSA { get; set; }
+
+        public override string ToString()
+        {
+            return $"user:{UserId}";
+        }
     }
 }

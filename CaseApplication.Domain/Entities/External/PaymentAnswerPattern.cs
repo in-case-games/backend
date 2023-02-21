@@ -16,5 +16,15 @@ namespace CaseApplication.Domain.Entities.External
         public int SendTimeAnswer { get; set; }
         [JsonPropertyName("signature")]
         public string? SignatureRSA { get; set; }
+
+        public override string ToString()
+        {
+            return 
+                $"state:{StatusAnswer};" +
+                $"invoice:{Invoice};" +
+                $"type:{TypeAnswer};" +
+                $"data:{ParametersAnswer};" +
+                $"time:{SendTimeAnswer};";
+        }
     }
 }

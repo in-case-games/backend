@@ -2,13 +2,18 @@
 
 namespace CaseApplication.Domain.Entities.External
 {
-    public class RequestInvoiceStatusPattern
+    public class InvoiceRequestStatusGM
     {
         [JsonPropertyName("project")]
-        public int Project { get; set; }
+        public int ProjectId { get; set; }
         [JsonPropertyName("invoice")]
-        public int Invoice { get; set; }
+        public int InvoiceId { get; set; }
         [JsonPropertyName("signature")]
         public string? Signature { get; set; }
+
+        public override string ToString()
+        {
+            return $"project:{ProjectId};invoice:{InvoiceId};";
+        }
     }
 }

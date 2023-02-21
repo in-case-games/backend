@@ -3,6 +3,8 @@ using System.Net.Http.Json;
 using System;
 using System.Text;
 using System.Text.Json;
+using Microsoft.Extensions.Configuration;
+using CaseApplication.Domain.Entities.Internal;
 
 namespace CaseApplication.Infrastructure.Services
 {
@@ -10,19 +12,24 @@ namespace CaseApplication.Infrastructure.Services
     {
         private readonly HttpClient _httpClient = new();
         private readonly RSAService _rsaService;
-        public GameMoneyService(RSAService rsaService)
+        private readonly IConfiguration _configuration;
+        public GameMoneyService(
+            RSAService rsaService,
+            IConfiguration configuration)
         {
             _rsaService = rsaService;
+            _configuration = configuration;
         }
 
-        public async Task<ResponseInvoiceStatusPattern?> GetInvoiceStatusInfo(int invoice)
+        public async Task<InvoiceAnswerStatusGM?> GetInvoiceStatusInfo(int invoice)
         {
             string url = "https://paygate.gamemoney.com/invoice/status";
-            RequestInvoiceStatusPattern requestInvoice = new() { 
-                Invoice = invoice,
-                Project = 123123,
+            InvoiceRequestStatusGM requestInvoice = new()
+            {
+                InvoiceId = invoice,
+                ProjectId = int.Parse(_configuration["GameMoney:projectId"]!),
             };
-            string hash = "invoice:[invoice];project:[project]";
+            string hash = requestInvoice.ToString();
             requestInvoice.Signature = _rsaService.GenerateHMAC(Encoding.ASCII.GetBytes(hash));
 
             JsonContent json = JsonContent.Create(requestInvoice);
@@ -39,8 +46,17 @@ namespace CaseApplication.Infrastructure.Services
             }
 
             return await response.Content
-                .ReadFromJsonAsync<ResponseInvoiceStatusPattern>(
+                .ReadFromJsonAsync<InvoiceAnswerStatusGM>(
                 new JsonSerializerOptions(JsonSerializerDefaults.Web));
+        }
+
+        public string CreateHashOfDataForDeposit(Guid userId)
+        {
+            return $"project:{_configuration["GameMoney:projectId"]};" +
+                $"user:{userId};" +
+                $"currency:{_configuration["GameMoney:currency"]};" +
+                $"success_url:{_configuration["GameMoney:url:success"]};" +
+                $"fail_url:{_configuration["GameMoney:url:fail"]};";
         }
     }
 }

@@ -17,7 +17,7 @@ namespace CaseApplication.Infrastructure.Services
 
         public string GenerateHMAC(byte[] hashOfDataToSign)
         {
-            byte[] keyBytes = Encoding.ASCII.GetBytes(_configuration["HMAC:Secret"]!);
+            byte[] keyBytes = Encoding.ASCII.GetBytes(_configuration["GameMoney:HMACSecret"]!);
 
             using HMACSHA256 hash = new(keyBytes);
 
@@ -28,7 +28,10 @@ namespace CaseApplication.Infrastructure.Services
 
         public byte[] SignData(byte[] hashOfDataToSign)
         {
-            string pathPrivateKey = Path.Combine(Directory.GetCurrentDirectory(), "RsaKeys", _configuration["Tokens:PrivateKey"]!);
+            string pathPrivateKey = Path.Combine(
+                Directory.GetCurrentDirectory(), 
+                "RsaKeys", 
+                _configuration["GameMoney:RSA:PrivateKey"]!);
             using TextReader privateKeyTextReader = new StringReader(File.ReadAllText(pathPrivateKey));
             RsaKeyParameters privateKeyParam = (RsaKeyParameters)new PemReader(privateKeyTextReader).ReadObject();
 
@@ -49,7 +52,10 @@ namespace CaseApplication.Infrastructure.Services
 
         public bool VerifySignature(byte[] hashOfDataToSign, byte[] signature)
         {
-            string pathPublicKey = Path.Combine(Directory.GetCurrentDirectory(), "RsaKeys", _configuration["Tokens:PublicKey"]!);
+            string pathPublicKey = Path.Combine(
+                Directory.GetCurrentDirectory(), 
+                "RsaKeys", 
+                _configuration["GameMoney:RSA:PublicKey"]!);
             using TextReader publicKeyTextReader = new StringReader(File.ReadAllText(pathPublicKey));
             RsaKeyParameters publicKeyParam = (RsaKeyParameters)new PemReader(publicKeyTextReader).ReadObject();
 

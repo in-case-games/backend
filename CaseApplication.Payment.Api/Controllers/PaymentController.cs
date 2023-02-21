@@ -59,7 +59,8 @@ namespace CaseApplication.Payment.Api.Controllers
 
             decimal minItemPriceTM = decimal.Parse(itemInfoTM.MinPrice!) / 100;
 
-            if(minItemPriceTM > gameItem.GameItemCost * 1.1M) return Forbid("Item no stability price, exchange");
+            if(minItemPriceTM > (gameItem.GameItemCost / 7) * 1.1M) 
+                return Forbid("Item no stability price, exchange");
 
             ItemBuyTM? itemBuyTM = await _marketTMService.BuyItemMarket(gameItem, 
                 withdrawItem.SteamTradePartner!, withdrawItem.SteamTradeToken!);
@@ -72,18 +73,12 @@ namespace CaseApplication.Payment.Api.Controllers
         }
 
         [Authorize]
-        [HttpGet("hmac")]
-        public async Task<IActionResult> CreateHMAC()
+        [HttpGet("deposit/signature")]
+        public async Task<IActionResult> GetSignatureForDeposit()
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            string hash = 
-                "project:[project];" +
-                "user:[user];" +
-                "currency:[currency];" +
-                "success_url:[success_url];" +
-                "fail_url:[fail_url]";
-
+            string hash = _gameMoneyService.CreateHashOfDataForDeposit(UserId);
             string hmac = _rsaService.GenerateHMAC(Encoding.ASCII.GetBytes(hash));
 
             return Ok(hmac);
@@ -95,27 +90,28 @@ namespace CaseApplication.Payment.Api.Controllers
         {
             if(paymentAnswer.StatusAnswer != "success") return BadRequest(paymentAnswer.ParametersAnswer);
 
-            string hash = 
-                "project:[project];" + 
-                "user:[user];" + 
-                "currency:[currency];" + 
-                "success_url:[success_url];" + 
-                "fail_url:[fail_url]";
-
-            byte[] hashOfDataInSignIn = Encoding.ASCII.GetBytes(hash);
+            byte[] hashOfDataInSignIn = Encoding.ASCII.GetBytes(paymentAnswer.ToString());
             byte[] signature = Encoding.ASCII.GetBytes(paymentAnswer.SignatureRSA!);
 
             if (!_rsaService.VerifySignature(hashOfDataInSignIn, signature)) return Forbid("Poshel hacker lesom");
 
-            ResponseInvoiceStatusPattern? invoiceInfoStatus = await _gameMoneyService
+            InvoiceAnswerStatusGM? invoiceInfoStatus = await _gameMoneyService
                 .GetInvoiceStatusInfo(paymentAnswer.Invoice);
+
             if (invoiceInfoStatus is null || invoiceInfoStatus.Status != "Paid") return Forbid("Some times");
+
+            byte[] signatureInvoice = Encoding.ASCII.GetBytes(invoiceInfoStatus.SignatureRSA!);
+            byte[] hashOfDataInvoice = Encoding.ASCII.GetBytes(invoiceInfoStatus.ToString()!); //TODO
+
+            if (!_rsaService.VerifySignature(hashOfDataInvoice, signatureInvoice)) 
+                return Forbid("Poshel hacker lesom");
 
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
             
             UserAdditionalInfo info = (await context.UserAdditionalInfo
                 .FirstOrDefaultAsync(x => x.UserId == invoiceInfoStatus.UserId))!;
-            info.UserBalance += invoiceInfoStatus.Amount; //TODO Transfer for coin [RUB/UST/BTC/etc] 1/7
+
+            info.UserBalance += invoiceInfoStatus.Amount * 7; //TODO Check current answer
 
             await context.SaveChangesAsync();
             
@@ -150,6 +146,17 @@ namespace CaseApplication.Payment.Api.Controllers
 
             await context.SaveChangesAsync();
 
+            return Ok();
+        }
+
+        [Authorize(Roles = "admin")]
+        [HttpGet("admin/gamemoney/balance/{currency}")]
+        public async Task<IActionResult> GetGameMoneyBalance(string currency)
+        {
+            RequestBalanceInfoGM requestBalanceInfo = new() { 
+                Currency = currency,
+                ProjectId = 
+            };
             return Ok();
         }
     }
