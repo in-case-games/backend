@@ -53,6 +53,7 @@ namespace CaseApplication.Payment.Api.Controllers
                 return Ok("Wait for the admin to accept");
             }
 
+            //Check info item in tm
             ItemInfoTM? itemInfoTM = await _marketTMService.GetItemInfoMarket(gameItem);
 
             if (itemInfoTM == null || itemInfoTM.Offers!.Count <= 0) return NotFound("Item no such in platform");
@@ -62,10 +63,18 @@ namespace CaseApplication.Payment.Api.Controllers
             if(minItemPriceTM > (gameItem.GameItemCost / 7) * 1.1M) 
                 return Forbid("Item no stability price, exchange");
 
-            //TODO
+            //Check balance tm
+            decimal balanceTM = await _marketTMService.GetBalanceTM();
 
-            ResponseBuyItemTM? itemBuyTM = await _marketTMService.BuyItemMarket(gameItem, 
-                withdrawItem.SteamTradePartner!, withdrawItem.SteamTradeToken!);
+            if (balanceTM <= gameItem.GameItemCost / 7) return Forbid("Wait payment");
+
+            await _gameMoneyService.TransferGMBalanceToTM(gameItem.GameItemCost / 7);
+
+            //Buy item tm
+            ResponseBuyItemTM? itemBuyTM = await _marketTMService.BuyItemMarket(
+                gameItem, 
+                withdrawItem.SteamTradePartner!, 
+                withdrawItem.SteamTradeToken!);
 
             if(itemBuyTM is null) return NotFound("Trade url is incorrect");
 
@@ -87,8 +96,8 @@ namespace CaseApplication.Payment.Api.Controllers
         }
 
         [AllowAnonymous]
-        [HttpPost("confirm/deposit")] 
-        public async Task<IActionResult> TopUpBalanceConfirm(ResponsePaymentGM paymentAnswer)
+        [HttpPost("deposit")] 
+        public async Task<IActionResult> TopUpBalance(ResponsePaymentGM paymentAnswer)
         {
             if(paymentAnswer.StatusAnswer != "success") return BadRequest(paymentAnswer.ParametersAnswer);
 
@@ -103,7 +112,7 @@ namespace CaseApplication.Payment.Api.Controllers
             if (invoiceInfoStatus is null || invoiceInfoStatus.Status != "Paid") return Forbid("Some times");
 
             byte[] signatureInvoice = Encoding.ASCII.GetBytes(invoiceInfoStatus.SignatureRSA!);
-            byte[] hashOfDataInvoice = Encoding.ASCII.GetBytes(invoiceInfoStatus.ToString()!); //TODO
+            byte[] hashOfDataInvoice = Encoding.ASCII.GetBytes(invoiceInfoStatus.ToString()!);
 
             if (!_rsaService.VerifySignature(hashOfDataInvoice, signatureInvoice)) 
                 return Forbid("Poshel hacker lesom");
@@ -163,14 +172,10 @@ namespace CaseApplication.Payment.Api.Controllers
         }
 
         [Authorize(Roles = "admin")]
-        [HttpGet("admin/markettm/balance")]
-        public async Task<IActionResult> GetMarketTMBalance(string currency)
+        [HttpGet("admin/market/balance")]
+        public async Task<IActionResult> GetMarketTMBalance()
         {
-            ResponseBalanceGM? answerBalanceInfoGM = await _gameMoneyService.GetBalanceInfoGM(currency);
-
-            if (answerBalanceInfoGM is null) return BadRequest();
-
-            return Ok(answerBalanceInfoGM);
+            return Ok(await _marketTMService.GetBalanceTM());
         }
     }
 }

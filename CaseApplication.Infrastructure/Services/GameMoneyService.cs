@@ -49,6 +49,44 @@ namespace CaseApplication.Infrastructure.Services
                 new JsonSerializerOptions(JsonSerializerDefaults.Web));
         }
 
+        //TODO
+        public async Task<ResponseInsertGM?> TransferGMBalanceToTM(decimal ammount)
+        {
+            string url = "https://paygate.gamemoney.com/checkout/insert";
+
+            RequestInsertGM requestInsertGM = new()
+            {
+                ProjectId = int.Parse(_configuration["GameMoney:projectId"]!),
+                PaymentId = new Guid(),
+                UserId = new Guid(),
+                UserIp = "1.0.1",
+                PaymentAmount = ammount,
+                Wallet = "STEAM_0:0:162919723",
+                Type = "market",
+                Description = "transfer balance gm to tm",
+            };
+
+            byte[] hash = Encoding.ASCII.GetBytes(requestInsertGM.ToString());
+            requestInsertGM.SignatureRSA = Encoding.ASCII.GetString(_rsaService.SignData(hash));
+
+            JsonContent json = JsonContent.Create(requestInsertGM);
+            HttpResponseMessage response = await _httpClient.PostAsync(url, json);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception(
+                    response.StatusCode.ToString() +
+                    response.RequestMessage! +
+                    response.Headers +
+                    response.ReasonPhrase! +
+                    response.Content);
+            }
+
+            return await response.Content
+                .ReadFromJsonAsync<ResponseInsertGM>(
+                new JsonSerializerOptions(JsonSerializerDefaults.Web));
+        }
+
         public async Task<ResponseInvoiceStatusGM?> GetInvoiceStatusInfo(int invoice)
         {
             string url = "https://paygate.gamemoney.com/invoice/status";

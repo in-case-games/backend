@@ -17,6 +17,28 @@ namespace CaseApplication.Infrastructure.Services
             _configuration = configuration;
         }
 
+        public async Task<decimal> GetBalanceTM()
+        {
+            string requestUrl = $"https://market.csgo.com/api/GetMoney/?key={_configuration["MarketTM:Secret"]}";
+
+            HttpResponseMessage response = await _httpClient.GetAsync(requestUrl);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception(
+                    response.StatusCode.ToString() +
+                    response.RequestMessage! +
+                    response.Headers +
+                    response.ReasonPhrase! +
+                    response.Content);
+            }
+
+            ResponseBalanceTM? balanceTM = await response.Content
+                .ReadFromJsonAsync<ResponseBalanceTM>(new JsonSerializerOptions(JsonSerializerDefaults.Web));
+
+            return balanceTM!.Money;
+        }
+
         public async Task<ResponseBuyItemTM?> BuyItemMarket(GameItem gameItem, string partner, string token)
         {
             Dictionary<string, string> requestUrls = new() {
