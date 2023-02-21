@@ -72,13 +72,21 @@ namespace CaseApplication.Email.Api.Controllers
             {
                 userInfo.IsConfirmedAccount = true;
 
-                await _emailHelper.SendNotifyToEmail(
-                    user.UserEmail!,
-                    "Администрация сайта",
-                    new EmailMessagePattern()
+                await _emailHelper.SendConfirmationAccountToEmail(
+                    new EmailPattern()
                     {
-                        Body = $"Спасибо что подтвердили аккаунт"
-                    });
+                        UserEmail = user.UserEmail!
+                    }
+                    , user.UserLogin!);
+            }
+            else
+            {
+                await _emailHelper.SendAccountLoginAttempt(
+                    new EmailPattern()
+                    {
+                        UserEmail = user.UserEmail!
+                    }
+                    , user.UserLogin!);
             }
 
             //Generate tokens
@@ -94,14 +102,6 @@ namespace CaseApplication.Email.Api.Controllers
             };
 
             MapUserTokenForUpdate(ref newUserToken, tokenModel);
-
-            await _emailHelper.SendNotifyToEmail(
-                user.UserEmail!,
-                "Администрация сайта",
-                new EmailMessagePattern()
-                {
-                    Body = $"Вход в аккаунт"
-                });
 
             await context.UserToken.AddAsync(newUserToken);
             await context.SaveChangesAsync();

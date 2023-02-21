@@ -148,11 +148,12 @@ namespace CaseApplication.Api.Controllers
             await context.UserAdditionalInfo.AddAsync(info);
             await context.SaveChangesAsync();
 
-            await _emailHelper.SendSignUpAccountToEmail(
-                new EmailPattern
-                {
-                    UserEmail = user.UserEmail!
-                }, "https://google.com");
+            await _emailHelper.SendSignUpAccountToEmail(new EmailPattern()
+            {
+                UserEmail = user.UserEmail!,
+                UserId = user.Id,
+                EmailToken = _jwtHelper.GenerateEmailToken(user)
+            });
 
             return Ok(new { Success = "true",
                 Message = "Registation success. Check your email for the following actions" });
@@ -183,13 +184,12 @@ namespace CaseApplication.Api.Controllers
             if(userToken == null) return Forbid("Invalid refresh token");
 
             if (userToken.RefreshTokenExpiryTime <= DateTime.UtcNow) {
-                await _emailHelper.SendNotifyToEmail(
-                    user.UserEmail!,
-                    "Администрация сайта",
-                    new EmailMessagePattern()
-                    {
-                        Body = $"Попытка входа в аккаунт"
-                    });
+                await _emailHelper.SendSignInAccountToEmail(new EmailPattern()
+                {
+                    UserEmail = user.UserEmail!,
+                    UserId = user.Id,
+                    EmailToken = _jwtHelper.GenerateEmailToken(user),
+                }, user.UserLogin!);
 
                 context.UserToken.Remove(userToken);
 
