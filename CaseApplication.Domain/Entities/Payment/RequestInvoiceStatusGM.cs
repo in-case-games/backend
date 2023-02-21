@@ -8,12 +8,15 @@ namespace CaseApplication.Domain.Entities.Payment
         public int ProjectId { get; set; }
         [JsonPropertyName("invoice")]
         public int InvoiceId { get; set; }
+        [JsonPropertyName("projectId")]
+        public string? Rand { get; set; }
         [JsonPropertyName("signature")]
         public string? SignatureHMAC { get; set; }
 
         public override string ToString()
         {
-            return $"project:{ProjectId};invoice:{InvoiceId};";
+            string rand = (string.IsNullOrEmpty(Rand)) ? "" : $"rand:{Rand}";
+            return $"project:{ProjectId};invoice:{InvoiceId};{rand};";
         }
     }
 }

@@ -55,8 +55,8 @@ namespace CaseApplication.Infrastructure.Services
 
             RequestInvoiceStatusGM requestInvoice = new()
             {
-                InvoiceId = invoice,
                 ProjectId = int.Parse(_configuration["GameMoney:projectId"]!),
+                InvoiceId = invoice,
             };
 
             string hash = requestInvoice.ToString();

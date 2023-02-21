@@ -12,6 +12,8 @@ namespace CaseApplication.Domain.Entities.Payment
         public string? TypeAnswer { get; set; }
         [JsonPropertyName("data")]
         public string? ParametersAnswer { get; set; }
+        [JsonPropertyName("rand")]
+        public string? Rand { get; set;}
         [JsonPropertyName("time")]
         public int SendTimeAnswer { get; set; }
         [JsonPropertyName("signature")]
@@ -19,11 +21,13 @@ namespace CaseApplication.Domain.Entities.Payment
 
         public override string ToString()
         {
+            string rand = (string.IsNullOrEmpty(Rand)) ? "" : $"rand:{Rand}";
             return
                 $"state:{StatusAnswer};" +
                 $"invoice:{Invoice};" +
                 $"type:{TypeAnswer};" +
                 $"data:{ParametersAnswer};" +
+                $"{rand};" +
                 $"time:{SendTimeAnswer};";
         }
     }

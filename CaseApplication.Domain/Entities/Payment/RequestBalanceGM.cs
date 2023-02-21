@@ -15,7 +15,7 @@ namespace CaseApplication.Domain.Entities.Payment
 
         public override string ToString()
         {
-            string rand = (string.IsNullOrEmpty(Rand)) ? $"rand:{Rand}" : "";
+            string rand = (string.IsNullOrEmpty(Rand)) ? "" : $"rand:{Rand}";
             return $"project:{ProjectId};{rand};currency:{Currency};";
         }
     }

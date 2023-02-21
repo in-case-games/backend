@@ -24,6 +24,8 @@ namespace CaseApplication.Domain.Entities.Payment
         public string? Type { get; set; }
         [JsonPropertyName("wallet")]
         public string? Wallet { get; set; }
+        [JsonPropertyName("comment")]
+        public string? Comment { get; set; }
         [JsonPropertyName("time")]
         public int Time { get; set; }
         [JsonPropertyName("currency_project")]
@@ -36,12 +38,39 @@ namespace CaseApplication.Domain.Entities.Payment
         public DateTime DatePay { get; set; }
         [JsonPropertyName("rate")]
         public decimal? Rate { get; set; }
+        [JsonPropertyName("rand")]
+        public string? Rand { get; set; }
+        [JsonPropertyName("reason")]
+        public string? Reason { get; set; }
         [JsonPropertyName("signature")]
         public string? SignatureRSA { get; set; }
 
         public override string ToString()
         {
-            return $"user:{UserId}";
+            string rand = (string.IsNullOrEmpty(Rand)) ? "" : $"rand:{Rand}";
+            string reason = (string.IsNullOrEmpty(Reason)) ? "" : $"reason:{Reason}";
+            string comment = (string.IsNullOrEmpty(Comment)) ? "" : $"comment:{Comment}";
+            string rate = Rate is null ? "" : $"rate:{Rate}";
+            return
+                $"state:{State};" +
+                $"project:{ProjectId};" +
+                $"invoice:{InvoiceId};" +
+                $"status:{Status};" +
+                $"amount:{Amount};" +
+                $"net_amount:{AmountUser};" +
+                $"recieved_amount:{ReceivedAmount};" +
+                $"user:{UserId};" +
+                $"type:{Type};" +
+                $"wallet:{Wallet};" +
+                $"{comment};" +
+                $"time:{Time};" +
+                $"currency_project:{CurrencyProject};" +
+                $"currency_user:{CurrencyUser};" +
+                $"date_create:{DateCreate};" +
+                $"date_pay:{DatePay};" +
+                $"{rate};" +
+                $"{rand};" +
+                $"{reason};";
         }
     }
 }

@@ -31,14 +31,20 @@ namespace CaseApplication.Domain.Entities.Payment
 
         public override string ToString()
         {
-            string rand = (string.IsNullOrEmpty(Rand)) ? $"rand:{Rand}" : "";
-            string currency = (string.IsNullOrEmpty(Currency)) ? $"currency:{Currency}" : "";
+            string rand = (string.IsNullOrEmpty(Rand)) ? "" : $"rand:{Rand}";
+            string currency = (string.IsNullOrEmpty(Currency)) ? "" : $"currency:{Currency}";
 
             return 
                 $"state:{State};" +
                 $"project:{ProjectId};" +
                 $"{currency};" +
                 $"project_income:{ProjectIncome}" +
+                $"project_outcome:{ProjectOutcome}" +
+                $"project_balance:{ProjectBalance}" +
+                $"contract_income:{ContractIncome}" +
+                $"contract_outcome:{ContractOutcome}" +
+                $"contract_balance:{ContractBalance}" +
+                $"time:{Time}" +
                 $"{rand};";
         }
     }
