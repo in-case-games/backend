@@ -35,9 +35,11 @@ namespace CaseApplication.Resources.Api.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    GameName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     GameItemName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     GameItemCost = table.Column<decimal>(type: "DECIMAL(18,5)", nullable: false),
                     GameItemImage = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    GameItemQuality = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     GameItemRarity = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
                     GameItemType = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     GameItemIdForPlatform = table.Column<string>(type: "nvarchar(max)", nullable: true)
@@ -206,8 +208,7 @@ namespace CaseApplication.Resources.Api.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    GameItemId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ExpiryTime = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    GameItemId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -329,8 +330,8 @@ namespace CaseApplication.Resources.Api.Migrations
                 columns: new[] { "Id", "PromocodeTypeName" },
                 values: new object[,]
                 {
-                    { new Guid("373f7c68-9920-4bcf-80c2-4fc2e4996755"), "balance" },
-                    { new Guid("d371bbe4-36e6-4c96-80b3-5027c4195f20"), "case" }
+                    { new Guid("55ffd7cb-ddae-4614-8746-77a5ad2e5bd1"), "balance" },
+                    { new Guid("b0aad271-6374-45d4-bdb6-e945d4e45201"), "case" }
                 });
 
             migrationBuilder.InsertData(
@@ -338,8 +339,8 @@ namespace CaseApplication.Resources.Api.Migrations
                 columns: new[] { "Id", "RoleName" },
                 values: new object[,]
                 {
-                    { new Guid("15a080f5-0c6d-4049-a943-778b75a998d9"), "user" },
-                    { new Guid("6fbd45a2-cee8-452a-83db-f797cb48e114"), "admin" }
+                    { new Guid("68a38f3f-d7d3-4aa8-a792-50d4535b14ec"), "user" },
+                    { new Guid("d029849e-bcde-497a-ac80-ac72569c3c40"), "admin" }
                 });
 
             migrationBuilder.CreateIndex(
