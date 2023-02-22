@@ -204,7 +204,7 @@ namespace CaseApplication.Api.Controllers
 
             await context.SaveChangesAsync();
 
-            return Ok(tokenModel);
+            return Ok(new { Data = tokenModel, Success = true });
         }
 
         [Authorize]

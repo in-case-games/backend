@@ -27,7 +27,9 @@ namespace CaseApplication.Resources.Api.Controllers
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == id);
 
-            return news is null ? NotFound(): Ok(news);
+            return news is null ?
+                NotFound(new { Error = "Data was not found", Success = false }) :
+                Ok(new { Data = news, Success = true });
         }
 
         [AllowAnonymous]
@@ -36,9 +38,13 @@ namespace CaseApplication.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            return Ok(await context.News
+            return Ok(new
+            {
+                Data = await context.News
                 .AsNoTracking()
-                .ToListAsync());
+                .ToListAsync(),
+                Success = true
+            });
         }
 
         [Authorize(Roles = "admin")]
@@ -52,7 +58,7 @@ namespace CaseApplication.Resources.Api.Controllers
             await context.News.AddAsync(news);
             await context.SaveChangesAsync();
 
-            return Ok();
+            return Ok(new { Message = "News succesfully created", Success = true });
         }
 
         [Authorize(Roles = "admin")]
@@ -63,12 +69,13 @@ namespace CaseApplication.Resources.Api.Controllers
 
             News? oldNews = await context.News.FirstOrDefaultAsync(x => x.Id == news.Id);
 
-            if (oldNews is null) return NotFound();
+            if (oldNews is null) 
+                return NotFound(new { Error = "Data was not found", Success = false });
 
             context.Entry(oldNews).CurrentValues.SetValues(news);
             await context.SaveChangesAsync();
 
-            return Ok();
+            return Ok(new { Message = "News succesfully updated", Success = true });
         }
 
         [Authorize(Roles = "admin")]
@@ -81,12 +88,13 @@ namespace CaseApplication.Resources.Api.Controllers
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == id);
 
-            if (news is null) return NotFound();
+            if (news is null)
+                return NotFound(new { Error = "Data was not found", Success = false });
 
             context.Remove(news);
             await context.SaveChangesAsync();
 
-            return Ok();
+            return Ok(new { Message = "News succesfully deleted", Success = true });
         }
     }
 }

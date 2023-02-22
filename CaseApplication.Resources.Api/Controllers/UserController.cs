@@ -42,7 +42,8 @@ namespace CaseApplication.Resources.Api.Controllers
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == UserId);
 
-            if (user == null) return NotFound();
+            if (user == null) 
+                return NotFound(new { Error = "Data was not found", Success = false });
             
             user.PasswordHash = "access denied";
             user.PasswordSalt = "access denied";
@@ -66,7 +67,8 @@ namespace CaseApplication.Resources.Api.Controllers
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == id);
 
-            if (user == null) return NotFound();
+            if (user == null) 
+                return NotFound(new { Error = "Data was not found", Success = false });
 
             user.PasswordHash = "access denied";
             user.PasswordSalt = "access denied";
@@ -90,12 +92,13 @@ namespace CaseApplication.Resources.Api.Controllers
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.UserLogin == login);
 
-            if (user == null) return NotFound();
+            if (user == null)
+                return NotFound(new { Error = "Data was not found", Success = false });
             
             user.PasswordHash = "access denied";
             user.PasswordSalt = "access denied";
             
-            return Ok(user);
+            return Ok(new { Data = user, Success = true });
         }
 
         [Authorize]
@@ -121,7 +124,7 @@ namespace CaseApplication.Resources.Api.Controllers
                 users[i].PasswordSalt = "access denied";
             }
 
-            return Ok(users);
+            return Ok(new { Data = users, Success = true });
         }
 
         [Authorize]
@@ -135,8 +138,9 @@ namespace CaseApplication.Resources.Api.Controllers
             User? user = await context.User
                 .FirstOrDefaultAsync(x => x.Id == UserId);
 
-            if (isExistLogin) return BadRequest();
-            if (user == null) return NotFound();
+            if (isExistLogin) return BadRequest(new { Message = "Login already taken. Try another login", Success = true });
+            if (user == null) 
+                return NotFound(new { Error = "Data was not found", Success = false });
 
             user.UserLogin = login;
             await context.SaveChangesAsync();
@@ -162,7 +166,8 @@ namespace CaseApplication.Resources.Api.Controllers
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == id);
 
-            if (user is null) return NotFound();
+            if (user is null) 
+                return NotFound(new { Error = "Data was not found", Success = false });
 
             context.User.Remove(user);
             await context.SaveChangesAsync();

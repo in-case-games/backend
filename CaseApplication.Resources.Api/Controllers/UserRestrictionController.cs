@@ -26,10 +26,14 @@ namespace CaseApplication.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            return Ok(await context.UserRestriction
+            return Ok(new
+            {
+                Data = await context.UserRestriction
                 .AsNoTracking()
                 .Where(x => x.UserId == userId)
-                .ToListAsync());
+                .ToListAsync(),
+                Success = true
+            });
         }
 
         [Authorize]
@@ -38,9 +42,13 @@ namespace CaseApplication.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            return Ok(await context.UserRestriction
+            return Ok(new
+            {
+                Data = await context.UserRestriction
                 .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.RestrictionName == name && x.UserId == UserId));
+                .FirstOrDefaultAsync(x => x.RestrictionName == name && x.UserId == UserId),
+                Success = true
+            });
         }
 
         [Authorize(Roles = "admin")]
@@ -55,7 +63,7 @@ namespace CaseApplication.Resources.Api.Controllers
             await context.UserRestriction.AddAsync(restriction);
             await context.SaveChangesAsync();
 
-            return Ok();
+            return Ok(new { Message = "Restriction succesfully added", Success = true });
         }
 
         [Authorize(Roles = "admin")]
@@ -67,12 +75,13 @@ namespace CaseApplication.Resources.Api.Controllers
             UserRestriction? oldRestriction = await context.UserRestriction.FirstOrDefaultAsync(
                 x => x.Id == newRestriction.Id && x.UserId == newRestriction.UserId);
 
-            if (oldRestriction is null) return NotFound();
+            if (oldRestriction is null)
+                return NotFound(new { Error = "Data was not found", Success = false });
 
             context.Entry(oldRestriction).CurrentValues.SetValues(newRestriction);
             await context.SaveChangesAsync();
 
-            return Ok();
+            return Ok(new { Message = "Restriction succesfully updated", Success = true });
         }
 
         [Authorize(Roles = "admin")]
@@ -85,12 +94,13 @@ namespace CaseApplication.Resources.Api.Controllers
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == id);
 
-            if (restriction is null) return NotFound();
+            if (restriction is null) 
+                return NotFound(new { Error = "Data was not found", Success = false });
 
             context.UserRestriction.Remove(restriction);
             await context.SaveChangesAsync();
 
-            return Ok();
+            return Ok(new { Message = "Restriction succesfully removed", Success = true });
         }
     }
 }

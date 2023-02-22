@@ -20,7 +20,7 @@ namespace CaseApplication.Infrastructure.Services
             _configuration = configuration;
         }
 
-        public async Task<ResponseBalanceGM?> GetBalanceInfoGM(string currency)
+        public async Task<ResponseBalanceGM?> GetBalanceInfo(string currency)
         {
             RequestBalanceGM requestBalanceInfo = new()
             {
@@ -36,7 +36,7 @@ namespace CaseApplication.Infrastructure.Services
         }
 
         //TODO
-        public async Task<ResponseInsertGM?> TransferGMBalanceToTM(decimal ammount)
+        public async Task<ResponseInsertGM?> TransferMoneyToTradeMarket(decimal ammount)
         {
             RequestInsertGM requestInsertGM = new()
             {

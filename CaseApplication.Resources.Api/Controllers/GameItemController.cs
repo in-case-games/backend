@@ -30,7 +30,9 @@ namespace CaseApplication.Resources.Api.Controllers
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == id);
 
-            return item is null ? NotFound(): Ok(item);
+            return item is null ?
+                NotFound(new { Error = "Data was not found", Success = false }) :
+                Ok(new { Data = item, Success = true });
         }
 
         [AllowAnonymous]
@@ -43,7 +45,9 @@ namespace CaseApplication.Resources.Api.Controllers
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.GameItemName == name);
 
-            return item is null ? NotFound() : Ok(item);
+            return item is null ?
+                NotFound(new { Error = "Data was not found", Success = false }) :
+                Ok(new { Data = item, Success = true });
         }
 
         [AllowAnonymous]
@@ -52,9 +56,13 @@ namespace CaseApplication.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            return Ok(await context.GameItem
+            return Ok(new
+            {
+                Data = await context.GameItem
                 .AsNoTracking()
-                .ToListAsync());
+                .ToListAsync(),
+                Success = true
+            });
         }
 
         [Authorize(Roles = "admin")]
@@ -68,7 +76,7 @@ namespace CaseApplication.Resources.Api.Controllers
             await context.GameItem.AddAsync(item);
             await context.SaveChangesAsync();
 
-            return Ok();
+            return Ok(new { Message = "GameItem succesfully created", Success = true });
         }
 
         [Authorize(Roles = "admin")]
@@ -80,12 +88,13 @@ namespace CaseApplication.Resources.Api.Controllers
             GameItem? oldItem = await context.GameItem
                 .FirstOrDefaultAsync(x => x.Id == newItem.Id);
 
-            if (oldItem is null) return NotFound();
+            if (oldItem is null) 
+                return NotFound(new { Error = "Data was not found", Success = false });
 
             context.Entry(oldItem).CurrentValues.SetValues(newItem);
             await context.SaveChangesAsync();
 
-            return Ok();
+            return Ok(new { Message = "GameItem succesfully updated", Success = true });
         }
 
         [Authorize(Roles = "admin")]
@@ -98,12 +107,13 @@ namespace CaseApplication.Resources.Api.Controllers
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == id);
 
-            if (item is null) return NotFound();
+            if (item is null)
+                return NotFound(new { Error = "Data was not found", Success = false });
 
             context.GameItem.Remove(item);
             await context.SaveChangesAsync();
 
-            return Ok();
+            return Ok(new { Message = "GameItem succesfully deleted", Success = true });
         }
     }
 }

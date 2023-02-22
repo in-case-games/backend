@@ -32,7 +32,9 @@ namespace CaseApplication.Resources.Api.Controllers
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == id);
 
-            return history is null ? NotFound() : Ok(history);
+            return history is null ?
+                NotFound(new { Error = "Data was not found", Success = false }) :
+                Ok(new { Data = history, Success = true });
         }
 
         [Authorize]
@@ -48,7 +50,7 @@ namespace CaseApplication.Resources.Api.Controllers
                 .Where(x => x.UserId == UserId)
                 .ToListAsync();
 
-            return Ok(histories);
+            return Ok(new { Data = histories, Success = true });
         }
 
         [AllowAnonymous]
@@ -64,7 +66,7 @@ namespace CaseApplication.Resources.Api.Controllers
                 .Where(x => x.UserId == userId)
                 .ToListAsync();
 
-            return Ok(histories);
+            return Ok(new { Data = histories, Success = true });
         }
 
         [Authorize]
@@ -78,7 +80,7 @@ namespace CaseApplication.Resources.Api.Controllers
                 .Include(x => x.GameItem)
                 .ToListAsync();
 
-            return Ok(histories);
+            return Ok(new { Data = histories, Success = true });
         }
 
         [Authorize]
@@ -90,12 +92,13 @@ namespace CaseApplication.Resources.Api.Controllers
             UserHistoryOpeningCases? history = await context.UserHistoryOpeningCases
                 .FirstOrDefaultAsync(x => x.Id == id && x.UserId == UserId);
 
-            if (history is null) return NotFound();
+            if (history is null) 
+                return NotFound(new { Error = "Data was not found", Success = false });
 
             context.UserHistoryOpeningCases.Remove(history);
             await context.SaveChangesAsync();
 
-            return Ok();
+            return Ok(new { Message = "HistoryOpeningCase succesfully deleted", Success = true });
         }
 
         [Authorize]
@@ -108,12 +111,13 @@ namespace CaseApplication.Resources.Api.Controllers
                 .Where(x => x.UserId == UserId)
                 .ToListAsync();
 
-            if (histories.Count == 0) return NotFound();
+            if (histories.Count == 0) 
+                return NotFound(new { Error = "Data was not found", Success = false });
 
             context.UserHistoryOpeningCases.RemoveRange(histories);
             await context.SaveChangesAsync();
 
-            return Ok();
+            return Ok(new { Message = "HistoryOpeningCases succesfully deleted", Success = true });
         }
     }
 }

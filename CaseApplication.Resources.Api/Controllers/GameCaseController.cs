@@ -36,7 +36,8 @@ namespace CaseApplication.Resources.Api.Controllers
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == id);
 
-            if (gameCase == null) return NotFound();
+            if (gameCase == null) 
+                return NotFound(new { Error = "Data was not found", Success = false });
 
             gameCase.СaseInventories = await context.CaseInventory
                 .AsNoTracking()
@@ -47,7 +48,7 @@ namespace CaseApplication.Resources.Api.Controllers
             gameCase.RevenuePrecentage = 0;
             gameCase.GameCaseBalance = 0;
             
-            return Ok(gameCase);
+            return Ok(new { Data = gameCase, Success = true });
         }
 
         [AllowAnonymous]
@@ -60,7 +61,8 @@ namespace CaseApplication.Resources.Api.Controllers
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.GameCaseName == name);
 
-            if (gameCase == null) return NotFound();
+            if (gameCase == null) 
+                return NotFound(new { Error = "Data was not found", Success = false });
 
             gameCase.СaseInventories = await context.CaseInventory
                 .AsNoTracking()
@@ -71,7 +73,7 @@ namespace CaseApplication.Resources.Api.Controllers
             gameCase.RevenuePrecentage = 0;
             gameCase.GameCaseBalance = 0;
             
-            return Ok(gameCase);
+            return Ok(new { Data = gameCase, Success = true });
         }
 
         [AllowAnonymous]
@@ -90,7 +92,7 @@ namespace CaseApplication.Resources.Api.Controllers
                 gameCase.GameCaseBalance = 0;
             }
 
-            return Ok(gameCases);
+            return Ok(new { Data = gameCases, Success = true });
         }
 
         [AllowAnonymous]
@@ -110,7 +112,7 @@ namespace CaseApplication.Resources.Api.Controllers
                 gameCase.GameCaseBalance = 0;
             }
 
-            return Ok(gameCases);
+            return Ok(new { Data = gameCases, Success = true });
         }
 
         [Authorize(Roles = "admin")]
@@ -123,7 +125,8 @@ namespace CaseApplication.Resources.Api.Controllers
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == id);
 
-            if (gameCase is null) return NotFound();
+            if (gameCase is null) 
+                return NotFound(new { Error = "Data was not found", Success = false });
 
             gameCase.СaseInventories = await context.CaseInventory
                 .AsNoTracking()
@@ -131,7 +134,7 @@ namespace CaseApplication.Resources.Api.Controllers
                 .Where(x => x.GameCaseId == gameCase.Id)
                 .ToListAsync();
 
-            return Ok(gameCase);
+            return Ok(new { Data = gameCase, Success = true });
         }
 
         [Authorize(Roles = "admin")]
@@ -147,7 +150,7 @@ namespace CaseApplication.Resources.Api.Controllers
             await context.GameCase.AddAsync(gameCase);
             await context.SaveChangesAsync();
 
-            return Ok();
+            return Ok(new { Message = "GameCase succesfully created", Success = true });
         }
 
         [Authorize(Roles = "admin")]
@@ -159,7 +162,8 @@ namespace CaseApplication.Resources.Api.Controllers
             GameCase? oldCase = await context.GameCase
                 .FirstOrDefaultAsync(x => x.Id == newCaseDto.Id);
 
-            if (oldCase is null) return NotFound();
+            if (oldCase is null) 
+                return NotFound(new { Error = "Data was not found", Success = false });
 
             IMapper mapper = _mapperConfiguration.CreateMapper();
             GameCase newCase = mapper.Map<GameCase>(newCaseDto);
@@ -167,7 +171,7 @@ namespace CaseApplication.Resources.Api.Controllers
             context.Entry(oldCase).CurrentValues.SetValues(newCase);
             await context.SaveChangesAsync();
 
-            return Ok();
+            return Ok(new { Message = "GameCase succesfully updated", Success = true });
         }
 
         [Authorize(Roles = "admin")]
@@ -180,12 +184,13 @@ namespace CaseApplication.Resources.Api.Controllers
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == id);
 
-            if (searchCase is null) return NotFound();
+            if (searchCase is null)
+                return NotFound(new { Error = "Data was not found", Success = false });
 
             context.GameCase.Remove(searchCase);
             await context.SaveChangesAsync();
 
-            return Ok();
+            return Ok(new { Message = "GameCase succesfully deleted", Success = true });
         }
     }
 }

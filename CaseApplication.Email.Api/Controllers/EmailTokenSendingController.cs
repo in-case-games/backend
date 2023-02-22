@@ -50,7 +50,7 @@ namespace CaseApplication.Email.Api.Controllers
 
             await _emailHelper.SendConfirmAccountToEmail(emailModel);
 
-            return Accepted();
+            return Accepted(new { Message = "Message was sended on your email", Success = true });
         }
 
         [AllowAnonymous]
@@ -70,7 +70,7 @@ namespace CaseApplication.Email.Api.Controllers
 
             await _emailHelper.SendChangePasswordToEmail(emailModel);
 
-            return Accepted();
+            return Accepted(new { Message = "Message was sended on your email", Success = true });
         }
 
         [Authorize]
@@ -87,10 +87,10 @@ namespace CaseApplication.Email.Api.Controllers
             }
             catch (NullReferenceException ex)
             {
-                return NotFound(ex.Message);
+                return NotFound(new { Error = ex.Message, Success = false });
             }
 
-            return Accepted();
+            return Accepted(new { Message = "Message was sended on your email", Success = true });
         }
         
         [Authorize]
@@ -107,10 +107,10 @@ namespace CaseApplication.Email.Api.Controllers
             }
             catch (NullReferenceException ex)
             {
-                return NotFound(ex.Message);
+                return NotFound(new { Error = ex.Message, Success = false });
             }
 
-            return Accepted();
+            return Accepted(new { Message = "Message was sended on your email", Success = true });
         }
 
         [Authorize]
@@ -127,10 +127,10 @@ namespace CaseApplication.Email.Api.Controllers
             }
             catch (NullReferenceException ex)
             {
-                return NotFound(ex.Message);
+                return NotFound(new { Error = ex.Message, Success = false });
             }
 
-            return Accepted();
+            return Accepted(new { Message = "Message was sended on your email", Success = true });
         }
 
         private async Task Send(DataMailLink emailModel, string password)

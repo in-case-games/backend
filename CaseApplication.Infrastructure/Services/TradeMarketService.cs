@@ -6,17 +6,17 @@ using System.Text.Json;
 
 namespace CaseApplication.Infrastructure.Services
 {
-    public class MarketTMService
+    public class TradeMarketService
     {
         private readonly IConfiguration _configuration;
         private readonly HttpClient _httpClient = new();
 
-        public MarketTMService(IConfiguration configuration)
+        public TradeMarketService(IConfiguration configuration)
         {
             _configuration = configuration;
         }
 
-        public async Task<decimal> GetBalanceTM()
+        public async Task<decimal> GetTradeMarketInfo()
         {
             string requestUrl = $"https://market.csgo.com/api/GetMoney/?key={_configuration["MarketTM:Secret"]}";
 
@@ -25,7 +25,7 @@ namespace CaseApplication.Infrastructure.Services
             return balanceTM!.Money;
         }
 
-        public async Task<ResponseBuyItemTM?> BuyItemMarket(GameItem gameItem, string partner, string token)
+        public async Task<ResponseBuyItemTM?> BuyMarketItem(GameItem gameItem, string partner, string token)
         {
             string requestUrl = string.Format("https://{0}.com/api/Buy/{1}/?key={2}/partner={3}/token={4}",
                 gameItem.GameName!.ToLower(),
@@ -37,7 +37,7 @@ namespace CaseApplication.Infrastructure.Services
             return await TakeResponse<ResponseBuyItemTM>(requestUrl);
         }
 
-        public async Task<ItemInfoTM?> GetItemInfoMarket(GameItem gameItem)
+        public async Task<ItemInfoTM?> GetMarketItemInfo(GameItem gameItem)
         {
             string requestUrl = string.Format("https://{0}.com/api/ItemInfo/{1}/ru/?key={2}",
                 gameItem.GameName!.ToLower(),
@@ -46,7 +46,7 @@ namespace CaseApplication.Infrastructure.Services
 
             return await TakeResponse<ItemInfoTM>(requestUrl);
         }
-        public async Task<T> TakeResponse<T>(string url)
+        public async Task<T?> TakeResponse<T>(string url)
         {
             HttpResponseMessage response = await _httpClient.GetAsync(url);
 
@@ -63,7 +63,7 @@ namespace CaseApplication.Infrastructure.Services
             T? responseEntity = await response.Content
                 .ReadFromJsonAsync<T>(new JsonSerializerOptions(JsonSerializerDefaults.Web));
 
-            return responseEntity!;
+            return responseEntity;
         }
     }
 }

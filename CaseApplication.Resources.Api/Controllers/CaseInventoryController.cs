@@ -37,7 +37,9 @@ namespace CaseApplication.Resources.Api.Controllers
                 .Include(x => x.GameItem)
                 .FirstOrDefaultAsync(x => x.Id == id);
 
-            return caseInventory is null ? NotFound(): Ok(caseInventory);
+            return caseInventory is null ?
+                NotFound(new { Error = "Data was not found", Success = false }) :
+                Ok(new { Data = caseInventory, Success = true });
         }
 
         [AllowAnonymous]
@@ -51,7 +53,9 @@ namespace CaseApplication.Resources.Api.Controllers
                 .Include(x => x.GameItem)
                 .FirstOrDefaultAsync(x => x.GameCaseId == caseId && x.GameItemId == itemId);
 
-            return caseInventory is null ? NotFound() : Ok(caseInventory);
+            return caseInventory is null ? 
+                NotFound(new { Error = "Data was not found", Success = false }) :
+                Ok(new { Data = caseInventory, Success = true });
         }
 
         [AllowAnonymous]
@@ -60,11 +64,15 @@ namespace CaseApplication.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            return Ok(await context.CaseInventory
+            return Ok(new
+            {
+                Data = await context.CaseInventory
                 .AsNoTracking()
                 .Include(x => x.GameItem)
                 .Where(x => x.GameCaseId == caseId)
-                .ToListAsync());
+                .ToListAsync(),
+                Success = true
+            });
         }
 
         [Authorize(Roles = "admin")]
@@ -80,7 +88,7 @@ namespace CaseApplication.Resources.Api.Controllers
             await context.CaseInventory.AddAsync(inventory);
             await context.SaveChangesAsync();
 
-            return Ok();
+            return Ok(new { Message = "CaseInventory succesfully created", Success = true });
         }
 
         [Authorize(Roles = "admin")]
@@ -92,7 +100,8 @@ namespace CaseApplication.Resources.Api.Controllers
             CaseInventory? oldInventory = await context.CaseInventory
                 .FirstOrDefaultAsync(x => x.Id == inventoryDto.Id);
 
-            if (oldInventory is null) return NotFound();
+            if (oldInventory is null) 
+                return NotFound(new { Error = "Data was not found", Success = false });
 
             IMapper mapper = _mapperConfiguration.CreateMapper();
             CaseInventory inventory = mapper.Map<CaseInventory>(inventoryDto);
@@ -100,7 +109,7 @@ namespace CaseApplication.Resources.Api.Controllers
             context.Entry(oldInventory).CurrentValues.SetValues(inventory);
             await context.SaveChangesAsync();
 
-            return Ok();
+            return Ok(new { Message = "CaseInventory succesfully updated", Success = true });
         }
 
         [Authorize(Roles = "admin")]
@@ -113,12 +122,13 @@ namespace CaseApplication.Resources.Api.Controllers
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == id);
 
-            if (inventory is null) return NotFound();
+            if (inventory is null)
+                return NotFound(new { Error = "Data was not found", Success = false });
 
             context.CaseInventory.Remove(inventory);
             await context.SaveChangesAsync();
 
-            return Ok();
+            return Ok(new { Message = "CaseInventory succesfully deleted", Success = true });
         }
     }
 }

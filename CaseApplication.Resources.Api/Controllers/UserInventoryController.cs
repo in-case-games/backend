@@ -31,7 +31,9 @@ namespace CaseApplication.Resources.Api.Controllers
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == id);
 
-            return inventory is null ? NotFound() : Ok(inventory);
+            return inventory is null ?
+                NotFound(new { Error = "Data was not found", Success = false }) :
+                Ok(new { Data = inventory, Success = true });
         }
 
         [Authorize]
@@ -46,7 +48,7 @@ namespace CaseApplication.Resources.Api.Controllers
                 .Where(x => x.UserId == UserId)
                 .ToListAsync();
 
-            return Ok(inventories);
+            return Ok(new { Data = inventories, Success = true });
         }
 
         [Authorize]
@@ -61,7 +63,7 @@ namespace CaseApplication.Resources.Api.Controllers
                 .Where(x => x.UserId == userId)
                 .ToListAsync();
 
-            return Ok(inventories);
+            return Ok(new { Data = inventories, Success = true });
         }
     }
 }

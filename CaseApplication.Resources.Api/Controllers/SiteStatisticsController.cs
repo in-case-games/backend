@@ -27,11 +27,12 @@ namespace CaseApplication.Resources.Api.Controllers
                 .AsNoTracking()
                 .FirstOrDefaultAsync();
 
-            if (statistics == null) return NotFound();
+            if (statistics == null) 
+                return NotFound(new { Error = "Data was not found", Success = false });
             
             statistics.SiteBalance = 0;
 
-            return Ok(statistics);
+            return Ok(new { Data = statistics, Success = true });
         }
     }
 }
