@@ -146,7 +146,7 @@ namespace CaseApplication.Resources.Api.Controllers
                 "Администрация сайта",
                 new EmailTemplate()
                 {
-                    Body = $"Имя вашего акканута измененно на: {login}"
+                    BodyDescription = $"Имя вашего акканута измененно на: {login}"
                 });
 
             return Ok(new { Success = true, Message = "Account properties was changed.", Changed = "Login" });

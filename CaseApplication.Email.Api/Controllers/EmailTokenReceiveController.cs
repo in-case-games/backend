@@ -142,7 +142,7 @@ namespace CaseApplication.Email.Api.Controllers
                 "Администрация сайта",
                 new EmailTemplate()
                 {
-                    Body = $"Вы изменили email аккаунта"
+                    BodyDescription = $"Вы изменили email аккаунта"
                 });
             return Ok(new { Success = true, Message = "Email was changed" });
         }
@@ -177,7 +177,7 @@ namespace CaseApplication.Email.Api.Controllers
                 "Администрация сайта",
                 new EmailTemplate()
                 {
-                    Body = $"Вы сменили пароль"
+                    BodyDescription = $"Вы сменили пароль"
                 });
 
             return Ok(new { Success = true, Message = "Password was changed" });
@@ -205,7 +205,7 @@ namespace CaseApplication.Email.Api.Controllers
                 "Администрация сайта",
                 new EmailTemplate()
                 {
-                    Body = $"Ваш аккаунт будет удален через 30 дней"
+                    BodyDescription = $"Ваш аккаунт будет удален через 30 дней"
                 });
 
             //TODO No delete give the user 30 days

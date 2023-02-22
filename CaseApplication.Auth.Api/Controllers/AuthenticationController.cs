@@ -83,7 +83,7 @@ namespace CaseApplication.Api.Controllers
                     "Администрация сайта",
                     new EmailTemplate()
                     {
-                        Body = $"Превышенно количество сессий для входа в аккаунт. " +
+                        BodyDescription = $"Превышенно количество сессий для входа в аккаунт. " +
                         $"Чтобы войти под новым устройством, выйдите с прошлого"
                     });
 
@@ -154,7 +154,7 @@ namespace CaseApplication.Api.Controllers
                 UserEmail = user.UserEmail!,
                 UserId = user.Id,
                 EmailToken = _jwtHelper.GenerateEmailToken(user)
-            });
+            }, user.UserLogin!);
 
             return Ok(new { Success = true,
                 Message = "Registation success. Check your email for the following actions" });
