@@ -30,7 +30,9 @@ namespace CaseApplication.Resources.Api.Controllers
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.RoleName == name);
 
-            return role is null ? NotFound(): Ok(role);
+            return role is null ?
+                NotFound(new { Error = "Data was not found", Success = false }) :
+                Ok(new { Data = role, Success = true });
         }
 
         [AllowAnonymous]
@@ -39,9 +41,13 @@ namespace CaseApplication.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            return Ok(await context.UserRole
+            return Ok(new
+            {
+                Data = await context.UserRole
                 .AsNoTracking()
-                .ToListAsync());
+                .ToListAsync(),
+                Success = true
+            });
         }
 
         [Authorize(Roles = "admin")]
@@ -55,7 +61,7 @@ namespace CaseApplication.Resources.Api.Controllers
             await context.UserRole.AddAsync(role);
             await context.SaveChangesAsync();
 
-            return Ok();
+            return Ok(new { Message = "Role succesfully created", Success = true });
         }
 
         [Authorize(Roles = "admin")]
@@ -67,12 +73,13 @@ namespace CaseApplication.Resources.Api.Controllers
             UserRole? oldRole = await context.UserRole
                 .FirstOrDefaultAsync(x => x.Id == role.Id);
 
-            if (oldRole is null) return NotFound();
+            if (oldRole is null) 
+                return NotFound(new { Error = "Data was not found", Success = false });
 
             context.Entry(oldRole).CurrentValues.SetValues(role);
             await context.SaveChangesAsync();
 
-            return Ok();
+            return Ok(new { Message = "Role succesfully updated", Success = true });
         }
 
         [Authorize(Roles = "admin")]
@@ -85,12 +92,13 @@ namespace CaseApplication.Resources.Api.Controllers
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == id);
 
-            if (role is null) return NotFound();
+            if (role is null) 
+                return NotFound(new { Error = "Data was not found", Success = false });
 
             context.UserRole.Remove(role);
             await context.SaveChangesAsync();
 
-            return Ok();
+            return Ok(new { Message = "Role succesfully deleted", Success = true });
         }
     }
 }

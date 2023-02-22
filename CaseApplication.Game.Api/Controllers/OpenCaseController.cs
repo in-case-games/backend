@@ -33,7 +33,7 @@ namespace CaseApplication.Game.Api.Controllers
                 .Include(x => x.СaseInventories)
                 .FirstOrDefaultAsync(x => x.Id == caseId);
 
-            if (userInfo is null || gameCase is null) return NotFound();
+            if (userInfo is null || gameCase is null) return NotFound(new { Error = "Data was not found", Success = false });
             if (userInfo.UserBalance < gameCase.GameCaseCost) return Forbid();
 
             //Update Balance Case and User
@@ -69,7 +69,7 @@ namespace CaseApplication.Game.Api.Controllers
 
             await context.SaveChangesAsync();
 
-            return Ok(winGameItem);
+            return Ok(new { Data = winGameItem, Success = true });
         }
         // TODO: Rebase this
         #region nonAction

@@ -107,7 +107,7 @@ namespace CaseApplication.Email.Api.Controllers
             await context.UserToken.AddAsync(newUserToken);
             await context.SaveChangesAsync();
 
-            return Ok(tokenModel);
+            return Ok(new { Data = tokenModel, Success = true });
         }
 
         [AllowAnonymous]

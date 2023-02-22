@@ -37,7 +37,9 @@ namespace CaseApplication.Resources.Api.Controllers
                 .Include(x => x.UserRole)
                 .FirstOrDefaultAsync(x => x.UserId == UserId);
 
-            return info is null ? NotFound() : Ok(info);
+            return info is null ?
+                NotFound(new { Error = "Data was not found", Success = false }) :
+                Ok(new { Data = info, Success = true });
         }
 
         [Authorize(Roles = "admin")]
@@ -50,14 +52,15 @@ namespace CaseApplication.Resources.Api.Controllers
             UserAdditionalInfo? oldInfo = await context.UserAdditionalInfo
                 .FirstOrDefaultAsync(x => x.Id == newInfoDto.Id);
 
-            if (oldInfo is null) return NotFound();
+            if (oldInfo is null) 
+                return NotFound(new { Error = "Data was not found", Success = false });
 
             UserAdditionalInfo newInfo = mapper.Map<UserAdditionalInfo>(newInfoDto);
 
             context.Entry(oldInfo).CurrentValues.SetValues(newInfo);
             await context.SaveChangesAsync();
 
-            return Ok();
+            return Ok(new { Message = "UserInfo succesfully updated", Success = true });
         }
     }
 }

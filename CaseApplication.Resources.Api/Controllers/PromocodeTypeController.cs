@@ -26,7 +26,9 @@ namespace CaseApplication.Resources.Api.Controllers
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.PromocodeTypeName == name);
 
-            return type is null ? NotFound(): Ok(type);
+            return type is null ?
+                NotFound(new { Error = "Data was not found", Success = false }) :
+                Ok(new { Data = type, Success = true });
         }
 
         [AllowAnonymous]
@@ -35,9 +37,13 @@ namespace CaseApplication.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            return Ok(await context.PromocodeType
+            return Ok(new
+            {
+                Data = await context.PromocodeType
                 .AsNoTracking()
-                .ToListAsync());
+                .ToListAsync(),
+                Success = true
+            });
         }
 
         [Authorize(Roles = "admin")]
@@ -51,7 +57,7 @@ namespace CaseApplication.Resources.Api.Controllers
             await context.PromocodeType.AddAsync(type);
             await context.SaveChangesAsync();
 
-            return Ok();
+            return Ok(new { Message = "PromocodeType succesfully created", Success = true });
         }
 
         [Authorize(Roles = "admin")]
@@ -63,12 +69,13 @@ namespace CaseApplication.Resources.Api.Controllers
             PromocodeType? oldType = await context.PromocodeType
                 .FirstOrDefaultAsync(x => x.Id == newType.Id);
 
-            if (oldType is null) return NotFound();
+            if (oldType is null) 
+                return NotFound(new { Error = "Data was not found", Success = false });
 
             context.Entry(oldType).CurrentValues.SetValues(newType);
             await context.SaveChangesAsync();
 
-            return Ok();
+            return Ok(new { Message = "PromocodeType succesfully updated", Success = true });
         }
 
         [Authorize(Roles = "admin")]
@@ -81,12 +88,13 @@ namespace CaseApplication.Resources.Api.Controllers
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == id);
 
-            if (type is null)return NotFound();
+            if (type is null)
+                return NotFound(new { Error = "Data was not found", Success = false });
 
             context.PromocodeType.Remove(type);
             await context.SaveChangesAsync();
 
-            return Ok();
+            return Ok(new { Message = "PromocodeType succesfully deleted", Success = true });
         }
     }
 }

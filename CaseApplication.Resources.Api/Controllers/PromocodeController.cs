@@ -36,12 +36,14 @@ namespace CaseApplication.Resources.Api.Controllers
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.PromocodeName == name);
 
-            if (promocode == null) return NotFound();
+            if (promocode == null) 
+                return NotFound(new { Error = "Data was not found", Success = false });
 
             bool isUsedPromocode = await context.PromocodeUsedByUsers.AnyAsync(
                 x => x.PromocodeId == promocode.Id && x.UserId == UserId);
 
-            if (isUsedPromocode) return UnprocessableEntity("Promocode is used");
+            if (isUsedPromocode) 
+                return UnprocessableEntity("Promocode is used");
 
             PromocodesUsedByUser promocodesUsedByUser = new() { 
                 Id = new Guid(),
@@ -52,7 +54,7 @@ namespace CaseApplication.Resources.Api.Controllers
             await context.PromocodeUsedByUsers.AddAsync(promocodesUsedByUser);
             await context.SaveChangesAsync();
 
-            return Ok();
+            return Ok(new { Message = "Promocode succesfully activated", Success = true });
         }
 
         [Authorize(Roles = "admin")]
@@ -66,7 +68,9 @@ namespace CaseApplication.Resources.Api.Controllers
                 .Include(x => x.PromocodeType)
                 .FirstOrDefaultAsync(x => x.PromocodeName == name);
 
-            return promocode is null ? NotFound() : Ok(promocode);
+            return promocode is null ?
+                NotFound(new { Error = "Data was not found", Success = false }) :
+                Ok(promocode);
         }
 
         [Authorize(Roles = "admin")]
@@ -82,7 +86,7 @@ namespace CaseApplication.Resources.Api.Controllers
             await context.Promocode.AddAsync(promocode);
             await context.SaveChangesAsync();
 
-            return Ok();
+            return Ok(new { Message = "Promocode succesfully created", Success = true });
         }
 
         [Authorize(Roles = "admin")]
@@ -94,7 +98,8 @@ namespace CaseApplication.Resources.Api.Controllers
             Promocode? oldPromocode = await context.Promocode
                 .FirstOrDefaultAsync(x => x.Id == promocodeDto.Id);
 
-            if (oldPromocode is null) return NotFound();
+            if (oldPromocode is null) 
+                return NotFound(new { Error = "Data was not found", Success = false });
 
             IMapper mapper = _mapperConfiguration.CreateMapper();
             Promocode promocode = mapper.Map<Promocode>(promocodeDto);
@@ -103,7 +108,7 @@ namespace CaseApplication.Resources.Api.Controllers
 
             await context.SaveChangesAsync();
 
-            return Ok();
+            return Ok(new { Message = "Promocode succesfully updated", Success = true });
         }
 
         [Authorize(Roles = "admin")]
@@ -116,12 +121,13 @@ namespace CaseApplication.Resources.Api.Controllers
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == id);
 
-            if (promocode is null) return NotFound();
+            if (promocode is null) 
+                return NotFound(new { Error = "Data was not found", Success = false });
 
             context.Promocode.Remove(promocode);
             await context.SaveChangesAsync();
 
-            return Ok();
+            return Ok(new { Message = "Promocode succesfully deleted", Success = true });
         }
     }
 }

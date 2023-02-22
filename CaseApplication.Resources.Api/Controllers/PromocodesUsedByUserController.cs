@@ -30,7 +30,9 @@ namespace CaseApplication.Resources.Api.Controllers
                 .Include(x => x.Promocode)
                 .FirstOrDefaultAsync(x => x.Id == id);
 
-            return promocodeUsed is null ? NotFound() : Ok(promocodeUsed);
+            return promocodeUsed is null ?
+                NotFound(new { Error = "Data was not found", Success = false }) :
+                Ok(new { Data = promocodeUsed, Success = true });
         }
 
         [Authorize]
@@ -39,11 +41,15 @@ namespace CaseApplication.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            return Ok(await context.PromocodeUsedByUsers
+            return Ok(new
+            {
+                Data = await context.PromocodeUsedByUsers
                 .AsNoTracking()
                 .Include(x => x.Promocode)
                 .Where(x => x.UserId == UserId)
-                .ToListAsync());
+                .ToListAsync(),
+                Success = true
+            });
         }
     }
 }
