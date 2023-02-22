@@ -156,7 +156,7 @@ namespace CaseApplication.Api.Controllers
                 EmailToken = _jwtHelper.GenerateEmailToken(user)
             });
 
-            return Ok(new { Success = "true",
+            return Ok(new { Success = true,
                 Message = "Registation success. Check your email for the following actions" });
         }
 
