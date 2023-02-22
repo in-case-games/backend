@@ -2,16 +2,12 @@
 
 namespace CaseApplication.Domain.Entities.Payment
 {
-    public class RequestInvoiceStatusGM
+    public class RequestInvoiceStatusGM: PaymentEntity
     {
-        [JsonPropertyName("project")]
-        public int ProjectId { get; set; }
-        [JsonPropertyName("invoice")]
-        public int InvoiceId { get; set; }
-        [JsonPropertyName("projectId")]
-        public string? Rand { get; set; }
-        [JsonPropertyName("signature")]
-        public string? SignatureHMAC { get; set; }
+        [JsonPropertyName("project")] public int ProjectId { get; set; }
+        [JsonPropertyName("invoice")] public int InvoiceId { get; set; }
+        [JsonPropertyName("projectId")] public string? Rand { get; set; }
+        [JsonPropertyName("signature")] public string? SignatureHMAC { get; set; }
 
         public override string ToString()
         {

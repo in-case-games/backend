@@ -3,6 +3,7 @@ using System.Text;
 using System.Text.Json;
 using Microsoft.Extensions.Configuration;
 using CaseApplication.Domain.Entities.Payment;
+using CaseApplication.Domain.Endpoints;
 
 namespace CaseApplication.Infrastructure.Services
 {
@@ -21,7 +22,6 @@ namespace CaseApplication.Infrastructure.Services
 
         public async Task<ResponseBalanceGM?> GetBalanceInfoGM(string currency)
         {
-            string url = "https://paygate.gamemoney.com/statistics/balance";
             RequestBalanceGM requestBalanceInfo = new()
             {
                 Currency = currency,
@@ -31,100 +31,63 @@ namespace CaseApplication.Infrastructure.Services
             string hash = requestBalanceInfo.ToString();
             requestBalanceInfo.SignatureHMAC = _rsaService.GenerateHMAC(Encoding.ASCII.GetBytes(hash));
 
-            JsonContent json = JsonContent.Create(requestBalanceInfo);
-            HttpResponseMessage response = await _httpClient.PostAsync(url, json);
-
-            if (!response.IsSuccessStatusCode)
-            {
-                throw new Exception(
-                    response.StatusCode.ToString() +
-                    response.RequestMessage! +
-                    response.Headers +
-                    response.ReasonPhrase! +
-                    response.Content);
-            }
-
-            return await response.Content
-                .ReadFromJsonAsync<ResponseBalanceGM?>(
-                new JsonSerializerOptions(JsonSerializerDefaults.Web));
+            return await PaymentResponse<ResponseBalanceGM, RequestBalanceGM>
+                (PaygateEndpoint.Balance, requestBalanceInfo);
         }
 
         //TODO
         public async Task<ResponseInsertGM?> TransferGMBalanceToTM(decimal ammount)
         {
-            string url = "https://paygate.gamemoney.com/checkout/insert";
-
             RequestInsertGM requestInsertGM = new()
             {
                 ProjectId = int.Parse(_configuration["GameMoney:projectId"]!),
                 PaymentId = new Guid(),
                 UserId = new Guid(),
                 UserIp = "1.0.1",
-                PaymentAmount = ammount,
-                Wallet = "STEAM_0:0:162919723",
-                Type = "market",
-                Description = "transfer balance gm to tm",
+                PaymentAmount = ammount
             };
 
             byte[] hash = Encoding.ASCII.GetBytes(requestInsertGM.ToString());
             requestInsertGM.SignatureRSA = Encoding.ASCII.GetString(_rsaService.SignData(hash));
 
-            JsonContent json = JsonContent.Create(requestInsertGM);
-            HttpResponseMessage response = await _httpClient.PostAsync(url, json);
-
-            if (!response.IsSuccessStatusCode)
-            {
-                throw new Exception(
-                    response.StatusCode.ToString() +
-                    response.RequestMessage! +
-                    response.Headers +
-                    response.ReasonPhrase! +
-                    response.Content);
-            }
-
-            return await response.Content
-                .ReadFromJsonAsync<ResponseInsertGM>(
-                new JsonSerializerOptions(JsonSerializerDefaults.Web));
+            return await PaymentResponse<ResponseInsertGM, RequestInsertGM>
+                (PaygateEndpoint.Transfer, requestInsertGM);
         }
 
         public async Task<ResponseInvoiceStatusGM?> GetInvoiceStatusInfo(int invoice)
         {
-            string url = "https://paygate.gamemoney.com/invoice/status";
-
             RequestInvoiceStatusGM requestInvoice = new()
             {
                 ProjectId = int.Parse(_configuration["GameMoney:projectId"]!),
                 InvoiceId = invoice,
             };
 
-            string hash = requestInvoice.ToString();
-            requestInvoice.SignatureHMAC = _rsaService.GenerateHMAC(Encoding.ASCII.GetBytes(hash));
+            requestInvoice.SignatureHMAC = _rsaService.GenerateHMAC(Encoding.ASCII.GetBytes(requestInvoice.ToString()));
 
-            JsonContent json = JsonContent.Create(requestInvoice);
+            return await PaymentResponse<ResponseInvoiceStatusGM, RequestInvoiceStatusGM>
+                (PaygateEndpoint.InvoiceInfo, requestInvoice);
+        }
+        public async Task<T> PaymentResponse<T, O>(string url, O entity) where T: PaymentEntity
+        {
+            JsonContent json = JsonContent.Create(entity);
             HttpResponseMessage response = await _httpClient.PostAsync(url, json);
 
             if (!response.IsSuccessStatusCode)
-            {
-                throw new Exception(
-                    response.StatusCode.ToString() +
-                    response.RequestMessage! +
-                    response.Headers +
-                    response.ReasonPhrase! +
-                    response.Content);
-            }
+                throw new Exception(response.StatusCode.ToString() + response.RequestMessage!);
 
-            return await response.Content
-                .ReadFromJsonAsync<ResponseInvoiceStatusGM>(
+            T? responseEntity =  await response.Content
+                .ReadFromJsonAsync<T>(
                 new JsonSerializerOptions(JsonSerializerDefaults.Web));
-        }
 
+            return responseEntity!;
+        }
         public string CreateHashOfDataForDeposit(Guid userId)
         {
             return $"project:{_configuration["GameMoney:projectId"]};" +
-                $"user:{userId};" +
-                $"currency:{_configuration["GameMoney:currency"]};" +
-                $"success_url:{_configuration["GameMoney:url:success"]};" +
-                $"fail_url:{_configuration["GameMoney:url:fail"]};";
+                   $"user:{userId};" +
+                   $"currency:{_configuration["GameMoney:currency"]};" +
+                   $"success_url:{_configuration["GameMoney:url:success"]};" +
+                   $"fail_url:{_configuration["GameMoney:url:fail"]};";
         }
     }
 }

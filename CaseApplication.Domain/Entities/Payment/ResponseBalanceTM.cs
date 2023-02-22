@@ -2,9 +2,8 @@
 
 namespace CaseApplication.Domain.Entities.Payment
 {
-    public class ResponseBalanceTM
+    public class ResponseBalanceTM: PaymentEntity
     {
-        [JsonPropertyName("money")]
-        public decimal Money { get; set; }
+        [JsonPropertyName("money")] public decimal Money { get; set; }
     }
 }

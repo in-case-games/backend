@@ -2,22 +2,15 @@
 
 namespace CaseApplication.Domain.Entities.Payment
 {
-    public class ResponsePaymentGM
+    public class ResponsePaymentGM: PaymentEntity
     {
-        [JsonPropertyName("state")]
-        public string? StatusAnswer { get; set; }
-        [JsonPropertyName("invoice")]
-        public int Invoice { get; set; }
-        [JsonPropertyName("type")]
-        public string? TypeAnswer { get; set; }
-        [JsonPropertyName("data")]
-        public string? ParametersAnswer { get; set; }
-        [JsonPropertyName("rand")]
-        public string? Rand { get; set;}
-        [JsonPropertyName("time")]
-        public int SendTimeAnswer { get; set; }
-        [JsonPropertyName("signature")]
-        public string? SignatureRSA { get; set; }
+        [JsonPropertyName("state")] public string? StatusAnswer { get; set; }
+        [JsonPropertyName("invoice")] public int Invoice { get; set; }
+        [JsonPropertyName("type")] string? TypeAnswer { get; set; }
+        [JsonPropertyName("data")] public string? ParametersAnswer { get; set; }
+        [JsonPropertyName("rand")] public string? Rand { get; set;}
+        [JsonPropertyName("time")] public int SendTimeAnswer { get; set; }
+        [JsonPropertyName("signature")] public string? SignatureRSA { get; set; }
 
         public override string ToString()
         {

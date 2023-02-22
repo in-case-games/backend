@@ -2,13 +2,10 @@
 
 namespace CaseApplication.Domain.Entities.Payment
 {
-    public class OfferTM
+    public class OfferTM: PaymentEntity
     {
-        [JsonPropertyName("price")]
-        public string? Price { get; set; }
-        [JsonPropertyName("count")]
-        public string? Count { get; set; }
-        [JsonPropertyName("my_count")]
-        public string? MyCount { get; set; }
+        [JsonPropertyName("price")] public string? Price { get; set; }
+        [JsonPropertyName("count")] public string? Count { get; set; }
+        [JsonPropertyName("my_count")] public string? MyCount { get; set; }
     }
 }

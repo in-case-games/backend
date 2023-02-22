@@ -1,6 +1,6 @@
 ﻿namespace CaseApplication.Domain.Entities.Payment
 {
-    public class DataWithdrawItem
+    public class DataWithdrawItem: PaymentEntity
     {
         public Guid GameItemId { get; set; }
         public string? SteamTradePartner { get; set; }
