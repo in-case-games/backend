@@ -79,6 +79,10 @@ namespace CaseApplication.Email.Api.Controllers
                         UserEmail = user.UserEmail!
                     }
                     , user.UserLogin!);
+
+                await context.SaveChangesAsync();
+
+                return Ok(new { Data = "You can join account", Success = true });
             }
             else
             {
