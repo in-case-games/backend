@@ -40,15 +40,40 @@ namespace CaseApplication.Email.Api.Controllers
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             User? user = await context.User
+                .Include(x => x.UserAdditionalInfo)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == emailModel.UserId);
 
             if (user == null) return NotFound();
             if (user.UserEmail != emailModel.UserEmail) return Forbid();
 
+            UserAdditionalInfo userInfo = user.UserAdditionalInfo!;
             emailModel.EmailToken = _jwtHelper.GenerateEmailToken(user);
 
-            await _emailHelper.SendConfirmAccountToEmail(emailModel);
+            if (userInfo.IsConfirmedAccount is false)
+            {
+                userInfo.IsConfirmedAccount = true;
+
+                await _emailHelper.SendConfirmationAccountToEmail(
+                    new DataMailLink()
+                    {
+                        UserEmail = user.UserEmail!
+                    }
+                    , user.UserLogin!);
+
+                await context.SaveChangesAsync();
+
+                return Ok(new { Data = "You can join account", Success = true });
+            }
+            else
+            {
+                await _emailHelper.SendAccountLoginAttempt(
+                    new DataMailLink()
+                    {
+                        UserEmail = user.UserEmail!
+                    }
+                    , user.UserLogin!);
+            }
 
             return Accepted(new { Message = "Message was sended on your email", Success = true });
         }
@@ -68,10 +93,13 @@ namespace CaseApplication.Email.Api.Controllers
 
             emailModel.EmailToken = _jwtHelper.GenerateEmailToken(user);
 
-            await _emailHelper.SendChangePasswordToEmail(emailModel);
+            await _emailHelper.SendChangePasswordToEmail(emailModel, user.UserLogin!);
 
             return Accepted(new { Message = "Message was sended on your email", Success = true });
         }
+
+        //TODO SendConfirmUpdateEmail => SendConfirmNewEmail => UpdateEmail
+        //TODO SendConfirmNewEmail it's confirm email another
 
         [Authorize]
         [HttpPut("email/{password}")]
@@ -147,7 +175,7 @@ namespace CaseApplication.Email.Api.Controllers
                 throw new ArgumentException("Invalid data");
 
             MapEmailModelForSend(ref emailModel, user);
-            await _emailHelper.SendDeleteAccountToEmail(emailModel);
+            await _emailHelper.SendDeleteAccountToEmail(emailModel, user.UserLogin!);
         }
 
         private void MapEmailModelForSend(ref DataMailLink emailModel, User user)
