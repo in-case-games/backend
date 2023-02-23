@@ -41,7 +41,7 @@ namespace CaseApplication.Infrastructure.Services
 
             if (principal is null) return false;
 
-            string email = principal.Claims.FirstOrDefault(x => x.ValueType == "UserEmail")!.Value;
+            string? email = principal.Claims.FirstOrDefault(x => x.Type == "UserEmail")?.Value;
 
             bool IsNoChangeEmail = email == user.UserEmail;
             bool IsNoUsed = user.UserTokens!.Any(x => x.EmailToken == token) is false;

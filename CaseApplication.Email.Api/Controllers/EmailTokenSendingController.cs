@@ -48,20 +48,16 @@ namespace CaseApplication.Email.Api.Controllers
             if (user.UserEmail != data.UserEmail) return Forbid();
 
             UserAdditionalInfo userInfo = user.UserAdditionalInfo!;
+            MapEmailModelForSend(ref data, in user);
             data.EmailToken = _jwtHelper.GenerateEmailToken(user);
 
             if (userInfo.IsConfirmedAccount is false)
             {
-                userInfo.IsConfirmedAccount = true;
-
-                await _emailHelper.SendSuccessVerifedAccount(data, user.UserLogin!);
-
-                await context.SaveChangesAsync();
-
+                await _emailHelper.SendSignUp(data, user.UserLogin!);
                 return Ok(new { Data = "You can join account", Success = true });
             }
-            else
-                await _emailHelper.SendLoginAttempt(data, user.UserLogin!);
+            
+            await _emailHelper.SendSignIn(data, user.UserLogin!);
 
             return Accepted(new { Message = "Message was sended on your email", Success = true });
         }
