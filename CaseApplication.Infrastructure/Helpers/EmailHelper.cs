@@ -34,9 +34,9 @@ namespace CaseApplication.Infrastructure.Helpers
             await _emailService.SendToEmail(email, subject, body);
         }
 
-        public async Task SendSignUpAccountToEmail(DataMailLink emailModel, string userName)
+        public async Task SendSignUp(DataMailLink emailModel, string userName)
         {
-            string subject = "Вы успешно зарегистрированы!";
+            string subject = "Подтверждение регистрации.";
             string uri = $"{_requestUrl}/email/api/EmailTokenReceive/confirm/" +
                 $"{emailModel.UserId}&{emailModel.EmailToken}" +
                 $"?ip={emailModel.UserIp}&platform={emailModel.UserPlatforms}";
@@ -46,28 +46,28 @@ namespace CaseApplication.Infrastructure.Helpers
             await _emailService.SendToEmail(emailModel.UserEmail, subject, body);
         }
 
-        public async Task SendSignInAccountToEmail(DataMailLink emailModel, string userName)
+        public async Task SendSignIn(DataMailLink emailModel, string userName)
         {
             string subject = "Подтверждение входа.";
             string uri = $"{_requestUrl}/email/api/EmailTokenReceive/confirm/" +
                 $"{emailModel.UserId}&{emailModel.EmailToken}" +
                 $"?ip={emailModel.UserIp}&platform={emailModel.UserPlatforms}";
             string patternBody = $"<div style=\"font-family:'Google Sans',Roboto,RobotoDraft,Helvetica,Arial,sans-serif;line-height:32px;padding-bottom:18px;text-align:center;word-break:break-word\">\r\n    <div style=\"font-size:22px; color: #BDEED6;\">Дорогой {userName}</div>\r\n</div>\r\n<div style=\"font-family:Roboto-Regular,Helvetica,Arial,sans-serif;font-size:16px;line-height:20px;text-align:center;color: #BDEED6;\">\r\n    <div style=\"color: #BDEED6;\">\r\n        Подтвердите вход в аккаунт с устройства {emailModel.UserPlatforms}. \r\n        Если это были не вы, то срочно измените пароль в настройках вашего аккаунта, вас автоматически отключит со всех устройств.\r\n    </div>\r\n    <div style=\"color: #BDEED6;\">\r\n        С уважением команда InCase\r\n    </div>\r\n    <div style=\"padding-top:50px;text-align:center\">\r\n        <a href=\"{uri}\" style=\"text-decoration: none; margin: 30px 0; cursor: pointer; background-color: transparent; font-family: 'Google Sans',Roboto,RobotoDraft,Helvetica,Arial,sans-serif; font-weight: bold; padding: 10px 75px; font-size: 16px; color: #BDEED6; border: 2px solid #BDEED6; border-radius: 8px;\" target=\"_blank\" data-saferedirecturl=\"ya.ru\">\r\n            Подтвердить\r\n        </a>\r\n    </div>\r\n</div>";
-            string body = CreateEmailTemplate("Подтверждение", "входа", body: patternBody);
+            string body = CreateEmailTemplate("Подтверждение", "входа", patternBody);
 
             await _emailService.SendToEmail(emailModel.UserEmail, subject, body);
         }
 
-        public async Task SendConfirmationAccountToEmail(DataMailLink emailModel, string userName)
+        public async Task SendSuccessVerifedAccount(DataMailLink emailModel, string userName)
         {
             string subject = "Подтверждение входа.";
             string patternBody = $"<div style=\"font-family:'Google Sans',Roboto,RobotoDraft,Helvetica,Arial,sans-serif;line-height:32px;padding-bottom:18px;text-align:center;word-break:break-word\">\r\n<div style=\"font-size:22px; color: #BDEED6;\">Добро пожаловать, {userName}</div>\r\n</div>\r\n<div style=\"font-family:Roboto-Regular,Helvetica,Arial,sans-serif;font-size:16px;line-height:20px;text-align:center;color: #BDEED6;\">\r\n<div style=\"color: #BDEED6;\">\r\nМы рады, что вы новый участник нашего проекта.\r\nНадеемся, что вам понравится наша реализация открытия кейсов и подарит множество эмоций и новых предметов\r\n</div>\r\n<div style=\"color: #BDEED6;\">\r\nС уважением команда InCase\r\n</div>\r\n</div>"; 
-            string body = CreateEmailTemplate("Подтверждение", "регистрации", body: patternBody);
+            string body = CreateEmailTemplate("Подтверждение", "регистрации", patternBody);
 
             await _emailService.SendToEmail(emailModel.UserEmail, subject, body);
         }
 
-        public async Task SendAccountLoginAttempt(DataMailLink emailModel, string userName)
+        public async Task SendLoginAttempt(DataMailLink emailModel, string userName)
         {
             string subject = "Вход в аккаунт.";
             string patternBody = $"<div style=\"font-family:'Google Sans',Roboto,RobotoDraft,Helvetica,Arial,sans-serif;line-height:32px;padding-bottom:18px;text-align:center;word-break:break-word\">\r\n<div style=\"font-size:22px; color: #BDEED6;\">Добро пожаловать, {userName}</div>\r\n</div>\r\n<div style=\"font-family:Roboto-Regular,Helvetica,Arial,sans-serif;font-size:16px;line-height:20px;text-align:center;color: #BDEED6;\">\r\n<div style=\"color: #BDEED6;\">\r\nВ ваш аккаунт вошли с {emailModel.UserPlatforms}. \r\nЕсли это были не вы, то срочно измените пароль в настройках вашего аккаунта, вас автоматически отключит со всех устройств.\r\n</div>\r\n<div style=\"color: #BDEED6;\">\r\nС уважением команда InCase\r\n</div>\r\n</div>";
@@ -76,7 +76,7 @@ namespace CaseApplication.Infrastructure.Helpers
             await _emailService.SendToEmail(emailModel.UserEmail, subject, body);
         }
 
-        public async Task SendDeleteAccountToEmail(DataMailLink emailModel, string userName)
+        public async Task SendDeleteAccount(DataMailLink emailModel, string userName)
         {
             string subject = "Подтвердите удаление аккаунта";
             string uri = $"{_requestUrl}/User/{emailModel.UserId}&{emailModel.EmailToken}";
@@ -86,7 +86,7 @@ namespace CaseApplication.Infrastructure.Helpers
             await _emailService.SendToEmail(emailModel.UserEmail, subject, body);
         }
 
-        public async Task SendChangePasswordToEmail(DataMailLink emailModel, string userName)
+        public async Task SendChangePassword(DataMailLink emailModel, string userName)
         {
             string subject = "Подтвердите изменение пароля";
             string uri = $"{_requestUrl}/User/{emailModel.UserId}&{emailModel.EmailToken}";
@@ -96,7 +96,7 @@ namespace CaseApplication.Infrastructure.Helpers
             await _emailService.SendToEmail(emailModel.UserEmail, subject, body);
         }
 
-        public async Task SendChangeEmailToEmail(DataMailLink emailModel, string userName)
+        public async Task SendChangeEmail(DataMailLink emailModel, string userName)
         {
             string subject = "Подтвердите изменение почты";
             string uri = $"{_requestUrl}/User/{emailModel.UserId}&{emailModel.EmailToken}";
@@ -112,18 +112,6 @@ namespace CaseApplication.Infrastructure.Helpers
             string uri = $"{_requestUrl}/User/{emailModel.UserId}&{emailModel.EmailToken}";
             string patternBody = $"<div style=\"font-family:'Google Sans',Roboto,RobotoDraft,Helvetica,Arial,sans-serif;line-height:32px;padding-bottom:18px;text-align:center;word-break:break-word\">\r\n<div style=\"font-size:22px; color: #BDEED6;\">Дорогой, {userName}</div>\r\n</div>\r\n<div style=\"font-family:Roboto-Regular,Helvetica,Arial,sans-serif;font-size:16px;line-height:20px;text-align:center;color: #BDEED6;\">\r\n<div style=\"color: #BDEED6;\">\r\nПодтвердите, что это ваш новый email. Отправка с устройства {emailModel.UserPlatforms}. \r\nЕсли это были не вы, то срочно измените пароль в настройках вашего аккаунта, вас автоматически отключит со всех устройств\r\n</div>\r\n<div style=\"color: #BDEED6;\">\r\nС уважением команда InCase\r\n</div>\r\n<div style=\"padding-top:50px;text-align:center\">\r\n<a href=\"{uri}\" style=\"text-decoration: none; margin: 30px 0; cursor: pointer; background-color: transparent; font-family: 'Google Sans',Roboto,RobotoDraft,Helvetica,Arial,sans-serif; font-weight: bold; padding: 10px 75px; font-size: 16px; color: #BDEED6; border: 2px solid #BDEED6; border-radius: 8px;\" target=\"_blank\" data-saferedirecturl=\"ya.ru\">\r\nПодтвердить\r\n</a>\r\n</div>\r\n</div>";
             string body = CreateEmailTemplate("Смена", "почты", patternBody);
-
-            await _emailService.SendToEmail(emailModel.UserEmail, subject, body);
-        }
-
-        public async Task SendConfirmAccountToEmail(DataMailLink emailModel)
-        {
-            string subject = "Подтвердите вход в аккаунт";
-            string body = $"<b>" +
-                $"Link: {_requestUrl}/email/api/EmailTokenReceive/confirm/" +
-                $"{emailModel.UserId}&{emailModel.EmailToken}" +
-                $"?ip={emailModel.UserIp}&platform={emailModel.UserPlatforms}" +
-                $"</b>";
 
             await _emailService.SendToEmail(emailModel.UserEmail, subject, body);
         }

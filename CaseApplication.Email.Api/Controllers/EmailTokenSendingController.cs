@@ -35,154 +35,150 @@ namespace CaseApplication.Email.Api.Controllers
 
         [AllowAnonymous]
         [HttpPost]
-        public async Task<IActionResult> SendConfirm(DataMailLink emailModel)
+        public async Task<IActionResult> SendConfirmEmail(DataMailLink data)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             User? user = await context.User
                 .Include(x => x.UserAdditionalInfo)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.Id == emailModel.UserId);
+                .FirstOrDefaultAsync(x => x.Id == data.UserId);
 
             if (user == null) return NotFound();
-            if (user.UserEmail != emailModel.UserEmail) return Forbid();
+            if (user.UserEmail != data.UserEmail) return Forbid();
 
             UserAdditionalInfo userInfo = user.UserAdditionalInfo!;
-            emailModel.EmailToken = _jwtHelper.GenerateEmailToken(user);
+            data.EmailToken = _jwtHelper.GenerateEmailToken(user);
 
             if (userInfo.IsConfirmedAccount is false)
             {
                 userInfo.IsConfirmedAccount = true;
 
-                await _emailHelper.SendConfirmationAccountToEmail(
-                    new DataMailLink()
-                    {
-                        UserEmail = user.UserEmail!
-                    }
-                    , user.UserLogin!);
+                await _emailHelper.SendSuccessVerifedAccount(data, user.UserLogin!);
 
                 await context.SaveChangesAsync();
 
                 return Ok(new { Data = "You can join account", Success = true });
             }
             else
-            {
-                await _emailHelper.SendAccountLoginAttempt(
-                    new DataMailLink()
-                    {
-                        UserEmail = user.UserEmail!
-                    }
-                    , user.UserLogin!);
-            }
+                await _emailHelper.SendLoginAttempt(data, user.UserLogin!);
+
+            return Accepted(new { Message = "Message was sended on your email", Success = true });
+        }
+
+        [AllowAnonymous]
+        [HttpPost("email/confirm/{email}")]
+        public async Task<IActionResult> SendConfirmNewEmail(DataMailLink data)
+        {
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            User? user = await context.User
+                .Include(x => x.UserAdditionalInfo)
+                .Include(x => x.UserTokens)
+                .FirstOrDefaultAsync(x => x.Id == data.UserId);
+
+            if (user == null)
+                return NotFound(new { Message = "The user was not found", Success = false });
+
+            bool isValidToken = _validationService.IsValidEmailToken(in data, in user);
+            if (isValidToken is false) return Forbid("Invalid email token");
+
+            data.EmailToken = _jwtHelper.GenerateEmailToken(user);
+
+            MapEmailModelForSend(ref data, in user);
+            await _emailHelper.SendConfirmNewEmail(data, user.UserLogin!);
 
             return Accepted(new { Message = "Message was sended on your email", Success = true });
         }
 
         [AllowAnonymous]
         [HttpPut("password")]
-        public async Task<IActionResult> SendConfirmForgotPassword(DataMailLink emailModel)
+        public async Task<IActionResult> SendForgotPassword(DataMailLink data)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             User? user = await context.User
                 .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.Id == emailModel.UserId);
+                .FirstOrDefaultAsync(x => x.Id == data.UserId);
 
             if (user == null) return NotFound();
-            if (user.UserEmail != emailModel.UserEmail) return Forbid();
+            if (user.UserEmail != data.UserEmail) return Forbid();
 
-            emailModel.EmailToken = _jwtHelper.GenerateEmailToken(user);
+            data.EmailToken = _jwtHelper.GenerateEmailToken(user);
 
-            await _emailHelper.SendChangePasswordToEmail(emailModel, user.UserLogin!);
+            await _emailHelper.SendChangePassword(data, user.UserLogin!);
 
             return Accepted(new { Message = "Message was sended on your email", Success = true });
         }
 
-        //TODO SendConfirmUpdateEmail => SendConfirmNewEmail => UpdateEmail
-        //TODO SendConfirmNewEmail it's confirm email another
-
-        [Authorize]
+        [AllowAnonymous]
         [HttpPut("email/{password}")]
-        public async Task<IActionResult> SendConfirmUpdateEmail(DataMailLink emailModel, string password)
+        public async Task<IActionResult> SendChangeEmail(DataMailLink data, string password)
         {
-            try
-            {
-                await Send(emailModel, password);
-            }
-            catch (ArgumentException ex)
-            {
-                return Forbid(ex.Message);
-            }
-            catch (NullReferenceException ex)
-            {
-                return NotFound(new { Error = ex.Message, Success = false });
-            }
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            User? user = await context.User
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id == data.UserId);
+
+            if (user == null)
+                return NotFound(new { Message = "The user was not found", Success = false });
+            if (!_validationService.IsValidUserPassword(in user, password))
+                return Forbid("Invalid data");
+
+            MapEmailModelForSend(ref data, in user);
+            await _emailHelper.SendChangeEmail(data, user.UserLogin!);
 
             return Accepted(new { Message = "Message was sended on your email", Success = true });
         }
         
-        [Authorize]
+        [AllowAnonymous]
         [HttpPut("password/{password}")]
-        public async Task<IActionResult> SendConfirmUpdatePassword(DataMailLink emailModel, string password)
-        {
-            try
-            {
-                await Send(emailModel, password);
-            }
-            catch (ArgumentException ex)
-            {
-                return Forbid(ex.Message);
-            }
-            catch (NullReferenceException ex)
-            {
-                return NotFound(new { Error = ex.Message, Success = false });
-            }
-
-            return Accepted(new { Message = "Message was sended on your email", Success = true });
-        }
-
-        [Authorize]
-        [HttpDelete("{password}")]
-        public async Task<IActionResult> SendConfirmDeleteAccount(DataMailLink emailModel, string password)
-        {
-            try
-            {
-                await Send(emailModel, password);
-            }
-            catch (ArgumentException ex)
-            {
-                return Forbid(ex.Message);
-            }
-            catch (NullReferenceException ex)
-            {
-                return NotFound(new { Error = ex.Message, Success = false });
-            }
-
-            return Accepted(new { Message = "Message was sended on your email", Success = true });
-        }
-
-        private async Task Send(DataMailLink emailModel, string password)
+        public async Task<IActionResult> SendChangePassword(DataMailLink data, string password)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             User? user = await context.User
                 .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.Id == UserId);
+                .FirstOrDefaultAsync(x => x.Id == data.UserId);
 
             if (user == null)
-                throw new NullReferenceException("The user was not found");
+                return NotFound(new { Message = "The user was not found", Success = false });
             if (!_validationService.IsValidUserPassword(in user, password))
-                throw new ArgumentException("Invalid data");
+                return Forbid("Invalid data");
 
-            MapEmailModelForSend(ref emailModel, user);
-            await _emailHelper.SendDeleteAccountToEmail(emailModel, user.UserLogin!);
+            MapEmailModelForSend(ref data, in user);
+            await _emailHelper.SendChangePassword(data, user.UserLogin!);
+
+            return Accepted(new { Message = "Message was sended on your email", Success = true });
         }
 
-        private void MapEmailModelForSend(ref DataMailLink emailModel, User user)
+        [AllowAnonymous]
+        [HttpDelete("{password}")]
+        public async Task<IActionResult> SendDeleteAccount(DataMailLink data, string password)
         {
-            emailModel.UserEmail = user.UserEmail!;
-            emailModel.UserId = user.Id;
-            emailModel.EmailToken = _jwtHelper.GenerateEmailToken(user);
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            User? user = await context.User
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id == data.UserId);
+
+            if (user == null)
+                return NotFound(new { Message = "The user was not found", Success = false });
+            if (!_validationService.IsValidUserPassword(in user, password))
+                return Forbid("Invalid data");
+
+            MapEmailModelForSend(ref data, in user);
+            await _emailHelper.SendDeleteAccount(data, user.UserLogin!);
+
+            return Accepted(new { Message = "Message was sended on your email", Success = true });
+        }
+
+        private void MapEmailModelForSend(ref DataMailLink data, in User user)
+        {
+            data.UserEmail = user.UserEmail!;
+            data.UserId = user.Id;
+            data.EmailToken = _jwtHelper.GenerateEmailToken(user);
         }
     }
 }

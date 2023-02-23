@@ -73,12 +73,12 @@ namespace CaseApplication.Email.Api.Controllers
             {
                 userInfo.IsConfirmedAccount = true;
 
-                await _emailHelper.SendConfirmationAccountToEmail(
+                await _emailHelper.SendSuccessVerifedAccount(
                     new DataMailLink()
                     {
                         UserEmail = user.UserEmail!
-                    }
-                    , user.UserLogin!);
+                    }, 
+                    user.UserLogin!);
 
                 await context.SaveChangesAsync();
 
@@ -86,7 +86,7 @@ namespace CaseApplication.Email.Api.Controllers
             }
             else
             {
-                await _emailHelper.SendAccountLoginAttempt(
+                await _emailHelper.SendLoginAttempt(
                     new DataMailLink()
                     {
                         UserEmail = user.UserEmail!
@@ -116,38 +116,38 @@ namespace CaseApplication.Email.Api.Controllers
 
         [AllowAnonymous]
         [HttpPut("email")]
-        public async Task<IActionResult> UpdateEmail(DataMailLink emailModel)
+        public async Task<IActionResult> UpdateEmail(DataMailLink data)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             bool isExistEmail = await context.User
-                .AnyAsync(x => x.UserEmail == emailModel.UserEmail);
+                .AnyAsync(x => x.UserEmail == data.UserEmail);
 
             User? user = await context.User
                 .Include(x => x.UserAdditionalInfo)
                 .Include(x => x.UserTokens)
-                .FirstOrDefaultAsync(x => x.Id == emailModel.UserId);
+                .FirstOrDefaultAsync(x => x.Id == data.UserId);
 
             if (isExistEmail) return Forbid("Email is already busy");
             if (user == null) return NotFound();
 
-            bool isValidToken = _validationService.IsValidEmailToken(in emailModel, in user);
+            bool isValidToken = _validationService.IsValidEmailToken(in data, in user);
             if (isValidToken is false) return Forbid("Invalid email token");
 
-            user.UserEmail = emailModel.UserEmail;
-            user.UserAdditionalInfo!.IsConfirmedAccount = false;
+            user.UserEmail = data.UserEmail;
 
             context.UserToken.RemoveRange(user.UserTokens!);
 
             await context.SaveChangesAsync();
 
             await _emailHelper.SendNotifyToEmail(
-                emailModel.UserEmail,
+                data.UserEmail,
                 "Администрация сайта",
                 new EmailTemplate()
                 {
                     BodyDescription = $"Вы изменили email аккаунта"
                 });
+
             return Ok(new { Success = true, Message = "Email was changed" });
         }
 
@@ -156,9 +156,11 @@ namespace CaseApplication.Email.Api.Controllers
         public async Task<IActionResult> UpdatePasswordConfirmation(DataMailLink emailModel, string password)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
             User? user = await context.User
                 .Include(x => x.UserTokens)
                 .FirstOrDefaultAsync(x => x.Id == emailModel.UserId);
+
             if (user == null) return NotFound();
 
             bool isValidToken = _validationService.IsValidEmailToken(in emailModel, in user);

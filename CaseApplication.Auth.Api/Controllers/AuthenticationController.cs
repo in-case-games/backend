@@ -90,7 +90,7 @@ namespace CaseApplication.Api.Controllers
                 return Forbid("Exceeded the number of sessions");
             }
 
-            await _emailHelper.SendSignInAccountToEmail(new DataMailLink()
+            await _emailHelper.SendSignIn(new DataMailLink()
             {
                 UserEmail = user.UserEmail!,
                 UserId = user.Id,
@@ -149,7 +149,7 @@ namespace CaseApplication.Api.Controllers
             await context.UserAdditionalInfo.AddAsync(info);
             await context.SaveChangesAsync();
 
-            await _emailHelper.SendSignUpAccountToEmail(new DataMailLink()
+            await _emailHelper.SendSignUp(new DataMailLink()
             {
                 UserEmail = user.UserEmail!,
                 UserId = user.Id,
@@ -185,7 +185,7 @@ namespace CaseApplication.Api.Controllers
             if(userToken == null) return Forbid("Invalid refresh token");
 
             if (userToken.RefreshTokenExpiryTime <= DateTime.UtcNow) {
-                await _emailHelper.SendSignInAccountToEmail(new DataMailLink()
+                await _emailHelper.SendSignIn(new DataMailLink()
                 {
                     UserEmail = user.UserEmail!,
                     UserId = user.Id,

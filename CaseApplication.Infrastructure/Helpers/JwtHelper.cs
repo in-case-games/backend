@@ -58,6 +58,7 @@ namespace CaseApplication.Infrastructure.Helpers
         {
             Claim[] claims = {
                 new Claim("UserId", user.Id.ToString()),
+                new Claim("UserEmail", user.UserEmail!),
             };
 
             JwtSecurityToken token = CreateEmailToken(claims, user.PasswordHash!);

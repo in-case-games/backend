@@ -36,12 +36,17 @@ namespace CaseApplication.Infrastructure.Services
             byte[] secretBytes = Encoding.UTF8.GetBytes(user.PasswordHash! + _configuration["JWT:Secret"]!);
             string token = emailModel.EmailToken;
 
-            bool IsTokenUsed = user.UserTokens!.Any(x => x.EmailToken == token);
-
             ClaimsPrincipal? principal = _jwtHelper
                 .GetClaimsToken(token, secretBytes, "HS512");
 
-            return principal is not null && IsTokenUsed is false;
+            if (principal is null) return false;
+
+            string email = principal.Claims.FirstOrDefault(x => x.ValueType == "UserEmail")!.Value;
+
+            bool IsNoChangeEmail = email == user.UserEmail;
+            bool IsNoUsed = user.UserTokens!.Any(x => x.EmailToken == token) is false;
+
+            return IsNoUsed && IsNoChangeEmail;
         }
     }
 }
