@@ -4,7 +4,6 @@ using CaseApplication.Domain.Entities.Auth;
 using CaseApplication.Domain.Entities.Email;
 using CaseApplication.Domain.Entities.Resources;
 using CaseApplication.Infrastructure.Data;
-using CaseApplication.Infrastructure.Helpers;
 using CaseApplication.Infrastructure.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -19,10 +18,8 @@ namespace CaseApplication.Api.Controllers
     {
         #region injections
         private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
-        private readonly EncryptorHelper _encryptorHelper;
-        private readonly JwtHelper _jwtHelper;
-        private readonly EmailHelper _emailHelper;
-        private readonly ValidationService _validationService;
+        private readonly JwtService _jwtService;
+        private readonly EmailService _emailService;
         private readonly MapperConfiguration _mapperConfiguration = new(configuration =>
         {
             configuration.CreateMap<UserDto, User>();
@@ -33,16 +30,12 @@ namespace CaseApplication.Api.Controllers
         #region ctor
         public AuthenticationController(
             IDbContextFactory<ApplicationDbContext> contextFactory,
-            EncryptorHelper encryptorHelper,
-            JwtHelper jwtHelper,
-            EmailHelper emailHelper,
-            ValidationService validationService)
+            JwtService jwtService,
+            EmailService emailService)
         {
             _contextFactory = contextFactory;
-            _encryptorHelper = encryptorHelper;
-            _jwtHelper = jwtHelper;
-            _emailHelper = emailHelper;
-            _validationService = validationService;
+            _jwtService = jwtService;
+            _emailService = emailService;
         }
         #endregion
 
@@ -71,14 +64,14 @@ namespace CaseApplication.Api.Controllers
                 x.UserLogin == userDto.UserLogin);
 
             if (user is null) return NotFound();
-            if (!_validationService.IsValidUserPassword(in user, password)) return Forbid();
+            if (!ValidationService.IsValidUserPassword(in user, password)) return Forbid();
 
             //Check exceeded sessions
             bool isExceededSessions = user.UserTokens?.Count >= 100;
 
             if (isExceededSessions)
             {
-                await _emailHelper.SendNotifyToEmail(
+                await _emailService.SendNotifyToEmail(
                     user.UserEmail!,
                     "Администрация сайта",
                     new EmailTemplate()
@@ -90,11 +83,11 @@ namespace CaseApplication.Api.Controllers
                 return Forbid("Exceeded the number of sessions");
             }
 
-            await _emailHelper.SendSignIn(new DataMailLink()
+            await _emailService.SendSignIn(new DataMailLink()
             {
                 UserEmail = user.UserEmail!,
                 UserId = user.Id,
-                EmailToken = _jwtHelper.GenerateEmailToken(user),
+                EmailToken = _jwtService.GenerateEmailToken(user),
                 UserIp = ip,
                 UserPlatforms = platform,
             }, user.UserLogin!);
@@ -119,9 +112,9 @@ namespace CaseApplication.Api.Controllers
             if (userExists is not null) return Conflict(new { Success = false, Message = "User already exists!" });
 
             //Encrypting password
-            byte[] salt = EncryptorHelper.GenerationSaltTo64Bytes();
+            byte[] salt = EncryptorService.GenerationSaltTo64Bytes();
 
-            userDto.PasswordHash = EncryptorHelper.EncryptorPassword(password, salt);
+            userDto.PasswordHash = EncryptorService.GenerationHashSHA512(password, salt);
             userDto.PasswordSalt = Convert.ToBase64String(salt);
 
             IMapper? mapper = _mapperConfiguration.CreateMapper();
@@ -149,11 +142,11 @@ namespace CaseApplication.Api.Controllers
             await context.UserAdditionalInfo.AddAsync(info);
             await context.SaveChangesAsync();
 
-            await _emailHelper.SendSignUp(new DataMailLink()
+            await _emailService.SendSignUp(new DataMailLink()
             {
                 UserEmail = user.UserEmail!,
                 UserId = user.Id,
-                EmailToken = _jwtHelper.GenerateEmailToken(user)
+                EmailToken = _jwtService.GenerateEmailToken(user)
             }, user.UserLogin!);
 
             return Ok(new { Success = true,
@@ -167,7 +160,7 @@ namespace CaseApplication.Api.Controllers
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             //Get User id
-            string? getUserId = _jwtHelper.GetIdFromRefreshToken(refreshToken);
+            string? getUserId = _jwtService.GetIdFromRefreshToken(refreshToken);
 
             if(getUserId == null) return Forbid("Invalid refresh token");
 
@@ -185,11 +178,11 @@ namespace CaseApplication.Api.Controllers
             if(userToken == null) return Forbid("Invalid refresh token");
 
             if (userToken.RefreshTokenExpiryTime <= DateTime.UtcNow) {
-                await _emailHelper.SendSignIn(new DataMailLink()
+                await _emailService.SendSignIn(new DataMailLink()
                 {
                     UserEmail = user.UserEmail!,
                     UserId = user.Id,
-                    EmailToken = _jwtHelper.GenerateEmailToken(user),
+                    EmailToken = _jwtService.GenerateEmailToken(user),
                 }, user.UserLogin!);
 
                 context.UserToken.Remove(userToken);
@@ -198,7 +191,7 @@ namespace CaseApplication.Api.Controllers
             }
 
             //Update and send token
-            DataSendTokens tokenModel = _jwtHelper.GenerateTokenPair(in user);
+            DataSendTokens tokenModel = _jwtService.GenerateTokenPair(in user);
 
             MapUserTokenForUpdate(ref userToken!, tokenModel);
 

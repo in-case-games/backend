@@ -6,13 +6,13 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace CaseApplication.Infrastructure.Helpers
+namespace CaseApplication.Infrastructure.Services
 {
-    public class JwtHelper
+    public class JwtService
     {
         private readonly IConfiguration _configuration;
 
-        public JwtHelper(IConfiguration configuration)
+        public JwtService(IConfiguration configuration)
         {
             _configuration = configuration;
         }
@@ -90,7 +90,7 @@ namespace CaseApplication.Infrastructure.Helpers
             };
         }
 
-        public ClaimsPrincipal? GetClaimsToken(
+        public static ClaimsPrincipal? GetClaimsToken(
             string token,
             byte[] secret,
             string securityAlgorithm)

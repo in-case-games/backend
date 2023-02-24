@@ -1,12 +1,10 @@
 ﻿using CaseApplication.Domain.Entities.Email;
 using CaseApplication.Domain.Entities.Resources;
 using CaseApplication.Infrastructure.Data;
-using CaseApplication.Infrastructure.Helpers;
 using CaseApplication.Infrastructure.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
 
 namespace CaseApplication.Email.Api.Controllers
 {
@@ -15,21 +13,19 @@ namespace CaseApplication.Email.Api.Controllers
     public class EmailTokenSendingController : ControllerBase
     {
         private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
-        private readonly EmailHelper _emailHelper;
-        private readonly JwtHelper _jwtHelper;
+        private readonly EmailService _emailService;
+        private readonly JwtService _jwtService;
         private readonly ValidationService _validationService;
-        private Guid UserId => Guid
-            .Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
 
         public EmailTokenSendingController(
             IDbContextFactory<ApplicationDbContext> contextFactory,
-            EmailHelper emailHelper,
-            JwtHelper jwtHelper,
+            EmailService emailService,
+            JwtService jwtService,
             ValidationService validationService)
         {
             _contextFactory = contextFactory;
-            _emailHelper = emailHelper;
-            _jwtHelper = jwtHelper;
+            _emailService = emailService;
+            _jwtService = jwtService;
             _validationService = validationService;
         }
 
@@ -49,15 +45,15 @@ namespace CaseApplication.Email.Api.Controllers
 
             UserAdditionalInfo userInfo = user.UserAdditionalInfo!;
             MapEmailModelForSend(ref data, in user);
-            data.EmailToken = _jwtHelper.GenerateEmailToken(user);
+            data.EmailToken = _jwtService.GenerateEmailToken(user);
 
             if (userInfo.IsConfirmedAccount is false)
             {
-                await _emailHelper.SendSignUp(data, user.UserLogin!);
+                await _emailService.SendSignUp(data, user.UserLogin!);
                 return Ok(new { Data = "You can join account", Success = true });
             }
             
-            await _emailHelper.SendSignIn(data, user.UserLogin!);
+            await _emailService.SendSignIn(data, user.UserLogin!);
 
             return Accepted(new { Message = "Message was sended on your email", Success = true });
         }
@@ -79,10 +75,10 @@ namespace CaseApplication.Email.Api.Controllers
             bool isValidToken = _validationService.IsValidEmailToken(in data, in user);
             if (isValidToken is false) return Forbid("Invalid email token");
 
-            data.EmailToken = _jwtHelper.GenerateEmailToken(user);
+            data.EmailToken = _jwtService.GenerateEmailToken(user);
 
             MapEmailModelForSend(ref data, in user);
-            await _emailHelper.SendConfirmNewEmail(data, user.UserLogin!);
+            await _emailService.SendConfirmNewEmail(data, user.UserLogin!);
 
             return Accepted(new { Message = "Message was sended on your email", Success = true });
         }
@@ -100,9 +96,9 @@ namespace CaseApplication.Email.Api.Controllers
             if (user == null) return NotFound();
             if (user.UserEmail != data.UserEmail) return Forbid();
 
-            data.EmailToken = _jwtHelper.GenerateEmailToken(user);
+            data.EmailToken = _jwtService.GenerateEmailToken(user);
 
-            await _emailHelper.SendChangePassword(data, user.UserLogin!);
+            await _emailService.SendChangePassword(data, user.UserLogin!);
 
             return Accepted(new { Message = "Message was sended on your email", Success = true });
         }
@@ -119,11 +115,11 @@ namespace CaseApplication.Email.Api.Controllers
 
             if (user == null)
                 return NotFound(new { Message = "The user was not found", Success = false });
-            if (!_validationService.IsValidUserPassword(in user, password))
+            if (!ValidationService.IsValidUserPassword(in user, password))
                 return Forbid("Invalid data");
 
             MapEmailModelForSend(ref data, in user);
-            await _emailHelper.SendChangeEmail(data, user.UserLogin!);
+            await _emailService.SendChangeEmail(data, user.UserLogin!);
 
             return Accepted(new { Message = "Message was sended on your email", Success = true });
         }
@@ -140,11 +136,11 @@ namespace CaseApplication.Email.Api.Controllers
 
             if (user == null)
                 return NotFound(new { Message = "The user was not found", Success = false });
-            if (!_validationService.IsValidUserPassword(in user, password))
+            if (!ValidationService.IsValidUserPassword(in user, password))
                 return Forbid("Invalid data");
 
             MapEmailModelForSend(ref data, in user);
-            await _emailHelper.SendChangePassword(data, user.UserLogin!);
+            await _emailService.SendChangePassword(data, user.UserLogin!);
 
             return Accepted(new { Message = "Message was sended on your email", Success = true });
         }
@@ -161,11 +157,11 @@ namespace CaseApplication.Email.Api.Controllers
 
             if (user == null)
                 return NotFound(new { Message = "The user was not found", Success = false });
-            if (!_validationService.IsValidUserPassword(in user, password))
+            if (!ValidationService.IsValidUserPassword(in user, password))
                 return Forbid("Invalid data");
 
             MapEmailModelForSend(ref data, in user);
-            await _emailHelper.SendDeleteAccount(data, user.UserLogin!);
+            await _emailService.SendDeleteAccount(data, user.UserLogin!);
 
             return Accepted(new { Message = "Message was sended on your email", Success = true });
         }
@@ -174,7 +170,7 @@ namespace CaseApplication.Email.Api.Controllers
         {
             data.UserEmail = user.UserEmail!;
             data.UserId = user.Id;
-            data.EmailToken = _jwtHelper.GenerateEmailToken(user);
+            data.EmailToken = _jwtService.GenerateEmailToken(user);
         }
     }
 }

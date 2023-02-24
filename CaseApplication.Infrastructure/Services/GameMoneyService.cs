@@ -10,10 +10,10 @@ namespace CaseApplication.Infrastructure.Services
     public class GameMoneyService
     {
         private readonly HttpClient _httpClient = new();
-        private readonly RSAService _rsaService;
+        private readonly EncryptorService _rsaService;
         private readonly IConfiguration _configuration;
         public GameMoneyService(
-            RSAService rsaService,
+            EncryptorService rsaService,
             IConfiguration configuration)
         {
             _rsaService = rsaService;
@@ -48,7 +48,7 @@ namespace CaseApplication.Infrastructure.Services
             };
 
             byte[] hash = Encoding.ASCII.GetBytes(requestInsertGM.ToString());
-            requestInsertGM.SignatureRSA = Encoding.ASCII.GetString(_rsaService.SignData(hash));
+            requestInsertGM.SignatureRSA = Encoding.ASCII.GetString(_rsaService.SignDataRSA(hash));
 
             return await PaymentResponse<ResponseInsertGM, RequestInsertGM>
                 (PaygateEndpoint.Transfer, requestInsertGM);

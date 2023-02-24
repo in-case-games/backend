@@ -1,7 +1,7 @@
 ﻿using CaseApplication.Domain.Entities.Email;
 using CaseApplication.Domain.Entities.Resources;
 using CaseApplication.Infrastructure.Data;
-using CaseApplication.Infrastructure.Helpers;
+using CaseApplication.Infrastructure.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -14,16 +14,16 @@ namespace CaseApplication.Resources.Api.Controllers
     public class UserController : ControllerBase
     {
         private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
-        private readonly EmailHelper _emailHelper;
+        private readonly EmailService _emailService;
         private Guid UserId => Guid
             .Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
 
         public UserController(
             IDbContextFactory<ApplicationDbContext> contextFactory, 
-            EmailHelper emailHelper)
+            EmailService emailService)
         {
             _contextFactory = contextFactory;
-            _emailHelper = emailHelper;
+            _emailService = emailService;
         }
 
         [Authorize]
@@ -145,7 +145,7 @@ namespace CaseApplication.Resources.Api.Controllers
             user.UserLogin = login;
             await context.SaveChangesAsync();
 
-            await _emailHelper.SendNotifyToEmail(
+            await _emailService.SendNotifyToEmail(
                 user.UserEmail!,
                 "Администрация сайта",
                 new EmailTemplate()

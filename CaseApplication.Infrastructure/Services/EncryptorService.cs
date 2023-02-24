@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Microsoft.AspNetCore.Cryptography.KeyDerivation;
+using Microsoft.Extensions.Configuration;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.OpenSsl;
 using System.Security.Cryptography;
@@ -6,11 +7,11 @@ using System.Text;
 
 namespace CaseApplication.Infrastructure.Services
 {
-    public class RSAService
+    public class EncryptorService
     {
         private readonly IConfiguration _configuration;
 
-        public RSAService(IConfiguration configuration)
+        public EncryptorService(IConfiguration configuration)
         {
             _configuration = configuration;
         }
@@ -26,7 +27,7 @@ namespace CaseApplication.Infrastructure.Services
             return BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
         }
 
-        public byte[] SignData(byte[] hashOfDataToSign)
+        public byte[] SignDataRSA(byte[] hashOfDataToSign)
         {
             string pathPrivateKey = Path.Combine(
                 Directory.GetCurrentDirectory(), 
@@ -50,7 +51,7 @@ namespace CaseApplication.Infrastructure.Services
             return rsaFormatter.CreateSignature(hashOfDataToSign);
         }
 
-        public bool VerifySignature(byte[] hashOfDataToSign, byte[] signature)
+        public bool VerifySignatureRSA(byte[] hashOfDataToSign, byte[] signature)
         {
             string pathPublicKey = Path.Combine(
                 Directory.GetCurrentDirectory(), 
@@ -71,6 +72,24 @@ namespace CaseApplication.Infrastructure.Services
             rsaDeformatter.SetHashAlgorithm("SHA256");
 
             return rsaDeformatter.VerifySignature(hashOfDataToSign, signature);
+        }
+
+        public static string GenerationHashSHA512(string password, byte[] salt)
+        {
+            string hashed = Convert.ToBase64String(KeyDerivation.Pbkdf2(
+                password: password,
+                salt: salt,
+                prf: KeyDerivationPrf.HMACSHA512,
+                iterationCount: 10000,
+                numBytesRequested: 256 / 8
+                ));
+
+            return hashed;
+        }
+
+        public static byte[] GenerationSaltTo64Bytes()
+        {
+            return RandomNumberGenerator.GetBytes(64);
         }
     }
 }

@@ -16,7 +16,7 @@ namespace CaseApplication.Payment.Api.Controllers
     {
         private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
         private readonly TradeMarketService _marketTMService;
-        private readonly RSAService _rsaService;
+        private readonly EncryptorService _rsaService;
         private readonly GameMoneyService _gameMoneyService;
         private Guid UserId => Guid
             .Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
@@ -24,7 +24,7 @@ namespace CaseApplication.Payment.Api.Controllers
         public PaymentController(
             IDbContextFactory<ApplicationDbContext> contextFactory, 
             TradeMarketService marketTMService,
-            RSAService rsaService,
+            EncryptorService rsaService,
             GameMoneyService gameMoneyService)
         {
             _contextFactory = contextFactory;
@@ -108,7 +108,7 @@ namespace CaseApplication.Payment.Api.Controllers
             byte[] hashOfDataInSignIn = Encoding.ASCII.GetBytes(paymentAnswer.ToString());
             byte[] signature = Encoding.ASCII.GetBytes(paymentAnswer.SignatureRSA!);
 
-            if (!_rsaService.VerifySignature(hashOfDataInSignIn, signature))
+            if (!_rsaService.VerifySignatureRSA(hashOfDataInSignIn, signature))
                 return Forbid("Poshel hacker lesom");
 
             ResponseInvoiceStatusGM? invoiceInfoStatus = await _gameMoneyService
@@ -120,7 +120,7 @@ namespace CaseApplication.Payment.Api.Controllers
             byte[] signatureInvoice = Encoding.ASCII.GetBytes(invoiceInfoStatus.SignatureRSA!);
             byte[] hashOfDataInvoice = Encoding.ASCII.GetBytes(invoiceInfoStatus.ToString()!);
 
-            if (!_rsaService.VerifySignature(hashOfDataInvoice, signatureInvoice)) 
+            if (!_rsaService.VerifySignatureRSA(hashOfDataInvoice, signatureInvoice)) 
                 return Forbid("Poshel hacker lesom");
 
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();

@@ -2,12 +2,10 @@
 using CaseApplication.Domain.Entities.Email;
 using CaseApplication.Domain.Entities.Resources;
 using CaseApplication.Infrastructure.Data;
-using CaseApplication.Infrastructure.Helpers;
 using CaseApplication.Infrastructure.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
 
 namespace CaseApplication.Email.Api.Controllers
 {
@@ -16,23 +14,20 @@ namespace CaseApplication.Email.Api.Controllers
     public class EmailTokenReceiveController : ControllerBase
     {
         private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
-        private readonly EmailHelper _emailHelper;
-        private readonly JwtHelper _jwtHelper;
+        private readonly EmailService _emailService;
+        private readonly JwtService _jwtService;
         private readonly ValidationService _validationService;
-        private readonly EncryptorHelper _encryptorHelper;
 
         public EmailTokenReceiveController(
             IDbContextFactory<ApplicationDbContext> contextFactory, 
-            EmailHelper emailHelper,
+            EmailService emailService,
             ValidationService validationService,
-            EncryptorHelper encryptorHelper,
-            JwtHelper jwtHelper)
+            JwtService jwtService)
         {
             _contextFactory = contextFactory;
-            _emailHelper = emailHelper;
+            _emailService = emailService;
             _validationService = validationService;
-            _encryptorHelper = encryptorHelper;
-            _jwtHelper = jwtHelper;
+            _jwtService = jwtService;
         }
 
         //TODO
@@ -73,7 +68,7 @@ namespace CaseApplication.Email.Api.Controllers
             {
                 userInfo.IsConfirmedAccount = true;
 
-                await _emailHelper.SendSuccessVerifedAccount(
+                await _emailService.SendSuccessVerifedAccount(
                     new DataMailLink()
                     {
                         UserEmail = user.UserEmail!
@@ -86,7 +81,7 @@ namespace CaseApplication.Email.Api.Controllers
             }
             else
             {
-                await _emailHelper.SendLoginAttempt(
+                await _emailService.SendLoginAttempt(
                     new DataMailLink()
                     {
                         UserEmail = user.UserEmail!
@@ -95,7 +90,7 @@ namespace CaseApplication.Email.Api.Controllers
             }
 
             //Generate tokens
-            DataSendTokens tokenModel = _jwtHelper.GenerateTokenPair(in user);
+            DataSendTokens tokenModel = _jwtService.GenerateTokenPair(in user);
 
             UserToken newUserToken = new()
             {
@@ -140,7 +135,7 @@ namespace CaseApplication.Email.Api.Controllers
 
             await context.SaveChangesAsync();
 
-            await _emailHelper.SendNotifyToEmail(
+            await _emailService.SendNotifyToEmail(
                 data.UserEmail,
                 "Администрация сайта",
                 new EmailTemplate()
@@ -168,8 +163,8 @@ namespace CaseApplication.Email.Api.Controllers
             if (isValidToken is false) return Forbid("Invalid email token");
 
             //Gen hash and salt
-            byte[] salt = EncryptorHelper.GenerationSaltTo64Bytes();
-            string hash = EncryptorHelper.EncryptorPassword(password, salt);
+            byte[] salt = EncryptorService.GenerationSaltTo64Bytes();
+            string hash = EncryptorService.GenerationHashSHA512(password, salt);
 
             user.PasswordHash = hash;
             user.PasswordSalt = Convert.ToBase64String(salt);
@@ -178,7 +173,7 @@ namespace CaseApplication.Email.Api.Controllers
 
             await context.SaveChangesAsync();
 
-            await _emailHelper.SendNotifyToEmail(
+            await _emailService.SendNotifyToEmail(
                 user.UserEmail!,
                 "Администрация сайта",
                 new EmailTemplate()
@@ -206,7 +201,7 @@ namespace CaseApplication.Email.Api.Controllers
 
             if (isValidToken is false) return Forbid("Invalid email token");
 
-            await _emailHelper.SendNotifyToEmail(
+            await _emailService.SendNotifyToEmail(
                 user.UserEmail!,
                 "Администрация сайта",
                 new EmailTemplate()

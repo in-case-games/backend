@@ -1,5 +1,4 @@
 using CaseApplication.Infrastructure.Data;
-using CaseApplication.Infrastructure.Helpers;
 using CaseApplication.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -42,15 +41,10 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-builder.Services.AddSingleton<EmailService>();
-builder.Services.AddSingleton<EmailHelper>();
 builder.Services.AddSingleton<TradeMarketService>();
-builder.Services.AddSingleton<RSAService>();
+builder.Services.AddSingleton<EncryptorService>();
 builder.Services.AddSingleton<GameMoneyService>();
 
-builder.Services.AddSingleton<EncryptorHelper>();
-builder.Services.AddSingleton<JwtHelper>();
-builder.Services.AddSingleton<ValidationService>();
 builder.Services.AddSwaggerGen(options =>
 {
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
