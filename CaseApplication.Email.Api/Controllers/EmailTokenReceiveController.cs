@@ -32,7 +32,7 @@ namespace CaseApplication.Email.Api.Controllers
 
         //TODO
         [AllowAnonymous]
-        [HttpGet("confirm")]
+        [HttpPost("confirm")]
         public async Task<IActionResult> ConfirmAccount(DataMailLink data)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
