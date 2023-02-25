@@ -60,7 +60,7 @@ namespace CaseApplication.Email.Api.Controllers
 
         [AllowAnonymous]
         [HttpPost("email/confirm/{email}")]
-        public async Task<IActionResult> SendConfirmNewEmail(DataMailLink data)
+        public async Task<IActionResult> SendConfirmNewEmail(DataMailLink data, string email)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
@@ -75,6 +75,7 @@ namespace CaseApplication.Email.Api.Controllers
             bool isValidToken = _validationService.IsValidEmailToken(in data, in user);
             if (isValidToken is false) return Forbid("Invalid email token");
 
+            data.UserEmail = email;
             data.EmailToken = _jwtService.GenerateEmailToken(user);
 
             MapEmailModelForSend(ref data, in user);

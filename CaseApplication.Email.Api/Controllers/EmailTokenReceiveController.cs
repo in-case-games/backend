@@ -32,33 +32,20 @@ namespace CaseApplication.Email.Api.Controllers
 
         //TODO
         [AllowAnonymous]
-        [HttpGet("confirm/{userId}&{token}")]
-        public async Task<IActionResult> ConfirmAccount(
-            Guid userId,
-            string token,
-            string ip = "",
-            string platform = "")
+        [HttpGet("confirm")]
+        public async Task<IActionResult> ConfirmAccount(DataMailLink data)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
-
-            //TODO OneTimeToken
-            DataMailLink emailModel = new()
-            {
-                UserId = userId,
-                EmailToken = token,
-                UserIp = ip,
-                UserPlatforms = platform
-            };
 
             User? user = await context.User
                 .Include(x => x.UserTokens)
                 .Include(x => x.UserAdditionalInfo)
                 .Include(x => x.UserAdditionalInfo!.UserRole)
-                .FirstOrDefaultAsync(x => x.Id == emailModel.UserId);
+                .FirstOrDefaultAsync(x => x.Id == data.UserId);
 
             if (user == null) return NotFound();
 
-            bool isValidToken = _validationService.IsValidEmailToken(in emailModel, in user);
+            bool isValidToken = _validationService.IsValidEmailToken(in data, in user);
 
             if (isValidToken is false) return Forbid("Invalid email token");
 
@@ -96,9 +83,9 @@ namespace CaseApplication.Email.Api.Controllers
             {
                 Id = new Guid(),
                 UserId = user.Id,
-                UserIpAddress = emailModel.UserIp,
-                UserPlatfrom = emailModel.UserPlatforms,
-                EmailToken = emailModel.EmailToken,
+                UserIpAddress = data.UserIp,
+                UserPlatfrom = data.UserPlatforms,
+                EmailToken = data.EmailToken,
             };
 
             MapUserTokenForUpdate(ref newUserToken, tokenModel);
@@ -185,7 +172,7 @@ namespace CaseApplication.Email.Api.Controllers
         }
 
         [AllowAnonymous]
-        [HttpDelete]
+        [HttpDelete("account")]
         public async Task<IActionResult> DeleteConfirmation(DataMailLink emailModel)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
