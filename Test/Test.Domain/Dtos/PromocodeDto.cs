@@ -1,0 +1,23 @@
+﻿using Test.Domain.Entities;
+
+namespace Test.Domain.Dtos
+{
+    public class PromocodeDto : BaseEntity
+    {
+        public string? Name { get; set; }
+        public string? Discount { get; set; }
+        public int NumberActivations { get; set; }
+        public DateTime ExpirationDate { get; set; }
+
+        public Guid TypeId { get; set; }
+
+        public Promocode Convert() => new()
+        {
+            Name = Name,
+            Discount = Discount,
+            NumberActivations = NumberActivations,
+            ExpirationDate = ExpirationDate,
+            TypeId = TypeId
+        };
+    }
+}
