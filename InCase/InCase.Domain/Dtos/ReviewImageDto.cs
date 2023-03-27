@@ -4,16 +4,15 @@ using System.Text.Json.Serialization;
 
 namespace InCase.Domain.Dtos
 {
-    public class AnswerImageDto : BaseEntity
+    public class ReviewImageDto : BaseEntity
     {
         public string? Uri { get; set; } = "";
+        public Guid ReviewId { get; set; }
 
-        public Guid AnswerId { get; set; }
-
-        public AnswerImage Convert() => new()
+        public ReviewImage Convert() => new()
         {
             Uri = Uri,
-            AnswerId = AnswerId
+            ReviewId = ReviewId,
         };
     }
 }

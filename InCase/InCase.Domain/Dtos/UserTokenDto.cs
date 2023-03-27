@@ -5,8 +5,8 @@ namespace InCase.Domain.Dtos
 {
     public class UserTokenDto : BaseEntity
     {
-        public string? RefreshToken { get; set; }
-        public string? EmailToken { get; set; }
+        public string? Refresh { get; set; }
+        public string? Email { get; set; }
         public string? IpAddress { get; set; }
         public string? Device { get; set; }
 
@@ -14,8 +14,8 @@ namespace InCase.Domain.Dtos
 
         public UserToken Convert() => new()
         {
-            RefreshToken = RefreshToken,
-            EmailToken = EmailToken,
+            Refresh = Refresh,
+            Email = Email,
             IpAddress = IpAddress,
             Device = Device,
 

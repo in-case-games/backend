@@ -14,16 +14,22 @@ namespace InCase.Domain.Entities.Resources
         [JsonIgnore]
         public Guid OwnerId { get; set; }
         [JsonIgnore]
+        public Guid TypeId { get; set; }
+        [JsonIgnore]
         public User? User { get; set; }
         [JsonIgnore]
         public User? Owner { get; set; }
+        [JsonIgnore]
+        public RestrictionType? Type { get; set; }
 
         public UserRestrictionDto Convert() => new()
         {
             CreationDate = CreationDate,
             ExpirationDate = ExpirationDate,
             Description = Description,
-            UserId = User?.Id ?? UserId
+            UserId = User?.Id ?? UserId,
+            OwnerId = Owner?.Id ?? OwnerId,
+            TypeId = Type?.Id ?? TypeId,
         };
     }
 }

@@ -3,19 +3,18 @@ using System.Text.Json.Serialization;
 
 namespace InCase.Domain.Entities.Resources
 {
-    public class AnswerImage : BaseEntity
+    public class ReviewImage : BaseEntity
     {
         public string? Uri { get; set; } = "";
-
         [JsonIgnore]
-        public Guid AnswerId { get; set; }
+        public Guid ReviewId { get; set; }
 
-        public SupportTopicAnswer? Answer { get; set; }
+        public UserReview? Review { get; set; }
 
-        public AnswerImageDto Convert() => new()
+        public ReviewImageDto Convert() => new()
         {
             Uri = Uri,
-            AnswerId = Answer?.Id ?? AnswerId
+            ReviewId = Review?.Id ?? ReviewId,
         };
     }
 }

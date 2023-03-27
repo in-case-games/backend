@@ -6,7 +6,6 @@ namespace InCase.Domain.Entities.Resources
     {
         public string? Title { get; set; }
         public string? Content { get; set; }
-        public string? Image { get; set; }
         public bool IsApproved { get; set; } = false;
 
         [JsonIgnore]
@@ -15,13 +14,14 @@ namespace InCase.Domain.Entities.Resources
         [JsonIgnore]
         public User? User { get; set; }
 
+        [JsonIgnore]
+        public List<ReviewImage>? Images { get; set; }
+
         public UserReview Convert() => new()
         {
             Title = Title,
             Content = Content,
-            Image = Image,
             IsApproved = IsApproved,
-
             UserId = User?.Id ?? UserId
         };
     }
