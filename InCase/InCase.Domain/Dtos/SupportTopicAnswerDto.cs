@@ -5,9 +5,7 @@ namespace InCase.Domain.Dtos
 {
     public class SupportTopicAnswerDto : BaseEntity
     {
-        public string? Title { get; set; }
         public string? Content { get; set; }
-        public string? Image { get; set; }
         public DateTime Date { get; set; }
 
         public Guid PlaintiffId { get; set; }
@@ -15,9 +13,7 @@ namespace InCase.Domain.Dtos
 
         public SupportTopicAnswer Convert() => new()
         {
-            Title = Title,
             Content = Content,
-            Image = Image,
             Date = Date,
             PlaintiffId = PlaintiffId,
             TopicId = TopicId
