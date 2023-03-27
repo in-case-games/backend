@@ -42,7 +42,6 @@ namespace InCase.Infrastructure.Data
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             base.OnConfiguring(optionsBuilder);
-            optionsBuilder.UseSqlServer("Server=DESKTOP-7SBJM8F\\SQLEXPRESS; Database=InCase.Test; Trusted_Connection=true; Trust Server Certificate = true;");
             optionsBuilder.UseLowerCaseNamingConvention();
         }
 

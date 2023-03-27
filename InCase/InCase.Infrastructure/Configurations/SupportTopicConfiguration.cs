@@ -10,6 +10,16 @@ namespace InCase.Infrastructure.Configurations
         {
             base.Configure(builder);
 
+            builder.HasOne(x => x.User)
+                .WithMany(t => t.UserTopics)
+                .HasForeignKey(m => m.UserId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            builder.HasOne(x => x.Support)
+                .WithMany(t => t.SupportTopics)
+                .HasForeignKey(m => m.SupportId)
+                .OnDelete(DeleteBehavior.NoAction);
+
             builder.ToTable(nameof(SupportTopic));
         }
     }
