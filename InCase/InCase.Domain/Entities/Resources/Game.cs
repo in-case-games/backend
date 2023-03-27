@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
-namespace InCase.Domain.Entities
+namespace InCase.Domain.Entities.Resources
 {
     [Table("Game")]
     public class Game : BaseEntity

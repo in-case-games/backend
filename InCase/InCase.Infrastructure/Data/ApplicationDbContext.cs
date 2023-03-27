@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using InCase.Domain.Entities;
 using InCase.Infrastructure.Configurations;
+using InCase.Domain.Entities.Resources;
 
 namespace InCase.Infrastructure.Data
 {

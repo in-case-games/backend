@@ -1,8 +1,8 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace InCase.Domain.Entities
+namespace InCase.Domain.Entities.Resources
 {
-    public class GameItemRarity : BaseEntity
+    public class GameItemType : BaseEntity
     {
         public string? Name { get; set; }
 

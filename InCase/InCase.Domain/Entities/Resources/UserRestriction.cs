@@ -1,7 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 using InCase.Domain.Dtos;
 
-namespace InCase.Domain.Entities
+namespace InCase.Domain.Entities.Resources
 {
     public class UserRestriction : BaseEntity
     {

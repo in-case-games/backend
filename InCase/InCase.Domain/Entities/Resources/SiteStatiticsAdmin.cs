@@ -1,4 +1,4 @@
-﻿namespace InCase.Domain.Entities
+﻿namespace InCase.Domain.Entities.Resources
 {
     public class SiteStatiticsAdmin : BaseEntity
     {

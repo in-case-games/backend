@@ -1,4 +1,4 @@
-﻿using InCase.Domain.Entities;
+﻿using InCase.Domain.Entities.Resources;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

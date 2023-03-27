@@ -1,30 +1,29 @@
 ﻿using System.Text.Json.Serialization;
+using InCase.Domain.Dtos;
 
-namespace InCase.Domain.Entities
+namespace InCase.Domain.Entities.Resources
 {
-    public class UserPathBanner : BaseEntity
+    public class UserHistoryOpening : BaseEntity
     {
-        public DateTime Date { get; set; }
-        public int NumberSteps { get; set; }
+        public DateTime? Date { get; set; }
 
         [JsonIgnore]
         public Guid UserId { get; set; }
         [JsonIgnore]
         public Guid ItemId { get; set; }
         [JsonIgnore]
-        public Guid BannerId { get; set; }
+        public Guid BoxId { get; set; }
 
         public User? User { get; set; }
         public GameItem? Item { get; set; }
-        public LootBoxBanner? Banner { get; set; }
+        public LootBox? Box { get; set; }
 
-        public UserPathBanner Convert() => new()
+        public UserHistoryOpeningDto Convert() => new()
         {
             Date = Date,
-            NumberSteps = NumberSteps,
             UserId = User?.Id ?? UserId,
             ItemId = Item?.Id ?? ItemId,
-            BannerId = Banner?.Id ?? BannerId
+            BoxId = Box?.Id ?? BoxId
         };
     }
 }

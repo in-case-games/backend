@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace InCase.Domain.Entities
+namespace InCase.Domain.Entities.Resources
 {
     public class GroupLootBox : BaseEntity
     {

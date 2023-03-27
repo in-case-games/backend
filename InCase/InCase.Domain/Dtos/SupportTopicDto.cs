@@ -1,4 +1,5 @@
 ﻿using InCase.Domain.Entities;
+using InCase.Domain.Entities.Resources;
 
 namespace InCase.Domain.Dtos
 {

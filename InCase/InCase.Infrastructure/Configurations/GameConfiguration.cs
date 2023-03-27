@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
-using InCase.Domain.Entities;
+using InCase.Domain.Entities.Resources;
 
 namespace InCase.Infrastructure.Configurations
 {

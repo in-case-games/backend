@@ -2,7 +2,7 @@
 using InCase.Domain.Dtos;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
-namespace InCase.Domain.Entities
+namespace InCase.Domain.Entities.Resources
 {
     public class UserAdditionalInfo : BaseEntity
     {
