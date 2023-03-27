@@ -3,7 +3,6 @@ using System.Text.Json.Serialization;
 
 namespace InCase.Domain.Entities.Resources
 {
-    [Table("Game")]
     public class Game : BaseEntity
     {
         public string? Name { get; set; }
