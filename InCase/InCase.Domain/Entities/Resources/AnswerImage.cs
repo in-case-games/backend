@@ -11,5 +11,11 @@ namespace InCase.Domain.Entities.Resources
         public Guid AnswerId { get; set; }
 
         public SupportTopicAnswer? Answer { get; set; }
+
+        public AnswerImageDto Convert() => new()
+        {
+            ImageUri = ImageUri,
+            AnswerId = Answer?.Id ?? AnswerId
+        };
     }
 }

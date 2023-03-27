@@ -37,8 +37,8 @@ namespace InCase.Domain.Entities.Resources
             Cost = Cost,
             Image = Image,
             IdForPlatform = IdForPlatform,
-            TypeId = Type!.Id,
-            RarityId = Rarity!.Id,
+            TypeId = Type?.Id ?? TypeId,
+            RarityId = Rarity?.Id ?? RarityId,
             GameId = Game?.Id ?? GameId,
         };
     }

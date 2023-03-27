@@ -10,7 +10,7 @@ namespace InCase.Domain.Dtos
 
         public Guid AnswerId { get; set; }
 
-        public AnswerImageDto Convert() => new()
+        public AnswerImage Convert() => new()
         {
             ImageUri = ImageUri,
             AnswerId = AnswerId
