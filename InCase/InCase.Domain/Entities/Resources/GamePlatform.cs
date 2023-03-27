@@ -6,7 +6,8 @@ namespace InCase.Domain.Entities.Resources
     public class GamePlatform : BaseEntity
     {
         public string? Name { get; set; }
-        public string? URI { get; set; }
+        public string? Uri { get; set; }
+        public string? ImageUri { get; set; }
 
         [JsonIgnore]
         public Guid GameId { get; set; }
@@ -16,7 +17,8 @@ namespace InCase.Domain.Entities.Resources
         public GamePlatformDto Convert() => new()
         {
             Name = Name,
-            URI = URI,
+            Uri = Uri,
+            ImageUri = ImageUri,
             GameId = Game?.Id ?? GameId,
         };
     }

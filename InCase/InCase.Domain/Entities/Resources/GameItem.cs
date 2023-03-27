@@ -16,7 +16,9 @@ namespace InCase.Domain.Entities.Resources
         public Guid TypeId { get; set; }
         [JsonIgnore]
         public Guid RarityId { get; set; }
-
+        [JsonIgnore]
+        public Guid QualityId { get; set; }
+        public GameItemQuality? ItemQuality { get; set; }
         public GameItemType? Type { get; set; }
         public GameItemRarity? Rarity { get; set; }
 
