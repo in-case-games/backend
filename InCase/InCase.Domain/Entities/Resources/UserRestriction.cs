@@ -5,7 +5,6 @@ namespace InCase.Domain.Entities.Resources
 {
     public class UserRestriction : BaseEntity
     {
-        public string? Name { get; set; }
         public DateTime CreationDate { get; set; }
         public DateTime ExpirationDate { get; set; }
         public string? Description { get; set; }
@@ -13,11 +12,14 @@ namespace InCase.Domain.Entities.Resources
         [JsonIgnore]
         public Guid UserId { get; set; }
         [JsonIgnore]
+        public Guid OwnerId { get; set; }
+        [JsonIgnore]
         public User? User { get; set; }
+        [JsonIgnore]
+        public User? Owner { get; set; }
 
         public UserRestrictionDto Convert() => new()
         {
-            Name = Name,
             CreationDate = CreationDate,
             ExpirationDate = ExpirationDate,
             Description = Description,
