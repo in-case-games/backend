@@ -42,6 +42,8 @@ namespace InCase.Infrastructure.Data
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             base.OnConfiguring(optionsBuilder);
+            op
+            optionsBuilder.UseLowerCaseNamingConvention();
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
