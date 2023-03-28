@@ -16,6 +16,7 @@ namespace InCase.Infrastructure.Configurations
                 .IsUnique(false);
 
             builder.Property(p => p.Balance)
+                .HasColumnType("DECIMAL(18,5)")
                 .IsRequired();
             builder.Property(p => p.Image)
                 .IsRequired();

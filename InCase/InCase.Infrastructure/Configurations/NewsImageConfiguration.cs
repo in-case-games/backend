@@ -21,7 +21,7 @@ namespace InCase.Infrastructure.Configurations
             builder.HasOne(o => o.News)
                 .WithMany(m => m.Images)
                 .HasForeignKey(fk => fk.NewsId)
-                .OnDelete(DeleteBehavior.ClientCascade);
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

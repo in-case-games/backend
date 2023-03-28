@@ -27,7 +27,7 @@ namespace InCase.Infrastructure.Configurations
 
             builder.HasOne(o => o.Type)
                 .WithOne(o => o.Promocode)
-                .OnDelete(DeleteBehavior.ClientCascade);
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

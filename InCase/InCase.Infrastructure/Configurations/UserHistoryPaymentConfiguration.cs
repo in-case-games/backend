@@ -18,12 +18,13 @@ namespace InCase.Infrastructure.Configurations
             builder.Property(p => p.Date)
                 .IsRequired();
             builder.Property(p => p.Amount)
+                .HasColumnType("DECIMAL(18,5)")
                 .IsRequired();
 
             builder.HasOne(o => o.User)
                 .WithMany(m => m.HistoryPayments)
                 .HasForeignKey(o => o.UserId)
-                .OnDelete(DeleteBehavior.ClientCascade);
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

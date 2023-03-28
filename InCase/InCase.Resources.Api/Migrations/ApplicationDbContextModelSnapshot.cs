@@ -31,7 +31,7 @@ namespace InCase.Resources.Api.Migrations
 
                     b.Property<Guid>("AnswerId")
                         .HasColumnType("uniqueidentifier")
-                        .HasColumnName("answerid");
+                        .HasColumnName("answer_id");
 
                     b.Property<string>("Uri")
                         .IsRequired()
@@ -39,14 +39,14 @@ namespace InCase.Resources.Api.Migrations
                         .HasColumnName("uri");
 
                     b.HasKey("Id")
-                        .HasName("pk_answerimage");
+                        .HasName("pk_answer_image");
 
                     b.HasIndex("AnswerId")
-                        .HasDatabaseName("ix_answerimage_answerid");
+                        .HasDatabaseName("ix_answer_image_answer_id");
 
                     b.HasIndex("Id")
                         .IsUnique()
-                        .HasDatabaseName("ix_answerimage_id");
+                        .HasDatabaseName("ix_answer_image_id");
 
                     b.ToTable("AnswerImage", (string)null);
                 });
@@ -85,16 +85,16 @@ namespace InCase.Resources.Api.Migrations
                         .HasColumnName("id");
 
                     b.Property<decimal>("Cost")
-                        .HasColumnType("decimal(18,2)")
+                        .HasColumnType("DECIMAL(18,5)")
                         .HasColumnName("cost");
 
                     b.Property<Guid>("GameId")
                         .HasColumnType("uniqueidentifier")
-                        .HasColumnName("gameid");
+                        .HasColumnName("game_id");
 
                     b.Property<string>("IdForPlatform")
                         .HasColumnType("nvarchar(max)")
-                        .HasColumnName("idforplatform");
+                        .HasColumnName("id_for_platform");
 
                     b.Property<string>("Image")
                         .IsRequired()
@@ -108,34 +108,34 @@ namespace InCase.Resources.Api.Migrations
 
                     b.Property<Guid?>("QualityId")
                         .HasColumnType("uniqueidentifier")
-                        .HasColumnName("qualityid");
+                        .HasColumnName("quality_id");
 
                     b.Property<Guid?>("RarityId")
                         .HasColumnType("uniqueidentifier")
-                        .HasColumnName("rarityid");
+                        .HasColumnName("rarity_id");
 
                     b.Property<Guid?>("TypeId")
                         .HasColumnType("uniqueidentifier")
-                        .HasColumnName("typeid");
+                        .HasColumnName("type_id");
 
                     b.HasKey("Id")
-                        .HasName("pk_gameitem");
+                        .HasName("pk_game_item");
 
                     b.HasIndex("GameId")
-                        .HasDatabaseName("ix_gameitem_gameid");
+                        .HasDatabaseName("ix_game_item_game_id");
 
                     b.HasIndex("Id")
                         .IsUnique()
-                        .HasDatabaseName("ix_gameitem_id");
+                        .HasDatabaseName("ix_game_item_id");
 
                     b.HasIndex("QualityId")
-                        .HasDatabaseName("ix_gameitem_qualityid");
+                        .HasDatabaseName("ix_game_item_quality_id");
 
                     b.HasIndex("RarityId")
-                        .HasDatabaseName("ix_gameitem_rarityid");
+                        .HasDatabaseName("ix_game_item_rarity_id");
 
                     b.HasIndex("TypeId")
-                        .HasDatabaseName("ix_gameitem_typeid");
+                        .HasDatabaseName("ix_game_item_type_id");
 
                     b.ToTable("GameItem", (string)null);
                 });
@@ -152,11 +152,11 @@ namespace InCase.Resources.Api.Migrations
                         .HasColumnName("name");
 
                     b.HasKey("Id")
-                        .HasName("pk_gameitemquality");
+                        .HasName("pk_game_item_quality");
 
                     b.HasIndex("Id")
                         .IsUnique()
-                        .HasDatabaseName("ix_gameitemquality_id");
+                        .HasDatabaseName("ix_game_item_quality_id");
 
                     b.ToTable("GameItemQuality", (string)null);
                 });
@@ -173,11 +173,11 @@ namespace InCase.Resources.Api.Migrations
                         .HasColumnName("name");
 
                     b.HasKey("Id")
-                        .HasName("pk_gameitemrarity");
+                        .HasName("pk_game_item_rarity");
 
                     b.HasIndex("Id")
                         .IsUnique()
-                        .HasDatabaseName("ix_gameitemrarity_id");
+                        .HasDatabaseName("ix_game_item_rarity_id");
 
                     b.ToTable("GameItemRarity", (string)null);
                 });
@@ -194,11 +194,11 @@ namespace InCase.Resources.Api.Migrations
                         .HasColumnName("name");
 
                     b.HasKey("Id")
-                        .HasName("pk_gameitemtype");
+                        .HasName("pk_game_item_type");
 
                     b.HasIndex("Id")
                         .IsUnique()
-                        .HasDatabaseName("ix_gameitemtype_id");
+                        .HasDatabaseName("ix_game_item_type_id");
 
                     b.ToTable("GameItemType", (string)null);
                 });
@@ -213,11 +213,11 @@ namespace InCase.Resources.Api.Migrations
                     b.Property<string>("DomainUri")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)")
-                        .HasColumnName("domainuri");
+                        .HasColumnName("domain_uri");
 
                     b.Property<Guid>("GameId")
                         .HasColumnType("uniqueidentifier")
-                        .HasColumnName("gameid");
+                        .HasColumnName("game_id");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -230,14 +230,14 @@ namespace InCase.Resources.Api.Migrations
                         .HasColumnName("uri");
 
                     b.HasKey("Id")
-                        .HasName("pk_gameplatform");
+                        .HasName("pk_game_platform");
 
                     b.HasIndex("GameId")
-                        .HasDatabaseName("ix_gameplatform_gameid");
+                        .HasDatabaseName("ix_game_platform_game_id");
 
                     b.HasIndex("Id")
                         .IsUnique()
-                        .HasDatabaseName("ix_gameplatform_id");
+                        .HasDatabaseName("ix_game_platform_id");
 
                     b.ToTable("GamePlatform", (string)null);
                 });
@@ -254,15 +254,15 @@ namespace InCase.Resources.Api.Migrations
                         .HasColumnName("name");
 
                     b.HasKey("Id")
-                        .HasName("pk_grouplootbox");
+                        .HasName("pk_group_loot_box");
 
                     b.HasIndex("Id")
                         .IsUnique()
-                        .HasDatabaseName("ix_grouplootbox_id");
+                        .HasDatabaseName("ix_group_loot_box_id");
 
                     b.HasIndex("Name")
                         .IsUnique()
-                        .HasDatabaseName("ix_grouplootbox_name")
+                        .HasDatabaseName("ix_group_loot_box_name")
                         .HasFilter("[name] IS NOT NULL");
 
                     b.ToTable("GroupLootBox", (string)null);
@@ -276,20 +276,20 @@ namespace InCase.Resources.Api.Migrations
                         .HasColumnName("id");
 
                     b.Property<decimal>("Balance")
-                        .HasColumnType("decimal(18,2)")
+                        .HasColumnType("DECIMAL(18,5)")
                         .HasColumnName("balance");
 
                     b.Property<decimal>("Cost")
-                        .HasColumnType("decimal(18,2)")
+                        .HasColumnType("DECIMAL(18,5)")
                         .HasColumnName("cost");
 
                     b.Property<Guid>("GameId")
                         .HasColumnType("uniqueidentifier")
-                        .HasColumnName("gameid");
+                        .HasColumnName("game_id");
 
                     b.Property<bool>("IsLocked")
                         .HasColumnType("bit")
-                        .HasColumnName("islocked");
+                        .HasColumnName("is_locked");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -302,18 +302,18 @@ namespace InCase.Resources.Api.Migrations
                         .HasColumnName("uri");
 
                     b.Property<decimal>("VirtualBalance")
-                        .HasColumnType("decimal(18,2)")
-                        .HasColumnName("virtualbalance");
+                        .HasColumnType("DECIMAL(18,5)")
+                        .HasColumnName("virtual_balance");
 
                     b.HasKey("Id")
-                        .HasName("pk_lootbox");
+                        .HasName("pk_loot_box");
 
                     b.HasIndex("GameId")
-                        .HasDatabaseName("ix_lootbox_gameid");
+                        .HasDatabaseName("ix_loot_box_game_id");
 
                     b.HasIndex("Id")
                         .IsUnique()
-                        .HasDatabaseName("ix_lootbox_id");
+                        .HasDatabaseName("ix_loot_box_id");
 
                     b.ToTable("LootBox", (string)null);
                 });
@@ -327,19 +327,19 @@ namespace InCase.Resources.Api.Migrations
 
                     b.Property<Guid>("BoxId")
                         .HasColumnType("uniqueidentifier")
-                        .HasColumnName("boxid");
+                        .HasColumnName("box_id");
 
                     b.Property<DateTime>("CreationDate")
                         .HasColumnType("datetime2")
-                        .HasColumnName("creationdate");
+                        .HasColumnName("creation_date");
 
                     b.Property<DateTime?>("ExpirationDate")
                         .HasColumnType("datetime2")
-                        .HasColumnName("expirationdate");
+                        .HasColumnName("expiration_date");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit")
-                        .HasColumnName("isactive");
+                        .HasColumnName("is_active");
 
                     b.Property<string>("Uri")
                         .IsRequired()
@@ -347,15 +347,15 @@ namespace InCase.Resources.Api.Migrations
                         .HasColumnName("uri");
 
                     b.HasKey("Id")
-                        .HasName("pk_lootboxbanner");
+                        .HasName("pk_loot_box_banner");
 
                     b.HasIndex("BoxId")
                         .IsUnique()
-                        .HasDatabaseName("ix_lootboxbanner_boxid");
+                        .HasDatabaseName("ix_loot_box_banner_box_id");
 
                     b.HasIndex("Id")
                         .IsUnique()
-                        .HasDatabaseName("ix_lootboxbanner_id");
+                        .HasDatabaseName("ix_loot_box_banner_id");
 
                     b.ToTable("LootBoxBanner", (string)null);
                 });
@@ -369,31 +369,31 @@ namespace InCase.Resources.Api.Migrations
 
                     b.Property<Guid>("BoxId")
                         .HasColumnType("uniqueidentifier")
-                        .HasColumnName("boxid");
+                        .HasColumnName("box_id");
 
                     b.Property<Guid>("GameId")
                         .HasColumnType("uniqueidentifier")
-                        .HasColumnName("gameid");
+                        .HasColumnName("game_id");
 
                     b.Property<Guid>("GroupId")
                         .HasColumnType("uniqueidentifier")
-                        .HasColumnName("groupid");
+                        .HasColumnName("group_id");
 
                     b.HasKey("Id")
-                        .HasName("pk_lootboxgroup");
+                        .HasName("pk_loot_box_group");
 
                     b.HasIndex("BoxId")
-                        .HasDatabaseName("ix_lootboxgroup_boxid");
+                        .HasDatabaseName("ix_loot_box_group_box_id");
 
                     b.HasIndex("GameId")
-                        .HasDatabaseName("ix_lootboxgroup_gameid");
+                        .HasDatabaseName("ix_loot_box_group_game_id");
 
                     b.HasIndex("GroupId")
-                        .HasDatabaseName("ix_lootboxgroup_groupid");
+                        .HasDatabaseName("ix_loot_box_group_group_id");
 
                     b.HasIndex("Id")
                         .IsUnique()
-                        .HasDatabaseName("ix_lootboxgroup_id");
+                        .HasDatabaseName("ix_loot_box_group_id");
 
                     b.ToTable("LootBoxGroup", (string)null);
                 });
@@ -407,32 +407,32 @@ namespace InCase.Resources.Api.Migrations
 
                     b.Property<Guid>("BoxId")
                         .HasColumnType("uniqueidentifier")
-                        .HasColumnName("boxid");
+                        .HasColumnName("box_id");
 
                     b.Property<int>("ChanceWining")
                         .HasColumnType("int")
-                        .HasColumnName("chancewining");
+                        .HasColumnName("chance_wining");
 
                     b.Property<Guid>("ItemId")
                         .HasColumnType("uniqueidentifier")
-                        .HasColumnName("itemid");
+                        .HasColumnName("item_id");
 
                     b.Property<int>("NumberItems")
                         .HasColumnType("int")
-                        .HasColumnName("numberitems");
+                        .HasColumnName("number_items");
 
                     b.HasKey("Id")
-                        .HasName("pk_lootboxinventory");
+                        .HasName("pk_loot_box_inventory");
 
                     b.HasIndex("BoxId")
-                        .HasDatabaseName("ix_lootboxinventory_boxid");
+                        .HasDatabaseName("ix_loot_box_inventory_box_id");
 
                     b.HasIndex("Id")
                         .IsUnique()
-                        .HasDatabaseName("ix_lootboxinventory_id");
+                        .HasDatabaseName("ix_loot_box_inventory_id");
 
                     b.HasIndex("ItemId")
-                        .HasDatabaseName("ix_lootboxinventory_itemid");
+                        .HasDatabaseName("ix_loot_box_inventory_item_id");
 
                     b.ToTable("LootBoxInventory", (string)null);
                 });
@@ -478,7 +478,7 @@ namespace InCase.Resources.Api.Migrations
 
                     b.Property<Guid>("NewsId")
                         .HasColumnType("uniqueidentifier")
-                        .HasColumnName("newsid");
+                        .HasColumnName("news_id");
 
                     b.Property<string>("Uri")
                         .IsRequired()
@@ -486,14 +486,14 @@ namespace InCase.Resources.Api.Migrations
                         .HasColumnName("uri");
 
                     b.HasKey("Id")
-                        .HasName("pk_newsimage");
+                        .HasName("pk_news_image");
 
                     b.HasIndex("Id")
                         .IsUnique()
-                        .HasDatabaseName("ix_newsimage_id");
+                        .HasDatabaseName("ix_news_image_id");
 
                     b.HasIndex("NewsId")
-                        .HasDatabaseName("ix_newsimage_newsid");
+                        .HasDatabaseName("ix_news_image_news_id");
 
                     b.ToTable("NewsImage", (string)null);
                 });
@@ -512,7 +512,7 @@ namespace InCase.Resources.Api.Migrations
 
                     b.Property<DateTime>("ExpirationDate")
                         .HasColumnType("datetime2")
-                        .HasColumnName("expirationdate");
+                        .HasColumnName("expiration_date");
 
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(450)")
@@ -520,11 +520,11 @@ namespace InCase.Resources.Api.Migrations
 
                     b.Property<int>("NumberActivations")
                         .HasColumnType("int")
-                        .HasColumnName("numberactivations");
+                        .HasColumnName("number_activations");
 
                     b.Property<Guid>("TypeId")
                         .HasColumnType("uniqueidentifier")
-                        .HasColumnName("typeid");
+                        .HasColumnName("type_id");
 
                     b.HasKey("Id")
                         .HasName("pk_promocode");
@@ -539,7 +539,7 @@ namespace InCase.Resources.Api.Migrations
                         .HasFilter("[name] IS NOT NULL");
 
                     b.HasIndex("TypeId")
-                        .HasDatabaseName("ix_promocode_typeid");
+                        .HasDatabaseName("ix_promocode_type_id");
 
                     b.ToTable("Promocode", (string)null);
                 });
@@ -556,15 +556,15 @@ namespace InCase.Resources.Api.Migrations
                         .HasColumnName("name");
 
                     b.HasKey("Id")
-                        .HasName("pk_promocodetype");
+                        .HasName("pk_promocode_type");
 
                     b.HasIndex("Id")
                         .IsUnique()
-                        .HasDatabaseName("ix_promocodetype_id");
+                        .HasDatabaseName("ix_promocode_type_id");
 
                     b.HasIndex("Name")
                         .IsUnique()
-                        .HasDatabaseName("ix_promocodetype_name")
+                        .HasDatabaseName("ix_promocode_type_name")
                         .HasFilter("[name] IS NOT NULL");
 
                     b.ToTable("PromocodeType", (string)null);
@@ -582,15 +582,15 @@ namespace InCase.Resources.Api.Migrations
                         .HasColumnName("name");
 
                     b.HasKey("Id")
-                        .HasName("pk_restrictiontype");
+                        .HasName("pk_restriction_type");
 
                     b.HasIndex("Id")
                         .IsUnique()
-                        .HasDatabaseName("ix_restrictiontype_id");
+                        .HasDatabaseName("ix_restriction_type_id");
 
                     b.HasIndex("Name")
                         .IsUnique()
-                        .HasDatabaseName("ix_restrictiontype_name")
+                        .HasDatabaseName("ix_restriction_type_name")
                         .HasFilter("[name] IS NOT NULL");
 
                     b.ToTable("RestrictionType", (string)null);
@@ -605,7 +605,7 @@ namespace InCase.Resources.Api.Migrations
 
                     b.Property<Guid>("ReviewId")
                         .HasColumnType("uniqueidentifier")
-                        .HasColumnName("reviewid");
+                        .HasColumnName("review_id");
 
                     b.Property<string>("Uri")
                         .IsRequired()
@@ -613,14 +613,14 @@ namespace InCase.Resources.Api.Migrations
                         .HasColumnName("uri");
 
                     b.HasKey("Id")
-                        .HasName("pk_reviewimage");
+                        .HasName("pk_review_image");
 
                     b.HasIndex("Id")
                         .IsUnique()
-                        .HasDatabaseName("ix_reviewimage_id");
+                        .HasDatabaseName("ix_review_image_id");
 
                     b.HasIndex("ReviewId")
-                        .HasDatabaseName("ix_reviewimage_reviewid");
+                        .HasDatabaseName("ix_review_image_review_id");
 
                     b.ToTable("ReviewImage", (string)null);
                 });
@@ -634,7 +634,7 @@ namespace InCase.Resources.Api.Migrations
 
                     b.Property<int>("OpenCases")
                         .HasColumnType("int")
-                        .HasColumnName("opencases");
+                        .HasColumnName("open_cases");
 
                     b.Property<int>("Reviews")
                         .HasColumnType("int")
@@ -646,18 +646,18 @@ namespace InCase.Resources.Api.Migrations
 
                     b.Property<int>("WithdrawnFunds")
                         .HasColumnType("int")
-                        .HasColumnName("withdrawnfunds");
+                        .HasColumnName("withdrawn_funds");
 
                     b.Property<int>("WithdrawnItems")
                         .HasColumnType("int")
-                        .HasColumnName("withdrawnitems");
+                        .HasColumnName("withdrawn_items");
 
                     b.HasKey("Id")
-                        .HasName("pk_sitestatitics");
+                        .HasName("pk_site_statitics");
 
                     b.HasIndex("Id")
                         .IsUnique()
-                        .HasDatabaseName("ix_sitestatitics_id");
+                        .HasDatabaseName("ix_site_statitics_id");
 
                     b.ToTable("SiteStatitics", (string)null);
                 });
@@ -670,23 +670,23 @@ namespace InCase.Resources.Api.Migrations
                         .HasColumnName("id");
 
                     b.Property<decimal>("BalanceWithdrawn")
-                        .HasColumnType("decimal(18,2)")
-                        .HasColumnName("balancewithdrawn");
+                        .HasColumnType("DECIMAL(18,5)")
+                        .HasColumnName("balance_withdrawn");
 
                     b.Property<decimal>("SentSites")
-                        .HasColumnType("decimal(18,2)")
-                        .HasColumnName("sentsites");
+                        .HasColumnType("DECIMAL(18,5)")
+                        .HasColumnName("sent_sites");
 
                     b.Property<decimal>("TotalReplenished")
-                        .HasColumnType("decimal(18,2)")
-                        .HasColumnName("totalreplenished");
+                        .HasColumnType("DECIMAL(18,5)")
+                        .HasColumnName("total_replenished");
 
                     b.HasKey("Id")
-                        .HasName("pk_sitestatiticsadmin");
+                        .HasName("pk_site_statitics_admin");
 
                     b.HasIndex("Id")
                         .IsUnique()
-                        .HasDatabaseName("ix_sitestatiticsadmin_id");
+                        .HasDatabaseName("ix_site_statitics_admin_id");
 
                     b.ToTable("SiteStatiticsAdmin", (string)null);
                 });
@@ -709,11 +709,11 @@ namespace InCase.Resources.Api.Migrations
 
                     b.Property<bool>("IsClosed")
                         .HasColumnType("bit")
-                        .HasColumnName("isclosed");
+                        .HasColumnName("is_closed");
 
                     b.Property<Guid?>("SupportId")
                         .HasColumnType("uniqueidentifier")
-                        .HasColumnName("supportid");
+                        .HasColumnName("support_id");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -722,20 +722,20 @@ namespace InCase.Resources.Api.Migrations
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier")
-                        .HasColumnName("userid");
+                        .HasColumnName("user_id");
 
                     b.HasKey("Id")
-                        .HasName("pk_supporttopic");
+                        .HasName("pk_support_topic");
 
                     b.HasIndex("Id")
                         .IsUnique()
-                        .HasDatabaseName("ix_supporttopic_id");
+                        .HasDatabaseName("ix_support_topic_id");
 
                     b.HasIndex("SupportId")
-                        .HasDatabaseName("ix_supporttopic_supportid");
+                        .HasDatabaseName("ix_support_topic_support_id");
 
                     b.HasIndex("UserId")
-                        .HasDatabaseName("ix_supporttopic_userid");
+                        .HasDatabaseName("ix_support_topic_user_id");
 
                     b.ToTable("SupportTopic", (string)null);
                 });
@@ -758,24 +758,24 @@ namespace InCase.Resources.Api.Migrations
 
                     b.Property<Guid?>("PlaintiffId")
                         .HasColumnType("uniqueidentifier")
-                        .HasColumnName("plaintiffid");
+                        .HasColumnName("plaintiff_id");
 
                     b.Property<Guid>("TopicId")
                         .HasColumnType("uniqueidentifier")
-                        .HasColumnName("topicid");
+                        .HasColumnName("topic_id");
 
                     b.HasKey("Id")
-                        .HasName("pk_supporttopicanswer");
+                        .HasName("pk_support_topic_answer");
 
                     b.HasIndex("Id")
                         .IsUnique()
-                        .HasDatabaseName("ix_supporttopicanswer_id");
+                        .HasDatabaseName("ix_support_topic_answer_id");
 
                     b.HasIndex("PlaintiffId")
-                        .HasDatabaseName("ix_supporttopicanswer_plaintiffid");
+                        .HasDatabaseName("ix_support_topic_answer_plaintiff_id");
 
                     b.HasIndex("TopicId")
-                        .HasDatabaseName("ix_supporttopicanswer_topicid");
+                        .HasDatabaseName("ix_support_topic_answer_topic_id");
 
                     b.ToTable("SupportTopicAnswer", (string)null);
                 });
@@ -798,12 +798,12 @@ namespace InCase.Resources.Api.Migrations
                     b.Property<string>("PasswordHash")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)")
-                        .HasColumnName("passwordhash");
+                        .HasColumnName("password_hash");
 
                     b.Property<string>("PasswordSalt")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)")
-                        .HasColumnName("passwordsalt");
+                        .HasColumnName("password_salt");
 
                     b.HasKey("Id")
                         .HasName("pk_user");
@@ -833,7 +833,7 @@ namespace InCase.Resources.Api.Migrations
                         .HasColumnName("id");
 
                     b.Property<decimal>("Balance")
-                        .HasColumnType("decimal(18,2)")
+                        .HasColumnType("DECIMAL(18,5)")
                         .HasColumnName("balance");
 
                     b.Property<string>("Image")
@@ -843,33 +843,33 @@ namespace InCase.Resources.Api.Migrations
 
                     b.Property<bool>("IsGuestMode")
                         .HasColumnType("bit")
-                        .HasColumnName("isguestmode");
+                        .HasColumnName("is_guest_mode");
 
                     b.Property<bool>("IsNotifyEmail")
                         .HasColumnType("bit")
-                        .HasColumnName("isnotifyemail");
+                        .HasColumnName("is_notify_email");
 
                     b.Property<Guid>("RoleId")
                         .HasColumnType("uniqueidentifier")
-                        .HasColumnName("roleid");
+                        .HasColumnName("role_id");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier")
-                        .HasColumnName("userid");
+                        .HasColumnName("user_id");
 
                     b.HasKey("Id")
-                        .HasName("pk_useradditionalinfo");
+                        .HasName("pk_user_additional_info");
 
                     b.HasIndex("Id")
                         .IsUnique()
-                        .HasDatabaseName("ix_useradditionalinfo_id");
+                        .HasDatabaseName("ix_user_additional_info_id");
 
                     b.HasIndex("RoleId")
-                        .HasDatabaseName("ix_useradditionalinfo_roleid");
+                        .HasDatabaseName("ix_user_additional_info_role_id");
 
                     b.HasIndex("UserId")
                         .IsUnique()
-                        .HasDatabaseName("ix_useradditionalinfo_userid");
+                        .HasDatabaseName("ix_user_additional_info_user_id");
 
                     b.ToTable("UserAdditionalInfo", (string)null);
                 });
@@ -883,7 +883,7 @@ namespace InCase.Resources.Api.Migrations
 
                     b.Property<Guid>("BoxId")
                         .HasColumnType("uniqueidentifier")
-                        .HasColumnName("boxid");
+                        .HasColumnName("box_id");
 
                     b.Property<DateTime?>("Date")
                         .IsRequired()
@@ -892,27 +892,27 @@ namespace InCase.Resources.Api.Migrations
 
                     b.Property<Guid>("ItemId")
                         .HasColumnType("uniqueidentifier")
-                        .HasColumnName("itemid");
+                        .HasColumnName("item_id");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier")
-                        .HasColumnName("userid");
+                        .HasColumnName("user_id");
 
                     b.HasKey("Id")
-                        .HasName("pk_userhistoryopening");
+                        .HasName("pk_user_history_opening");
 
                     b.HasIndex("BoxId")
-                        .HasDatabaseName("ix_userhistoryopening_boxid");
+                        .HasDatabaseName("ix_user_history_opening_box_id");
 
                     b.HasIndex("Id")
                         .IsUnique()
-                        .HasDatabaseName("ix_userhistoryopening_id");
+                        .HasDatabaseName("ix_user_history_opening_id");
 
                     b.HasIndex("ItemId")
-                        .HasDatabaseName("ix_userhistoryopening_itemid");
+                        .HasDatabaseName("ix_user_history_opening_item_id");
 
                     b.HasIndex("UserId")
-                        .HasDatabaseName("ix_userhistoryopening_userid");
+                        .HasDatabaseName("ix_user_history_opening_user_id");
 
                     b.ToTable("UserHistoryOpening", (string)null);
                 });
@@ -925,7 +925,7 @@ namespace InCase.Resources.Api.Migrations
                         .HasColumnName("id");
 
                     b.Property<decimal>("Amount")
-                        .HasColumnType("decimal(18,2)")
+                        .HasColumnType("DECIMAL(18,5)")
                         .HasColumnName("amount");
 
                     b.Property<DateTime>("Date")
@@ -934,17 +934,17 @@ namespace InCase.Resources.Api.Migrations
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier")
-                        .HasColumnName("userid");
+                        .HasColumnName("user_id");
 
                     b.HasKey("Id")
-                        .HasName("pk_userhistorypayment");
+                        .HasName("pk_user_history_payment");
 
                     b.HasIndex("Id")
                         .IsUnique()
-                        .HasDatabaseName("ix_userhistorypayment_id");
+                        .HasDatabaseName("ix_user_history_payment_id");
 
                     b.HasIndex("UserId")
-                        .HasDatabaseName("ix_userhistorypayment_userid");
+                        .HasDatabaseName("ix_user_history_payment_user_id");
 
                     b.ToTable("UserHistoryPayment", (string)null);
                 });
@@ -963,28 +963,28 @@ namespace InCase.Resources.Api.Migrations
 
                     b.Property<bool>("IsActivated")
                         .HasColumnType("bit")
-                        .HasColumnName("isactivated");
+                        .HasColumnName("is_activated");
 
                     b.Property<Guid>("PromocodeId")
                         .HasColumnType("uniqueidentifier")
-                        .HasColumnName("promocodeid");
+                        .HasColumnName("promocode_id");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier")
-                        .HasColumnName("userid");
+                        .HasColumnName("user_id");
 
                     b.HasKey("Id")
-                        .HasName("pk_userhistorypromocode");
+                        .HasName("pk_user_history_promocode");
 
                     b.HasIndex("Id")
                         .IsUnique()
-                        .HasDatabaseName("ix_userhistorypromocode_id");
+                        .HasDatabaseName("ix_user_history_promocode_id");
 
                     b.HasIndex("PromocodeId")
-                        .HasDatabaseName("ix_userhistorypromocode_promocodeid");
+                        .HasDatabaseName("ix_user_history_promocode_promocode_id");
 
                     b.HasIndex("UserId")
-                        .HasDatabaseName("ix_userhistorypromocode_userid");
+                        .HasDatabaseName("ix_user_history_promocode_user_id");
 
                     b.ToTable("UserHistoryPromocode", (string)null);
                 });
@@ -1002,24 +1002,24 @@ namespace InCase.Resources.Api.Migrations
 
                     b.Property<Guid>("ItemId")
                         .HasColumnType("uniqueidentifier")
-                        .HasColumnName("itemid");
+                        .HasColumnName("item_id");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier")
-                        .HasColumnName("userid");
+                        .HasColumnName("user_id");
 
                     b.HasKey("Id")
-                        .HasName("pk_userhistorywithdrawn");
+                        .HasName("pk_user_history_withdrawn");
 
                     b.HasIndex("Id")
                         .IsUnique()
-                        .HasDatabaseName("ix_userhistorywithdrawn_id");
+                        .HasDatabaseName("ix_user_history_withdrawn_id");
 
                     b.HasIndex("ItemId")
-                        .HasDatabaseName("ix_userhistorywithdrawn_itemid");
+                        .HasDatabaseName("ix_user_history_withdrawn_item_id");
 
                     b.HasIndex("UserId")
-                        .HasDatabaseName("ix_userhistorywithdrawn_userid");
+                        .HasDatabaseName("ix_user_history_withdrawn_user_id");
 
                     b.ToTable("UserHistoryWithdrawn", (string)null);
                 });
@@ -1036,29 +1036,29 @@ namespace InCase.Resources.Api.Migrations
                         .HasColumnName("date");
 
                     b.Property<decimal>("FixedCost")
-                        .HasColumnType("decimal(18,2)")
-                        .HasColumnName("fixedcost");
+                        .HasColumnType("DECIMAL(18,5)")
+                        .HasColumnName("fixed_cost");
 
                     b.Property<Guid>("ItemId")
                         .HasColumnType("uniqueidentifier")
-                        .HasColumnName("itemid");
+                        .HasColumnName("item_id");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier")
-                        .HasColumnName("userid");
+                        .HasColumnName("user_id");
 
                     b.HasKey("Id")
-                        .HasName("pk_userinventory");
+                        .HasName("pk_user_inventory");
 
                     b.HasIndex("Id")
                         .IsUnique()
-                        .HasDatabaseName("ix_userinventory_id");
+                        .HasDatabaseName("ix_user_inventory_id");
 
                     b.HasIndex("ItemId")
-                        .HasDatabaseName("ix_userinventory_itemid");
+                        .HasDatabaseName("ix_user_inventory_item_id");
 
                     b.HasIndex("UserId")
-                        .HasDatabaseName("ix_userinventory_userid");
+                        .HasDatabaseName("ix_user_inventory_user_id");
 
                     b.ToTable("UserInventory", (string)null);
                 });
@@ -1072,7 +1072,7 @@ namespace InCase.Resources.Api.Migrations
 
                     b.Property<Guid>("BannerId")
                         .HasColumnType("uniqueidentifier")
-                        .HasColumnName("bannerid");
+                        .HasColumnName("banner_id");
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2")
@@ -1080,31 +1080,31 @@ namespace InCase.Resources.Api.Migrations
 
                     b.Property<Guid>("ItemId")
                         .HasColumnType("uniqueidentifier")
-                        .HasColumnName("itemid");
+                        .HasColumnName("item_id");
 
                     b.Property<int>("NumberSteps")
                         .HasColumnType("int")
-                        .HasColumnName("numbersteps");
+                        .HasColumnName("number_steps");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier")
-                        .HasColumnName("userid");
+                        .HasColumnName("user_id");
 
                     b.HasKey("Id")
-                        .HasName("pk_userpathbanner");
+                        .HasName("pk_user_path_banner");
 
                     b.HasIndex("BannerId")
-                        .HasDatabaseName("ix_userpathbanner_bannerid");
+                        .HasDatabaseName("ix_user_path_banner_banner_id");
 
                     b.HasIndex("Id")
                         .IsUnique()
-                        .HasDatabaseName("ix_userpathbanner_id");
+                        .HasDatabaseName("ix_user_path_banner_id");
 
                     b.HasIndex("ItemId")
-                        .HasDatabaseName("ix_userpathbanner_itemid");
+                        .HasDatabaseName("ix_user_path_banner_item_id");
 
                     b.HasIndex("UserId")
-                        .HasDatabaseName("ix_userpathbanner_userid");
+                        .HasDatabaseName("ix_user_path_banner_user_id");
 
                     b.ToTable("UserPathBanner", (string)null);
                 });
@@ -1118,7 +1118,7 @@ namespace InCase.Resources.Api.Migrations
 
                     b.Property<DateTime>("CreationDate")
                         .HasColumnType("datetime2")
-                        .HasColumnName("creationdate");
+                        .HasColumnName("creation_date");
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)")
@@ -1126,35 +1126,35 @@ namespace InCase.Resources.Api.Migrations
 
                     b.Property<DateTime>("ExpirationDate")
                         .HasColumnType("datetime2")
-                        .HasColumnName("expirationdate");
+                        .HasColumnName("expiration_date");
 
                     b.Property<Guid?>("OwnerId")
                         .HasColumnType("uniqueidentifier")
-                        .HasColumnName("ownerid");
+                        .HasColumnName("owner_id");
 
                     b.Property<Guid>("TypeId")
                         .HasColumnType("uniqueidentifier")
-                        .HasColumnName("typeid");
+                        .HasColumnName("type_id");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier")
-                        .HasColumnName("userid");
+                        .HasColumnName("user_id");
 
                     b.HasKey("Id")
-                        .HasName("pk_userrestriction");
+                        .HasName("pk_user_restriction");
 
                     b.HasIndex("Id")
                         .IsUnique()
-                        .HasDatabaseName("ix_userrestriction_id");
+                        .HasDatabaseName("ix_user_restriction_id");
 
                     b.HasIndex("OwnerId")
-                        .HasDatabaseName("ix_userrestriction_ownerid");
+                        .HasDatabaseName("ix_user_restriction_owner_id");
 
                     b.HasIndex("TypeId")
-                        .HasDatabaseName("ix_userrestriction_typeid");
+                        .HasDatabaseName("ix_user_restriction_type_id");
 
                     b.HasIndex("UserId")
-                        .HasDatabaseName("ix_userrestriction_userid");
+                        .HasDatabaseName("ix_user_restriction_user_id");
 
                     b.ToTable("UserRestriction", (string)null);
                 });
@@ -1173,7 +1173,7 @@ namespace InCase.Resources.Api.Migrations
 
                     b.Property<bool>("IsApproved")
                         .HasColumnType("bit")
-                        .HasColumnName("isapproved");
+                        .HasColumnName("is_approved");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -1182,17 +1182,17 @@ namespace InCase.Resources.Api.Migrations
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier")
-                        .HasColumnName("userid");
+                        .HasColumnName("user_id");
 
                     b.HasKey("Id")
-                        .HasName("pk_userreview");
+                        .HasName("pk_user_review");
 
                     b.HasIndex("Id")
                         .IsUnique()
-                        .HasDatabaseName("ix_userreview_id");
+                        .HasDatabaseName("ix_user_review_id");
 
                     b.HasIndex("UserId")
-                        .HasDatabaseName("ix_userreview_userid");
+                        .HasDatabaseName("ix_user_review_user_id");
 
                     b.ToTable("UserReview", (string)null);
                 });
@@ -1209,15 +1209,15 @@ namespace InCase.Resources.Api.Migrations
                         .HasColumnName("name");
 
                     b.HasKey("Id")
-                        .HasName("pk_userrole");
+                        .HasName("pk_user_role");
 
                     b.HasIndex("Id")
                         .IsUnique()
-                        .HasDatabaseName("ix_userrole_id");
+                        .HasDatabaseName("ix_user_role_id");
 
                     b.HasIndex("Name")
                         .IsUnique()
-                        .HasDatabaseName("ix_userrole_name")
+                        .HasDatabaseName("ix_user_role_name")
                         .HasFilter("[name] IS NOT NULL");
 
                     b.ToTable("UserRole", (string)null);
@@ -1241,7 +1241,7 @@ namespace InCase.Resources.Api.Migrations
 
                     b.Property<string>("IpAddress")
                         .HasColumnType("nvarchar(max)")
-                        .HasColumnName("ipaddress");
+                        .HasColumnName("ip_address");
 
                     b.Property<string>("Refresh")
                         .IsRequired()
@@ -1250,17 +1250,17 @@ namespace InCase.Resources.Api.Migrations
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier")
-                        .HasColumnName("userid");
+                        .HasColumnName("user_id");
 
                     b.HasKey("Id")
-                        .HasName("pk_usertoken");
+                        .HasName("pk_user_token");
 
                     b.HasIndex("Id")
                         .IsUnique()
-                        .HasDatabaseName("ix_usertoken_id");
+                        .HasDatabaseName("ix_user_token_id");
 
                     b.HasIndex("UserId")
-                        .HasDatabaseName("ix_usertoken_userid");
+                        .HasDatabaseName("ix_user_token_user_id");
 
                     b.ToTable("UserToken", (string)null);
                 });
@@ -1270,9 +1270,9 @@ namespace InCase.Resources.Api.Migrations
                     b.HasOne("InCase.Domain.Entities.Resources.SupportTopicAnswer", "Answer")
                         .WithMany("Images")
                         .HasForeignKey("AnswerId")
-                        .OnDelete(DeleteBehavior.ClientCascade)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_answerimage_supporttopicanswers_answerid");
+                        .HasConstraintName("fk_answer_image_support_topic_answers_answer_id");
 
                     b.Navigation("Answer");
                 });
@@ -1284,22 +1284,22 @@ namespace InCase.Resources.Api.Migrations
                         .HasForeignKey("GameId")
                         .OnDelete(DeleteBehavior.ClientCascade)
                         .IsRequired()
-                        .HasConstraintName("fk_gameitem_game_gameid");
+                        .HasConstraintName("fk_game_item_game_game_id");
 
                     b.HasOne("InCase.Domain.Entities.Resources.GameItemQuality", "Quality")
                         .WithOne("Item")
                         .HasForeignKey("InCase.Domain.Entities.Resources.GameItem", "QualityId")
-                        .HasConstraintName("fk_gameitem_gameitemqualities_qualityid");
+                        .HasConstraintName("fk_game_item_game_item_qualities_quality_id");
 
                     b.HasOne("InCase.Domain.Entities.Resources.GameItemRarity", "Rarity")
                         .WithOne("Item")
                         .HasForeignKey("InCase.Domain.Entities.Resources.GameItem", "RarityId")
-                        .HasConstraintName("fk_gameitem_gameitemrarities_rarityid");
+                        .HasConstraintName("fk_game_item_game_item_rarities_rarity_id");
 
                     b.HasOne("InCase.Domain.Entities.Resources.GameItemType", "Type")
                         .WithOne("Item")
                         .HasForeignKey("InCase.Domain.Entities.Resources.GameItem", "TypeId")
-                        .HasConstraintName("fk_gameitem_gameitemtypes_typeid");
+                        .HasConstraintName("fk_game_item_game_item_types_type_id");
 
                     b.Navigation("Game");
 
@@ -1315,9 +1315,9 @@ namespace InCase.Resources.Api.Migrations
                     b.HasOne("InCase.Domain.Entities.Resources.Game", "Game")
                         .WithMany("Platforms")
                         .HasForeignKey("GameId")
-                        .OnDelete(DeleteBehavior.ClientCascade)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_gameplatform_game_gameid");
+                        .HasConstraintName("fk_game_platform_game_game_id");
 
                     b.Navigation("Game");
                 });
@@ -1329,7 +1329,7 @@ namespace InCase.Resources.Api.Migrations
                         .HasForeignKey("GameId")
                         .OnDelete(DeleteBehavior.ClientCascade)
                         .IsRequired()
-                        .HasConstraintName("fk_lootbox_game_gameid");
+                        .HasConstraintName("fk_loot_box_game_game_id");
 
                     b.Navigation("Game");
                 });
@@ -1339,9 +1339,9 @@ namespace InCase.Resources.Api.Migrations
                     b.HasOne("InCase.Domain.Entities.Resources.LootBox", "Box")
                         .WithOne("Banner")
                         .HasForeignKey("InCase.Domain.Entities.Resources.LootBoxBanner", "BoxId")
-                        .OnDelete(DeleteBehavior.ClientCascade)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_lootboxbanner_lootbox_boxid");
+                        .HasConstraintName("fk_loot_box_banner_loot_box_box_id");
 
                     b.Navigation("Box");
                 });
@@ -1351,23 +1351,23 @@ namespace InCase.Resources.Api.Migrations
                     b.HasOne("InCase.Domain.Entities.Resources.LootBox", "Box")
                         .WithMany("Groups")
                         .HasForeignKey("BoxId")
-                        .OnDelete(DeleteBehavior.ClientCascade)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_lootboxgroup_lootbox_boxid");
+                        .HasConstraintName("fk_loot_box_group_loot_box_box_id");
 
                     b.HasOne("InCase.Domain.Entities.Resources.Game", "Game")
                         .WithMany("Groups")
                         .HasForeignKey("GameId")
-                        .OnDelete(DeleteBehavior.ClientCascade)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_lootboxgroup_game_gameid");
+                        .HasConstraintName("fk_loot_box_group_game_game_id");
 
                     b.HasOne("InCase.Domain.Entities.Resources.GroupLootBox", "Group")
                         .WithOne("Group")
                         .HasForeignKey("InCase.Domain.Entities.Resources.LootBoxGroup", "GroupId")
-                        .OnDelete(DeleteBehavior.ClientCascade)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_lootboxgroup_grouplootbox_groupid");
+                        .HasConstraintName("fk_loot_box_group_group_loot_box_group_id");
 
                     b.Navigation("Box");
 
@@ -1381,16 +1381,16 @@ namespace InCase.Resources.Api.Migrations
                     b.HasOne("InCase.Domain.Entities.Resources.LootBox", "Box")
                         .WithMany("Inventories")
                         .HasForeignKey("BoxId")
-                        .OnDelete(DeleteBehavior.ClientCascade)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_lootboxinventory_lootbox_boxid");
+                        .HasConstraintName("fk_loot_box_inventory_loot_box_box_id");
 
                     b.HasOne("InCase.Domain.Entities.Resources.GameItem", "Item")
                         .WithMany("Inventories")
                         .HasForeignKey("ItemId")
-                        .OnDelete(DeleteBehavior.ClientCascade)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_lootboxinventory_gameitem_itemid");
+                        .HasConstraintName("fk_loot_box_inventory_game_item_item_id");
 
                     b.Navigation("Box");
 
@@ -1402,9 +1402,9 @@ namespace InCase.Resources.Api.Migrations
                     b.HasOne("InCase.Domain.Entities.Resources.News", "News")
                         .WithMany("Images")
                         .HasForeignKey("NewsId")
-                        .OnDelete(DeleteBehavior.ClientCascade)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_newsimage_news_newsid");
+                        .HasConstraintName("fk_news_image_news_news_id");
 
                     b.Navigation("News");
                 });
@@ -1414,9 +1414,9 @@ namespace InCase.Resources.Api.Migrations
                     b.HasOne("InCase.Domain.Entities.Resources.PromocodeType", "Type")
                         .WithOne("Promocode")
                         .HasForeignKey("InCase.Domain.Entities.Resources.Promocode", "TypeId")
-                        .OnDelete(DeleteBehavior.ClientCascade)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_promocode_promocodetypes_typeid");
+                        .HasConstraintName("fk_promocode_promocode_types_type_id");
 
                     b.Navigation("Type");
                 });
@@ -1426,9 +1426,9 @@ namespace InCase.Resources.Api.Migrations
                     b.HasOne("InCase.Domain.Entities.Resources.UserReview", "Review")
                         .WithMany("Images")
                         .HasForeignKey("ReviewId")
-                        .OnDelete(DeleteBehavior.ClientCascade)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_reviewimage_userreviews_reviewid");
+                        .HasConstraintName("fk_review_image_user_reviews_review_id");
 
                     b.Navigation("Review");
                 });
@@ -1438,14 +1438,14 @@ namespace InCase.Resources.Api.Migrations
                     b.HasOne("InCase.Domain.Entities.Resources.User", "Support")
                         .WithMany("SupportTopics")
                         .HasForeignKey("SupportId")
-                        .HasConstraintName("fk_supporttopic_users_supportid");
+                        .HasConstraintName("fk_support_topic_users_support_id");
 
                     b.HasOne("InCase.Domain.Entities.Resources.User", "User")
                         .WithMany("UserTopics")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.ClientCascade)
                         .IsRequired()
-                        .HasConstraintName("fk_supporttopic_users_userid");
+                        .HasConstraintName("fk_support_topic_users_user_id");
 
                     b.Navigation("Support");
 
@@ -1457,14 +1457,14 @@ namespace InCase.Resources.Api.Migrations
                     b.HasOne("InCase.Domain.Entities.Resources.User", "Plaintiff")
                         .WithMany("Answers")
                         .HasForeignKey("PlaintiffId")
-                        .HasConstraintName("fk_supporttopicanswer_users_plaintiffid");
+                        .HasConstraintName("fk_support_topic_answer_users_plaintiff_id");
 
                     b.HasOne("InCase.Domain.Entities.Resources.SupportTopic", "Topic")
                         .WithMany("Answers")
                         .HasForeignKey("TopicId")
                         .OnDelete(DeleteBehavior.ClientCascade)
                         .IsRequired()
-                        .HasConstraintName("fk_supporttopicanswer_supporttopic_topicid");
+                        .HasConstraintName("fk_support_topic_answer_support_topic_topic_id");
 
                     b.Navigation("Plaintiff");
 
@@ -1478,14 +1478,14 @@ namespace InCase.Resources.Api.Migrations
                         .HasForeignKey("InCase.Domain.Entities.Resources.UserAdditionalInfo", "RoleId")
                         .OnDelete(DeleteBehavior.ClientNoAction)
                         .IsRequired()
-                        .HasConstraintName("fk_useradditionalinfo_userroles_roleid");
+                        .HasConstraintName("fk_user_additional_info_user_roles_role_id");
 
                     b.HasOne("InCase.Domain.Entities.Resources.User", "User")
                         .WithOne("AdditionalInfo")
                         .HasForeignKey("InCase.Domain.Entities.Resources.UserAdditionalInfo", "UserId")
                         .OnDelete(DeleteBehavior.ClientCascade)
                         .IsRequired()
-                        .HasConstraintName("fk_useradditionalinfo_user_userid");
+                        .HasConstraintName("fk_user_additional_info_user_user_id");
 
                     b.Navigation("Role");
 
@@ -1497,23 +1497,23 @@ namespace InCase.Resources.Api.Migrations
                     b.HasOne("InCase.Domain.Entities.Resources.LootBox", "Box")
                         .WithMany("HistoryOpenings")
                         .HasForeignKey("BoxId")
-                        .OnDelete(DeleteBehavior.ClientCascade)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_userhistoryopening_lootbox_boxid");
+                        .HasConstraintName("fk_user_history_opening_loot_box_box_id");
 
                     b.HasOne("InCase.Domain.Entities.Resources.GameItem", "Item")
                         .WithMany("HistoryOpenings")
                         .HasForeignKey("ItemId")
-                        .OnDelete(DeleteBehavior.ClientCascade)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_userhistoryopening_gameitem_itemid");
+                        .HasConstraintName("fk_user_history_opening_game_item_item_id");
 
                     b.HasOne("InCase.Domain.Entities.Resources.User", "User")
                         .WithMany("HistoryOpenings")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.ClientCascade)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_userhistoryopening_user_userid");
+                        .HasConstraintName("fk_user_history_opening_user_user_id");
 
                     b.Navigation("Box");
 
@@ -1527,9 +1527,9 @@ namespace InCase.Resources.Api.Migrations
                     b.HasOne("InCase.Domain.Entities.Resources.User", "User")
                         .WithMany("HistoryPayments")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.ClientCascade)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_userhistorypayment_user_userid");
+                        .HasConstraintName("fk_user_history_payment_user_user_id");
 
                     b.Navigation("User");
                 });
@@ -1539,16 +1539,16 @@ namespace InCase.Resources.Api.Migrations
                     b.HasOne("InCase.Domain.Entities.Resources.Promocode", "Promocode")
                         .WithMany("History")
                         .HasForeignKey("PromocodeId")
-                        .OnDelete(DeleteBehavior.ClientCascade)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_userhistorypromocode_promocode_promocodeid");
+                        .HasConstraintName("fk_user_history_promocode_promocode_promocode_id");
 
                     b.HasOne("InCase.Domain.Entities.Resources.User", "User")
                         .WithMany("HistoryPromocodes")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.ClientCascade)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_userhistorypromocode_user_userid");
+                        .HasConstraintName("fk_user_history_promocode_user_user_id");
 
                     b.Navigation("Promocode");
 
@@ -1560,16 +1560,16 @@ namespace InCase.Resources.Api.Migrations
                     b.HasOne("InCase.Domain.Entities.Resources.GameItem", "Item")
                         .WithMany("HistoryWithdrawns")
                         .HasForeignKey("ItemId")
-                        .OnDelete(DeleteBehavior.ClientCascade)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_userhistorywithdrawn_gameitem_itemid");
+                        .HasConstraintName("fk_user_history_withdrawn_game_item_item_id");
 
                     b.HasOne("InCase.Domain.Entities.Resources.User", "User")
                         .WithMany("HistoryWithdrawns")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.ClientCascade)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_userhistorywithdrawn_user_userid");
+                        .HasConstraintName("fk_user_history_withdrawn_user_user_id");
 
                     b.Navigation("Item");
 
@@ -1581,16 +1581,16 @@ namespace InCase.Resources.Api.Migrations
                     b.HasOne("InCase.Domain.Entities.Resources.GameItem", "Item")
                         .WithMany("UserInventories")
                         .HasForeignKey("ItemId")
-                        .OnDelete(DeleteBehavior.ClientCascade)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_userinventory_gameitem_itemid");
+                        .HasConstraintName("fk_user_inventory_game_item_item_id");
 
                     b.HasOne("InCase.Domain.Entities.Resources.User", "User")
                         .WithMany("Inventories")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.ClientCascade)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_userinventory_user_userid");
+                        .HasConstraintName("fk_user_inventory_user_user_id");
 
                     b.Navigation("Item");
 
@@ -1602,23 +1602,23 @@ namespace InCase.Resources.Api.Migrations
                     b.HasOne("InCase.Domain.Entities.Resources.LootBoxBanner", "Banner")
                         .WithMany("Paths")
                         .HasForeignKey("BannerId")
-                        .OnDelete(DeleteBehavior.ClientCascade)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_userpathbanner_lootboxbanner_bannerid");
+                        .HasConstraintName("fk_user_path_banner_loot_box_banner_banner_id");
 
                     b.HasOne("InCase.Domain.Entities.Resources.GameItem", "Item")
                         .WithMany("PathBanners")
                         .HasForeignKey("ItemId")
-                        .OnDelete(DeleteBehavior.ClientCascade)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_userpathbanner_gameitem_itemid");
+                        .HasConstraintName("fk_user_path_banner_game_item_item_id");
 
                     b.HasOne("InCase.Domain.Entities.Resources.User", "User")
                         .WithMany("Paths")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.ClientCascade)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_userpathbanner_user_userid");
+                        .HasConstraintName("fk_user_path_banner_user_user_id");
 
                     b.Navigation("Banner");
 
@@ -1632,21 +1632,21 @@ namespace InCase.Resources.Api.Migrations
                     b.HasOne("InCase.Domain.Entities.Resources.User", "Owner")
                         .WithMany("OwnerRestrictions")
                         .HasForeignKey("OwnerId")
-                        .HasConstraintName("fk_userrestriction_user_ownerid");
+                        .HasConstraintName("fk_user_restriction_user_owner_id");
 
                     b.HasOne("InCase.Domain.Entities.Resources.RestrictionType", "Type")
                         .WithOne("Restriction")
                         .HasForeignKey("InCase.Domain.Entities.Resources.UserRestriction", "TypeId")
-                        .OnDelete(DeleteBehavior.ClientCascade)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_userrestriction_restrictiontype_typeid");
+                        .HasConstraintName("fk_user_restriction_restriction_type_type_id");
 
                     b.HasOne("InCase.Domain.Entities.Resources.User", "User")
                         .WithMany("Restrictions")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.ClientNoAction)
                         .IsRequired()
-                        .HasConstraintName("fk_userrestriction_user_userid");
+                        .HasConstraintName("fk_user_restriction_user_user_id");
 
                     b.Navigation("Owner");
 
@@ -1660,9 +1660,9 @@ namespace InCase.Resources.Api.Migrations
                     b.HasOne("InCase.Domain.Entities.Resources.User", "User")
                         .WithMany("Reviews")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.ClientCascade)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_userreview_user_userid");
+                        .HasConstraintName("fk_user_review_user_user_id");
 
                     b.Navigation("User");
                 });
@@ -1672,9 +1672,9 @@ namespace InCase.Resources.Api.Migrations
                     b.HasOne("InCase.Domain.Entities.Resources.User", "User")
                         .WithMany("Tokens")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.ClientCascade)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_usertoken_user_userid");
+                        .HasConstraintName("fk_user_token_user_user_id");
 
                     b.Navigation("User");
                 });

@@ -24,6 +24,7 @@ namespace InCase.Infrastructure.Configurations
             builder.Property(p => p.Name)
                 .IsRequired();
             builder.Property(p => p.Cost)
+                .HasColumnType("DECIMAL(18,5)")
                 .IsRequired();
             builder.Property(p => p.Image)
                 .IsRequired();

@@ -13,10 +13,13 @@ namespace InCase.Infrastructure.Configurations
             builder.ToTable(nameof(SiteStatiticsAdmin));
 
             builder.Property(p => p.BalanceWithdrawn)
+                .HasColumnType("DECIMAL(18,5)")
                 .IsRequired();
             builder.Property(p => p.TotalReplenished)
+                .HasColumnType("DECIMAL(18,5)")
                 .IsRequired();
             builder.Property(p => p.SentSites)
+                .HasColumnType("DECIMAL(18,5)")
                 .IsRequired();
         }
     }

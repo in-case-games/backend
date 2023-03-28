@@ -25,11 +25,11 @@ namespace InCase.Infrastructure.Configurations
             builder.HasOne(o => o.Promocode)
                 .WithMany(m => m.History)
                 .HasForeignKey(fk => fk.PromocodeId)
-                .OnDelete(DeleteBehavior.ClientCascade);
+                .OnDelete(DeleteBehavior.Cascade);
             builder.HasOne(o => o.User)
                 .WithMany(m => m.HistoryPromocodes)
                 .HasForeignKey(fk => fk.UserId)
-                .OnDelete(DeleteBehavior.ClientCascade);
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

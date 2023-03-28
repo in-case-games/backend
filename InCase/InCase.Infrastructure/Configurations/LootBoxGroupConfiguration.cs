@@ -21,15 +21,15 @@ namespace InCase.Infrastructure.Configurations
 
             builder.HasOne(o => o.Group)
                 .WithOne(o => o.Group)
-                .OnDelete(DeleteBehavior.ClientCascade);
+                .OnDelete(DeleteBehavior.Cascade);
             builder.HasOne(o => o.Game)
                 .WithMany(m => m.Groups)
                 .HasForeignKey(o => o.GameId)
-                .OnDelete(DeleteBehavior.ClientCascade);
+                .OnDelete(DeleteBehavior.Cascade);
             builder.HasOne(o => o.Box)
                 .WithMany(m => m.Groups)
                 .HasForeignKey(o => o.BoxId)
-                .OnDelete(DeleteBehavior.ClientCascade);
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

@@ -25,15 +25,15 @@ namespace InCase.Infrastructure.Configurations
             builder.HasOne(o => o.User)
                 .WithMany(m => m.HistoryOpenings)
                 .HasForeignKey(o => o.UserId)
-                .OnDelete(DeleteBehavior.ClientCascade);
+                .OnDelete(DeleteBehavior.Cascade);
             builder.HasOne(o => o.Item)
                 .WithMany(m => m.HistoryOpenings)
                 .HasForeignKey(o => o.ItemId)
-                .OnDelete(DeleteBehavior.ClientCascade);
+                .OnDelete(DeleteBehavior.Cascade);
             builder.HasOne(o => o.Box)
                 .WithMany(m => m.HistoryOpenings)
                 .HasForeignKey(o => o.BoxId)
-                .OnDelete(DeleteBehavior.ClientCascade);
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

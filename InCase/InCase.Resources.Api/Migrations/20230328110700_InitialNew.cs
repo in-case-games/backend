@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace InCase.Resources.Api.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class InitialNew : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -32,7 +32,7 @@ namespace InCase.Resources.Api.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_gameitemquality", x => x.id);
+                    table.PrimaryKey("pk_game_item_quality", x => x.id);
                 });
 
             migrationBuilder.CreateTable(
@@ -44,7 +44,7 @@ namespace InCase.Resources.Api.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_gameitemrarity", x => x.id);
+                    table.PrimaryKey("pk_game_item_rarity", x => x.id);
                 });
 
             migrationBuilder.CreateTable(
@@ -56,7 +56,7 @@ namespace InCase.Resources.Api.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_gameitemtype", x => x.id);
+                    table.PrimaryKey("pk_game_item_type", x => x.id);
                 });
 
             migrationBuilder.CreateTable(
@@ -68,7 +68,7 @@ namespace InCase.Resources.Api.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_grouplootbox", x => x.id);
+                    table.PrimaryKey("pk_group_loot_box", x => x.id);
                 });
 
             migrationBuilder.CreateTable(
@@ -94,7 +94,7 @@ namespace InCase.Resources.Api.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_promocodetype", x => x.id);
+                    table.PrimaryKey("pk_promocode_type", x => x.id);
                 });
 
             migrationBuilder.CreateTable(
@@ -106,7 +106,7 @@ namespace InCase.Resources.Api.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_restrictiontype", x => x.id);
+                    table.PrimaryKey("pk_restriction_type", x => x.id);
                 });
 
             migrationBuilder.CreateTable(
@@ -116,13 +116,13 @@ namespace InCase.Resources.Api.Migrations
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     users = table.Column<int>(type: "int", nullable: false),
                     reviews = table.Column<int>(type: "int", nullable: false),
-                    opencases = table.Column<int>(type: "int", nullable: false),
-                    withdrawnitems = table.Column<int>(type: "int", nullable: false),
-                    withdrawnfunds = table.Column<int>(type: "int", nullable: false)
+                    open_cases = table.Column<int>(type: "int", nullable: false),
+                    withdrawn_items = table.Column<int>(type: "int", nullable: false),
+                    withdrawn_funds = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_sitestatitics", x => x.id);
+                    table.PrimaryKey("pk_site_statitics", x => x.id);
                 });
 
             migrationBuilder.CreateTable(
@@ -130,13 +130,13 @@ namespace InCase.Resources.Api.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    balancewithdrawn = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    totalreplenished = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    sentsites = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
+                    balance_withdrawn = table.Column<decimal>(type: "DECIMAL(18,5)", nullable: false),
+                    total_replenished = table.Column<decimal>(type: "DECIMAL(18,5)", nullable: false),
+                    sent_sites = table.Column<decimal>(type: "DECIMAL(18,5)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_sitestatiticsadmin", x => x.id);
+                    table.PrimaryKey("pk_site_statitics_admin", x => x.id);
                 });
 
             migrationBuilder.CreateTable(
@@ -146,8 +146,8 @@ namespace InCase.Resources.Api.Migrations
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     login = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     email = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    passwordhash = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    passwordsalt = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    password_hash = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    password_salt = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -163,7 +163,7 @@ namespace InCase.Resources.Api.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_userrole", x => x.id);
+                    table.PrimaryKey("pk_user_role", x => x.id);
                 });
 
             migrationBuilder.CreateTable(
@@ -172,18 +172,19 @@ namespace InCase.Resources.Api.Migrations
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    domainuri = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    domain_uri = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     uri = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    gameid = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    game_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_gameplatform", x => x.id);
+                    table.PrimaryKey("pk_game_platform", x => x.id);
                     table.ForeignKey(
-                        name: "fk_gameplatform_game_gameid",
-                        column: x => x.gameid,
+                        name: "fk_game_platform_game_game_id",
+                        column: x => x.game_id,
                         principalTable: "Game",
-                        principalColumn: "id");
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -192,19 +193,19 @@ namespace InCase.Resources.Api.Migrations
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    cost = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    balance = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    virtualbalance = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    cost = table.Column<decimal>(type: "DECIMAL(18,5)", nullable: false),
+                    balance = table.Column<decimal>(type: "DECIMAL(18,5)", nullable: false),
+                    virtual_balance = table.Column<decimal>(type: "DECIMAL(18,5)", nullable: false),
                     uri = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    islocked = table.Column<bool>(type: "bit", nullable: false),
-                    gameid = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    is_locked = table.Column<bool>(type: "bit", nullable: false),
+                    game_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_lootbox", x => x.id);
+                    table.PrimaryKey("pk_loot_box", x => x.id);
                     table.ForeignKey(
-                        name: "fk_lootbox_game_gameid",
-                        column: x => x.gameid,
+                        name: "fk_loot_box_game_game_id",
+                        column: x => x.game_id,
                         principalTable: "Game",
                         principalColumn: "id");
                 });
@@ -215,35 +216,35 @@ namespace InCase.Resources.Api.Migrations
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    cost = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    cost = table.Column<decimal>(type: "DECIMAL(18,5)", nullable: false),
                     image = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    idforplatform = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    gameid = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    typeid = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    rarityid = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    qualityid = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    id_for_platform = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    game_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    type_id = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    rarity_id = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    quality_id = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_gameitem", x => x.id);
+                    table.PrimaryKey("pk_game_item", x => x.id);
                     table.ForeignKey(
-                        name: "fk_gameitem_game_gameid",
-                        column: x => x.gameid,
+                        name: "fk_game_item_game_game_id",
+                        column: x => x.game_id,
                         principalTable: "Game",
                         principalColumn: "id");
                     table.ForeignKey(
-                        name: "fk_gameitem_gameitemqualities_qualityid",
-                        column: x => x.qualityid,
+                        name: "fk_game_item_game_item_qualities_quality_id",
+                        column: x => x.quality_id,
                         principalTable: "GameItemQuality",
                         principalColumn: "id");
                     table.ForeignKey(
-                        name: "fk_gameitem_gameitemrarities_rarityid",
-                        column: x => x.rarityid,
+                        name: "fk_game_item_game_item_rarities_rarity_id",
+                        column: x => x.rarity_id,
                         principalTable: "GameItemRarity",
                         principalColumn: "id");
                     table.ForeignKey(
-                        name: "fk_gameitem_gameitemtypes_typeid",
-                        column: x => x.typeid,
+                        name: "fk_game_item_game_item_types_type_id",
+                        column: x => x.type_id,
                         principalTable: "GameItemType",
                         principalColumn: "id");
                 });
@@ -254,16 +255,17 @@ namespace InCase.Resources.Api.Migrations
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     uri = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    newsid = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    news_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_newsimage", x => x.id);
+                    table.PrimaryKey("pk_news_image", x => x.id);
                     table.ForeignKey(
-                        name: "fk_newsimage_news_newsid",
-                        column: x => x.newsid,
+                        name: "fk_news_image_news_news_id",
+                        column: x => x.news_id,
                         principalTable: "News",
-                        principalColumn: "id");
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -273,18 +275,19 @@ namespace InCase.Resources.Api.Migrations
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     name = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     discount = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    numberactivations = table.Column<int>(type: "int", nullable: false),
-                    expirationdate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    typeid = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    number_activations = table.Column<int>(type: "int", nullable: false),
+                    expiration_date = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    type_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("pk_promocode", x => x.id);
                     table.ForeignKey(
-                        name: "fk_promocode_promocodetypes_typeid",
-                        column: x => x.typeid,
+                        name: "fk_promocode_promocode_types_type_id",
+                        column: x => x.type_id,
                         principalTable: "PromocodeType",
-                        principalColumn: "id");
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -295,21 +298,21 @@ namespace InCase.Resources.Api.Migrations
                     title = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     content = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     date = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    isclosed = table.Column<bool>(type: "bit", nullable: false),
-                    userid = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    supportid = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    is_closed = table.Column<bool>(type: "bit", nullable: false),
+                    user_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    support_id = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_supporttopic", x => x.id);
+                    table.PrimaryKey("pk_support_topic", x => x.id);
                     table.ForeignKey(
-                        name: "fk_supporttopic_users_supportid",
-                        column: x => x.supportid,
+                        name: "fk_support_topic_users_support_id",
+                        column: x => x.support_id,
                         principalTable: "User",
                         principalColumn: "id");
                     table.ForeignKey(
-                        name: "fk_supporttopic_users_userid",
-                        column: x => x.userid,
+                        name: "fk_support_topic_users_user_id",
+                        column: x => x.user_id,
                         principalTable: "User",
                         principalColumn: "id");
                 });
@@ -320,17 +323,18 @@ namespace InCase.Resources.Api.Migrations
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     date = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    userid = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    amount = table.Column<decimal>(type: "DECIMAL(18,5)", nullable: false),
+                    user_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_userhistorypayment", x => x.id);
+                    table.PrimaryKey("pk_user_history_payment", x => x.id);
                     table.ForeignKey(
-                        name: "fk_userhistorypayment_user_userid",
-                        column: x => x.userid,
+                        name: "fk_user_history_payment_user_user_id",
+                        column: x => x.user_id,
                         principalTable: "User",
-                        principalColumn: "id");
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -338,29 +342,30 @@ namespace InCase.Resources.Api.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    creationdate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    expirationdate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    creation_date = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    expiration_date = table.Column<DateTime>(type: "datetime2", nullable: false),
                     description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    userid = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ownerid = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    typeid = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    user_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    owner_id = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    type_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_userrestriction", x => x.id);
+                    table.PrimaryKey("pk_user_restriction", x => x.id);
                     table.ForeignKey(
-                        name: "fk_userrestriction_restrictiontype_typeid",
-                        column: x => x.typeid,
+                        name: "fk_user_restriction_restriction_type_type_id",
+                        column: x => x.type_id,
                         principalTable: "RestrictionType",
-                        principalColumn: "id");
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "fk_userrestriction_user_ownerid",
-                        column: x => x.ownerid,
+                        name: "fk_user_restriction_user_owner_id",
+                        column: x => x.owner_id,
                         principalTable: "User",
                         principalColumn: "id");
                     table.ForeignKey(
-                        name: "fk_userrestriction_user_userid",
-                        column: x => x.userid,
+                        name: "fk_user_restriction_user_user_id",
+                        column: x => x.user_id,
                         principalTable: "User",
                         principalColumn: "id");
                 });
@@ -372,17 +377,18 @@ namespace InCase.Resources.Api.Migrations
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     title = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     content = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    isapproved = table.Column<bool>(type: "bit", nullable: false),
-                    userid = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    is_approved = table.Column<bool>(type: "bit", nullable: false),
+                    user_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_userreview", x => x.id);
+                    table.PrimaryKey("pk_user_review", x => x.id);
                     table.ForeignKey(
-                        name: "fk_userreview_user_userid",
-                        column: x => x.userid,
+                        name: "fk_user_review_user_user_id",
+                        column: x => x.user_id,
                         principalTable: "User",
-                        principalColumn: "id");
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -392,18 +398,19 @@ namespace InCase.Resources.Api.Migrations
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     refresh = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     email = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ipaddress = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ip_address = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     device = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    userid = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    user_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_usertoken", x => x.id);
+                    table.PrimaryKey("pk_user_token", x => x.id);
                     table.ForeignKey(
-                        name: "fk_usertoken_user_userid",
-                        column: x => x.userid,
+                        name: "fk_user_token_user_user_id",
+                        column: x => x.user_id,
                         principalTable: "User",
-                        principalColumn: "id");
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -411,25 +418,25 @@ namespace InCase.Resources.Api.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    balance = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    balance = table.Column<decimal>(type: "DECIMAL(18,5)", nullable: false),
                     image = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    isnotifyemail = table.Column<bool>(type: "bit", nullable: false),
-                    isguestmode = table.Column<bool>(type: "bit", nullable: false),
-                    roleid = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    userid = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    is_notify_email = table.Column<bool>(type: "bit", nullable: false),
+                    is_guest_mode = table.Column<bool>(type: "bit", nullable: false),
+                    role_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    user_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_useradditionalinfo", x => x.id);
+                    table.PrimaryKey("pk_user_additional_info", x => x.id);
                     table.ForeignKey(
-                        name: "fk_useradditionalinfo_user_userid",
-                        column: x => x.userid,
-                        principalTable: "User",
+                        name: "fk_user_additional_info_user_roles_role_id",
+                        column: x => x.role_id,
+                        principalTable: "UserRole",
                         principalColumn: "id");
                     table.ForeignKey(
-                        name: "fk_useradditionalinfo_userroles_roleid",
-                        column: x => x.roleid,
-                        principalTable: "UserRole",
+                        name: "fk_user_additional_info_user_user_id",
+                        column: x => x.user_id,
+                        principalTable: "User",
                         principalColumn: "id");
                 });
 
@@ -438,20 +445,21 @@ namespace InCase.Resources.Api.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    isactive = table.Column<bool>(type: "bit", nullable: false),
-                    creationdate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    expirationdate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    is_active = table.Column<bool>(type: "bit", nullable: false),
+                    creation_date = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    expiration_date = table.Column<DateTime>(type: "datetime2", nullable: true),
                     uri = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    boxid = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    box_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_lootboxbanner", x => x.id);
+                    table.PrimaryKey("pk_loot_box_banner", x => x.id);
                     table.ForeignKey(
-                        name: "fk_lootboxbanner_lootbox_boxid",
-                        column: x => x.boxid,
+                        name: "fk_loot_box_banner_loot_box_box_id",
+                        column: x => x.box_id,
                         principalTable: "LootBox",
-                        principalColumn: "id");
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -459,28 +467,31 @@ namespace InCase.Resources.Api.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    boxid = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    groupid = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    gameid = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    box_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    group_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    game_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_lootboxgroup", x => x.id);
+                    table.PrimaryKey("pk_loot_box_group", x => x.id);
                     table.ForeignKey(
-                        name: "fk_lootboxgroup_game_gameid",
-                        column: x => x.gameid,
+                        name: "fk_loot_box_group_game_game_id",
+                        column: x => x.game_id,
                         principalTable: "Game",
-                        principalColumn: "id");
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "fk_lootboxgroup_grouplootbox_groupid",
-                        column: x => x.groupid,
+                        name: "fk_loot_box_group_group_loot_box_group_id",
+                        column: x => x.group_id,
                         principalTable: "GroupLootBox",
-                        principalColumn: "id");
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "fk_lootboxgroup_lootbox_boxid",
-                        column: x => x.boxid,
+                        name: "fk_loot_box_group_loot_box_box_id",
+                        column: x => x.box_id,
                         principalTable: "LootBox",
-                        principalColumn: "id");
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -488,24 +499,26 @@ namespace InCase.Resources.Api.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    numberitems = table.Column<int>(type: "int", nullable: false),
-                    chancewining = table.Column<int>(type: "int", nullable: false),
-                    itemid = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    boxid = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    number_items = table.Column<int>(type: "int", nullable: false),
+                    chance_wining = table.Column<int>(type: "int", nullable: false),
+                    item_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    box_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_lootboxinventory", x => x.id);
+                    table.PrimaryKey("pk_loot_box_inventory", x => x.id);
                     table.ForeignKey(
-                        name: "fk_lootboxinventory_gameitem_itemid",
-                        column: x => x.itemid,
+                        name: "fk_loot_box_inventory_game_item_item_id",
+                        column: x => x.item_id,
                         principalTable: "GameItem",
-                        principalColumn: "id");
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "fk_lootboxinventory_lootbox_boxid",
-                        column: x => x.boxid,
+                        name: "fk_loot_box_inventory_loot_box_box_id",
+                        column: x => x.box_id,
                         principalTable: "LootBox",
-                        principalColumn: "id");
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -514,28 +527,31 @@ namespace InCase.Resources.Api.Migrations
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     date = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    userid = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    itemid = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    boxid = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    user_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    item_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    box_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_userhistoryopening", x => x.id);
+                    table.PrimaryKey("pk_user_history_opening", x => x.id);
                     table.ForeignKey(
-                        name: "fk_userhistoryopening_gameitem_itemid",
-                        column: x => x.itemid,
+                        name: "fk_user_history_opening_game_item_item_id",
+                        column: x => x.item_id,
                         principalTable: "GameItem",
-                        principalColumn: "id");
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "fk_userhistoryopening_lootbox_boxid",
-                        column: x => x.boxid,
+                        name: "fk_user_history_opening_loot_box_box_id",
+                        column: x => x.box_id,
                         principalTable: "LootBox",
-                        principalColumn: "id");
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "fk_userhistoryopening_user_userid",
-                        column: x => x.userid,
+                        name: "fk_user_history_opening_user_user_id",
+                        column: x => x.user_id,
                         principalTable: "User",
-                        principalColumn: "id");
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -544,22 +560,24 @@ namespace InCase.Resources.Api.Migrations
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     date = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    userid = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    itemid = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    user_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    item_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_userhistorywithdrawn", x => x.id);
+                    table.PrimaryKey("pk_user_history_withdrawn", x => x.id);
                     table.ForeignKey(
-                        name: "fk_userhistorywithdrawn_gameitem_itemid",
-                        column: x => x.itemid,
+                        name: "fk_user_history_withdrawn_game_item_item_id",
+                        column: x => x.item_id,
                         principalTable: "GameItem",
-                        principalColumn: "id");
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "fk_userhistorywithdrawn_user_userid",
-                        column: x => x.userid,
+                        name: "fk_user_history_withdrawn_user_user_id",
+                        column: x => x.user_id,
                         principalTable: "User",
-                        principalColumn: "id");
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -568,23 +586,25 @@ namespace InCase.Resources.Api.Migrations
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     date = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    fixedcost = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    userid = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    itemid = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    fixed_cost = table.Column<decimal>(type: "DECIMAL(18,5)", nullable: false),
+                    user_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    item_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_userinventory", x => x.id);
+                    table.PrimaryKey("pk_user_inventory", x => x.id);
                     table.ForeignKey(
-                        name: "fk_userinventory_gameitem_itemid",
-                        column: x => x.itemid,
+                        name: "fk_user_inventory_game_item_item_id",
+                        column: x => x.item_id,
                         principalTable: "GameItem",
-                        principalColumn: "id");
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "fk_userinventory_user_userid",
-                        column: x => x.userid,
+                        name: "fk_user_inventory_user_user_id",
+                        column: x => x.user_id,
                         principalTable: "User",
-                        principalColumn: "id");
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -593,23 +613,25 @@ namespace InCase.Resources.Api.Migrations
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     date = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    isactivated = table.Column<bool>(type: "bit", nullable: false),
-                    userid = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    promocodeid = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    is_activated = table.Column<bool>(type: "bit", nullable: false),
+                    user_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    promocode_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_userhistorypromocode", x => x.id);
+                    table.PrimaryKey("pk_user_history_promocode", x => x.id);
                     table.ForeignKey(
-                        name: "fk_userhistorypromocode_promocode_promocodeid",
-                        column: x => x.promocodeid,
+                        name: "fk_user_history_promocode_promocode_promocode_id",
+                        column: x => x.promocode_id,
                         principalTable: "Promocode",
-                        principalColumn: "id");
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "fk_userhistorypromocode_user_userid",
-                        column: x => x.userid,
+                        name: "fk_user_history_promocode_user_user_id",
+                        column: x => x.user_id,
                         principalTable: "User",
-                        principalColumn: "id");
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -619,20 +641,20 @@ namespace InCase.Resources.Api.Migrations
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     content = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     date = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    plaintiffid = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    topicid = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    plaintiff_id = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    topic_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_supporttopicanswer", x => x.id);
+                    table.PrimaryKey("pk_support_topic_answer", x => x.id);
                     table.ForeignKey(
-                        name: "fk_supporttopicanswer_supporttopic_topicid",
-                        column: x => x.topicid,
+                        name: "fk_support_topic_answer_support_topic_topic_id",
+                        column: x => x.topic_id,
                         principalTable: "SupportTopic",
                         principalColumn: "id");
                     table.ForeignKey(
-                        name: "fk_supporttopicanswer_users_plaintiffid",
-                        column: x => x.plaintiffid,
+                        name: "fk_support_topic_answer_users_plaintiff_id",
+                        column: x => x.plaintiff_id,
                         principalTable: "User",
                         principalColumn: "id");
                 });
@@ -643,16 +665,17 @@ namespace InCase.Resources.Api.Migrations
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     uri = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    reviewid = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    review_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_reviewimage", x => x.id);
+                    table.PrimaryKey("pk_review_image", x => x.id);
                     table.ForeignKey(
-                        name: "fk_reviewimage_userreviews_reviewid",
-                        column: x => x.reviewid,
+                        name: "fk_review_image_user_reviews_review_id",
+                        column: x => x.review_id,
                         principalTable: "UserReview",
-                        principalColumn: "id");
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -661,29 +684,32 @@ namespace InCase.Resources.Api.Migrations
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     date = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    numbersteps = table.Column<int>(type: "int", nullable: false),
-                    userid = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    itemid = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    bannerid = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    number_steps = table.Column<int>(type: "int", nullable: false),
+                    user_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    item_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    banner_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_userpathbanner", x => x.id);
+                    table.PrimaryKey("pk_user_path_banner", x => x.id);
                     table.ForeignKey(
-                        name: "fk_userpathbanner_gameitem_itemid",
-                        column: x => x.itemid,
+                        name: "fk_user_path_banner_game_item_item_id",
+                        column: x => x.item_id,
                         principalTable: "GameItem",
-                        principalColumn: "id");
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "fk_userpathbanner_lootboxbanner_bannerid",
-                        column: x => x.bannerid,
+                        name: "fk_user_path_banner_loot_box_banner_banner_id",
+                        column: x => x.banner_id,
                         principalTable: "LootBoxBanner",
-                        principalColumn: "id");
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "fk_userpathbanner_user_userid",
-                        column: x => x.userid,
+                        name: "fk_user_path_banner_user_user_id",
+                        column: x => x.user_id,
                         principalTable: "User",
-                        principalColumn: "id");
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -692,25 +718,26 @@ namespace InCase.Resources.Api.Migrations
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     uri = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    answerid = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    answer_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_answerimage", x => x.id);
+                    table.PrimaryKey("pk_answer_image", x => x.id);
                     table.ForeignKey(
-                        name: "fk_answerimage_supporttopicanswers_answerid",
-                        column: x => x.answerid,
+                        name: "fk_answer_image_support_topic_answers_answer_id",
+                        column: x => x.answer_id,
                         principalTable: "SupportTopicAnswer",
-                        principalColumn: "id");
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "ix_answerimage_answerid",
+                name: "ix_answer_image_answer_id",
                 table: "AnswerImage",
-                column: "answerid");
+                column: "answer_id");
 
             migrationBuilder.CreateIndex(
-                name: "ix_answerimage_id",
+                name: "ix_answer_image_id",
                 table: "AnswerImage",
                 column: "id",
                 unique: true);
@@ -729,132 +756,132 @@ namespace InCase.Resources.Api.Migrations
                 filter: "[name] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "ix_gameitem_gameid",
+                name: "ix_game_item_game_id",
                 table: "GameItem",
-                column: "gameid");
+                column: "game_id");
 
             migrationBuilder.CreateIndex(
-                name: "ix_gameitem_id",
+                name: "ix_game_item_id",
                 table: "GameItem",
                 column: "id",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "ix_gameitem_qualityid",
+                name: "ix_game_item_quality_id",
                 table: "GameItem",
-                column: "qualityid");
+                column: "quality_id");
 
             migrationBuilder.CreateIndex(
-                name: "ix_gameitem_rarityid",
+                name: "ix_game_item_rarity_id",
                 table: "GameItem",
-                column: "rarityid");
+                column: "rarity_id");
 
             migrationBuilder.CreateIndex(
-                name: "ix_gameitem_typeid",
+                name: "ix_game_item_type_id",
                 table: "GameItem",
-                column: "typeid");
+                column: "type_id");
 
             migrationBuilder.CreateIndex(
-                name: "ix_gameitemquality_id",
+                name: "ix_game_item_quality_id",
                 table: "GameItemQuality",
                 column: "id",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "ix_gameitemrarity_id",
+                name: "ix_game_item_rarity_id",
                 table: "GameItemRarity",
                 column: "id",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "ix_gameitemtype_id",
+                name: "ix_game_item_type_id",
                 table: "GameItemType",
                 column: "id",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "ix_gameplatform_gameid",
+                name: "ix_game_platform_game_id",
                 table: "GamePlatform",
-                column: "gameid");
+                column: "game_id");
 
             migrationBuilder.CreateIndex(
-                name: "ix_gameplatform_id",
+                name: "ix_game_platform_id",
                 table: "GamePlatform",
                 column: "id",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "ix_grouplootbox_id",
+                name: "ix_group_loot_box_id",
                 table: "GroupLootBox",
                 column: "id",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "ix_grouplootbox_name",
+                name: "ix_group_loot_box_name",
                 table: "GroupLootBox",
                 column: "name",
                 unique: true,
                 filter: "[name] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "ix_lootbox_gameid",
+                name: "ix_loot_box_game_id",
                 table: "LootBox",
-                column: "gameid");
+                column: "game_id");
 
             migrationBuilder.CreateIndex(
-                name: "ix_lootbox_id",
+                name: "ix_loot_box_id",
                 table: "LootBox",
                 column: "id",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "ix_lootboxbanner_boxid",
+                name: "ix_loot_box_banner_box_id",
                 table: "LootBoxBanner",
-                column: "boxid",
+                column: "box_id",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "ix_lootboxbanner_id",
+                name: "ix_loot_box_banner_id",
                 table: "LootBoxBanner",
                 column: "id",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "ix_lootboxgroup_boxid",
+                name: "ix_loot_box_group_box_id",
                 table: "LootBoxGroup",
-                column: "boxid");
+                column: "box_id");
 
             migrationBuilder.CreateIndex(
-                name: "ix_lootboxgroup_gameid",
+                name: "ix_loot_box_group_game_id",
                 table: "LootBoxGroup",
-                column: "gameid");
+                column: "game_id");
 
             migrationBuilder.CreateIndex(
-                name: "ix_lootboxgroup_groupid",
+                name: "ix_loot_box_group_group_id",
                 table: "LootBoxGroup",
-                column: "groupid");
+                column: "group_id");
 
             migrationBuilder.CreateIndex(
-                name: "ix_lootboxgroup_id",
+                name: "ix_loot_box_group_id",
                 table: "LootBoxGroup",
                 column: "id",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "ix_lootboxinventory_boxid",
+                name: "ix_loot_box_inventory_box_id",
                 table: "LootBoxInventory",
-                column: "boxid");
+                column: "box_id");
 
             migrationBuilder.CreateIndex(
-                name: "ix_lootboxinventory_id",
+                name: "ix_loot_box_inventory_id",
                 table: "LootBoxInventory",
                 column: "id",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "ix_lootboxinventory_itemid",
+                name: "ix_loot_box_inventory_item_id",
                 table: "LootBoxInventory",
-                column: "itemid");
+                column: "item_id");
 
             migrationBuilder.CreateIndex(
                 name: "ix_news_id",
@@ -863,15 +890,15 @@ namespace InCase.Resources.Api.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "ix_newsimage_id",
+                name: "ix_news_image_id",
                 table: "NewsImage",
                 column: "id",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "ix_newsimage_newsid",
+                name: "ix_news_image_news_id",
                 table: "NewsImage",
-                column: "newsid");
+                column: "news_id");
 
             migrationBuilder.CreateIndex(
                 name: "ix_promocode_id",
@@ -887,90 +914,90 @@ namespace InCase.Resources.Api.Migrations
                 filter: "[name] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "ix_promocode_typeid",
+                name: "ix_promocode_type_id",
                 table: "Promocode",
-                column: "typeid");
+                column: "type_id");
 
             migrationBuilder.CreateIndex(
-                name: "ix_promocodetype_id",
+                name: "ix_promocode_type_id",
                 table: "PromocodeType",
                 column: "id",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "ix_promocodetype_name",
+                name: "ix_promocode_type_name",
                 table: "PromocodeType",
                 column: "name",
                 unique: true,
                 filter: "[name] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "ix_restrictiontype_id",
+                name: "ix_restriction_type_id",
                 table: "RestrictionType",
                 column: "id",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "ix_restrictiontype_name",
+                name: "ix_restriction_type_name",
                 table: "RestrictionType",
                 column: "name",
                 unique: true,
                 filter: "[name] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "ix_reviewimage_id",
+                name: "ix_review_image_id",
                 table: "ReviewImage",
                 column: "id",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "ix_reviewimage_reviewid",
+                name: "ix_review_image_review_id",
                 table: "ReviewImage",
-                column: "reviewid");
+                column: "review_id");
 
             migrationBuilder.CreateIndex(
-                name: "ix_sitestatitics_id",
+                name: "ix_site_statitics_id",
                 table: "SiteStatitics",
                 column: "id",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "ix_sitestatiticsadmin_id",
+                name: "ix_site_statitics_admin_id",
                 table: "SiteStatiticsAdmin",
                 column: "id",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "ix_supporttopic_id",
+                name: "ix_support_topic_id",
                 table: "SupportTopic",
                 column: "id",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "ix_supporttopic_supportid",
+                name: "ix_support_topic_support_id",
                 table: "SupportTopic",
-                column: "supportid");
+                column: "support_id");
 
             migrationBuilder.CreateIndex(
-                name: "ix_supporttopic_userid",
+                name: "ix_support_topic_user_id",
                 table: "SupportTopic",
-                column: "userid");
+                column: "user_id");
 
             migrationBuilder.CreateIndex(
-                name: "ix_supporttopicanswer_id",
+                name: "ix_support_topic_answer_id",
                 table: "SupportTopicAnswer",
                 column: "id",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "ix_supporttopicanswer_plaintiffid",
+                name: "ix_support_topic_answer_plaintiff_id",
                 table: "SupportTopicAnswer",
-                column: "plaintiffid");
+                column: "plaintiff_id");
 
             migrationBuilder.CreateIndex(
-                name: "ix_supporttopicanswer_topicid",
+                name: "ix_support_topic_answer_topic_id",
                 table: "SupportTopicAnswer",
-                column: "topicid");
+                column: "topic_id");
 
             migrationBuilder.CreateIndex(
                 name: "ix_user_email",
@@ -993,178 +1020,178 @@ namespace InCase.Resources.Api.Migrations
                 filter: "[login] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "ix_useradditionalinfo_id",
+                name: "ix_user_additional_info_id",
                 table: "UserAdditionalInfo",
                 column: "id",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "ix_useradditionalinfo_roleid",
+                name: "ix_user_additional_info_role_id",
                 table: "UserAdditionalInfo",
-                column: "roleid");
+                column: "role_id");
 
             migrationBuilder.CreateIndex(
-                name: "ix_useradditionalinfo_userid",
+                name: "ix_user_additional_info_user_id",
                 table: "UserAdditionalInfo",
-                column: "userid",
+                column: "user_id",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "ix_userhistoryopening_boxid",
+                name: "ix_user_history_opening_box_id",
                 table: "UserHistoryOpening",
-                column: "boxid");
+                column: "box_id");
 
             migrationBuilder.CreateIndex(
-                name: "ix_userhistoryopening_id",
+                name: "ix_user_history_opening_id",
                 table: "UserHistoryOpening",
                 column: "id",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "ix_userhistoryopening_itemid",
+                name: "ix_user_history_opening_item_id",
                 table: "UserHistoryOpening",
-                column: "itemid");
+                column: "item_id");
 
             migrationBuilder.CreateIndex(
-                name: "ix_userhistoryopening_userid",
+                name: "ix_user_history_opening_user_id",
                 table: "UserHistoryOpening",
-                column: "userid");
+                column: "user_id");
 
             migrationBuilder.CreateIndex(
-                name: "ix_userhistorypayment_id",
+                name: "ix_user_history_payment_id",
                 table: "UserHistoryPayment",
                 column: "id",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "ix_userhistorypayment_userid",
+                name: "ix_user_history_payment_user_id",
                 table: "UserHistoryPayment",
-                column: "userid");
+                column: "user_id");
 
             migrationBuilder.CreateIndex(
-                name: "ix_userhistorypromocode_id",
+                name: "ix_user_history_promocode_id",
                 table: "UserHistoryPromocode",
                 column: "id",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "ix_userhistorypromocode_promocodeid",
+                name: "ix_user_history_promocode_promocode_id",
                 table: "UserHistoryPromocode",
-                column: "promocodeid");
+                column: "promocode_id");
 
             migrationBuilder.CreateIndex(
-                name: "ix_userhistorypromocode_userid",
+                name: "ix_user_history_promocode_user_id",
                 table: "UserHistoryPromocode",
-                column: "userid");
+                column: "user_id");
 
             migrationBuilder.CreateIndex(
-                name: "ix_userhistorywithdrawn_id",
+                name: "ix_user_history_withdrawn_id",
                 table: "UserHistoryWithdrawn",
                 column: "id",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "ix_userhistorywithdrawn_itemid",
+                name: "ix_user_history_withdrawn_item_id",
                 table: "UserHistoryWithdrawn",
-                column: "itemid");
+                column: "item_id");
 
             migrationBuilder.CreateIndex(
-                name: "ix_userhistorywithdrawn_userid",
+                name: "ix_user_history_withdrawn_user_id",
                 table: "UserHistoryWithdrawn",
-                column: "userid");
+                column: "user_id");
 
             migrationBuilder.CreateIndex(
-                name: "ix_userinventory_id",
+                name: "ix_user_inventory_id",
                 table: "UserInventory",
                 column: "id",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "ix_userinventory_itemid",
+                name: "ix_user_inventory_item_id",
                 table: "UserInventory",
-                column: "itemid");
+                column: "item_id");
 
             migrationBuilder.CreateIndex(
-                name: "ix_userinventory_userid",
+                name: "ix_user_inventory_user_id",
                 table: "UserInventory",
-                column: "userid");
+                column: "user_id");
 
             migrationBuilder.CreateIndex(
-                name: "ix_userpathbanner_bannerid",
+                name: "ix_user_path_banner_banner_id",
                 table: "UserPathBanner",
-                column: "bannerid");
+                column: "banner_id");
 
             migrationBuilder.CreateIndex(
-                name: "ix_userpathbanner_id",
+                name: "ix_user_path_banner_id",
                 table: "UserPathBanner",
                 column: "id",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "ix_userpathbanner_itemid",
+                name: "ix_user_path_banner_item_id",
                 table: "UserPathBanner",
-                column: "itemid");
+                column: "item_id");
 
             migrationBuilder.CreateIndex(
-                name: "ix_userpathbanner_userid",
+                name: "ix_user_path_banner_user_id",
                 table: "UserPathBanner",
-                column: "userid");
+                column: "user_id");
 
             migrationBuilder.CreateIndex(
-                name: "ix_userrestriction_id",
+                name: "ix_user_restriction_id",
                 table: "UserRestriction",
                 column: "id",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "ix_userrestriction_ownerid",
+                name: "ix_user_restriction_owner_id",
                 table: "UserRestriction",
-                column: "ownerid");
+                column: "owner_id");
 
             migrationBuilder.CreateIndex(
-                name: "ix_userrestriction_typeid",
+                name: "ix_user_restriction_type_id",
                 table: "UserRestriction",
-                column: "typeid");
+                column: "type_id");
 
             migrationBuilder.CreateIndex(
-                name: "ix_userrestriction_userid",
+                name: "ix_user_restriction_user_id",
                 table: "UserRestriction",
-                column: "userid");
+                column: "user_id");
 
             migrationBuilder.CreateIndex(
-                name: "ix_userreview_id",
+                name: "ix_user_review_id",
                 table: "UserReview",
                 column: "id",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "ix_userreview_userid",
+                name: "ix_user_review_user_id",
                 table: "UserReview",
-                column: "userid");
+                column: "user_id");
 
             migrationBuilder.CreateIndex(
-                name: "ix_userrole_id",
+                name: "ix_user_role_id",
                 table: "UserRole",
                 column: "id",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "ix_userrole_name",
+                name: "ix_user_role_name",
                 table: "UserRole",
                 column: "name",
                 unique: true,
                 filter: "[name] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "ix_usertoken_id",
+                name: "ix_user_token_id",
                 table: "UserToken",
                 column: "id",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "ix_usertoken_userid",
+                name: "ix_user_token_user_id",
                 table: "UserToken",
-                column: "userid");
+                column: "user_id");
         }
 
         /// <inheritdoc />

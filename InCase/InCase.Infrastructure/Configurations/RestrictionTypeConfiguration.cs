@@ -17,7 +17,7 @@ namespace InCase.Infrastructure.Configurations
 
             builder.HasOne(o => o.Restriction)
                 .WithOne(m => m.Type)
-                .OnDelete(DeleteBehavior.ClientCascade);
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

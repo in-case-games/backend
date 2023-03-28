@@ -20,15 +20,15 @@ namespace InCase.Infrastructure.Configurations
             builder.HasOne(o => o.User)
                 .WithMany(m => m.Paths)
                 .HasForeignKey(o => o.UserId)
-                .OnDelete(DeleteBehavior.ClientCascade);
+                .OnDelete(DeleteBehavior.Cascade);
             builder.HasOne(o => o.Item)
                 .WithMany(m => m.PathBanners)
                 .HasForeignKey(o => o.ItemId)
-                .OnDelete(DeleteBehavior.ClientCascade);
+                .OnDelete(DeleteBehavior.Cascade);
             builder.HasOne(o => o.Banner)
                 .WithMany(m => m.Paths)
                 .HasForeignKey(o => o.BannerId)
-                .OnDelete(DeleteBehavior.ClientCascade);
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

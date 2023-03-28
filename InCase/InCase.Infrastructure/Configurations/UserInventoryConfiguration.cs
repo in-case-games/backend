@@ -20,16 +20,17 @@ namespace InCase.Infrastructure.Configurations
             builder.Property(p => p.Date)
                 .IsRequired();
             builder.Property(p => p.FixedCost)
+                .HasColumnType("DECIMAL(18,5)")
                 .IsRequired();
 
             builder.HasOne(o => o.User)
                 .WithMany(m => m.Inventories)
                 .HasForeignKey(o => o.UserId)
-                .OnDelete(DeleteBehavior.ClientCascade);
+                .OnDelete(DeleteBehavior.Cascade);
             builder.HasOne(o => o.Item)
                 .WithMany(m => m.UserInventories)
                 .HasForeignKey(o => o.ItemId)
-                .OnDelete(DeleteBehavior.ClientCascade);
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

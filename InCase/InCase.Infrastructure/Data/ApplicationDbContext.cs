@@ -46,11 +46,12 @@ namespace InCase.Infrastructure.Data
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             base.OnConfiguring(optionsBuilder);
-            optionsBuilder.UseLowerCaseNamingConvention();
+            optionsBuilder.UseSnakeCaseNamingConvention();
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            
             base.OnModelCreating(modelBuilder);
 
             #region .ApplyConfiguration()
