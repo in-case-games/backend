@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContextFactory<ApplicationDbContext>(options => 
-    options.UseSqlServer(@"Server=DESKTOP-7SBJM8F\SQLEXPRESS;Database=InCaseTest;TrustServerCertificate=True;Trusted_Connection=True;",
+    options.UseSqlServer(@"Server=GIS\FERBRAY;Database=InCaseTest;TrustServerCertificate=True;Trusted_Connection=True;",
     b => b.MigrationsAssembly("InCase.Resources.Api")));
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

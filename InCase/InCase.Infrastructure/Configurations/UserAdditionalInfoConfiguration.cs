@@ -27,11 +27,11 @@ namespace InCase.Infrastructure.Configurations
 
             builder.HasOne(o => o.User)
                 .WithOne(o => o.AdditionalInfo)
-                .OnDelete(DeleteBehavior.ClientCascade);
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasOne(o => o.Role)
                 .WithOne(o => o.AdditionalInfo)
-                .OnDelete(DeleteBehavior.ClientNoAction);
+                .OnDelete(DeleteBehavior.NoAction);
         }
     }
 }
