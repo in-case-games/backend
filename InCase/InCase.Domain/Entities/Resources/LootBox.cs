@@ -9,7 +9,7 @@ namespace InCase.Domain.Entities.Resources
         public decimal Cost { get; set; }
         public decimal Balance { get; set; } = 0;
         public decimal VirtualBalance { get; set; } = 0;
-        public string? Image { get; set; } = "";
+        public string? Uri { get; set; } = "";
         public bool IsLocked { get; set; } = false;
 
         [JsonIgnore]
@@ -19,11 +19,11 @@ namespace InCase.Domain.Entities.Resources
         [JsonIgnore]
         public List<LootBoxInventory>? Inventories { get; set; }
         [JsonIgnore]
-        public List<UserHistoryOpening>? UserHistoryOpenings { get; set; }
+        public List<UserHistoryOpening>? HistoryOpenings { get; set; }
         [JsonIgnore]
         public List<LootBoxGroup>? Groups { get; set; }
         [JsonIgnore]
-        public LootBoxBanner? LootBoxBanner { get; set; }
+        public LootBoxBanner? Banner { get; set; }
 
         public LootBoxDto Convert() => new()
         {
@@ -31,7 +31,7 @@ namespace InCase.Domain.Entities.Resources
             Cost = Cost,
             Balance = Balance,
             VirtualBalance = VirtualBalance,
-            Image = Image,
+            Uri = Uri,
             IsLocked = IsLocked,
             GameId = Game?.Id ?? GameId
         };

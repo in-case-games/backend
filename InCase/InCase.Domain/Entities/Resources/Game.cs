@@ -12,6 +12,6 @@ namespace InCase.Domain.Entities.Resources
         public List<GamePlatform>? Platforms { get; set; }
 
         [JsonIgnore]
-        public List<LootBoxGroup>? LootBoxGroups { get; set; }
+        public List<LootBoxGroup>? Groups { get; set; }
     }
 }

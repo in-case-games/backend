@@ -8,7 +8,7 @@ namespace InCase.Domain.Entities.Resources
         public bool IsActive { get; set; } = false;
         public DateTime CreationDate { get; set; }
         public DateTime? ExpirationDate { get; set; }
-        public string? Image { get; set; } = "";
+        public string? Uri { get; set; } = "";
 
         [JsonIgnore]
         public Guid BoxId { get; set; }
@@ -23,7 +23,7 @@ namespace InCase.Domain.Entities.Resources
             IsActive = IsActive,
             CreationDate = CreationDate,
             ExpirationDate = ExpirationDate,
-            Image = Image,
+            Uri = Uri,
             BoxId = Box?.Id ?? BoxId,
         };
     }

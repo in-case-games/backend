@@ -4,29 +4,30 @@ using InCase.Domain.Entities.Resources;
 
 namespace InCase.Infrastructure.Configurations
 {
-    internal class UserHistoryWithdrawnConfiguration : BaseEntityConfiguration<UserHistoryWithdrawn>
+    internal class UserPathBannerConfiguration : BaseEntityConfiguration<UserPathBanner>
     {
-        public override void Configure(EntityTypeBuilder<UserHistoryWithdrawn> builder)
+        public override void Configure(EntityTypeBuilder<UserPathBanner> builder)
         {
             base.Configure(builder);
 
-            builder.ToTable(nameof(UserHistoryWithdrawn));
-
-            builder.HasIndex(i => i.UserId)
-                .IsUnique(false);
-            builder.HasIndex(i => i.ItemId)
-                .IsUnique(false);
+            builder.ToTable(nameof(UserPathBanner));
 
             builder.Property(p => p.Date)
                 .IsRequired();
+            builder.Property(p => p.NumberSteps)
+                .IsRequired();
 
             builder.HasOne(o => o.User)
-                .WithMany(m => m.HistoryWithdrawns)
+                .WithMany(m => m.Paths)
                 .HasForeignKey(o => o.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
             builder.HasOne(o => o.Item)
-                .WithMany(m => m.HistoryWithdrawns)
+                .WithMany(m => m.PathBanners)
                 .HasForeignKey(o => o.ItemId)
+                .OnDelete(DeleteBehavior.Cascade);
+            builder.HasOne(o => o.Banner)
+                .WithMany(m => m.Paths)
+                .HasForeignKey(o => o.BannerId)
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }

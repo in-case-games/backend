@@ -11,6 +11,13 @@ namespace InCase.Infrastructure.Configurations
             base.Configure(builder);
 
             builder.ToTable(nameof(SiteStatiticsAdmin));
+
+            builder.Property(p => p.BalanceWithdrawn)
+                .IsRequired();
+            builder.Property(p => p.TotalReplenished)
+                .IsRequired();
+            builder.Property(p => p.SentSites)
+                .IsRequired();
         }
     }
 }

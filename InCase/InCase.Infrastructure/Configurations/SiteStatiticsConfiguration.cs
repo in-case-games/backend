@@ -11,6 +11,17 @@ namespace InCase.Infrastructure.Configurations
             base.Configure(builder);
 
             builder.ToTable(nameof(SiteStatitics));
+
+            builder.Property(p => p.Users)
+                .IsRequired();
+            builder.Property(p => p.Reviews)
+                .IsRequired();
+            builder.Property(p => p.OpenCases)
+                .IsRequired();
+            builder.Property(p => p.WithdrawnItems)
+                .IsRequired();
+            builder.Property(p => p.WithdrawnFunds)
+                .IsRequired();
         }
     }
 }

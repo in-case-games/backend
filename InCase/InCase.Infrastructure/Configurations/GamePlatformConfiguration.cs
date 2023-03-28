@@ -11,6 +11,21 @@ namespace InCase.Infrastructure.Configurations
             base.Configure(builder);
 
             builder.ToTable(nameof(GamePlatform));
+
+            builder.HasIndex(i => i.GameId)
+                .IsUnique(false);
+
+            builder.Property(p => p.Uri)
+                .IsRequired();
+            builder.Property(p => p.DomainUri)
+                .IsRequired();
+            builder.Property(p => p.Name)
+                .IsRequired();
+
+            builder.HasOne(o => o.Game)
+                .WithMany(o => o.Platforms)
+                .HasForeignKey(o => o.GameId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

@@ -11,6 +11,26 @@ namespace InCase.Infrastructure.Configurations
             base.Configure(builder);
 
             builder.ToTable(nameof(UserAdditionalInfo));
+            
+            builder.HasIndex(i => i.RoleId)
+                .IsUnique(false);
+
+            builder.Property(p => p.Balance)
+                .IsRequired();
+            builder.Property(p => p.Image)
+                .IsRequired();
+            builder.Property(p => p.IsNotifyEmail)
+                .IsRequired();
+            builder.Property(p => p.IsGuestMode)
+                .IsRequired();
+
+            builder.HasOne(o => o.User)
+                .WithOne(o => o.AdditionalInfo)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasOne(o => o.Role)
+                .WithOne(o => o.AdditionalInfo)
+                .OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

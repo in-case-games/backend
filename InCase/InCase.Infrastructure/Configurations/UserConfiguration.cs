@@ -11,6 +11,16 @@ namespace InCase.Infrastructure.Configurations
             base.Configure(builder);
 
             builder.ToTable(nameof(User));
+
+            builder.HasIndex(i => i.Login)
+                .IsUnique();
+            builder.HasIndex(i => i.Email)
+                .IsUnique();
+
+            builder.Property(p => p.PasswordSalt)
+                .IsRequired();
+            builder.Property(p => p.PasswordHash)
+                .IsRequired();
         }
     }
 }

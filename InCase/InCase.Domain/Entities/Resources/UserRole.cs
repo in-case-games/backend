@@ -7,6 +7,6 @@ namespace InCase.Domain.Entities.Resources
         public string? Name { get; set; }
 
         [JsonIgnore]
-        public UserAdditionalInfo? UserAdditionalInfo { get; set; }
+        public UserAdditionalInfo? AdditionalInfo { get; set; }
     }
 }

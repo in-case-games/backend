@@ -6,8 +6,8 @@ namespace InCase.Domain.Dtos
     public class GamePlatformDto : BaseEntity
     {
         public string? Name { get; set; }
+        public string? DomainUri { get; set; }
         public string? Uri { get; set; }
-        public string? ImageUri { get; set; }
 
         public Guid GameId { get; set; }
 
@@ -15,7 +15,8 @@ namespace InCase.Domain.Dtos
         {
             Name = Name,
             Uri = Uri,
-            GameId = GameId
+            GameId = GameId,
+            DomainUri = DomainUri,
         };
     }
 }

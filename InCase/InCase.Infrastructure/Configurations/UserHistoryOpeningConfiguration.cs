@@ -11,6 +11,29 @@ namespace InCase.Infrastructure.Configurations
             base.Configure(builder);
 
             builder.ToTable(nameof(UserHistoryOpening));
+
+            builder.HasIndex(i => i.UserId)
+                .IsUnique(false);
+            builder.HasIndex(i => i.BoxId)
+                .IsUnique(false);
+            builder.HasIndex(i => i.ItemId)
+                .IsUnique(false);
+
+            builder.Property(p => p.Date)
+                .IsRequired();
+
+            builder.HasOne(o => o.User)
+                .WithMany(m => m.HistoryOpenings)
+                .HasForeignKey(o => o.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+            builder.HasOne(o => o.Item)
+                .WithMany(m => m.HistoryOpenings)
+                .HasForeignKey(o => o.ItemId)
+                .OnDelete(DeleteBehavior.Cascade);
+            builder.HasOne(o => o.Box)
+                .WithMany(m => m.HistoryOpenings)
+                .HasForeignKey(o => o.BoxId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

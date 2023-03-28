@@ -10,17 +10,31 @@ namespace InCase.Infrastructure.Configurations
         {
             base.Configure(builder);
 
+            builder.ToTable(nameof(UserRestriction));
+
+            builder.HasIndex(i => i.UserId)
+                .IsUnique(false);
+            builder.HasIndex(i => i.OwnerId)
+                .IsUnique(false);
+            builder.HasIndex(i => i.TypeId)
+                .IsUnique(false);
+
+            builder.Property(p => p.CreationDate)
+                .IsRequired();
+            builder.Property(p => p.ExpirationDate)
+                .IsRequired();
+            builder.Property(p => p.Description)
+                .IsRequired(false);
+
             builder.HasOne(x => x.User)
                 .WithMany(t => t.Restrictions)
                 .HasForeignKey(m => m.UserId)
-                .OnDelete(DeleteBehavior.NoAction);
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasOne(x => x.Owner)
                 .WithMany(t => t.OwnerRestrictions)
                 .HasForeignKey(m => m.OwnerId)
-                .OnDelete(DeleteBehavior.NoAction);
-
-            builder.ToTable(nameof(UserRestriction));
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

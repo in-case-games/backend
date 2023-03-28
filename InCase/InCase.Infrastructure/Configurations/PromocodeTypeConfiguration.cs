@@ -11,6 +11,9 @@ namespace InCase.Infrastructure.Configurations
             base.Configure(builder);
 
             builder.ToTable(nameof(PromocodeType));
+
+            builder.HasIndex(i => i.Name)
+                .IsUnique();
         }
     }
 }

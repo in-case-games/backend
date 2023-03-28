@@ -11,6 +11,13 @@ namespace InCase.Infrastructure.Configurations
             base.Configure(builder);
 
             builder.ToTable(nameof(GroupLootBox));
+
+            builder.HasIndex(i => i.Name)
+                .IsUnique();
+
+            builder.HasOne(o => o.Group)
+                .WithOne(o => o.Group)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

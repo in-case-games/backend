@@ -7,6 +7,6 @@ namespace InCase.Domain.Entities.Resources
         public string? Name { get; set; }
 
         [JsonIgnore]
-        public UserRestriction? UserRestriction { get; set; }
+        public UserRestriction? Restriction { get; set; }
     }
 }

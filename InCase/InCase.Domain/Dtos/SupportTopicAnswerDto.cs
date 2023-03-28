@@ -8,7 +8,7 @@ namespace InCase.Domain.Dtos
         public string? Content { get; set; }
         public DateTime Date { get; set; }
 
-        public Guid PlaintiffId { get; set; }
+        public Guid? PlaintiffId { get; set; }
         public Guid TopicId { get; set; }
 
         public SupportTopicAnswer Convert() => new()

@@ -11,8 +11,9 @@ namespace InCase.Domain.Dtos
         public string? IdForPlatform { get; set; }
 
         public Guid GameId { get; set; }
-        public Guid TypeId { get; set; }
-        public Guid RarityId { get; set; }
+        public Guid? TypeId { get; set; }
+        public Guid? RarityId { get; set; }
+        public Guid? QualityId { get; set; }
 
         public GameItem Convert() => new()
         {
@@ -22,7 +23,8 @@ namespace InCase.Domain.Dtos
             IdForPlatform = IdForPlatform,
             TypeId = TypeId,
             RarityId = RarityId,
-            GameId = GameId
+            GameId = GameId,
+            QualityId = QualityId,
         };
     }
 }

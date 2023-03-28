@@ -11,6 +11,19 @@ namespace InCase.Infrastructure.Configurations
             base.Configure(builder);
 
             builder.ToTable(nameof(UserHistoryPayment));
+
+            builder.HasIndex(x => x.UserId)
+                .IsUnique(false);
+
+            builder.Property(p => p.Date)
+                .IsRequired();
+            builder.Property(p => p.Amount)
+                .IsRequired();
+
+            builder.HasOne(o => o.User)
+                .WithMany(m => m.HistoryPayments)
+                .HasForeignKey(o => o.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

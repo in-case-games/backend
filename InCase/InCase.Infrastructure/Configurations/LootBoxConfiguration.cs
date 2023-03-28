@@ -11,6 +11,27 @@ namespace InCase.Infrastructure.Configurations
             base.Configure(builder);
 
             builder.ToTable(nameof(LootBox));
+
+            builder.HasIndex(i => i.GameId)
+                .IsUnique(false);
+
+            builder.Property(p => p.Name)
+                .IsRequired();
+            builder.Property(p => p.Cost)
+                .IsRequired();
+            builder.Property(p => p.Balance)
+                .IsRequired();
+            builder.Property(p => p.VirtualBalance)
+                .IsRequired();
+            builder.Property(p => p.Uri)
+                .IsRequired();
+            builder.Property(p => p.IsLocked)
+                .IsRequired();
+
+            builder.HasOne(o => o.Game)
+                .WithMany(m => m.Boxes)
+                .HasForeignKey(fk => fk.GameId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

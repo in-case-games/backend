@@ -9,7 +9,7 @@ namespace InCase.Domain.Entities.Resources
         public DateTime Date { get; set; } = DateTime.UtcNow;
 
         [JsonIgnore]
-        public Guid PlaintiffId { get; set; }
+        public Guid? PlaintiffId { get; set; }
         [JsonIgnore]
         public Guid TopicId { get; set; }
 
@@ -18,7 +18,7 @@ namespace InCase.Domain.Entities.Resources
         [JsonIgnore]
         public SupportTopic? Topic { get; set; }
         [JsonIgnore]
-        public List<AnswerImage>? AnswerImage { get; set; }
+        public List<AnswerImage>? Images { get; set; }
 
         public SupportTopicAnswerDto Convert() => new()
         {

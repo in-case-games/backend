@@ -10,17 +10,31 @@ namespace InCase.Infrastructure.Configurations
         {
             base.Configure(builder);
 
-            builder.HasOne(x => x.User)
-                .WithMany(t => t.UserTopics)
-                .HasForeignKey(m => m.UserId)
-                .OnDelete(DeleteBehavior.NoAction);
-
-            builder.HasOne(x => x.Support)
-                .WithMany(t => t.SupportTopics)
-                .HasForeignKey(m => m.SupportId)
-                .OnDelete(DeleteBehavior.NoAction);
-
             builder.ToTable(nameof(SupportTopic));
+
+            builder.Property(p => p.Title)
+                .IsRequired();
+            builder.Property(p => p.Content)
+                .IsRequired();
+            builder.Property(p => p.Date)
+                .IsRequired();
+            builder.Property(p => p.IsClosed)
+                .IsRequired();
+
+            builder.HasIndex(i => i.UserId)
+                .IsUnique(false);
+            builder.HasIndex(i => i.SupportId)
+                .IsUnique(false);
+
+            builder.HasOne(o => o.User)
+                .WithMany(m => m.UserTopics)
+                .HasForeignKey(fk => fk.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasOne(o => o.Support)
+                .WithMany(m => m.SupportTopics)
+                .HasForeignKey(fk => fk.SupportId)
+                .OnDelete(DeleteBehavior.SetNull);
         }
     }
 }
