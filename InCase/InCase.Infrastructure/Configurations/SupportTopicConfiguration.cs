@@ -29,12 +29,12 @@ namespace InCase.Infrastructure.Configurations
             builder.HasOne(o => o.User)
                 .WithMany(m => m.UserTopics)
                 .HasForeignKey(fk => fk.UserId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.ClientCascade);
 
             builder.HasOne(o => o.Support)
                 .WithMany(m => m.SupportTopics)
                 .HasForeignKey(fk => fk.SupportId)
-                .OnDelete(DeleteBehavior.SetNull);
+                .OnDelete(DeleteBehavior.ClientSetNull);
         }
     }
 }

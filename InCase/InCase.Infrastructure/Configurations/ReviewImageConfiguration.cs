@@ -21,7 +21,7 @@ namespace InCase.Infrastructure.Configurations
             builder.HasOne(o => o.Review)
                 .WithMany(m => m.Images)
                 .HasForeignKey(fk => fk.ReviewId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.ClientCascade);
         }
     }
 }

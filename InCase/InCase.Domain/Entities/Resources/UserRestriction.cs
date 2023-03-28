@@ -12,7 +12,7 @@ namespace InCase.Domain.Entities.Resources
         [JsonIgnore]
         public Guid UserId { get; set; }
         [JsonIgnore]
-        public Guid OwnerId { get; set; }
+        public Guid? OwnerId { get; set; }
         [JsonIgnore]
         public Guid TypeId { get; set; }
         [JsonIgnore]

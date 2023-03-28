@@ -14,10 +14,6 @@ namespace InCase.Infrastructure.Configurations
 
             builder.HasIndex(i => i.Name)
                 .IsUnique();
-
-            builder.HasOne(o => o.Group)
-                .WithOne(o => o.Group)
-                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

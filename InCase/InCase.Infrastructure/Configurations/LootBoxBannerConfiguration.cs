@@ -26,7 +26,7 @@ namespace InCase.Infrastructure.Configurations
 
             builder.HasOne(o => o.Box)
                 .WithOne(o => o.Banner)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.ClientCascade);
         }
     }
 }

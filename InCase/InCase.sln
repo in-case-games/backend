@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InCase.Domain", "InCase.Dom
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InCase.Infrastructure", "InCase.Infrastructure\InCase.Infrastructure.csproj", "{5A06BC8C-39D3-485C-9624-6328C6F1E089}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InCase.Resources.Api", "InCase.Resources.Api\InCase.Resources.Api.csproj", "{AFB0A887-2FBB-4328-9831-E98A411C4C16}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{5A06BC8C-39D3-485C-9624-6328C6F1E089}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5A06BC8C-39D3-485C-9624-6328C6F1E089}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5A06BC8C-39D3-485C-9624-6328C6F1E089}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AFB0A887-2FBB-4328-9831-E98A411C4C16}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AFB0A887-2FBB-4328-9831-E98A411C4C16}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AFB0A887-2FBB-4328-9831-E98A411C4C16}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AFB0A887-2FBB-4328-9831-E98A411C4C16}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

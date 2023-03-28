@@ -11,7 +11,7 @@ namespace InCase.Domain.Dtos
         public string? Description { get; set; }
 
         public Guid UserId { get; set; }
-        public Guid OwnerId { get; set; }
+        public Guid? OwnerId { get; set; }
         public Guid TypeId { get; set; }
 
         public UserRestriction Convert() => new()

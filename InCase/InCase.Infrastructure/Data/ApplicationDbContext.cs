@@ -6,6 +6,7 @@ namespace InCase.Infrastructure.Data
 {
     public class ApplicationDbContext : DbContext
     {
+        public DbSet<AnswerImage> AnswerImages => Set<AnswerImage>();
         public DbSet<Game> Games => Set<Game>();
         public DbSet<GameItem> GameItems => Set<GameItem>();
         public DbSet<GameItemQuality> GameItemQualities => Set<GameItemQuality>();
@@ -18,8 +19,11 @@ namespace InCase.Infrastructure.Data
         public DbSet<LootBoxGroup> LootBoxGroups => Set<LootBoxGroup>();
         public DbSet<LootBoxInventory> LootBoxInventories => Set<LootBoxInventory>();
         public DbSet<News> News => Set<News>();
+        public DbSet<NewsImage> NewsImages => Set<NewsImage>();
         public DbSet<Promocode> Promocodes => Set<Promocode>();
         public DbSet<PromocodeType> PromocodeTypes => Set<PromocodeType>();
+        public DbSet<RestrictionType> RestrictionTypes => Set<RestrictionType>();
+        public DbSet<ReviewImage> ReviewImages => Set<ReviewImage>();
         public DbSet<SiteStatitics> SiteStatitics => Set<SiteStatitics>();
         public DbSet<SiteStatiticsAdmin> SiteStatiticsAdmins => Set<SiteStatiticsAdmin>();
         public DbSet<SupportTopic> SupportTopics => Set<SupportTopic>();
@@ -50,6 +54,7 @@ namespace InCase.Infrastructure.Data
             base.OnModelCreating(modelBuilder);
 
             #region .ApplyConfiguration()
+            modelBuilder.ApplyConfiguration(new AnswerImageConfiguration());
             modelBuilder.ApplyConfiguration(new GameConfiguration());
             modelBuilder.ApplyConfiguration(new GameItemConfiguration());
             modelBuilder.ApplyConfiguration(new GameItemQualityConfiguration());
@@ -62,8 +67,11 @@ namespace InCase.Infrastructure.Data
             modelBuilder.ApplyConfiguration(new LootBoxGroupConfiguration());
             modelBuilder.ApplyConfiguration(new LootBoxInventoryConfiguration());
             modelBuilder.ApplyConfiguration(new NewsConfiguration());
+            modelBuilder.ApplyConfiguration(new NewsImageConfiguration());
             modelBuilder.ApplyConfiguration(new PromocodeConfiguration());
             modelBuilder.ApplyConfiguration(new PromocodeTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new RestrictionTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new ReviewImageConfiguration());
             modelBuilder.ApplyConfiguration(new SiteStatiticsConfiguration());
             modelBuilder.ApplyConfiguration(new SiteStatiticsAdminConfiguration());
             modelBuilder.ApplyConfiguration(new SupportTopicConfiguration());

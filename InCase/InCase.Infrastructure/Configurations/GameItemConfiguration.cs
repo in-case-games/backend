@@ -33,16 +33,16 @@ namespace InCase.Infrastructure.Configurations
             builder.HasOne(o => o.Game)
                 .WithMany(m => m.Items)
                 .HasForeignKey(fk => fk.GameId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.ClientCascade);
             builder.HasOne(o => o.Rarity)
                 .WithOne(o => o.Item)
-                .OnDelete(DeleteBehavior.SetNull);
+                .OnDelete(DeleteBehavior.ClientSetNull);
             builder.HasOne(o => o.Quality)
                 .WithOne(o => o.Item)
-                .OnDelete(DeleteBehavior.SetNull);
+                .OnDelete(DeleteBehavior.ClientSetNull);
             builder.HasOne(o => o.Type)
                 .WithOne(o => o.Item)
-                .OnDelete(DeleteBehavior.SetNull);
+                .OnDelete(DeleteBehavior.ClientSetNull);
         }
     }
 }

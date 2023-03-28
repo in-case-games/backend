@@ -31,7 +31,7 @@ namespace InCase.Infrastructure.Configurations
             builder.HasOne(o => o.Game)
                 .WithMany(m => m.Boxes)
                 .HasForeignKey(fk => fk.GameId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.ClientCascade);
         }
     }
 }

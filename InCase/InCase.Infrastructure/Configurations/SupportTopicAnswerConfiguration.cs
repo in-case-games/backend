@@ -26,7 +26,7 @@ namespace InCase.Infrastructure.Configurations
             builder.HasOne(o => o.Topic)
                 .WithMany(m => m.Answers)
                 .HasForeignKey(fk => fk.TopicId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.ClientCascade);
 
             builder.HasOne(o => o.Plaintiff)
                 .WithMany(m => m.Answers)

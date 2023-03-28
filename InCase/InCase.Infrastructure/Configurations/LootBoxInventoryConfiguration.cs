@@ -25,11 +25,11 @@ namespace InCase.Infrastructure.Configurations
             builder.HasOne(o => o.Box)
                 .WithMany(m => m.Inventories)
                 .HasForeignKey(o => o.BoxId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.ClientCascade);
             builder.HasOne(o => o.Item)
                 .WithMany(m => m.Inventories)
                 .HasForeignKey(o => o.ItemId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.ClientCascade);
         }
     }
 }
