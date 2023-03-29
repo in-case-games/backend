@@ -7,7 +7,6 @@ namespace InCase.Domain.Entities.Resources
         public string? Name { get; set; }
         public DateTime? Date { get; set; }
         public string? Content { get; set; }
-
         [JsonIgnore]
         public List<NewsImage>? Images { get; set; }
     }
