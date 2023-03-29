@@ -15,6 +15,11 @@ namespace InCase.Infrastructure.Configurations
             builder.HasIndex(i => i.GameId)
                 .IsUnique(false);
 
+            builder.HasIndex(i => i.Name)
+                .IsUnique();
+            builder.HasIndex(i => i.DomainUri)
+                .IsUnique();
+
             builder.Property(p => p.Uri)
                 .IsRequired();
             builder.Property(p => p.DomainUri)
