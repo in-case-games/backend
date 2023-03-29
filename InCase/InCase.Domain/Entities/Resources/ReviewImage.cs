@@ -5,7 +5,7 @@ namespace InCase.Domain.Entities.Resources
 {
     public class ReviewImage : BaseEntity
     {
-        public string? Uri { get; set; } = "";
+        public string? ImageUri { get; set; } = "";
         [JsonIgnore]
         public Guid ReviewId { get; set; }
 
@@ -13,7 +13,7 @@ namespace InCase.Domain.Entities.Resources
 
         public ReviewImageDto Convert() => new()
         {
-            Uri = Uri,
+            ImageUri = ImageUri,
             ReviewId = Review?.Id ?? ReviewId,
         };
     }

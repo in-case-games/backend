@@ -19,7 +19,7 @@ namespace InCase.Infrastructure.Configurations
                 .IsRequired();
             builder.Property(p => p.CreationDate)
                 .IsRequired();
-            builder.Property(p => p.Uri)
+            builder.Property(p => p.ImageUri)
                 .IsRequired();
             builder.Property(p => p.ExpirationDate)
                 .IsRequired(false);

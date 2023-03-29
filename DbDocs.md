@@ -14,7 +14,7 @@
 |Key|Name|Type|IsRequired|Constrains|
 | :- | :- | :- | :- | :- |
 |PK|Id|uniqueidentifier|True|NEWID(), UNIQUE|
-||Uri|nvarchar(MAX)|True|-|
+||ImageUri|nvarchar(MAX)|True|-|
 |FK|AnswerId|uniqueidentifier|True|-|
 
 **SupportTopicAnswer**
@@ -95,12 +95,11 @@
 | :- | :- | :- | :- | :- |
 |PK|Id|uniqueidentifier|True|NEWID(), UNIQUE|
 ||Balance|decimal(18, 5)|True|-|
-||Uri|nvarchar(MAX)|True|-|
+||ImageUri|nvarchar(MAX)|True|-|
 ||IsNotifyEmail|bit|True|-|
 ||IsGuestMode|bit|True|-|
 |FK|RoleId|uniqueidentifier|True|-|
 |FK|UserId|uniqueidentifier|True|-|
-
 
 **UserRole**
 
@@ -158,7 +157,6 @@
 - Promocode(Многие к одному)
 
 
-
 |Key|Name|Type|IsRequired|Constrains|
 | :- | :- | :- | :- | :- |
 |PK|Id|uniqueidentifier|True|NEWID(), UNIQUE|
@@ -179,7 +177,6 @@
 - RestrictionType:Type(Один к одному)
 
 
-
 |Key|Name|Type|IsRequired|Constrains|
 | :- | :- | :- | :- | :- |
 |PK|Id|uniqueidentifier|True|NEWID(), UNIQUE|
@@ -195,7 +192,6 @@
 Описание:
 
 - Таблица представляет из себя тип эффекта
-
 
 
 |Key|Name|Type|IsRequired|Constrains|
@@ -217,7 +213,7 @@
 |Key|Name|Type|IsRequired|Constrains|
 | :- | :- | :- | :- | :- |
 |PK|Id|uniqueidentifier|True|NEWID(), UNIQUE|
-||Uri|nvarchar(MAX)|True|-|
+||ImageUri|nvarchar(MAX)|True|-|
 |FK|ReviewId|uniqueidentifier|True|-|
 
 **UserReview**
@@ -253,4 +249,352 @@
 ||Email|nvarchar(50)|True|-|
 ||PasswordSalt|nvarchar(64)|True|-|
 ||PasswordHash|nvarchar(64)|True|-|
+
+**UserHistoryPayment**
+
+Описание:
+
+- Таблица представляет из себя коллекцию истории пополнения
+
+Связи:
+
+- User(Многие к одному)
+
+
+|Key|Name|Type|IsRequired|Constrains|
+| :- | :- | :- | :- | :- |
+|PK|Id|uniqueidentifier|True|NEWID(), UNIQUE|
+||Date|datetime2(7)|True|-|
+||Amount|decimal(18, 5)|True|-|
+|FK|UserId|uniqueidentifier|True|-|
+
+**NewsImage**
+
+Описание:
+
+- Таблица представляет из себя коллекцию картинок для новостей
+
+Связи:
+
+- News(Многие к одному)
+
+
+|Key|Name|Type|IsRequired|Constrains|
+| :- | :- | :- | :- | :- |
+|PK|Id|uniqueidentifier|True|NEWID(), UNIQUE|
+||ImageUri|nvarchar(MAX)|True|-|
+|FK|NewsId|uniqueidentifier|True|-|
+
+**News**
+
+Описание:
+
+- Таблица представляет из себя новость
+
+
+|Key|Name|Type|IsRequired|Constrains|
+| :- | :- | :- | :- | :- |
+|PK|Id|uniqueidentifier|True|NEWID(), UNIQUE|
+||Title|nvarchar(50)|True|-|
+||Date|datetime2(7)|True|-|
+||Content|nvarchar(MAX)|True|-|
+
+**SiteStatiticsAdmin**
+
+Описание:
+
+- Таблица представляет из себя статистику сайта для админов
+
+
+|Key|Name|Type|IsRequired|Constrains|
+| :- | :- | :- | :- | :- |
+|PK|Id|uniqueidentifier|True|NEWID(), UNIQUE|
+||BalanceWithdrawn|decimal(18, 5)|True|-|
+||TotalReplenished|decimal(18, 5)|True|-|
+||SentSites|decimal(18, 5)|True|-|
+
+**SiteStatitics**
+
+Описание:
+
+- Таблица представляет из себя статистику сайта
+
+
+|Key|Name|Type|IsRequired|Constrains|
+| :- | :- | :- | :- | :- |
+|PK|Id|uniqueidentifier|True|NEWID(), UNIQUE|
+||Users|int|True|-|
+||Reviews|int|True|-|
+||LootBoxes|int|True|-|
+||WithdrawnItems|int|True|-|
+||WithdrawnFunds|int|True|-|
+
+**GroupLootBox**
+
+Описание:
+
+- Таблица представляет из себя группу кейсов
+
+
+|Key|Name|Type|IsRequired|Constrains|
+| :- | :- | :- | :- | :- |
+|PK|Id|uniqueidentifier|True|NEWID(), UNIQUE|
+||Name|nvarchar(50)|True|UNIQUE|
+
+**LootBoxGroup**
+
+Описание:
+
+- Таблица представляет из себя коллекцию группы кейсов
+
+Связи:
+
+- GroupLootBox:Group(Один к одному)
+- Game(Многие к одному)
+- LootBox:Box(Многие к одному)
+
+
+|Key|Name|Type|IsRequired|Constrains|
+| :- | :- | :- | :- | :- |
+|PK|Id|uniqueidentifier|True|NEWID(), UNIQUE|
+|FK|BoxId|uniqueidentifier|True|-|
+|FK|GroupId|uniqueidentifier|True|-|
+|FK|GameId|uniqueidentifier|True|-|
+
+**LootBoxBanner**
+
+Описание:
+
+- Таблица представляет из себя ивентовый баннер для кейса
+
+Связи:
+
+- LootBox:Box(Один к одному)
+
+
+|Key|Name|Type|IsRequired|Constrains|
+| :- | :- | :- | :- | :- |
+|PK|Id|uniqueidentifier|True|NEWID(), UNIQUE|
+||IsActive|bit|True|-|
+||CreationDate|datetime2(7)|True|-|
+||ImageUri|nvarchar(MAX)|True|-|
+||ExpirationDate|datetime2(7)|False|-|
+|FK|BoxId|uniqueidentifier|True|-|
+
+**LootBox**
+
+Описание:
+
+- Таблица представляет из себя кейс
+
+Связи:
+
+- Game(Многие к одному)
+
+
+|Key|Name|Type|IsRequired|Constrains|
+| :- | :- | :- | :- | :- |
+|PK|Id|uniqueidentifier|True|NEWID(), UNIQUE|
+||Name|nvarchar(50)|True|-|
+||Cost|decimal(18, 5)|True|-|
+||Balance|decimal(18, 5)|True|-|
+||VirtualBalance|decimal(18, 5)|True|-|
+||ImageUri|nvarchar(MAX)|True|-|
+||IsLocked|bit|True|-|
+|FK|GameId|uniqueidentifier|True|-|
+
+**Game**
+
+Описание:
+
+- Таблица представляет из себя игру
+
+
+|Key|Name|Type|IsRequired|Constrains|
+| :- | :- | :- | :- | :- |
+|PK|Id|uniqueidentifier|True|NEWID(), UNIQUE|
+||Name|nvarchar(50)|True|UNIQUE|
+
+**GamePlatform**
+
+Описание:
+
+- Таблица представляет из себя коллекцию платформ для игры
+
+Связи:
+
+- Game(Многие к одному)
+
+
+|Key|Name|Type|IsRequired|Constrains|
+| :- | :- | :- | :- | :- |
+|PK|Id|uniqueidentifier|True|NEWID(), UNIQUE|
+||Name|nvarchar(50)|True|UNIQUE|
+||ImageUri|nvarchar(MAX)|True|-|
+||DomainUri|nvarchar(MAX)|True|UNIQUE|
+|FK|GameId|uniqueidentifier|True|-|
+
+**LootBoxInventory**
+
+Описание:
+
+- Таблица представляет из себя коллекцию инвентаря кейсов
+
+Связи:
+
+- LootBox:Box(Многие к одному)
+- GameItem:Item(Многие к одному)
+
+
+|Key|Name|Type|IsRequired|Constrains|
+| :- | :- | :- | :- | :- |
+|PK|Id|uniqueidentifier|True|NEWID(), UNIQUE|
+||NumberItems|int|True|-|
+||ChanceWining|int|True|-|
+|FK|BoxId|uniqueidentifier|True|-|
+|FK|ItemId|uniqueidentifier|True|-|
+
+**GameItem**
+
+Описание:
+
+- Таблица представляет из себя игровой предмет
+
+Связи:
+
+- Game(Многие к одному)
+- GameItemType:Type(Один к одному)
+- GameItemRarity:Rarity(Один к одному)
+- GameItemQuality:Quality(Один к одному)
+
+
+|Key|Name|Type|IsRequired|Constrains|
+| :- | :- | :- | :- | :- |
+|PK|Id|uniqueidentifier|True|NEWID(), UNIQUE|
+||Name|nvarchar(50)|True|-|
+||Cost|decimal(18, 5)|True|-|
+||ImageUri|nvarchar(MAX)|True|-|
+||IdForPlatform|nvarchar(MAX)|False|-|
+|FK|GameId|uniqueidentifier|True|-|
+|FK|TypeId|uniqueidentifier|True|-|
+|FK|RarityId|uniqueidentifier|True|-|
+|FK|QualityId|uniqueidentifier|True|-|
+
+**GameItemRarity**
+
+Описание:
+
+- Таблица представляет из себя редкость предмета
+
+
+|Key|Name|Type|IsRequired|Constrains|
+| :- | :- | :- | :- | :- |
+|PK|Id|uniqueidentifier|True|NEWID(), UNIQUE|
+||Name|nvarchar(50)|True|UNIQUE|
+
+**GameItemQuality**
+
+Описание:
+
+- Таблица представляет из себя качество предмета
+
+
+|Key|Name|Type|IsRequired|Constrains|
+| :- | :- | :- | :- | :- |
+|PK|Id|uniqueidentifier|True|NEWID(), UNIQUE|
+||Name|nvarchar(50)|True|UNIQUE|
+
+**GameItemType**
+
+Описание:
+
+- Таблица представляет из себя тип предмета
+
+
+|Key|Name|Type|IsRequired|Constrains|
+| :- | :- | :- | :- | :- |
+|PK|Id|uniqueidentifier|True|NEWID(), UNIQUE|
+||Name|nvarchar(50)|True|UNIQUE|
+
+**UserHistoryWithdrawn**
+
+Описание:
+
+- Таблица представляет из себя коллекцию истории вывода
+
+Связи:
+
+- User(Многие к одному)
+- GameItem:Item(Многие к одному)
+
+
+|Key|Name|Type|IsRequired|Constrains|
+| :- | :- | :- | :- | :- |
+|PK|Id|uniqueidentifier|True|NEWID(), UNIQUE|
+||Date|datetime2(7)|True|-|
+|FK|UserId|uniqueidentifier|True|-|
+|FK|ItemId|uniqueidentifier|True|-|
+
+**UserInventory**
+
+Описание:
+
+- Таблица представляет из себя коллекцию инвентаря пользователя
+
+Связи:
+
+- User(Многие к одному)
+- GameItem:Item(Многие к одному)
+
+
+|Key|Name|Type|IsRequired|Constrains|
+| :- | :- | :- | :- | :- |
+|PK|Id|uniqueidentifier|True|NEWID(), UNIQUE|
+||Date|datetime2(7)|True|-|
+||FixedCost|decimal(18, 5)|True|-|
+|FK|UserId|uniqueidentifier|True|-|
+|FK|ItemId|uniqueidentifier|True|-|
+
+**UserHistoryOpening**
+
+Описание:
+
+- Таблица представляет из себя коллекцию истории открытия кейсов
+
+Связи:
+
+- User(Многие к одному)
+- GameItem:Item(Многие к одному)
+- LootBox:Box(Многие к одному)
+
+
+|Key|Name|Type|IsRequired|Constrains|
+| :- | :- | :- | :- | :- |
+|PK|Id|uniqueidentifier|True|NEWID(), UNIQUE|
+||Date|datetime2(7)|True|-|
+|FK|UserId|uniqueidentifier|True|-|
+|FK|BoxId|uniqueidentifier|True|-|
+|FK|ItemId|uniqueidentifier|True|-|
+
+**UserPathBanner**
+
+Описание:
+
+- Таблица представляет из себя коллекцию путей до ивентовых баннеров
+
+Связи:
+
+- User(Многие к одному)
+- GameItem:Item(Многие к одному)
+- LootBoxBanner:Banner(Многие к одному)
+
+
+|Key|Name|Type|IsRequired|Constrains|
+| :- | :- | :- | :- | :- |
+|PK|Id|uniqueidentifier|True|NEWID(), UNIQUE|
+||Date|datetime2(7)|True|-|
+||NumberSteps|int|True|-|
+|FK|UserId|uniqueidentifier|True|-|
+|FK|ItemId|uniqueidentifier|True|-|
+|FK|BannerId|uniqueidentifier|True|-|
 

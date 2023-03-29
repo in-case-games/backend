@@ -12,7 +12,7 @@ namespace InCase.Infrastructure.Configurations
 
             builder.ToTable(nameof(News));
 
-            builder.Property(p => p.Name)
+            builder.Property(p => p.Title)
                 .IsRequired();
             builder.Property(p => p.Date)
                 .IsRequired();

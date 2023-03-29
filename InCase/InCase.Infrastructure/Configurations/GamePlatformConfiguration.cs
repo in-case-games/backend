@@ -20,7 +20,7 @@ namespace InCase.Infrastructure.Configurations
             builder.HasIndex(i => i.DomainUri)
                 .IsUnique();
 
-            builder.Property(p => p.Uri)
+            builder.Property(p => p.ImageUri)
                 .IsRequired();
             builder.Property(p => p.DomainUri)
                 .IsRequired();

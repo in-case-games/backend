@@ -5,14 +5,14 @@ namespace InCase.Domain.Entities.Resources
 {
     public class NewsImage: BaseEntity
     {
-        public string? Uri { get; set; }
+        public string? ImageUri { get; set; }
         [JsonIgnore]
         public Guid NewsId { get; set; }
         public News? News { get; set; }
 
         public NewsImageDto Convert() => new()
         {
-            Uri = Uri,
+            ImageUri = ImageUri,
             NewsId = News?.Id ?? NewsId,
         };
     }

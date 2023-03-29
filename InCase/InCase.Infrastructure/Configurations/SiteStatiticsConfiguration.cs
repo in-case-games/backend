@@ -16,7 +16,7 @@ namespace InCase.Infrastructure.Configurations
                 .IsRequired();
             builder.Property(p => p.Reviews)
                 .IsRequired();
-            builder.Property(p => p.OpenCases)
+            builder.Property(p => p.LootBoxes)
                 .IsRequired();
             builder.Property(p => p.WithdrawnItems)
                 .IsRequired();

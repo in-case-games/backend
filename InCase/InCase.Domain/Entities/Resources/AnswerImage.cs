@@ -5,7 +5,7 @@ namespace InCase.Domain.Entities.Resources
 {
     public class AnswerImage : BaseEntity
     {
-        public string? Uri { get; set; } = "";
+        public string? ImageUri { get; set; } = "";
 
         [JsonIgnore]
         public Guid AnswerId { get; set; }
@@ -14,7 +14,7 @@ namespace InCase.Domain.Entities.Resources
 
         public AnswerImageDto Convert() => new()
         {
-            Uri = Uri,
+            ImageUri = ImageUri,
             AnswerId = Answer?.Id ?? AnswerId
         };
     }

@@ -5,13 +5,13 @@ namespace InCase.Domain.Dtos
 {
     public class AnswerImageDto : BaseEntity
     {
-        public string? Uri { get; set; } = "";
+        public string? ImageUri { get; set; } = "";
 
         public Guid AnswerId { get; set; }
 
         public AnswerImage Convert() => new()
         {
-            Uri = Uri,
+            ImageUri = ImageUri,
             AnswerId = AnswerId
         };
     }

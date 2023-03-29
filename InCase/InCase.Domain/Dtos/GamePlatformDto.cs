@@ -7,14 +7,14 @@ namespace InCase.Domain.Dtos
     {
         public string? Name { get; set; }
         public string? DomainUri { get; set; }
-        public string? Uri { get; set; }
+        public string? ImageUri { get; set; }
 
         public Guid GameId { get; set; }
 
         public GamePlatform Convert() => new()
         {
             Name = Name,
-            Uri = Uri,
+            ImageUri = ImageUri,
             GameId = GameId,
             DomainUri = DomainUri,
         };

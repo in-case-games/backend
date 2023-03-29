@@ -15,7 +15,7 @@ namespace InCase.Infrastructure.Configurations
             builder.HasIndex(i => i.NewsId)
                 .IsUnique(false);
 
-            builder.Property(p => p.Uri)
+            builder.Property(p => p.ImageUri)
                 .IsRequired();
 
             builder.HasOne(o => o.News)

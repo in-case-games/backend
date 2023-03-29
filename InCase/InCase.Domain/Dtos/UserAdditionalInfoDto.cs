@@ -6,7 +6,7 @@ namespace InCase.Domain.Dtos
     public class UserAdditionalInfoDto : BaseEntity
     {
         public decimal Balance { get; set; } = 0;
-        public string? Uri { get; set; } = "";
+        public string? ImageUri { get; set; } = "";
         public bool IsNotifyEmail { get; set; } = false;
         public bool IsGuestMode { get; set; } = false;
 
@@ -16,7 +16,7 @@ namespace InCase.Domain.Dtos
         public UserAdditionalInfo Convert() => new()
         {
             Balance = Balance,
-            Uri = Uri,
+            ImageUri = ImageUri,
             IsNotifyEmail = IsNotifyEmail,
             RoleId = RoleId,
             UserId = UserId,

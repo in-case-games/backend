@@ -6,7 +6,7 @@ namespace InCase.Domain.Entities.Resources
     public class UserAdditionalInfo : BaseEntity
     {
         public decimal Balance { get; set; } = 0;
-        public string? Uri { get; set; } = "";
+        public string? ImageUri { get; set; } = "";
         public bool IsNotifyEmail { get; set; } = false;
         public bool IsGuestMode { get; set; } = false;
 
@@ -23,7 +23,7 @@ namespace InCase.Domain.Entities.Resources
         public UserAdditionalInfoDto Convert() => new()
         {
             Balance = Balance,
-            Uri = Uri,
+            ImageUri = ImageUri,
             IsNotifyEmail = IsNotifyEmail,
             RoleId = Role?.Id ?? RoleId,
             UserId = User?.Id ?? UserId,

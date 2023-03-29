@@ -11,6 +11,7 @@ namespace InCase.Domain.Entities.Resources
         public Guid ItemId { get; set; }
         [JsonIgnore]
         public Guid BoxId { get; set; }
+        [JsonIgnore]
         public LootBox? Box { get; set; }
         public GameItem? Item { get; set; }
 
