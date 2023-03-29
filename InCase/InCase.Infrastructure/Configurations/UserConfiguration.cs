@@ -17,6 +17,11 @@ namespace InCase.Infrastructure.Configurations
             builder.HasIndex(i => i.Email)
                 .IsUnique();
 
+            builder.Property(p => p.Login)
+                .IsRequired();
+            builder.Property(p => p.Email)
+                .IsRequired();
+
             builder.Property(p => p.PasswordSalt)
                 .IsRequired();
             builder.Property(p => p.PasswordHash)
