@@ -34,7 +34,7 @@ namespace InCase.Infrastructure.Configurations
             builder.HasOne(o => o.Support)
                 .WithMany(m => m.SupportTopics)
                 .HasForeignKey(fk => fk.SupportId)
-                .OnDelete(DeleteBehavior.ClientSetNull);
+                .OnDelete(DeleteBehavior.SetNull);
         }
     }
 }

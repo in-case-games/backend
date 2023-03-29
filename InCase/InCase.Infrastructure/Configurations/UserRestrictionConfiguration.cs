@@ -34,7 +34,7 @@ namespace InCase.Infrastructure.Configurations
             builder.HasOne(x => x.Owner)
                 .WithMany(t => t.OwnerRestrictions)
                 .HasForeignKey(m => m.OwnerId)
-                .OnDelete(DeleteBehavior.ClientSetNull);
+                .OnDelete(DeleteBehavior.SetNull);
         }
     }
 }
