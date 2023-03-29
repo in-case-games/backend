@@ -18,7 +18,7 @@ namespace InCase.Infrastructure.Configurations
             builder.Property(p => p.Balance)
                 .HasColumnType("DECIMAL(18,5)")
                 .IsRequired();
-            builder.Property(p => p.Image)
+            builder.Property(p => p.Uri)
                 .IsRequired();
             builder.Property(p => p.IsNotifyEmail)
                 .IsRequired();
