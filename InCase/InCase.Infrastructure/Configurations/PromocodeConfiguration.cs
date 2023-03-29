@@ -18,6 +18,8 @@ namespace InCase.Infrastructure.Configurations
             builder.HasIndex(i => i.TypeId)
                 .IsUnique(false);
 
+            builder.Property(p => p.Name)
+                .IsRequired();
             builder.Property(p => p.Discount)
                 .IsRequired();
             builder.Property(p => p.NumberActivations)
