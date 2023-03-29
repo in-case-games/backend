@@ -1,5 +1,5 @@
 ﻿using InCase.Domain.Entities;
-using System.Text.Json.Serialization;
+using InCase.Domain.Entities.Resources;
 
 namespace InCase.Domain.Dtos
 {
@@ -7,5 +7,11 @@ namespace InCase.Domain.Dtos
     {
         public string? Uri { get; set; }
         public Guid NewsId { get; set; }
+
+        public NewsImage Convert() => new()
+        {
+            Uri = Uri,
+            NewsId = NewsId,
+        };
     }
 }

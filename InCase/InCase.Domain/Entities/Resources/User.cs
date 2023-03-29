@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using InCase.Domain.Dtos;
+using System.Text.Json.Serialization;
 
 namespace InCase.Domain.Entities.Resources
 {
@@ -31,5 +32,13 @@ namespace InCase.Domain.Entities.Resources
         public List<UserInventory>? Inventories { get; set; }
         [JsonIgnore]
         public List<UserHistoryWithdrawn>? HistoryWithdrawns { get; set; }
+
+        public UserDto Convert() => new()
+        {
+            Login = Login,
+            Email = Email,
+            PasswordHash = PasswordHash,
+            PasswordSalt = PasswordSalt
+        };
     }
 }

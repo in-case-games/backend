@@ -1,6 +1,5 @@
 ﻿using System.Text.Json.Serialization;
 using InCase.Domain.Dtos;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace InCase.Domain.Entities.Resources
 {

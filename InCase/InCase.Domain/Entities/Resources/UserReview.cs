@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using InCase.Domain.Dtos;
+using System.Text.Json.Serialization;
 
 namespace InCase.Domain.Entities.Resources
 {
@@ -17,7 +18,7 @@ namespace InCase.Domain.Entities.Resources
         [JsonIgnore]
         public List<ReviewImage>? Images { get; set; }
 
-        public UserReview Convert() => new()
+        public UserReviewDto Convert() => new()
         {
             Title = Title,
             Content = Content,

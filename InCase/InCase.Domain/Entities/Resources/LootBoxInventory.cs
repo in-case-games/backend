@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using InCase.Domain.Dtos;
+using System.Text.Json.Serialization;
 
 namespace InCase.Domain.Entities.Resources
 {
@@ -13,7 +14,7 @@ namespace InCase.Domain.Entities.Resources
         public LootBox? Box { get; set; }
         public GameItem? Item { get; set; }
 
-        public LootBoxInventory Convert() => new()
+        public LootBoxInventoryDto Convert() => new()
         {
             NumberItems = NumberItems,
             ChanceWining = ChanceWining,
