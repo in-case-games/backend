@@ -14,7 +14,6 @@ namespace InCase.Domain.Entities.Resources
 
         public List<SupportTopic>? UserTopics { get; set; }
         public List<SupportTopic>? SupportTopics { get; set; }
-        public List<UserToken>? Tokens { get; set; }
         public List<UserRestriction>? Restrictions { get; set; }
         public List<UserRestriction>? OwnerRestrictions { get; set; }
         public List<UserReview>? Reviews { get; set; }

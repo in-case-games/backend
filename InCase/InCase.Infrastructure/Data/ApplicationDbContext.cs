@@ -39,7 +39,6 @@ namespace InCase.Infrastructure.Data
         public DbSet<UserRestriction> UserRestrictions => Set<UserRestriction>();
         public DbSet<UserReview> UserReviews => Set<UserReview>();
         public DbSet<UserRole> UserRoles => Set<UserRole>();
-        public DbSet<UserToken> UserTokens => Set<UserToken>();
 
         public ApplicationDbContext(DbContextOptions options) : base(options) { }
 

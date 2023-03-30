@@ -59,26 +59,6 @@
 |FK|UserId|uniqueidentifier|True|-|
 |FK|SupportId|uniqueidentifier|False|-|
 
-**UserToken**
-
-Описание:
-
-- Таблица представляет из себя коллекцию сессий пользователя
-
-Связи:
-
-- User(Многие к одному)
-
-
-|Key|Name|Type|IsRequired|Constrains|
-| :- | :- | :- | :- | :- |
-|PK|Id|uniqueidentifier|True|NEWID(), UNIQUE|
-||Refresh|nvarchar(64)|True|-|
-||Email|nvarchar(64)|True|-|
-||IpAddress|nvarchar(15)|False|-|
-||Device|nvarchar(15)|False|-|
-|FK|UserId|uniqueidentifier|True|-|
-
 **UserAdditionalInfo**
 
 Описание:
