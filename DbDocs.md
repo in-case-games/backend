@@ -34,7 +34,7 @@
 |PK|Id|uniqueidentifier|True|NEWID(), UNIQUE|
 ||Content|nvarchar(120)|True|-|
 ||Date|datetime2(7)|True|-|
-|FK|PlaintiffId|uniqueidentifier|True|-|
+|FK|PlaintiffId|uniqueidentifier|False|-|
 |FK|TopicId|uniqueidentifier|True|-|
 
 **SupportTopic**
@@ -160,7 +160,7 @@
 |Key|Name|Type|IsRequired|Constrains|
 | :- | :- | :- | :- | :- |
 |PK|Id|uniqueidentifier|True|NEWID(), UNIQUE|
-||ExpirationDate|datetime2(7)|True|-|
+||Date|datetime2(7)|True|-|
 ||IsActivated|bit|True|-|
 |FK|UserId|uniqueidentifier|True|-|
 |FK|PromocodeId|uniqueidentifier|True|-|
@@ -184,7 +184,7 @@
 ||ExpirationDate|datetime2(7)|True|-|
 ||Description|nvarchar(120)|False|-|
 |FK|UserId|uniqueidentifier|True|-|
-|FK|OwnerId|uniqueidentifier|True|-|
+|FK|OwnerId|uniqueidentifier|False|-|
 |FK|TypeId|uniqueidentifier|True|-|
 
 **RestrictionType**
@@ -476,9 +476,9 @@
 ||ImageUri|nvarchar(MAX)|True|-|
 ||IdForPlatform|nvarchar(MAX)|False|-|
 |FK|GameId|uniqueidentifier|True|-|
-|FK|TypeId|uniqueidentifier|True|-|
-|FK|RarityId|uniqueidentifier|True|-|
-|FK|QualityId|uniqueidentifier|True|-|
+|FK|TypeId|uniqueidentifier|False|-|
+|FK|RarityId|uniqueidentifier|False|-|
+|FK|QualityId|uniqueidentifier|False|-|
 
 **GameItemRarity**
 

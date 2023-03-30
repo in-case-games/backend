@@ -13,8 +13,10 @@ namespace InCase.Infrastructure.Configurations
             builder.ToTable(nameof(SupportTopic));
 
             builder.Property(p => p.Title)
+                .HasMaxLength(50)
                 .IsRequired();
             builder.Property(p => p.Content)
+                .HasMaxLength(120)
                 .IsRequired();
             builder.Property(p => p.Date)
                 .IsRequired();

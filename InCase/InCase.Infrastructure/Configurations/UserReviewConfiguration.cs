@@ -16,8 +16,10 @@ namespace InCase.Infrastructure.Configurations
                 .IsUnique(false);
 
             builder.Property(p => p.Title)
+                .HasMaxLength(50)
                 .IsRequired();
             builder.Property(p => p.Content)
+                .HasMaxLength(120)
                 .IsRequired();
             builder.Property(p => p.IsApproved)
                 .IsRequired();

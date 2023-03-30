@@ -16,7 +16,7 @@ namespace InCase.Resources.Api.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    name = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                    name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -28,7 +28,7 @@ namespace InCase.Resources.Api.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    name = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -40,7 +40,7 @@ namespace InCase.Resources.Api.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    name = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -52,7 +52,7 @@ namespace InCase.Resources.Api.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    name = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -64,7 +64,7 @@ namespace InCase.Resources.Api.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    name = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                    name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -76,7 +76,7 @@ namespace InCase.Resources.Api.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    title = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     date = table.Column<DateTime>(type: "datetime2", nullable: false),
                     content = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
@@ -90,7 +90,7 @@ namespace InCase.Resources.Api.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    name = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                    name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -102,7 +102,7 @@ namespace InCase.Resources.Api.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    name = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                    name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -116,7 +116,7 @@ namespace InCase.Resources.Api.Migrations
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     users = table.Column<int>(type: "int", nullable: false),
                     reviews = table.Column<int>(type: "int", nullable: false),
-                    open_cases = table.Column<int>(type: "int", nullable: false),
+                    loot_boxes = table.Column<int>(type: "int", nullable: false),
                     withdrawn_items = table.Column<int>(type: "int", nullable: false),
                     withdrawn_funds = table.Column<int>(type: "int", nullable: false)
                 },
@@ -144,10 +144,10 @@ namespace InCase.Resources.Api.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    login = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    email = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    password_hash = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    password_salt = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    login = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    email = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    password_hash = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false),
+                    password_salt = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -159,7 +159,7 @@ namespace InCase.Resources.Api.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    name = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                    name = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -171,9 +171,9 @@ namespace InCase.Resources.Api.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    domain_uri = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    uri = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    domain_uri = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    image_uri = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     game_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
@@ -192,11 +192,11 @@ namespace InCase.Resources.Api.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     cost = table.Column<decimal>(type: "DECIMAL(18,5)", nullable: false),
                     balance = table.Column<decimal>(type: "DECIMAL(18,5)", nullable: false),
                     virtual_balance = table.Column<decimal>(type: "DECIMAL(18,5)", nullable: false),
-                    uri = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    image_uri = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     is_locked = table.Column<bool>(type: "bit", nullable: false),
                     game_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
@@ -215,9 +215,9 @@ namespace InCase.Resources.Api.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     cost = table.Column<decimal>(type: "DECIMAL(18,5)", nullable: false),
-                    image = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    image_uri = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     id_for_platform = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     game_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     type_id = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
@@ -258,7 +258,7 @@ namespace InCase.Resources.Api.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    uri = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    image_uri = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     news_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
@@ -277,8 +277,8 @@ namespace InCase.Resources.Api.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    name = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    discount = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    discount = table.Column<int>(type: "int", nullable: false),
                     number_activations = table.Column<int>(type: "int", nullable: false),
                     expiration_date = table.Column<DateTime>(type: "datetime2", nullable: false),
                     type_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
@@ -299,8 +299,8 @@ namespace InCase.Resources.Api.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    title = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    content = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    title = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    content = table.Column<string>(type: "nvarchar(120)", maxLength: 120, nullable: false),
                     date = table.Column<DateTime>(type: "datetime2", nullable: false),
                     is_closed = table.Column<bool>(type: "bit", nullable: false),
                     user_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -349,7 +349,7 @@ namespace InCase.Resources.Api.Migrations
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     creation_date = table.Column<DateTime>(type: "datetime2", nullable: false),
                     expiration_date = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    description = table.Column<string>(type: "nvarchar(120)", maxLength: 120, nullable: true),
                     user_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     owner_id = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     type_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
@@ -381,8 +381,8 @@ namespace InCase.Resources.Api.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    title = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    content = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    title = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    content = table.Column<string>(type: "nvarchar(120)", maxLength: 120, nullable: false),
                     is_approved = table.Column<bool>(type: "bit", nullable: false),
                     user_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
@@ -402,10 +402,10 @@ namespace InCase.Resources.Api.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    refresh = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    email = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ip_address = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    device = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    refresh = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false),
+                    email = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false),
+                    ip_address = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: true),
+                    device = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: true),
                     user_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
@@ -425,7 +425,7 @@ namespace InCase.Resources.Api.Migrations
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     balance = table.Column<decimal>(type: "DECIMAL(18,5)", nullable: false),
-                    image = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    image_uri = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     is_notify_email = table.Column<bool>(type: "bit", nullable: false),
                     is_guest_mode = table.Column<bool>(type: "bit", nullable: false),
                     role_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -455,7 +455,7 @@ namespace InCase.Resources.Api.Migrations
                     is_active = table.Column<bool>(type: "bit", nullable: false),
                     creation_date = table.Column<DateTime>(type: "datetime2", nullable: false),
                     expiration_date = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    uri = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    image_uri = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     box_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
@@ -646,7 +646,7 @@ namespace InCase.Resources.Api.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    content = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    content = table.Column<string>(type: "nvarchar(120)", maxLength: 120, nullable: false),
                     date = table.Column<DateTime>(type: "datetime2", nullable: false),
                     plaintiff_id = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     topic_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
@@ -673,7 +673,7 @@ namespace InCase.Resources.Api.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    uri = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    image_uri = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     review_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
@@ -726,7 +726,7 @@ namespace InCase.Resources.Api.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    uri = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    image_uri = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     answer_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
@@ -761,8 +761,7 @@ namespace InCase.Resources.Api.Migrations
                 name: "ix_game_name",
                 table: "Game",
                 column: "name",
-                unique: true,
-                filter: "[name] IS NOT NULL");
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "ix_game_item_game_id",
@@ -797,15 +796,39 @@ namespace InCase.Resources.Api.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "ix_game_item_quality_name",
+                table: "GameItemQuality",
+                column: "name",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "ix_game_item_rarity_id",
                 table: "GameItemRarity",
                 column: "id",
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "ix_game_item_rarity_name",
+                table: "GameItemRarity",
+                column: "name",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "ix_game_item_type_id",
                 table: "GameItemType",
                 column: "id",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "ix_game_item_type_name",
+                table: "GameItemType",
+                column: "name",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "ix_game_platform_domain_uri",
+                table: "GamePlatform",
+                column: "domain_uri",
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -820,6 +843,12 @@ namespace InCase.Resources.Api.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "ix_game_platform_name",
+                table: "GamePlatform",
+                column: "name",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "ix_group_loot_box_id",
                 table: "GroupLootBox",
                 column: "id",
@@ -829,8 +858,7 @@ namespace InCase.Resources.Api.Migrations
                 name: "ix_group_loot_box_name",
                 table: "GroupLootBox",
                 column: "name",
-                unique: true,
-                filter: "[name] IS NOT NULL");
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "ix_loot_box_game_id",
@@ -919,8 +947,7 @@ namespace InCase.Resources.Api.Migrations
                 name: "ix_promocode_name",
                 table: "Promocode",
                 column: "name",
-                unique: true,
-                filter: "[name] IS NOT NULL");
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "ix_promocode_type_id",
@@ -937,8 +964,7 @@ namespace InCase.Resources.Api.Migrations
                 name: "ix_promocode_type_name",
                 table: "PromocodeType",
                 column: "name",
-                unique: true,
-                filter: "[name] IS NOT NULL");
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "ix_restriction_type_id",
@@ -950,8 +976,7 @@ namespace InCase.Resources.Api.Migrations
                 name: "ix_restriction_type_name",
                 table: "RestrictionType",
                 column: "name",
-                unique: true,
-                filter: "[name] IS NOT NULL");
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "ix_review_image_id",
@@ -1012,8 +1037,7 @@ namespace InCase.Resources.Api.Migrations
                 name: "ix_user_email",
                 table: "User",
                 column: "email",
-                unique: true,
-                filter: "[email] IS NOT NULL");
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "ix_user_id",
@@ -1025,8 +1049,7 @@ namespace InCase.Resources.Api.Migrations
                 name: "ix_user_login",
                 table: "User",
                 column: "login",
-                unique: true,
-                filter: "[login] IS NOT NULL");
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "ix_user_additional_info_id",
@@ -1188,8 +1211,7 @@ namespace InCase.Resources.Api.Migrations
                 name: "ix_user_role_name",
                 table: "UserRole",
                 column: "name",
-                unique: true,
-                filter: "[name] IS NOT NULL");
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "ix_user_token_id",

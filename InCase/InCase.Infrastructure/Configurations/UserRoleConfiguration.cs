@@ -15,6 +15,7 @@ namespace InCase.Infrastructure.Configurations
             builder.HasIndex(i => i.Name)
                 .IsUnique();
             builder.Property(p => p.Name)
+                .HasMaxLength(15)
                 .IsRequired();
         }
     }

@@ -11,9 +11,11 @@ namespace InCase.Infrastructure.Configurations
             base.Configure(builder);
 
             builder.ToTable(nameof(GameItemType));
+            
             builder.HasIndex(i => i.Name)
                 .IsUnique();
             builder.Property(p => p.Name)
+                .HasMaxLength(50)
                 .IsRequired();
         }
     }

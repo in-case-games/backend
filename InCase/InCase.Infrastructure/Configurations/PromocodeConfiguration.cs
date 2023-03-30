@@ -19,6 +19,7 @@ namespace InCase.Infrastructure.Configurations
                 .IsUnique(false);
 
             builder.Property(p => p.Name)
+                .HasMaxLength(50)
                 .IsRequired();
             builder.Property(p => p.Discount)
                 .IsRequired();

@@ -24,6 +24,7 @@ namespace InCase.Infrastructure.Configurations
             builder.Property(p => p.ExpirationDate)
                 .IsRequired();
             builder.Property(p => p.Description)
+                .HasMaxLength(120)
                 .IsRequired(false);
 
             builder.HasOne(x => x.User)

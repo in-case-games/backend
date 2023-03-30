@@ -13,6 +13,7 @@ namespace InCase.Infrastructure.Configurations
             builder.ToTable(nameof(News));
 
             builder.Property(p => p.Title)
+                .HasMaxLength(50)
                 .IsRequired();
             builder.Property(p => p.Date)
                 .IsRequired();

@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InCase.Resources.Api.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230329095443_InitialCreate")]
+    [Migration("20230330051048_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -36,10 +36,10 @@ namespace InCase.Resources.Api.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("answer_id");
 
-                    b.Property<string>("Uri")
+                    b.Property<string>("ImageUri")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)")
-                        .HasColumnName("uri");
+                        .HasColumnName("image_uri");
 
                     b.HasKey("Id")
                         .HasName("pk_answer_image");
@@ -62,7 +62,9 @@ namespace InCase.Resources.Api.Migrations
                         .HasColumnName("id");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(450)")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
                         .HasColumnName("name");
 
                     b.HasKey("Id")
@@ -74,8 +76,7 @@ namespace InCase.Resources.Api.Migrations
 
                     b.HasIndex("Name")
                         .IsUnique()
-                        .HasDatabaseName("ix_game_name")
-                        .HasFilter("[name] IS NOT NULL");
+                        .HasDatabaseName("ix_game_name");
 
                     b.ToTable("Game", (string)null);
                 });
@@ -99,14 +100,15 @@ namespace InCase.Resources.Api.Migrations
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("id_for_platform");
 
-                    b.Property<string>("Image")
+                    b.Property<string>("ImageUri")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)")
-                        .HasColumnName("image");
+                        .HasColumnName("image_uri");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
                         .HasColumnName("name");
 
                     b.Property<Guid?>("QualityId")
@@ -151,7 +153,9 @@ namespace InCase.Resources.Api.Migrations
                         .HasColumnName("id");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
                         .HasColumnName("name");
 
                     b.HasKey("Id")
@@ -160,6 +164,10 @@ namespace InCase.Resources.Api.Migrations
                     b.HasIndex("Id")
                         .IsUnique()
                         .HasDatabaseName("ix_game_item_quality_id");
+
+                    b.HasIndex("Name")
+                        .IsUnique()
+                        .HasDatabaseName("ix_game_item_quality_name");
 
                     b.ToTable("GameItemQuality", (string)null);
                 });
@@ -172,7 +180,9 @@ namespace InCase.Resources.Api.Migrations
                         .HasColumnName("id");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
                         .HasColumnName("name");
 
                     b.HasKey("Id")
@@ -181,6 +191,10 @@ namespace InCase.Resources.Api.Migrations
                     b.HasIndex("Id")
                         .IsUnique()
                         .HasDatabaseName("ix_game_item_rarity_id");
+
+                    b.HasIndex("Name")
+                        .IsUnique()
+                        .HasDatabaseName("ix_game_item_rarity_name");
 
                     b.ToTable("GameItemRarity", (string)null);
                 });
@@ -193,7 +207,9 @@ namespace InCase.Resources.Api.Migrations
                         .HasColumnName("id");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
                         .HasColumnName("name");
 
                     b.HasKey("Id")
@@ -202,6 +218,10 @@ namespace InCase.Resources.Api.Migrations
                     b.HasIndex("Id")
                         .IsUnique()
                         .HasDatabaseName("ix_game_item_type_id");
+
+                    b.HasIndex("Name")
+                        .IsUnique()
+                        .HasDatabaseName("ix_game_item_type_name");
 
                     b.ToTable("GameItemType", (string)null);
                 });
@@ -215,25 +235,30 @@ namespace InCase.Resources.Api.Migrations
 
                     b.Property<string>("DomainUri")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("nvarchar(450)")
                         .HasColumnName("domain_uri");
 
                     b.Property<Guid>("GameId")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("game_id");
 
+                    b.Property<string>("ImageUri")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("image_uri");
+
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
                         .HasColumnName("name");
-
-                    b.Property<string>("Uri")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("uri");
 
                     b.HasKey("Id")
                         .HasName("pk_game_platform");
+
+                    b.HasIndex("DomainUri")
+                        .IsUnique()
+                        .HasDatabaseName("ix_game_platform_domain_uri");
 
                     b.HasIndex("GameId")
                         .HasDatabaseName("ix_game_platform_game_id");
@@ -241,6 +266,10 @@ namespace InCase.Resources.Api.Migrations
                     b.HasIndex("Id")
                         .IsUnique()
                         .HasDatabaseName("ix_game_platform_id");
+
+                    b.HasIndex("Name")
+                        .IsUnique()
+                        .HasDatabaseName("ix_game_platform_name");
 
                     b.ToTable("GamePlatform", (string)null);
                 });
@@ -253,7 +282,9 @@ namespace InCase.Resources.Api.Migrations
                         .HasColumnName("id");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(450)")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
                         .HasColumnName("name");
 
                     b.HasKey("Id")
@@ -265,8 +296,7 @@ namespace InCase.Resources.Api.Migrations
 
                     b.HasIndex("Name")
                         .IsUnique()
-                        .HasDatabaseName("ix_group_loot_box_name")
-                        .HasFilter("[name] IS NOT NULL");
+                        .HasDatabaseName("ix_group_loot_box_name");
 
                     b.ToTable("GroupLootBox", (string)null);
                 });
@@ -290,19 +320,20 @@ namespace InCase.Resources.Api.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("game_id");
 
+                    b.Property<string>("ImageUri")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("image_uri");
+
                     b.Property<bool>("IsLocked")
                         .HasColumnType("bit")
                         .HasColumnName("is_locked");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
                         .HasColumnName("name");
-
-                    b.Property<string>("Uri")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("uri");
 
                     b.Property<decimal>("VirtualBalance")
                         .HasColumnType("DECIMAL(18,5)")
@@ -340,14 +371,14 @@ namespace InCase.Resources.Api.Migrations
                         .HasColumnType("datetime2")
                         .HasColumnName("expiration_date");
 
+                    b.Property<string>("ImageUri")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("image_uri");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit")
                         .HasColumnName("is_active");
-
-                    b.Property<string>("Uri")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("uri");
 
                     b.HasKey("Id")
                         .HasName("pk_loot_box_banner");
@@ -457,10 +488,11 @@ namespace InCase.Resources.Api.Migrations
                         .HasColumnType("datetime2")
                         .HasColumnName("date");
 
-                    b.Property<string>("Name")
+                    b.Property<string>("Title")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("name");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasColumnName("title");
 
                     b.HasKey("Id")
                         .HasName("pk_news");
@@ -479,14 +511,14 @@ namespace InCase.Resources.Api.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("id");
 
+                    b.Property<string>("ImageUri")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("image_uri");
+
                     b.Property<Guid>("NewsId")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("news_id");
-
-                    b.Property<string>("Uri")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("uri");
 
                     b.HasKey("Id")
                         .HasName("pk_news_image");
@@ -508,9 +540,8 @@ namespace InCase.Resources.Api.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("id");
 
-                    b.Property<string>("Discount")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
+                    b.Property<int>("Discount")
+                        .HasColumnType("int")
                         .HasColumnName("discount");
 
                     b.Property<DateTime>("ExpirationDate")
@@ -518,7 +549,9 @@ namespace InCase.Resources.Api.Migrations
                         .HasColumnName("expiration_date");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(450)")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
                         .HasColumnName("name");
 
                     b.Property<int>("NumberActivations")
@@ -538,8 +571,7 @@ namespace InCase.Resources.Api.Migrations
 
                     b.HasIndex("Name")
                         .IsUnique()
-                        .HasDatabaseName("ix_promocode_name")
-                        .HasFilter("[name] IS NOT NULL");
+                        .HasDatabaseName("ix_promocode_name");
 
                     b.HasIndex("TypeId")
                         .HasDatabaseName("ix_promocode_type_id");
@@ -555,7 +587,9 @@ namespace InCase.Resources.Api.Migrations
                         .HasColumnName("id");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(450)")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
                         .HasColumnName("name");
 
                     b.HasKey("Id")
@@ -567,8 +601,7 @@ namespace InCase.Resources.Api.Migrations
 
                     b.HasIndex("Name")
                         .IsUnique()
-                        .HasDatabaseName("ix_promocode_type_name")
-                        .HasFilter("[name] IS NOT NULL");
+                        .HasDatabaseName("ix_promocode_type_name");
 
                     b.ToTable("PromocodeType", (string)null);
                 });
@@ -581,7 +614,9 @@ namespace InCase.Resources.Api.Migrations
                         .HasColumnName("id");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(450)")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
                         .HasColumnName("name");
 
                     b.HasKey("Id")
@@ -593,8 +628,7 @@ namespace InCase.Resources.Api.Migrations
 
                     b.HasIndex("Name")
                         .IsUnique()
-                        .HasDatabaseName("ix_restriction_type_name")
-                        .HasFilter("[name] IS NOT NULL");
+                        .HasDatabaseName("ix_restriction_type_name");
 
                     b.ToTable("RestrictionType", (string)null);
                 });
@@ -606,14 +640,14 @@ namespace InCase.Resources.Api.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("id");
 
+                    b.Property<string>("ImageUri")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("image_uri");
+
                     b.Property<Guid>("ReviewId")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("review_id");
-
-                    b.Property<string>("Uri")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("uri");
 
                     b.HasKey("Id")
                         .HasName("pk_review_image");
@@ -635,9 +669,9 @@ namespace InCase.Resources.Api.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("id");
 
-                    b.Property<int>("OpenCases")
+                    b.Property<int>("LootBoxes")
                         .HasColumnType("int")
-                        .HasColumnName("open_cases");
+                        .HasColumnName("loot_boxes");
 
                     b.Property<int>("Reviews")
                         .HasColumnType("int")
@@ -703,7 +737,8 @@ namespace InCase.Resources.Api.Migrations
 
                     b.Property<string>("Content")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
+                        .HasMaxLength(120)
+                        .HasColumnType("nvarchar(120)")
                         .HasColumnName("content");
 
                     b.Property<DateTime>("Date")
@@ -720,7 +755,8 @@ namespace InCase.Resources.Api.Migrations
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
                         .HasColumnName("title");
 
                     b.Property<Guid>("UserId")
@@ -752,7 +788,8 @@ namespace InCase.Resources.Api.Migrations
 
                     b.Property<string>("Content")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
+                        .HasMaxLength(120)
+                        .HasColumnType("nvarchar(120)")
                         .HasColumnName("content");
 
                     b.Property<DateTime>("Date")
@@ -791,21 +828,27 @@ namespace InCase.Resources.Api.Migrations
                         .HasColumnName("id");
 
                     b.Property<string>("Email")
-                        .HasColumnType("nvarchar(450)")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
                         .HasColumnName("email");
 
                     b.Property<string>("Login")
-                        .HasColumnType("nvarchar(450)")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
                         .HasColumnName("login");
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)")
                         .HasColumnName("password_hash");
 
                     b.Property<string>("PasswordSalt")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)")
                         .HasColumnName("password_salt");
 
                     b.HasKey("Id")
@@ -813,8 +856,7 @@ namespace InCase.Resources.Api.Migrations
 
                     b.HasIndex("Email")
                         .IsUnique()
-                        .HasDatabaseName("ix_user_email")
-                        .HasFilter("[email] IS NOT NULL");
+                        .HasDatabaseName("ix_user_email");
 
                     b.HasIndex("Id")
                         .IsUnique()
@@ -822,8 +864,7 @@ namespace InCase.Resources.Api.Migrations
 
                     b.HasIndex("Login")
                         .IsUnique()
-                        .HasDatabaseName("ix_user_login")
-                        .HasFilter("[login] IS NOT NULL");
+                        .HasDatabaseName("ix_user_login");
 
                     b.ToTable("User", (string)null);
                 });
@@ -839,10 +880,10 @@ namespace InCase.Resources.Api.Migrations
                         .HasColumnType("DECIMAL(18,5)")
                         .HasColumnName("balance");
 
-                    b.Property<string>("Image")
+                    b.Property<string>("ImageUri")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)")
-                        .HasColumnName("image");
+                        .HasColumnName("image_uri");
 
                     b.Property<bool>("IsGuestMode")
                         .HasColumnType("bit")
@@ -1124,7 +1165,8 @@ namespace InCase.Resources.Api.Migrations
                         .HasColumnName("creation_date");
 
                     b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)")
+                        .HasMaxLength(120)
+                        .HasColumnType("nvarchar(120)")
                         .HasColumnName("description");
 
                     b.Property<DateTime>("ExpirationDate")
@@ -1171,7 +1213,8 @@ namespace InCase.Resources.Api.Migrations
 
                     b.Property<string>("Content")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
+                        .HasMaxLength(120)
+                        .HasColumnType("nvarchar(120)")
                         .HasColumnName("content");
 
                     b.Property<bool>("IsApproved")
@@ -1180,7 +1223,8 @@ namespace InCase.Resources.Api.Migrations
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
                         .HasColumnName("title");
 
                     b.Property<Guid>("UserId")
@@ -1208,7 +1252,9 @@ namespace InCase.Resources.Api.Migrations
                         .HasColumnName("id");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(450)")
+                        .IsRequired()
+                        .HasMaxLength(15)
+                        .HasColumnType("nvarchar(15)")
                         .HasColumnName("name");
 
                     b.HasKey("Id")
@@ -1220,8 +1266,7 @@ namespace InCase.Resources.Api.Migrations
 
                     b.HasIndex("Name")
                         .IsUnique()
-                        .HasDatabaseName("ix_user_role_name")
-                        .HasFilter("[name] IS NOT NULL");
+                        .HasDatabaseName("ix_user_role_name");
 
                     b.ToTable("UserRole", (string)null);
                 });
@@ -1234,21 +1279,25 @@ namespace InCase.Resources.Api.Migrations
                         .HasColumnName("id");
 
                     b.Property<string>("Device")
-                        .HasColumnType("nvarchar(max)")
+                        .HasMaxLength(15)
+                        .HasColumnType("nvarchar(15)")
                         .HasColumnName("device");
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)")
                         .HasColumnName("email");
 
                     b.Property<string>("IpAddress")
-                        .HasColumnType("nvarchar(max)")
+                        .HasMaxLength(15)
+                        .HasColumnType("nvarchar(15)")
                         .HasColumnName("ip_address");
 
                     b.Property<string>("Refresh")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)")
                         .HasColumnName("refresh");
 
                     b.Property<Guid>("UserId")

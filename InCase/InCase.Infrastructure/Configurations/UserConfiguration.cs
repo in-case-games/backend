@@ -18,13 +18,17 @@ namespace InCase.Infrastructure.Configurations
                 .IsUnique();
 
             builder.Property(p => p.Login)
+                .HasMaxLength(50)
                 .IsRequired();
             builder.Property(p => p.Email)
+                .HasMaxLength(50)
                 .IsRequired();
 
             builder.Property(p => p.PasswordSalt)
+                .HasMaxLength(64)
                 .IsRequired();
             builder.Property(p => p.PasswordHash)
+                .HasMaxLength(64)
                 .IsRequired();
         }
     }

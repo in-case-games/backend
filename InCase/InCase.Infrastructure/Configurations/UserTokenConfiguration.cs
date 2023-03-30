@@ -13,12 +13,16 @@ namespace InCase.Infrastructure.Configurations
             builder.ToTable(nameof(UserToken));
 
             builder.Property(p => p.Refresh)
+                .HasMaxLength(64)
                 .IsRequired();
             builder.Property(p => p.Email)
+                .HasMaxLength(64)
                 .IsRequired();
             builder.Property(p => p.IpAddress)
+                .HasMaxLength(15)
                 .IsRequired(false);
             builder.Property(p => p.Device)
+                .HasMaxLength(15)
                 .IsRequired(false);
 
             builder.HasIndex(i => i.UserId)
