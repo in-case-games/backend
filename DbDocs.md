@@ -144,6 +144,7 @@
 ||IsActivated|bit|True|-|
 |FK|UserId|uniqueidentifier|True|-|
 |FK|PromocodeId|uniqueidentifier|True|-|
+
 **UserRestriction**
 
 Описание:
