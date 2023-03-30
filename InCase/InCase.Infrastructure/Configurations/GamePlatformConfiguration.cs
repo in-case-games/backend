@@ -24,6 +24,7 @@ namespace InCase.Infrastructure.Configurations
                 .IsRequired();
             builder.Property(p => p.DomainUri)
                 .IsRequired();
+
             builder.Property(p => p.Name)
                 .HasMaxLength(50)
                 .IsRequired();

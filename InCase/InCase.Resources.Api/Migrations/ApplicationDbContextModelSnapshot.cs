@@ -232,7 +232,7 @@ namespace InCase.Resources.Api.Migrations
 
                     b.Property<string>("DomainUri")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)")
+                        .HasColumnType("nvarchar(MAX)")
                         .HasColumnName("domain_uri");
 
                     b.Property<Guid>("GameId")

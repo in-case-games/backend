@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InCase.Resources.Api.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230330064735_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20230330080505_UpdateGamePlatformDomainUri")]
+    partial class UpdateGamePlatformDomainUri
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -235,7 +235,7 @@ namespace InCase.Resources.Api.Migrations
 
                     b.Property<string>("DomainUri")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)")
+                        .HasColumnType("nvarchar(MAX)")
                         .HasColumnName("domain_uri");
 
                     b.Property<Guid>("GameId")
