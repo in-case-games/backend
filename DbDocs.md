@@ -1,4 +1,4 @@
-﻿Документация к базе данных InCase.
+# Документация к базе данных InCase.
 
 **AnswerImage**
 
@@ -144,6 +144,7 @@
 ||IsActivated|bit|True|-|
 |FK|UserId|uniqueidentifier|True|-|
 |FK|PromocodeId|uniqueidentifier|True|-|
+
 **UserRestriction**
 
 Описание:
