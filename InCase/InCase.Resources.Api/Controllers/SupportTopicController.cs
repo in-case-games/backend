@@ -182,5 +182,23 @@ namespace InCase.Resources.Api.Controllers
 
             return Accepted(new { Data = "Object was successfully removed", Success = true });
         }
+        [HttpDelete("{id}/answers/{answerId}")]
+        public async Task<IActionResult> DeleteAnswer(Guid id, Guid answerId)
+        {
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            SupportTopicAnswer? answer = await context.SupportTopicAnswers
+                .Include(x => x.Plaintiff)
+                .Include(x => x.Images)
+                .FirstOrDefaultAsync(x => x.TopicId == id && x.Id == answerId);
+
+            if (answer is null)
+                return NotFound(new { Data = "Object is not found", Success = false });
+
+            context.SupportTopicAnswers.Remove(answer);
+            await context.SaveChangesAsync();
+
+            return Accepted(new { Data = "Object was succesfully removed", Success = true });
+        }
     }
 }
