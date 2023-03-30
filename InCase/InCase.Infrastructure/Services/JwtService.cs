@@ -85,8 +85,8 @@ namespace InCase.Infrastructure.Services
             {
                 AccessToken = new JwtSecurityTokenHandler().WriteToken(accessToken),
                 RefreshToken = new JwtSecurityTokenHandler().WriteToken(refreshToken),
-                ExpiresAccessIn = accessToken.ValidTo,
-                ExpiresRefreshIn = refreshToken.ValidTo,
+                ExpiresAccess = accessToken.ValidTo,
+                ExpiresRefresh = refreshToken.ValidTo,
             };
         }
 
