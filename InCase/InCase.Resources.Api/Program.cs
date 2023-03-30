@@ -7,15 +7,18 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddPooledDbContextFactory<ApplicationDbContext>(
-    options => options.UseSqlServer(
+builder.Services.AddPooledDbContextFactory<ApplicationDbContext>(options =>
+{
+    options.UseSnakeCaseNamingConvention();
+
+    options.UseSqlServer(
 #if DEBUG
-        builder.Configuration["ConnectionStrings:DevelopmentConnection"],
+    builder.Configuration["ConnectionStrings:DevelopmentConnection"],
 #else
         builder.Configuration["ConnectionStrings:ProductionConnection"],
 #endif
-        b => b.MigrationsAssembly("InCase.Resources.Api"))
-);
+    b => b.MigrationsAssembly("InCase.Resources.Api"));
+});
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>

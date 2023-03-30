@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace InCase.Resources.Api.Migrations
 {
     /// <inheritdoc />
-    public partial class UpdateGamePlatformDomainUri : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -172,7 +172,7 @@ namespace InCase.Resources.Api.Migrations
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    domain_uri = table.Column<string>(type: "nvarchar(MAX)", nullable: false),
+                    domain_uri = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     image_uri = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     game_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },

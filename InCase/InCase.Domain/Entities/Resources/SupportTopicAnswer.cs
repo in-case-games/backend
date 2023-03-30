@@ -17,7 +17,6 @@ namespace InCase.Domain.Entities.Resources
 
         [JsonIgnore]
         public SupportTopic? Topic { get; set; }
-        [JsonIgnore]
         public List<AnswerImage>? Images { get; set; }
 
         public SupportTopicAnswerDto Convert() => new()

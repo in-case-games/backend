@@ -60,7 +60,8 @@ namespace InCase.Authentication.Api.Controllers
                 x.Login == userDto.Login);
 
             if (user is null) return NotFound();
-            if (!ValidationService.IsValidUserPassword(in user, userDto.Password!)) return Forbid();
+            if (!ValidationService.IsValidUserPassword(in user, userDto.Password!))
+                return Forbid();
 
             await _emailService.SendSignIn(new DataMailLink()
             {
@@ -91,7 +92,8 @@ namespace InCase.Authentication.Api.Controllers
                 x.Email == userDto.Email ||
                 x.Login == userDto.Login);
 
-            if (userExists is not null) return Conflict(new { Success = false, Message = "User already exists!" });
+            if (userExists is not null) 
+                return Conflict(new { Success = false, Message = "User already exists!" });
 
             //Encrypting password
             byte[] salt = EncryptorService.GenerationSaltTo64Bytes();

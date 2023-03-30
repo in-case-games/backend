@@ -41,13 +41,6 @@ namespace InCase.Infrastructure.Data
         public DbSet<UserRole> UserRoles => Set<UserRole>();
 
         public ApplicationDbContext(DbContextOptions options) : base(options) { }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            base.OnConfiguring(optionsBuilder);
-            optionsBuilder.UseSnakeCaseNamingConvention();
-        }
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             
