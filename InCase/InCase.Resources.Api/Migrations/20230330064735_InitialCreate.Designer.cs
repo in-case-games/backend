@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InCase.Resources.Api.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230330051048_InitialCreate")]
+    [Migration("20230330064735_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -1271,52 +1271,6 @@ namespace InCase.Resources.Api.Migrations
                     b.ToTable("UserRole", (string)null);
                 });
 
-            modelBuilder.Entity("InCase.Domain.Entities.Resources.UserToken", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("id");
-
-                    b.Property<string>("Device")
-                        .HasMaxLength(15)
-                        .HasColumnType("nvarchar(15)")
-                        .HasColumnName("device");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)")
-                        .HasColumnName("email");
-
-                    b.Property<string>("IpAddress")
-                        .HasMaxLength(15)
-                        .HasColumnType("nvarchar(15)")
-                        .HasColumnName("ip_address");
-
-                    b.Property<string>("Refresh")
-                        .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)")
-                        .HasColumnName("refresh");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("user_id");
-
-                    b.HasKey("Id")
-                        .HasName("pk_user_token");
-
-                    b.HasIndex("Id")
-                        .IsUnique()
-                        .HasDatabaseName("ix_user_token_id");
-
-                    b.HasIndex("UserId")
-                        .HasDatabaseName("ix_user_token_user_id");
-
-                    b.ToTable("UserToken", (string)null);
-                });
-
             modelBuilder.Entity("InCase.Domain.Entities.Resources.AnswerImage", b =>
                 {
                     b.HasOne("InCase.Domain.Entities.Resources.SupportTopicAnswer", "Answer")
@@ -1725,18 +1679,6 @@ namespace InCase.Resources.Api.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("InCase.Domain.Entities.Resources.UserToken", b =>
-                {
-                    b.HasOne("InCase.Domain.Entities.Resources.User", "User")
-                        .WithMany("Tokens")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_user_token_user_user_id");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("InCase.Domain.Entities.Resources.Game", b =>
                 {
                     b.Navigation("Boxes");
@@ -1852,8 +1794,6 @@ namespace InCase.Resources.Api.Migrations
                     b.Navigation("Reviews");
 
                     b.Navigation("SupportTopics");
-
-                    b.Navigation("Tokens");
 
                     b.Navigation("UserTopics");
                 });

@@ -398,28 +398,6 @@ namespace InCase.Resources.Api.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserToken",
-                columns: table => new
-                {
-                    id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    refresh = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false),
-                    email = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false),
-                    ip_address = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: true),
-                    device = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: true),
-                    user_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("pk_user_token", x => x.id);
-                    table.ForeignKey(
-                        name: "fk_user_token_user_user_id",
-                        column: x => x.user_id,
-                        principalTable: "User",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "UserAdditionalInfo",
                 columns: table => new
                 {
@@ -1212,17 +1190,6 @@ namespace InCase.Resources.Api.Migrations
                 table: "UserRole",
                 column: "name",
                 unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "ix_user_token_id",
-                table: "UserToken",
-                column: "id",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "ix_user_token_user_id",
-                table: "UserToken",
-                column: "user_id");
         }
 
         /// <inheritdoc />
@@ -1275,9 +1242,6 @@ namespace InCase.Resources.Api.Migrations
 
             migrationBuilder.DropTable(
                 name: "UserRestriction");
-
-            migrationBuilder.DropTable(
-                name: "UserToken");
 
             migrationBuilder.DropTable(
                 name: "SupportTopicAnswer");
