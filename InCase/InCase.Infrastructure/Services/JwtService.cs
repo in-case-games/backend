@@ -34,62 +34,6 @@ namespace InCase.Infrastructure.Services
             return getUserId;
         }
 
-        public JwtSecurityToken CreateResuableToken(Claim[] claims, TimeSpan expiration)
-        {
-            SymmetricSecurityKey securityKey = new(Encoding.ASCII.GetBytes(_configuration["JWT:Secret"]!));
-            SigningCredentials credentials = new(securityKey, SecurityAlgorithms.HmacSha256);
-
-            return CreateToken(claims, credentials, expiration);
-        }
-
-        public JwtSecurityToken CreateEmailToken(
-            Claim[] claims,
-            string secret)
-        {
-            TimeSpan expiration = TimeSpan.FromMinutes(5);
-
-            SymmetricSecurityKey securityKey = new(Encoding.ASCII.GetBytes(secret + _configuration["JWT:Secret"]!));
-            SigningCredentials credentials = new(securityKey, SecurityAlgorithms.HmacSha512);
-
-            return CreateToken(claims, credentials, expiration);
-        }
-
-        public string GenerateEmailToken(User user)
-        {
-            Claim[] claims = {
-                new Claim("UserId", user.Id.ToString()),
-                new Claim("UserEmail", user.Email!),
-            };
-
-            JwtSecurityToken token = CreateEmailToken(claims, user.PasswordHash!);
-
-            return new JwtSecurityTokenHandler().WriteToken(token);
-        }
-
-        public DataSendTokens GenerateTokenPair(in User user)
-        {
-            Claim[] claimsAccess = GenerateClaimsForAccessToken(user);
-            Claim[] claimsRefresh = {
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
-            };
-
-            TimeSpan expirationRefresh = TimeSpan.FromDays(
-                double.Parse(_configuration["JWT:RefreshTokenValidityInDays"]!));
-            TimeSpan expirationAccess = TimeSpan.FromMinutes(
-                double.Parse(_configuration["JWT:TokenValidityInMinutes"]!));
-
-            JwtSecurityToken accessToken = CreateResuableToken(claimsAccess, expirationAccess);
-            JwtSecurityToken refreshToken = CreateResuableToken(claimsRefresh, expirationRefresh);
-
-            return new DataSendTokens
-            {
-                AccessToken = new JwtSecurityTokenHandler().WriteToken(accessToken),
-                RefreshToken = new JwtSecurityTokenHandler().WriteToken(refreshToken),
-                ExpiresAccess = accessToken.ValidTo,
-                ExpiresRefresh = refreshToken.ValidTo,
-            };
-        }
-
         public static ClaimsPrincipal? GetClaimsToken(
             string token,
             byte[] secret,
@@ -105,6 +49,7 @@ namespace InCase.Infrastructure.Services
             };
 
             JwtSecurityTokenHandler tokenHandler = new();
+
             ClaimsPrincipal principal = tokenHandler.ValidateToken(
                 token,
                 tokenValidationParameters,
@@ -118,7 +63,64 @@ namespace InCase.Infrastructure.Services
             return principal;
         }
 
-        private JwtSecurityToken CreateToken(
+        public JwtSecurityToken CreateResuableToken(Claim[] claims, TimeSpan expiration)
+        {
+            SymmetricSecurityKey securityKey = new(Encoding.ASCII.GetBytes(_configuration["JWT:Secret"]!));
+            SigningCredentials credentials = new(securityKey, SecurityAlgorithms.HmacSha256);
+
+            return GenerateToken(claims, credentials, expiration);
+        }
+
+        public string CreateEmailToken(in User user)
+        {
+            Claim[] claims = {
+                new Claim("UserId", user.Id.ToString()),
+                new Claim("UserEmail", user.Email!),
+            };
+
+            JwtSecurityToken token = GenerateEmailToken(claims, user.PasswordHash!);
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        public DataSendTokens CreateTokenPair(in User user)
+        {
+            Claim[] claimsAccess = GenerateClaimsForAccessToken(user);
+            Claim[] claimsRefresh = {
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
+            };
+
+            TimeSpan expirationRefresh = TimeSpan.FromDays(
+                double.Parse(_configuration["JWT:RefreshTokenValidityInDays"]!));
+            TimeSpan expirationAccess = TimeSpan.FromMinutes(
+                double.Parse(_configuration["JWT:AccessTokenValidityInMinutes"]!));
+
+            JwtSecurityToken accessToken = CreateResuableToken(claimsAccess, expirationAccess);
+            JwtSecurityToken refreshToken = CreateResuableToken(claimsRefresh, expirationRefresh);
+
+            return new DataSendTokens
+            {
+                AccessToken = new JwtSecurityTokenHandler().WriteToken(accessToken),
+                RefreshToken = new JwtSecurityTokenHandler().WriteToken(refreshToken),
+                ExpiresAccess = accessToken.ValidTo,
+                ExpiresRefresh = refreshToken.ValidTo,
+            };
+        }
+
+        public JwtSecurityToken GenerateEmailToken(
+            Claim[] claims,
+            string secret)
+        {
+            TimeSpan expiration = TimeSpan.FromMinutes(
+                double.Parse(_configuration["JWT:EmailTokenValidityInDays"]!));
+
+            SymmetricSecurityKey securityKey = new(Encoding.ASCII.GetBytes(secret + _configuration["JWT:Secret"]!));
+            SigningCredentials credentials = new(securityKey, SecurityAlgorithms.HmacSha512);
+
+            return GenerateToken(claims, credentials, expiration);
+        }
+
+        private JwtSecurityToken GenerateToken(
             Claim[] claims,
             SigningCredentials credentials,
             TimeSpan expiration)
@@ -130,6 +132,7 @@ namespace InCase.Infrastructure.Services
                 expires: DateTime.UtcNow.Add(expiration),
                 signingCredentials: credentials);
         }
+
         private static Claim[] GenerateClaimsForAccessToken(User user)
         {
             //Find future data for claims

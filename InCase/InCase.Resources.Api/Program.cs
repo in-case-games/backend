@@ -7,7 +7,7 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddDbContextFactory<ApplicationDbContext>(
+builder.Services.AddPooledDbContextFactory<ApplicationDbContext>(
     options => options.UseSqlServer(
 #if DEBUG
         builder.Configuration["ConnectionStrings:DevelopmentConnection"],

@@ -7,15 +7,12 @@ namespace InCase.Domain.Dtos
     {
         public string? Login { get; set; }
         public string? Email { get; set; }
-        public string? PasswordHash { get; set; }
-        public string? PasswordSalt { get; set; }
+        public string? Password { get; set; }
 
         public User Convert() => new()
         {
             Login = Login,
-            Email = Email,
-            PasswordHash = PasswordHash,
-            PasswordSalt = PasswordSalt
+            Email = Email
         };
     }
 }

@@ -24,20 +24,17 @@ namespace InCase.Infrastructure.Services
             return hash == user.PasswordHash;
         }
 
-        public bool IsValidEmailToken(in DataMailLink emailModel, in User user)
+        public bool IsValidToken(string token, in User user)
         {
             byte[] secretBytes = Encoding.UTF8.GetBytes(user.PasswordHash! + _configuration["JWT:Secret"]!);
-            string token = emailModel.EmailToken;
 
             ClaimsPrincipal? principal = JwtService.GetClaimsToken(token, secretBytes, "HS512");
+            string? lifetime = principal?.Claims.FirstOrDefault(c => c.Type == "exp")?.Value;
 
-            if (principal is null) return false;
+            DateTimeOffset lifetimeOffSet = DateTimeOffset.FromUnixTimeSeconds(long.Parse(lifetime ?? "0"));
+            DateTime lifeTimeDateTime = lifetimeOffSet.UtcDateTime;
 
-            string? email = principal.Claims.FirstOrDefault(x => x.Type == "UserEmail")?.Value;
-
-            bool IsNoChangeEmail = email == user.Email;
-
-            return IsNoChangeEmail;
+            return (DateTime.UtcNow < lifeTimeDateTime);
         }
     }
 }

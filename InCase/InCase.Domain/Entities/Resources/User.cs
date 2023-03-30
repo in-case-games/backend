@@ -35,9 +35,7 @@ namespace InCase.Domain.Entities.Resources
         public UserDto Convert() => new()
         {
             Login = Login,
-            Email = Email,
-            PasswordHash = PasswordHash,
-            PasswordSalt = PasswordSalt
+            Email = Email
         };
     }
 }

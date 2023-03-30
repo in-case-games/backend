@@ -1,4 +1,5 @@
 using InCase.Infrastructure.Data;
+using InCase.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -7,7 +8,7 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddDbContextFactory<ApplicationDbContext>(
+builder.Services.AddPooledDbContextFactory<ApplicationDbContext>(
     options => options.UseSqlServer(
 #if DEBUG
         builder.Configuration["ConnectionStrings:DevelopmentConnection"]
@@ -65,6 +66,9 @@ builder.Services.AddSwaggerGen(options =>
         }
     });
 });
+
+builder.Services.AddSingleton<EmailService>();
+builder.Services.AddSingleton<JwtService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
