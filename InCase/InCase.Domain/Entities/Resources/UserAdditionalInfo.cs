@@ -11,6 +11,7 @@ namespace InCase.Domain.Entities.Resources
         public bool IsGuestMode { get; set; } = false;
         public bool IsConfirmed { get; set; } = false;
         public DateTime CreationDate { get; set; } = DateTime.UtcNow;
+        public DateTime? DeletionDate { get; set; }
 
         [JsonIgnore]
         public Guid RoleId { get; set; }
@@ -30,6 +31,7 @@ namespace InCase.Domain.Entities.Resources
             IsGuestMode = IsGuestMode,
             IsConfirmed = IsConfirmed,
             CreationDate = CreationDate,
+            DeletionDate = DeletionDate,
             RoleId = Role?.Id ?? RoleId,
             UserId = User?.Id ?? UserId
         };

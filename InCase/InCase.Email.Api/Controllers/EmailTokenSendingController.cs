@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace InCase.Email.Api.Controllers
 {
-    [Route("email/api/[controller]")]
+    [Route("api/email/send")]
     [ApiController]
     public class EmailTokenSendingController : ControllerBase
     {
@@ -33,8 +33,8 @@ namespace InCase.Email.Api.Controllers
         #endregion
 
         [AllowAnonymous]
-        [HttpPost]
-        public async Task<IActionResult> SendConfirmEmail(DataMailLink data)
+        [HttpPost("confirm")]
+        public async Task<IActionResult> ConfirmAccount(DataMailLink data)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
@@ -71,8 +71,8 @@ namespace InCase.Email.Api.Controllers
         }
 
         [AllowAnonymous]
-        [HttpPost("email/confirm/{email}")]
-        public async Task<IActionResult> SendConfirmNewEmail(DataMailLink data, string email)
+        [HttpPost("confirm/{email}")]
+        public async Task<IActionResult> ConfirmNewEmail(DataMailLink data, string email)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
@@ -106,8 +106,8 @@ namespace InCase.Email.Api.Controllers
         }
 
         [AllowAnonymous]
-        [HttpPut("password")]
-        public async Task<IActionResult> SendForgotPassword(DataMailLink data)
+        [HttpPut("forgot/password")]
+        public async Task<IActionResult> ForgotPassword(DataMailLink data)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
@@ -133,7 +133,7 @@ namespace InCase.Email.Api.Controllers
 
         [AllowAnonymous]
         [HttpPut("email/{password}")]
-        public async Task<IActionResult> SendChangeEmail(DataMailLink data, string password)
+        public async Task<IActionResult> UpdateEmail(DataMailLink data, string password)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
@@ -159,7 +159,7 @@ namespace InCase.Email.Api.Controllers
 
         [AllowAnonymous]
         [HttpPut("password/{password}")]
-        public async Task<IActionResult> SendChangePassword(DataMailLink data, string password)
+        public async Task<IActionResult> UpdatePassword(DataMailLink data, string password)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
@@ -184,8 +184,8 @@ namespace InCase.Email.Api.Controllers
         }
 
         [AllowAnonymous]
-        [HttpDelete("{password}")]
-        public async Task<IActionResult> SendDeleteAccount(DataMailLink data, string password)
+        [HttpDelete("confirm/{password}")]
+        public async Task<IActionResult> DeleteAccount(DataMailLink data, string password)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 

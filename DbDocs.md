@@ -80,6 +80,7 @@
 ||IsGuestMode|bit|True|-|
 ||IsConfirmed|bit|True|-|
 ||CreationDate|datetime2(7)|True|-|
+||DeletionDate|datetime2(7)|False|-|
 |FK|RoleId|uniqueidentifier|True|-|
 |FK|UserId|uniqueidentifier|True|-|
 

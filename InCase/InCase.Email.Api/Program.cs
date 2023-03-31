@@ -9,13 +9,16 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddPooledDbContextFactory<ApplicationDbContext>(
-    options => options.UseSqlServer(
-#if DEBUG
+    options => {
+        options.UseSnakeCaseNamingConvention();
+        options.UseSqlServer(
+        #if DEBUG
         builder.Configuration["ConnectionStrings:DevelopmentConnection"]
-#else
+        #else
         builder.Configuration["ConnectionStrings:ProductionConnection"]
-#endif
-        )
+        #endif
+        );
+    }
 );
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

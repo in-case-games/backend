@@ -408,6 +408,7 @@ namespace InCase.Resources.Api.Migrations
                     is_guest_mode = table.Column<bool>(type: "bit", nullable: false),
                     is_confirmed = table.Column<bool>(type: "bit", nullable: false),
                     creation_date = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    deletion_date = table.Column<DateTime>(type: "datetime2", nullable: true),
                     role_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     user_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },

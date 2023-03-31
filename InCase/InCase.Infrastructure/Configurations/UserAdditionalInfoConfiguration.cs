@@ -28,6 +28,8 @@ namespace InCase.Infrastructure.Configurations
                 .IsRequired();
             builder.Property(p => p.CreationDate)
                 .IsRequired();
+            builder.Property(p => p.DeletionDate)
+                .IsRequired(false);
 
             builder.HasOne(o => o.User)
                 .WithOne(o => o.AdditionalInfo)

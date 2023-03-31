@@ -7,10 +7,11 @@ using InCase.Infrastructure.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace InCase.Authentication.Api.Controllers
 {
-    [Route("auth/api/[controller]")]
+    [Route("api/authentication")]
     [ApiController]
     public class AuthenticationController : ControllerBase
     {
@@ -74,16 +75,15 @@ namespace InCase.Authentication.Api.Controllers
         [HttpPost("signup")]
         public async Task<IActionResult> SignUp(UserDto userDto)
         {
-            //Check is exist user
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            User? userExists = await context.Users
+            bool isExist = await context.Users
                 .AsNoTracking()
-                .FirstOrDefaultAsync(x =>
+                .AnyAsync(x =>
                 x.Email == userDto.Email ||
                 x.Login == userDto.Login);
 
-            if (userExists is not null) 
+            if (isExist) 
                 return Conflict(new { Success = false, Message = "User already exists!" });
 
             //Map user and additional info
@@ -103,6 +103,7 @@ namespace InCase.Authentication.Api.Controllers
                 Id = Guid.NewGuid(),
                 RoleId = role.Id,
                 UserId = user.Id,
+                DeletionDate = DateTime.UtcNow + TimeSpan.FromDays(30),
             };
 
             //Create user and additional info
@@ -134,6 +135,7 @@ namespace InCase.Authentication.Api.Controllers
             User? user = await context.Users
                 .Include(x => x.AdditionalInfo)
                 .Include(x => x.AdditionalInfo!.Role)
+                .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Login == login);
 
             if (user is null) 

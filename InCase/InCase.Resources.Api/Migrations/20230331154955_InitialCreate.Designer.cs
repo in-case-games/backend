@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InCase.Resources.Api.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230331051109_InitialCreate")]
+    [Migration("20230331154955_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -883,6 +883,10 @@ namespace InCase.Resources.Api.Migrations
                     b.Property<DateTime>("CreationDate")
                         .HasColumnType("datetime2")
                         .HasColumnName("creation_date");
+
+                    b.Property<DateTime?>("DeletionDate")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("deletion_date");
 
                     b.Property<string>("ImageUri")
                         .IsRequired()

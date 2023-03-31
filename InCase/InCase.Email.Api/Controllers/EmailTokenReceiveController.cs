@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace InCase.Email.Api.Controllers
 {
-    [Route("email/api/[controller]")]
+    [Route("api/email/confirm")]
     [ApiController]
     public class EmailTokenReceiveController : ControllerBase
     {
@@ -34,7 +34,7 @@ namespace InCase.Email.Api.Controllers
         #endregion
 
         [AllowAnonymous]
-        [HttpPost("confirm")]
+        [HttpPost("account")]
         public async Task<IActionResult> ConfirmAccount(DataMailLink data)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
@@ -42,6 +42,7 @@ namespace InCase.Email.Api.Controllers
             User? user = await context.Users
                 .Include(x => x.AdditionalInfo)
                 .Include(x => x.AdditionalInfo!.Role)
+                .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Login == data.UserLogin);
 
             if (user == null) return NotFound();
@@ -53,9 +54,22 @@ namespace InCase.Email.Api.Controllers
 
             UserAdditionalInfo userInfo = user.AdditionalInfo!;
 
+            if(userInfo.DeletionDate != null)
+            {
+                userInfo.DeletionDate = null;
+                context.UserAdditionalInfos.Attach(userInfo);
+                context.Entry(userInfo).Property(x => x.DeletionDate).IsModified = true;
+
+                //TODO Send cancel deleted account
+
+                await context.SaveChangesAsync();
+            }
+
             if (userInfo.IsConfirmed is false)
             {
                 userInfo.IsConfirmed = true;
+                context.UserAdditionalInfos.Attach(userInfo);
+                context.Entry(userInfo).Property(x => x.IsConfirmed).IsModified = true;
 
                 await _emailService.SendSuccessVerifedAccount(
                     new DataMailLink()
@@ -96,10 +110,11 @@ namespace InCase.Email.Api.Controllers
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             bool isExistEmail = await context.Users
+                .AsNoTracking()
                 .AnyAsync(x => x.Email == data.UserEmail);
 
             User? user = await context.Users
-                .Include(x => x.AdditionalInfo)
+                .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Login == data.UserLogin);
 
             if (isExistEmail)
@@ -113,6 +128,9 @@ namespace InCase.Email.Api.Controllers
                 return Forbid("Access denied invalid email token");
 
             user.Email = data.UserEmail;
+
+            context.Users.Attach(user);
+            context.Entry(user).Property(x => x.Email).IsModified = true;
 
             await context.SaveChangesAsync();
 
@@ -133,11 +151,12 @@ namespace InCase.Email.Api.Controllers
 
         [AllowAnonymous]
         [HttpPut("password/{password}")]
-        public async Task<IActionResult> UpdatePasswordConfirmation(DataMailLink data, string password)
+        public async Task<IActionResult> UpdatePassword(DataMailLink data, string password)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             User? user = await context.Users
+                .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Login == data.UserLogin);
 
             if (user == null) 
@@ -154,6 +173,10 @@ namespace InCase.Email.Api.Controllers
 
             user.PasswordHash = hash;
             user.PasswordSalt = Convert.ToBase64String(salt);
+
+            context.Users.Attach(user);
+            context.Entry(user).Property(x => x.PasswordHash).IsModified = true;
+            context.Entry(user).Property(x => x.PasswordSalt).IsModified = true;
 
             await context.SaveChangesAsync();
 
@@ -174,11 +197,12 @@ namespace InCase.Email.Api.Controllers
 
         [AllowAnonymous]
         [HttpDelete("account")]
-        public async Task<IActionResult> DeleteConfirmation(DataMailLink data)
+        public async Task<IActionResult> Delete(DataMailLink data)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             User? user = await context.Users
+                .Include(x => x.AdditionalInfo)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Login == data.UserLogin);
 
@@ -198,7 +222,13 @@ namespace InCase.Email.Api.Controllers
                     BodyDescription = $"Ваш аккаунт будет удален через 30 дней"
                 });
 
-            //TODO No delete give the user 30 days
+            UserAdditionalInfo userInfo = user.AdditionalInfo!;
+
+            userInfo.DeletionDate = DateTime.UtcNow + TimeSpan.FromDays(30);
+            context.UserAdditionalInfos.Attach(userInfo);
+            context.Entry(userInfo).Property(x => x.IsConfirmed).IsModified = true;
+
+            await context.SaveChangesAsync();
 
             return Ok(new 
             { 

@@ -881,6 +881,10 @@ namespace InCase.Resources.Api.Migrations
                         .HasColumnType("datetime2")
                         .HasColumnName("creation_date");
 
+                    b.Property<DateTime?>("DeletionDate")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("deletion_date");
+
                     b.Property<string>("ImageUri")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)")

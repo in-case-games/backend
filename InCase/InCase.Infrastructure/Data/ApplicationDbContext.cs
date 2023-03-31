@@ -41,15 +41,13 @@ namespace InCase.Infrastructure.Data
         public DbSet<UserRole> UserRoles => Set<UserRole>();
 
         public ApplicationDbContext(DbContextOptions options) : base(options) { }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
-
-            #region .HasData()
-            #endregion
         }
     }
 }

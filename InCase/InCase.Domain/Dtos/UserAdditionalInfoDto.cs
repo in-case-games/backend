@@ -11,6 +11,7 @@ namespace InCase.Domain.Dtos
         public bool IsGuestMode { get; set; } = false;
         public bool IsConfirmed { get; set; } = false;
         public DateTime CreationDate { get; set; } = DateTime.UtcNow;
+        public DateTime? DeletionDate { get; set; }
 
         public Guid RoleId { get; set; }
         public Guid UserId { get; set; }
@@ -23,6 +24,7 @@ namespace InCase.Domain.Dtos
             IsGuestMode = IsGuestMode,
             IsConfirmed = IsConfirmed,
             CreationDate = CreationDate,
+            DeletionDate = DeletionDate,
             RoleId = RoleId,
             UserId = UserId
         };
