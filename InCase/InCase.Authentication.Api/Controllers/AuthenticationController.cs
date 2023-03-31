@@ -48,35 +48,33 @@ namespace InCase.Authentication.Api.Controllers
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             User? user = await context.Users
-                .Include(x => x.AdditionalInfo)
-                .Include(x => x.AdditionalInfo!.Role)
-                .Include(x => x.Inventories)
-                .Include(x => x.HistoryPromocodes)
-                .Include(x => x.Restrictions)
-                .Include(x => x.HistoryOpenings)
-                .FirstOrDefaultAsync(x =>
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => 
                 x.Id == userDto.Id ||
                 x.Email == userDto.Email ||
                 x.Login == userDto.Login);
 
             if (user is null) return NotFound();
-            if (!ValidationService.IsValidUserPassword(in user, userDto.Password!))
-                return Forbid();
 
-            await _emailService.SendSignIn(new DataMailLink()
+            if (ValidationService.IsValidUserPassword(in user, userDto.Password!)) 
             {
-                UserEmail = user.Email!,
-                UserName = user.Login!,
-                EmailToken = _jwtService.CreateEmailToken(user),
-                UserIp = ip,
-                UserPlatforms = platform,
-            });
+                await _emailService.SendSignIn(new DataMailLink()
+                {
+                    UserEmail = user.Email!,
+                    UserName = user.Login!,
+                    EmailToken = _jwtService.CreateEmailToken(user),
+                    UserIp = ip,
+                    UserPlatforms = platform,
+                });
 
-            return Ok(new
-            {
-                Success = true,
-                Message = "Authentication success. Check your email for the following actions"
-            });
+                return Ok(new
+                {
+                    Success = true,
+                    Message = "Authentication success. Check your email for the following actions"
+                });
+            }
+
+            return Forbid();
         }
 
         [AllowAnonymous]
@@ -95,32 +93,27 @@ namespace InCase.Authentication.Api.Controllers
             if (userExists is not null) 
                 return Conflict(new { Success = false, Message = "User already exists!" });
 
-            //Encrypting password
-            byte[] salt = EncryptorService.GenerationSaltTo64Bytes();
-
+            //Map user and additional info
             User user = userDto.Convert();
-            user.Id = Guid.NewGuid();
-            user.PasswordHash = EncryptorService.GenerationHashSHA512(userDto.Password!, salt);
-            user.PasswordSalt = Convert.ToBase64String(salt);
-
-            await context.Users.AddAsync(user);
-
-            //Create Add info
-            User? createdUser = await context.Users
-               .AsNoTracking()
-               .FirstOrDefaultAsync(x => x.Login == user.Login);
-
             UserAdditionalInfo info = new();
-
             UserRole? role = await context.UserRoles
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Name == "user");
+
+            byte[] salt = EncryptorService.GenerationSaltTo64Bytes();
+
+            user.Id = Guid.NewGuid();
+            user.PasswordHash = EncryptorService.GenerationHashSHA512(userDto.Password!, salt);
+            user.PasswordSalt = Convert.ToBase64String(salt);
 
             info.Id = Guid.NewGuid();
             info.RoleId = role!.Id;
             info.UserId = user.Id!;
 
+            //Create user and additional info
+            await context.Users.AddAsync(user);
             await context.UserAdditionalInfos.AddAsync(info);
+
             await context.SaveChangesAsync();
 
             await _emailService.SendSignUp(new DataMailLink()
@@ -150,21 +143,15 @@ namespace InCase.Authentication.Api.Controllers
 
             _ = Guid.TryParse(getUserId, out Guid userId);
 
-            //Search refresh token by ip TODO Cut in method
+            //Create token
             User? user = await context.Users
                 .Include(x => x.AdditionalInfo)
                 .Include(x => x.AdditionalInfo!.Role)
                 .FirstOrDefaultAsync(x => x.Id == userId);
 
-            if (_validationService.IsValidToken(refreshToken, in user!))
-            {
-                //Send token
-                DataSendTokens tokenModel = _jwtService.CreateTokenPair(in user!);
-
-                return Ok(new { Data = tokenModel, Success = true });
-            }
-
-            return NoContent();
+            DataSendTokens tokenModel = _jwtService.CreateTokenPair(in user!);
+            
+            return Ok(new { Success = true, Data = tokenModel });
         }
     }
 }
