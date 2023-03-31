@@ -69,6 +69,7 @@ builder.Services.AddSwaggerGen(options =>
 
 builder.Services.AddSingleton<EmailService>();
 builder.Services.AddSingleton<JwtService>();
+builder.Services.AddSingleton<ValidationService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

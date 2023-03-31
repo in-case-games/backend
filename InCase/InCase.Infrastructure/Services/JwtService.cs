@@ -18,30 +18,16 @@ namespace InCase.Infrastructure.Services
             _configuration = configuration;
         }
 
-        public string? GetIdFromRefreshToken(string refreshToken)
+        public ClaimsPrincipal? GetClaimsToken(string token, string secret)
         {
-            //Get claims
-            byte[] secretBytes = Encoding.ASCII.GetBytes(_configuration["JWT:Secret"]!);
-            ClaimsPrincipal? principal = GetClaimsToken(refreshToken, secretBytes);
+            byte[] secretBytes = Encoding.ASCII.GetBytes(secret + _configuration["JWT:Secret"]);
 
-            if (principal is null)
-                return null;
-
-            //Get user id TODO Cut in method
-            string getUserId = principal.Claims
-                .Single(x => x.Type == ClaimTypes.NameIdentifier).Value;
-
-            return getUserId;
-        }
-
-        public static ClaimsPrincipal? GetClaimsToken(string token, byte[] secret)
-        {
             TokenValidationParameters tokenValidationParameters = new()
             {
                 ValidateAudience = false,
                 ValidateIssuer = false,
                 ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(secret),
+                IssuerSigningKey = new SymmetricSecurityKey(secretBytes),
                 ValidateLifetime = false
             };
 

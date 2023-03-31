@@ -17,18 +17,24 @@ namespace InCase.Authentication.Api.Controllers
     {
         #region injections
         private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
+        private readonly IConfiguration _configuration;
         private readonly JwtService _jwtService;
         private readonly EmailService _emailService;
+        private readonly ValidationService _validationService;
         #endregion
         #region ctor
         public AuthenticationController(
             IDbContextFactory<ApplicationDbContext> contextFactory,
+            IConfiguration configuration,
             JwtService jwtService,
-            EmailService emailService)
+            EmailService emailService,
+            ValidationService validationService)
         {
             _contextFactory = contextFactory;
+            _configuration = configuration;
             _jwtService = jwtService;
             _emailService = emailService;
+            _validationService = validationService;
         }
         #endregion
 
@@ -126,27 +132,32 @@ namespace InCase.Authentication.Api.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("refresh/{refreshToken}")]
-        public async Task<IActionResult> RefreshTokens(string refreshToken)
+        [HttpGet("refresh/{login}?{refreshToken}")]
+        public async Task<IActionResult> RefreshTokens(string login, string refreshToken)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            //Get User id
-            string? getUserId = _jwtService.GetIdFromRefreshToken(refreshToken);
-
-            if (getUserId == null) return Forbid("Invalid refresh token");
-
-            _ = Guid.TryParse(getUserId, out Guid userId);
-
-            //Create token
             User? user = await context.Users
                 .Include(x => x.AdditionalInfo)
                 .Include(x => x.AdditionalInfo!.Role)
-                .FirstOrDefaultAsync(x => x.Id == userId);
+                .FirstOrDefaultAsync(x => x.Login == login);
 
-            DataSendTokens tokenModel = _jwtService.CreateTokenPair(in user!);
+            if (user is null) return NotFound(new
+            {
+                Success = false,
+                Message = "Not found user, refresh denied"
+            });
+
+            string secret = user.PasswordHash + user.Email + _configuration["JWT:Secret"];
+
+            if(_validationService.IsValidToken(refreshToken, secret))
+            {
+                DataSendTokens tokenModel = _jwtService.CreateTokenPair(in user!);
+
+                return Ok(new { Success = true, Data = tokenModel });
+            }
             
-            return Ok(new { Success = true, Data = tokenModel });
+            return Forbid("Invalid refresh token");
         }
     }
 }
