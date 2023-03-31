@@ -34,9 +34,7 @@ namespace InCase.Infrastructure.Services
             return getUserId;
         }
 
-        public static ClaimsPrincipal? GetClaimsToken(
-            string token,
-            byte[] secret)
+        public static ClaimsPrincipal? GetClaimsToken(string token, byte[] secret)
         {
             TokenValidationParameters tokenValidationParameters = new()
             {
