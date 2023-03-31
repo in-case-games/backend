@@ -886,6 +886,10 @@ namespace InCase.Resources.Api.Migrations
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("image_uri");
 
+                    b.Property<bool>("IsConfirmed")
+                        .HasColumnType("bit")
+                        .HasColumnName("is_confirmed");
+
                     b.Property<bool>("IsGuestMode")
                         .HasColumnType("bit")
                         .HasColumnName("is_guest_mode");

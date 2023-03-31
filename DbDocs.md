@@ -78,6 +78,7 @@
 ||ImageUri|nvarchar(MAX)|True|-|
 ||IsNotifyEmail|bit|True|-|
 ||IsGuestMode|bit|True|-|
+||IsConfirmed|bit|True|-|
 ||CreationDate|datetime2(7)|True|-|
 |FK|RoleId|uniqueidentifier|True|-|
 |FK|UserId|uniqueidentifier|True|-|

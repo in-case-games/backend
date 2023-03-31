@@ -9,6 +9,7 @@ namespace InCase.Domain.Entities.Resources
         public string? ImageUri { get; set; } = "";
         public bool IsNotifyEmail { get; set; } = false;
         public bool IsGuestMode { get; set; } = false;
+        public bool IsConfirmed { get; set; } = false;
         public DateTime CreationDate { get; set; } = DateTime.UtcNow;
 
         [JsonIgnore]
@@ -27,6 +28,8 @@ namespace InCase.Domain.Entities.Resources
             ImageUri = ImageUri,
             IsNotifyEmail = IsNotifyEmail,
             IsGuestMode = IsGuestMode,
+            IsConfirmed = IsConfirmed,
+            CreationDate = CreationDate,
             RoleId = Role?.Id ?? RoleId,
             UserId = User?.Id ?? UserId
         };

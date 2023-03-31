@@ -9,6 +9,8 @@ namespace InCase.Domain.Dtos
         public string? ImageUri { get; set; } = "";
         public bool IsNotifyEmail { get; set; } = false;
         public bool IsGuestMode { get; set; } = false;
+        public bool IsConfirmed { get; set; } = false;
+        public DateTime CreationDate { get; set; } = DateTime.UtcNow;
 
         public Guid RoleId { get; set; }
         public Guid UserId { get; set; }
@@ -18,9 +20,11 @@ namespace InCase.Domain.Dtos
             Balance = Balance,
             ImageUri = ImageUri,
             IsNotifyEmail = IsNotifyEmail,
+            IsGuestMode = IsGuestMode,
+            IsConfirmed = IsConfirmed,
+            CreationDate = CreationDate,
             RoleId = RoleId,
-            UserId = UserId,
-            IsGuestMode = IsGuestMode
+            UserId = UserId
         };
     }
 }

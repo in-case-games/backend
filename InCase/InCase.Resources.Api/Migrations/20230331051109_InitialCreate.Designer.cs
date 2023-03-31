@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InCase.Resources.Api.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230331050131_InitialCreate")]
+    [Migration("20230331051109_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -888,6 +888,10 @@ namespace InCase.Resources.Api.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("image_uri");
+
+                    b.Property<bool>("IsConfirmed")
+                        .HasColumnType("bit")
+                        .HasColumnName("is_confirmed");
 
                     b.Property<bool>("IsGuestMode")
                         .HasColumnType("bit")
