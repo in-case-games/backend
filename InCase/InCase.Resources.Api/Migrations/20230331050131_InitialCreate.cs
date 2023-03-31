@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace InCase.Resources.Api.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -406,6 +406,7 @@ namespace InCase.Resources.Api.Migrations
                     image_uri = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     is_notify_email = table.Column<bool>(type: "bit", nullable: false),
                     is_guest_mode = table.Column<bool>(type: "bit", nullable: false),
+                    creation_date = table.Column<DateTime>(type: "datetime2", nullable: false),
                     role_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     user_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },

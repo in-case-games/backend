@@ -24,6 +24,8 @@ namespace InCase.Infrastructure.Configurations
                 .IsRequired();
             builder.Property(p => p.IsGuestMode)
                 .IsRequired();
+            builder.Property(p => p.CreationDate)
+                .IsRequired();
 
             builder.HasOne(o => o.User)
                 .WithOne(o => o.AdditionalInfo)

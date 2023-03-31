@@ -877,6 +877,10 @@ namespace InCase.Resources.Api.Migrations
                         .HasColumnType("DECIMAL(18,5)")
                         .HasColumnName("balance");
 
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("creation_date");
+
                     b.Property<string>("ImageUri")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)")

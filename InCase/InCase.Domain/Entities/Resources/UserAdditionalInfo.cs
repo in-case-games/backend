@@ -9,6 +9,7 @@ namespace InCase.Domain.Entities.Resources
         public string? ImageUri { get; set; } = "";
         public bool IsNotifyEmail { get; set; } = false;
         public bool IsGuestMode { get; set; } = false;
+        public DateTime CreationDate { get; set; } = DateTime.UtcNow;
 
         [JsonIgnore]
         public Guid RoleId { get; set; }
@@ -25,9 +26,9 @@ namespace InCase.Domain.Entities.Resources
             Balance = Balance,
             ImageUri = ImageUri,
             IsNotifyEmail = IsNotifyEmail,
+            IsGuestMode = IsGuestMode,
             RoleId = Role?.Id ?? RoleId,
-            UserId = User?.Id ?? UserId,
-            IsGuestMode = IsGuestMode
+            UserId = User?.Id ?? UserId
         };
     }
 }

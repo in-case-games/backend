@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InCase.Resources.Api.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230330141749_Initial")]
-    partial class Initial
+    [Migration("20230331050131_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -879,6 +879,10 @@ namespace InCase.Resources.Api.Migrations
                     b.Property<decimal>("Balance")
                         .HasColumnType("DECIMAL(18,5)")
                         .HasColumnName("balance");
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("creation_date");
 
                     b.Property<string>("ImageUri")
                         .IsRequired()

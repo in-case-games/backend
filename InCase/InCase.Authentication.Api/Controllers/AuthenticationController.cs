@@ -19,21 +19,16 @@ namespace InCase.Authentication.Api.Controllers
         private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
         private readonly JwtService _jwtService;
         private readonly EmailService _emailService;
-        private readonly ValidationService _validationService;
-        private Guid UserId => Guid
-            .Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
         #endregion
         #region ctor
         public AuthenticationController(
             IDbContextFactory<ApplicationDbContext> contextFactory,
             JwtService jwtService,
-            EmailService emailService,
-            ValidationService validationService)
+            EmailService emailService)
         {
             _contextFactory = contextFactory;
             _jwtService = jwtService;
             _emailService = emailService;
-            _validationService = validationService;
         }
         #endregion
 
