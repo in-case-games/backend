@@ -9,6 +9,9 @@ namespace InCase.Domain.Dtos
         public string? Email { get; set; }
         public string? Password { get; set; }
 
+        public string? Ip { get; set; } = "";
+        public string? Platform { get; set; } = "";
+
         public User Convert() => new()
         {
             Login = Login,

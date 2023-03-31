@@ -6,8 +6,6 @@ using InCase.Infrastructure.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace InCase.Email.Api.Controllers
 {
@@ -15,11 +13,13 @@ namespace InCase.Email.Api.Controllers
     [ApiController]
     public class EmailTokenReceiveController : ControllerBase
     {
+        #region injections
         private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
         private readonly EmailService _emailService;
         private readonly ValidationService _validationService;
         private readonly JwtService _jwtService;
-
+        #endregion
+        #region ctor
         public EmailTokenReceiveController(
             IDbContextFactory<ApplicationDbContext> contextFactory,
             EmailService emailService,
@@ -31,8 +31,8 @@ namespace InCase.Email.Api.Controllers
             _validationService = validationService;
             _jwtService = jwtService;
         }
+        #endregion
 
-        //TODO
         [AllowAnonymous]
         [HttpPost("confirm")]
         public async Task<IActionResult> ConfirmAccount(DataMailLink data)
@@ -42,13 +42,14 @@ namespace InCase.Email.Api.Controllers
             User? user = await context.Users
                 .Include(x => x.AdditionalInfo)
                 .Include(x => x.AdditionalInfo!.Role)
-                .FirstOrDefaultAsync(x => x.Login == data.UserName);
+                .FirstOrDefaultAsync(x => x.Login == data.UserLogin);
 
             if (user == null) return NotFound();
 
             string? secret = user.PasswordHash + user.Email;
 
-            if(!_validationService.IsValidToken(data.EmailToken, secret)) return Forbid("Invalid email token");
+            if(!_validationService.IsValidToken(data.EmailToken, secret)) 
+                return Forbid("Access denied invalid email token");
 
             UserAdditionalInfo userInfo = user.AdditionalInfo!;
 
@@ -60,27 +61,32 @@ namespace InCase.Email.Api.Controllers
                     new DataMailLink()
                     {
                         UserEmail = user.Email!,
-                        UserName = user.Login!
+                        UserLogin = user.Login!
                     });
 
                 await context.SaveChangesAsync();
 
-                return Ok(new { Data = "You can join account", Success = true });
+                return Ok(new 
+                {
+                    Success = true,
+                    Data = "You can join account"
+                });
             }
-            else
-            {
-                await _emailService.SendLoginAttempt(
-                    new DataMailLink()
-                    {
-                        UserEmail = user.Email!,
-                        UserName = user.Login!
-                    });
-            }
+            
+            await _emailService.SendLoginAttempt(
+                new DataMailLink()
+                {
+                    UserEmail = user.Email!,
+                    UserLogin = user.Login!
+                });
 
-            //Generate tokens
             DataSendTokens tokenModel = _jwtService.CreateTokenPair(in user);
 
-            return Ok(new { Data = tokenModel, Success = true });
+            return Ok(new 
+            {
+                Success = true,
+                Data = tokenModel
+            });
         }
 
         [AllowAnonymous]
@@ -94,31 +100,35 @@ namespace InCase.Email.Api.Controllers
 
             User? user = await context.Users
                 .Include(x => x.AdditionalInfo)
-                .FirstOrDefaultAsync(x => x.Login == data.UserName);
+                .FirstOrDefaultAsync(x => x.Login == data.UserLogin);
 
-            if (isExistEmail) return Forbid("Email is already busy");
-            if (user == null) return NotFound();
+            if (isExistEmail)
+                return Conflict(new { Success = false, Message = "Access denied mail is already busy" });
+            if (user == null) 
+                return NotFound(new { Success = false, Message = "User not found the update is not available" });
 
             string secret = user.PasswordHash + user.Email;
 
-            if (_validationService.IsValidToken(data.EmailToken, secret))
-            {
-                user.Email = data.UserEmail;
+            if (!_validationService.IsValidToken(data.EmailToken, secret))
+                return Forbid("Access denied invalid email token");
 
-                await context.SaveChangesAsync();
+            user.Email = data.UserEmail;
 
-                await _emailService.SendNotifyToEmail(
-                    data.UserEmail,
-                    "Администрация сайта",
-                    new EmailTemplate()
-                    {
-                        BodyDescription = $"Вы изменили email аккаунта"
-                    });
+            await context.SaveChangesAsync();
 
-                return Ok(new { Success = true, Message = "Email was changed" });
-            }
+            await _emailService.SendNotifyToEmail(
+                data.UserEmail,
+                "Администрация сайта",
+                new EmailTemplate()
+                {
+                    BodyDescription = $"Вы изменили email аккаунта"
+                });
 
-            return Forbid("Invalid email token");
+            return Ok(new 
+            { 
+                Success = true, 
+                Message = "Email was changed" 
+            });
         }
 
         [AllowAnonymous]
@@ -128,35 +138,38 @@ namespace InCase.Email.Api.Controllers
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             User? user = await context.Users
-                .FirstOrDefaultAsync(x => x.Login == data.UserName);
+                .FirstOrDefaultAsync(x => x.Login == data.UserLogin);
 
-            if (user == null) return NotFound();
+            if (user == null) 
+                return NotFound(new { Success = false, Message = "User not found the update is not available" });
 
             string secret = user.PasswordHash + user.Email;
 
-            if (_validationService.IsValidToken(data.EmailToken, secret))
-            {
-                //Gen hash and salt
-                byte[] salt = EncryptorService.GenerationSaltTo64Bytes();
-                string hash = EncryptorService.GenerationHashSHA512(password, salt);
+            if (!_validationService.IsValidToken(data.EmailToken, secret))
+                return Forbid("Access denied invalid email token");
 
-                user.PasswordHash = hash;
-                user.PasswordSalt = Convert.ToBase64String(salt);
+            //Gen hash and salt
+            byte[] salt = EncryptorService.GenerationSaltTo64Bytes();
+            string hash = EncryptorService.GenerationHashSHA512(password, salt);
 
-                await context.SaveChangesAsync();
+            user.PasswordHash = hash;
+            user.PasswordSalt = Convert.ToBase64String(salt);
 
-                await _emailService.SendNotifyToEmail(
-                    user.Email!,
-                    "Администрация сайта",
-                    new EmailTemplate()
-                    {
-                        BodyDescription = $"Вы сменили пароль"
-                    });
+            await context.SaveChangesAsync();
 
-                return Ok(new { Success = true, Message = "Password was changed" });
-            }
-            
-            return Forbid("Invalid email token");
+            await _emailService.SendNotifyToEmail(
+                user.Email!,
+                "Администрация сайта",
+                new EmailTemplate()
+                {
+                    BodyDescription = $"Вы сменили пароль"
+                });
+
+            return Ok(new 
+            { 
+                Success = true, 
+                Message = "Password was changed" 
+            });
         }
 
         [AllowAnonymous]
@@ -167,28 +180,31 @@ namespace InCase.Email.Api.Controllers
 
             User? user = await context.Users
                 .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.Login == data.UserName);
+                .FirstOrDefaultAsync(x => x.Login == data.UserLogin);
 
-            if (user == null) return NotFound();
+            if (user == null)
+                return NotFound(new { Success = false, Message = "User not found the update is not available" });
 
             string secret = user.PasswordHash + user.Email;
 
-            if (_validationService.IsValidToken(data.EmailToken, secret))
-            {
-                await _emailService.SendNotifyToEmail(
-                    user.Email!,
-                    "Администрация сайта",
-                    new EmailTemplate()
-                    {
-                        BodyDescription = $"Ваш аккаунт будет удален через 30 дней"
-                    });
+            if (!_validationService.IsValidToken(data.EmailToken, secret)) 
+                return Forbid("Access denied invalid email token");
 
-                //TODO No delete give the user 30 days
+            await _emailService.SendNotifyToEmail(
+                user.Email!,
+                "Администрация сайта",
+                new EmailTemplate()
+                {
+                    BodyDescription = $"Ваш аккаунт будет удален через 30 дней"
+                });
 
-                return Ok(new { Success = true, Message = "Request for delete account was confirmated." });
-            }
-            
-            return Forbid("Invalid email token");
+            //TODO No delete give the user 30 days
+
+            return Ok(new 
+            { 
+                Success = true, 
+                Message = "Request for delete account was confirmated." 
+            });
         }
     }
 }

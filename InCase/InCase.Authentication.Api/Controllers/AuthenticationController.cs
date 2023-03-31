@@ -7,7 +7,6 @@ using InCase.Infrastructure.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
 
 namespace InCase.Authentication.Api.Controllers
 {
@@ -17,7 +16,6 @@ namespace InCase.Authentication.Api.Controllers
     {
         #region injections
         private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
-        private readonly IConfiguration _configuration;
         private readonly JwtService _jwtService;
         private readonly EmailService _emailService;
         private readonly ValidationService _validationService;
@@ -25,13 +23,11 @@ namespace InCase.Authentication.Api.Controllers
         #region ctor
         public AuthenticationController(
             IDbContextFactory<ApplicationDbContext> contextFactory,
-            IConfiguration configuration,
             JwtService jwtService,
             EmailService emailService,
             ValidationService validationService)
         {
             _contextFactory = contextFactory;
-            _configuration = configuration;
             _jwtService = jwtService;
             _emailService = emailService;
             _validationService = validationService;
@@ -40,10 +36,7 @@ namespace InCase.Authentication.Api.Controllers
 
         [AllowAnonymous]
         [HttpPost("signin")]
-        public async Task<IActionResult> SignIn(
-            UserDto userDto,
-            string ip = "",
-            string platform = "")
+        public async Task<IActionResult> SignIn(UserDto userDto)
         {
             //Check is exist user
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
@@ -55,27 +48,26 @@ namespace InCase.Authentication.Api.Controllers
                 x.Email == userDto.Email ||
                 x.Login == userDto.Login);
 
-            if (user is null) return NotFound();
+            if (user is null) 
+                return NotFound(new { Success = false, Message = "User not found the update is not available" });
 
-            if (ValidationService.IsValidUserPassword(in user, userDto.Password!)) 
+            if (!ValidationService.IsValidUserPassword(in user, userDto.Password!))
+                return Forbid("Access is denied incorrectly entered data");
+
+            await _emailService.SendSignIn(new DataMailLink()
             {
-                await _emailService.SendSignIn(new DataMailLink()
-                {
-                    UserEmail = user.Email!,
-                    UserName = user.Login!,
-                    EmailToken = _jwtService.CreateEmailToken(user),
-                    UserIp = ip,
-                    UserPlatforms = platform,
-                });
+                UserEmail = user.Email!,
+                UserLogin = user.Login!,
+                EmailToken = _jwtService.CreateEmailToken(user),
+                UserIp = userDto.Ip!,
+                UserPlatforms = userDto.Platform!,
+            });
 
-                return Ok(new
-                {
-                    Success = true,
-                    Message = "Authentication success. Check your email for the following actions"
-                });
-            }
-
-            return Forbid();
+            return Ok(new
+            {
+                Success = true,
+                Message = "Authentication success. Check your email for the following actions"
+            });
         }
 
         [AllowAnonymous]
@@ -96,10 +88,6 @@ namespace InCase.Authentication.Api.Controllers
 
             //Map user and additional info
             User user = userDto.Convert();
-            UserAdditionalInfo info = new();
-            UserRole? role = await context.UserRoles
-                .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.Name == "user");
 
             byte[] salt = EncryptorService.GenerationSaltTo64Bytes();
 
@@ -107,9 +95,15 @@ namespace InCase.Authentication.Api.Controllers
             user.PasswordHash = EncryptorService.GenerationHashSHA512(userDto.Password!, salt);
             user.PasswordSalt = Convert.ToBase64String(salt);
 
-            info.Id = Guid.NewGuid();
-            info.RoleId = role!.Id;
-            info.UserId = user.Id!;
+            UserRole? role = await context.UserRoles
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Name == "user") ?? throw new Exception("Eblan dobavb roli");
+
+            UserAdditionalInfo info = new() { 
+                Id = Guid.NewGuid(),
+                RoleId = role.Id,
+                UserId = user.Id,
+            };
 
             //Create user and additional info
             await context.Users.AddAsync(user);
@@ -120,7 +114,7 @@ namespace InCase.Authentication.Api.Controllers
             await _emailService.SendSignUp(new DataMailLink()
             {
                 UserEmail = user.Email!,
-                UserName = user.Login!,
+                UserLogin = user.Login!,
                 EmailToken = _jwtService.CreateEmailToken(user)
             });
 
@@ -132,7 +126,7 @@ namespace InCase.Authentication.Api.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("refresh/{login}?{refreshToken}")]
+        [HttpGet("refresh/{login}")]
         public async Task<IActionResult> RefreshTokens(string login, string refreshToken)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
@@ -142,22 +136,21 @@ namespace InCase.Authentication.Api.Controllers
                 .Include(x => x.AdditionalInfo!.Role)
                 .FirstOrDefaultAsync(x => x.Login == login);
 
-            if (user is null) return NotFound(new
-            {
-                Success = false,
-                Message = "Not found user, refresh denied"
-            });
+            if (user is null) 
+                return NotFound(new { Success = false, Message = "User not found the update is not available" });
 
-            string secret = user.PasswordHash + user.Email + _configuration["JWT:Secret"];
+            string secret = user.PasswordHash + user.Email;
 
-            if(_validationService.IsValidToken(refreshToken, secret))
-            {
-                DataSendTokens tokenModel = _jwtService.CreateTokenPair(in user!);
-
-                return Ok(new { Success = true, Data = tokenModel });
-            }
+            if(!_validationService.IsValidToken(refreshToken, secret))
+                return Forbid("Invalid refresh token");
             
-            return Forbid("Invalid refresh token");
+            DataSendTokens tokenModel = _jwtService.CreateTokenPair(in user!);
+
+            return Ok(new 
+            { 
+                Success = true, 
+                Data = tokenModel 
+            });
         }
     }
 }
