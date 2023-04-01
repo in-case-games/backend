@@ -48,7 +48,7 @@ namespace InCase.Email.Api.Controllers
 
             string? secret = user.PasswordHash + user.Email;
 
-            if(!_validationService.IsValidToken(data.EmailToken, secret)) 
+            if(!_validationService.IsValidToken(in user, data.EmailToken, "email")) 
                 return Forbid("Access denied invalid email token");
 
             UserAdditionalInfo userInfo = user.AdditionalInfo!;
@@ -118,7 +118,7 @@ namespace InCase.Email.Api.Controllers
 
             string secret = user.PasswordHash + user.Email;
 
-            if (!_validationService.IsValidToken(data.EmailToken, secret))
+            if (!_validationService.IsValidToken(in user, data.EmailToken, "email"))
                 return Forbid("Access denied invalid email token");
 
             user.Email = data.UserEmail;
@@ -154,7 +154,7 @@ namespace InCase.Email.Api.Controllers
 
             string secret = user.PasswordHash + user.Email;
 
-            if (!_validationService.IsValidToken(data.EmailToken, secret))
+            if (!_validationService.IsValidToken(in user, data.EmailToken, "email"))
                 return Forbid("Access denied invalid email token");
 
             //Gen hash and salt
@@ -196,7 +196,7 @@ namespace InCase.Email.Api.Controllers
 
             string secret = user.PasswordHash + user.Email;
 
-            if (!_validationService.IsValidToken(data.EmailToken, secret)) 
+            if (!_validationService.IsValidToken(in user, data.EmailToken, "email")) 
                 return Forbid("Access denied invalid email token");
 
             await _emailService.SendNotifyToEmail(

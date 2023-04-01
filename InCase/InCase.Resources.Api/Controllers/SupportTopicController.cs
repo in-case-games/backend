@@ -10,11 +10,14 @@ namespace InCase.Resources.Api.Controllers
     [ApiController]
     public class SupportTopicController : ControllerBase
     {
+
         private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
+
         public SupportTopicController(IDbContextFactory<ApplicationDbContext> contextFactory)
         {
             _contextFactory = contextFactory;
         }
+
         [HttpGet]
         public async Task<IActionResult> Get()
         {
@@ -27,8 +30,9 @@ namespace InCase.Resources.Api.Controllers
 
             return Ok(new { Data = supportTopics, Success = true });
         }
+
         [HttpGet("{id}")]
-        public async Task<IActionResult> Get(Guid id)
+        public async Task<IActionResult> GetById(Guid id)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
@@ -41,6 +45,7 @@ namespace InCase.Resources.Api.Controllers
 
             return Ok(new { Data = supportTopic, Success = true });
         }
+
         [HttpGet("{id}/answers")]
         public async Task<IActionResult> GetAnswers(Guid id)
         {
@@ -54,6 +59,7 @@ namespace InCase.Resources.Api.Controllers
 
             return Ok(new { Data = answers, Success = true });
         }
+
         [HttpGet("{id}/answers/{answerId}")]
         public async Task<IActionResult> GetAnswer(Guid id, Guid answerId)
         {
@@ -69,6 +75,7 @@ namespace InCase.Resources.Api.Controllers
 
             return Ok(new { Data = answer, Success = true });
         }
+
         [HttpPost]
         public async Task<IActionResult> Create(SupportTopicDto supportTopic)
         {
@@ -86,6 +93,7 @@ namespace InCase.Resources.Api.Controllers
                 return Conflict(new { Data = ex.InnerException!.Message.ToString(), Success = false });
             }
         }
+
         [HttpPost("{id}/answers")]
         public async Task<IActionResult> CreateAnswer(Guid id, SupportTopicAnswerDto supportTopicAnswer)
         {
@@ -117,6 +125,7 @@ namespace InCase.Resources.Api.Controllers
                 return Conflict(new { Data = ex.InnerException!.Message.ToString(), Success = false }); ;
             }
         }
+
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(Guid id, SupportTopicDto supportTopic)
         {
@@ -135,6 +144,7 @@ namespace InCase.Resources.Api.Controllers
                 return Conflict(new { Data = ex.InnerException!.Message.ToString(), Success = false });
             }
         }
+
         [HttpPut("{id}/answers/{answerId}")]
         public async Task<IActionResult> UpdateAnswer(Guid id, Guid answerId, SupportTopicAnswerDto answer)
         {
@@ -165,6 +175,7 @@ namespace InCase.Resources.Api.Controllers
                 return Conflict(new { Data = ex.InnerException!.Message.ToString(), Success = false });
             }
         }
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
@@ -182,6 +193,7 @@ namespace InCase.Resources.Api.Controllers
 
             return Accepted(new { Data = "Object was successfully removed", Success = true });
         }
+
         [HttpDelete("{id}/answers/{answerId}")]
         public async Task<IActionResult> DeleteAnswer(Guid id, Guid answerId)
         {

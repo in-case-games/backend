@@ -92,7 +92,7 @@ namespace InCase.Email.Api.Controllers
 
             string secret = user.PasswordHash + user.Email;
 
-            if (_validationService.IsValidToken(data.EmailToken, secret))
+            if (_validationService.IsValidToken(in user, data.EmailToken, "email"))
                 return Forbid("Access denied invalid email token");
 
             MapDataMailLink(ref data, in user);

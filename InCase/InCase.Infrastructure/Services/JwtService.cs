@@ -18,9 +18,9 @@ namespace InCase.Infrastructure.Services
             _configuration = configuration;
         }
 
-        public ClaimsPrincipal? GetClaimsToken(string token, string secret)
+        public ClaimsPrincipal? GetClaimsToken(string token)
         {
-            byte[] secretBytes = Encoding.ASCII.GetBytes(secret + _configuration["JWT:Secret"]);
+            byte[] secretBytes = Encoding.ASCII.GetBytes(_configuration["JWT:Secret"]!);
 
             TokenValidationParameters tokenValidationParameters = new()
             {
@@ -38,13 +38,7 @@ namespace InCase.Infrastructure.Services
                 tokenValidationParameters,
                 out SecurityToken securityToken);
 
-            string? lifetime = principal?.Claims.FirstOrDefault(c => c.Type == "exp")?.Value;
-
-            DateTimeOffset lifetimeOffset = DateTimeOffset.FromUnixTimeSeconds(long.Parse(lifetime ?? "0"));
-            DateTime lifetimeDateTime = lifetimeOffset.UtcDateTime;
-
-            if (DateTime.UtcNow >= lifetimeDateTime || 
-                securityToken is not JwtSecurityToken jwtSecurityToken ||
+            if (securityToken is not JwtSecurityToken jwtSecurityToken ||
                 !jwtSecurityToken.Header.Alg.Equals("HS512",
                 StringComparison.InvariantCultureIgnoreCase))
                 return null;
@@ -54,37 +48,28 @@ namespace InCase.Infrastructure.Services
 
         public string CreateEmailToken(in User user)
         {
-            Claim[] claims = {
-                new Claim("UserId", user.Id.ToString()),
-                new Claim("UserEmail", user.Email!),
-            };
+            Claim[] claims = GenerateTokenClaims(in user, "email");
 
             TimeSpan expiration = TimeSpan.FromMinutes(
                 double.Parse(_configuration["JWT:EmailTokenValidityInMinutes"]!));
 
-            string secret = user.PasswordHash + user.Email;
-
-            JwtSecurityToken token = GenerateToken(claims, secret, expiration);
+            JwtSecurityToken token = GenerateToken(claims, expiration);
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
         public DataSendTokens CreateTokenPair(in User user)
         {
-            Claim[] claimsAccess = GenerateAccessTokenClaims(user);
-            Claim[] claimsRefresh = {
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
-            };
+            Claim[] claimsAccess = GenerateAccessTokenClaims(in user);
+            Claim[] claimsRefresh = GenerateTokenClaims(in user, "refresh");
 
             TimeSpan expirationRefresh = TimeSpan.FromDays(
                 double.Parse(_configuration["JWT:RefreshTokenValidityInDays"]!));
             TimeSpan expirationAccess = TimeSpan.FromMinutes(
                 double.Parse(_configuration["JWT:AccessTokenValidityInMinutes"]!));
 
-            string secret = user.PasswordHash + user.Email;
-
-            JwtSecurityToken accessToken = GenerateToken(claimsAccess, secret, expirationAccess);
-            JwtSecurityToken refreshToken = GenerateToken(claimsRefresh, secret, expirationRefresh);
+            JwtSecurityToken accessToken = GenerateToken(claimsAccess, expirationAccess);
+            JwtSecurityToken refreshToken = GenerateToken(claimsRefresh, expirationRefresh);
 
             return new DataSendTokens
             {
@@ -97,10 +82,9 @@ namespace InCase.Infrastructure.Services
 
         private JwtSecurityToken GenerateToken(
             Claim[] claims,
-            string secret,
             TimeSpan expiration)
         {
-            SymmetricSecurityKey securityKey = new(Encoding.ASCII.GetBytes(secret + _configuration["JWT:Secret"]!));
+            SymmetricSecurityKey securityKey = new(Encoding.ASCII.GetBytes(_configuration["JWT:Secret"]!));
             SigningCredentials credentials = new(securityKey, SecurityAlgorithms.HmacSha512);
 
             return new(
@@ -121,6 +105,16 @@ namespace InCase.Infrastructure.Services
                 new Claim(ClaimTypes.Role, roleName),
                 new Claim(ClaimTypes.Name, user.Login!),
                 new Claim(ClaimTypes.Email, user.Email!)
+            };
+        }
+
+        private static Claim[] GenerateTokenClaims(in User user, string type)
+        {
+            return new Claim[] {
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.Email, user.Email!),
+                new Claim(ClaimTypes.Hash, user.PasswordHash!),
+                new Claim("TokenType", type)
             };
         }
     }

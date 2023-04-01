@@ -140,7 +140,7 @@ namespace InCase.Authentication.Api.Controllers
 
             string secret = user.PasswordHash + user.Email;
 
-            if(!_validationService.IsValidToken(refreshToken, secret))
+            if(!_validationService.IsValidToken(in user, refreshToken, "refresh"))
                 return Forbid("Invalid refresh token");
             
             DataSendTokens tokenModel = _jwtService.CreateTokenPair(in user!);
