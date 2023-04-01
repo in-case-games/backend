@@ -42,7 +42,6 @@ namespace InCase.Email.Api.Controllers
             User? user = await context.Users
                 .Include(x => x.AdditionalInfo)
                 .Include(x => x.AdditionalInfo!.Role)
-                .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Login == data.UserLogin);
 
             if (user == null) return NotFound();
@@ -54,52 +53,48 @@ namespace InCase.Email.Api.Controllers
 
             UserAdditionalInfo userInfo = user.AdditionalInfo!;
 
+            //TODO CUT
             if(userInfo.DeletionDate != null)
             {
-                userInfo.DeletionDate = null;
-                context.UserAdditionalInfos.Attach(userInfo);
-                context.Entry(userInfo).Property(x => x.DeletionDate).IsModified = true;
-
                 //TODO Send cancel deleted account
+                userInfo.DeletionDate = null;
 
                 await context.SaveChangesAsync();
             }
 
-            if (userInfo.IsConfirmed is false)
+            if (userInfo.IsConfirmed)
             {
-                userInfo.IsConfirmed = true;
-                context.UserAdditionalInfos.Attach(userInfo);
-                context.Entry(userInfo).Property(x => x.IsConfirmed).IsModified = true;
-
-                await _emailService.SendSuccessVerifedAccount(
+                await _emailService.SendLoginAttempt(
                     new DataMailLink()
                     {
                         UserEmail = user.Email!,
                         UserLogin = user.Login!
                     });
 
-                await context.SaveChangesAsync();
+                DataSendTokens tokenModel = _jwtService.CreateTokenPair(in user);
 
-                return Ok(new 
+                return Ok(new
                 {
                     Success = true,
-                    Data = "You can join account"
+                    Data = tokenModel
                 });
             }
-            
-            await _emailService.SendLoginAttempt(
+
+            userInfo.IsConfirmed = true;
+
+            await _emailService.SendSuccessVerifedAccount(
                 new DataMailLink()
                 {
                     UserEmail = user.Email!,
                     UserLogin = user.Login!
                 });
 
-            DataSendTokens tokenModel = _jwtService.CreateTokenPair(in user);
+            await context.SaveChangesAsync();
 
-            return Ok(new 
+            return Ok(new
             {
                 Success = true,
-                Data = tokenModel
+                Data = "You can join account"
             });
         }
 
@@ -114,7 +109,6 @@ namespace InCase.Email.Api.Controllers
                 .AnyAsync(x => x.Email == data.UserEmail);
 
             User? user = await context.Users
-                .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Login == data.UserLogin);
 
             if (isExistEmail)
@@ -128,9 +122,6 @@ namespace InCase.Email.Api.Controllers
                 return Forbid("Access denied invalid email token");
 
             user.Email = data.UserEmail;
-
-            context.Users.Attach(user);
-            context.Entry(user).Property(x => x.Email).IsModified = true;
 
             await context.SaveChangesAsync();
 
@@ -156,7 +147,6 @@ namespace InCase.Email.Api.Controllers
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             User? user = await context.Users
-                .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Login == data.UserLogin);
 
             if (user == null) 
@@ -173,10 +163,6 @@ namespace InCase.Email.Api.Controllers
 
             user.PasswordHash = hash;
             user.PasswordSalt = Convert.ToBase64String(salt);
-
-            context.Users.Attach(user);
-            context.Entry(user).Property(x => x.PasswordHash).IsModified = true;
-            context.Entry(user).Property(x => x.PasswordSalt).IsModified = true;
 
             await context.SaveChangesAsync();
 
@@ -203,7 +189,6 @@ namespace InCase.Email.Api.Controllers
 
             User? user = await context.Users
                 .Include(x => x.AdditionalInfo)
-                .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Login == data.UserLogin);
 
             if (user == null)
@@ -222,11 +207,7 @@ namespace InCase.Email.Api.Controllers
                     BodyDescription = $"Ваш аккаунт будет удален через 30 дней"
                 });
 
-            UserAdditionalInfo userInfo = user.AdditionalInfo!;
-
-            userInfo.DeletionDate = DateTime.UtcNow + TimeSpan.FromDays(30);
-            context.UserAdditionalInfos.Attach(userInfo);
-            context.Entry(userInfo).Property(x => x.IsConfirmed).IsModified = true;
+            user.AdditionalInfo!.DeletionDate = DateTime.UtcNow + TimeSpan.FromDays(30);
 
             await context.SaveChangesAsync();
 

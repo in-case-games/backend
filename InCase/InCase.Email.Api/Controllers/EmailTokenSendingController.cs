@@ -77,10 +77,12 @@ namespace InCase.Email.Api.Controllers
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             bool isExistEmail = await context.Users
+                .AsNoTracking()
                 .AnyAsync(x => x.Email == email);
 
             User? user = await context.Users
                 .Include(x => x.AdditionalInfo)
+                .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Login == data.UserLogin);
 
             if (isExistEmail)
