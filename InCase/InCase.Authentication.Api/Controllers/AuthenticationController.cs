@@ -7,7 +7,6 @@ using InCase.Infrastructure.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace InCase.Authentication.Api.Controllers
 {
@@ -50,7 +49,7 @@ namespace InCase.Authentication.Api.Controllers
                 x.Login == userDto.Login);
 
             if (user is null) 
-                return NotFound(new { Success = false, Message = "User not found the update is not available" });
+                return NotFound(new { Success = false, Data = "User not found the update is not available" });
 
             if (!ValidationService.IsValidUserPassword(in user, userDto.Password!))
                 return Forbid("Access is denied incorrectly entered data");
@@ -67,7 +66,7 @@ namespace InCase.Authentication.Api.Controllers
             return Ok(new
             {
                 Success = true,
-                Message = "Authentication success. Check your email for the following actions"
+                Data = "Authentication success. Check your email for the following actions"
             });
         }
 
@@ -84,7 +83,7 @@ namespace InCase.Authentication.Api.Controllers
                 x.Login == userDto.Login);
 
             if (isExist) 
-                return Conflict(new { Success = false, Message = "User already exists!" });
+                return Conflict(new { Success = false, Data = "User already exists!" });
 
             //Map user and additional info
             User user = userDto.Convert();
@@ -120,7 +119,7 @@ namespace InCase.Authentication.Api.Controllers
             return Ok(new
             {
                 Success = true,
-                Message = "Registation success. Check your email for the following actions"
+                Data = "Registation success. Check your email for the following actions"
             });
         }
 
@@ -137,7 +136,7 @@ namespace InCase.Authentication.Api.Controllers
                 .FirstOrDefaultAsync(x => x.Login == login);
 
             if (user is null) 
-                return NotFound(new { Success = false, Message = "User not found the update is not available" });
+                return NotFound(new { Success = false, Data = "User not found the update is not available" });
 
             string secret = user.PasswordHash + user.Email;
 
@@ -148,7 +147,7 @@ namespace InCase.Authentication.Api.Controllers
 
             return Ok(new 
             { 
-                Success = true, 
+                Success = true,
                 Data = tokenModel 
             });
         }
