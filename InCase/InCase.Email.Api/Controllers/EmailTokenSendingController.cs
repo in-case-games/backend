@@ -85,13 +85,11 @@ namespace InCase.Email.Api.Controllers
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Login == data.UserLogin);
 
+            //TODO Remove user login
             if (isExistEmail)
                 return Conflict(new { Success = false, Message = "Access denied mail is already busy" });
             if (user == null)
                 return NotFound(new { Success = false, Message = "User not found" });
-
-            string secret = user.PasswordHash + user.Email;
-
             if (_validationService.IsValidToken(in user, data.EmailToken, "email"))
                 return Forbid("Access denied invalid email token");
 

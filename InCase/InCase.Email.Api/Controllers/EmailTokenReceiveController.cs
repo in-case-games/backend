@@ -6,6 +6,7 @@ using InCase.Infrastructure.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace InCase.Email.Api.Controllers
 {
@@ -16,19 +17,16 @@ namespace InCase.Email.Api.Controllers
         #region injections
         private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
         private readonly EmailService _emailService;
-        private readonly ValidationService _validationService;
         private readonly JwtService _jwtService;
         #endregion
         #region ctor
         public EmailTokenReceiveController(
             IDbContextFactory<ApplicationDbContext> contextFactory,
             EmailService emailService,
-            ValidationService validationService,
             JwtService jwtService)
         {
             _contextFactory = contextFactory;
             _emailService = emailService;
-            _validationService = validationService;
             _jwtService = jwtService;
         }
         #endregion
@@ -39,16 +37,21 @@ namespace InCase.Email.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
+            ClaimsPrincipal? principal = _jwtService.GetClaimsToken(data.EmailToken);
+
+            if (principal is null) return Forbid("Invalid refresh token");
+
+            string id = principal.Claims
+                .Single(x => x.Type == ClaimTypes.NameIdentifier)
+                .Value;
+
             User? user = await context.Users
                 .Include(x => x.AdditionalInfo)
                 .Include(x => x.AdditionalInfo!.Role)
-                .FirstOrDefaultAsync(x => x.Login == data.UserLogin);
+                .FirstOrDefaultAsync(x => x.Id == Guid.Parse(id));
 
             if (user == null) return NotFound();
-
-            string? secret = user.PasswordHash + user.Email;
-
-            if(!_validationService.IsValidToken(in user, data.EmailToken, "email")) 
+            if(!ValidationService.IsValidToken(in user, principal, "email")) 
                 return Forbid("Access denied invalid email token");
 
             UserAdditionalInfo userInfo = user.AdditionalInfo!;
@@ -104,21 +107,26 @@ namespace InCase.Email.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
+            ClaimsPrincipal? principal = _jwtService.GetClaimsToken(data.EmailToken);
+
+            if (principal is null) return Forbid("Invalid refresh token");
+
+            string id = principal.Claims
+                .Single(x => x.Type == ClaimTypes.NameIdentifier)
+                .Value;
+
             bool isExistEmail = await context.Users
                 .AsNoTracking()
                 .AnyAsync(x => x.Email == data.UserEmail);
 
-            User? user = await context.Users
-                .FirstOrDefaultAsync(x => x.Login == data.UserLogin);
-
             if (isExistEmail)
                 return Conflict(new { Success = false, Message = "Access denied mail is already busy" });
-            if (user == null) 
-                return NotFound(new { Success = false, Message = "User not found the update is not available" });
 
-            string secret = user.PasswordHash + user.Email;
+            User? user = await context.Users
+                .FirstOrDefaultAsync(x => x.Id == Guid.Parse(id));
 
-            if (!_validationService.IsValidToken(in user, data.EmailToken, "email"))
+            if (user == null) return NotFound();
+            if (!ValidationService.IsValidToken(in user, principal, "email"))
                 return Forbid("Access denied invalid email token");
 
             user.Email = data.UserEmail;
@@ -146,15 +154,19 @@ namespace InCase.Email.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
+            ClaimsPrincipal? principal = _jwtService.GetClaimsToken(data.EmailToken);
+
+            if (principal is null) return Forbid("Invalid refresh token");
+
+            string id = principal.Claims
+                .Single(x => x.Type == ClaimTypes.NameIdentifier)
+                .Value;
+
             User? user = await context.Users
-                .FirstOrDefaultAsync(x => x.Login == data.UserLogin);
+                .FirstOrDefaultAsync(x => x.Id == Guid.Parse(id));
 
-            if (user == null) 
-                return NotFound(new { Success = false, Message = "User not found the update is not available" });
-
-            string secret = user.PasswordHash + user.Email;
-
-            if (!_validationService.IsValidToken(in user, data.EmailToken, "email"))
+            if (user == null) return NotFound();
+            if (!ValidationService.IsValidToken(in user, principal, "email"))
                 return Forbid("Access denied invalid email token");
 
             //Gen hash and salt
@@ -187,16 +199,20 @@ namespace InCase.Email.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
+            ClaimsPrincipal? principal = _jwtService.GetClaimsToken(data.EmailToken);
+
+            if (principal is null) return Forbid("Invalid refresh token");
+
+            string id = principal.Claims
+                .Single(x => x.Type == ClaimTypes.NameIdentifier)
+                .Value;
+
             User? user = await context.Users
                 .Include(x => x.AdditionalInfo)
-                .FirstOrDefaultAsync(x => x.Login == data.UserLogin);
+                .FirstOrDefaultAsync(x => x.Id == Guid.Parse(id));
 
-            if (user == null)
-                return NotFound(new { Success = false, Message = "User not found the update is not available" });
-
-            string secret = user.PasswordHash + user.Email;
-
-            if (!_validationService.IsValidToken(in user, data.EmailToken, "email")) 
+            if (user == null) return NotFound();
+            if (!ValidationService.IsValidToken(in user, principal, "email"))
                 return Forbid("Access denied invalid email token");
 
             await _emailService.SendNotifyToEmail(

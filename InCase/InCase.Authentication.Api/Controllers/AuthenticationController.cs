@@ -7,6 +7,7 @@ using InCase.Infrastructure.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace InCase.Authentication.Api.Controllers
 {
@@ -18,19 +19,16 @@ namespace InCase.Authentication.Api.Controllers
         private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
         private readonly JwtService _jwtService;
         private readonly EmailService _emailService;
-        private readonly ValidationService _validationService;
         #endregion
         #region ctor
         public AuthenticationController(
             IDbContextFactory<ApplicationDbContext> contextFactory,
             JwtService jwtService,
-            EmailService emailService,
-            ValidationService validationService)
+            EmailService emailService)
         {
             _contextFactory = contextFactory;
             _jwtService = jwtService;
             _emailService = emailService;
-            _validationService = validationService;
         }
         #endregion
 
@@ -124,23 +122,31 @@ namespace InCase.Authentication.Api.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("refresh/{login}")]
-        public async Task<IActionResult> RefreshTokens(string login, string refreshToken)
+        [HttpGet("refresh")]
+        public async Task<IActionResult> RefreshTokens(string refreshToken)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            ClaimsPrincipal? principal = _jwtService.GetClaimsToken(refreshToken); 
+
+            if(principal is null) return Forbid("Invalid refresh token");
+
+            string id = principal.Claims
+                .Single(x => x.Type == ClaimTypes.NameIdentifier)
+                .Value;
 
             User? user = await context.Users
                 .Include(x => x.AdditionalInfo)
                 .Include(x => x.AdditionalInfo!.Role)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.Login == login);
+                .FirstOrDefaultAsync(x => x.Id == Guid.Parse(id));
 
             if (user is null) 
                 return NotFound(new { Success = false, Data = "User not found the update is not available" });
 
             string secret = user.PasswordHash + user.Email;
 
-            if(!_validationService.IsValidToken(in user, refreshToken, "refresh"))
+            if (!ValidationService.IsValidToken(in user, principal, "refresh"))
                 return Forbid("Invalid refresh token");
             
             DataSendTokens tokenModel = _jwtService.CreateTokenPair(in user!);
