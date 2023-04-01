@@ -283,7 +283,7 @@
 ||Date|datetime2(7)|True|-|
 ||Content|nvarchar(MAX)|True|-|
 
-**SiteStatiticsAdmin**
+**SiteStatisticsAdmin**
 
 Описание:
 
@@ -297,7 +297,7 @@
 ||TotalReplenished|decimal(18, 5)|True|-|
 ||SentSites|decimal(18, 5)|True|-|
 
-**SiteStatitics**
+**SiteStatistics**
 
 Описание:
 
