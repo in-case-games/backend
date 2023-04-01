@@ -188,8 +188,6 @@ namespace InCase.Resources.Api.Controllers
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             SupportTopicAnswer? answer = await context.SupportTopicAnswers
-                .Include(x => x.Plaintiff)
-                .Include(x => x.Images)
                 .FirstOrDefaultAsync(x => x.TopicId == id && x.Id == answerId);
 
             if (answer is null)

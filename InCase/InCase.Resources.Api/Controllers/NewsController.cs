@@ -117,7 +117,6 @@ namespace InCase.Resources.Api.Controllers
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             News? news = await context.News
-                .Include(x => x.Images)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == id);
 
