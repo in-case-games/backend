@@ -1,12 +1,14 @@
-﻿using InCase.Domain.Dtos;
+﻿using InCase.Domain.Common;
+using InCase.Domain.Dtos;
 using InCase.Domain.Entities.Resources;
 using InCase.Infrastructure.Data;
+using InCase.Infrastructure.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace InCase.Resources.Api.Controllers
 {
-    [Route("api/support_topic")]
+    [Route("api/support-topic")]
     [ApiController]
     public class SupportTopicController : ControllerBase
     {
@@ -17,7 +19,7 @@ namespace InCase.Resources.Api.Controllers
         {
             _contextFactory = contextFactory;
         }
-
+        [AuthorizeRoles(Roles.All)]
         [HttpGet]
         public async Task<IActionResult> Get()
         {
@@ -28,9 +30,9 @@ namespace InCase.Resources.Api.Controllers
                 .Include(x => x.User)
                 .ToListAsync();
 
-            return Ok(new { Data = supportTopics, Success = true });
+            return ResponseUtil.Ok(supportTopics);
         }
-
+        [AuthorizeRoles(Roles.All)]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(Guid id)
         {
@@ -41,11 +43,11 @@ namespace InCase.Resources.Api.Controllers
                 .FirstOrDefaultAsync(x => x.Id == id);
 
             if (supportTopic is null)
-                return NotFound(new { Data = "Object is not found", Success = true });
+                return ResponseUtil.NotFound(nameof(SupportTopic));
 
-            return Ok(new { Data = supportTopic, Success = true });
+            return ResponseUtil.Ok(supportTopic);
         }
-
+        [AuthorizeRoles(Roles.All)]
         [HttpGet("{id}/answers")]
         public async Task<IActionResult> GetAnswers(Guid id)
         {
@@ -57,9 +59,9 @@ namespace InCase.Resources.Api.Controllers
                 .Include(x => x.Images)
                 .ToListAsync();
 
-            return Ok(new { Data = answers, Success = true });
+            return ResponseUtil.Ok(answers);
         }
-
+        [AuthorizeRoles(Roles.All)]
         [HttpGet("{id}/answers/{answerId}")]
         public async Task<IActionResult> GetAnswer(Guid id, Guid answerId)
         {
@@ -71,11 +73,11 @@ namespace InCase.Resources.Api.Controllers
                 .FirstOrDefaultAsync(x => x.TopicId == id && x.Id == answerId);
 
             if (answer is null)
-                return NotFound(new { Data = "Object is not found", Success = false });
+                return ResponseUtil.NotFound(nameof(SupportTopicAnswer));
 
-            return Ok(new { Data = answer, Success = true });
+            return ResponseUtil.Ok(answer);
         }
-
+        [AuthorizeRoles(Roles.Admin, Roles.User, Roles.Support)]
         [HttpPost]
         public async Task<IActionResult> Create(SupportTopicDto supportTopic)
         {
@@ -86,14 +88,14 @@ namespace InCase.Resources.Api.Controllers
                 await context.SupportTopics.AddAsync(supportTopic.Convert());
                 await context.SaveChangesAsync();
 
-                return Ok(new { Data = supportTopic, Success = true });
+                return ResponseUtil.Ok(supportTopic);
             }
             catch (Exception ex)
             {
-                return Conflict(new { Data = ex.InnerException!.Message.ToString(), Success = false });
+                return ResponseUtil.Error(ex);
             }
         }
-
+        [AuthorizeRoles(Roles.Admin, Roles.User, Roles.Support)]
         [HttpPost("{id}/answers")]
         public async Task<IActionResult> CreateAnswer(Guid id, SupportTopicAnswerDto supportTopicAnswer)
         {
@@ -105,12 +107,7 @@ namespace InCase.Resources.Api.Controllers
                     .AsNoTracking()
                     .FirstOrDefaultAsync(x => x.Id == id) is null)
                 {
-                    return NotFound(
-                        new
-                        {
-                            Data = "Object (SupportTopic) is not found. [parameter: id]",
-                            Success = true
-                        });
+                    return ResponseUtil.NotFound(nameof(SupportTopic));
                 }
 
                 supportTopicAnswer.TopicId = id;
@@ -118,14 +115,14 @@ namespace InCase.Resources.Api.Controllers
                 await context.SupportTopicAnswers.AddAsync(supportTopicAnswer.Convert());
                 await context.SaveChangesAsync();
 
-                return Ok(new { Data = supportTopicAnswer, Success = true });
+                return ResponseUtil.Ok(supportTopicAnswer);
             }
             catch (Exception ex)
             {
-                return Conflict(new { Data = ex.InnerException!.Message.ToString(), Success = false }); ;
+                return ResponseUtil.Error(ex);
             }
         }
-
+        [AuthorizeRoles(Roles.Admin, Roles.Support)]
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(Guid id, SupportTopicDto supportTopic)
         {
@@ -137,14 +134,14 @@ namespace InCase.Resources.Api.Controllers
                 context.SupportTopics.Update(supportTopic.Convert());
                 await context.SaveChangesAsync();
 
-                return Ok(new { Data = supportTopic, Success = true });
+                return ResponseUtil.Ok(supportTopic);
             }
             catch (Exception ex)
             {
-                return Conflict(new { Data = ex.InnerException!.Message.ToString(), Success = false });
+                return ResponseUtil.Error(ex);
             }
         }
-
+        [AuthorizeRoles(Roles.Admin, Roles.Support)]
         [HttpPut("{id}/answers/{answerId}")]
         public async Task<IActionResult> UpdateAnswer(Guid id, Guid answerId, SupportTopicAnswerDto answer)
         {
@@ -156,26 +153,21 @@ namespace InCase.Resources.Api.Controllers
                     .AsNoTracking()
                     .FirstOrDefaultAsync(x => x.Id == id) is null)
                 {
-                    return NotFound(
-                        new
-                        {
-                            Data = "Object (SupportTopic) is not found. [parameter: id]",
-                            Success = true
-                        });
+                    return ResponseUtil.NotFound(nameof(SupportTopicAnswer));
                 }
 
                 answer.Id = id;
                 context.SupportTopicAnswers.Update(answer.Convert());
                 await context.SaveChangesAsync();
 
-                return Ok(new { Data = answer, Success = true });
+                return ResponseUtil.Ok(answer);
             }
             catch (Exception ex)
             {
-                return Conflict(new { Data = ex.InnerException!.Message.ToString(), Success = false });
+                return ResponseUtil.Error(ex);
             }
         }
-
+        [AuthorizeRoles(Roles.Admin, Roles.Support)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
@@ -186,14 +178,14 @@ namespace InCase.Resources.Api.Controllers
                 .FirstOrDefaultAsync(x => x.Id == id);
 
             if (supportTopic is null)
-                return NotFound(new { Data = "Object is not found", Success = false });
+                return ResponseUtil.NotFound(nameof(SupportTopic));
 
             context.SupportTopics.Remove(supportTopic);
             await context.SaveChangesAsync();
 
-            return Accepted(new { Data = "Object was successfully removed", Success = true });
+            return ResponseUtil.Delete(nameof(SupportTopic));
         }
-
+        [AuthorizeRoles(Roles.Admin, Roles.Support)]
         [HttpDelete("{id}/answers/{answerId}")]
         public async Task<IActionResult> DeleteAnswer(Guid id, Guid answerId)
         {
@@ -203,12 +195,12 @@ namespace InCase.Resources.Api.Controllers
                 .FirstOrDefaultAsync(x => x.TopicId == id && x.Id == answerId);
 
             if (answer is null)
-                return NotFound(new { Data = "Object is not found", Success = false });
+                return ResponseUtil.NotFound(nameof(SupportTopicAnswer));
 
             context.SupportTopicAnswers.Remove(answer);
             await context.SaveChangesAsync();
 
-            return Accepted(new { Data = "Object was succesfully removed", Success = true });
+            return ResponseUtil.Delete(nameof(SupportTopicAnswer));
         }
     }
 }

@@ -25,8 +25,8 @@ namespace InCase.Infrastructure.Data
         public DbSet<PromocodeType> PromocodeTypes => Set<PromocodeType>();
         public DbSet<RestrictionType> RestrictionTypes => Set<RestrictionType>();
         public DbSet<ReviewImage> ReviewImages => Set<ReviewImage>();
-        public DbSet<SiteStatitics> SiteStatitics => Set<SiteStatitics>();
-        public DbSet<SiteStatiticsAdmin> SiteStatiticsAdmins => Set<SiteStatiticsAdmin>();
+        public DbSet<SiteStatistics> SiteStatistics => Set<SiteStatistics>();
+        public DbSet<SiteStatisticsAdmin> SiteStatisticsAdmins => Set<SiteStatisticsAdmin>();
         public DbSet<SupportTopic> SupportTopics => Set<SupportTopic>();
         public DbSet<SupportTopicAnswer> SupportTopicAnswers => Set<SupportTopicAnswer>();
         public DbSet<User> Users => Set<User>();

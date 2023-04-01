@@ -4,13 +4,13 @@ using InCase.Domain.Entities.Resources;
 
 namespace InCase.Infrastructure.Configurations
 {
-    internal class SiteStatiticsAdminConfiguration : BaseEntityConfiguration<SiteStatiticsAdmin>
+    internal class SiteStatiticsAdminConfiguration : BaseEntityConfiguration<SiteStatisticsAdmin>
     {
-        public override void Configure(EntityTypeBuilder<SiteStatiticsAdmin> builder)
+        public override void Configure(EntityTypeBuilder<SiteStatisticsAdmin> builder)
         {
             base.Configure(builder);
 
-            builder.ToTable(nameof(SiteStatiticsAdmin));
+            builder.ToTable(nameof(SiteStatisticsAdmin));
 
             builder.Property(p => p.BalanceWithdrawn)
                 .HasColumnType("DECIMAL(18,5)")

@@ -27,10 +27,10 @@ namespace InCase.Resources.Api.Controllers
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             IEnumerable<News> news = await context.News
-                .Include(x => x.Images == null? null: x.Images.First())
+                .Include(x => x.Images)
                 .ToListAsync();
 
-            return Ok(new { Success = true, Data = news });
+            return ResponseUtil.Ok(news);
         }
 
         [AllowAnonymous]
@@ -45,9 +45,9 @@ namespace InCase.Resources.Api.Controllers
                 .FirstOrDefaultAsync(x => x.Id == id);
 
             if (news is null)
-                return NotFound(new { Success = false, Data = "Object is not found" });
+                return ResponseUtil.NotFound(nameof(News));
 
-            return Ok(new { Success = true, Data = news });
+            return ResponseUtil.Ok(news);
         }
 
         [AuthorizeRoles(Roles.Admin, Roles.Owner, Roles.Bot)]
@@ -61,12 +61,11 @@ namespace InCase.Resources.Api.Controllers
                 await context.News.AddAsync(news);
                 await context.SaveChangesAsync();
 
-                return Ok(new { Success = true, Data = news });
+                return ResponseUtil.Ok(news);
             }
             catch (Exception ex)
             {
-                return Conflict(new { Success = false,
-                    Data = ex.InnerException!.Message.ToString() });
+                return ResponseUtil.Error(ex);
             }
         }
 
@@ -83,20 +82,18 @@ namespace InCase.Resources.Api.Controllers
                 .FirstOrDefaultAsync(x => x.Id == id) is null)
                 {
 
-                    return NotFound(new { Success = false,
-                        Data = "Object (news) is not found [parameter: id]" });
+                    return ResponseUtil.NotFound(nameof(NewsImage));
                 }
 
                 newsImage.NewsId = id;
                 await context.NewsImages.AddAsync(newsImage.Convert());
                 await context.SaveChangesAsync();
 
-                return Ok(new { Success = true, Data = newsImage });
+                return ResponseUtil.Ok(newsImage);
             }
             catch (Exception ex)
             {
-                return Conflict(new { Success = false,
-                    Data = ex.InnerException!.Message.ToString() });
+                return ResponseUtil.Error(ex);
             }
         }
 
@@ -113,8 +110,7 @@ namespace InCase.Resources.Api.Controllers
                 .FirstOrDefaultAsync(x => x.Id == id) is null)
                 {
 
-                    return NotFound(new { Success = false,
-                        Data = "Object (news) is not found [parameter: id]" });
+                    return ResponseUtil.NotFound(nameof(News));
                 }
 
                 news.Id = id;
@@ -122,11 +118,11 @@ namespace InCase.Resources.Api.Controllers
                 context.News.Update(news);
                 await context.SaveChangesAsync();
 
-                return Ok(new { Success = true, Data = news });
+                return ResponseUtil.Ok(news);
             }
             catch (Exception ex)
             {
-                return Conflict(new { Success = false, Data = ex.InnerException!.Message.ToString() });
+                return ResponseUtil.Error(ex);
             }
         }
 
@@ -141,12 +137,12 @@ namespace InCase.Resources.Api.Controllers
                 .FirstOrDefaultAsync(x => x.Id == id);
 
             if (news is null)
-                return NotFound(new { Success = false, Data = "Object is not found" });
+                return ResponseUtil.NotFound(nameof(News));
 
             context.News.Remove(news);
             await context.SaveChangesAsync();
 
-            return Ok(new { Success = true, Data = "Object was successfully removed" });
+            return ResponseUtil.Ok(news);
         }
 
         [AuthorizeRoles(Roles.Admin, Roles.Owner, Roles.Bot)]
@@ -160,12 +156,12 @@ namespace InCase.Resources.Api.Controllers
                 .FirstOrDefaultAsync(x => x.Id == id);
 
             if (image is null)
-                return NotFound(new { Success = false, Data = "Object is not found" });
+                return ResponseUtil.NotFound(nameof(NewsImage));
 
             context.NewsImages.Remove(image);
             await context.SaveChangesAsync();
 
-            return Ok(new { Success = true, Data = "Object was successfully removed" });
+            return ResponseUtil.Ok(image);
         }
     }
 }

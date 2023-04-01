@@ -4,13 +4,13 @@ using InCase.Domain.Entities.Resources;
 
 namespace InCase.Infrastructure.Configurations
 {
-    internal class SiteStatiticsConfiguration : BaseEntityConfiguration<SiteStatitics>
+    internal class SiteStatiticsConfiguration : BaseEntityConfiguration<SiteStatistics>
     {
-        public override void Configure(EntityTypeBuilder<SiteStatitics> builder)
+        public override void Configure(EntityTypeBuilder<SiteStatistics> builder)
         {
             base.Configure(builder);
 
-            builder.ToTable(nameof(SiteStatitics));
+            builder.ToTable(nameof(SiteStatistics));
 
             builder.Property(p => p.Users)
                 .IsRequired();

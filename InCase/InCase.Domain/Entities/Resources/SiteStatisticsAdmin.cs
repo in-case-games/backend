@@ -1,6 +1,6 @@
 ﻿namespace InCase.Domain.Entities.Resources
 {
-    public class SiteStatiticsAdmin : BaseEntity
+    public class SiteStatisticsAdmin : BaseEntity
     {
         public decimal BalanceWithdrawn { get; set; } = 0;
         public decimal TotalReplenished { get; set; } = 0;
