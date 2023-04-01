@@ -231,8 +231,8 @@
 |PK|Id|uniqueidentifier|True|NEWID(), UNIQUE|
 ||Login|nvarchar(50)|True|-|
 ||Email|nvarchar(50)|True|-|
-||PasswordSalt|nvarchar(64)|True|-|
-||PasswordHash|nvarchar(64)|True|-|
+||PasswordSalt|nvarchar(MAX)|True|-|
+||PasswordHash|nvarchar(MAX)|True|-|
 
 **UserHistoryPayment**
 

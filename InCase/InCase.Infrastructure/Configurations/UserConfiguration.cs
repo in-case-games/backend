@@ -25,10 +25,10 @@ namespace InCase.Infrastructure.Configurations
                 .IsRequired();
 
             builder.Property(p => p.PasswordSalt)
-                .HasMaxLength(64)
+                .HasColumnType("nvarchar(MAX)")
                 .IsRequired();
             builder.Property(p => p.PasswordHash)
-                .HasMaxLength(64)
+                .HasColumnType("nvarchar(MAX)")
                 .IsRequired();
         }
     }
