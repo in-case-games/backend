@@ -6,6 +6,7 @@ namespace InCase.Infrastructure.Data
 {
     public class ApplicationDbContext : DbContext
     {
+        #region IncludedEntities (DbSet)
         public DbSet<AnswerImage> AnswerImages => Set<AnswerImage>();
         public DbSet<Game> Games => Set<Game>();
         public DbSet<GameItem> GameItems => Set<GameItem>();
@@ -39,7 +40,7 @@ namespace InCase.Infrastructure.Data
         public DbSet<UserRestriction> UserRestrictions => Set<UserRestriction>();
         public DbSet<UserReview> UserReviews => Set<UserReview>();
         public DbSet<UserRole> UserRoles => Set<UserRole>();
-
+        #endregion
         public ApplicationDbContext(DbContextOptions options) : base(options) { }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -48,6 +49,10 @@ namespace InCase.Infrastructure.Data
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+
+            #region DevelopmentTemplateData
+            // coming soon
+            #endregion
         }
     }
 }

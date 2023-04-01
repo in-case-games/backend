@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace InCase.Resources.Api.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/support_topic")]
     [ApiController]
     public class SupportTopicController : ControllerBase
     {
