@@ -91,7 +91,6 @@ namespace InCase.Authentication.Api.Controllers
 
             byte[] salt = EncryptorService.GenerationSaltTo64Bytes();
 
-            user.Id = Guid.NewGuid();
             user.PasswordHash = EncryptorService.GenerationHashSHA512(userDto.Password!, salt);
             user.PasswordSalt = Convert.ToBase64String(salt);
 
@@ -99,8 +98,7 @@ namespace InCase.Authentication.Api.Controllers
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Name == "user") ?? throw new Exception("Eblan dobavb roli");
 
-            UserAdditionalInfo info = new() { 
-                Id = Guid.NewGuid(),
+            UserAdditionalInfo info = new() {
                 RoleId = role.Id,
                 UserId = user.Id,
                 DeletionDate = DateTime.UtcNow + TimeSpan.FromDays(30),

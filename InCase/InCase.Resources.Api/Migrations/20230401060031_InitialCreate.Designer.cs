@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InCase.Resources.Api.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230331154955_InitialCreate")]
+    [Migration("20230401060031_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -79,6 +79,23 @@ namespace InCase.Resources.Api.Migrations
                         .HasDatabaseName("ix_game_name");
 
                     b.ToTable("Game", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("6142ff7f-db8c-4b44-a240-ce6143e8ad75"),
+                            Name = "csgo"
+                        },
+                        new
+                        {
+                            Id = new Guid("d32a8b03-f95e-4682-a735-450f362ed1ab"),
+                            Name = "dota"
+                        },
+                        new
+                        {
+                            Id = new Guid("1502ddcd-d7ea-464e-b88c-c70c2327a0c4"),
+                            Name = "genshin"
+                        });
                 });
 
             modelBuilder.Entity("InCase.Domain.Entities.Resources.GameItem", b =>
@@ -170,6 +187,38 @@ namespace InCase.Resources.Api.Migrations
                         .HasDatabaseName("ix_game_item_quality_name");
 
                     b.ToTable("GameItemQuality", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("5ce0df65-f245-4b7f-9f1c-495c004c4da8"),
+                            Name = "none"
+                        },
+                        new
+                        {
+                            Id = new Guid("5e23cc70-0c55-419c-8b4a-a50ae05d5e33"),
+                            Name = "battle scarred"
+                        },
+                        new
+                        {
+                            Id = new Guid("c4dbab30-2ab7-4e5a-99b7-ca2dccec287f"),
+                            Name = "well worn"
+                        },
+                        new
+                        {
+                            Id = new Guid("7eb9f5be-c9d6-4aa1-8a57-85378da7f513"),
+                            Name = "field tested"
+                        },
+                        new
+                        {
+                            Id = new Guid("195af0cc-f147-44ac-a970-36ef150c728a"),
+                            Name = "minimal wear"
+                        },
+                        new
+                        {
+                            Id = new Guid("2d4941dd-9e52-498d-b63b-00b81d5123b2"),
+                            Name = "factory new"
+                        });
                 });
 
             modelBuilder.Entity("InCase.Domain.Entities.Resources.GameItemRarity", b =>
@@ -197,6 +246,38 @@ namespace InCase.Resources.Api.Migrations
                         .HasDatabaseName("ix_game_item_rarity_name");
 
                     b.ToTable("GameItemRarity", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("16b1b383-2758-4824-808b-055df9a30fed"),
+                            Name = "white"
+                        },
+                        new
+                        {
+                            Id = new Guid("71ff1099-b9f8-425c-8bfe-7a82601e0e1f"),
+                            Name = "blue"
+                        },
+                        new
+                        {
+                            Id = new Guid("dfd7a78d-219e-463f-bd52-16db49fbdabc"),
+                            Name = "violet"
+                        },
+                        new
+                        {
+                            Id = new Guid("607e655b-6426-46f2-8685-65a82dc48f3c"),
+                            Name = "pink"
+                        },
+                        new
+                        {
+                            Id = new Guid("c50af113-3626-4aff-9a75-2b17c22d13fa"),
+                            Name = "red"
+                        },
+                        new
+                        {
+                            Id = new Guid("2947d224-7471-460b-b586-1cb4cf826bb3"),
+                            Name = "gold"
+                        });
                 });
 
             modelBuilder.Entity("InCase.Domain.Entities.Resources.GameItemType", b =>
@@ -224,6 +305,33 @@ namespace InCase.Resources.Api.Migrations
                         .HasDatabaseName("ix_game_item_type_name");
 
                     b.ToTable("GameItemType", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("04c45525-fd4b-4a68-8d38-12c358b532c5"),
+                            Name = "none"
+                        },
+                        new
+                        {
+                            Id = new Guid("f607ab80-a135-4553-a105-6ffa48c3a06d"),
+                            Name = "pistol"
+                        },
+                        new
+                        {
+                            Id = new Guid("27254074-8e7c-487e-bb65-df7504e22947"),
+                            Name = "weapon"
+                        },
+                        new
+                        {
+                            Id = new Guid("8c90c589-3c23-4989-a101-c08c2ac603c8"),
+                            Name = "rifle"
+                        },
+                        new
+                        {
+                            Id = new Guid("7202bda4-cff1-4146-9736-680bad45e495"),
+                            Name = "knife"
+                        });
                 });
 
             modelBuilder.Entity("InCase.Domain.Entities.Resources.GamePlatform", b =>
@@ -604,6 +712,18 @@ namespace InCase.Resources.Api.Migrations
                         .HasDatabaseName("ix_promocode_type_name");
 
                     b.ToTable("PromocodeType", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("0f2bd6f2-9c58-4785-9e51-4823276a44e7"),
+                            Name = "balance"
+                        },
+                        new
+                        {
+                            Id = new Guid("422ac8d6-723a-4f4a-a4d1-9bddcbbeae96"),
+                            Name = "case"
+                        });
                 });
 
             modelBuilder.Entity("InCase.Domain.Entities.Resources.RestrictionType", b =>
@@ -631,6 +751,18 @@ namespace InCase.Resources.Api.Migrations
                         .HasDatabaseName("ix_restriction_type_name");
 
                     b.ToTable("RestrictionType", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("7bf5dbe1-9b30-42d9-bab3-2d4e4c5767ae"),
+                            Name = "mute"
+                        },
+                        new
+                        {
+                            Id = new Guid("d8bceb06-9099-483c-ad6c-cedb8f189ba5"),
+                            Name = "ban"
+                        });
                 });
 
             modelBuilder.Entity("InCase.Domain.Entities.Resources.ReviewImage", b =>
@@ -1281,6 +1413,33 @@ namespace InCase.Resources.Api.Migrations
                         .HasDatabaseName("ix_user_role_name");
 
                     b.ToTable("UserRole", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("599ba85c-8ac4-4af4-b3e4-449792f20448"),
+                            Name = "user"
+                        },
+                        new
+                        {
+                            Id = new Guid("709bc62d-6bfa-46f5-b237-8d985d5e8ae5"),
+                            Name = "support"
+                        },
+                        new
+                        {
+                            Id = new Guid("b1d8a18b-21a3-4741-962a-673982095711"),
+                            Name = "admin"
+                        },
+                        new
+                        {
+                            Id = new Guid("d0d20c80-2ec2-447a-ac67-3df5715c650f"),
+                            Name = "owner"
+                        },
+                        new
+                        {
+                            Id = new Guid("c1f90c1c-73fe-40df-a010-0a5e02b2333e"),
+                            Name = "bot"
+                        });
                 });
 
             modelBuilder.Entity("InCase.Domain.Entities.Resources.AnswerImage", b =>

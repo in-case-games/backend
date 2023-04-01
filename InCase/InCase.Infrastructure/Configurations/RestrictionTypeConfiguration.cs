@@ -6,6 +6,10 @@ namespace InCase.Infrastructure.Configurations
 {
     internal class RestrictionTypeConfiguration : BaseEntityConfiguration<RestrictionType>
     {
+        private readonly List<RestrictionType> types = new() { 
+            new() { Name = "mute" }, new() { Name = "ban" }
+        };
+
         public override void Configure(EntityTypeBuilder<RestrictionType> builder)
         {
             base.Configure(builder);
@@ -21,6 +25,9 @@ namespace InCase.Infrastructure.Configurations
             builder.HasOne(o => o.Restriction)
                 .WithOne(m => m.Type)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            foreach (var type in types)
+                builder.HasData(type);
         }
     }
 }
