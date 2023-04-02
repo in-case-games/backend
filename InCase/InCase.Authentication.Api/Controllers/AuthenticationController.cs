@@ -4,6 +4,7 @@ using InCase.Domain.Entities.Email;
 using InCase.Domain.Entities.Resources;
 using InCase.Infrastructure.Data;
 using InCase.Infrastructure.Services;
+using InCase.Infrastructure.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -47,24 +48,17 @@ namespace InCase.Authentication.Api.Controllers
                 x.Login == userDto.Login);
 
             if (user is null) 
-                return NotFound(new { Success = false, Data = "User not found the update is not available" });
-
+                return ResponseUtil.NotFound("User");
             if (!ValidationService.IsValidUserPassword(in user, userDto.Password!))
-                return Forbid("Access is denied incorrectly entered data");
+                return Forbid("Invalid data");
 
-            await _emailService.SendSignIn(new DataMailLink()
+            return await _emailService.SendSignIn(new DataMailLink()
             {
                 UserEmail = user.Email!,
                 UserLogin = user.Login!,
                 EmailToken = _jwtService.CreateEmailToken(user),
                 UserIp = userDto.Ip!,
                 UserPlatforms = userDto.Platform!,
-            });
-
-            return Ok(new
-            {
-                Success = true,
-                Data = "Authentication success. Check your email for the following actions"
             });
         }
 
@@ -80,8 +74,7 @@ namespace InCase.Authentication.Api.Controllers
                 x.Email == userDto.Email ||
                 x.Login == userDto.Login);
 
-            if (isExist) 
-                return Conflict(new { Success = false, Data = "User already exists!" });
+            if (isExist) return ResponseUtil.Conflict("User already exists!");
 
             //Map user and additional info
             User user = userDto.Convert();
@@ -93,10 +86,10 @@ namespace InCase.Authentication.Api.Controllers
 
             UserRole? role = await context.UserRoles
                 .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.Name == "user") ?? throw new Exception("Eblan dobavb roli");
+                .FirstOrDefaultAsync(x => x.Name == "user");
 
             UserAdditionalInfo info = new() {
-                RoleId = role.Id,
+                RoleId = role!.Id,
                 UserId = user.Id,
                 DeletionDate = DateTime.UtcNow + TimeSpan.FromDays(30),
             };
@@ -107,17 +100,11 @@ namespace InCase.Authentication.Api.Controllers
 
             await context.SaveChangesAsync();
 
-            await _emailService.SendSignUp(new DataMailLink()
+            return await _emailService.SendSignUp(new DataMailLink()
             {
                 UserEmail = user.Email!,
                 UserLogin = user.Login!,
                 EmailToken = _jwtService.CreateEmailToken(user)
-            });
-
-            return Ok(new
-            {
-                Success = true,
-                Data = "Registation success. Check your email for the following actions"
             });
         }
 
@@ -142,20 +129,13 @@ namespace InCase.Authentication.Api.Controllers
                 .FirstOrDefaultAsync(x => x.Id == Guid.Parse(id));
 
             if (user is null) 
-                return NotFound(new { Success = false, Data = "User not found the update is not available" });
-
-            string secret = user.PasswordHash + user.Email;
-
+                return ResponseUtil.NotFound("User");
             if (!ValidationService.IsValidToken(in user, principal, "refresh"))
                 return Forbid("Invalid refresh token");
             
             DataSendTokens tokenModel = _jwtService.CreateTokenPair(in user!);
 
-            return Ok(new 
-            { 
-                Success = true,
-                Data = tokenModel 
-            });
+            return ResponseUtil.Ok(tokenModel);
         }
     }
 }

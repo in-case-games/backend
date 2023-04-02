@@ -2,9 +2,11 @@
 using InCase.Domain.Entities.Resources;
 using InCase.Infrastructure.Data;
 using InCase.Infrastructure.Services;
+using InCase.Infrastructure.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace InCase.Email.Api.Controllers
 {
@@ -16,19 +18,16 @@ namespace InCase.Email.Api.Controllers
         private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
         private readonly EmailService _emailService;
         private readonly JwtService _jwtService;
-        private readonly ValidationService _validationService;
         #endregion
         #region ctor
         public EmailTokenSendingController(
             IDbContextFactory<ApplicationDbContext> contextFactory,
             EmailService emailService,
-            JwtService jwtService,
-            ValidationService validationService)
+            JwtService jwtService)
         {
             _contextFactory = contextFactory;
             _emailService = emailService;
             _jwtService = jwtService;
-            _validationService = validationService;
         }
         #endregion
 
@@ -44,30 +43,16 @@ namespace InCase.Email.Api.Controllers
                 .FirstOrDefaultAsync(x => x.Login == data.UserLogin);
 
             if (user == null) 
-                return NotFound(new { Success = false, Message = "User not found the update is not available" });
-            if (user.Email != data.UserEmail)
-                return Conflict(new { Success = false, Message = "Access denied mail invalid" });
+                return ResponseUtil.NotFound("User");
+            if (user.Email != data.UserEmail) 
+                return ResponseUtil.Conflict("E-mail invalid");
 
             MapDataMailLink(ref data, in user);
 
             if (user.AdditionalInfo!.IsConfirmed is false)
-            {
-                await _emailService.SendSignUp(data);
+                return await _emailService.SendSignUp(data);
 
-                return Ok(new 
-                {
-                    Success = true,
-                    Data = "You can join account" 
-                });
-            }
-
-            await _emailService.SendSignIn(data);
-
-            return Accepted(new 
-            {
-                Success = true,
-                Message = "Message was sended on your email" 
-            });
+            return await _emailService.SendSignIn(data);
         }
 
         [AllowAnonymous]
@@ -76,33 +61,35 @@ namespace InCase.Email.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
+            ClaimsPrincipal? principal = _jwtService.GetClaimsToken(data.EmailToken);
+
+            if (principal is null) return Forbid("Invalid refresh token");
+
+            string id = principal.Claims
+                .Single(x => x.Type == ClaimTypes.NameIdentifier)
+                .Value;
+
             bool isExistEmail = await context.Users
                 .AsNoTracking()
                 .AnyAsync(x => x.Email == email);
 
+            if (isExistEmail) 
+                return ResponseUtil.Conflict("E-mail is already busy");
+
             User? user = await context.Users
                 .Include(x => x.AdditionalInfo)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.Login == data.UserLogin);
+                .FirstOrDefaultAsync(x => x.Id == Guid.Parse(id));
 
-            //TODO Remove user login
-            if (isExistEmail)
-                return Conflict(new { Success = false, Message = "Access denied mail is already busy" });
-            if (user == null)
-                return NotFound(new { Success = false, Message = "User not found" });
-            if (_validationService.IsValidToken(in user, data.EmailToken, "email"))
-                return Forbid("Access denied invalid email token");
+            if (user == null) 
+                return ResponseUtil.NotFound("User");
+            if (!ValidationService.IsValidToken(in user, principal, "email"))
+                return Forbid("Invalid email token");
 
             MapDataMailLink(ref data, in user);
             data.UserEmail = email;
 
-            await _emailService.SendConfirmNewEmail(data);
-
-            return Accepted(new 
-            {
-                Success = true,
-                Message = "Message was sended on your email" 
-            });
+            return await _emailService.SendConfirmNewEmail(data);
         }
 
         [AllowAnonymous]
@@ -116,19 +103,13 @@ namespace InCase.Email.Api.Controllers
                 .FirstOrDefaultAsync(x => x.Login == data.UserLogin);
 
             if (user == null)
-                return NotFound(new { Success = false, Message = "User not found" });
+                return ResponseUtil.NotFound("User");
             if (user.Email != data.UserEmail)
-                return Conflict(new { Success = false, Message = "Access denied mail invalid" });
+                return ResponseUtil.Conflict("E-mail invalid");
 
             MapDataMailLink(ref data, in user);
 
-            await _emailService.SendChangePassword(data);
-
-            return Accepted(new 
-            {
-                Success = true,
-                Message = "Message was sended on your email"
-            });
+            return await _emailService.SendChangePassword(data);
         }
 
         [AllowAnonymous]
@@ -142,19 +123,13 @@ namespace InCase.Email.Api.Controllers
                 .FirstOrDefaultAsync(x => x.Login == data.UserLogin);
 
             if (user == null)
-                return NotFound(new { Success = false, Message = "User not found" });
+                return ResponseUtil.NotFound("User");
             if (!ValidationService.IsValidUserPassword(in user, password))
                 return Forbid("Invalid data");
 
             MapDataMailLink(ref data, in user);
 
-            await _emailService.SendChangeEmail(data);
-
-            return Accepted(new 
-            { 
-                Success = true, 
-                Message = "Message was sended on your email" 
-            });
+            return await _emailService.SendChangeEmail(data);
         }
 
         [AllowAnonymous]
@@ -168,19 +143,13 @@ namespace InCase.Email.Api.Controllers
                 .FirstOrDefaultAsync(x => x.Login == data.UserLogin);
 
             if (user == null)
-                return NotFound(new { Success = false, Message = "User not found" });
+                return ResponseUtil.NotFound("User");
             if (!ValidationService.IsValidUserPassword(in user, password))
                 return Forbid("Invalid data");
 
             MapDataMailLink(ref data, in user);
 
-            await _emailService.SendChangePassword(data);
-
-            return Accepted(new 
-            {
-                Success = true,
-                Message = "Message was sended on your email"
-            });
+            return await _emailService.SendChangePassword(data);
         }
 
         [AllowAnonymous]
@@ -194,18 +163,13 @@ namespace InCase.Email.Api.Controllers
                 .FirstOrDefaultAsync(x => x.Login == data.UserLogin);
 
             if (user == null)
-                return NotFound(new { Message = "The user was not found", Success = false });
+                return ResponseUtil.NotFound("User");
             if (!ValidationService.IsValidUserPassword(in user, password))
                 return Forbid("Invalid data");
 
             MapDataMailLink(ref data, in user);
-            await _emailService.SendDeleteAccount(data);
 
-            return Accepted(new 
-            {
-                Success = true,
-                Message = "Message was sended on your email", 
-            });
+            return await _emailService.SendDeleteAccount(data);
         }
 
         private void MapDataMailLink(ref DataMailLink data, in User user)

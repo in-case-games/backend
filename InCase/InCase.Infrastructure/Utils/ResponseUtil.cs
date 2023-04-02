@@ -14,11 +14,27 @@ namespace InCase.Infrastructure.Utils
                 Success = false,
                 Data = $"{name} is not found. {description}" });
         }
+        public static IActionResult Conflict(string message)
+        {
+            return new ConflictObjectResult(new
+            {
+                Success = false,
+                Data = message
+            });
+        }
         public static IActionResult Error(Exception ex)
         {
             return new ConflictObjectResult(new {
                 Success = false,
                 Data = ex.InnerException?.Message });
+        }
+        public static IActionResult SendEmail()
+        {
+            return new AcceptedResult(location: null, new
+            {
+                Success = true,
+                Data = $"Message was sended on your email"
+            });
         }
         public static IActionResult Delete(string name)
         {
