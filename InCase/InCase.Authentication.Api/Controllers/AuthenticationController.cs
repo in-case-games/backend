@@ -74,7 +74,8 @@ namespace InCase.Authentication.Api.Controllers
                 x.Email == userDto.Email ||
                 x.Login == userDto.Login);
 
-            if (isExist) return ResponseUtil.Conflict("User already exists!");
+            if (isExist) 
+                return ResponseUtil.Conflict("User already exists!");
 
             //Map user and additional info
             User user = userDto.Convert();
@@ -116,7 +117,8 @@ namespace InCase.Authentication.Api.Controllers
 
             ClaimsPrincipal? principal = _jwtService.GetClaimsToken(refreshToken); 
 
-            if(principal is null) return Forbid("Invalid refresh token");
+            if(principal is null) 
+                return Forbid("Invalid refresh token");
 
             string id = principal.Claims
                 .Single(x => x.Type == ClaimTypes.NameIdentifier)

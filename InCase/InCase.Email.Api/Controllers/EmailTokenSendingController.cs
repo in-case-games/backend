@@ -63,7 +63,8 @@ namespace InCase.Email.Api.Controllers
 
             ClaimsPrincipal? principal = _jwtService.GetClaimsToken(data.EmailToken);
 
-            if (principal is null) return Forbid("Invalid refresh token");
+            if (principal is null) 
+                return Forbid("Invalid refresh token");
 
             string id = principal.Claims
                 .Single(x => x.Type == ClaimTypes.NameIdentifier)

@@ -3,6 +3,7 @@ using InCase.Domain.Entities.Email;
 using InCase.Domain.Entities.Resources;
 using InCase.Infrastructure.Data;
 using InCase.Infrastructure.Services;
+using InCase.Infrastructure.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -39,7 +40,8 @@ namespace InCase.Email.Api.Controllers
 
             ClaimsPrincipal? principal = _jwtService.GetClaimsToken(data.EmailToken);
 
-            if (principal is null) return Forbid("Invalid refresh token");
+            if (principal is null) 
+                return Forbid("Invalid refresh token");
 
             string id = principal.Claims
                 .Single(x => x.Type == ClaimTypes.NameIdentifier)
@@ -50,7 +52,8 @@ namespace InCase.Email.Api.Controllers
                 .Include(x => x.AdditionalInfo!.Role)
                 .FirstOrDefaultAsync(x => x.Id == Guid.Parse(id));
 
-            if (user == null) return NotFound();
+            if (user == null) 
+                return ResponseUtil.NotFound("User");
             if(!ValidationService.IsValidToken(in user, principal, "email")) 
                 return Forbid("Access denied invalid email token");
 
@@ -76,29 +79,19 @@ namespace InCase.Email.Api.Controllers
 
                 DataSendTokens tokenModel = _jwtService.CreateTokenPair(in user);
 
-                return Ok(new
-                {
-                    Success = true,
-                    Data = tokenModel
-                });
+                return ResponseUtil.Ok(tokenModel);
             }
 
             userInfo.IsConfirmed = true;
 
-            await _emailService.SendSuccessVerifedAccount(
+            await context.SaveChangesAsync();
+
+            return await _emailService.SendSuccessVerifedAccount(
                 new DataMailLink()
                 {
                     UserEmail = user.Email!,
                     UserLogin = user.Login!
                 });
-
-            await context.SaveChangesAsync();
-
-            return Ok(new
-            {
-                Success = true,
-                Data = "You can join account"
-            });
         }
 
         [AllowAnonymous]
@@ -109,7 +102,8 @@ namespace InCase.Email.Api.Controllers
 
             ClaimsPrincipal? principal = _jwtService.GetClaimsToken(data.EmailToken);
 
-            if (principal is null) return Forbid("Invalid refresh token");
+            if (principal is null) 
+                return Forbid("Invalid refresh token");
 
             string id = principal.Claims
                 .Single(x => x.Type == ClaimTypes.NameIdentifier)
@@ -119,13 +113,14 @@ namespace InCase.Email.Api.Controllers
                 .AsNoTracking()
                 .AnyAsync(x => x.Email == data.UserEmail);
 
-            if (isExistEmail)
-                return Conflict(new { Success = false, Message = "Access denied mail is already busy" });
+            if (isExistEmail) 
+                return ResponseUtil.Conflict("E-mail is already busy");
 
             User? user = await context.Users
                 .FirstOrDefaultAsync(x => x.Id == Guid.Parse(id));
 
-            if (user == null) return NotFound();
+            if (user == null) 
+                return ResponseUtil.NotFound("User");
             if (!ValidationService.IsValidToken(in user, principal, "email"))
                 return Forbid("Access denied invalid email token");
 
@@ -133,19 +128,13 @@ namespace InCase.Email.Api.Controllers
 
             await context.SaveChangesAsync();
 
-            await _emailService.SendNotifyToEmail(
+            return await _emailService.SendNotifyToEmail(
                 data.UserEmail,
                 "Администрация сайта",
                 new EmailTemplate()
                 {
                     BodyDescription = $"Вы изменили email аккаунта"
                 });
-
-            return Ok(new 
-            { 
-                Success = true, 
-                Message = "Email was changed" 
-            });
         }
 
         [AllowAnonymous]
@@ -156,7 +145,8 @@ namespace InCase.Email.Api.Controllers
 
             ClaimsPrincipal? principal = _jwtService.GetClaimsToken(data.EmailToken);
 
-            if (principal is null) return Forbid("Invalid refresh token");
+            if (principal is null) 
+                return Forbid("Invalid refresh token");
 
             string id = principal.Claims
                 .Single(x => x.Type == ClaimTypes.NameIdentifier)
@@ -165,7 +155,8 @@ namespace InCase.Email.Api.Controllers
             User? user = await context.Users
                 .FirstOrDefaultAsync(x => x.Id == Guid.Parse(id));
 
-            if (user == null) return NotFound();
+            if (user == null) 
+                return ResponseUtil.NotFound("User");
             if (!ValidationService.IsValidToken(in user, principal, "email"))
                 return Forbid("Access denied invalid email token");
 
@@ -178,19 +169,13 @@ namespace InCase.Email.Api.Controllers
 
             await context.SaveChangesAsync();
 
-            await _emailService.SendNotifyToEmail(
+            return await _emailService.SendNotifyToEmail(
                 user.Email!,
                 "Администрация сайта",
                 new EmailTemplate()
                 {
                     BodyDescription = $"Вы сменили пароль"
                 });
-
-            return Ok(new 
-            { 
-                Success = true, 
-                Message = "Password was changed" 
-            });
         }
 
         [AllowAnonymous]
@@ -201,7 +186,8 @@ namespace InCase.Email.Api.Controllers
 
             ClaimsPrincipal? principal = _jwtService.GetClaimsToken(data.EmailToken);
 
-            if (principal is null) return Forbid("Invalid refresh token");
+            if (principal is null) 
+                return Forbid("Invalid refresh token");
 
             string id = principal.Claims
                 .Single(x => x.Type == ClaimTypes.NameIdentifier)
@@ -211,27 +197,22 @@ namespace InCase.Email.Api.Controllers
                 .Include(x => x.AdditionalInfo)
                 .FirstOrDefaultAsync(x => x.Id == Guid.Parse(id));
 
-            if (user == null) return NotFound();
+            if (user == null) 
+                return ResponseUtil.NotFound("User");
             if (!ValidationService.IsValidToken(in user, principal, "email"))
                 return Forbid("Access denied invalid email token");
 
-            await _emailService.SendNotifyToEmail(
+            user.AdditionalInfo!.DeletionDate = DateTime.UtcNow + TimeSpan.FromDays(30);
+
+            await context.SaveChangesAsync();
+
+            return await _emailService.SendNotifyToEmail(
                 user.Email!,
                 "Администрация сайта",
                 new EmailTemplate()
                 {
                     BodyDescription = $"Ваш аккаунт будет удален через 30 дней"
                 });
-
-            user.AdditionalInfo!.DeletionDate = DateTime.UtcNow + TimeSpan.FromDays(30);
-
-            await context.SaveChangesAsync();
-
-            return Ok(new 
-            { 
-                Success = true, 
-                Message = "Request for delete account was confirmated." 
-            });
         }
     }
 }
