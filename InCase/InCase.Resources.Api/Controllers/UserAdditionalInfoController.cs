@@ -44,26 +44,14 @@ namespace InCase.Resources.Api.Controllers
         [HttpGet("roles")]
         public async Task<IActionResult> GetRoles()
         {
-            await using ApplicationDbContext context = await _context.CreateDbContextAsync();
-
-            List<UserRole>? roles = await context.UserRoles
-                .AsNoTracking()
-                .ToListAsync();
-
-            return ResponseUtil.Ok(roles);
+            return await EndpointUtil.GetAll<UserRole>(_context);
         }
 
         [AllowAnonymous]
         [HttpGet("roles/{id}")]
         public async Task<IActionResult> GetRoleById(Guid id)
         {
-            await using ApplicationDbContext context = await _context.CreateDbContextAsync();
-
-            UserRole? role = await context.UserRoles
-                .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.Id == id);
-
-            return ResponseUtil.Ok(role);
+            return await EndpointUtil.GetById<UserRole>(id, _context);
         }
 
         [AuthorizeRoles(Roles.Owner, Roles.Bot)]

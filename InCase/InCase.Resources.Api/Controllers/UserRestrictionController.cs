@@ -4,7 +4,6 @@ using InCase.Domain.Entities.Resources;
 using InCase.Infrastructure.Data;
 using InCase.Infrastructure.Utils;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
@@ -118,88 +117,35 @@ namespace InCase.Resources.Api.Controllers
         [HttpGet("types")]
         public async Task<IActionResult> GetRestrictionType()
         {
-            await using ApplicationDbContext context = await _context.CreateDbContextAsync();
-
-            List<RestrictionType> types = await context.RestrictionTypes
-                .AsNoTracking()
-                .ToListAsync();
-
-            return ResponseUtil.Ok(types);
+            return await EndpointUtil.GetAll<RestrictionType>(_context);
         }
 
         [AuthorizeRoles(Roles.All)]
         [HttpGet("types/{id}")]
         public async Task<IActionResult> GetRestrictionTypeById(Guid id)
         {
-            await using ApplicationDbContext context = await _context.CreateDbContextAsync();
-
-            RestrictionType? type = await context.RestrictionTypes
-                .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.Id == id);
-
-            return ResponseUtil.Ok(type);
+            return await EndpointUtil.GetById<RestrictionType>(id, _context);
         }
 
         [AuthorizeRoles(Roles.Admin, Roles.Bot, Roles.Owner)]
         [HttpPost]
         public async Task<IActionResult> Create(UserRestrictionDto restrictionDto)
         {
-            await using ApplicationDbContext context = await _context.CreateDbContextAsync();
-
-            try
-            {
-                await context.UserRestrictions.AddAsync(restrictionDto.Convert());
-                await context.SaveChangesAsync();
-            }
-            catch (Exception ex)
-            {
-                return ResponseUtil.Error(ex);
-            }
-
-            return ResponseUtil.Ok(restrictionDto);
+            return await EndpointUtil.Create(restrictionDto.Convert(), _context);
         }
 
         [AuthorizeRoles(Roles.Admin, Roles.Bot, Roles.Owner)]
         [HttpPut]
         public async Task<IActionResult> Update(UserRestrictionDto restrictionDto)
         {
-            await using ApplicationDbContext context = await _context.CreateDbContextAsync();
-
-            UserRestriction? restriction = await context.UserRestrictions
-                .FirstOrDefaultAsync(x => x.Id == restrictionDto.Id);
-
-            if (restriction == null) 
-                return ResponseUtil.NotFound(nameof(UserRestriction));
-
-            try
-            {
-                context.Entry(restriction).CurrentValues.SetValues(restrictionDto.Convert());
-                await context.SaveChangesAsync();
-            }
-            catch (Exception ex)
-            {
-                return ResponseUtil.Error(ex);
-            }
-
-            return ResponseUtil.Ok(restrictionDto);
+            return await EndpointUtil.Update(restrictionDto.Convert(), _context);
         }
 
         [AuthorizeRoles(Roles.Admin, Roles.Bot, Roles.Owner)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            await using ApplicationDbContext context = await _context.CreateDbContextAsync();
-
-            UserRestriction? restriction = await context.UserRestrictions
-                .FirstOrDefaultAsync(x => x.Id == id);
-
-            if (restriction == null)
-                return ResponseUtil.NotFound(nameof(UserRestriction));
-
-            context.UserRestrictions.Remove(restriction);
-            await context.SaveChangesAsync();
-
-            return ResponseUtil.Ok(restriction);
+            return await EndpointUtil.Delete<UserRestriction>(id, _context);
         }
     }
 }

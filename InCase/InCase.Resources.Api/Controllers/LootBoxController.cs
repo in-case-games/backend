@@ -78,164 +78,49 @@ namespace InCase.Resources.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(LootBoxDto lootBox)
         {
-            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
-
-            try
-            {
-                await context.LootBoxes.AddAsync(lootBox.Convert());
-                await context.SaveChangesAsync();
-
-                return ResponseUtil.Ok(lootBox.Convert());
-            }
-            catch (Exception ex)
-            {
-                return ResponseUtil.Error(ex);
-            }
+            return await EndpointUtil.Create(lootBox.Convert(), _contextFactory);
         }
         [AuthorizeRoles(Roles.Admin, Roles.Bot, Roles.Owner)]
         [HttpPost("inventory")]
         public async Task<IActionResult> CreateInventory(LootBoxInventoryDto inventory)
         {
-            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
-
-            try
-            {
-                await context.LootBoxInventories.AddAsync(inventory.Convert());
-                await context.SaveChangesAsync();
-
-                return ResponseUtil.Ok(inventory);
-            }
-            catch (Exception ex)
-            {
-                return ResponseUtil.Error(ex);
-            }
+            return await EndpointUtil.Create(inventory.Convert(), _contextFactory);
         }
         [AuthorizeRoles(Roles.Admin, Roles.Bot, Roles.Owner)]
         [HttpPost("banners")]
         public async Task<IActionResult> CreateBanner(LootBoxBannerDto banner)
         {
-            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
-
-            try
-            {
-                await context.LootBoxBanners.AddAsync(banner.Convert());
-                await context.SaveChangesAsync();
-
-                return ResponseUtil.Ok(banner);
-            }
-            catch (Exception ex)
-            {
-                return ResponseUtil.Error(ex);
-            }
+            return await EndpointUtil.Create(banner.Convert(), _contextFactory);
         }
         [AuthorizeRoles(Roles.Admin, Roles.Bot, Roles.Owner)]
         [HttpPut]
         public async Task<IActionResult> Update(LootBoxDto lootBox)
         {
-            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
-
-            LootBox? oldBox = await context.LootBoxes
-                .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.Id == lootBox.Id);
-
-            if (oldBox is null)
-            {
-                return ResponseUtil.NotFound(nameof(LootBox));
-            }    
-
-            try
-            {
-                context.Entry(oldBox).CurrentValues.SetValues(lootBox.Convert());
-                await context.SaveChangesAsync();
-
-                return ResponseUtil.Ok(lootBox);
-            }
-            catch (Exception ex)
-            {
-                return ResponseUtil.Error(ex);
-            }
+            return await EndpointUtil.Update(lootBox.Convert(), _contextFactory);
         }
         [AuthorizeRoles(Roles.Admin, Roles.Bot, Roles.Owner)]
         [HttpPut("banners")]
         public async Task<IActionResult> UpdateBanner(LootBoxBannerDto banner)
         {
-            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
-
-            LootBoxBanner? oldBox = await context.LootBoxBanners
-                .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.Id == banner.Id);
-
-            if (oldBox is null)
-            {
-                return ResponseUtil.NotFound(nameof(LootBoxBanner));
-            }
-
-            try
-            {
-                context.Entry(oldBox).CurrentValues.SetValues(banner.Convert());
-                await context.SaveChangesAsync();
-
-                return ResponseUtil.Ok(banner);
-            }
-            catch (Exception ex)
-            {
-                return ResponseUtil.Error(ex);
-            }
+            return await EndpointUtil.Update(banner.Convert(), _contextFactory);
         }
         [AuthorizeRoles(Roles.Admin, Roles.Bot, Roles.Owner)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
-
-            LootBox? lootBox = await context.LootBoxes
-                .AsNoTracking()
-                .Include(x => x.Game)
-                .FirstOrDefaultAsync(x => x.Id == id);
-
-            if (lootBox is null)
-                return ResponseUtil.NotFound(nameof(LootBox));
-
-            context.LootBoxes.Remove(lootBox);
-            await context.SaveChangesAsync();
-
-            return ResponseUtil.Ok(lootBox);
+            return await EndpointUtil.Delete<LootBox>(id, _contextFactory);
         }
         [AuthorizeRoles(Roles.Admin, Roles.Bot, Roles.Owner)]
         [HttpDelete("banners/{id}")]
         public async Task<IActionResult> DeleteBanner(Guid id)
         {
-            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
-
-            LootBoxBanner? banner = await context.LootBoxBanners
-                .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.Id == id);
-
-            if (banner is null)
-                return ResponseUtil.NotFound(nameof(LootBoxBanner));
-
-            context.LootBoxBanners.Remove(banner);
-            await context.SaveChangesAsync();
-
-            return ResponseUtil.Ok(banner);
+            return await EndpointUtil.Delete<LootBoxBanner>(id, _contextFactory);
         }
         [AuthorizeRoles(Roles.Admin, Roles.Bot, Roles.Owner)]
         [HttpDelete("inventory/{id}")]
         public async Task<IActionResult> DeleteItemFromInventory(Guid id)
         {
-            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
-
-            LootBoxInventory? inventory = await context.LootBoxInventories
-                .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.Id == id);
-
-            if (inventory is null)
-                return ResponseUtil.NotFound(nameof(LootBoxInventory));
-
-            context.LootBoxInventories.Remove(inventory);
-            await context.SaveChangesAsync();
-
-            return ResponseUtil.Ok(inventory);
+            return await EndpointUtil.Delete<LootBoxInventory>(id, _contextFactory);
         }
 
     }

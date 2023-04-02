@@ -86,13 +86,7 @@ namespace InCase.Resources.Api.Controllers
         [HttpGet("images")]
         public async Task<IActionResult> GetImages()
         {
-            await using ApplicationDbContext context = await _context.CreateDbContextAsync();
-
-            List<ReviewImage> images = await context.ReviewImages
-                .AsNoTracking()
-                .ToListAsync();
-
-            return ResponseUtil.Ok(images);
+            return await EndpointUtil.GetAll<ReviewImage>(_context);
         }
 
         [AllowAnonymous]
@@ -113,13 +107,7 @@ namespace InCase.Resources.Api.Controllers
         [HttpGet("images/{id}")]
         public async Task<IActionResult> GetImageById(Guid id)
         {
-            await using ApplicationDbContext context = await _context.CreateDbContextAsync();
-
-            ReviewImage? image = await context.ReviewImages
-                .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.Id == id);
-
-            return ResponseUtil.Ok(image);
+            return await EndpointUtil.GetById<ReviewImage>(id, _context);
         }
 
         [AuthorizeRoles(Roles.User)]
