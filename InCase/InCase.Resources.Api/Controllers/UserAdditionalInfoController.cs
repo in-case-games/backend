@@ -3,6 +3,7 @@ using InCase.Domain.Dtos;
 using InCase.Domain.Entities.Resources;
 using InCase.Infrastructure.Data;
 using InCase.Infrastructure.Utils;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
@@ -22,6 +23,7 @@ namespace InCase.Resources.Api.Controllers
         {
             _context = context;
         }
+
         [AuthorizeRoles(Roles.All)]
         [HttpGet]
         public async Task<IActionResult> Get()
@@ -36,6 +38,32 @@ namespace InCase.Resources.Api.Controllers
             return info is null ?
                 ResponseUtil.NotFound(nameof(UserAdditionalInfo)) :
                 ResponseUtil.Ok(info);
+        }
+
+        [AllowAnonymous]
+        [HttpGet("role")]
+        public async Task<IActionResult> GetRoles()
+        {
+            await using ApplicationDbContext context = await _context.CreateDbContextAsync();
+
+            List<UserRole>? roles = await context.UserRoles
+                .AsNoTracking()
+                .ToListAsync();
+
+            return ResponseUtil.Ok(roles);
+        }
+
+        [AllowAnonymous]
+        [HttpGet("role/{id}")]
+        public async Task<IActionResult> GetRoleById(Guid id)
+        {
+            await using ApplicationDbContext context = await _context.CreateDbContextAsync();
+
+            UserRole? role = await context.UserRoles
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id == id);
+
+            return ResponseUtil.Ok(role);
         }
 
         [AuthorizeRoles(Roles.Owner, Roles.Bot)]
