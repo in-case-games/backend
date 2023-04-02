@@ -41,7 +41,7 @@ namespace InCase.Resources.Api.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("role")]
+        [HttpGet("roles")]
         public async Task<IActionResult> GetRoles()
         {
             await using ApplicationDbContext context = await _context.CreateDbContextAsync();
@@ -54,7 +54,7 @@ namespace InCase.Resources.Api.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("role/{id}")]
+        [HttpGet("roles/{id}")]
         public async Task<IActionResult> GetRoleById(Guid id)
         {
             await using ApplicationDbContext context = await _context.CreateDbContextAsync();

@@ -28,21 +28,21 @@ namespace InCase.Infrastructure.Utils
                 Success = false,
                 Data = ex.InnerException?.Message });
         }
-        public static IActionResult SendEmail()
+        public static IActionResult Accept(string message = "")
         {
             return new AcceptedResult(location: null, new
             {
                 Success = true,
-                Data = $"Message was sended on your email"
+                Data = message
             });
+        }
+        public static IActionResult SendEmail()
+        {
+            return Accept("Message was sended on your email");
         }
         public static IActionResult Delete(string name)
         {
-            return new AcceptedResult(location: null, new
-            {
-                Success = true,
-                Data = $"{name} is succesfully removed"
-            });
+            return Accept($"{name} is succesfully removed");
         }
     }
 }

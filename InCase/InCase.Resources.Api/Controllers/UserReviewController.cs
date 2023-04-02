@@ -39,7 +39,7 @@ namespace InCase.Resources.Api.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("id/{id}")]
+        [HttpGet("{id}")]
         public async Task<IActionResult> GetById(Guid id)
         {
             await using ApplicationDbContext context = await _context.CreateDbContextAsync();
@@ -53,7 +53,7 @@ namespace InCase.Resources.Api.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("user/{userId}")]
+        [HttpGet("{userId}")]
         public async Task<IActionResult> GetByUserId(Guid userId)
         {
             await using ApplicationDbContext context = await _context.CreateDbContextAsync();
@@ -68,7 +68,7 @@ namespace InCase.Resources.Api.Controllers
         }
 
         [AuthorizeRoles(Roles.All)]
-        [HttpGet("user")]
+        [HttpGet("reviews")]
         public async Task<IActionResult> GetByUser()
         {
             await using ApplicationDbContext context = await _context.CreateDbContextAsync();
@@ -83,7 +83,7 @@ namespace InCase.Resources.Api.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("image")]
+        [HttpGet("images")]
         public async Task<IActionResult> GetImages()
         {
             await using ApplicationDbContext context = await _context.CreateDbContextAsync();
@@ -96,7 +96,7 @@ namespace InCase.Resources.Api.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("{reviewId}/image")]
+        [HttpGet("{reviewId}/images")]
         public async Task<IActionResult> GetImagesByReviewId(Guid reviewId)
         {
             await using ApplicationDbContext context = await _context.CreateDbContextAsync();
@@ -110,7 +110,7 @@ namespace InCase.Resources.Api.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("image/{id}")]
+        [HttpGet("images/{id}")]
         public async Task<IActionResult> GetImageById(Guid id)
         {
             await using ApplicationDbContext context = await _context.CreateDbContextAsync();
@@ -145,7 +145,7 @@ namespace InCase.Resources.Api.Controllers
         }
 
         [AuthorizeRoles(Roles.User)]
-        [HttpPost("image")]
+        [HttpPost("images")]
         public async Task<IActionResult> CreateImage(ReviewImageDto imageDto)
         {
             await using ApplicationDbContext context = await _context.CreateDbContextAsync();
@@ -255,7 +255,7 @@ namespace InCase.Resources.Api.Controllers
         }
 
         [AuthorizeRoles(Roles.All)]
-        [HttpDelete("{id}/image/{imageId}")]
+        [HttpDelete("{id}/images/{imageId}")]
         public async Task<IActionResult> DeleteImage(Guid id, Guid imageId)
         {
             await using ApplicationDbContext context = await _context.CreateDbContextAsync();
@@ -289,7 +289,7 @@ namespace InCase.Resources.Api.Controllers
         }
 
         [AuthorizeRoles(Roles.All)]
-        [HttpDelete("admin/image/{id}")]
+        [HttpDelete("admin/images/{id}")]
         public async Task<IActionResult> DeleteAdminImage(Guid id)
         {
             await using ApplicationDbContext context = await _context.CreateDbContextAsync();

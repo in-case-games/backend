@@ -26,7 +26,7 @@ namespace InCase.Resources.Api.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("id/{id}")]
+        [HttpGet("{id}")]
         public async Task<IActionResult> GetById(Guid id)
         {
             await using ApplicationDbContext context = await _context.CreateDbContextAsync();
@@ -55,7 +55,7 @@ namespace InCase.Resources.Api.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("{userId}")]
+        [HttpGet("users/{userId}")]
         public async Task<IActionResult> GetByUserId(Guid userId)
         {
             await using ApplicationDbContext context = await _context.CreateDbContextAsync();
@@ -115,7 +115,7 @@ namespace InCase.Resources.Api.Controllers
         }
 
         [AuthorizeRoles(Roles.All)]
-        [HttpGet("type")]
+        [HttpGet("types")]
         public async Task<IActionResult> GetRestrictionType()
         {
             await using ApplicationDbContext context = await _context.CreateDbContextAsync();
@@ -128,7 +128,7 @@ namespace InCase.Resources.Api.Controllers
         }
 
         [AuthorizeRoles(Roles.All)]
-        [HttpGet("type/{id}")]
+        [HttpGet("types/{id}")]
         public async Task<IActionResult> GetRestrictionTypeById(Guid id)
         {
             await using ApplicationDbContext context = await _context.CreateDbContextAsync();
