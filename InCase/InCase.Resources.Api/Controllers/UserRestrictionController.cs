@@ -31,7 +31,7 @@ namespace InCase.Resources.Api.Controllers
             await using ApplicationDbContext context = await _context.CreateDbContextAsync();
 
             UserRestriction? restriction = await context.UserRestrictions
-                .Include(x => x.Type)
+                .Include(i => i.Type)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == id);
 
@@ -45,7 +45,7 @@ namespace InCase.Resources.Api.Controllers
             await using ApplicationDbContext context = await _context.CreateDbContextAsync();
 
             List<UserRestriction> restrictions = await context.UserRestrictions
-                .Include(x => x.Type)
+                .Include(i => i.Type)
                 .AsNoTracking()
                 .Where(w => w.UserId == UserId)
                 .ToListAsync();
@@ -60,7 +60,7 @@ namespace InCase.Resources.Api.Controllers
             await using ApplicationDbContext context = await _context.CreateDbContextAsync();
 
             List<UserRestriction> restrictions = await context.UserRestrictions
-                .Include(x => x.Type)
+                .Include(i => i.Type)
                 .AsNoTracking()
                 .Where(w => w.UserId == userId)
                 .ToListAsync();
@@ -75,7 +75,7 @@ namespace InCase.Resources.Api.Controllers
             await using ApplicationDbContext context = await _context.CreateDbContextAsync();
 
             List<UserRestriction> restrictions = await context.UserRestrictions
-                .Include(x => x.Type)
+                .Include(i => i.Type)
                 .AsNoTracking()
                 .Where(w => w.UserId == userId && w.OwnerId == ownerId)
                 .ToListAsync();
@@ -90,7 +90,7 @@ namespace InCase.Resources.Api.Controllers
             await using ApplicationDbContext context = await _context.CreateDbContextAsync();
 
             List<UserRestriction> restrictions = await context.UserRestrictions
-                .Include(x => x.Type)
+                .Include(i => i.Type)
                 .AsNoTracking()
                 .Where(w => w.OwnerId == UserId)
                 .ToListAsync();
@@ -105,7 +105,7 @@ namespace InCase.Resources.Api.Controllers
             await using ApplicationDbContext context = await _context.CreateDbContextAsync();
 
             List<UserRestriction> restrictions = await context.UserRestrictions
-                .Include(x => x.Type)
+                .Include(i => i.Type)
                 .AsNoTracking()
                 .Where(w => w.UserId == userId && w.OwnerId == UserId)
                 .ToListAsync();

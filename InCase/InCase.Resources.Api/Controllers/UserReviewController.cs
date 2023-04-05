@@ -249,7 +249,7 @@ namespace InCase.Resources.Api.Controllers
             await using ApplicationDbContext context = await _context.CreateDbContextAsync();
 
             UserReview? review = await context.UserReviews
-                .Include(x => x.Images)
+                .Include(i => i.Images)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == id);
 

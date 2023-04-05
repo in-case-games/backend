@@ -13,10 +13,12 @@ namespace InCase.Resources.Api.Controllers
     public class SiteStatisticsController : ControllerBase
     {
         private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
+
         public SiteStatisticsController(IDbContextFactory<ApplicationDbContext> contextFactory)
         {
             _contextFactory = contextFactory;
         }
+
         [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> Get()
@@ -25,20 +27,21 @@ namespace InCase.Resources.Api.Controllers
 
             SiteStatistics? statistics = await context.SiteStatistics
                 .AsNoTracking()
-                .FirstAsync();
+                .FirstOrDefaultAsync();
 
             if (statistics is null)
                 return ResponseUtil.NotFound(nameof(SiteStatistics));
 
             return ResponseUtil.Ok(statistics);
         }
+
         [AuthorizeRoles(Roles.Bot)]
         [HttpPut]
         public async Task<IActionResult> Update(SiteStatistics statistics)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            if (await context.SiteStatistics.FindAsync(statistics.Id) is null)
+            if (await context.SiteStatistics.AnyAsync(a => a.Id == statistics.Id))
                 return ResponseUtil.NotFound(nameof(SiteStatistics));
 
             try

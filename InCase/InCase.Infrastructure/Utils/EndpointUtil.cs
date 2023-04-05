@@ -12,22 +12,26 @@ namespace InCase.Infrastructure.Utils
             await using ApplicationDbContext context = await contextFactory.CreateDbContextAsync();
 
             T? result = await context.Set<T>()
-                .FindAsync(id);
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id == id);
 
             if (result is null)
                 return ResponseUtil.NotFound(typeof(T).Name);
 
             return ResponseUtil.Ok(result);
         }
+
         public static async Task<IActionResult> GetAll<T>(IDbContextFactory<ApplicationDbContext> contextFactory) where T : BaseEntity
         {
             await using ApplicationDbContext context = await contextFactory.CreateDbContextAsync();
 
             List<T> result = await context.Set<T>()
+                .AsNoTracking()
                 .ToListAsync();
 
             return ResponseUtil.Ok(result);
         }
+
         public static async Task<IActionResult> Create<T>(T entity, IDbContextFactory<ApplicationDbContext> contextFactory) where T : BaseEntity
         {
             await using ApplicationDbContext context = await contextFactory.CreateDbContextAsync();
@@ -44,14 +48,16 @@ namespace InCase.Infrastructure.Utils
                 return ResponseUtil.Error(ex);
             }
         }
+
         public static async Task<IActionResult> Update<T>(T entity, IDbContextFactory<ApplicationDbContext> contextFactory) where T : BaseEntity
         {
             await using ApplicationDbContext context = await contextFactory.CreateDbContextAsync();
 
             T? result = await context.Set<T>()
-                .FindAsync(entity.Id);
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id == entity.Id);
 
-            if (result == null)
+            if (result is null)
                 return ResponseUtil.NotFound(typeof(T).Name);
 
             try
@@ -66,12 +72,14 @@ namespace InCase.Infrastructure.Utils
                 return ResponseUtil.Error(ex);
             }
         }
+
         public static async Task<IActionResult> Delete<T>(Guid id, IDbContextFactory<ApplicationDbContext> contextFactory) where T : BaseEntity
         {
             await using ApplicationDbContext context = await contextFactory.CreateDbContextAsync();
 
             T? result = await context.Set<T>()
-                .FindAsync(id);
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id == id);
 
             if (result is null)
                 return ResponseUtil.NotFound(typeof(T).Name);

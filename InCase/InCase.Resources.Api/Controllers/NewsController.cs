@@ -26,8 +26,8 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            IEnumerable<News> news = await context.News
-                .Include(x => x.Images)
+            List<News> news = await context.News
+                .Include(i => i.Images)
                 .ToListAsync();
 
             return ResponseUtil.Ok(news);
@@ -40,7 +40,7 @@ namespace InCase.Resources.Api.Controllers
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             News? news = await context.News
-                .Include(x => x.Images)
+                .Include(i => i.Images)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == id);
 
@@ -65,19 +65,16 @@ namespace InCase.Resources.Api.Controllers
 
             try
             {
-                if (await context.News
-                .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.Id == id) is null)
+                if (await context.News.AnyAsync(a => a.Id == id))
                 {
+                    newsImage.NewsId = id;
+                    await context.NewsImages.AddAsync(newsImage.Convert());
+                    await context.SaveChangesAsync();
 
-                    return ResponseUtil.NotFound(nameof(NewsImage));
+                    return ResponseUtil.Ok(newsImage);
                 }
 
-                newsImage.NewsId = id;
-                await context.NewsImages.AddAsync(newsImage.Convert());
-                await context.SaveChangesAsync();
-
-                return ResponseUtil.Ok(newsImage);
+                return ResponseUtil.NotFound(nameof(NewsImage));
             }
             catch (Exception ex)
             {

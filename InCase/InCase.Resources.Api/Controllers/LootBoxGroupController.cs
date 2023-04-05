@@ -15,35 +15,39 @@ namespace InCase.Resources.Api.Controllers
     public class LootBoxGroupController : ControllerBase
     {
         private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
+
         public LootBoxGroupController(IDbContextFactory<ApplicationDbContext> contextFactory)
         {
             _contextFactory = contextFactory;
         }
+
+        [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> Get()
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             List<LootBoxGroup> groups = await context.LootBoxGroups
+                .Include(i => i.Group)
+                .Include(i => i.Box)
+                .Include(i => i.Game)
                 .AsNoTracking()
-                .Include(x => x.Group)
-                .Include(x => x.Box)
-                .Include(x => x.Game)
                 .ToListAsync();
 
             return ResponseUtil.Ok(groups);
         }
+
         [AllowAnonymous]
         [HttpGet("{id}")]
-        public async Task<IActionResult> Get(Guid id)
+        public async Task<IActionResult> GetById(Guid id)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             LootBoxGroup? group = await context.LootBoxGroups
+                .Include(i => i.Group)
+                .Include(i => i.Box)
+                .Include(i => i.Game)
                 .AsNoTracking()
-                .Include(x => x.Group)
-                .Include(x => x.Box)
-                .Include(x => x.Game)
                 .FirstOrDefaultAsync(x => x.Id == id);
 
             if (group is null)
@@ -51,6 +55,7 @@ namespace InCase.Resources.Api.Controllers
 
             return ResponseUtil.Ok(group);
         }
+
         [AllowAnonymous]
         [HttpGet("groups")]
         public async Task<IActionResult> GetGroups()
@@ -63,9 +68,10 @@ namespace InCase.Resources.Api.Controllers
 
             return ResponseUtil.Ok(groups);
         }
+
         [AllowAnonymous]
         [HttpGet("groups/{id}")]
-        public async Task<IActionResult> GetGroup(Guid id)
+        public async Task<IActionResult> GetGroupById(Guid id)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
@@ -78,9 +84,10 @@ namespace InCase.Resources.Api.Controllers
 
             return ResponseUtil.Ok(group);
         }
+
         [AllowAnonymous]
         [HttpGet("groups/{name}")]
-        public async Task<IActionResult> GetGroup(string name)
+        public async Task<IActionResult> GetGroupByName(string name)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
@@ -93,6 +100,7 @@ namespace InCase.Resources.Api.Controllers
 
             return ResponseUtil.Ok(group);
         }
+
         [AuthorizeRoles(Roles.Owner, Roles.Admin)]
         [HttpPost]
         public async Task<IActionResult> Create(LootBoxGroupDto lootBoxGroup)
@@ -111,6 +119,7 @@ namespace InCase.Resources.Api.Controllers
                 return ResponseUtil.Error(ex);
             }
         }
+
         [AuthorizeRoles(Roles.Owner, Roles.Admin)]
         [HttpPost("groups")]
         public async Task<IActionResult> CreateGroup(GroupLootBox groupLootBox)
@@ -129,6 +138,7 @@ namespace InCase.Resources.Api.Controllers
                 return ResponseUtil.Error(ex);
             }
         }
+
         [AuthorizeRoles(Roles.Owner, Roles.Admin)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
@@ -146,6 +156,7 @@ namespace InCase.Resources.Api.Controllers
 
             return ResponseUtil.Delete(nameof(LootBoxGroup));
         }
+
         [AuthorizeRoles(Roles.Owner, Roles.Admin)]
         [HttpDelete("groups/{id}")]
         public async Task<IActionResult> DeleteGroup(Guid id)

@@ -31,7 +31,7 @@ namespace InCase.Resources.Api.Controllers
             await using ApplicationDbContext context = await _context.CreateDbContextAsync();
 
             UserAdditionalInfo? info = await context.UserAdditionalInfos
-                .Include(x => x.Role)
+                .Include(i => i.Role)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.UserId == UserId);
 

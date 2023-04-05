@@ -12,10 +12,12 @@ namespace InCase.Resources.Api.Controllers
     public class SiteStatisticsAdminController : ControllerBase
     {
         private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
+
         public SiteStatisticsAdminController(IDbContextFactory<ApplicationDbContext> contextFactory)
         {
             _contextFactory = contextFactory;
         }
+
         [AuthorizeRoles(Roles.Admin)]
         [HttpGet]
         public async Task<IActionResult> Get()
@@ -24,7 +26,7 @@ namespace InCase.Resources.Api.Controllers
 
             SiteStatisticsAdmin? statistics = await context.SiteStatisticsAdmins
                 .AsNoTracking()
-                .FirstAsync();
+                .FirstOrDefaultAsync();
 
             if (statistics is null)
                 return ResponseUtil.NotFound(nameof(SiteStatisticsAdmin));

@@ -15,12 +15,15 @@ namespace InCase.Resources.Api.Controllers
     public class UserController : ControllerBase
     {
         private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
+
         private Guid UserId => Guid
             .Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
+
         public UserController(IDbContextFactory<ApplicationDbContext> contextFactory)
         {
             _contextFactory = contextFactory;
         }
+
         [AuthorizeRoles(Roles.All)]
         [HttpGet]
         public async Task<IActionResult> Get()
@@ -28,18 +31,19 @@ namespace InCase.Resources.Api.Controllers
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             List<User> users = await context.Users
-                .AsNoTracking()
                 .Include(x => x.AdditionalInfo)
+                .AsNoTracking()
                 .ToListAsync();
 
             users.ForEach(x =>
             {
-                x.PasswordSalt = "denied";
-                x.PasswordHash = "denied";
+                x.PasswordSalt = null;
+                x.PasswordHash = null;
             });
 
             return ResponseUtil.Ok(users);
         }
+
         [AuthorizeRoles(Roles.All)]
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(Guid id)
@@ -47,8 +51,8 @@ namespace InCase.Resources.Api.Controllers
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             User? user = await context.Users
-                .AsNoTracking()
                 .Include(x => x.AdditionalInfo)
+                .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == id);
 
             if (user is null)
@@ -59,6 +63,7 @@ namespace InCase.Resources.Api.Controllers
 
             return ResponseUtil.Ok(user);
         }
+
         [AuthorizeRoles(Roles.All)]
         [HttpGet("history/promocodes/{userId}")]
         public async Task<IActionResult> GetPromocodes(Guid userId)
@@ -66,13 +71,14 @@ namespace InCase.Resources.Api.Controllers
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             List<UserHistoryPromocode> promocodes = await context.UserHistoryPromocodes
+                .Include(i => i.Promocode)
                 .AsNoTracking()
-                .Include(x => x.Promocode)
                 .Where(x => x.UserId == userId)
                 .ToListAsync();
 
             return ResponseUtil.Ok(promocodes);
         }
+
         [AuthorizeRoles(Roles.All)]
         [HttpGet("history/withdrawns/{userId}")]
         public async Task<IActionResult> GetWithdrawns(Guid userId)
@@ -81,12 +87,13 @@ namespace InCase.Resources.Api.Controllers
 
             List<UserHistoryWithdrawn> withdrawns = await context.UserHistoryWithdrawns
                 .AsNoTracking()
-                .Include(x => x.Item)
+                .Include(i => i.Item)
                 .Where(x => x.UserId == userId)
                 .ToListAsync();
 
             return ResponseUtil.Ok(withdrawns);
         }
+
         [AuthorizeRoles(Roles.All)]
         [HttpGet("history/openings/{userId}")]
         public async Task<IActionResult> GetOpenings(Guid userId)
@@ -94,14 +101,15 @@ namespace InCase.Resources.Api.Controllers
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             List<UserHistoryOpening> openings = await context.UserHistoryOpenings
+                .Include(i => i.Box)
+                .Include(i => i.Item)
                 .AsNoTracking()
-                .Include(x => x.Box)
-                .Include(x => x.Item)
                 .Where(x => x.UserId == userId)
                 .ToListAsync();
 
             return ResponseUtil.Ok(openings);
         }
+
         [AuthorizeRoles(Roles.All)]
         [HttpGet("banners/{userId}")]
         public async Task<IActionResult> GetPathBanners(Guid userId)
@@ -109,14 +117,15 @@ namespace InCase.Resources.Api.Controllers
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             List<UserPathBanner> banners = await context.UserPathBanners
+                .Include(i => i.Banner)
+                .Include(i => i.Item)
                 .AsNoTracking()
-                .Include(x => x.Banner)
-                .Include(x => x.Item)
                 .Where(x => x.UserId == userId)
                 .ToListAsync();
 
             return ResponseUtil.Ok(banners);
         }
+
         [AuthorizeRoles(Roles.All)]
         [HttpGet("inventory/{userId}")]
         public async Task<IActionResult> GetInventory(Guid userId)
@@ -124,12 +133,13 @@ namespace InCase.Resources.Api.Controllers
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             List<UserInventory> inventories = await context.UserInventories
+                .Include(i => i.Item)
                 .AsNoTracking()
-                .Include(x => x.Item)
                 .ToListAsync();
 
             return ResponseUtil.Ok(inventories);
         }
+
         [AuthorizeRoles(Roles.All)]
         [HttpGet("history/payments/{userId}")]
         public async Task<IActionResult> GetPayments(Guid id)
@@ -143,6 +153,7 @@ namespace InCase.Resources.Api.Controllers
 
             return ResponseUtil.Ok(payments);
         }
+
         [AuthorizeRoles(Roles.All)]
         [HttpPost("promocodes")]
         public async Task<IActionResult> ActivatePromocode(UserHistoryPromocodeDto promocode)
@@ -152,6 +163,7 @@ namespace InCase.Resources.Api.Controllers
 
             return Forbid("Access denied");
         }
+
         [AuthorizeRoles(Roles.All)]
         [HttpPost("payments")]
         public async Task<IActionResult> CreditPayment(UserHistoryPaymentDto paymentDto)
@@ -161,6 +173,7 @@ namespace InCase.Resources.Api.Controllers
 
             return Forbid("Access denied");
         }
+
         [AuthorizeRoles(Roles.All)]
         [HttpPost("openings")]
         public async Task<IActionResult> CreateOpening(UserHistoryOpeningDto opening)
@@ -170,6 +183,7 @@ namespace InCase.Resources.Api.Controllers
 
             return Forbid("Access denied");
         }
+
         [AuthorizeRoles(Roles.All)]
         [HttpPost("banners")]
         public async Task<IActionResult> CreatePathBanner(UserPathBannerDto banner)
@@ -179,6 +193,7 @@ namespace InCase.Resources.Api.Controllers
 
             return Forbid("Access denied");
         }
+
         [AuthorizeRoles(Roles.All)]
         [HttpPost("withdrawns")]
         public async Task<IActionResult> CreateWithdrawn(UserHistoryWithdrawnDto withdrawn)
@@ -188,6 +203,7 @@ namespace InCase.Resources.Api.Controllers
 
             return Forbid("Access denied");
         }
+
         [AuthorizeRoles(Roles.All)]
         [HttpPost("items")]
         public async Task<IActionResult> AddItemToInventory(UserInventoryDto inventory)
@@ -197,6 +213,7 @@ namespace InCase.Resources.Api.Controllers
 
             return Forbid("Access denied");
         }
+
         [AuthorizeRoles(Roles.All)]
         [HttpDelete("items")]
         public async Task<IActionResult> RemoveItem()
