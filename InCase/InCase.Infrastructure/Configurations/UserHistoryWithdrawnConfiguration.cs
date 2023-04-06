@@ -11,6 +11,23 @@ namespace InCase.Infrastructure.Configurations
             base.Configure(builder);
 
             builder.ToTable(nameof(UserHistoryWithdrawn));
+
+            builder.HasIndex(i => i.UserId)
+                .IsUnique(false);
+            builder.HasIndex(i => i.ItemId)
+                .IsUnique(false);
+
+            builder.Property(p => p.Date)
+                .IsRequired();
+
+            builder.HasOne(o => o.User)
+                .WithMany(m => m.HistoryWithdrawns)
+                .HasForeignKey(o => o.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+            builder.HasOne(o => o.Item)
+                .WithMany(m => m.HistoryWithdrawns)
+                .HasForeignKey(o => o.ItemId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

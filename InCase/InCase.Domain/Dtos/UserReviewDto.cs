@@ -7,7 +7,6 @@ namespace InCase.Domain.Dtos
     {
         public string? Title { get; set; }
         public string? Content { get; set; }
-        public string? Image { get; set; }
         public bool IsApproved { get; set; } = false;
 
         public Guid UserId { get; set; }
@@ -16,9 +15,7 @@ namespace InCase.Domain.Dtos
         {
             Title = Title,
             Content = Content,
-            Image = Image,
             IsApproved = IsApproved,
-
             UserId = UserId
         };
     }

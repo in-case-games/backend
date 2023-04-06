@@ -9,7 +9,7 @@ namespace InCase.Domain.Dtos
         public decimal Cost { get; set; }
         public decimal Balance { get; set; } = 0;
         public decimal VirtualBalance { get; set; } = 0;
-        public string? Image { get; set; } = "";
+        public string? ImageUri { get; set; } = "";
         public bool IsLocked { get; set; } = false;
 
         public Guid GameId { get; set; }
@@ -20,7 +20,7 @@ namespace InCase.Domain.Dtos
             Cost = Cost,
             Balance = Balance,
             VirtualBalance = VirtualBalance,
-            Image = Image,
+            ImageUri = ImageUri,
             IsLocked = IsLocked,
             GameId = GameId
         };

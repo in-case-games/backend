@@ -11,6 +11,14 @@ namespace InCase.Infrastructure.Configurations
             base.Configure(builder);
 
             builder.ToTable(nameof(News));
+
+            builder.Property(p => p.Title)
+                .HasMaxLength(50)
+                .IsRequired();
+            builder.Property(p => p.Date)
+                .IsRequired();
+            builder.Property(p => p.Content)
+                .IsRequired();
         }
     }
 }

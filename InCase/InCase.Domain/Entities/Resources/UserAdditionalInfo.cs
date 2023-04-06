@@ -1,15 +1,17 @@
 ﻿using System.Text.Json.Serialization;
 using InCase.Domain.Dtos;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace InCase.Domain.Entities.Resources
 {
     public class UserAdditionalInfo : BaseEntity
     {
         public decimal Balance { get; set; } = 0;
-        public string? Image { get; set; } = "";
+        public string? ImageUri { get; set; } = "";
         public bool IsNotifyEmail { get; set; } = false;
         public bool IsGuestMode { get; set; } = false;
+        public bool IsConfirmed { get; set; } = false;
+        public DateTime CreationDate { get; set; } = DateTime.UtcNow;
+        public DateTime? DeletionDate { get; set; }
 
         [JsonIgnore]
         public Guid RoleId { get; set; }
@@ -24,11 +26,14 @@ namespace InCase.Domain.Entities.Resources
         public UserAdditionalInfoDto Convert() => new()
         {
             Balance = Balance,
-            Image = Image,
+            ImageUri = ImageUri,
             IsNotifyEmail = IsNotifyEmail,
+            IsGuestMode = IsGuestMode,
+            IsConfirmed = IsConfirmed,
+            CreationDate = CreationDate,
+            DeletionDate = DeletionDate,
             RoleId = Role?.Id ?? RoleId,
-            UserId = User?.Id ?? UserId,
-            IsGuestMode = IsGuestMode
+            UserId = User?.Id ?? UserId
         };
     }
 }

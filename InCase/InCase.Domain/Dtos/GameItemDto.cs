@@ -7,22 +7,24 @@ namespace InCase.Domain.Dtos
     {
         public string? Name { get; set; }
         public decimal Cost { get; set; }
-        public string? Image { get; set; }
+        public string? ImageUri { get; set; }
         public string? IdForPlatform { get; set; }
 
         public Guid GameId { get; set; }
-        public Guid TypeId { get; set; }
-        public Guid RarityId { get; set; }
+        public Guid? TypeId { get; set; }
+        public Guid? RarityId { get; set; }
+        public Guid? QualityId { get; set; }
 
         public GameItem Convert() => new()
         {
             Name = Name,
             Cost = Cost,
-            Image = Image,
+            ImageUri = ImageUri,
             IdForPlatform = IdForPlatform,
             TypeId = TypeId,
             RarityId = RarityId,
-            GameId = GameId
+            GameId = GameId,
+            QualityId = QualityId,
         };
     }
 }

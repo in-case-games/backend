@@ -6,7 +6,7 @@ namespace InCase.Domain.Dtos
     public class PromocodeDto : BaseEntity
     {
         public string? Name { get; set; }
-        public string? Discount { get; set; }
+        public int Discount { get; set; }
         public int NumberActivations { get; set; }
         public DateTime ExpirationDate { get; set; }
 

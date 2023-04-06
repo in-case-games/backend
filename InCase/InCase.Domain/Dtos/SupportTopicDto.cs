@@ -11,7 +11,6 @@ namespace InCase.Domain.Dtos
         public bool IsClosed { get; set; } = false;
 
         public Guid UserId { get; set; }
-        public Guid? SupportId { get; set; }
 
         public SupportTopic Convert() => new()
         {
@@ -19,8 +18,7 @@ namespace InCase.Domain.Dtos
             Content = Content,
             Date = Date,
             IsClosed = IsClosed,
-            UserId = UserId,
-            SupportId = SupportId
+            UserId = UserId
         };
     }
 }

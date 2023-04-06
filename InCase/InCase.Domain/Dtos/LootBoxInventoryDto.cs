@@ -8,7 +8,6 @@ namespace InCase.Domain.Dtos
         public int NumberItems { get; set; }
         public int ChanceWining { get; set; }
 
-        public Guid? QualityId { get; set; }
         public Guid ItemId { get; set; }
         public Guid BoxId { get; set; }
 
@@ -16,7 +15,6 @@ namespace InCase.Domain.Dtos
         {
             NumberItems = NumberItems,
             ChanceWining = ChanceWining,
-            QualityId = QualityId,
             ItemId = ItemId,
             BoxId = BoxId
         };

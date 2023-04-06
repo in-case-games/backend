@@ -3,9 +3,18 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.33516.290
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InCase.Domain", "InCase.Domain\InCase.Domain.csproj", "{A6655C17-241F-4FB8-BA26-4F75FAF37DE7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InCase.Domain", "InCase.Domain\InCase.Domain.csproj", "{A6655C17-241F-4FB8-BA26-4F75FAF37DE7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InCase.Infrastructure", "InCase.Infrastructure\InCase.Infrastructure.csproj", "{5A06BC8C-39D3-485C-9624-6328C6F1E089}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InCase.Infrastructure", "InCase.Infrastructure\InCase.Infrastructure.csproj", "{5A06BC8C-39D3-485C-9624-6328C6F1E089}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InCase.Resources.Api", "InCase.Resources.Api\InCase.Resources.Api.csproj", "{AFB0A887-2FBB-4328-9831-E98A411C4C16}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InCase.Authentication.Api", "InCase.Authentication.Api\InCase.Authentication.Api.csproj", "{EABCD4A1-E4B4-4FDA-B7FA-54E56E6E2D25}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InCase.Email.Api", "InCase.Email.Api\InCase.Email.Api.csproj", "{BC274453-43FA-41F5-8784-6EC2725D5DA8}"
+	ProjectSection(ProjectDependencies) = postProject
+		{5A06BC8C-39D3-485C-9624-6328C6F1E089} = {5A06BC8C-39D3-485C-9624-6328C6F1E089}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +30,18 @@ Global
 		{5A06BC8C-39D3-485C-9624-6328C6F1E089}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5A06BC8C-39D3-485C-9624-6328C6F1E089}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5A06BC8C-39D3-485C-9624-6328C6F1E089}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AFB0A887-2FBB-4328-9831-E98A411C4C16}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AFB0A887-2FBB-4328-9831-E98A411C4C16}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AFB0A887-2FBB-4328-9831-E98A411C4C16}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AFB0A887-2FBB-4328-9831-E98A411C4C16}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EABCD4A1-E4B4-4FDA-B7FA-54E56E6E2D25}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EABCD4A1-E4B4-4FDA-B7FA-54E56E6E2D25}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EABCD4A1-E4B4-4FDA-B7FA-54E56E6E2D25}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EABCD4A1-E4B4-4FDA-B7FA-54E56E6E2D25}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BC274453-43FA-41F5-8784-6EC2725D5DA8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BC274453-43FA-41F5-8784-6EC2725D5DA8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BC274453-43FA-41F5-8784-6EC2725D5DA8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BC274453-43FA-41F5-8784-6EC2725D5DA8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

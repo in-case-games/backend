@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace InCase.Domain.Entities.Resources
 {
@@ -12,6 +11,6 @@ namespace InCase.Domain.Entities.Resources
         public List<GamePlatform>? Platforms { get; set; }
 
         [JsonIgnore]
-        public List<LootBoxGroup>? LootBoxGroups { get; set; }
+        public List<LootBoxGroup>? Groups { get; set; }
     }
 }

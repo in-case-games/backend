@@ -7,18 +7,18 @@ namespace InCase.Domain.Entities.Resources
     {
         public string? Name { get; set; }
         public decimal Cost { get; set; }
-        public string? Image { get; set; }
+        public string? ImageUri { get; set; }
         public string? IdForPlatform { get; set; }
 
         [JsonIgnore]
         public Guid GameId { get; set; }
         [JsonIgnore]
-        public Guid TypeId { get; set; }
+        public Guid? TypeId { get; set; }
         [JsonIgnore]
-        public Guid RarityId { get; set; }
+        public Guid? RarityId { get; set; }
         [JsonIgnore]
-        public Guid QualityId { get; set; }
-        public GameItemQuality? ItemQuality { get; set; }
+        public Guid? QualityId { get; set; }
+        public GameItemQuality? Quality { get; set; }
         public GameItemType? Type { get; set; }
         public GameItemRarity? Rarity { get; set; }
 
@@ -27,7 +27,9 @@ namespace InCase.Domain.Entities.Resources
         [JsonIgnore]
         public List<UserHistoryWithdrawn>? HistoryWithdrawns { get; set; }
         [JsonIgnore]
-        public List<UserInventory>? Inventories { get; set; }
+        public List<LootBoxInventory>? Inventories { get; set; }
+        [JsonIgnore]
+        public List<UserInventory>? UserInventories { get; set; }
         [JsonIgnore]
         public List<UserHistoryOpening>? HistoryOpenings { get; set; }
         [JsonIgnore]
@@ -37,11 +39,12 @@ namespace InCase.Domain.Entities.Resources
         {
             Name = Name,
             Cost = Cost,
-            Image = Image,
+            ImageUri = ImageUri,
             IdForPlatform = IdForPlatform,
             TypeId = Type?.Id ?? TypeId,
             RarityId = Rarity?.Id ?? RarityId,
             GameId = Game?.Id ?? GameId,
+            QualityId = Quality?.Id ?? QualityId
         };
     }
 }

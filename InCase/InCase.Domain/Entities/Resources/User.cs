@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using InCase.Domain.Dtos;
+using System.Text.Json.Serialization;
 
 namespace InCase.Domain.Entities.Resources
 {
@@ -11,10 +12,9 @@ namespace InCase.Domain.Entities.Resources
 
         public UserAdditionalInfo? AdditionalInfo { get; set; }
 
-        public List<SupportTopic>? UserTopics { get; set; }
-        public List<SupportTopic>? SupportTopics { get; set; }
-        public List<UserToken>? Tokens { get; set; }
+        public List<SupportTopic>? Topics { get; set; }
         public List<UserRestriction>? Restrictions { get; set; }
+        public List<UserRestriction>? OwnerRestrictions { get; set; }
         public List<UserReview>? Reviews { get; set; }
         public List<UserHistoryPayment>? HistoryPayments { get; set; }
 
@@ -30,5 +30,11 @@ namespace InCase.Domain.Entities.Resources
         public List<UserInventory>? Inventories { get; set; }
         [JsonIgnore]
         public List<UserHistoryWithdrawn>? HistoryWithdrawns { get; set; }
+
+        public UserDto Convert() => new()
+        {
+            Login = Login,
+            Email = Email
+        };
     }
 }

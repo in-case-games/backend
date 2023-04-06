@@ -11,6 +11,22 @@ namespace InCase.Infrastructure.Configurations
             base.Configure(builder);
 
             builder.ToTable(nameof(LootBoxBanner));
+
+            builder.HasIndex(i => i.BoxId)
+                .IsUnique();
+
+            builder.Property(p => p.IsActive)
+                .IsRequired();
+            builder.Property(p => p.CreationDate)
+                .IsRequired();
+            builder.Property(p => p.ImageUri)
+                .IsRequired();
+            builder.Property(p => p.ExpirationDate)
+                .IsRequired(false);
+
+            builder.HasOne(o => o.Box)
+                .WithOne(o => o.Banner)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

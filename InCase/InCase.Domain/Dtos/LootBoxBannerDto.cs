@@ -8,7 +8,7 @@ namespace InCase.Domain.Dtos
         public bool IsActive { get; set; } = false;
         public DateTime CreationDate { get; set; }
         public DateTime? ExpirationDate { get; set; }
-        public string? Image { get; set; } = "";
+        public string? ImageUri { get; set; } = "";
 
         public Guid BoxId { get; set; }
 
@@ -17,7 +17,7 @@ namespace InCase.Domain.Dtos
             IsActive = IsActive,
             CreationDate = CreationDate,
             ExpirationDate = ExpirationDate,
-            Image = Image,
+            ImageUri = ImageUri,
             BoxId = BoxId
         };
     }
