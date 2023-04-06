@@ -106,7 +106,7 @@ namespace InCase.Resources.Api.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("images/{id}")]
+        [HttpGet("image/{id}")]
         public async Task<IActionResult> GetImage(Guid id)
         {
             return await EndpointUtil.GetById<ReviewImage>(id, _context);
