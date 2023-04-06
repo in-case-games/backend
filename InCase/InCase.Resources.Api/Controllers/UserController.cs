@@ -183,14 +183,14 @@ namespace InCase.Resources.Api.Controllers
             return ResponseUtil.Ok(payments);
         }
 
-        //TODO Transfer method
-        [AuthorizeRoles(Roles.All)]
-        [HttpPost("promocodes")]
-        public async Task<IActionResult> ActivatePromocode(UserHistoryPromocodeDto promocode)
-        {
-            return promocode.UserId == UserId ? 
-                await EndpointUtil.Create(promocode.Convert(), _contextFactory) : 
-                Forbid("Access denied");
-        }
+        // TODO Transfer method
+        // [AuthorizeRoles(Roles.All)]
+        // [HttpPost("promocodes")]
+        // public async Task<IActionResult> ActivatePromocode(UserHistoryPromocodeDto promocode)
+        // {
+        //     return promocode.UserId == UserId ? 
+        //     await EndpointUtil.Create(promocode.Convert(), _contextFactory) : 
+        //     Forbid("Access denied");
+        // }
     }
 }
