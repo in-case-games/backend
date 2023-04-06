@@ -25,18 +25,11 @@ namespace InCase.Infrastructure.Configurations
 
             builder.HasIndex(i => i.UserId)
                 .IsUnique(false);
-            builder.HasIndex(i => i.SupportId)
-                .IsUnique(false);
 
             builder.HasOne(o => o.User)
-                .WithMany(m => m.UserTopics)
+                .WithMany(m => m.Topics)
                 .HasForeignKey(fk => fk.UserId)
-                .OnDelete(DeleteBehavior.ClientCascade);
-
-            builder.HasOne(o => o.Support)
-                .WithMany(m => m.SupportTopics)
-                .HasForeignKey(fk => fk.SupportId)
-                .OnDelete(DeleteBehavior.SetNull);
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

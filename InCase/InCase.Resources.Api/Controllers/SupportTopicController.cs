@@ -159,53 +159,102 @@ namespace InCase.Resources.Api.Controllers
             return ResponseUtil.Ok(answers);
         }
 
-        //TODO
         [AuthorizeRoles(Roles.User)]
         [HttpPost]
-        public async Task<IActionResult> Create(SupportTopicDto supportTopic)
+        public async Task<IActionResult> Create(SupportTopicDto topicDto)
         {
-            return await EndpointUtil.Create(supportTopic.Convert(), _contextFactory);
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            topicDto.UserId = UserId;
+
+            List<SupportTopic> supportTopics = await context.SupportTopics
+                .AsNoTracking()
+                .Where(w => w.UserId == topicDto.UserId)
+                .ToListAsync();
+
+            if (supportTopics.Count == 3)
+                return Forbid("Access denied");
+
+            try
+            {
+                await context.SupportTopics.AddAsync(topicDto.Convert());
+                await context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                return ResponseUtil.Error(ex);
+            }
+
+            return ResponseUtil.Ok(supportTopics);
         }
 
-        //TODO
         [AuthorizeRoles(Roles.AllExceptAdmin)]
         [HttpPost("answer")]
         public async Task<IActionResult> CreateAnswer(SupportTopicAnswerDto answerDto)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
+            SupportTopic? topic = await context.SupportTopics
+                    .FirstOrDefaultAsync(f => f.Id == answerDto.TopicId);
+
+            if (topic is null)
+                return ResponseUtil.NotFound(nameof(SupportTopic));
+
+            answerDto.PlaintiffId = UserId;
+
             try
             {
-                if (await context.SupportTopics.AnyAsync(a => a.Id == answerDto.TopicId))
-                {
-                    await context.SupportTopicAnswers.AddAsync(answerDto.Convert());
-                    await context.SaveChangesAsync();
-
-                    return ResponseUtil.Ok(answerDto);
-                }
-
-                return ResponseUtil.NotFound(nameof(SupportTopic));
+                await context.SupportTopicAnswers.AddAsync(answerDto.Convert());
+                await context.SaveChangesAsync();
             }
             catch (Exception ex)
             {
                 return ResponseUtil.Error(ex);
             }
+
+            return ResponseUtil.Ok(answerDto);
         }
 
-        //TODO
         [AuthorizeRoles(Roles.AllExceptAdmin)]
-        [HttpPut()]
-        public async Task<IActionResult> Update(SupportTopicDto supportTopic)
+        [HttpPut]
+        public async Task<IActionResult> Update(SupportTopicDto topicDto)
         {
-            return await EndpointUtil.Update(supportTopic.Convert(), _contextFactory);
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            topicDto.UserId = UserId;
+
+            SupportTopic? topic = await context.SupportTopics
+                .AsNoTracking()
+                .FirstOrDefaultAsync(f => f.Id == topicDto.Id);
+
+            if (topic is null)
+                return ResponseUtil.NotFound(nameof(SupportTopicAnswer));
+
+            context.Entry(topic).CurrentValues.SetValues(topicDto.Convert());
+            await context.SaveChangesAsync();
+
+            return ResponseUtil.Ok(topicDto);
         }
 
-        //TODO
-        [AuthorizeRoles(Roles.AllExceptAdmin)]
-        [HttpPut("answers")]
-        public async Task<IActionResult> UpdateAnswer(SupportTopicAnswerDto answer)
+        [AuthorizeRoles(Roles.User)]
+        [HttpPut("answer")]
+        public async Task<IActionResult> UpdateAnswer(SupportTopicAnswerDto answerDto)
         {
-            return await EndpointUtil.Update(answer.Convert(), _contextFactory);
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            SupportTopicAnswer? answer = await context.SupportTopicAnswers
+                .AsNoTracking()
+                .FirstOrDefaultAsync(f => f.Id == answerDto.Id);
+
+            if (answer is null)
+                return ResponseUtil.NotFound(nameof(SupportTopicAnswer));
+
+            answerDto.PlaintiffId = UserId;
+
+            context.Entry(answer).CurrentValues.SetValues(answerDto.Convert());
+            await context.SaveChangesAsync();
+
+            return ResponseUtil.Ok(answerDto);
         }
 
         [AuthorizeRoles(Roles.Owner, Roles.Bot)]
@@ -215,8 +264,7 @@ namespace InCase.Resources.Api.Controllers
             return await EndpointUtil.Delete<SupportTopic>(id, _contextFactory);
         }
 
-        //TODO
-        [AuthorizeRoles(Roles.AllExceptAdmin)]
+        [AuthorizeRoles(Roles.User)]
         [HttpDelete("answer/{id}")]
         public async Task<IActionResult> DeleteAnswer(Guid id)
         {
@@ -229,7 +277,26 @@ namespace InCase.Resources.Api.Controllers
             if (answer is null)
                 return ResponseUtil.NotFound(nameof(SupportTopicAnswer));
 
-            context.Set<SupportTopicAnswer>().Remove(answer);
+            context.SupportTopicAnswers.Remove(answer);
+            await context.SaveChangesAsync();
+
+            return ResponseUtil.Delete(nameof(SupportTopicAnswer));
+        }
+
+        [AuthorizeRoles(Roles.SupportOwnerBot)]
+        [HttpDelete("support/answer/{id}")]
+        public async Task<IActionResult> DeleteAnswerBySupport(Guid id)
+        {
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            SupportTopicAnswer? answer = await context.SupportTopicAnswers
+                .AsNoTracking()
+                .FirstOrDefaultAsync(f => f.Id == id); 
+
+            if (answer is null)
+                return ResponseUtil.NotFound(nameof(SupportTopicAnswer));
+
+            context.SupportTopicAnswers.Remove(answer);
             await context.SaveChangesAsync();
 
             return ResponseUtil.Delete(nameof(SupportTopicAnswer));

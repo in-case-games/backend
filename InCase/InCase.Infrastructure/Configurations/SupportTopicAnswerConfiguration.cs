@@ -32,7 +32,7 @@ namespace InCase.Infrastructure.Configurations
             builder.HasOne(o => o.Plaintiff)
                 .WithMany(m => m.Answers)
                 .HasForeignKey(fk => fk.PlaintiffId)
-                .OnDelete(DeleteBehavior.SetNull);
+                .OnDelete(DeleteBehavior.ClientSetNull);
         }
     }
 }

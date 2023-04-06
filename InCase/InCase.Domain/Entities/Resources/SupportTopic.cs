@@ -12,14 +12,9 @@ namespace InCase.Domain.Entities.Resources
 
         [JsonIgnore]
         public Guid UserId { get; set; }
-        [JsonIgnore]
-        public Guid? SupportId { get; set; }
 
         [JsonIgnore]
         public User? User { get; set; }
-
-        [JsonIgnore]
-        public User? Support { get; set; }
 
         public List<SupportTopicAnswer>? Answers { get; set; }
 
@@ -29,8 +24,7 @@ namespace InCase.Domain.Entities.Resources
             Content = Content,
             Date = Date,
             IsClosed = IsClosed,
-            UserId = User?.Id ?? UserId,
-            SupportId = Support?.Id ?? SupportId
+            UserId = User?.Id ?? UserId
         };
     }
 }

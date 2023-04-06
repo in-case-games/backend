@@ -7,7 +7,8 @@ namespace InCase.Infrastructure.Configurations
     internal class RestrictionTypeConfiguration : BaseEntityConfiguration<RestrictionType>
     {
         private readonly List<RestrictionType> types = new() { 
-            new() { Name = "mute" }, new() { Name = "ban" }
+            new() { Name = "mute" }, new() { Name = "ban" },
+            new() { Name = "warn" }
         };
 
         public override void Configure(EntityTypeBuilder<RestrictionType> builder)

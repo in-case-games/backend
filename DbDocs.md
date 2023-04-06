@@ -46,8 +46,6 @@
 Связи:
 
 - User(Многие к одному)
-- User:Support(Многие к одному)
-
 
 |Key|Name|Type|IsRequired|Constrains|
 | :- | :- | :- | :- | :- |
