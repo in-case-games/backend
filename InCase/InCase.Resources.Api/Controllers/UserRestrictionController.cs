@@ -33,9 +33,11 @@ namespace InCase.Resources.Api.Controllers
             UserRestriction? restriction = await context.UserRestrictions
                 .Include(i => i.Type)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.Id == id);
+                .FirstOrDefaultAsync(f => f.Id == id);
 
-            return ResponseUtil.Ok(restriction);
+            return restriction is null ? 
+                ResponseUtil.NotFound(nameof(UserRestriction)) : 
+                ResponseUtil.Ok(restriction);
         }
 
         [AuthorizeRoles(Roles.All)]
@@ -54,15 +56,15 @@ namespace InCase.Resources.Api.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("users/{userId}")]
-        public async Task<IActionResult> GetByUserId(Guid userId)
+        [HttpGet("user/{id}")]
+        public async Task<IActionResult> GetByUserId(Guid id)
         {
             await using ApplicationDbContext context = await _context.CreateDbContextAsync();
 
             List<UserRestriction> restrictions = await context.UserRestrictions
                 .Include(i => i.Type)
                 .AsNoTracking()
-                .Where(w => w.UserId == userId)
+                .Where(w => w.UserId == id)
                 .ToListAsync();
 
             return ResponseUtil.Ok(restrictions);
@@ -70,7 +72,7 @@ namespace InCase.Resources.Api.Controllers
 
         [AllowAnonymous]
         [HttpGet("{ownerId}&{userId}")]
-        public async Task<IActionResult> GetByOwnerIdAndUserId(Guid ownerId, Guid userId)
+        public async Task<IActionResult> GetByIds(Guid ownerId, Guid userId)
         {
             await using ApplicationDbContext context = await _context.CreateDbContextAsync();
 
@@ -83,8 +85,8 @@ namespace InCase.Resources.Api.Controllers
             return ResponseUtil.Ok(restrictions);
         }
 
-        [AuthorizeRoles(Roles.Admin, Roles.Bot, Roles.Owner)]
-        [HttpGet("admin")]
+        [AuthorizeRoles(Roles.AdminOwnerBot)]
+        [HttpGet("owner")]
         public async Task<IActionResult> GetByAdmin()
         {
             await using ApplicationDbContext context = await _context.CreateDbContextAsync();
@@ -98,8 +100,8 @@ namespace InCase.Resources.Api.Controllers
             return ResponseUtil.Ok(restrictions);
         }
 
-        [AuthorizeRoles(Roles.Admin, Roles.Bot, Roles.Owner)]
-        [HttpGet("admin/{userId}")]
+        [AuthorizeRoles(Roles.AdminOwnerBot)]
+        [HttpGet("owner/{userId}")]
         public async Task<IActionResult> GetByAdminAndUserId(Guid userId)
         {
             await using ApplicationDbContext context = await _context.CreateDbContextAsync();
@@ -113,35 +115,38 @@ namespace InCase.Resources.Api.Controllers
             return ResponseUtil.Ok(restrictions);
         }
 
-        [AuthorizeRoles(Roles.All)]
+        [AllowAnonymous]
         [HttpGet("types")]
         public async Task<IActionResult> GetRestrictionType()
         {
             return await EndpointUtil.GetAll<RestrictionType>(_context);
         }
 
-        [AuthorizeRoles(Roles.All)]
+        [AllowAnonymous]
         [HttpGet("types/{id}")]
         public async Task<IActionResult> GetRestrictionTypeById(Guid id)
         {
             return await EndpointUtil.GetById<RestrictionType>(id, _context);
         }
 
-        [AuthorizeRoles(Roles.Admin, Roles.Bot, Roles.Owner)]
+        //TODO
+        [AuthorizeRoles(Roles.AdminOwnerBot)]
         [HttpPost]
         public async Task<IActionResult> Create(UserRestrictionDto restrictionDto)
         {
             return await EndpointUtil.Create(restrictionDto.Convert(), _context);
         }
 
-        [AuthorizeRoles(Roles.Admin, Roles.Bot, Roles.Owner)]
+        //TODO
+        [AuthorizeRoles(Roles.AdminOwnerBot)]
         [HttpPut]
         public async Task<IActionResult> Update(UserRestrictionDto restrictionDto)
         {
             return await EndpointUtil.Update(restrictionDto.Convert(), _context);
         }
 
-        [AuthorizeRoles(Roles.Admin, Roles.Bot, Roles.Owner)]
+        //TODO
+        [AuthorizeRoles(Roles.AdminOwnerBot)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {

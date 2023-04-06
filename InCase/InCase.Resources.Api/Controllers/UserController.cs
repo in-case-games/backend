@@ -3,6 +3,7 @@ using InCase.Domain.Dtos;
 using InCase.Domain.Entities.Resources;
 using InCase.Infrastructure.Data;
 using InCase.Infrastructure.Utils;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
@@ -10,7 +11,7 @@ using System.Security.Claims;
 
 namespace InCase.Resources.Api.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/user")]
     [ApiController]
     public class UserController : ControllerBase
     {
@@ -24,27 +25,25 @@ namespace InCase.Resources.Api.Controllers
             _contextFactory = contextFactory;
         }
 
+        //TODO
         [AuthorizeRoles(Roles.All)]
         [HttpGet]
         public async Task<IActionResult> Get()
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            List<User> users = await context.Users
+            User? user = await context.Users
                 .Include(x => x.AdditionalInfo)
                 .AsNoTracking()
-                .ToListAsync();
+                .FirstOrDefaultAsync(f => f.Id == UserId);
 
-            users.ForEach(x =>
-            {
-                x.PasswordSalt = null;
-                x.PasswordHash = null;
-            });
-
-            return ResponseUtil.Ok(users);
+            return (user is null) ? 
+                ResponseUtil.NotFound(nameof(User)) : 
+                ResponseUtil.Ok(user);
         }
 
-        [AuthorizeRoles(Roles.All)]
+        //TODO
+        [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(Guid id)
         {
@@ -53,7 +52,7 @@ namespace InCase.Resources.Api.Controllers
             User? user = await context.Users
                 .Include(x => x.AdditionalInfo)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.Id == id);
+                .FirstOrDefaultAsync(f => f.Id == id);
 
             if (user is null)
                 return ResponseUtil.NotFound(nameof(User));
@@ -65,38 +64,38 @@ namespace InCase.Resources.Api.Controllers
         }
 
         [AuthorizeRoles(Roles.All)]
-        [HttpGet("history/promocodes/{userId}")]
-        public async Task<IActionResult> GetPromocodes(Guid userId)
+        [HttpGet("history/promocodes")]
+        public async Task<IActionResult> GetPromocodes()
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             List<UserHistoryPromocode> promocodes = await context.UserHistoryPromocodes
                 .Include(i => i.Promocode)
                 .AsNoTracking()
-                .Where(x => x.UserId == userId)
+                .Where(w => w.UserId == UserId)
                 .ToListAsync();
 
             return ResponseUtil.Ok(promocodes);
         }
 
         [AuthorizeRoles(Roles.All)]
-        [HttpGet("history/withdrawns/{userId}")]
-        public async Task<IActionResult> GetWithdrawns(Guid userId)
+        [HttpGet("history/withdrawns")]
+        public async Task<IActionResult> GetWithdrawns()
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             List<UserHistoryWithdrawn> withdrawns = await context.UserHistoryWithdrawns
                 .AsNoTracking()
                 .Include(i => i.Item)
-                .Where(x => x.UserId == userId)
+                .Where(w => w.UserId == UserId)
                 .ToListAsync();
 
             return ResponseUtil.Ok(withdrawns);
         }
 
-        [AuthorizeRoles(Roles.All)]
-        [HttpGet("history/openings/{userId}")]
-        public async Task<IActionResult> GetOpenings(Guid userId)
+        [AllowAnonymous]
+        [HttpGet("{id}/history/openings")]
+        public async Task<IActionResult> GetOpeningsByUserId(Guid id)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
@@ -104,15 +103,31 @@ namespace InCase.Resources.Api.Controllers
                 .Include(i => i.Box)
                 .Include(i => i.Item)
                 .AsNoTracking()
-                .Where(x => x.UserId == userId)
+                .Where(w => w.UserId == id)
                 .ToListAsync();
 
             return ResponseUtil.Ok(openings);
         }
 
         [AuthorizeRoles(Roles.All)]
-        [HttpGet("banners/{userId}")]
-        public async Task<IActionResult> GetPathBanners(Guid userId)
+        [HttpGet("history/openings")]
+        public async Task<IActionResult> GetOpenings()
+        {
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            List<UserHistoryOpening> openings = await context.UserHistoryOpenings
+                .Include(i => i.Box)
+                .Include(i => i.Item)
+                .AsNoTracking()
+                .Where(w => w.UserId == UserId)
+                .ToListAsync();
+
+            return ResponseUtil.Ok(openings);
+        }
+
+        [AuthorizeRoles(Roles.All)]
+        [HttpGet("banners")]
+        public async Task<IActionResult> GetPathBanners()
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
@@ -120,105 +135,64 @@ namespace InCase.Resources.Api.Controllers
                 .Include(i => i.Banner)
                 .Include(i => i.Item)
                 .AsNoTracking()
-                .Where(x => x.UserId == userId)
+                .Where(w => w.UserId == UserId)
                 .ToListAsync();
 
             return ResponseUtil.Ok(banners);
         }
 
-        [AuthorizeRoles(Roles.All)]
-        [HttpGet("inventory/{userId}")]
-        public async Task<IActionResult> GetInventory(Guid userId)
+        [AllowAnonymous]
+        [HttpGet("{id}/inventory")]
+        public async Task<IActionResult> GetInventoryByUserId(Guid id)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             List<UserInventory> inventories = await context.UserInventories
                 .Include(i => i.Item)
                 .AsNoTracking()
+                .Where(w => w.UserId == id)
                 .ToListAsync();
 
             return ResponseUtil.Ok(inventories);
         }
 
         [AuthorizeRoles(Roles.All)]
-        [HttpGet("history/payments/{userId}")]
-        public async Task<IActionResult> GetPayments(Guid id)
+        [HttpGet("inventory")]
+        public async Task<IActionResult> GetInventory()
+        {
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            List<UserInventory> inventories = await context.UserInventories
+                .Include(i => i.Item)
+                .AsNoTracking()
+                .Where(w => w.UserId == UserId)
+                .ToListAsync();
+
+            return ResponseUtil.Ok(inventories);
+        }
+
+        [AuthorizeRoles(Roles.All)]
+        [HttpGet("history/payments")]
+        public async Task<IActionResult> GetPayments()
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             List<UserHistoryPayment> payments = await context.UserHistoryPayments
                 .AsNoTracking()
-                .Where(x => x.UserId == id)
+                .Where(w => w.UserId == UserId)
                 .ToListAsync();
 
             return ResponseUtil.Ok(payments);
         }
 
+        //TODO Transfer method
         [AuthorizeRoles(Roles.All)]
         [HttpPost("promocodes")]
         public async Task<IActionResult> ActivatePromocode(UserHistoryPromocodeDto promocode)
         {
-            if (promocode.UserId == UserId)
-                return await EndpointUtil.Create(promocode.Convert(), _contextFactory);
-
-            return Forbid("Access denied");
-        }
-
-        [AuthorizeRoles(Roles.All)]
-        [HttpPost("payments")]
-        public async Task<IActionResult> CreditPayment(UserHistoryPaymentDto paymentDto)
-        {
-            if (paymentDto.UserId == UserId)
-                return await EndpointUtil.Create(paymentDto.Convert(), _contextFactory);
-
-            return Forbid("Access denied");
-        }
-
-        [AuthorizeRoles(Roles.All)]
-        [HttpPost("openings")]
-        public async Task<IActionResult> CreateOpening(UserHistoryOpeningDto opening)
-        {
-            if (opening.UserId == UserId)
-                return await EndpointUtil.Create(opening.Convert(), _contextFactory);
-
-            return Forbid("Access denied");
-        }
-
-        [AuthorizeRoles(Roles.All)]
-        [HttpPost("banners")]
-        public async Task<IActionResult> CreatePathBanner(UserPathBannerDto banner)
-        {
-            if (banner.UserId == UserId)
-                return await EndpointUtil.Create(banner.Convert(), _contextFactory);
-
-            return Forbid("Access denied");
-        }
-
-        [AuthorizeRoles(Roles.All)]
-        [HttpPost("withdrawns")]
-        public async Task<IActionResult> CreateWithdrawn(UserHistoryWithdrawnDto withdrawn)
-        {
-            if (withdrawn.UserId == UserId)
-                return await EndpointUtil.Create(withdrawn.Convert(), _contextFactory);
-
-            return Forbid("Access denied");
-        }
-
-        [AuthorizeRoles(Roles.All)]
-        [HttpPost("items")]
-        public async Task<IActionResult> AddItemToInventory(UserInventoryDto inventory)
-        {
-            if (inventory.UserId == UserId)
-                return await EndpointUtil.Create(inventory.Convert(), _contextFactory);
-
-            return Forbid("Access denied");
-        }
-
-        [AuthorizeRoles(Roles.All)]
-        [HttpDelete("items")]
-        public async Task<IActionResult> RemoveItem()
-        {
-            return await EndpointUtil.Delete<UserInventory>(UserId, _contextFactory);
+            return promocode.UserId == UserId ? 
+                await EndpointUtil.Create(promocode.Convert(), _contextFactory) : 
+                Forbid("Access denied");
         }
     }
 }

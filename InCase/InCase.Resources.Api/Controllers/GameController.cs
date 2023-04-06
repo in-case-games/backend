@@ -25,7 +25,6 @@ namespace InCase.Resources.Api.Controllers
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             List<Game> games = await context.Games
-                .Include(i => i.Platforms)
                 .Include(i => i.Boxes)
                 .Include(i => i.Items)
                 .AsNoTracking()
@@ -41,30 +40,12 @@ namespace InCase.Resources.Api.Controllers
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             Game? game = await context.Games
-                .Include(i => i.Platforms)
                 .Include(i => i.Boxes)
                 .Include(i => i.Items)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.Id == id);
+                .FirstOrDefaultAsync(f => f.Id == id);
 
-            if (game is null) 
-                return ResponseUtil.NotFound(nameof(Game));
-
-            return ResponseUtil.Ok(game);
-        }
-
-        [AllowAnonymous]
-        [HttpGet("platforms")]
-        public async Task<IActionResult> GetPlatforms()
-        {
-            return await EndpointUtil.GetAll<GamePlatform>(_contextFactory);
-        }
-
-        [AllowAnonymous]
-        [HttpGet("platforms/{id}")]
-        public async Task<IActionResult> GetPlatformById(Guid id)
-        {
-            return await EndpointUtil.GetById<GamePlatform>(id, _contextFactory);
+            return game is null ? ResponseUtil.NotFound(nameof(Game)) : ResponseUtil.Ok(game);
         }
     }
 }

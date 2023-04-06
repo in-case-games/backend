@@ -47,50 +47,49 @@ namespace InCase.Resources.Api.Controllers
                 .Include(i => i.Rarity)
                 .Include(i => i.Quality)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.Id == id);
+                .FirstOrDefaultAsync(f => f.Id == id);
 
-            if (gameItem is null)
-                return ResponseUtil.NotFound(nameof(GameItem));
-
-            return ResponseUtil.Ok(gameItem);
+            return gameItem is null ? 
+                ResponseUtil.NotFound(nameof(GameItem)) : 
+                ResponseUtil.Ok(gameItem);
         }
 
-        [AuthorizeRoles(Roles.All)]
+        [AllowAnonymous]
         [HttpGet("qualities")]
         public async Task<IActionResult> GetQualities()
         {
             return await EndpointUtil.GetAll<GameItemQuality>(_contextFactory);
         }
 
-        [AuthorizeRoles(Roles.All)]
+        [AllowAnonymous]
         [HttpGet("types")]
         public async Task<IActionResult> GetTypes()
         {
             return await EndpointUtil.GetAll<GameItemType>(_contextFactory);
         }
 
-        [AuthorizeRoles(Roles.All)]
+        [AllowAnonymous]
         [HttpGet("rarities")]
         public async Task<IActionResult> GetRarities()
         {
             return await EndpointUtil.GetAll<GameItemRarity>(_contextFactory);
         }
 
-        [AuthorizeRoles(Roles.Admin, Roles.Owner, Roles.Bot)]
+        [AuthorizeRoles(Roles.AdminOwnerBot)]
         [HttpPost]
         public async Task<IActionResult> Create(GameItemDto gameItem)
         {
             return await EndpointUtil.Create(gameItem.Convert(), _contextFactory);  
         }
 
-        [AuthorizeRoles(Roles.Admin, Roles.Owner, Roles.Bot)]
+        [AuthorizeRoles(Roles.AdminOwnerBot)]
         [HttpPut]
         public async Task<IActionResult> Update(GameItemDto item)
         {
             return await EndpointUtil.Update(item.Convert(), _contextFactory);
         }
 
-        [AuthorizeRoles(Roles.Admin, Roles.Owner, Roles.Bot)]
+        [AuthorizeRoles(Roles.AdminOwnerBot)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {

@@ -29,10 +29,24 @@ namespace InCase.Resources.Api.Controllers
                 .AsNoTracking()
                 .FirstOrDefaultAsync();
 
-            if (statistics is null)
-                return ResponseUtil.NotFound(nameof(SiteStatistics));
+            return statistics is null ? 
+                ResponseUtil.NotFound(nameof(SiteStatistics)) : 
+                ResponseUtil.Ok(statistics);
+        }
 
-            return ResponseUtil.Ok(statistics);
+        [AuthorizeRoles(Roles.Admin)]
+        [HttpGet("admin")]
+        public async Task<IActionResult> GetAdmin()
+        {
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            SiteStatisticsAdmin? statistics = await context.SiteStatisticsAdmins
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
+
+            return statistics is null ? 
+                ResponseUtil.NotFound(nameof(SiteStatisticsAdmin)) : 
+                ResponseUtil.Ok(statistics);
         }
 
         [AuthorizeRoles(Roles.Bot)]
@@ -47,6 +61,28 @@ namespace InCase.Resources.Api.Controllers
             try
             {
                 context.SiteStatistics.Update(statistics);
+                await context.SaveChangesAsync();
+
+                return ResponseUtil.Ok(statistics);
+            }
+            catch (Exception ex)
+            {
+                return ResponseUtil.Error(ex);
+            }
+        }
+
+        [AuthorizeRoles(Roles.Bot)]
+        [HttpPut("admin")]
+        public async Task<IActionResult> UpdateAdmin(SiteStatisticsAdmin statistics)
+        {
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            if (await context.SiteStatisticsAdmins.AnyAsync(a => a.Id == statistics.Id))
+                return ResponseUtil.NotFound(nameof(SiteStatisticsAdmin));
+
+            try
+            {
+                context.SiteStatisticsAdmins.Update(statistics);
                 await context.SaveChangesAsync();
 
                 return ResponseUtil.Ok(statistics);

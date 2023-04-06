@@ -33,7 +33,7 @@ namespace InCase.Resources.Api.Controllers
             UserAdditionalInfo? info = await context.UserAdditionalInfos
                 .Include(i => i.Role)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.UserId == UserId);
+                .FirstOrDefaultAsync(f => f.UserId == UserId);
 
             return info is null ?
                 ResponseUtil.NotFound(nameof(UserAdditionalInfo)) :
@@ -47,13 +47,6 @@ namespace InCase.Resources.Api.Controllers
             return await EndpointUtil.GetAll<UserRole>(_context);
         }
 
-        [AllowAnonymous]
-        [HttpGet("roles/{id}")]
-        public async Task<IActionResult> GetRoleById(Guid id)
-        {
-            return await EndpointUtil.GetById<UserRole>(id, _context);
-        }
-
         [AuthorizeRoles(Roles.Owner, Roles.Bot)]
         [HttpPut]
         public async Task<IActionResult> Update(UserAdditionalInfoDto infoDto)
@@ -61,7 +54,7 @@ namespace InCase.Resources.Api.Controllers
             await using ApplicationDbContext context = await _context.CreateDbContextAsync();
 
             UserAdditionalInfo? oldInfo = await context.UserAdditionalInfos
-                .FirstOrDefaultAsync(x => x.Id == infoDto.Id);
+                .FirstOrDefaultAsync(f => f.Id == infoDto.Id);
 
             if (oldInfo == null)
                 return ResponseUtil.NotFound(nameof(UserAdditionalInfo));

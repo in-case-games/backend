@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace InCase.Resources.Api.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/promocode")]
     [ApiController]
     public class PromocodeController : ControllerBase
     {
@@ -19,7 +19,7 @@ namespace InCase.Resources.Api.Controllers
             _contextFactory = contextFactory;
         }
 
-        [AuthorizeRoles(Roles.Admin, Roles.Owner)]
+        [AuthorizeRoles(Roles.AdminOwnerBot)]
         [HttpGet]
         public async Task<IActionResult> Get()
         {
@@ -33,7 +33,7 @@ namespace InCase.Resources.Api.Controllers
             return ResponseUtil.Ok(promocodes);
         }
 
-        [AuthorizeRoles(Roles.Admin, Roles.Owner)]
+        [AuthorizeRoles(Roles.AdminOwnerBot)]
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(Guid id)
         {
@@ -42,68 +42,48 @@ namespace InCase.Resources.Api.Controllers
             Promocode? promocode = await context.Promocodes
                 .Include(i => i.Type)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.Id == id);
+                .FirstOrDefaultAsync(f => f.Id == id);
 
-            if (promocode is null)
-                return ResponseUtil.NotFound(nameof(GameItem));
-
-            return ResponseUtil.Ok(promocode);
+            return promocode is null ? 
+                ResponseUtil.NotFound(nameof(Promocode)) : 
+                ResponseUtil.Ok(promocode);
         }
 
-        [AuthorizeRoles(Roles.Admin, Roles.Owner)]
+        [AuthorizeRoles(Roles.AdminOwnerBot)]
+        [HttpGet("type/{id}")]
+        public async Task<IActionResult> GetType(Guid id)
+        {
+            return await EndpointUtil.GetById<PromocodeType>(id, _contextFactory);
+        }
+
+        [AuthorizeRoles(Roles.AdminOwnerBot)]
         [HttpGet("types")]
         public async Task<IActionResult> GetTypes()
         {
             return await EndpointUtil.GetAll<PromocodeType>(_contextFactory);
         }
 
-        [AuthorizeRoles(Roles.Admin, Roles.Owner)]
-        [HttpGet("types/{id}")]
-        public async Task<IActionResult> GetType(Guid id)
-        {
-            return await EndpointUtil.GetById<PromocodeType>(id, _contextFactory);
-        }
-
-        [AuthorizeRoles(Roles.Admin, Roles.Owner)]
+        //TODO
+        [AuthorizeRoles(Roles.AdminOwnerBot)]
         [HttpPost]
         public async Task<IActionResult> Create(PromocodeDto promocode)
         {
             return await EndpointUtil.Create(promocode.Convert(), _contextFactory);
         }
 
-        [AuthorizeRoles(Roles.Admin, Roles.Owner)]
-        [HttpPost("types")]
-        public async Task<IActionResult> CreateType(PromocodeType type)
-        {
-            return await EndpointUtil.Create(type, _contextFactory);
-        }
-
-        [AuthorizeRoles(Roles.Admin, Roles.Owner)]
+        //TODO
+        [AuthorizeRoles(Roles.AdminOwnerBot)]
         [HttpPut]
         public async Task<IActionResult> Update(PromocodeDto promocode)
         {
             return await EndpointUtil.Update(promocode.Convert(), _contextFactory);
         }
 
-        [AuthorizeRoles(Roles.Admin, Roles.Owner)]
-        [HttpPut("types")]
-        public async Task<IActionResult> UpdateType(PromocodeType type)
-        {
-            return await EndpointUtil.Update(type, _contextFactory);
-        }
-
-        [AuthorizeRoles(Roles.Admin, Roles.Owner)]
+        [AuthorizeRoles(Roles.AdminOwnerBot)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
             return await EndpointUtil.Delete<Promocode>(id, _contextFactory);
-        }
-
-        [AuthorizeRoles(Roles.Admin, Roles.Owner)]
-        [HttpDelete("types/{id}")]
-        public async Task<IActionResult> DeleteType(Guid id)
-        {
-            return await EndpointUtil.Delete<PromocodeType>(id, _contextFactory);
         }
     }
 }

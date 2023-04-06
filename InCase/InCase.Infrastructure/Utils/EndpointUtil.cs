@@ -7,21 +7,22 @@ namespace InCase.Infrastructure.Utils
 {
     public class EndpointUtil
     {
-        public static async Task<IActionResult> GetById<T>(Guid id, IDbContextFactory<ApplicationDbContext> contextFactory) where T: BaseEntity
+        public static async Task<IActionResult> GetById<T>(Guid id, IDbContextFactory<ApplicationDbContext> contextFactory) 
+            where T: BaseEntity
         {
             await using ApplicationDbContext context = await contextFactory.CreateDbContextAsync();
 
             T? result = await context.Set<T>()
                 .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.Id == id);
+                .FirstOrDefaultAsync(f => f.Id == id);
 
-            if (result is null)
-                return ResponseUtil.NotFound(typeof(T).Name);
-
-            return ResponseUtil.Ok(result);
+            return result is null ? 
+                ResponseUtil.NotFound(typeof(T).Name) : 
+                ResponseUtil.Ok(result);
         }
 
-        public static async Task<IActionResult> GetAll<T>(IDbContextFactory<ApplicationDbContext> contextFactory) where T : BaseEntity
+        public static async Task<IActionResult> GetAll<T>(IDbContextFactory<ApplicationDbContext> contextFactory) 
+            where T : BaseEntity
         {
             await using ApplicationDbContext context = await contextFactory.CreateDbContextAsync();
 
@@ -32,7 +33,8 @@ namespace InCase.Infrastructure.Utils
             return ResponseUtil.Ok(result);
         }
 
-        public static async Task<IActionResult> Create<T>(T entity, IDbContextFactory<ApplicationDbContext> contextFactory) where T : BaseEntity
+        public static async Task<IActionResult> Create<T>(T entity, IDbContextFactory<ApplicationDbContext> contextFactory) 
+            where T : BaseEntity
         {
             await using ApplicationDbContext context = await contextFactory.CreateDbContextAsync();
 
@@ -49,13 +51,13 @@ namespace InCase.Infrastructure.Utils
             }
         }
 
-        public static async Task<IActionResult> Update<T>(T entity, IDbContextFactory<ApplicationDbContext> contextFactory) where T : BaseEntity
+        public static async Task<IActionResult> Update<T>(T entity, IDbContextFactory<ApplicationDbContext> contextFactory) 
+            where T : BaseEntity
         {
             await using ApplicationDbContext context = await contextFactory.CreateDbContextAsync();
 
             T? result = await context.Set<T>()
-                .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.Id == entity.Id);
+                .FirstOrDefaultAsync(f => f.Id == entity.Id);
 
             if (result is null)
                 return ResponseUtil.NotFound(typeof(T).Name);
@@ -73,13 +75,14 @@ namespace InCase.Infrastructure.Utils
             }
         }
 
-        public static async Task<IActionResult> Delete<T>(Guid id, IDbContextFactory<ApplicationDbContext> contextFactory) where T : BaseEntity
+        public static async Task<IActionResult> Delete<T>(Guid id, IDbContextFactory<ApplicationDbContext> contextFactory) 
+            where T : BaseEntity
         {
             await using ApplicationDbContext context = await contextFactory.CreateDbContextAsync();
 
             T? result = await context.Set<T>()
                 .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.Id == id);
+                .FirstOrDefaultAsync(f => f.Id == id);
 
             if (result is null)
                 return ResponseUtil.NotFound(typeof(T).Name);

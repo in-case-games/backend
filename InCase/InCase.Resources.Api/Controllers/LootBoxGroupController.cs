@@ -50,10 +50,9 @@ namespace InCase.Resources.Api.Controllers
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == id);
 
-            if (group is null)
-                return ResponseUtil.NotFound(nameof(LootBoxGroup));
-
-            return ResponseUtil.Ok(group);
+            return group is null ? 
+                ResponseUtil.NotFound(nameof(LootBoxGroup)) : 
+                ResponseUtil.Ok(group);
         }
 
         [AllowAnonymous]
@@ -67,38 +66,6 @@ namespace InCase.Resources.Api.Controllers
                 .ToListAsync();
 
             return ResponseUtil.Ok(groups);
-        }
-
-        [AllowAnonymous]
-        [HttpGet("groups/{id}")]
-        public async Task<IActionResult> GetGroupById(Guid id)
-        {
-            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
-
-            GroupLootBox? group = await context.GroupLootBoxes
-                .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.Id == id);
-
-            if (group is null)
-                return ResponseUtil.NotFound(nameof(GroupLootBox));
-
-            return ResponseUtil.Ok(group);
-        }
-
-        [AllowAnonymous]
-        [HttpGet("groups/{name}")]
-        public async Task<IActionResult> GetGroupByName(string name)
-        {
-            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
-
-            GroupLootBox? group = await context.GroupLootBoxes
-                .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.Name == name);
-
-            if (group is null)
-                return ResponseUtil.NotFound(nameof(GroupLootBox));
-
-            return ResponseUtil.Ok(group);
         }
 
         [AuthorizeRoles(Roles.Owner, Roles.Admin)]
@@ -121,7 +88,7 @@ namespace InCase.Resources.Api.Controllers
         }
 
         [AuthorizeRoles(Roles.Owner, Roles.Admin)]
-        [HttpPost("groups")]
+        [HttpPost("group")]
         public async Task<IActionResult> CreateGroup(GroupLootBox groupLootBox)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
@@ -146,7 +113,7 @@ namespace InCase.Resources.Api.Controllers
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             LootBoxGroup? group = await context.LootBoxGroups
-                .FirstOrDefaultAsync(x => x.Id == id);
+                .FirstOrDefaultAsync(f => f.Id == id);
 
             if (group is null)
                 return ResponseUtil.NotFound(nameof(LootBoxGroup));
@@ -158,14 +125,14 @@ namespace InCase.Resources.Api.Controllers
         }
 
         [AuthorizeRoles(Roles.Owner, Roles.Admin)]
-        [HttpDelete("groups/{id}")]
+        [HttpDelete("group/{id}")]
         public async Task<IActionResult> DeleteGroup(Guid id)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             GroupLootBox? group = await context.GroupLootBoxes
                 .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.Id == id);
+                .FirstOrDefaultAsync(f => f.Id == id);
 
             if (group is null)
                 return ResponseUtil.NotFound(nameof(GroupLootBox));
