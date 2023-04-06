@@ -62,7 +62,7 @@ _Данный подзаголовок содержит в себе информ
   &#9;]
 }</code>
 * Получение определенной игровой сущности:<br/>
-Метод: GET, параметр id (guid)
+Метод: GET, параметр id (guid)<br/>
 **Пример запроса**<br/>
 `https://r.api.incase.com/api/game/{id}`<br/>
 **Пример ответа (status code: 200):**<br/>
@@ -81,4 +81,43 @@ _Данный подзаголовок содержит в себе информ
 <code>{
   &#9;"success": false,
   &#9;"data": "Game is not found. "
+}</code>
+
+### Информация о новостях
+
+* Получение всех новостей:<br/>
+Метод: GET, без параметров <br/>
+**Пример запроса**<br/>
+`https://r.api.incase.com/api/news`<br/>
+**Пример ответа (status code: 200):**<br/>
+<code>{
+  &#9;"success": true,
+  &#9;"data": [
+  &#9;{
+  &#9;&#9;"id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  &#9;&#9;"title": "string",
+  &#9;&#9;"date": "2023-04-06T22:56:18.774Z",
+  &#9;&#9;"content": "string"
+&#9;}
+]
+}</code>
+
+* Получение определенной новости:<br/>
+Метод: GET, параметр id (guid)<br/>
+`https://r.api.incase.com/api/news/{id}`<br/>
+**Пример ответа (status code: 200):**<br/>
+<code>{
+  &#9;"success": true,
+  &#9;"data": 
+  &#9;{
+  &#9;&#9;"id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  &#9;&#9;"title": "string",
+  &#9;&#9;"date": "2023-04-06T22:56:18.774Z",
+  &#9;&#9;"content": "string"
+&#9;}
+}</code><br/>
+**Пример ответа (status code: 404):**<br/>
+<code>{
+  &#9;"success": false,
+  &#9;"data": "News is not found. "
 }</code>
