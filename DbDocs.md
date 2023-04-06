@@ -57,7 +57,6 @@
 ||Date|datetime2(7)|True|-|
 ||IsClosed|bit|True|-|
 |FK|UserId|uniqueidentifier|True|-|
-|FK|SupportId|uniqueidentifier|False|-|
 
 **UserAdditionalInfo**
 
