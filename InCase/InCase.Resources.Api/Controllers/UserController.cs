@@ -25,7 +25,6 @@ namespace InCase.Resources.Api.Controllers
             _contextFactory = contextFactory;
         }
 
-        //TODO
         [AuthorizeRoles(Roles.All)]
         [HttpGet]
         public async Task<IActionResult> Get()
@@ -42,7 +41,6 @@ namespace InCase.Resources.Api.Controllers
                 ResponseUtil.Ok(user);
         }
 
-        //TODO
         [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(Guid id)

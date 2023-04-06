@@ -6,6 +6,7 @@ using InCase.Infrastructure.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Runtime.CompilerServices;
 using System.Security.Claims;
 
 namespace InCase.Resources.Api.Controllers
@@ -129,28 +130,130 @@ namespace InCase.Resources.Api.Controllers
             return await EndpointUtil.GetById<RestrictionType>(id, _context);
         }
 
-        //TODO
         [AuthorizeRoles(Roles.AdminOwnerBot)]
         [HttpPost]
         public async Task<IActionResult> Create(UserRestrictionDto restrictionDto)
         {
-            return await EndpointUtil.Create(restrictionDto.Convert(), _context);
+            await using ApplicationDbContext context = await _context.CreateDbContextAsync();
+
+            User? user;
+            User? owner;
+
+            try
+            {
+                user = await context.Users
+                    .Include(i => i.AdditionalInfo)
+                    .Include(i => i.AdditionalInfo!.Role)
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(f => f.Id == restrictionDto.UserId);
+
+                owner = await context.Users
+                    .Include(i => i.AdditionalInfo)
+                    .Include(i => i.AdditionalInfo!.Role)
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(f => f.Id == UserId);
+            }
+            catch(ArgumentNullException)
+            {
+                return ResponseUtil.NotFound(nameof(UserRestriction));
+            }
+
+            string userRole = user!.AdditionalInfo!.Role!.Name!;
+            string ownerRole = owner!.AdditionalInfo!.Role!.Name!;
+
+            bool IsAccess = userRole == "user" || 
+                ((ownerRole == "owner" || ownerRole == "bot") && userRole != "owner");
+
+            if(IsAccess is false)
+                return Forbid("Access denied");
+            
+            try
+            {
+                await context.UserRestrictions.AddAsync(restrictionDto.Convert());
+                await context.SaveChangesAsync();
+            }
+            catch(Exception ex)
+            {
+                return ResponseUtil.Error(ex);
+            }
+
+            return ResponseUtil.Ok(restrictionDto);
         }
 
-        //TODO
         [AuthorizeRoles(Roles.AdminOwnerBot)]
         [HttpPut]
         public async Task<IActionResult> Update(UserRestrictionDto restrictionDto)
         {
-            return await EndpointUtil.Update(restrictionDto.Convert(), _context);
+            await using ApplicationDbContext context = await _context.CreateDbContextAsync();
+
+            UserRestriction? restriction = await context.UserRestrictions
+                .FirstOrDefaultAsync(f => f.Id == restrictionDto.Id);
+
+            if(restriction == null) 
+                return ResponseUtil.NotFound(nameof(UserRestriction));
+
+            User? user;
+            User? owner;
+
+            try
+            {
+                user = await context.Users
+                    .Include(i => i.AdditionalInfo)
+                    .Include(i => i.AdditionalInfo!.Role)
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(f => f.Id == restrictionDto.UserId);
+
+                owner = await context.Users
+                    .Include(i => i.AdditionalInfo)
+                    .Include(i => i.AdditionalInfo!.Role)
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(f => f.Id == UserId);
+            }
+            catch (ArgumentNullException)
+            {
+                return ResponseUtil.NotFound(nameof(UserRestriction));
+            }
+
+            string userRole = user!.AdditionalInfo!.Role!.Name!;
+            string ownerRole = owner!.AdditionalInfo!.Role!.Name!;
+
+            bool IsAccess = userRole == "user" || 
+                ((ownerRole == "owner" || ownerRole == "bot") && userRole != "owner");
+
+            if (IsAccess is false)
+                return Forbid("Access denied");
+
+            try
+            {
+                context.Entry(restriction).CurrentValues.SetValues(restrictionDto.Convert());
+                await context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                return ResponseUtil.Error(ex);
+            }
+
+            return ResponseUtil.Ok(restrictionDto);
         }
 
-        //TODO
         [AuthorizeRoles(Roles.AdminOwnerBot)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            return await EndpointUtil.Delete<UserRestriction>(id, _context);
+            await using ApplicationDbContext context = await _context.CreateDbContextAsync();
+
+            UserRestriction? restriction = await context.UserRestrictions
+                .FirstOrDefaultAsync(f => f.Id == id);
+
+            if (restriction == null)
+                return ResponseUtil.NotFound(nameof(UserRestriction));
+            if (restriction.UserId == UserId)
+                return Forbid("Access denied");
+
+            context.UserRestrictions.Remove(restriction);
+            await context.SaveChangesAsync();
+
+            return ResponseUtil.Ok(restriction);
         }
     }
 }

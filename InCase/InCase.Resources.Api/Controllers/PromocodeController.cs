@@ -63,7 +63,6 @@ namespace InCase.Resources.Api.Controllers
             return await EndpointUtil.GetAll<PromocodeType>(_contextFactory);
         }
 
-        //TODO
         [AuthorizeRoles(Roles.AdminOwnerBot)]
         [HttpPost]
         public async Task<IActionResult> Create(PromocodeDto promocode)
@@ -71,7 +70,6 @@ namespace InCase.Resources.Api.Controllers
             return await EndpointUtil.Create(promocode.Convert(), _contextFactory);
         }
 
-        //TODO
         [AuthorizeRoles(Roles.AdminOwnerBot)]
         [HttpPut]
         public async Task<IActionResult> Update(PromocodeDto promocode)

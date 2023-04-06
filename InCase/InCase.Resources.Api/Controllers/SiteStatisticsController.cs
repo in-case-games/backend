@@ -34,7 +34,7 @@ namespace InCase.Resources.Api.Controllers
                 ResponseUtil.Ok(statistics);
         }
 
-        [AuthorizeRoles(Roles.Admin)]
+        [AuthorizeRoles(Roles.Owner, Roles.Bot)]
         [HttpGet("admin")]
         public async Task<IActionResult> GetAdmin()
         {
