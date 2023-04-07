@@ -430,3 +430,22 @@ _Данный подзаголовок содержит в себе информ
   "data": "GameItem is not found. "
 }
 ```
+Удаление предмета:
+* Доступ: Admin, Owner, Bot
+* Метод: Delete
+* Запрос: `https://r.api.incase.com/api/game-item/{id}`
+
+**STATUS CODE 202**
+```JSON
+{
+  "success": true,
+  "data": "GameItem is succesfully removed"
+}
+```
+**STATUS CODE 404**
+```JSON
+{
+  "success": false,
+  "data": "GameItem is not found. "
+}
+```
