@@ -1,8 +1,4 @@
-# Документация к ресурсному Api InCase
-
-<p align="center">
-<img src="https://sun9-83.userapi.com/impg/KZb62xYb5iynlL00ivIQeUCQIJNXGpUGHfjCOA/IVL6knc9ycU.jpg?size=192x132&quality=96&sign=dd171982807a3f3d0e896ae5e106c14b&type=album"/>
-</p>
+# Документация InCase.Resources.Api
 
 **Содержание**
 
@@ -27,97 +23,117 @@
   
 ## Общее
 
-_Данный подзаголовок содержит в себе информацио о том, как работать с общими endpoint`ами_
+_Данный подзаголовок содержит в себе информацио о том, как работать с общими endpoint-ами_
 
 ### Информация об играх
-* Получение всех игровых сущностей:<br/>
-Метод: GET, без параметров<br/>
-**Пример запроса**<br/>
-`https://r.api.incase.com/api/game`<br/>
-**Пример ответа (status code: 200):**<br/>
-<code>{
-  &#9;"success": true,
-  &#9; "data": [
-    &#9;{
-      &#9;&#9;"name": "csgo",
-      &#9;&#9;"items": [],
-      &#9;&#9;"boxes": [],
-      &#9;&#9;"platforms": null,
-      &#9;&#9;"id": "bb3a297c-7d54-49ba-8906-7c8f5903a6ad"
-    &#9;},
-    &#9;{
-      &#9;&#9;"name": "dota2",
-      &#9;&#9;"items": [],
-      &#9;&#9;"boxes": [],
-      &#9;&#9;"platforms": null,
-      &#9;&#9;"id": "4edd89d0-d4cf-4a58-93fb-a7b714510855"
-    &#9;},
-    &#9;{
-      &#9;&#9;"name": "genshin",
-      &#9;&#9;"items": [],
-      &#9;&#9;"boxes": [],
-      &#9;&#9;"platforms": null,
-      &#9;&#9;"id": "d3de7704-031f-4b12-a7ad-c3bf42dfa0f1"
-    &#9;}
-  &#9;]
-}</code>
-* Получение определенной игровой сущности:<br/>
-Метод: GET, параметр id (guid)<br/>
-**Пример запроса**<br/>
-`https://r.api.incase.com/api/game/{id}`<br/>
-**Пример ответа (status code: 200):**<br/>
-<code>{
-  &#9;"success": true,
-  &#9;"data":
-  &#9;{
-    &#9;&#9;"name": "csgo",
-    &#9;&#9;"items": [],
-    &#9;&#9;"boxes": [],
-    &#9;&#9;"platforms": null,
-    &#9;&#9;"id": "bb3a297c-7d54-49ba-8906-7c8f5903a6ad"
-  &#9;}
-}</code><br/>
-**Пример ответа (status code: 404):**<br/>
-<code>{
-  &#9;"success": false,
-  &#9;"data": "Game is not found. "
-}</code>
+Получение всех игровых сущностей: 
+* Доступ: Allow Anonymous
+* Метод: GET 
+* Запрос: `https://r.api.incase.com/api/game`
+
+
+**STATUS CODE 200:**
+```JSON
+{
+  "success": true,
+  "data": [
+    {
+      "name": "csgo",
+      "items": [],
+      "boxes": [],
+      "platforms": null,
+      "id": "bb3a297c-7d54-49ba-8906-7c8f5903a6ad"
+    },
+    {
+      "name": "dota2",
+      "items": [],
+      "boxes": [],
+      "platforms": null,
+      "id": "4edd89d0-d4cf-4a58-93fb-a7b714510855"
+    },
+    {
+      "name": "genshin",
+      "items": [],
+      "boxes": [],
+      "platforms": null,
+      "id": "d3de7704-031f-4b12-a7ad-c3bf42dfa0f1"
+    }
+  ]
+}
+```
+Получение определенной игровой сущности: 
+* Доступ: Allow Anonymous
+* Метод: GET 
+* Запрос: `https://r.api.incase.com/api/game/{id}`
+
+**STATUS CODE 200:**
+```JSON
+{
+  "success": true,
+  "data":
+  {
+    "name": "csgo",
+    "items": [],
+    "boxes": [],
+    "platforms": null,
+    "id": "bb3a297c-7d54-49ba-8906-7c8f5903a6ad"
+  }
+}
+```
+**STATUS CODE 404:**
+```JSON
+{
+  "success": false,
+  "data": "Game is not found. "
+}
+```
 
 ### Информация о новостях
+Получение всех новостей: 
+* Доступ: Allow Anonymous
+* Метод: GET 
+* Запрос: `https://r.api.incase.com/api/news`
 
-* Получение всех новостей:<br/>
-Метод: GET, без параметров <br/>
-**Пример запроса**<br/>
-`https://r.api.incase.com/api/news`<br/>
-**Пример ответа (status code: 200):**<br/>
-<code>{
-  &#9;"success": true,
-  &#9;"data": [
-  &#9;{
-  &#9;&#9;"id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-  &#9;&#9;"title": "string",
-  &#9;&#9;"date": "2023-04-06T22:56:18.774Z",
-  &#9;&#9;"content": "string"
-&#9;}
-]
-}</code>
 
-* Получение определенной новости:<br/>
-Метод: GET, параметр id (guid)<br/>
-`https://r.api.incase.com/api/news/{id}`<br/>
-**Пример ответа (status code: 200):**<br/>
-<code>{
-  &#9;"success": true,
-  &#9;"data": 
-  &#9;{
-  &#9;&#9;"id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-  &#9;&#9;"title": "string",
-  &#9;&#9;"date": "2023-04-06T22:56:18.774Z",
-  &#9;&#9;"content": "string"
-&#9;}
-}</code><br/>
-**Пример ответа (status code: 404):**<br/>
-<code>{
-  &#9;"success": false,
-  &#9;"data": "News is not found. "
-}</code>
+**STATUS CODE 200:**
+```JSON
+{
+  "success": true,
+  "data": [
+    {
+      "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "title": "string",
+      "date": "2023-04-06T22:56:18.774Z",
+      "content": "string"
+    }
+  ]
+}
+```
+
+Получение определенной новости:
+* Доступ: Allow Anonymous
+* Метод: GET 
+* Запрос: `https://r.api.incase.com/api/news/{id}`
+
+
+**STATUS CODE 200:**
+```JSON
+{
+  "success": true,
+  "data": 
+  {
+    "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+    "title": "string",
+    "date": "2023-04-06T22:56:18.774Z",
+    "content": "string"
+  }
+}
+```
+
+**STATUS CODE 404:**
+```JSON
+{
+  "success": false,
+  "data": "News is not found. "
+}
+```
