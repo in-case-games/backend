@@ -12,9 +12,9 @@ namespace InCase.Domain.Dtos
 
         public Guid BoxId { get; set; }
 
-        public LootBoxBanner Convert() => new()
+        public LootBoxBanner Convert(bool IsNewGuid = true) => new()
         {
-            Id = Id,
+            Id = IsNewGuid ? Guid.NewGuid() : Id,
             IsActive = IsActive,
             CreationDate = CreationDate,
             ExpirationDate = ExpirationDate,

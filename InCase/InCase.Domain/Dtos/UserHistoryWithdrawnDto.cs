@@ -10,9 +10,9 @@ namespace InCase.Domain.Dtos
         public Guid UserId { get; set; }
         public Guid ItemId { get; set; }
 
-        public UserHistoryWithdrawn Convert() => new()
+        public UserHistoryWithdrawn Convert(bool IsNewGuid = true) => new()
         {
-            Id = Id,
+            Id = IsNewGuid ? Guid.NewGuid() : Id,
             Date = Date,
             UserId = UserId,
             ItemId = ItemId

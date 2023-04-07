@@ -22,9 +22,9 @@ namespace InCase.Domain.Entities.Resources
         [JsonIgnore]
         public RestrictionType? Type { get; set; }
 
-        public UserRestrictionDto Convert() => new()
+        public UserRestrictionDto Convert(bool IsNewGuid = true) => new()
         {
-            Id = Id,
+            Id = IsNewGuid ? Guid.NewGuid() : Id,
             CreationDate = CreationDate,
             ExpirationDate = ExpirationDate,
             Description = Description,

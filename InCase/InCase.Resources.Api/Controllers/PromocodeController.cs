@@ -74,7 +74,7 @@ namespace InCase.Resources.Api.Controllers
         [HttpPut]
         public async Task<IActionResult> Update(PromocodeDto promocode)
         {
-            return await EndpointUtil.Update(promocode.Convert(), _contextFactory);
+            return await EndpointUtil.Update(promocode.Convert(false), _contextFactory);
         }
 
         [AuthorizeRoles(Roles.AdminOwnerBot)]

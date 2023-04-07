@@ -14,9 +14,9 @@ namespace InCase.Domain.Entities.Resources
         [JsonIgnore]
         public Game? Game { get; set; }
 
-        public GamePlatformDto Convert() => new()
+        public GamePlatformDto Convert(bool IsNewGuid = true) => new()
         {
-            Id = Id,
+            Id = IsNewGuid ? Guid.NewGuid() : Id,
             Name = Name,
             ImageUri = ImageUri,
             DomainUri = DomainUri,

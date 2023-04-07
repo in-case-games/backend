@@ -61,14 +61,14 @@ namespace InCase.Resources.Api.Controllers
 
             try
             {
-                context.Entry(oldInfo).CurrentValues.SetValues(infoDto.Convert());
+                context.Entry(oldInfo).CurrentValues.SetValues(infoDto.Convert(false));
                 await context.SaveChangesAsync();
             }
             catch(Exception ex) {
                 return ResponseUtil.Error(ex);
             }
 
-            return ResponseUtil.Ok(infoDto.Convert());
+            return ResponseUtil.Ok(infoDto.Convert(false));
         }
     }
 }

@@ -12,9 +12,9 @@ namespace InCase.Domain.Entities.Resources
 
         public SupportTopicAnswer? Answer { get; set; }
 
-        public AnswerImageDto Convert() => new()
+        public AnswerImageDto Convert(bool IsNewGuid = true) => new()
         {
-            Id = Id,
+            Id = IsNewGuid ? Guid.NewGuid() : Id,
             ImageUri = ImageUri,
             AnswerId = Answer?.Id ?? AnswerId
         };

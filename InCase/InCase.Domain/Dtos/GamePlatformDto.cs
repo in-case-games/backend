@@ -11,9 +11,9 @@ namespace InCase.Domain.Dtos
 
         public Guid GameId { get; set; }
 
-        public GamePlatform Convert() => new()
+        public GamePlatform Convert(bool IsNewGuid = true) => new()
         {
-            Id = Id,
+            Id = IsNewGuid ? Guid.NewGuid() : Id,
             Name = Name,
             ImageUri = ImageUri,
             GameId = GameId,

@@ -181,7 +181,7 @@ namespace InCase.Resources.Api.Controllers
 
             try
             {
-                context.Entry(review).CurrentValues.SetValues(reviewDto.Convert());
+                context.Entry(review).CurrentValues.SetValues(reviewDto.Convert(false));
                 await context.SaveChangesAsync();
             }
             catch (Exception ex)
@@ -189,7 +189,7 @@ namespace InCase.Resources.Api.Controllers
                 return ResponseUtil.Error(ex);
             }
 
-            return ResponseUtil.Ok(reviewDto.Convert());
+            return ResponseUtil.Ok(reviewDto.Convert(false));
         }
 
         [AuthorizeRoles(Roles.AdminOwnerBot)]
@@ -206,7 +206,7 @@ namespace InCase.Resources.Api.Controllers
 
             try
             {
-                context.Entry(review).CurrentValues.SetValues(reviewDto.Convert());
+                context.Entry(review).CurrentValues.SetValues(reviewDto.Convert(false));
                 await context.SaveChangesAsync();
             }
             catch (Exception ex)
@@ -214,7 +214,7 @@ namespace InCase.Resources.Api.Controllers
                 return ResponseUtil.Error(ex);
             }
 
-            return ResponseUtil.Ok(reviewDto.Convert());
+            return ResponseUtil.Ok(reviewDto.Convert(false));
         }
 
         [AuthorizeRoles(Roles.User)]

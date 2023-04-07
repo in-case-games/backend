@@ -28,7 +28,6 @@ namespace InCase.Resources.Api.Controllers
 
             List<LootBox> lootBoxes = await context.LootBoxes
                 .AsNoTracking()
-                .Include(i => i.Game)
                 .ToListAsync();
 
             return ResponseUtil.Ok(lootBoxes);
@@ -42,7 +41,6 @@ namespace InCase.Resources.Api.Controllers
 
             LootBox? lootBox = await context.LootBoxes
                 .AsNoTracking()
-                .Include(i => i.Game)
                 .Include(i => i.Inventories)
                 .FirstOrDefaultAsync(f => f.Id == id);
 
@@ -121,14 +119,14 @@ namespace InCase.Resources.Api.Controllers
         [HttpPut]
         public async Task<IActionResult> Update(LootBoxDto lootBox)
         {
-            return await EndpointUtil.Update(lootBox.Convert(), _contextFactory);
+            return await EndpointUtil.Update(lootBox.Convert(false), _contextFactory);
         }
 
         [AuthorizeRoles(Roles.AdminOwnerBot)]
         [HttpPut("banner")]
         public async Task<IActionResult> UpdateBanner(LootBoxBannerDto banner)
         {
-            return await EndpointUtil.Update(banner.Convert(), _contextFactory);
+            return await EndpointUtil.Update(banner.Convert(false), _contextFactory);
         }
 
         [AuthorizeRoles(Roles.AdminOwnerBot)]

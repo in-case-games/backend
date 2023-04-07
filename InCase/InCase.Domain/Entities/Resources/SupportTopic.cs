@@ -18,9 +18,9 @@ namespace InCase.Domain.Entities.Resources
 
         public List<SupportTopicAnswer>? Answers { get; set; }
 
-        public SupportTopicDto Convert() => new()
+        public SupportTopicDto Convert(bool IsNewGuid = true) => new()
         {
-            Id = Id,
+            Id = IsNewGuid ? Guid.NewGuid() : Id,
             Title = Title,
             Content = Content,
             Date = Date,

@@ -11,9 +11,9 @@ namespace InCase.Domain.Dtos
         public Guid ItemId { get; set; }
         public Guid BoxId { get; set; }
 
-        public UserHistoryOpening Convert() => new()
+        public UserHistoryOpening Convert(bool IsNewGuid = true) => new()
         {
-            Id = Id,
+            Id = IsNewGuid ? Guid.NewGuid() : Id,
             Date = Date,
             UserId = UserId,
             ItemId = ItemId,

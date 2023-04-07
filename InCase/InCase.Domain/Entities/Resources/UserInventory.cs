@@ -16,9 +16,9 @@ namespace InCase.Domain.Entities.Resources
         public User? User { get; set; }
         public GameItem? Item { get; set; }
 
-        public UserInventoryDto Convert() => new()
+        public UserInventoryDto Convert(bool IsNewGuid = true) => new()
         {
-            Id = Id,
+            Id = IsNewGuid ? Guid.NewGuid() : Id,
             Date = Date,
             FixedCost = FixedCost,
             UserId = User?.Id ?? UserId,

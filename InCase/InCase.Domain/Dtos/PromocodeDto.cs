@@ -12,9 +12,9 @@ namespace InCase.Domain.Dtos
 
         public Guid TypeId { get; set; }
 
-        public Promocode Convert() => new()
+        public Promocode Convert(bool IsNewGuid = true) => new()
         {
-            Id = Id,
+            Id = IsNewGuid ? Guid.NewGuid() : Id,
             Name = Name,
             Discount = Discount,
             NumberActivations = NumberActivations,

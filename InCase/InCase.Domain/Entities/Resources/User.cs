@@ -31,9 +31,9 @@ namespace InCase.Domain.Entities.Resources
         [JsonIgnore]
         public List<UserHistoryWithdrawn>? HistoryWithdrawns { get; set; }
 
-        public UserDto Convert() => new()
+        public UserDto Convert(bool IsNewGuid = true) => new()
         {
-            Id = Id,
+            Id = IsNewGuid ? Guid.NewGuid() : Id,
             Login = Login,
             Email = Email
         };

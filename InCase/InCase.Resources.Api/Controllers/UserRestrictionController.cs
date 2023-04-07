@@ -225,7 +225,7 @@ namespace InCase.Resources.Api.Controllers
 
             try
             {
-                context.Entry(restriction).CurrentValues.SetValues(restrictionDto.Convert());
+                context.Entry(restriction).CurrentValues.SetValues(restrictionDto.Convert(false));
                 await context.SaveChangesAsync();
             }
             catch (Exception ex)
@@ -233,7 +233,7 @@ namespace InCase.Resources.Api.Controllers
                 return ResponseUtil.Error(ex);
             }
 
-            return ResponseUtil.Ok(restrictionDto.Convert());
+            return ResponseUtil.Ok(restrictionDto.Convert(false));
         }
 
         [AuthorizeRoles(Roles.AdminOwnerBot)]

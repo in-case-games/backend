@@ -11,9 +11,9 @@ namespace InCase.Domain.Dtos
         public Guid UserId { get; set; }
         public Guid PromocodeId { get; set; }
 
-        public UserHistoryPromocode Convert() => new()
+        public UserHistoryPromocode Convert(bool IsNewGuid = true) => new()
         {
-            Id = Id,
+            Id = IsNewGuid ? Guid.NewGuid() : Id,
             Date = Date,
             IsActivated = IsActivated,
             UserId = UserId,

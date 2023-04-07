@@ -11,9 +11,9 @@ namespace InCase.Domain.Dtos
 
         public Guid UserId { get; set; }
 
-        public UserReview Convert() => new()
+        public UserReview Convert(bool IsNewGuid = true) => new()
         {
-            Id = Id,
+            Id = IsNewGuid ? Guid.NewGuid() : Id,
             Title = Title,
             Content = Content,
             IsApproved = IsApproved,

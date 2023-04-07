@@ -18,9 +18,9 @@ namespace InCase.Domain.Entities.Resources
         public GameItem? Item { get; set; }
         public LootBox? Box { get; set; }
 
-        public UserHistoryOpeningDto Convert() => new()
+        public UserHistoryOpeningDto Convert(bool IsNewGuid = true) => new()
         {
-            Id = Id,
+            Id = IsNewGuid ? Guid.NewGuid() : Id,
             Date = Date,
             UserId = User?.Id ?? UserId,
             ItemId = Item?.Id ?? ItemId,

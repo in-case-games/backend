@@ -230,10 +230,10 @@ namespace InCase.Resources.Api.Controllers
             if (topic is null)
                 return ResponseUtil.NotFound(nameof(SupportTopicAnswer));
 
-            context.Entry(topic).CurrentValues.SetValues(topicDto.Convert());
+            context.Entry(topic).CurrentValues.SetValues(topicDto.Convert(false));
             await context.SaveChangesAsync();
 
-            return ResponseUtil.Ok(topicDto.Convert());
+            return ResponseUtil.Ok(topicDto.Convert(false));
         }
 
         [AuthorizeRoles(Roles.User)]
@@ -251,10 +251,10 @@ namespace InCase.Resources.Api.Controllers
 
             answerDto.PlaintiffId = UserId;
 
-            context.Entry(answer).CurrentValues.SetValues(answerDto.Convert());
+            context.Entry(answer).CurrentValues.SetValues(answerDto.Convert(false));
             await context.SaveChangesAsync();
 
-            return ResponseUtil.Ok(answerDto.Convert());
+            return ResponseUtil.Ok(answerDto.Convert(false));
         }
 
         [AuthorizeRoles(Roles.Owner, Roles.Bot)]

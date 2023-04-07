@@ -16,9 +16,9 @@ namespace InCase.Domain.Entities.Resources
         public LootBox? Box { get; set; }
         public Game? Game { get; set; }
 
-        public LootBoxGroupDto Convert() => new()
+        public LootBoxGroupDto Convert(bool IsNewGuid = true) => new()
         {
-            Id = Id,
+            Id = IsNewGuid ? Guid.NewGuid() : Id,
             BoxId = Box?.Id ?? BoxId,
             GroupId = Group?.Id ?? GroupId,
             GameId = Game?.Id ?? GameId

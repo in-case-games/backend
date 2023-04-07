@@ -18,9 +18,9 @@ namespace InCase.Domain.Entities.Resources
         public GameItem? Item { get; set; }
         public LootBoxBanner? Banner { get; set; }
 
-        public UserPathBanner Convert() => new()
+        public UserPathBanner Convert(bool IsNewGuid = true) => new()
         {
-            Id = Id,
+            Id = IsNewGuid ? Guid.NewGuid() : Id,
             Date = Date,
             NumberSteps = NumberSteps,
             UserId = User?.Id ?? UserId,

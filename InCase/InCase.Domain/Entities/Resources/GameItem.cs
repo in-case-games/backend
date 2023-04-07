@@ -35,9 +35,9 @@ namespace InCase.Domain.Entities.Resources
         [JsonIgnore]
         public List<UserPathBanner>? PathBanners { get; set; }
 
-        public GameItemDto Convert() => new()
+        public GameItemDto Convert(bool IsNewGuid = true) => new()
         {
-            Id = Id,
+            Id = IsNewGuid ? Guid.NewGuid() : Id,
             Name = Name,
             Cost = Cost,
             ImageUri = ImageUri,

@@ -14,9 +14,9 @@ namespace InCase.Domain.Dtos
 
         public Guid GameId { get; set; }
 
-        public LootBox Convert() => new()
+        public LootBox Convert(bool IsNewGuid = true) => new()
         {
-            Id = Id,
+            Id = IsNewGuid ? Guid.NewGuid() : Id,
             Name = Name,
             Cost = Cost,
             Balance = Balance,

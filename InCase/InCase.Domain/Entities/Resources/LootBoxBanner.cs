@@ -18,9 +18,9 @@ namespace InCase.Domain.Entities.Resources
         [JsonIgnore]
         public List<UserPathBanner>? Paths { get; set; }
 
-        public LootBoxBannerDto Convert() => new()
+        public LootBoxBannerDto Convert(bool IsNewGuid = true) => new()
         {
-            Id = Id,
+            Id = IsNewGuid ? Guid.NewGuid() : Id,
             IsActive = IsActive,
             CreationDate = CreationDate,
             ExpirationDate = ExpirationDate,

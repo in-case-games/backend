@@ -11,9 +11,9 @@ namespace InCase.Domain.Dtos
         public Guid? PlaintiffId { get; set; }
         public Guid TopicId { get; set; }
 
-        public SupportTopicAnswer Convert() => new()
+        public SupportTopicAnswer Convert(bool IsNewGuid = true) => new()
         {
-            Id = Id,
+            Id = IsNewGuid ? Guid.NewGuid() : Id,
             Content = Content,
             Date = Date,
             PlaintiffId = PlaintiffId,

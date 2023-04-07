@@ -86,7 +86,7 @@ namespace InCase.Resources.Api.Controllers
         [HttpPut]
         public async Task<IActionResult> Update(GameItemDto item)
         {
-            return await EndpointUtil.Update(item.Convert(), _contextFactory);
+            return await EndpointUtil.Update(item.Convert(false), _contextFactory);
         }
 
         [AuthorizeRoles(Roles.AdminOwnerBot)]

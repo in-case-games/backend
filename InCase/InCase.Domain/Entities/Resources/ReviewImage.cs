@@ -11,9 +11,9 @@ namespace InCase.Domain.Entities.Resources
 
         public UserReview? Review { get; set; }
 
-        public ReviewImageDto Convert() => new()
+        public ReviewImageDto Convert(bool IsNewGuid = true) => new()
         {
-            Id = Id,
+            Id = IsNewGuid ? Guid.NewGuid() : Id,
             ImageUri = ImageUri,
             ReviewId = Review?.Id ?? ReviewId,
         };
