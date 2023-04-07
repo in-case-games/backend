@@ -131,6 +131,30 @@ _Данный подзаголовок содержит в себе информ
   "data": "News is not found. "
 }
 ```
+Создание новости:
+* Доступ: Admin, Owner, Bot
+* Метод: POST 
+* Запрос: `https://r.api.incase.com/api/news`
+
+Обновление новости:
+* Доступ: Admin, Owner, Bot
+* Метод: PUT 
+* Запрос: `https://r.api.incase.com/api/news`
+
+Удаление новости:
+* Доступ: Admin, Owner, Bot
+* Метод: Delete 
+* Запрос: `https://r.api.incase.com/api/news`
+
+Создание картинки новости:
+* Доступ: Admin, Owner, Bot
+* Метод: POST 
+* Запрос: `https://r.api.incase.com/api/news/image`
+
+Удаление картинки новости:
+* Доступ: Admin, Owner, Bot
+* Метод: Delete 
+* Запрос: `https://r.api.incase.com/api/news/image/{id}`
 
 ### Информация о статистике
 Получение обычной статистике сайта:
@@ -169,6 +193,10 @@ _Данный подзаголовок содержит в себе информ
   }
 }
 ```
+Редактирование админской статистике сайта:
+* Доступ: Owner, Bot
+* Метод: PUT 
+* Запрос: `https://r.api.incase.com/api/site-statistics/admin`
 
 ### Информация о предметах
 Получение всех предметов:
