@@ -22,6 +22,8 @@ namespace InCase.Infrastructure.Configurations
                 .IsRequired();
             builder.Property(p => p.WithdrawnFunds)
                 .IsRequired();
+
+            builder.HasData(new SiteStatistics());
         }
     }
 }

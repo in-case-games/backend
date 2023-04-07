@@ -33,12 +33,12 @@ namespace InCase.Email.Api.Controllers
         #endregion
 
         [AllowAnonymous]
-        [HttpPost("account")]
-        public async Task<IActionResult> ConfirmAccount(DataMailLink data)
+        [HttpGet("account")]
+        public async Task<IActionResult> ConfirmAccount(string token = "")
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            ClaimsPrincipal? principal = _jwtService.GetClaimsToken(data.EmailToken);
+            ClaimsPrincipal? principal = _jwtService.GetClaimsToken(token);
 
             if (principal is null) 
                 return Forbid("Invalid refresh token");
