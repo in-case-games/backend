@@ -177,7 +177,7 @@ namespace InCase.Resources.Api.Controllers
                 return ResponseUtil.Error(ex);
             }
 
-            return ResponseUtil.Ok(restrictionDto);
+            return ResponseUtil.Ok(restrictionDto.Convert());
         }
 
         [AuthorizeRoles(Roles.AdminOwnerBot)]
@@ -233,7 +233,7 @@ namespace InCase.Resources.Api.Controllers
                 return ResponseUtil.Error(ex);
             }
 
-            return ResponseUtil.Ok(restrictionDto);
+            return ResponseUtil.Ok(restrictionDto.Convert());
         }
 
         [AuthorizeRoles(Roles.AdminOwnerBot)]

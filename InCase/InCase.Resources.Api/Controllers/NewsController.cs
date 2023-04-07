@@ -58,18 +58,18 @@ namespace InCase.Resources.Api.Controllers
 
         [AuthorizeRoles(Roles.AdminOwnerBot)]
         [HttpPost("image")]
-        public async Task<IActionResult> CreateImage(NewsImageDto newsImage)
+        public async Task<IActionResult> CreateImage(NewsImageDto imageDto)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             try
             {
-                if (await context.News.AnyAsync(a => a.Id == newsImage.NewsId))
+                if (await context.News.AnyAsync(a => a.Id == imageDto.NewsId))
                 {
-                    await context.NewsImages.AddAsync(newsImage.Convert());
+                    await context.NewsImages.AddAsync(imageDto.Convert());
                     await context.SaveChangesAsync();
 
-                    return ResponseUtil.Ok(newsImage);
+                    return ResponseUtil.Ok(imageDto.Convert());
                 }
 
                 return ResponseUtil.NotFound(nameof(NewsImage));

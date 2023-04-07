@@ -70,16 +70,16 @@ namespace InCase.Resources.Api.Controllers
 
         [AuthorizeRoles(Roles.Owner, Roles.Admin)]
         [HttpPost]
-        public async Task<IActionResult> Create(LootBoxGroupDto lootBoxGroup)
+        public async Task<IActionResult> Create(LootBoxGroupDto groupDto)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             try
             {
-                await context.LootBoxGroups.AddAsync(lootBoxGroup.Convert());
+                await context.LootBoxGroups.AddAsync(groupDto.Convert());
                 await context.SaveChangesAsync();
 
-                return ResponseUtil.Ok(lootBoxGroup);
+                return ResponseUtil.Ok(groupDto.Convert());
             }
             catch (Exception ex)
             {
@@ -89,16 +89,16 @@ namespace InCase.Resources.Api.Controllers
 
         [AuthorizeRoles(Roles.Owner, Roles.Admin)]
         [HttpPost("group")]
-        public async Task<IActionResult> CreateGroup(GroupLootBox groupLootBox)
+        public async Task<IActionResult> CreateGroup(GroupLootBox group)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             try
             {
-                await context.GroupLootBoxes.AddAsync(groupLootBox);
+                await context.GroupLootBoxes.AddAsync(group);
                 await context.SaveChangesAsync();
 
-                return ResponseUtil.Ok(groupLootBox);
+                return ResponseUtil.Ok(group);
             }
             catch (Exception ex)
             {

@@ -185,7 +185,7 @@ namespace InCase.Resources.Api.Controllers
                 return ResponseUtil.Error(ex);
             }
 
-            return ResponseUtil.Ok(supportTopics);
+            return ResponseUtil.Ok(topicDto.Convert());
         }
 
         [AuthorizeRoles(Roles.AllExceptAdmin)]
@@ -212,7 +212,7 @@ namespace InCase.Resources.Api.Controllers
                 return ResponseUtil.Error(ex);
             }
 
-            return ResponseUtil.Ok(answerDto);
+            return ResponseUtil.Ok(answerDto.Convert());
         }
 
         [AuthorizeRoles(Roles.AllExceptAdmin)]
@@ -233,7 +233,7 @@ namespace InCase.Resources.Api.Controllers
             context.Entry(topic).CurrentValues.SetValues(topicDto.Convert());
             await context.SaveChangesAsync();
 
-            return ResponseUtil.Ok(topicDto);
+            return ResponseUtil.Ok(topicDto.Convert());
         }
 
         [AuthorizeRoles(Roles.User)]
@@ -254,7 +254,7 @@ namespace InCase.Resources.Api.Controllers
             context.Entry(answer).CurrentValues.SetValues(answerDto.Convert());
             await context.SaveChangesAsync();
 
-            return ResponseUtil.Ok(answerDto);
+            return ResponseUtil.Ok(answerDto.Convert());
         }
 
         [AuthorizeRoles(Roles.Owner, Roles.Bot)]

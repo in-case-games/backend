@@ -68,7 +68,7 @@ namespace InCase.Resources.Api.Controllers
                 return ResponseUtil.Error(ex);
             }
 
-            return ResponseUtil.Ok(infoDto);
+            return ResponseUtil.Ok(infoDto.Convert());
         }
     }
 }

@@ -131,7 +131,7 @@ namespace InCase.Resources.Api.Controllers
                 return ResponseUtil.Error(ex);
             }
 
-            return ResponseUtil.Ok(reviewDto);
+            return ResponseUtil.Ok(reviewDto.Convert());
         }
 
         [AuthorizeRoles(Roles.User)]
@@ -159,7 +159,7 @@ namespace InCase.Resources.Api.Controllers
                 return ResponseUtil.Error(ex);
             }
 
-            return ResponseUtil.Ok(imageDto);
+            return ResponseUtil.Ok(imageDto.Convert());
         }
 
         [AuthorizeRoles(Roles.User)]
@@ -189,7 +189,7 @@ namespace InCase.Resources.Api.Controllers
                 return ResponseUtil.Error(ex);
             }
 
-            return ResponseUtil.Ok(reviewDto);
+            return ResponseUtil.Ok(reviewDto.Convert());
         }
 
         [AuthorizeRoles(Roles.AdminOwnerBot)]
@@ -214,7 +214,7 @@ namespace InCase.Resources.Api.Controllers
                 return ResponseUtil.Error(ex);
             }
 
-            return ResponseUtil.Ok(reviewDto);
+            return ResponseUtil.Ok(reviewDto.Convert());
         }
 
         [AuthorizeRoles(Roles.User)]

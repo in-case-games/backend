@@ -95,12 +95,12 @@ namespace InCase.Email.Api.Controllers
         }
 
         [AllowAnonymous]
-        [HttpPut("email")]
-        public async Task<IActionResult> UpdateEmail(DataMailLink data)
+        [HttpGet("email/{email}")]
+        public async Task<IActionResult> UpdateEmail(string email, string token = "")
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            ClaimsPrincipal? principal = _jwtService.GetClaimsToken(data.EmailToken);
+            ClaimsPrincipal? principal = _jwtService.GetClaimsToken(token);
 
             if (principal is null) 
                 return Forbid("Invalid refresh token");
@@ -111,7 +111,7 @@ namespace InCase.Email.Api.Controllers
 
             bool isExistEmail = await context.Users
                 .AsNoTracking()
-                .AnyAsync(x => x.Email == data.UserEmail);
+                .AnyAsync(x => x.Email == email);
 
             if (isExistEmail) 
                 return ResponseUtil.Conflict("E-mail is already busy");
@@ -124,12 +124,12 @@ namespace InCase.Email.Api.Controllers
             if (!ValidationService.IsValidToken(in user, principal, "email"))
                 return Forbid("Access denied invalid email token");
 
-            user.Email = data.UserEmail;
+            user.Email = email;
 
             await context.SaveChangesAsync();
 
             return await _emailService.SendNotifyToEmail(
-                data.UserEmail,
+                email,
                 "Администрация сайта",
                 new EmailTemplate()
                 {
@@ -138,12 +138,12 @@ namespace InCase.Email.Api.Controllers
         }
 
         [AllowAnonymous]
-        [HttpPut("password/{password}")]
-        public async Task<IActionResult> UpdatePassword(DataMailLink data, string password)
+        [HttpGet("password/{password}")]
+        public async Task<IActionResult> UpdatePassword(string password, string token = "")
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            ClaimsPrincipal? principal = _jwtService.GetClaimsToken(data.EmailToken);
+            ClaimsPrincipal? principal = _jwtService.GetClaimsToken(token);
 
             if (principal is null) 
                 return Forbid("Invalid refresh token");
@@ -180,11 +180,11 @@ namespace InCase.Email.Api.Controllers
 
         [AllowAnonymous]
         [HttpDelete("account")]
-        public async Task<IActionResult> Delete(DataMailLink data)
+        public async Task<IActionResult> Delete(string token = "")
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            ClaimsPrincipal? principal = _jwtService.GetClaimsToken(data.EmailToken);
+            ClaimsPrincipal? principal = _jwtService.GetClaimsToken(token);
 
             if (principal is null) 
                 return Forbid("Invalid refresh token");
