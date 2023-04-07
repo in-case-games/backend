@@ -10,6 +10,7 @@ namespace InCase.Domain.Dtos
 
         public NewsImage Convert() => new()
         {
+            Id = Id,
             ImageUri = ImageUri,
             NewsId = NewsId,
         };

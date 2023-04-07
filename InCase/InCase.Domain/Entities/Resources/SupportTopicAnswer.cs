@@ -21,6 +21,7 @@ namespace InCase.Domain.Entities.Resources
 
         public SupportTopicAnswerDto Convert() => new()
         {
+            Id = Id,
             Content = Content,
             Date = Date,
             PlaintiffId = Plaintiff?.Id ?? PlaintiffId,

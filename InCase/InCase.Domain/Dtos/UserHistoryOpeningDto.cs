@@ -13,6 +13,7 @@ namespace InCase.Domain.Dtos
 
         public UserHistoryOpening Convert() => new()
         {
+            Id = Id,
             Date = Date,
             UserId = UserId,
             ItemId = ItemId,

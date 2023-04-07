@@ -13,6 +13,7 @@ namespace InCase.Domain.Dtos
 
         public UserInventory Convert() => new()
         {
+            Id = Id,
             Date = Date,
             FixedCost = FixedCost,
             UserId = UserId,

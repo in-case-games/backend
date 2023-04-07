@@ -25,6 +25,7 @@ namespace InCase.Domain.Entities.Resources
 
         public UserAdditionalInfoDto Convert() => new()
         {
+            Id = Id,
             Balance = Balance,
             ImageUri = ImageUri,
             IsNotifyEmail = IsNotifyEmail,

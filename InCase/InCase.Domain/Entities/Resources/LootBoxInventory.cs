@@ -17,6 +17,7 @@ namespace InCase.Domain.Entities.Resources
 
         public LootBoxInventoryDto Convert() => new()
         {
+            Id = Id,
             NumberItems = NumberItems,
             ChanceWining = ChanceWining,
             ItemId = Item?.Id ?? ItemId,

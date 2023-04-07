@@ -15,6 +15,7 @@ namespace InCase.Domain.Dtos
 
         public UserRestriction Convert() => new()
         {
+            Id = Id,
             CreationDate = CreationDate,
             ExpirationDate = ExpirationDate,
             Description = Description,

@@ -20,6 +20,7 @@ namespace InCase.Domain.Entities.Resources
 
         public LootBoxBannerDto Convert() => new()
         {
+            Id = Id,
             IsActive = IsActive,
             CreationDate = CreationDate,
             ExpirationDate = ExpirationDate,

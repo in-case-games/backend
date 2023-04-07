@@ -10,6 +10,7 @@ namespace InCase.Domain.Dtos
 
         public ReviewImage Convert() => new()
         {
+            Id = Id,
             ImageUri = ImageUri,
             ReviewId = ReviewId,
         };

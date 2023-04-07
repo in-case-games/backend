@@ -20,6 +20,7 @@ namespace InCase.Domain.Entities.Resources
 
         public SupportTopicDto Convert() => new()
         {
+            Id = Id,
             Title = Title,
             Content = Content,
             Date = Date,

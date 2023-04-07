@@ -14,6 +14,7 @@ namespace InCase.Domain.Dtos
 
         public Promocode Convert() => new()
         {
+            Id = Id,
             Name = Name,
             Discount = Discount,
             NumberActivations = NumberActivations,

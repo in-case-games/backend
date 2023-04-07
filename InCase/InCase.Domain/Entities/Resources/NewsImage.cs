@@ -12,6 +12,7 @@ namespace InCase.Domain.Entities.Resources
 
         public NewsImageDto Convert() => new()
         {
+            Id = Id,
             ImageUri = ImageUri,
             NewsId = News?.Id ?? NewsId,
         };

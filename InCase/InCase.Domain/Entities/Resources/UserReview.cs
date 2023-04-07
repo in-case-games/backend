@@ -20,6 +20,7 @@ namespace InCase.Domain.Entities.Resources
 
         public UserReviewDto Convert() => new()
         {
+            Id = Id,
             Title = Title,
             Content = Content,
             IsApproved = IsApproved,

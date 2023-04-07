@@ -13,6 +13,7 @@ namespace InCase.Domain.Dtos
 
         public LootBoxInventory Convert() => new()
         {
+            Id = Id,
             NumberItems = NumberItems,
             ChanceWining = ChanceWining,
             ItemId = ItemId,

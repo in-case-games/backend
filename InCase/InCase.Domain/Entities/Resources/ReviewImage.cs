@@ -13,6 +13,7 @@ namespace InCase.Domain.Entities.Resources
 
         public ReviewImageDto Convert() => new()
         {
+            Id = Id,
             ImageUri = ImageUri,
             ReviewId = Review?.Id ?? ReviewId,
         };

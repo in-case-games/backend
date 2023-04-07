@@ -17,6 +17,7 @@ namespace InCase.Domain.Dtos
 
         public GameItem Convert() => new()
         {
+            Id = Id,
             Name = Name,
             Cost = Cost,
             ImageUri = ImageUri,

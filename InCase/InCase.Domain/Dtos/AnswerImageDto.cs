@@ -11,6 +11,7 @@ namespace InCase.Domain.Dtos
 
         public AnswerImage Convert() => new()
         {
+            Id = Id,
             ImageUri = ImageUri,
             AnswerId = AnswerId
         };

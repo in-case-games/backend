@@ -16,6 +16,7 @@ namespace InCase.Domain.Entities.Resources
 
         public GamePlatformDto Convert() => new()
         {
+            Id = Id,
             Name = Name,
             ImageUri = ImageUri,
             DomainUri = DomainUri,

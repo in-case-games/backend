@@ -13,6 +13,7 @@ namespace InCase.Domain.Dtos
 
         public GamePlatform Convert() => new()
         {
+            Id = Id,
             Name = Name,
             ImageUri = ImageUri,
             GameId = GameId,

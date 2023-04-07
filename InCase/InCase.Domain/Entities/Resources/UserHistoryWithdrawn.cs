@@ -17,6 +17,7 @@ namespace InCase.Domain.Entities.Resources
 
         public UserHistoryWithdrawnDto Convert() => new()
         {
+            Id = Id,
             Date = Date,
             UserId = User?.Id ?? UserId,
             ItemId = Item?.Id ?? ItemId

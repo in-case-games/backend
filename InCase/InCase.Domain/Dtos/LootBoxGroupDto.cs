@@ -11,6 +11,7 @@ namespace InCase.Domain.Dtos
 
         public LootBoxGroup Convert() => new()
         {
+            Id = Id,
             BoxId = BoxId,
             GroupId = GroupId,
             GameId = GameId

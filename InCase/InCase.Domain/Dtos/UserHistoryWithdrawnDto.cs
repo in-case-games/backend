@@ -12,6 +12,7 @@ namespace InCase.Domain.Dtos
 
         public UserHistoryWithdrawn Convert() => new()
         {
+            Id = Id,
             Date = Date,
             UserId = UserId,
             ItemId = ItemId

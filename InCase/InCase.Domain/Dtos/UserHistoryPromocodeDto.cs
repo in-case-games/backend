@@ -13,6 +13,7 @@ namespace InCase.Domain.Dtos
 
         public UserHistoryPromocode Convert() => new()
         {
+            Id = Id,
             Date = Date,
             IsActivated = IsActivated,
             UserId = UserId,

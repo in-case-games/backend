@@ -26,6 +26,7 @@ namespace InCase.Domain.Entities.Resources
 
         public LootBoxDto Convert() => new()
         {
+            Id = Id,
             Name = Name,
             Cost = Cost,
             Balance = Balance,

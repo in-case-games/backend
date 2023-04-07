@@ -33,6 +33,7 @@ namespace InCase.Domain.Entities.Resources
 
         public UserDto Convert() => new()
         {
+            Id = Id,
             Login = Login,
             Email = Email
         };

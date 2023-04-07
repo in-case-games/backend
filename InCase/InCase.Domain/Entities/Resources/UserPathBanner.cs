@@ -20,6 +20,7 @@ namespace InCase.Domain.Entities.Resources
 
         public UserPathBanner Convert() => new()
         {
+            Id = Id,
             Date = Date,
             NumberSteps = NumberSteps,
             UserId = User?.Id ?? UserId,

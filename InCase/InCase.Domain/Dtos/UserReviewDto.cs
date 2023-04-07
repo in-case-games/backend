@@ -13,6 +13,7 @@ namespace InCase.Domain.Dtos
 
         public UserReview Convert() => new()
         {
+            Id = Id,
             Title = Title,
             Content = Content,
             IsApproved = IsApproved,

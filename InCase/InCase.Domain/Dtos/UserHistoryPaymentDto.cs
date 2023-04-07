@@ -12,6 +12,7 @@ namespace InCase.Domain.Dtos
 
         public UserHistoryPayment Convert() => new()
         {
+            Id = Id,
             Date = Date,
             Amount = Amount,
             UserId = UserId

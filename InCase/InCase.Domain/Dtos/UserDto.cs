@@ -14,6 +14,7 @@ namespace InCase.Domain.Dtos
 
         public User Convert() => new()
         {
+            Id = Id,
             Login = Login,
             Email = Email
         };

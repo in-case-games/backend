@@ -16,6 +16,7 @@ namespace InCase.Domain.Dtos
 
         public LootBox Convert() => new()
         {
+            Id = Id,
             Name = Name,
             Cost = Cost,
             Balance = Balance,

@@ -18,6 +18,7 @@ namespace InCase.Domain.Dtos
 
         public UserAdditionalInfo Convert() => new()
         {
+            Id = Id,
             Balance = Balance,
             ImageUri = ImageUri,
             IsNotifyEmail = IsNotifyEmail,

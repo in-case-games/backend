@@ -20,6 +20,7 @@ namespace InCase.Domain.Entities.Resources
 
         public PromocodeDto Convert() => new()
         {
+            Id = Id,
             Name = Name,
             Discount = Discount,
             NumberActivations = NumberActivations,

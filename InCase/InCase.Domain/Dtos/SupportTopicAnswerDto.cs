@@ -13,6 +13,7 @@ namespace InCase.Domain.Dtos
 
         public SupportTopicAnswer Convert() => new()
         {
+            Id = Id,
             Content = Content,
             Date = Date,
             PlaintiffId = PlaintiffId,

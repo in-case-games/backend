@@ -14,6 +14,7 @@ namespace InCase.Domain.Dtos
 
         public SupportTopic Convert() => new()
         {
+            Id = Id,
             Title = Title,
             Content = Content,
             Date = Date,

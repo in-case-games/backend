@@ -18,6 +18,7 @@ namespace InCase.Domain.Entities.Resources
 
         public UserInventoryDto Convert() => new()
         {
+            Id = Id,
             Date = Date,
             FixedCost = FixedCost,
             UserId = User?.Id ?? UserId,

@@ -14,6 +14,7 @@ namespace InCase.Domain.Dtos
 
         public UserPathBanner Convert() => new()
         {
+            Id = Id,
             Date = Date,
             NumberSteps = NumberSteps,
             UserId = UserId,

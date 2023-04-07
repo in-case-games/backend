@@ -37,6 +37,7 @@ namespace InCase.Domain.Entities.Resources
 
         public GameItemDto Convert() => new()
         {
+            Id = Id,
             Name = Name,
             Cost = Cost,
             ImageUri = ImageUri,

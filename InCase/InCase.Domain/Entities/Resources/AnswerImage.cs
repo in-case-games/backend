@@ -14,6 +14,7 @@ namespace InCase.Domain.Entities.Resources
 
         public AnswerImageDto Convert() => new()
         {
+            Id = Id,
             ImageUri = ImageUri,
             AnswerId = Answer?.Id ?? AnswerId
         };

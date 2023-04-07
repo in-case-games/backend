@@ -24,6 +24,7 @@ namespace InCase.Domain.Entities.Resources
 
         public UserRestrictionDto Convert() => new()
         {
+            Id = Id,
             CreationDate = CreationDate,
             ExpirationDate = ExpirationDate,
             Description = Description,

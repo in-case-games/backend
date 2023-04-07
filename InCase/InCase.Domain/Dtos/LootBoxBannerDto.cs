@@ -14,6 +14,7 @@ namespace InCase.Domain.Dtos
 
         public LootBoxBanner Convert() => new()
         {
+            Id = Id,
             IsActive = IsActive,
             CreationDate = CreationDate,
             ExpirationDate = ExpirationDate,

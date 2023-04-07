@@ -15,6 +15,7 @@ namespace InCase.Domain.Entities.Resources
 
         public UserHistoryPaymentDto Convert() => new()
         {
+            Id = Id,
             Date = Date,
             Amount = Amount,
             UserId = User?.Id ?? UserId
