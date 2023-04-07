@@ -31,7 +31,6 @@ _Данный подзаголовок содержит в себе информ
 * Метод: GET 
 * Запрос: `https://r.api.incase.com/api/game`
 
-
 **STATUS CODE 200:**
 ```JSON
 {
@@ -87,13 +86,11 @@ _Данный подзаголовок содержит в себе информ
   "data": "Game is not found. "
 }
 ```
-
 ### Информация о новостях
 Получение всех новостей: 
 * Доступ: Allow Anonymous
 * Метод: GET 
 * Запрос: `https://r.api.incase.com/api/news`
-
 
 **STATUS CODE 200:**
 ```JSON
@@ -109,12 +106,10 @@ _Данный подзаголовок содержит в себе информ
   ]
 }
 ```
-
 Получение определенной новости:
 * Доступ: Allow Anonymous
 * Метод: GET 
 * Запрос: `https://r.api.incase.com/api/news/{id}`
-
 
 **STATUS CODE 200:**
 ```JSON
@@ -129,11 +124,48 @@ _Данный подзаголовок содержит в себе информ
   }
 }
 ```
-
 **STATUS CODE 404:**
 ```JSON
 {
   "success": false,
   "data": "News is not found. "
+}
+```
+
+### Информация о статистике
+Получение обычной статистике сайта:
+* Доступ: Allow Anonymous
+* Метод: GET 
+* Запрос: `https://r.api.incase.com/api/site-statistics`
+
+**STATUS CODE 200:**
+```JSON
+{
+  "success": true,
+  "data": {
+    "users": 0,
+    "reviews": 0,
+    "lootBoxes": 0,
+    "withdrawnItems": 0,
+    "withdrawnFunds": 0,
+    "id": "b7d9b658-7116-46f2-85bf-91c09fbd316d"
+  }
+}
+```
+Получение админской статистике сайта:
+* Доступ: Owner, Bot
+* Метод: GET 
+* Запрос: `https://r.api.incase.com/api/site-statistics/admin`
+
+**STATUS CODE 200:**
+```JSON
+{
+  "success": true,
+  "data": {
+    "balanceWithdrawn": 0,
+    "totalReplenished": 0,
+    "sentSites": 0,
+    "id": "dcc228c3-6ad8-4021-9677-01b1067b5e23"
+  }
 }
 ```
