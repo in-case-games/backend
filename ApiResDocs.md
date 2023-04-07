@@ -449,3 +449,64 @@ _Данный подзаголовок содержит в себе информ
   "data": "GameItem is not found. "
 }
 ```
+###Информация о кейсе
+Получение всех кейсов:
+* Доступ: Allow Anonymous
+* Метод: GET
+* Запрос: `https://r.api.incase.com/api/loot-box`
+
+Получение одного кейса:
+* Доступ: Allow Anonymous
+* Метод: GET
+* Запрос: `https://r.api.incase.com/api/loot-box/{id}`
+
+Получение содержимого кейса:
+* Доступ: Allow Anonymous
+* Метод: GET
+* Запрос: `https://r.api.incase.com/api/loot-box/{id}/inventory`
+
+Получение всех баннеров кейсов:
+* Доступ: Allow Anonymous
+* Метод: GET
+* Запрос: `https://r.api.incase.com/api/loot-box/banners`
+
+Получение баннера у кейса:
+* Доступ: Allow Anonymous
+* Метод: GET
+* Запрос: `https://r.api.incase.com/api/loot-box/{id}/banner`
+
+Создать новый кейс:
+* Доступ: Admin, Owner, Bot
+* Метод: POST
+* Запрос: `https://r.api.incase.com/api/loot-box`
+
+**Request body**
+```JSON
+{
+  "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "name": "Самый классный кейс",
+  "cost": 150,
+  "balance": 0,
+  "virtualBalance": 0,
+  "imageUri": "string",
+  "isLocked": false,
+  "gameId": "219c5443-9aba-4603-a595-f2f0ef382a39"
+}
+```
+
+**STATUS CODE 200**
+```JSON
+{
+  "success": true,
+  "data": {
+    "name": "Самый классный кейс",
+    "cost": 150,
+    "balance": 0,
+    "virtualBalance": 0,
+    "imageUri": "string",
+    "isLocked": false,
+    "inventories": null,
+    "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+  }
+}
+```
