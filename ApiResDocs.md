@@ -455,10 +455,54 @@ _Данный подзаголовок содержит в себе информ
 * Метод: GET
 * Запрос: `https://r.api.incase.com/api/loot-box`
 
+**STATUS CODE 200**
+```JSON
+{
+  "success": true,
+  "data": [
+    {
+      "name": "Самый классный кейс",
+      "cost": 250,
+      "balance": 0,
+      "virtualBalance": 0,
+      "imageUri": "string",
+      "isLocked": false,
+      "inventories": null,
+      "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    }
+  ]
+}
+```
+
 Получение одного кейса:
 * Доступ: Allow Anonymous
 * Метод: GET
 * Запрос: `https://r.api.incase.com/api/loot-box/{id}`
+
+**STATUS CODE 200**
+```JSON
+{
+  "success": true,
+  "data": {
+    "name": "Самый классный кейс",
+    "cost": 250,
+    "balance": 0,
+    "virtualBalance": 0,
+    "imageUri": "string",
+    "isLocked": false,
+    "inventories": [],
+    "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+  }
+}
+```
+
+**STATUS CODE 404**
+```JSON
+{
+  "success": false,
+  "data": "LootBox is not found. "
+}
+```
 
 Получение содержимого кейса:
 * Доступ: Allow Anonymous
@@ -510,3 +554,82 @@ _Данный подзаголовок содержит в себе информ
   }
 }
 ```
+**STATUS CODE 409**
+```JSON
+{
+  "success": false,
+  "data": "Конфликт инструкции INSERT с ограничением FOREIGN KEY \"fk_loot_box_game_game_id\". Конфликт произошел в базе данных \"InCase.Dev\", таблица \"dbo.Game\", column 'id'.\r\nВыполнение данной инструкции было прервано."
+}
+```
+Обновить кейс:
+* Доступ: Admin, Owner, Bot
+* Метод: PUT
+* Запрос: `https://r.api.incase.com/api/loot-box`
+
+**Request body**
+```JSON
+{
+  "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "name": "Самый классный кейс",
+  "cost": 250,
+  "balance": 0,
+  "virtualBalance": 0,
+  "imageUri": "string",
+  "isLocked": false,
+  "gameId": "219c5443-9aba-4603-a595-f2f0ef382a39"
+}
+```
+
+**STATUS CODE 200**
+```JSON
+{
+  "success": true,
+  "data": {
+    "name": "Самый классный кейс",
+    "cost": 250,
+    "balance": 0,
+    "virtualBalance": 0,
+    "imageUri": "string",
+    "isLocked": false,
+    "inventories": null,
+    "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+  }
+}
+```
+**STATUS CODE 409**
+```JSON
+{
+  "success": false,
+  "data": "Конфликт инструкции UPDATE с ограничением FOREIGN KEY \"fk_loot_box_game_game_id\". Конфликт произошел в базе данных \"InCase.Dev\", таблица \"dbo.Game\", column 'id'."
+}
+```
+
+Создать новое содержимое кейсу:
+* Доступ: Admin, Owner, Bot
+* Метод: POST
+* Запрос: `https://r.api.incase.com/api/loot-box/inventory`
+
+Создать баннер кейсу:
+* Доступ: Admin, Owner, Bot
+* Метод: POST
+* Запрос: `https://r.api.incase.com/api/loot-box/banner`
+
+Обновить баннер кейса:
+* Доступ: Admin, Owner, Bot
+* Метод: PUT
+* Запрос: `https://r.api.incase.com/api/loot-box/banner`
+
+Удалить кейс:
+* Доступ: Admin, Owner, Bot
+* Метод: DELETE
+* Запрос: `https://r.api.incase.com/api/loot-box/{id}`
+
+Удалить баннер кейса:
+* Доступ: Admin, Owner, Bot
+* Метод: DELETE
+* Запрос: `https://r.api.incase.com/api/loot-box/banner/{id}`
+
+Удалить содержимое кейса:
+* Доступ: Admin, Owner, Bot
+* Метод: DELETE
+* Запрос: `https://r.api.incase.com/api/loot-box/inventory/{id}`
