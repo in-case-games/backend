@@ -33,7 +33,23 @@ namespace InCase.Resources.Api.Controllers
             return ResponseUtil.Ok(promocodes);
         }
 
-        [AuthorizeRoles(Roles.AdminOwnerBot)]
+        [AuthorizeRoles(Roles.All)]
+        [HttpGet("name/{name}")]
+        public async Task<IActionResult> GetByName(string? name)
+        {
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            Promocode? promocode = await context.Promocodes
+                .Include(i => i.Type)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(f => f.Name == name);
+
+            return promocode is null ?
+                ResponseUtil.NotFound(nameof(Promocode)) :
+                ResponseUtil.Ok(promocode);
+        }
+
+        [AuthorizeRoles(Roles.All)]
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(Guid id)
         {
@@ -47,13 +63,6 @@ namespace InCase.Resources.Api.Controllers
             return promocode is null ? 
                 ResponseUtil.NotFound(nameof(Promocode)) : 
                 ResponseUtil.Ok(promocode);
-        }
-
-        [AuthorizeRoles(Roles.AdminOwnerBot)]
-        [HttpGet("type/{id}")]
-        public async Task<IActionResult> GetType(Guid id)
-        {
-            return await EndpointUtil.GetById<PromocodeType>(id, _contextFactory);
         }
 
         [AuthorizeRoles(Roles.AdminOwnerBot)]
