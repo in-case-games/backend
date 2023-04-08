@@ -362,6 +362,7 @@ _Данный подзаголовок содержит в себе информ
 }
 ```
 
+## Предметы
 
 ### Информация о предметах
 
@@ -1124,3 +1125,43 @@ _Данный подзаголовок содержит в себе информ
   "data": "LootBoxInventory is not found. "
 }
 ```
+
+
+### Информация о промокодах
+
+1. Получить все промокоды:
+   * Доступ: Admin, Owner, Bot
+   * Метод: GET
+   * Запрос: `https://r.api.incase.com/api/promocode`
+
+2. Получить один промокод по id:
+   * Доступ: All
+   * Метод: GET
+   * Запрос: `https://r.api.incase.com/api/promocode/{id}`
+
+3. Получить один промокод по названию:
+   * Доступ: All
+   * Метод: GET
+   * Запрос: `https://r.api.incase.com/api/promocode/name/{name}`
+
+4. Получить типы промокодов:
+   * Доступ: All
+   * Метод: GET
+   * Запрос: `https://r.api.incase.com/api/promocode/types`
+
+5. Создать промокод:
+   * Доступ: Admin, Owner, Bot
+   * Метод: POST
+   * Запрос: `https://r.api.incase.com/api/promocode`
+
+6. Обновить промокод:
+   * Доступ: Admin, Owner, Bot
+   * Метод: PUT
+   * Запрос: `https://r.api.incase.com/api/promocode`
+
+7. Удалить промокод:
+   * Доступ: Admin, Owner, Bot
+   * Метод: DELETE
+   * Запрос: `https://r.api.incase.com/api/promocode`
+
+## Пользователь
