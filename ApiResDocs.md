@@ -712,15 +712,105 @@ _Данный подзаголовок содержит в себе информ
    * Метод: GET
    * Запрос: `https://r.api.incase.com/api/loot-box/{id}/inventory`
 
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+```JSON
+{
+  "success": true,
+  "data": [
+    {
+      "numberItems": 1,
+      "chanceWining": 120,
+      "item": {
+        "name": "НОЖ",
+        "cost": 150,
+        "imageUri": "string",
+        "idForPlatform": "string",
+        "quality": null,
+        "type": null,
+        "rarity": null,
+        "id": "becb3051-91aa-4e52-b3f4-f26001afd8ed"
+      },
+      "id": "1174c0df-e11a-426d-a8ae-d8fba5acfe4d"
+    }
+  ]
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "LootBox is not found. "
+}
+```
+
 4. Получение всех баннеров кейсов:
    * Доступ: Allow Anonymous
    * Метод: GET
    * Запрос: `https://r.api.incase.com/api/loot-box/banners`
 
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+```JSON
+{
+  "success": true,
+  "data": [
+    {
+      "isActive": true,
+      "creationDate": "2023-04-08T07:31:43.916",
+      "expirationDate": "2023-04-08T07:31:43.916",
+      "imageUri": "AAA",
+      "box": {
+        "name": "Самый классный кейс",
+        "cost": 250,
+        "balance": 0,
+        "virtualBalance": 0,
+        "imageUri": "string",
+        "isLocked": false,
+        "inventories": null,
+        "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+      },
+      "id": "6441d41f-c2cf-4c6c-91b0-52224cf5b4c3"
+    }
+  ]
+}
+```
+
 5. Получение баннера у кейса:
    * Доступ: Allow Anonymous
    * Метод: GET
    * Запрос: `https://r.api.incase.com/api/loot-box/{id}/banner`
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+```JSON
+{
+  "success": true,
+  "data": {
+    "isActive": true,
+    "creationDate": "2023-04-08T07:31:43.916",
+    "expirationDate": "2023-04-08T07:31:43.916",
+    "imageUri": "AAA",
+    "box": {
+      "name": "Самый классный кейс",
+      "cost": 250,
+      "balance": 0,
+      "virtualBalance": 0,
+      "imageUri": "string",
+      "isLocked": false,
+      "inventories": null,
+      "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    },
+    "id": "6441d41f-c2cf-4c6c-91b0-52224cf5b4c3"
+  }
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "LootBoxBanner is not found. "
+}
+```
 
 6. Создать новый кейс:
    * Доступ: Admin, Owner, Bot
@@ -815,27 +905,222 @@ _Данный подзаголовок содержит в себе информ
    * Метод: POST
    * Запрос: `https://r.api.incase.com/api/loot-box/inventory`
 
+![](https://img.shields.io/static/v1?label=&message=Request_Body:&color=blue)
+```JSON
+{
+  "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "numberItems": 1,
+  "chanceWining": 120,
+  "itemId": "becb3051-91aa-4e52-b3f4-f26001afd8ed",
+  "boxId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+```JSON
+{
+  "success": true,
+  "data": {
+    "numberItems": 1,
+    "chanceWining": 120,
+    "item": null,
+    "id": "1174c0df-e11a-426d-a8ae-d8fba5acfe4d"
+  }
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_409:&color=orange)
+```JSON
+{
+  "success": false,
+  "data": "Конфликт инструкции INSERT с ограничением FOREIGN KEY \"fk_loot_box_inventory_game_item_item_id\". Конфликт произошел в базе данных \"InCase.Dev\", таблица \"dbo.GameItem\", column 'id'.\r\nВыполнение данной инструкции было прервано."
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_409:&color=orange)
+```JSON
+{
+  "success": false,
+  "data": "Конфликт инструкции INSERT с ограничением FOREIGN KEY \"fk_loot_box_inventory_loot_box_box_id\". Конфликт произошел в базе данных \"InCase.Dev\", таблица \"dbo.LootBox\", column 'id'.\r\nВыполнение данной инструкции было прервано."
+}
+```
+
 9. Создать баннер кейсу:
    * Доступ: Admin, Owner, Bot
    * Метод: POST
    * Запрос: `https://r.api.incase.com/api/loot-box/banner`
+
+![](https://img.shields.io/static/v1?label=&message=Request_Body:&color=blue)
+```JSON
+{
+  "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "isActive": true,
+  "creationDate": "2023-04-08T07:29:07.297Z",
+  "expirationDate": "2023-04-08T07:29:07.297Z",
+  "imageUri": "ЭТО ПУТЬ К ФОТКЕ БАННЕРА",
+  "boxId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+```JSON
+{
+  "success": true,
+  "data": {
+    "isActive": true,
+    "creationDate": "2023-04-08T07:29:07.297Z",
+    "expirationDate": "2023-04-08T07:29:07.297Z",
+    "imageUri": "ЭТО ПУТЬ К ФОТКЕ БАННЕРА",
+    "box": null,
+    "id": "6441d41f-c2cf-4c6c-91b0-52224cf5b4c3"
+  }
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_409:&color=orange)
+```JSON
+{
+  "success": false,
+  "data": "Конфликт инструкции INSERT с ограничением FOREIGN KEY \"fk_loot_box_banner_loot_boxes_box_id\". Конфликт произошел в базе данных \"InCase.Dev\", таблица \"dbo.LootBox\", column 'id'.\r\nВыполнение данной инструкции было прервано."
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_409:&color=orange)
+```JSON
+{
+  "success": false,
+  "data": "Не удается вставить повторяющуюся строку ключа в объект \"dbo.LootBoxBanner\" с уникальным индексом \"ix_loot_box_banner_box_id\". Повторяющееся значение ключа: (3fa85f64-5717-4562-b3fc-2c963f66afa6).\r\nВыполнение данной инструкции было прервано."
+}
+```
 
 10. Обновить баннер кейса:
     * Доступ: Admin, Owner, Bot
     * Метод: PUT
     * Запрос: `https://r.api.incase.com/api/loot-box/banner`
 
+![](https://img.shields.io/static/v1?label=&message=Request_Body:&color=blue)
+```JSON
+{
+  "id": "6441d41f-c2cf-4c6c-91b0-52224cf5b4c3",
+  "isActive": true,
+  "creationDate": "2023-04-08T07:31:43.916Z",
+  "expirationDate": "2023-04-08T07:31:43.916Z",
+  "imageUri": "AAA",
+  "boxId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+```JSON
+{
+  "success": true,
+  "data": {
+    "isActive": true,
+    "creationDate": "2023-04-08T07:29:07.297Z",
+    "expirationDate": "2023-04-08T07:29:07.297Z",
+    "imageUri": "ЭТО ПУТЬ К ФОТКЕ БАННЕРА",
+    "box": null,
+    "id": "6441d41f-c2cf-4c6c-91b0-52224cf5b4c3"
+  }
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_409:&color=orange)
+```JSON
+{
+  "success": false,
+  "data": "Конфликт инструкции UPDATE с ограничением FOREIGN KEY \"fk_loot_box_banner_loot_boxes_box_id\". Конфликт произошел в базе данных \"InCase.Dev\", таблица \"dbo.LootBox\", column 'id'."
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "LootBoxBanner is not found. "
+}
+```
+
 11. Удалить кейс:
     * Доступ: Admin, Owner, Bot
     * Метод: DELETE
     * Запрос: `https://r.api.incase.com/api/loot-box/{id}`
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+```JSON
+{
+  "success": true,
+  "data": {
+    "name": "Самый классный кейс",
+    "cost": 250,
+    "balance": 0,
+    "virtualBalance": 0,
+    "imageUri": "string",
+    "isLocked": false,
+    "inventories": null,
+    "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+  }
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "LootBox is not found. "
+}
+```
 
 12. Удалить баннер кейса:
     * Доступ: Admin, Owner, Bot
     * Метод: DELETE
     * Запрос: `https://r.api.incase.com/api/loot-box/banner/{id}`
 
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+```JSON
+{
+  "success": true,
+  "data": {
+    "isActive": true,
+    "creationDate": "2023-04-08T07:31:43.916",
+    "expirationDate": "2023-04-08T07:31:43.916",
+    "imageUri": "AAA",
+    "box": null,
+    "id": "6441d41f-c2cf-4c6c-91b0-52224cf5b4c3"
+  }
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "LootBoxBanner is not found. "
+}
+```
+
 13. Удалить содержимое кейса:
     * Доступ: Admin, Owner, Bot
     * Метод: DELETE
     * Запрос: `https://r.api.incase.com/api/loot-box/inventory/{id}`
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+```JSON
+{
+  "success": true,
+  "data": {
+    "numberItems": 1,
+    "chanceWining": 120,
+    "item": null,
+    "id": "1174c0df-e11a-426d-a8ae-d8fba5acfe4d"
+  }
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "LootBoxInventory is not found. "
+}
+```
