@@ -25,13 +25,15 @@
 
 _Данный подзаголовок содержит в себе информацио о том, как работать с общими endpoint-ами_
 
-### Информация об играх
-Получение всех игровых сущностей: 
-* Доступ: Allow Anonymous
-* Метод: GET 
-* Запрос: `https://r.api.incase.com/api/game`
 
-**STATUS CODE 200:**
+### Информация об играх
+
+1. Получение всех игровых сущностей:
+   * Доступ: Allow Anonymous
+   * Метод: GET 
+   * Запрос: `https://r.api.incase.com/api/game`
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
 ```JSON
 {
   "success": true,
@@ -60,12 +62,13 @@ _Данный подзаголовок содержит в себе информ
   ]
 }
 ```
-Получение определенной игровой сущности: 
-* Доступ: Allow Anonymous
-* Метод: GET 
-* Запрос: `https://r.api.incase.com/api/game/{id}`
 
-**STATUS CODE 200:**
+2. Получение определенной игровой сущности: 
+   * Доступ: Allow Anonymous
+   * Метод: GET 
+   * Запрос: `https://r.api.incase.com/api/game/{id}`
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
 ```JSON
 {
   "success": true,
@@ -79,90 +82,218 @@ _Данный подзаголовок содержит в себе информ
   }
 }
 ```
-**STATUS CODE 404:**
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
 ```JSON
 {
   "success": false,
   "data": "Game is not found. "
 }
 ```
-### Информация о новостях
-Получение всех новостей: 
-* Доступ: Allow Anonymous
-* Метод: GET 
-* Запрос: `https://r.api.incase.com/api/news`
 
-**STATUS CODE 200:**
+
+### Информация о новостях
+
+1. Получение всех новостей: 
+   * Доступ: Allow Anonymous
+   * Метод: GET 
+   * Запрос: `https://r.api.incase.com/api/news`
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
 ```JSON
 {
   "success": true,
   "data": [
     {
-      "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-      "title": "string",
-      "date": "2023-04-06T22:56:18.774Z",
-      "content": "string"
+      "title": "NEWS2",
+      "date": "2023-04-08T05:01:03.28",
+      "content": "BBBB",
+      "images": [
+        {
+          "imageUri": "ЭТО ПУТЬ НА КАРТИНКУ",
+          "id": "65576f0f-6a2c-4b22-aa5a-01a923707ac1"
+        }
+      ],
+      "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
     }
   ]
 }
 ```
-Получение определенной новости:
-* Доступ: Allow Anonymous
-* Метод: GET 
-* Запрос: `https://r.api.incase.com/api/news/{id}`
 
-**STATUS CODE 200:**
+2. Получение определенной новости:
+   * Доступ: Allow Anonymous
+   * Метод: GET 
+   * Запрос: `https://r.api.incase.com/api/news/{id}`
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
 ```JSON
 {
   "success": true,
-  "data": 
-  {
-    "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-    "title": "string",
-    "date": "2023-04-06T22:56:18.774Z",
-    "content": "string"
+  "data": {
+    "title": "NEWS2",
+    "date": "2023-04-08T05:01:03.28",
+    "content": "BBBB",
+    "images": [
+      {
+        "imageUri": "ЭТО ПУТЬ НА КАРТИНКУ",
+        "id": "65576f0f-6a2c-4b22-aa5a-01a923707ac1"
+      }
+    ],
+    "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
   }
 }
 ```
-**STATUS CODE 404:**
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
 ```JSON
 {
   "success": false,
   "data": "News is not found. "
 }
 ```
-Создание новости:
-* Доступ: Admin, Owner, Bot
-* Метод: POST 
-* Запрос: `https://r.api.incase.com/api/news`
 
-Обновление новости:
-* Доступ: Admin, Owner, Bot
-* Метод: PUT 
-* Запрос: `https://r.api.incase.com/api/news`
+3. Создание новости:
+   * Доступ: Admin, Owner, Bot
+   * Метод: POST 
+   * Запрос: `https://r.api.incase.com/api/news`
 
-Удаление новости:
-* Доступ: Admin, Owner, Bot
-* Метод: Delete 
-* Запрос: `https://r.api.incase.com/api/news`
+![](https://img.shields.io/static/v1?label=&message=Request_Body:&color=blue)
+```JSON
+{
+  "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "title": "NEWS",
+  "date": "2023-04-08T04:26:24.822Z",
+  "content": "AAAAA"
+}
+```
 
-Создание картинки новости:
-* Доступ: Admin, Owner, Bot
-* Метод: POST 
-* Запрос: `https://r.api.incase.com/api/news/image`
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+```JSON
+{
+  "success": true,
+  "data": {
+    "title": "NEWS",
+    "date": "2023-04-08T04:26:24.822Z",
+    "content": "AAAAA",
+    "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+  }
+}
+```
 
-Удаление картинки новости:
-* Доступ: Admin, Owner, Bot
-* Метод: Delete 
-* Запрос: `https://r.api.incase.com/api/news/image/{id}`
+4. Обновление новости:
+   * Доступ: Admin, Owner, Bot
+   * Метод: PUT 
+   * Запрос: `https://r.api.incase.com/api/news`
+
+![](https://img.shields.io/static/v1?label=&message=Request_Body:&color=blue)
+```JSON
+{
+  "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "title": "NEWS2",
+  "date": "2023-04-08T05:01:03.280Z",
+  "content": "BBBB"
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+```JSON
+{
+  "success": true,
+  "data": {
+    "title": "NEWS2",
+    "date": "2023-04-08T05:01:03.28Z",
+    "content": "BBBB",
+    "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+  }
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "News is not found. "
+}
+```
+
+5. Удаление новости:
+   * Доступ: Admin, Owner, Bot
+   * Метод: Delete 
+   * Запрос: `https://r.api.incase.com/api/news`
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+```JSON
+{
+  "success": true,
+  "data": {
+    "title": "NEWS2",
+    "date": "2023-04-08T05:01:03.28",
+    "content": "BBBB",
+    "images": null,
+    "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+  }
+}
+```
+
+6. Создание картинки новости:
+   * Доступ: Admin, Owner, Bot
+   * Метод: POST 
+   * Запрос: `https://r.api.incase.com/api/news/image`
+
+![](https://img.shields.io/static/v1?label=&message=Request_Body:&color=blue)
+```JSON
+{
+  "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "imageUri": "ЭТО ПУТЬ НА КАРТИНКУ",
+  "newsId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+```JSON
+{
+  "success": true,
+  "data": {
+    "imageUri": "ЭТО ПУТЬ НА КАРТИНКУ",
+    "news": null,
+    "id": "24e26de0-adf0-43bb-ad04-5092cb543bda"
+  }
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "NewsImage is not found. "
+}
+```
+
+7. Удаление картинки новости:
+   * Доступ: Admin, Owner, Bot
+   * Метод: Delete 
+   * Запрос: `https://r.api.incase.com/api/news/image/{id}`
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+```JSON
+{
+  "success": true,
+  "data": {
+    "imageUri": "ЭТО ПУТЬ НА КАРТИНКУ",
+    "id": "65576f0f-6a2c-4b22-aa5a-01a923707ac1"
+  }
+}
+```
+
 
 ### Информация о статистике
-Получение обычной статистике сайта:
-* Доступ: Allow Anonymous
-* Метод: GET 
-* Запрос: `https://r.api.incase.com/api/site-statistics`
 
-**STATUS CODE 200:**
+1. Получение обычной статистике сайта:
+   * Доступ: Allow Anonymous
+   * Метод: GET 
+   * Запрос: `https://r.api.incase.com/api/site-statistics`
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
 ```JSON
 {
   "success": true,
@@ -176,12 +307,13 @@ _Данный подзаголовок содержит в себе информ
   }
 }
 ```
-Получение админской статистике сайта:
-* Доступ: Owner, Bot
-* Метод: GET 
-* Запрос: `https://r.api.incase.com/api/site-statistics/admin`
 
-**STATUS CODE 200:**
+2. Получение админской статистике сайта:
+   * Доступ: Owner, Bot
+   * Метод: GET 
+   * Запрос: `https://r.api.incase.com/api/site-statistics/admin`
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
 ```JSON
 {
   "success": true,
@@ -193,18 +325,52 @@ _Данный подзаголовок содержит в себе информ
   }
 }
 ```
-Редактирование админской статистике сайта:
-* Доступ: Owner, Bot
-* Метод: PUT 
-* Запрос: `https://r.api.incase.com/api/site-statistics/admin`
+
+3. Редактирование админской статистике сайта:
+   * Доступ: Owner, Bot
+   * Метод: PUT 
+   * Запрос: `https://r.api.incase.com/api/site-statistics/admin`
+
+![](https://img.shields.io/static/v1?label=&message=Request_Body:&color=blue)
+```JSON
+{
+  "id": "dcc228c3-6ad8-4021-9677-01b1067b5e23",
+  "balanceWithdrawn": 110,
+  "totalReplenished": 0,
+  "sentSites": 0
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+```JSON
+{
+  "success": true,
+  "data": {
+    "balanceWithdrawn": 110,
+    "totalReplenished": 0,
+    "sentSites": 0,
+    "id": "dcc228c3-6ad8-4021-9677-01b1067b5e23"
+  }
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "SiteStatisticsAdmin is not found. "
+}
+```
+
 
 ### Информация о предметах
-Получение всех предметов:
-* Доступ: Allow Anonymous
-* Метод: GET 
-* Запрос: `https://r.api.incase.com/api/game-item`
 
-**STATUS CODE 200**
+1. Получение всех предметов:
+   * Доступ: Allow Anonymous
+   * Метод: GET 
+   * Запрос: `https://r.api.incase.com/api/game-item`
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
 ```JSON
 {
   "success": true,
@@ -231,12 +397,13 @@ _Данный подзаголовок содержит в себе информ
   ]
 }
 ```
-Получение одного предмета:
-* Доступ: Allow Anonymous
-* Метод: GET 
-* Запрос: `https://r.api.incase.com/api/game-item/{id}`
 
-**STATUS CODE 200**
+2. Получение одного предмета:
+   * Доступ: Allow Anonymous
+   * Метод: GET 
+   * Запрос: `https://r.api.incase.com/api/game-item/{id}`
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
 ```JSON
 {
   "success": true,
@@ -261,7 +428,8 @@ _Данный подзаголовок содержит в себе информ
   }
 }
 ```
-**STATUS CODE 404**
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
 ```JSON
 {
   "success": false,
@@ -269,12 +437,12 @@ _Данный подзаголовок содержит в себе информ
 }
 ```
 
-Получение всех качеств предмета:
-* Доступ: Allow Anonymous
-* Метод: GET 
-* Запрос: `https://r.api.incase.com/api/game-item/qualities`
+3. Получение всех качеств предмета:
+   * Доступ: Allow Anonymous
+   * Метод: GET 
+   * Запрос: `https://r.api.incase.com/api/game-item/qualities`
 
-**STATUS CODE 200**
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
 ```JSON
 {
   "success": true,
@@ -307,12 +475,12 @@ _Данный подзаголовок содержит в себе информ
 }
 ```
 
-Получение всех типов предмета:
-* Доступ: Allow Anonymous
-* Метод: GET 
-* Запрос: `https://r.api.incase.com/api/game-item/types`
+4. Получение всех типов предмета:
+   * Доступ: Allow Anonymous
+   * Метод: GET 
+   * Запрос: `https://r.api.incase.com/api/game-item/types`
 
-**STATUS CODE 200**
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
 ```JSON
 {
   "success": true,
@@ -340,12 +508,13 @@ _Данный подзаголовок содержит в себе информ
   ]
 }
 ```
-Получение всех редкостей предмета:
-* Доступ: Allow Anonymous
-* Метод: GET 
-* Запрос: `https://r.api.incase.com/api/game-item/rarities`
 
-**STATUS CODE 200**
+5. Получение всех редкостей предмета:
+   * Доступ: Allow Anonymous
+   * Метод: GET 
+   * Запрос: `https://r.api.incase.com/api/game-item/rarities`
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
 ```JSON
 {
   "success": true,
@@ -377,12 +546,13 @@ _Данный подзаголовок содержит в себе информ
   ]
 }
 ```
-Создание нового предмета:
-* Доступ: Admin, Owner, Bot
-* Метод: POST 
-* Запрос: `https://r.api.incase.com/api/game-item`
 
-**Request body**
+6. Создание нового предмета:
+   * Доступ: Admin, Owner, Bot
+   * Метод: POST 
+   * Запрос: `https://r.api.incase.com/api/game-item`
+
+![](https://img.shields.io/static/v1?label=&message=Request_Body:&color=blue)
 ```JSON
 {
   "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
@@ -397,7 +567,7 @@ _Данный подзаголовок содержит в себе информ
 }
 ```
 
-**STATUS CODE 200**
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
 ```JSON
 {
   "success": true,
@@ -414,12 +584,12 @@ _Данный подзаголовок содержит в себе информ
 }
 ```
 
-Обновление предмета:
-* Доступ: Admin, Owner, Bot
-* Метод: PUT 
-* Запрос: `https://r.api.incase.com/api/game-item`
+7. Обновление предмета:
+   * Доступ: Admin, Owner, Bot
+   * Метод: PUT 
+   * Запрос: `https://r.api.incase.com/api/game-item`
 
-**Request body**
+![](https://img.shields.io/static/v1?label=&message=Request_Body:&color=blue)
 ```JSON
 {
   "id": "47908aed-2372-4965-92f9-0498515aaadb",
@@ -434,7 +604,7 @@ _Данный подзаголовок содержит в себе информ
 }
 ```
 
-**STATUS CODE 200**
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
 ```JSON
 {
   "success": true,
@@ -451,39 +621,44 @@ _Данный подзаголовок содержит в себе информ
 }
 ```
 
-**STATUS CODE 404**
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=green)
 ```JSON
 {
   "success": false,
   "data": "GameItem is not found. "
 }
 ```
-Удаление предмета:
-* Доступ: Admin, Owner, Bot
-* Метод: Delete
-* Запрос: `https://r.api.incase.com/api/game-item/{id}`
 
-**STATUS CODE 202**
+8. Удаление предмета:
+   * Доступ: Admin, Owner, Bot
+   * Метод: Delete
+   * Запрос: `https://r.api.incase.com/api/game-item/{id}`
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
 ```JSON
 {
   "success": true,
   "data": "GameItem is succesfully removed"
 }
 ```
-**STATUS CODE 404**
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
 ```JSON
 {
   "success": false,
   "data": "GameItem is not found. "
 }
 ```
-###Информация о кейсе
-Получение всех кейсов:
-* Доступ: Allow Anonymous
-* Метод: GET
-* Запрос: `https://r.api.incase.com/api/loot-box`
 
-**STATUS CODE 200**
+
+### Информация о кейсе
+
+1. Получение всех кейсов:
+   * Доступ: Allow Anonymous
+   * Метод: GET
+   * Запрос: `https://r.api.incase.com/api/loot-box`
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
 ```JSON
 {
   "success": true,
@@ -502,12 +677,12 @@ _Данный подзаголовок содержит в себе информ
 }
 ```
 
-Получение одного кейса:
-* Доступ: Allow Anonymous
-* Метод: GET
-* Запрос: `https://r.api.incase.com/api/loot-box/{id}`
+2. Получение одного кейса:
+   * Доступ: Allow Anonymous
+   * Метод: GET
+   * Запрос: `https://r.api.incase.com/api/loot-box/{id}`
 
-**STATUS CODE 200**
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
 ```JSON
 {
   "success": true,
@@ -524,7 +699,7 @@ _Данный подзаголовок содержит в себе информ
 }
 ```
 
-**STATUS CODE 404**
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
 ```JSON
 {
   "success": false,
@@ -532,27 +707,27 @@ _Данный подзаголовок содержит в себе информ
 }
 ```
 
-Получение содержимого кейса:
-* Доступ: Allow Anonymous
-* Метод: GET
-* Запрос: `https://r.api.incase.com/api/loot-box/{id}/inventory`
+3. Получение содержимого кейса:
+   * Доступ: Allow Anonymous
+   * Метод: GET
+   * Запрос: `https://r.api.incase.com/api/loot-box/{id}/inventory`
 
-Получение всех баннеров кейсов:
-* Доступ: Allow Anonymous
-* Метод: GET
-* Запрос: `https://r.api.incase.com/api/loot-box/banners`
+4. Получение всех баннеров кейсов:
+   * Доступ: Allow Anonymous
+   * Метод: GET
+   * Запрос: `https://r.api.incase.com/api/loot-box/banners`
 
-Получение баннера у кейса:
-* Доступ: Allow Anonymous
-* Метод: GET
-* Запрос: `https://r.api.incase.com/api/loot-box/{id}/banner`
+5. Получение баннера у кейса:
+   * Доступ: Allow Anonymous
+   * Метод: GET
+   * Запрос: `https://r.api.incase.com/api/loot-box/{id}/banner`
 
-Создать новый кейс:
-* Доступ: Admin, Owner, Bot
-* Метод: POST
-* Запрос: `https://r.api.incase.com/api/loot-box`
+6. Создать новый кейс:
+   * Доступ: Admin, Owner, Bot
+   * Метод: POST
+   * Запрос: `https://r.api.incase.com/api/loot-box`
 
-**Request body**
+![](https://img.shields.io/static/v1?label=&message=Request_Body:&color=blue)
 ```JSON
 {
   "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
@@ -566,7 +741,7 @@ _Данный подзаголовок содержит в себе информ
 }
 ```
 
-**STATUS CODE 200**
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
 ```JSON
 {
   "success": true,
@@ -582,19 +757,21 @@ _Данный подзаголовок содержит в себе информ
   }
 }
 ```
-**STATUS CODE 409**
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_409:&color=orange)
 ```JSON
 {
   "success": false,
   "data": "Конфликт инструкции INSERT с ограничением FOREIGN KEY \"fk_loot_box_game_game_id\". Конфликт произошел в базе данных \"InCase.Dev\", таблица \"dbo.Game\", column 'id'.\r\nВыполнение данной инструкции было прервано."
 }
 ```
-Обновить кейс:
-* Доступ: Admin, Owner, Bot
-* Метод: PUT
-* Запрос: `https://r.api.incase.com/api/loot-box`
 
-**Request body**
+7. Обновить кейс:
+   * Доступ: Admin, Owner, Bot
+   * Метод: PUT
+   * Запрос: `https://r.api.incase.com/api/loot-box`
+
+![](https://img.shields.io/static/v1?label=&message=Request_Body:&color=blue)
 ```JSON
 {
   "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
@@ -608,7 +785,7 @@ _Данный подзаголовок содержит в себе информ
 }
 ```
 
-**STATUS CODE 200**
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
 ```JSON
 {
   "success": true,
@@ -624,7 +801,8 @@ _Данный подзаголовок содержит в себе информ
   }
 }
 ```
-**STATUS CODE 409**
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_409:&color=orange)
 ```JSON
 {
   "success": false,
@@ -632,32 +810,32 @@ _Данный подзаголовок содержит в себе информ
 }
 ```
 
-Создать новое содержимое кейсу:
-* Доступ: Admin, Owner, Bot
-* Метод: POST
-* Запрос: `https://r.api.incase.com/api/loot-box/inventory`
+8. Создать новое содержимое кейсу:
+   * Доступ: Admin, Owner, Bot
+   * Метод: POST
+   * Запрос: `https://r.api.incase.com/api/loot-box/inventory`
 
-Создать баннер кейсу:
-* Доступ: Admin, Owner, Bot
-* Метод: POST
-* Запрос: `https://r.api.incase.com/api/loot-box/banner`
+9. Создать баннер кейсу:
+   * Доступ: Admin, Owner, Bot
+   * Метод: POST
+   * Запрос: `https://r.api.incase.com/api/loot-box/banner`
 
-Обновить баннер кейса:
-* Доступ: Admin, Owner, Bot
-* Метод: PUT
-* Запрос: `https://r.api.incase.com/api/loot-box/banner`
+10. Обновить баннер кейса:
+    * Доступ: Admin, Owner, Bot
+    * Метод: PUT
+    * Запрос: `https://r.api.incase.com/api/loot-box/banner`
 
-Удалить кейс:
-* Доступ: Admin, Owner, Bot
-* Метод: DELETE
-* Запрос: `https://r.api.incase.com/api/loot-box/{id}`
+11. Удалить кейс:
+    * Доступ: Admin, Owner, Bot
+    * Метод: DELETE
+    * Запрос: `https://r.api.incase.com/api/loot-box/{id}`
 
-Удалить баннер кейса:
-* Доступ: Admin, Owner, Bot
-* Метод: DELETE
-* Запрос: `https://r.api.incase.com/api/loot-box/banner/{id}`
+12. Удалить баннер кейса:
+    * Доступ: Admin, Owner, Bot
+    * Метод: DELETE
+    * Запрос: `https://r.api.incase.com/api/loot-box/banner/{id}`
 
-Удалить содержимое кейса:
-* Доступ: Admin, Owner, Bot
-* Метод: DELETE
-* Запрос: `https://r.api.incase.com/api/loot-box/inventory/{id}`
+13. Удалить содержимое кейса:
+    * Доступ: Admin, Owner, Bot
+    * Метод: DELETE
+    * Запрос: `https://r.api.incase.com/api/loot-box/inventory/{id}`
