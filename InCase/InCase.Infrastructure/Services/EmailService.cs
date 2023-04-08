@@ -42,7 +42,7 @@ namespace InCase.Infrastructure.Services
         public async Task<IActionResult> SendSignUp(DataMailLink data)
         {
             string subject = "Подтверждение регистрации.";
-            string uri = $"{_requestUrl}/api/email/confirm?token={data.EmailToken}";
+            string uri = $"{_requestUrl}api/email/confirm?token={data.EmailToken}";
             string body = data.CreateSignUpTemplate(uri);
             try
             {
@@ -58,7 +58,7 @@ namespace InCase.Infrastructure.Services
         public async Task<IActionResult> SendSignIn(DataMailLink data)
         {
             string subject = "Подтверждение входа.";
-            string uri = $"{_requestUrl}/api/email/confirm?token={data.EmailToken}";
+            string uri = $"{_requestUrl}api/email/confirm/account?token={data.EmailToken}";
             string body = data.CreateSignInTemplate(uri);
             try
             {
