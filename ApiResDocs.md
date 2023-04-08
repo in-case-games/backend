@@ -1710,3 +1710,204 @@ _Данный подзаголовок содержит в себе информ
   "data": "UserAdditionalInfo is not found. "
 }
 ```
+
+4. Получить основную информацию:
+   * Доступ: All
+   * Метод: GET
+   * Запрос: `https://r.api.incase.com/api/user`
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+```JSON
+{
+  "success": true,
+  "data": {
+    "login": "GIS",
+    "email": "yt_ferbray@mail.ru",
+    "passwordHash": "upL6BXvpHm4TGjQ+BTkD1ll4jGgpkcvMMsmR1NpuBqc=",
+    "passwordSalt": "JNpn50AEljepMvgrCLVqQGP+zwfUyCxB2Lzc9tTN1KCoceYRPAtzjMRQ9nGx4PGQ+6J1sL1PJrp6rUpSCo+Whw==",
+    "additionalInfo": {
+      "balance": 1110,
+      "imageUri": "",
+      "isNotifyEmail": false,
+      "isGuestMode": false,
+      "isConfirmed": true,
+      "creationDate": "2023-04-07T05:52:48.4918144",
+      "deletionDate": null,
+      "role": null,
+      "id": "7c1353fe-5582-403f-9c21-a32a2ab4f9a5"
+    },
+    "topics": null,
+    "restrictions": null,
+    "ownerRestrictions": null,
+    "reviews": null,
+    "historyPayments": null,
+    "id": "753ed98a-cf5d-4acc-994c-afab92848fab"
+  }
+}
+```
+
+5. Получить основную информацию по id:
+   * Доступ: Allow Anonymous
+   * Метод: GET
+   * Запрос: `https://r.api.incase.com/api/user/{id}`
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+```JSON
+{
+  "success": true,
+  "data": {
+    "login": "GIS",
+    "email": "yt_ferbray@mail.ru",
+    "passwordHash": null,
+    "passwordSalt": null,
+    "additionalInfo": {
+      "balance": 1110,
+      "imageUri": "",
+      "isNotifyEmail": false,
+      "isGuestMode": false,
+      "isConfirmed": true,
+      "creationDate": "2023-04-07T05:52:48.4918144",
+      "deletionDate": null,
+      "role": null,
+      "id": "7c1353fe-5582-403f-9c21-a32a2ab4f9a5"
+    },
+    "topics": null,
+    "restrictions": null,
+    "ownerRestrictions": null,
+    "reviews": null,
+    "historyPayments": null,
+    "id": "753ed98a-cf5d-4acc-994c-afab92848fab"
+  }
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "User is not found. "
+}
+```
+
+6. Получить инвентарь пользователя:
+   * Доступ: All
+   * Метод: GET
+   * Запрос: `https://r.api.incase.com/api/user/inventory`
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+```JSON
+{
+  "success": true,
+  "data": []
+}
+```
+
+7. Получить инвентарь пользователя по id:
+   * Доступ: Allow Anonymous
+   * Метод: GET
+   * Запрос: `https://r.api.incase.com/api/user/{id}`
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+```JSON
+{
+  "success": true,
+  "data": []
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "User is not found. "
+}
+```
+
+7. Получить путь к баннерам пользователя:
+   * Доступ: All
+   * Метод: GET
+   * Запрос: `https://r.api.incase.com/api/user/banner`
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+```JSON
+{
+  "success": true,
+  "data": []
+}
+```
+
+
+### Информация о историях
+
+1. Получить историю пополнения:
+   * Доступ: All
+   * Метод: GET
+   * Запрос: `https://r.api.incase.com/api/user/history/payments`
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+```JSON
+{
+  "success": true,
+  "data": []
+}
+```
+
+2. Получить историю вывода:
+   * Доступ: All
+   * Метод: GET
+   * Запрос: `https://r.api.incase.com/api/user/history/openings`
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+```JSON
+{
+  "success": true,
+  "data": []
+}
+```
+
+3. Получить историю вывода по id:
+   * Доступ: Allow Anonymous
+   * Метод: GET
+   * Запрос: `https://r.api.incase.com/api/user/{id}/history/withdrawns`
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+```JSON
+{
+  "success": true,
+  "data": []
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "User is not found. "
+}
+```
+
+4. Получить историю вывода:
+   * Доступ: All
+   * Метод: GET
+   * Запрос: `https://r.api.incase.com/api/user/history/openings`
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+```JSON
+{
+  "success": true,
+  "data": []
+}
+```
+
+5. Получить историю промокодов:
+   * Доступ: All
+   * Метод: GET
+   * Запрос: `https://r.api.incase.com/api/user/history/promocodes`
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+```JSON
+{
+  "success": true,
+  "data": []
+}
+```
