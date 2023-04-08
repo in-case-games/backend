@@ -16,7 +16,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InCase.Email.Api", "InCase.
 		{5A06BC8C-39D3-485C-9624-6328C6F1E089} = {5A06BC8C-39D3-485C-9624-6328C6F1E089}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InCase.Payment.Api", "InCase.Payment.Api\InCase.Payment.Api.csproj", "{CAB8E47E-E32D-4EF2-9527-5491B3E55D40}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InCase.Payment.Api", "InCase.Payment.Api\InCase.Payment.Api.csproj", "{CAB8E47E-E32D-4EF2-9527-5491B3E55D40}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

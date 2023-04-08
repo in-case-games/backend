@@ -49,6 +49,10 @@ namespace InCase.Infrastructure.Services
                 await SendToEmail(data.UserEmail, subject, body);
                 return ResponseUtil.SendEmail();
             }
+            catch (SmtpCommandException)
+            {
+                return ResponseUtil.Conflict("MailBox is not existed!");
+            }
             catch (Exception ex)
             {
                 return ResponseUtil.Error(ex);
