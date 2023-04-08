@@ -666,36 +666,212 @@ _Данный подзаголовок содержит в себе информ
    * Метод: GET
    * Запрос: `https://r.api.incase.com/api/loot-box-group`
 
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+```JSON
+{
+  "success": true,
+  "data": [
+    {
+      "group": {
+        "name": "string",
+        "id": "1a97a421-16ed-4b96-a4b9-8ebfda7ae79c"
+      },
+      "box": {
+        "name": "string",
+        "cost": 0,
+        "balance": 0,
+        "virtualBalance": 0,
+        "imageUri": "string",
+        "isLocked": false,
+        "inventories": null,
+        "id": "38bd74d4-6b26-4725-84a7-b86b5c6703ad"
+      },
+      "id": "6966ff94-26af-429f-b4d3-afbdfd679481"
+    }
+  ]
+}
+```
+
 2. Получение группы кейса по id:
    * Доступ: Allow Anonymous
    * Метод: GET
    * Запрос: `https://r.api.incase.com/api/loot-box-group/{id}`
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+```JSON
+{
+  "success": true,
+  "data": {
+    "group": {
+      "name": "string",
+      "id": "1a97a421-16ed-4b96-a4b9-8ebfda7ae79c"
+    },
+    "box": {
+      "name": "string",
+      "cost": 0,
+      "balance": 0,
+      "virtualBalance": 0,
+      "imageUri": "string",
+      "isLocked": false,
+      "inventories": null,
+      "id": "38bd74d4-6b26-4725-84a7-b86b5c6703ad"
+    },
+    "id": "0743b1cf-63b8-4d92-9e50-d726bb0dbb61"
+  }
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "LootBoxGroup is not found. "
+}
+```
 
 3. Получение всех групп:
    * Доступ: Allow Anonymous
    * Метод: GET
    * Запрос: `https://r.api.incase.com/api/loot-box-group/groups`
 
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+```JSON
+{
+  "success": true,
+  "data": [
+    {
+      "name": "string",
+      "id": "1a97a421-16ed-4b96-a4b9-8ebfda7ae79c"
+    }
+  ]
+}
+```
+
 4. Создание группы кейсов:
    * Доступ: Admin, Owner, Bot
    * Метод: POST
    * Запрос: `https://r.api.incase.com/api/loot-box-group`
+
+![](https://img.shields.io/static/v1?label=&message=Request_Body:&color=blue)
+```JSON
+{
+  "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "boxId": "38bd74d4-6b26-4725-84a7-b86b5c6703ad",
+  "groupId": "1a97a421-16ed-4b96-a4b9-8ebfda7ae79c",
+  "gameId": "219c5443-9aba-4603-a595-f2f0ef382a39"
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+```JSON
+{
+  "success": true,
+  "data": {
+    "group": null,
+    "box": null,
+    "id": "df514c21-c046-4abe-b7ed-3ca63299b5aa"
+  }
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_409:&color=orange)
+```JSON
+{
+  "success": false,
+  "data": "Конфликт инструкции INSERT с ограничением FOREIGN KEY \"fk_loot_box_group_loot_box_box_id\". Конфликт произошел в базе данных \"InCase.Dev\", таблица \"dbo.LootBox\", column 'id'.\r\nВыполнение данной инструкции было прервано."
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_409:&color=orange)
+```JSON
+{
+  "success": false,
+  "data": "Конфликт инструкции INSERT с ограничением FOREIGN KEY \"fk_loot_box_group_group_loot_box_group_id\". Конфликт произошел в базе данных \"InCase.Dev\", таблица \"dbo.GroupLootBox\", column 'id'.\r\nВыполнение данной инструкции было прервано."
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_409:&color=orange)
+```JSON
+{
+  "success": false,
+  "data": "Конфликт инструкции INSERT с ограничением FOREIGN KEY \"fk_loot_box_group_game_game_id\". Конфликт произошел в базе данных \"InCase.Dev\", таблица \"dbo.Game\", column 'id'.\r\nВыполнение данной инструкции было прервано."
+}
+```
 
 5. Создание группы:
    * Доступ: Admin, Owner, Bot
    * Метод: POST
    * Запрос: `https://r.api.incase.com/api/loot-box-group/group`
 
+![](https://img.shields.io/static/v1?label=&message=Request_Body:&color=blue)
+```JSON
+{
+  "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "name": "string"
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+```JSON
+{
+  "success": true,
+  "data": {
+    "name": "string",
+    "id": "01e72c7c-1738-4f81-8632-48203f8f6e67"
+  }
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_409:&color=orange)
+```JSON
+{
+  "success": false,
+  "data": "Не удается вставить повторяющуюся строку ключа в объект \"dbo.GroupLootBox\" с уникальным индексом \"ix_group_loot_box_name\". Повторяющееся значение ключа: (string).\r\nВыполнение данной инструкции было прервано."
+}
+```
+
+
 6. Удаление группы кейсов:
    * Доступ: Admin, Owner, Bot
    * Метод: DELETE
    * Запрос: `https://r.api.incase.com/api/loot-box-group/{id}`
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=orange)
+```JSON
+{
+  "success": true,
+  "data": "LootBoxGroup"
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "LootBoxGroup is not found. "
+}
+```
 
 7. Удаление группы:
    * Доступ: Admin, Owner, Bot
    * Метод: DELETE
    * Запрос: `https://r.api.incase.com/api/loot-box-group/group/{id}`
 
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=orange)
+```JSON
+{
+  "success": true,
+  "data": "GroupLootBox"
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "GroupLootBox is not found. "
+}
+```
 
 ### Информация о кейсе
 
