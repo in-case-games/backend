@@ -30,7 +30,6 @@ namespace InCase.Resources.Api.Controllers
             List<LootBoxGroup> groups = await context.LootBoxGroups
                 .Include(i => i.Group)
                 .Include(i => i.Box)
-                .Include(i => i.Game)
                 .AsNoTracking()
                 .ToListAsync();
 
@@ -46,7 +45,6 @@ namespace InCase.Resources.Api.Controllers
             LootBoxGroup? group = await context.LootBoxGroups
                 .Include(i => i.Group)
                 .Include(i => i.Box)
-                .Include(i => i.Game)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == id);
 
@@ -68,7 +66,7 @@ namespace InCase.Resources.Api.Controllers
             return ResponseUtil.Ok(groups);
         }
 
-        [AuthorizeRoles(Roles.Owner, Roles.Admin)]
+        [AuthorizeRoles(Roles.AdminOwnerBot)]
         [HttpPost]
         public async Task<IActionResult> Create(LootBoxGroupDto groupDto)
         {
@@ -87,7 +85,7 @@ namespace InCase.Resources.Api.Controllers
             }
         }
 
-        [AuthorizeRoles(Roles.Owner, Roles.Admin)]
+        [AuthorizeRoles(Roles.AdminOwnerBot)]
         [HttpPost("group")]
         public async Task<IActionResult> CreateGroup(GroupLootBox group)
         {
@@ -108,7 +106,7 @@ namespace InCase.Resources.Api.Controllers
             }
         }
 
-        [AuthorizeRoles(Roles.Owner, Roles.Admin)]
+        [AuthorizeRoles(Roles.AdminOwnerBot)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
@@ -126,7 +124,7 @@ namespace InCase.Resources.Api.Controllers
             return ResponseUtil.Ok(nameof(LootBoxGroup));
         }
 
-        [AuthorizeRoles(Roles.Owner, Roles.Admin)]
+        [AuthorizeRoles(Roles.AdminOwnerBot)]
         [HttpDelete("group/{id}")]
         public async Task<IActionResult> DeleteGroup(Guid id)
         {
