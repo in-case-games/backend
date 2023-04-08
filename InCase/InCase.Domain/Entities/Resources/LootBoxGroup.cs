@@ -14,6 +14,7 @@ namespace InCase.Domain.Entities.Resources
 
         public GroupLootBox? Group { get; set; }
         public LootBox? Box { get; set; }
+        [JsonIgnore]
         public Game? Game { get; set; }
 
         public LootBoxGroupDto Convert(bool IsNewGuid = true) => new()
