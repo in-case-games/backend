@@ -55,6 +55,9 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
+            if (!await context.LootBoxes.AnyAsync(x => x.Id == id))
+                return ResponseUtil.NotFound(nameof(LootBox));
+
             List<LootBoxInventory> inventories = await context.LootBoxInventories
                 .Include(i => i.Item)
                 .AsNoTracking()
