@@ -56,19 +56,21 @@ namespace InCase.Resources.Api.Controllers
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             if (await context.SiteStatisticsAdmins.AnyAsync(a => a.Id == statistics.Id))
-                return ResponseUtil.NotFound(nameof(SiteStatisticsAdmin));
-
-            try
             {
-                context.SiteStatisticsAdmins.Update(statistics);
-                await context.SaveChangesAsync();
+                try
+                {
+                    context.SiteStatisticsAdmins.Update(statistics);
+                    await context.SaveChangesAsync();
 
-                return ResponseUtil.Ok(statistics);
+                    return ResponseUtil.Ok(statistics);
+                }
+                catch (Exception ex)
+                {
+                    return ResponseUtil.Error(ex);
+                }
             }
-            catch (Exception ex)
-            {
-                return ResponseUtil.Error(ex);
-            }
+            
+            return ResponseUtil.NotFound(nameof(SiteStatisticsAdmin));
         }
     }
 }

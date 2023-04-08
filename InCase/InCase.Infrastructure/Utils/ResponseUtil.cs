@@ -40,9 +40,5 @@ namespace InCase.Infrastructure.Utils
         {
             return Accept("Message was sended on your email");
         }
-        public static IActionResult Delete(string name)
-        {
-            return Accept($"{name} is succesfully removed");
-        }
     }
 }

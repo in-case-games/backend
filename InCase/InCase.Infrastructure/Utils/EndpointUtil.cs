@@ -90,7 +90,7 @@ namespace InCase.Infrastructure.Utils
             context.Set<T>().Remove(result);
             await context.SaveChangesAsync();
 
-            return ResponseUtil.Delete(typeof(T).Name);
+            return ResponseUtil.Ok(result);
         }
     }
 }

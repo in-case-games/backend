@@ -8,6 +8,7 @@ namespace InCase.Domain.Entities.Resources
         public string? ImageUri { get; set; }
         [JsonIgnore]
         public Guid NewsId { get; set; }
+        [JsonIgnore]
         public News? News { get; set; }
 
         public NewsImageDto Convert() => new()

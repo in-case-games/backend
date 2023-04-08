@@ -93,6 +93,8 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
+            group.Id = Guid.NewGuid();
+
             try
             {
                 await context.GroupLootBoxes.AddAsync(group);
@@ -121,7 +123,7 @@ namespace InCase.Resources.Api.Controllers
             context.LootBoxGroups.Remove(group);
             await context.SaveChangesAsync();
 
-            return ResponseUtil.Delete(nameof(LootBoxGroup));
+            return ResponseUtil.Ok(nameof(LootBoxGroup));
         }
 
         [AuthorizeRoles(Roles.Owner, Roles.Admin)]
@@ -140,7 +142,7 @@ namespace InCase.Resources.Api.Controllers
             context.GroupLootBoxes.Remove(group);
             await context.SaveChangesAsync();
 
-            return ResponseUtil.Delete(nameof(GroupLootBox));
+            return ResponseUtil.Ok(nameof(GroupLootBox));
         }
     }
 }

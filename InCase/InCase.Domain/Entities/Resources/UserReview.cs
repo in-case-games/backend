@@ -15,7 +15,6 @@ namespace InCase.Domain.Entities.Resources
         [JsonIgnore]
         public User? User { get; set; }
 
-        [JsonIgnore]
         public List<ReviewImage>? Images { get; set; }
 
         public UserReviewDto Convert(bool IsNewGuid = true) => new()

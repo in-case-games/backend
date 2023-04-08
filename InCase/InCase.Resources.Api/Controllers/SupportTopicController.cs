@@ -280,7 +280,7 @@ namespace InCase.Resources.Api.Controllers
             context.SupportTopicAnswers.Remove(answer);
             await context.SaveChangesAsync();
 
-            return ResponseUtil.Delete(nameof(SupportTopicAnswer));
+            return ResponseUtil.Ok(nameof(SupportTopicAnswer));
         }
 
         [AuthorizeRoles(Roles.SupportOwnerBot)]
@@ -299,7 +299,7 @@ namespace InCase.Resources.Api.Controllers
             context.SupportTopicAnswers.Remove(answer);
             await context.SaveChangesAsync();
 
-            return ResponseUtil.Delete(nameof(SupportTopicAnswer));
+            return ResponseUtil.Ok(nameof(SupportTopicAnswer));
         }
     }
 }

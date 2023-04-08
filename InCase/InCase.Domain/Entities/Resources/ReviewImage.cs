@@ -8,7 +8,7 @@ namespace InCase.Domain.Entities.Resources
         public string? ImageUri { get; set; } = "";
         [JsonIgnore]
         public Guid ReviewId { get; set; }
-
+        [JsonIgnore]
         public UserReview? Review { get; set; }
 
         public ReviewImageDto Convert(bool IsNewGuid = true) => new()

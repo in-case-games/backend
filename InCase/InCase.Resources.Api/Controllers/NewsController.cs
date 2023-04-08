@@ -53,6 +53,8 @@ namespace InCase.Resources.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(News news)
         {
+            news.Id = Guid.NewGuid();
+
             return await EndpointUtil.Create(news, _contextFactory);
         }
 
