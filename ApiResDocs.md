@@ -1911,3 +1911,269 @@ _Данный подзаголовок содержит в себе информ
   "data": []
 }
 ```
+
+
+### Информация о ограничениях
+
+1. Получить ограничения пользователя по id:
+   * Доступ: Allow Anonymous
+   * Метод: GET
+   * Запрос: `https://r.api.incase.com/api/user-restriction/{id}`
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+```JSON
+{
+  "success": true,
+  "data": {
+    "creationDate": "2023-04-08T12:06:07.209",
+    "expirationDate": "2023-04-08T12:06:07.209",
+    "description": "stringaaaa",
+    "id": "1351f855-71c0-4ae1-963f-ca7bc73d6784"
+  }
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "UserRestriction is not found. "
+}
+```
+
+2. Получить все ограничения пользователя:
+   * Доступ: All
+   * Метод: GET
+   * Запрос: `https://r.api.incase.com/api/user-restriction`
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+```JSON
+{
+  "success": true,
+  "data": []
+}
+```
+
+3. Получить все ограничения пользователя по id:
+   * Доступ: Allow Anonymous
+   * Метод: GET
+   * Запрос: `https://r.api.incase.com/api/user-restriction/user/{id}`
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+```JSON
+{
+  "success": true,
+  "data": [
+    {
+      "creationDate": "2023-04-08T12:06:07.209",
+      "expirationDate": "2023-04-08T12:06:07.209",
+      "description": "stringaaaa",
+      "id": "1351f855-71c0-4ae1-963f-ca7bc73d6784"
+    }
+  ]
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "User is not found. "
+}
+```
+
+4. Получить все ограничения пользователя по id и по id обвинителя:
+   * Доступ: Allow Anonymous
+   * Метод: GET
+   * Запрос: `https://r.api.incase.com/api/user-restriction/{ownerId}&{userId}`
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+```JSON
+{
+  "success": true,
+  "data": [
+    {
+      "creationDate": "2023-04-08T12:27:21.729",
+      "expirationDate": "2023-04-08T12:27:21.729",
+      "description": "stringasdasdasd",
+      "id": "46247306-910c-4ad8-86d7-8a738e6d5661"
+    }
+  ]
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "User is not found. "
+}
+```
+
+5. Получить все ограничения возложенные обвинителем:
+   * Доступ: Admin, Owner, Bot
+   * Метод: GET
+   * Запрос: `https://r.api.incase.com/api/user-restriction/owner`
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+```JSON
+{
+  "success": true,
+  "data": [
+    {
+      "creationDate": "2023-04-08T12:27:21.729",
+      "expirationDate": "2023-04-08T12:27:21.729",
+      "description": "stringasdasdasd",
+      "id": "46247306-910c-4ad8-86d7-8a738e6d5661"
+    }
+  ]
+}
+```
+
+6. Получить все ограничения возложенные обвинителем на пользователя по id:
+   * Доступ: Admin, Owner, Bot
+   * Метод: GET
+   * Запрос: `https://r.api.incase.com/api/user-restriction/owner/{userId}`
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+```JSON
+{
+  "success": true,
+  "data": [
+    {
+      "creationDate": "2023-04-08T12:27:21.729",
+      "expirationDate": "2023-04-08T12:27:21.729",
+      "description": "stringasdasdasd",
+      "id": "46247306-910c-4ad8-86d7-8a738e6d5661"
+    }
+  ]
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "User is not found. "
+}
+```
+
+7. Получить все типы ограничений:
+   * Доступ: Admin, Owner, Bot
+   * Метод: GET
+   * Запрос: `https://r.api.incase.com/api/user-restriction/types`
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+```JSON
+{
+  "success": true,
+  "data": [
+    {
+      "name": "ban",
+      "id": "5c6c9522-36d1-4b43-b8bb-678aceac7c2b"
+    },
+    {
+      "name": "mute",
+      "id": "da9fe9b5-1a59-41aa-b574-553236e9a11c"
+    },
+    {
+      "name": "warn",
+      "id": "cdc27c2f-8bf6-4cfa-9c3f-021e80c600bf"
+    }
+  ]
+}
+```
+
+8. Создать ограничение:
+   * Доступ: Admin, Owner, Bot
+   * Метод: POST
+   * Запрос: `https://r.api.incase.com/api/user-restriction`
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+```JSON
+{
+  "success": true,
+  "data": {
+    "creationDate": "2023-04-08T11:59:53.043Z",
+    "expirationDate": "2023-04-08T11:59:53.043Z",
+    "description": "НЕ СПАМЬ БОЛЬШЕ",
+    "id": "3e206fd2-4bb2-42f4-8ea1-c39ab06436cf"
+  }
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_409:&color=orange)
+```JSON
+{
+  "success": false,
+  "data": "Конфликт инструкции INSERT с ограничением FOREIGN KEY \"fk_user_restriction_restriction_type_type_id\". Конфликт произошел в базе данных \"InCase.Dev\", таблица \"dbo.RestrictionType\", column 'id'.\r\nВыполнение данной инструкции было прервано."
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "UserRestriction is not found. "
+}
+```
+
+9. Обновить ограничение:
+   * Доступ: Admin, Owner, Bot
+   * Метод: PUT
+   * Запрос: `https://r.api.incase.com/api/user-restriction`
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+```JSON
+{
+  "success": true,
+  "data": {
+    "creationDate": "2023-04-08T12:06:07.209Z",
+    "expirationDate": "2023-04-08T12:06:07.209Z",
+    "description": "stringaaaa",
+    "id": "1351f855-71c0-4ae1-963f-ca7bc73d6784"
+  }
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_409:&color=orange)
+```JSON
+{
+  "success": false,
+  "data": "Конфликт инструкции UPDATE с ограничением FOREIGN KEY \"fk_user_restriction_restriction_type_type_id\". Конфликт произошел в базе данных \"InCase.Dev\", таблица \"dbo.RestrictionType\", column 'id'."
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "UserRestriction is not found. "
+}
+```
+
+10. Удалить ограничение:
+    * Доступ: Admin, Owner, Bot
+    * Метод: DELETE
+    * Запрос: `https://r.api.incase.com/api/user-restriction`
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+```JSON
+{
+  "success": true,
+  "data": {
+    "creationDate": "2023-04-08T12:27:21.729",
+    "expirationDate": "2023-04-08T12:27:21.729",
+    "description": "stringasdasdasd",
+    "id": "46247306-910c-4ad8-86d7-8a738e6d5661"
+  }
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "UserRestriction is not found. "
+}
+```
