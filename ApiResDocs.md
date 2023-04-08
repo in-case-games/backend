@@ -20,6 +20,8 @@
     * Информация об обменах
     * Информация о промокодах
   * Информация об ограничениях
+  * Информация об отзывах
+  * Информация об обращениях в тех поддержку
   
 ## Общее
 
@@ -1134,34 +1136,233 @@ _Данный подзаголовок содержит в себе информ
    * Метод: GET
    * Запрос: `https://r.api.incase.com/api/promocode`
 
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+```JSON
+{
+  "success": true,
+  "data": [
+    {
+      "name": "string",
+      "discount": 0,
+      "numberActivations": 0,
+      "expirationDate": "2023-04-08T08:15:30.484",
+      "type": {
+        "name": "balance",
+        "id": "afce1b8c-8d16-4429-90d0-ae7959933063"
+      },
+      "id": "bbb36e4a-24f8-445f-8c6d-2df7e5d497ff"
+    }
+  ]
+}
+```
+
 2. Получить один промокод по id:
    * Доступ: All
    * Метод: GET
    * Запрос: `https://r.api.incase.com/api/promocode/{id}`
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+```JSON
+{
+  "success": true,
+  "data": {
+    "name": "string",
+    "discount": 0,
+    "numberActivations": 0,
+    "expirationDate": "2023-04-08T08:15:30.484",
+    "type": {
+      "name": "balance",
+      "id": "afce1b8c-8d16-4429-90d0-ae7959933063"
+    },
+    "id": "bbb36e4a-24f8-445f-8c6d-2df7e5d497ff"
+  }
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "Promocode is not found. "
+}
+```
 
 3. Получить один промокод по названию:
    * Доступ: All
    * Метод: GET
    * Запрос: `https://r.api.incase.com/api/promocode/name/{name}`
 
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+```JSON
+{
+  "success": true,
+  "data": {
+    "name": "string",
+    "discount": 0,
+    "numberActivations": 0,
+    "expirationDate": "2023-04-08T08:15:30.484",
+    "type": {
+      "name": "balance",
+      "id": "afce1b8c-8d16-4429-90d0-ae7959933063"
+    },
+    "id": "bbb36e4a-24f8-445f-8c6d-2df7e5d497ff"
+  }
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "Promocode is not found. "
+}
+```
+
 4. Получить типы промокодов:
    * Доступ: All
    * Метод: GET
    * Запрос: `https://r.api.incase.com/api/promocode/types`
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+```JSON
+{
+  "success": true,
+  "data": [
+    {
+      "name": "balance",
+      "id": "afce1b8c-8d16-4429-90d0-ae7959933063"
+    },
+    {
+      "name": "case",
+      "id": "de145f9a-522d-4e50-b427-c67fd1456e0e"
+    }
+  ]
+}
+```
 
 5. Создать промокод:
    * Доступ: Admin, Owner, Bot
    * Метод: POST
    * Запрос: `https://r.api.incase.com/api/promocode`
 
+![](https://img.shields.io/static/v1?label=&message=Request_Body:&color=blue)
+```JSON
+{
+  "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "name": "ЛУЧШИЙ-ПРОМОКОД",
+  "discount": 10,
+  "numberActivations": 1110,
+  "expirationDate": "2023-04-08T08:12:17.749Z",
+  "typeId": "afce1b8c-8d16-4429-90d0-ae7959933063"
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+```JSON
+{
+  "success": true,
+  "data": {
+    "name": "ЛУЧШИЙ-ПРОМОКОД",
+    "discount": 10,
+    "numberActivations": 1110,
+    "expirationDate": "2023-04-08T08:12:17.749Z",
+    "type": null,
+    "id": "bbb36e4a-24f8-445f-8c6d-2df7e5d497ff"
+  }
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_409:&color=orange)
+```JSON
+{
+  "success": false,
+  "data": "Не удается вставить повторяющуюся строку ключа в объект \"dbo.Promocode\" с уникальным индексом \"ix_promocode_name\". Повторяющееся значение ключа: (ЛУЧШИЙ-ПРОМОКОД).\r\nВыполнение данной инструкции было прервано."
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_409:&color=orange)
+```JSON
+{
+  "success": false,
+  "data": "Не удается вставить повторяющуюся строку ключа в объект \"dbo.Promocode\" с уникальным индексом \"ix_promocode_name\". Повторяющееся значение ключа: (string).\r\nВыполнение данной инструкции было прервано."
+}
+```
+
 6. Обновить промокод:
    * Доступ: Admin, Owner, Bot
    * Метод: PUT
    * Запрос: `https://r.api.incase.com/api/promocode`
 
+![](https://img.shields.io/static/v1?label=&message=Request_Body:&color=blue)
+```JSON
+{
+  "id": "bbb36e4a-24f8-445f-8c6d-2df7e5d497ff",
+  "name": "string",
+  "discount": 0,
+  "numberActivations": 0,
+  "expirationDate": "2023-04-08T08:15:30.484Z",
+  "typeId": "afce1b8c-8d16-4429-90d0-ae7959933063"
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+```JSON
+{
+  "success": true,
+  "data": {
+    "name": "string",
+    "discount": 0,
+    "numberActivations": 0,
+    "expirationDate": "2023-04-08T08:15:30.484Z",
+    "type": null,
+    "id": "bbb36e4a-24f8-445f-8c6d-2df7e5d497ff"
+  }
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_409:&color=orange)
+```JSON
+{
+  "success": false,
+  "data": "Конфликт инструкции UPDATE с ограничением FOREIGN KEY \"fk_promocode_promocode_types_type_id\". Конфликт произошел в базе данных \"InCase.Dev\", таблица \"dbo.PromocodeType\", column 'id'."
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "Promocode is not found. "
+}
+```
+
+
 7. Удалить промокод:
    * Доступ: Admin, Owner, Bot
    * Метод: DELETE
    * Запрос: `https://r.api.incase.com/api/promocode`
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+```JSON
+{
+  "success": true,
+  "data": {
+    "name": "string",
+    "discount": 0,
+    "numberActivations": 0,
+    "expirationDate": "2023-04-08T08:15:30.484",
+    "type": null,
+    "id": "bbb36e4a-24f8-445f-8c6d-2df7e5d497ff"
+  }
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "Promocode is not found. "
+}
+```
 
 ## Пользователь
