@@ -46,6 +46,7 @@ _Данный подзаголовок содержит в себе информ
       "items": [],
       "boxes": [],
       "platforms": null,
+      "groups": null,
       "id": "bb3a297c-7d54-49ba-8906-7c8f5903a6ad"
     },
     {
@@ -53,6 +54,7 @@ _Данный подзаголовок содержит в себе информ
       "items": [],
       "boxes": [],
       "platforms": null,
+      "groups": null,
       "id": "4edd89d0-d4cf-4a58-93fb-a7b714510855"
     },
     {
@@ -60,6 +62,7 @@ _Данный подзаголовок содержит в себе информ
       "items": [],
       "boxes": [],
       "platforms": null,
+      "groups": null,
       "id": "d3de7704-031f-4b12-a7ad-c3bf42dfa0f1"
     }
   ]
@@ -81,6 +84,7 @@ _Данный подзаголовок содержит в себе информ
     "items": [],
     "boxes": [],
     "platforms": null,
+    "groups": null,
     "id": "bb3a297c-7d54-49ba-8906-7c8f5903a6ad"
   }
 }
@@ -653,6 +657,44 @@ _Данный подзаголовок содержит в себе информ
   "data": "GameItem is not found. "
 }
 ```
+
+
+### Информация о группах кейсов
+
+1. Получение всех групп кейсов:
+   * Доступ: Allow Anonymous
+   * Метод: GET
+   * Запрос: `https://r.api.incase.com/api/loot-box-group`
+
+2. Получение группы кейса по id:
+   * Доступ: Allow Anonymous
+   * Метод: GET
+   * Запрос: `https://r.api.incase.com/api/loot-box-group/{id}`
+
+3. Получение всех групп:
+   * Доступ: Allow Anonymous
+   * Метод: GET
+   * Запрос: `https://r.api.incase.com/api/loot-box-group/groups`
+
+4. Создание группы кейсов:
+   * Доступ: Admin, Owner, Bot
+   * Метод: POST
+   * Запрос: `https://r.api.incase.com/api/loot-box-group`
+
+5. Создание группы:
+   * Доступ: Admin, Owner, Bot
+   * Метод: POST
+   * Запрос: `https://r.api.incase.com/api/loot-box-group/group`
+
+6. Удаление группы кейсов:
+   * Доступ: Admin, Owner, Bot
+   * Метод: DELETE
+   * Запрос: `https://r.api.incase.com/api/loot-box-group/{id}`
+
+7. Удаление группы:
+   * Доступ: Admin, Owner, Bot
+   * Метод: DELETE
+   * Запрос: `https://r.api.incase.com/api/loot-box-group/group/{id}`
 
 
 ### Информация о кейсе
