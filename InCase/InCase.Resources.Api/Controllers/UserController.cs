@@ -97,6 +97,9 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
+            if (!await context.Users.AnyAsync(a => a.Id == id))
+                return ResponseUtil.NotFound(nameof(User));
+
             List<UserHistoryWithdrawn> withdrawns = await context.UserHistoryWithdrawns
                 .AsNoTracking()
                 .Include(i => i.Item)
