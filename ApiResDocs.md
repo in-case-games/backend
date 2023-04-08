@@ -1366,3 +1366,128 @@ _Данный подзаголовок содержит в себе информ
 ```
 
 ## Пользователь
+
+### Информация о пользователе
+
+1. Получить дополнительную информацию:
+   * Доступ: All
+   * Метод: GET
+   * Запрос: `https://r.api.incase.com/api/user-additional-info`
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+```JSON
+{
+  "success": true,
+  "data": {
+    "balance": 0,
+    "imageUri": "",
+    "isNotifyEmail": false,
+    "isGuestMode": false,
+    "isConfirmed": true,
+    "creationDate": "2023-04-07T05:52:48.4918144",
+    "deletionDate": null,
+    "role": {
+      "name": "bot",
+      "id": "7788cbe6-1a9e-41b0-91cd-f55fa1e60d5e"
+    },
+    "id": "7c1353fe-5582-403f-9c21-a32a2ab4f9a5"
+  }
+}
+```
+
+2. Получить все роли:
+   * Доступ: Allow Anonymous
+   * Метод: GET
+   * Запрос: `https://r.api.incase.com/api/user-additional-info/roles`
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+```JSON
+{
+  "success": true,
+  "data": [
+    {
+      "name": "admin",
+      "id": "2bd9949b-180e-4bed-9da2-3f0569cf157b"
+    },
+    {
+      "name": "bot",
+      "id": "7788cbe6-1a9e-41b0-91cd-f55fa1e60d5e"
+    },
+    {
+      "name": "owner",
+      "id": "c8c2854f-a142-4384-b424-acb7aa2928bf"
+    },
+    {
+      "name": "support",
+      "id": "f65c09b1-5ab4-4d9c-a10e-d41093f04146"
+    },
+    {
+      "name": "user",
+      "id": "37df21ec-8723-4ed2-957f-283ba1ecbb7c"
+    }
+  ]
+}
+```
+
+3. Обновить дополнительную информацию о пользователе:
+   * Доступ: Owner, Bot
+   * Метод: PUT
+   * Запрос: `https://r.api.incase.com/api/user-additional-info`
+
+![](https://img.shields.io/static/v1?label=&message=Request_Body:&color=blue)
+```JSON
+{
+  "id": "7c1353fe-5582-403f-9c21-a32a2ab4f9a5",
+  "balance": 1110,
+  "imageUri": "",
+  "isNotifyEmail": false,
+  "isGuestMode": false,
+  "isConfirmed": true,
+  "creationDate": "2023-04-07T05:52:48.4918144",
+  "deletionDate": null,
+  "roleId": "7788cbe6-1a9e-41b0-91cd-f55fa1e60d5e",
+  "userId": "753ed98a-cf5d-4acc-994c-afab92848fab"
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+```JSON
+{
+  "success": true,
+  "data": {
+    "balance": 1110,
+    "imageUri": "",
+    "isNotifyEmail": false,
+    "isGuestMode": false,
+    "isConfirmed": true,
+    "creationDate": "2023-04-07T05:52:48.4918144",
+    "deletionDate": null,
+    "role": null,
+    "id": "7c1353fe-5582-403f-9c21-a32a2ab4f9a5"
+  }
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_409:&color=orange)
+```JSON
+{
+  "success": false,
+  "data": "Конфликт инструкции UPDATE с ограничением FOREIGN KEY \"fk_user_additional_info_user_roles_role_id\". Конфликт произошел в базе данных \"InCase.Dev\", таблица \"dbo.UserRole\", column 'id'."
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_409:&color=orange)
+```JSON
+{
+  "success": false,
+  "data": "Конфликт инструкции UPDATE с ограничением FOREIGN KEY \"fk_user_additional_info_users_user_id\". Конфликт произошел в базе данных \"InCase.Dev\", таблица \"dbo.User\", column 'id'."
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "UserAdditionalInfo is not found. "
+}
+```
