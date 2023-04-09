@@ -2186,72 +2186,461 @@ _Данный подзаголовок содержит в себе информ
    * Метод: GET
    * Запрос: `https://r.api.incase.com/api/user-review`
 
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+```JSON
+{
+  "success": true,
+  "data": [
+    {
+      "title": "string",
+      "content": "string",
+      "isApproved": true,
+      "images": [],
+      "id": "80c5950d-07bc-445f-8808-e850cd0d6989"
+    },
+    {
+      "title": "Лучший отзыв на свете",
+      "content": "ПРошли нахуй пидоры",
+      "isApproved": true,
+      "images": [],
+      "id": "0e19cb07-e2c7-453b-affd-f5bde5dc501d"
+    }
+  ]
+}
+```
+
 2. Получить все отзывы по админке:
    * Доступ: Admin, Owner, Bot
    * Метод: GET
    * Запрос: `https://r.api.incase.com/api/user-review/admin`
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+```JSON
+{
+  "success": true,
+  "data": [
+    {
+      "title": "string",
+      "content": "string",
+      "isApproved": true,
+      "images": [],
+      "id": "03f4d37d-6940-4623-8195-dd47fd83ed57"
+    },
+    {
+      "title": "string",
+      "content": "string",
+      "isApproved": true,
+      "images": [
+        {
+          "imageUri": "string",
+          "id": "c4e40610-9501-4a2f-a556-106aeb54edf3"
+        }
+      ],
+      "id": "80c5950d-07bc-445f-8808-e850cd0d6989"
+    }
+  ]
+}
+```
 
 3. Получить отзыв по id:
    * Доступ: Allow Anonymous
    * Метод: GET
    * Запрос: `https://r.api.incase.com/api/user-review/{id}`
 
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+```JSON
+{
+  "success": true,
+  "data": {
+    "title": "Лучший отзыв на свете",
+    "content": "ПРошли нахуй пидоры",
+    "isApproved": true,
+    "images": [],
+    "id": "0e19cb07-e2c7-453b-affd-f5bde5dc501d"
+  }
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "UserReview is not found. "
+}
+```
+
 4. Получить все отзывы пользователя по id:
    * Доступ: Allow Anonymous
    * Метод: GET
    * Запрос: `https://r.api.incase.com/api/user-review/user/{id}`
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+```JSON
+{
+  "success": true,
+  "data": [
+    {
+      "title": "string",
+      "content": "string",
+      "isApproved": true,
+      "images": [],
+      "id": "80c5950d-07bc-445f-8808-e850cd0d6989"
+    },
+    {
+      "title": "Лучший отзыв на свете",
+      "content": "ПРошли нахуй пидоры",
+      "isApproved": true,
+      "images": [],
+      "id": "0e19cb07-e2c7-453b-affd-f5bde5dc501d"
+    }
+  ]
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=orange)
+```JSON
+User
+```
 
 5. Получить все свои отзывы:
    * Доступ: All
    * Метод: GET
    * Запрос: `https://r.api.incase.com/api/user-review/user`
 
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+```JSON
+{
+  "success": true,
+  "data": [
+    {
+      "title": "string",
+      "content": "string",
+      "isApproved": true,
+      "images": [],
+      "id": "80c5950d-07bc-445f-8808-e850cd0d6989"
+    },
+    {
+      "title": "Лучший отзыв на свете",
+      "content": "ПРошли нахуй пидоры",
+      "isApproved": true,
+      "images": [],
+      "id": "0e19cb07-e2c7-453b-affd-f5bde5dc501d"
+    }
+  ]
+}
+```
+
 6. Получить все картинки отзывов:
    * Доступ: Allow Anonymous
    * Метод: GET
    * Запрос: `https://r.api.incase.com/api/user-review/images`
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+```JSON
+{
+  "success": true,
+  "data": [
+    {
+      "imageUri": "stringA",
+      "id": "bf40c042-c78c-47c7-8681-09f98c17d848"
+    },
+    {
+      "imageUri": "string",
+      "id": "c4e40610-9501-4a2f-a556-106aeb54edf3"
+    }
+  ]
+}
+```
 
 7. Получить все картинки отзыва:
    * Доступ: Allow Anonymous
    * Метод: GET
    * Запрос: `https://r.api.incase.com/api/user-review/{id}/images`
 
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+```JSON
+{
+  "success": true,
+  "data": [
+    {
+      "imageUri": "stringA",
+      "id": "bf40c042-c78c-47c7-8681-09f98c17d848"
+    },
+    {
+      "imageUri": "string",
+      "id": "c4e40610-9501-4a2f-a556-106aeb54edf3"
+    }
+  ]
+}
+```
+
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=orange)
+```JSON
+UserReview
+```
+
 8. Получить картинку отзыва по id:
    * Доступ: Allow Anonymous
    * Метод: GET
    * Запрос: `https://r.api.incase.com/api/user-review/image/{id}`
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+```JSON
+{
+  "success": true,
+  "data": {
+    "imageUri": "stringA",
+    "id": "bf40c042-c78c-47c7-8681-09f98c17d848"
+  }
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "ReviewImage is not found. "
+}
+```
 
 9. Создать отзыв:
    * Доступ: All
    * Метод: POST
    * Запрос: `https://r.api.incase.com/api/user-review`
 
+![](https://img.shields.io/static/v1?label=&message=Request_Body:&color=blue)
+```JSON
+{
+  "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "title": "string",
+  "content": "string",
+  "isApproved": true,
+  "userId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+```JSON
+{
+  "success": true,
+  "data": {
+    "title": "Лучший отзыв на свете",
+    "content": "ПРошли нахуй пидоры",
+    "isApproved": true,
+    "images": null,
+    "id": "4a64e732-b432-4f90-9870-fcf8235db77a"
+  }
+}
+```
+
 10. Обновить отзыв:
     * Доступ: All
     * Метод: PUT
     * Запрос: `https://r.api.incase.com/api/user-review`
+
+![](https://img.shields.io/static/v1?label=&message=Request_Body:&color=blue)
+```JSON
+{
+  "id": "80c5950d-07bc-445f-8808-e850cd0d6989",
+  "title": "string",
+  "content": "string",
+  "isApproved": true,
+  "userId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+```JSON
+{
+  "success": true,
+  "data": {
+    "title": "string",
+    "content": "string",
+    "isApproved": true,
+    "images": null,
+    "id": "80c5950d-07bc-445f-8808-e850cd0d6989"
+  }
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "UserReview is not found. "
+}
+```
 
 11. Обновить отзыв по админке:
     * Доступ: Admin, Owner, Bot
     * Метод: PUT
     * Запрос: `https://r.api.incase.com/api/user-review/admin`
 
+![](https://img.shields.io/static/v1?label=&message=Request_Body:&color=blue)
+```JSON
+{
+  "id": "80c5950d-07bc-445f-8808-e850cd0d6989",
+  "title": "string2131",
+  "content": "string12312",
+  "isApproved": true,
+  "userId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+```JSON
+{
+  "success": true,
+  "data": {
+    "title": "string2131",
+    "content": "string12312",
+    "isApproved": true,
+    "images": null,
+    "id": "80c5950d-07bc-445f-8808-e850cd0d6989"
+  }
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "UserReview is not found. "
+}
+```
+
 12. Удалить отзыв по id:
     * Доступ: All
     * Метод: Delete
     * Запрос: `https://r.api.incase.com/api/user-review/{id}`
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+```JSON
+{
+  "success": true,
+  "data": {
+    "title": "Лучший отзыв на свете",
+    "content": "ПРошли нахуй пидоры",
+    "isApproved": true,
+    "images": null,
+    "id": "0e19cb07-e2c7-453b-affd-f5bde5dc501d"
+  }
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "UserReview is not found. "
+}
+```
 
 13. Удалить отзыв по админке и id:
     * Доступ: Admin, Owner, Bot
     * Метод: Delete
     * Запрос: `https://r.api.incase.com/api/user-review/admin/{id}`
 
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+```JSON
+{
+  "success": true,
+  "data": {
+    "title": "string",
+    "content": "string",
+    "isApproved": true,
+    "images": null,
+    "id": "03f4d37d-6940-4623-8195-dd47fd83ed57"
+  }
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "UserReview is not found. "
+}
+```
+
 14. Удалить картинку отзыва по админке и id:
     * Доступ: Admin, Owner, Bot
     * Метод: Delete
     * Запрос: `https://r.api.incase.com/api/user-review/admin/image/{id}`
 
-15. Удалить картинку отзыва по id отзыва и id картинки
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+```JSON
+{
+  "success": true,
+  "data": {
+    "imageUri": "string",
+    "id": "c4e40610-9501-4a2f-a556-106aeb54edf3"
+  }
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "UserReview is not found. "
+}
+```
+
+15. Удалить картинку отзыва по id картинки
     * Доступ: All
     * Метод: Delete
-    * Запрос: `https://r.api.incase.com/api/user-review/admin/{id}/image/{imageId}`
+    * Запрос: `https://r.api.incase.com/api/user-review/admin/image/{imageId}`
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+```JSON
+{
+  "success": true,
+  "data": {
+    "imageUri": "stringA",
+    "id": "bf40c042-c78c-47c7-8681-09f98c17d848"
+  }
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "ReviewImage is not found. "
+}
+```
+
+16. Создать картинку для отзыва:
+    * Доступ: All
+    * Метод: POST
+    * Запрос: `https://r.api.incase.com/api/user-review`
+
+![](https://img.shields.io/static/v1?label=&message=Request_Body:&color=blue)
+```JSON
+{
+  "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "imageUri": "string",
+  "reviewId": "80c5950d-07bc-445f-8808-e850cd0d6989"
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+```JSON
+{
+  "success": true,
+  "data": {
+    "imageUri": "stringA",
+    "id": "fc61e820-36be-4449-80a3-63028905a8b9"
+  }
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "UserReview is not found. "
+}
+```
