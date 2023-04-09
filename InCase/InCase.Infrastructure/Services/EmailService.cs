@@ -42,7 +42,7 @@ namespace InCase.Infrastructure.Services
         public async Task<IActionResult> SendSignUp(DataMailLink data)
         {
             string subject = "Подтверждение регистрации.";
-            string uri = $"{_requestUrl}api/email/confirm?token={data.EmailToken}";
+            string uri = $"{_requestUrl}/api/email/confirm/account?token={data.EmailToken}";
             string body = data.CreateSignUpTemplate(uri);
             try
             {
@@ -62,7 +62,7 @@ namespace InCase.Infrastructure.Services
         public async Task<IActionResult> SendSignIn(DataMailLink data)
         {
             string subject = "Подтверждение входа.";
-            string uri = $"{_requestUrl}api/email/confirm/account?token={data.EmailToken}";
+            string uri = $"{_requestUrl}/api/email/confirm/account?token={data.EmailToken}";
             string body = data.CreateSignInTemplate(uri);
             try
             {
@@ -110,7 +110,7 @@ namespace InCase.Infrastructure.Services
         public async Task<IActionResult> SendDeleteAccount(DataMailLink data)
         {
             string subject = "Подтвердите удаление аккаунта";
-            string uri = $"{_requestUrl}/email/confirm/delete?token={data.EmailToken}";
+            string uri = $"{_requestUrl}/api/email/confirm/delete?token={data.EmailToken}";
             string body = data.CreateDeleteAccountTemplate(uri);
 
             try
@@ -127,7 +127,7 @@ namespace InCase.Infrastructure.Services
         public async Task<IActionResult> SendChangePassword(DataMailLink data)
         {
             string subject = "Подтвердите изменение пароля";
-            string uri = $"{_requestUrl}/email/confirm/update/password?token={data.EmailToken}";
+            string uri = $"{_requestUrl}/api/email/confirm/update/password?token={data.EmailToken}";
             string body = data.CreateChangePasswordTemplate(uri);
 
             try
@@ -144,7 +144,7 @@ namespace InCase.Infrastructure.Services
         public async Task<IActionResult> SendChangeEmail(DataMailLink data)
         {
             string subject = "Подтвердите изменение почты";
-            string uri = $"{_requestUrl}/email/confirm/update/email?token={data.EmailToken}";
+            string uri = $"{_requestUrl}/api/email/confirm/update/email?token={data.EmailToken}";
             string body = data.CreateChangeEmailTemplate(uri);
 
             try
@@ -161,7 +161,7 @@ namespace InCase.Infrastructure.Services
         public async Task<IActionResult> SendConfirmNewEmail(DataMailLink data)
         {
             string subject = "Подтвердите изменение почты";
-            string uri = $"{_requestUrl}/email/confirm/new?token={data.EmailToken}";
+            string uri = $"{_requestUrl}/api/email/confirm/new?token={data.EmailToken}";
             string body = data.CreateConfirmNewEmailTemplate(uri);
 
             try
