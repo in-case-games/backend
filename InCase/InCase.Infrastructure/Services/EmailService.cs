@@ -39,24 +39,13 @@ namespace InCase.Infrastructure.Services
             }
         }
 
-        public async Task<IActionResult> SendSignUp(DataMailLink data)
+        public async Task SendSignUp(DataMailLink data)
         {
             string subject = "Подтверждение регистрации.";
             string uri = $"{_requestUrl}/api/email/confirm/account?token={data.EmailToken}";
             string body = data.CreateSignUpTemplate(uri);
-            try
-            {
-                await SendToEmail(data.UserEmail, subject, body);
-                return ResponseUtil.SendEmail();
-            }
-            catch (SmtpCommandException)
-            {
-                return ResponseUtil.Conflict("MailBox is not existed!");
-            }
-            catch (Exception ex)
-            {
-                return ResponseUtil.Error(ex);
-            }
+
+            await SendToEmail(data.UserEmail, subject, body);
         }
 
         public async Task<IActionResult> SendSignIn(DataMailLink data)
