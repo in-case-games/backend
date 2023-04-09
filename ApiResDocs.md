@@ -2177,3 +2177,81 @@ _Данный подзаголовок содержит в себе информ
   "data": "UserRestriction is not found. "
 }
 ```
+
+
+### Информация об отзывах
+
+1. Получить все отзывы одобренные отзывы:
+   * Доступ: Allow Anonymous
+   * Метод: GET
+   * Запрос: `https://r.api.incase.com/api/user-review`
+
+2. Получить все отзывы по админке:
+   * Доступ: Admin, Owner, Bot
+   * Метод: GET
+   * Запрос: `https://r.api.incase.com/api/user-review/admin`
+
+3. Получить отзыв по id:
+   * Доступ: Allow Anonymous
+   * Метод: GET
+   * Запрос: `https://r.api.incase.com/api/user-review/{id}`
+
+4. Получить все отзывы пользователя по id:
+   * Доступ: Allow Anonymous
+   * Метод: GET
+   * Запрос: `https://r.api.incase.com/api/user-review/user/{id}`
+
+5. Получить все свои отзывы:
+   * Доступ: All
+   * Метод: GET
+   * Запрос: `https://r.api.incase.com/api/user-review/user`
+
+6. Получить все картинки отзывов:
+   * Доступ: Allow Anonymous
+   * Метод: GET
+   * Запрос: `https://r.api.incase.com/api/user-review/images`
+
+7. Получить все картинки отзыва:
+   * Доступ: Allow Anonymous
+   * Метод: GET
+   * Запрос: `https://r.api.incase.com/api/user-review/{id}/images`
+
+8. Получить картинку отзыва по id:
+   * Доступ: Allow Anonymous
+   * Метод: GET
+   * Запрос: `https://r.api.incase.com/api/user-review/image/{id}`
+
+9. Создать отзыв:
+   * Доступ: All
+   * Метод: POST
+   * Запрос: `https://r.api.incase.com/api/user-review`
+
+10. Обновить отзыв:
+    * Доступ: All
+    * Метод: PUT
+    * Запрос: `https://r.api.incase.com/api/user-review`
+
+11. Обновить отзыв по админке:
+    * Доступ: Admin, Owner, Bot
+    * Метод: PUT
+    * Запрос: `https://r.api.incase.com/api/user-review/admin`
+
+12. Удалить отзыв по id:
+    * Доступ: All
+    * Метод: Delete
+    * Запрос: `https://r.api.incase.com/api/user-review/{id}`
+
+13. Удалить отзыв по админке и id:
+    * Доступ: Admin, Owner, Bot
+    * Метод: Delete
+    * Запрос: `https://r.api.incase.com/api/user-review/admin/{id}`
+
+14. Удалить картинку отзыва по админке и id:
+    * Доступ: Admin, Owner, Bot
+    * Метод: Delete
+    * Запрос: `https://r.api.incase.com/api/user-review/admin/image/{id}`
+
+15. Удалить картинку отзыва по id отзыва и id картинки
+    * Доступ: All
+    * Метод: Delete
+    * Запрос: `https://r.api.incase.com/api/user-review/admin/{id}/image/{imageId}`
