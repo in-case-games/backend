@@ -99,47 +99,73 @@ namespace InCase.Resources.Api.Controllers
 
         [AuthorizeRoles(Roles.AdminOwnerBot)]
         [HttpPost]
-        public async Task<IActionResult> Create(LootBoxDto lootBox)
+        public async Task<IActionResult> Create(LootBoxDto boxDto)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            return await EndpointUtil.Create(lootBox.Convert(), context);
+            if (!await context.Games.AnyAsync(a => a.Id == boxDto.GameId))
+                return ResponseUtil.NotFound(nameof(Game));
+
+            return await EndpointUtil.Create(boxDto.Convert(), context);
         }
 
         [AuthorizeRoles(Roles.AdminOwnerBot)]
         [HttpPost("inventory")]
-        public async Task<IActionResult> CreateInventory(LootBoxInventoryDto inventory)
+        public async Task<IActionResult> CreateInventory(LootBoxInventoryDto inventoryDto)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            return await EndpointUtil.Create(inventory.Convert(), context);
+            if (!await context.LootBoxes.AnyAsync(a => a.Id == inventoryDto.BoxId))
+                return ResponseUtil.NotFound(nameof(LootBox));
+            if (!await context.GameItems.AnyAsync(a => a.Id == inventoryDto.ItemId))
+                return ResponseUtil.NotFound(nameof(GameItem));
+
+            return await EndpointUtil.Create(inventoryDto.Convert(), context);
         }
 
         [AuthorizeRoles(Roles.AdminOwnerBot)]
         [HttpPost("banner")]
-        public async Task<IActionResult> CreateBanner(LootBoxBannerDto banner)
+        public async Task<IActionResult> CreateBanner(LootBoxBannerDto bannerDto)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            return await EndpointUtil.Create(banner.Convert(), context);
+            if (!await context.LootBoxes.AnyAsync(a => a.Id == bannerDto.BoxId))
+                return ResponseUtil.NotFound(nameof(LootBox));
+            if (await context.LootBoxBanners.AnyAsync(a => a.BoxId == bannerDto.BoxId))
+                return ResponseUtil.Conflict("The banner is already used by this loot box");
+
+            return await EndpointUtil.Create(bannerDto.Convert(), context);
         }
 
         [AuthorizeRoles(Roles.AdminOwnerBot)]
         [HttpPut]
-        public async Task<IActionResult> Update(LootBoxDto lootBox)
+        public async Task<IActionResult> Update(LootBoxDto boxDto)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            return await EndpointUtil.Update(lootBox.Convert(false), context);
+            if (!await context.Games.AnyAsync(a => a.Id == boxDto.GameId))
+                return ResponseUtil.NotFound(nameof(Game));
+
+            return await EndpointUtil.Update(boxDto.Convert(false), context);
         }
 
         [AuthorizeRoles(Roles.AdminOwnerBot)]
         [HttpPut("banner")]
-        public async Task<IActionResult> UpdateBanner(LootBoxBannerDto banner)
+        public async Task<IActionResult> UpdateBanner(LootBoxBannerDto bannerDto)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            return await EndpointUtil.Update(banner.Convert(false), context);
+            LootBoxBanner? banner = await context.LootBoxBanners
+                .FirstOrDefaultAsync(f => f.Id == bannerDto.Id);
+
+            if(banner is null)
+                return ResponseUtil.NotFound(nameof(LootBoxBanner));
+            if (!await context.LootBoxes.AnyAsync(a => a.Id == bannerDto.BoxId))
+                return ResponseUtil.NotFound(nameof(LootBox));
+            if (banner.BoxId != bannerDto.BoxId && await context.LootBoxBanners.AnyAsync(a => a.BoxId == bannerDto.BoxId))
+                return ResponseUtil.Conflict("The banner is already used by this loot box");
+
+            return await EndpointUtil.Update(banner, bannerDto.Convert(false), context);
         }
 
         [AuthorizeRoles(Roles.AdminOwnerBot)]

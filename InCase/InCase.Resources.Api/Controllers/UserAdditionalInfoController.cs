@@ -53,6 +53,11 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _context.CreateDbContextAsync();
 
+            if (!await context.UserRoles.AnyAsync(a => a.Id == infoDto.RoleId))
+                return ResponseUtil.NotFound(nameof(UserRole));
+            if (!await context.Users.AnyAsync(a => a.Id == infoDto.UserId))
+                return ResponseUtil.NotFound("User");
+
             return await EndpointUtil.Update(infoDto.Convert(false), context);
         }
     }

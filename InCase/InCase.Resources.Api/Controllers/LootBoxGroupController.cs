@@ -91,6 +91,13 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
+            if (!await context.Games.AnyAsync(a => a.Id == groupDto.GameId))
+                return ResponseUtil.NotFound(nameof(Game));
+            if (!await context.GroupLootBoxes.AnyAsync(a => a.Id == groupDto.GroupId))
+                return ResponseUtil.NotFound(nameof(Game));
+            if (!await context.LootBoxes.AnyAsync(a => a.Id == groupDto.BoxId))
+                return ResponseUtil.NotFound(nameof(Game));
+
             return await EndpointUtil.Create(groupDto.Convert(), context);
         }
 
@@ -99,6 +106,9 @@ namespace InCase.Resources.Api.Controllers
         public async Task<IActionResult> CreateGroup(GroupLootBox group)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            if (await context.GroupLootBoxes.AnyAsync(a => a.Name == group.Name))
+                return ResponseUtil.Conflict("The group name is already in use");
 
             group.Id = Guid.NewGuid();
 

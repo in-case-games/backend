@@ -77,7 +77,7 @@ namespace InCase.Resources.Api.Controllers
             await using ApplicationDbContext context = await _context.CreateDbContextAsync();
 
             if (!await context.Users.AnyAsync(a => a.Id == id))
-                return NotFound(nameof(User));
+                return NotFound("User");
 
             List<UserReview> reviews = await context.UserReviews
                 .Include(i => i.Images)
@@ -129,7 +129,7 @@ namespace InCase.Resources.Api.Controllers
             await using ApplicationDbContext context = await _context.CreateDbContextAsync();
 
             if (!await context.UserReviews.AnyAsync(a => a.Id == id && a.IsApproved == true))
-                return NotFound(nameof(UserReview));
+                return NotFound("UserReview");
 
             List<ReviewImage> images = await context.ReviewImages
                 .AsNoTracking()

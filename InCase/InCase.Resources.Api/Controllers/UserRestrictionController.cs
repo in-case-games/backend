@@ -134,37 +134,19 @@ namespace InCase.Resources.Api.Controllers
             return await EndpointUtil.GetAll<RestrictionType>(_context);
         }
 
+        //TODO
         [AuthorizeRoles(Roles.AdminOwnerBot)]
         [HttpPost]
         public async Task<IActionResult> Create(UserRestrictionDto restrictionDto)
         {
             await using ApplicationDbContext context = await _context.CreateDbContextAsync();
 
-            User? user = await context.Users
-                .Include(i => i.AdditionalInfo)
-                .Include(i => i.AdditionalInfo!.Role)
-                .AsNoTracking()
-                .FirstOrDefaultAsync(f => f.Id == restrictionDto.UserId);
-
-            User? owner = await context.Users
-                .Include(i => i.AdditionalInfo)
-                .Include(i => i.AdditionalInfo!.Role)
-                .AsNoTracking()
-                .FirstOrDefaultAsync(f => f.Id == UserId);
-
-            if(owner is null || user is null)
-                return ResponseUtil.NotFound(nameof(UserRestriction));
-
-            string userRole = user!.AdditionalInfo!.Role!.Name!;
-            string ownerRole = owner!.AdditionalInfo!.Role!.Name!;
-
-            bool IsAccess = userRole == "user" || 
-                ((ownerRole == "owner" || ownerRole == "bot") && userRole != "owner");
-
-            if(IsAccess is false)
-                return Forbid("Access denied");
-            
             restrictionDto.OwnerId = UserId;
+
+            if (!await context.RestrictionTypes.AnyAsync(a => a.Id == restrictionDto.TypeId))
+                return ResponseUtil.NotFound(nameof(RestrictionType));
+            if (!await context.Users.AnyAsync(a => a.Id == restrictionDto.UserId))
+                return ResponseUtil.NotFound("User");
 
             return await EndpointUtil.Create(restrictionDto.Convert(), context);
         }
@@ -175,39 +157,14 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _context.CreateDbContextAsync();
 
-            UserRestriction? restriction = await context.UserRestrictions
-                .FirstOrDefaultAsync(f => f.Id == restrictionDto.Id);
-
-            if(restriction == null) 
-                return ResponseUtil.NotFound(nameof(UserRestriction));
-
-            User? user = await context.Users
-                .Include(i => i.AdditionalInfo)
-                .Include(i => i.AdditionalInfo!.Role)
-                .AsNoTracking()
-                .FirstOrDefaultAsync(f => f.Id == restrictionDto.UserId);
-
-            User? owner = await context.Users
-                .Include(i => i.AdditionalInfo)
-                .Include(i => i.AdditionalInfo!.Role)
-                .AsNoTracking()
-                .FirstOrDefaultAsync(f => f.Id == UserId);
-
-            if (owner is null || user is null)
-                return ResponseUtil.NotFound(nameof(UserRestriction));
-
-            string userRole = user!.AdditionalInfo!.Role!.Name!;
-            string ownerRole = owner!.AdditionalInfo!.Role!.Name!;
-
-            bool IsAccess = userRole == "user" || 
-                ((ownerRole == "owner" || ownerRole == "bot") && userRole != "owner");
-
-            if (IsAccess is false)
-                return Forbid("Access denied");
-
             restrictionDto.OwnerId = UserId;
 
-            return await EndpointUtil.Update(restriction, restrictionDto.Convert(false), context);
+            if (!await context.RestrictionTypes.AnyAsync(a => a.Id == restrictionDto.TypeId))
+                return ResponseUtil.NotFound(nameof(RestrictionType));
+            if (!await context.Users.AnyAsync(a => a.Id == restrictionDto.UserId))
+                return ResponseUtil.NotFound("User");
+
+            return await EndpointUtil.Update(restrictionDto.Convert(false), context);
         }
 
         [AuthorizeRoles(Roles.AdminOwnerBot)]

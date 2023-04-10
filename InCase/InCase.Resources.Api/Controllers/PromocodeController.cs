@@ -78,16 +78,31 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
+            if (!await context.PromocodeTypes.AnyAsync(a => a.Id == promocode.TypeId))
+                return ResponseUtil.NotFound(nameof(PromocodeType));
+            if (await context.Promocodes.AnyAsync(a => a.Name == promocode.Name))
+                return ResponseUtil.Conflict("The promocode name is already in use");
+
             return await EndpointUtil.Create(promocode.Convert(), context);
         }
 
         [AuthorizeRoles(Roles.AdminOwnerBot)]
         [HttpPut]
-        public async Task<IActionResult> Update(PromocodeDto promocode)
+        public async Task<IActionResult> Update(PromocodeDto promocodeDto)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            return await EndpointUtil.Update(promocode.Convert(false), context);
+            Promocode? promocode = await context.Promocodes
+                .FirstOrDefaultAsync(f => f.Id == promocodeDto.Id);
+
+            if (promocode is null)
+                return ResponseUtil.NotFound(nameof(Promocode));
+            if (!await context.PromocodeTypes.AnyAsync(a => a.Id == promocodeDto.TypeId))
+                return ResponseUtil.NotFound(nameof(PromocodeType));
+            if (promocode.Name != promocodeDto.Name && await context.Promocodes.AnyAsync(a => a.Name == promocodeDto.Name))
+                return ResponseUtil.Conflict("The promocode name is already in use");
+
+            return await EndpointUtil.Update(promocode, promocodeDto.Convert(false), context);
         }
 
         [AuthorizeRoles(Roles.AdminOwnerBot)]
