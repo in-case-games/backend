@@ -3,7 +3,7 @@
 **Содержание**
 
 * Общее
-  * Информация об играх
+  * <a href="https://github.com/InCase-buy-and-opening-cases/InCase_backend/blob/InCase.dev/ApiResDocs.md#информация-об-играх">Информация об играх</a>
   * Информация о новостях
   * Информация о статистике сайта
 
