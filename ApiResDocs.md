@@ -160,7 +160,7 @@ _Данный подзаголовок содержит в себе информ
 ```
 
 3. Создание новости:
-   * Доступ: Admin, Owner, Bot
+   * Доступ: Admin, Owner
    * Метод: POST 
    * Запрос: `https://r.api.incase.com/api/news`
 
@@ -188,7 +188,7 @@ _Данный подзаголовок содержит в себе информ
 ```
 
 4. Обновление новости:
-   * Доступ: Admin, Owner, Bot
+   * Доступ: Admin, Owner
    * Метод: PUT 
    * Запрос: `https://r.api.incase.com/api/news`
 
@@ -224,7 +224,7 @@ _Данный подзаголовок содержит в себе информ
 ```
 
 5. Удаление новости:
-   * Доступ: Admin, Owner, Bot
+   * Доступ: Admin, Owner
    * Метод: Delete 
    * Запрос: `https://r.api.incase.com/api/news`
 
@@ -243,7 +243,7 @@ _Данный подзаголовок содержит в себе информ
 ```
 
 6. Создание картинки новости:
-   * Доступ: Admin, Owner, Bot
+   * Доступ: Admin, Owner
    * Метод: POST 
    * Запрос: `https://r.api.incase.com/api/news/image`
 
@@ -277,7 +277,7 @@ _Данный подзаголовок содержит в себе информ
 ```
 
 7. Удаление картинки новости:
-   * Доступ: Admin, Owner, Bot
+   * Доступ: Admin, Owner
    * Метод: Delete 
    * Запрос: `https://r.api.incase.com/api/news/image/{id}`
 
@@ -556,7 +556,7 @@ _Данный подзаголовок содержит в себе информ
 ```
 
 6. Создание нового предмета:
-   * Доступ: Admin, Owner, Bot
+   * Доступ: Owner
    * Метод: POST 
    * Запрос: `https://r.api.incase.com/api/game-item`
 
@@ -633,7 +633,7 @@ _Данный подзаголовок содержит в себе информ
 ```
 
 7. Обновление предмета:
-   * Доступ: Admin, Owner, Bot
+   * Доступ: Owner
    * Метод: PUT 
    * Запрос: `https://r.api.incase.com/api/game-item`
 
@@ -718,7 +718,7 @@ _Данный подзаголовок содержит в себе информ
 ```
 
 8. Удаление предмета:
-   * Доступ: Admin, Owner, Bot
+   * Доступ: Owner
    * Метод: Delete
    * Запрос: `https://r.api.incase.com/api/game-item/{id}`
 
@@ -837,7 +837,7 @@ _Данный подзаголовок содержит в себе информ
 ```
 
 4. Создание группы кейсов:
-   * Доступ: Admin, Owner, Bot
+   * Доступ: Owner
    * Метод: POST
    * Запрос: `https://r.api.incase.com/api/loot-box-group`
 
@@ -888,7 +888,7 @@ _Данный подзаголовок содержит в себе информ
 ```
 
 5. Создание группы:
-   * Доступ: Admin, Owner, Bot
+   * Доступ: Owner
    * Метод: POST
    * Запрос: `https://r.api.incase.com/api/loot-box-group/group`
 
@@ -921,7 +921,7 @@ _Данный подзаголовок содержит в себе информ
 
 
 6. Удаление группы кейсов:
-   * Доступ: Admin, Owner, Bot
+   * Доступ: Owner
    * Метод: DELETE
    * Запрос: `https://r.api.incase.com/api/loot-box-group/{id}`
 
@@ -946,7 +946,7 @@ _Данный подзаголовок содержит в себе информ
 ```
 
 7. Удаление группы:
-   * Доступ: Admin, Owner, Bot
+   * Доступ: Owner
    * Метод: DELETE
    * Запрос: `https://r.api.incase.com/api/loot-box-group/group/{id}`
 
@@ -1170,7 +1170,7 @@ _Данный подзаголовок содержит в себе информ
 ```
 
 6. Создать новый кейс:
-   * Доступ: Admin, Owner, Bot
+   * Доступ: Owner
    * Метод: POST
    * Запрос: `https://r.api.incase.com/api/loot-box`
 
@@ -1214,7 +1214,7 @@ _Данный подзаголовок содержит в себе информ
 ```
 
 7. Обновить кейс:
-   * Доступ: Admin, Owner, Bot
+   * Доступ: Owner
    * Метод: PUT
    * Запрос: `https://r.api.incase.com/api/loot-box`
 
@@ -1258,7 +1258,7 @@ _Данный подзаголовок содержит в себе информ
 ```
 
 8. Создать новое содержимое кейсу:
-   * Доступ: Admin, Owner, Bot
+   * Доступ: Owner
    * Метод: POST
    * Запрос: `https://r.api.incase.com/api/loot-box/inventory`
 
@@ -1303,7 +1303,7 @@ _Данный подзаголовок содержит в себе информ
 ```
 
 9. Создать баннер кейсу:
-   * Доступ: Admin, Owner, Bot
+   * Доступ: Owner
    * Метод: POST
    * Запрос: `https://r.api.incase.com/api/loot-box/banner`
 
@@ -1351,7 +1351,7 @@ _Данный подзаголовок содержит в себе информ
 ```
 
 10. Обновить баннер кейса:
-    * Доступ: Admin, Owner, Bot
+    * Доступ: Owner
     * Метод: PUT
     * Запрос: `https://r.api.incase.com/api/loot-box/banner`
 
@@ -1407,7 +1407,7 @@ _Данный подзаголовок содержит в себе информ
 ```
 
 11. Удалить кейс:
-    * Доступ: Admin, Owner, Bot
+    * Доступ: Owner
     * Метод: DELETE
     * Запрос: `https://r.api.incase.com/api/loot-box/{id}`
 
@@ -1437,7 +1437,7 @@ _Данный подзаголовок содержит в себе информ
 ```
 
 12. Удалить баннер кейса:
-    * Доступ: Admin, Owner, Bot
+    * Доступ: Owner
     * Метод: DELETE
     * Запрос: `https://r.api.incase.com/api/loot-box/banner/{id}`
 
@@ -1465,7 +1465,7 @@ _Данный подзаголовок содержит в себе информ
 ```
 
 13. Удалить содержимое кейса:
-    * Доступ: Admin, Owner, Bot
+    * Доступ: Owner
     * Метод: DELETE
     * Запрос: `https://r.api.incase.com/api/loot-box/inventory/{id}`
 
@@ -1494,7 +1494,7 @@ _Данный подзаголовок содержит в себе информ
 ### Информация о промокодах
 
 1. Получить все промокоды:
-   * Доступ: Admin, Owner, Bot
+   * Доступ: Admin, Owner
    * Метод: GET
    * Запрос: `https://r.api.incase.com/api/promocode`
 
@@ -1603,7 +1603,7 @@ _Данный подзаголовок содержит в себе информ
 ```
 
 5. Создать промокод:
-   * Доступ: Admin, Owner, Bot
+   * Доступ: Owner
    * Метод: POST
    * Запрос: `https://r.api.incase.com/api/promocode`
 
@@ -1651,7 +1651,7 @@ _Данный подзаголовок содержит в себе информ
 ```
 
 6. Обновить промокод:
-   * Доступ: Admin, Owner, Bot
+   * Доступ: Owner
    * Метод: PUT
    * Запрос: `https://r.api.incase.com/api/promocode`
 
@@ -1708,7 +1708,7 @@ _Данный подзаголовок содержит в себе информ
 
 
 7. Удалить промокод:
-   * Доступ: Admin, Owner, Bot
+   * Доступ: Admin, Owner
    * Метод: DELETE
    * Запрос: `https://r.api.incase.com/api/promocode`
 
@@ -2976,7 +2976,7 @@ _Данный подзаголовок содержит в себе информ
 ```
 
 5. Получить все обращение в техническую поддержку:
-   * Доступ: Support, Owner, Bot
+   * Доступ: Admin, Owner, Bot
    * Метод: GET
    * Запрос: `https://r.api.incase.com/api/support-topic/support`
 
@@ -3022,7 +3022,7 @@ _Данный подзаголовок содержит в себе информ
 ```
 
 6. Получить определенный ответ на обращение в техническую поддержку:
-   * Доступ: Support, Owner, Bot
+   * Доступ: Admin, Owner, Bot
    * Метод: GET
    * Запрос: `https://r.api.incase.com/api/support-topic/support/answer/{id}`
 
@@ -3061,7 +3061,7 @@ _Данный подзаголовок содержит в себе информ
 ```
 
 7. Получить все ответы на обращение в техническую поддержку:
-   * Доступ: Support, Owner, Bot
+   * Доступ: Admin, Owner, Bot
    * Метод: GET
    * Запрос: `https://r.api.incase.com/api/support-topic/{id}/support/answers`
 
@@ -3094,7 +3094,7 @@ _Данный подзаголовок содержит в себе информ
 ```
 
 8. Получить определенное обращение в техническую поддержку:
-   * Доступ: Support, Owner, Bot
+   * Доступ: Admin, Owner, Bot
    * Метод: GET
    * Запрос: `https://r.api.incase.com/api/support-topic/{id}/support`
 
@@ -3170,7 +3170,7 @@ _Данный подзаголовок содержит в себе информ
 ```
 
 10. Ответ на вопрос в технической поддержке:
-   * Доступ: Support, Owner, Bot, User
+   * Доступ: Admin, Owner
    * Метод: POST
    * Запрос: `https://r.api.incase.com/api/support-topic/answer`
 
@@ -3215,8 +3215,8 @@ _Данный подзаголовок содержит в себе информ
 }
 ```
 
-11. Изменение ответа на вопрос в технической поддержке со стороны администрации:
-   * Доступ: Support, Owner, Bot, User
+11. Изменение обсуждения:
+   * Доступ: User, Admin, Owner
    * Метод: PUT
    * Запрос: `https://r.api.incase.com/api/support-topic`
 
@@ -3254,8 +3254,8 @@ _Данный подзаголовок содержит в себе информ
 }
 ```
 
-12. Изменение ответа на вопрос в технической поддержке со стороны пользователя:
-   * Доступ: User
+12. Изменение ответа:
+   * Доступ: User, Admin, Owner
    * Метод: PUT
    * Запрос: `https://r.api.incase.com/api/support-topic/answer`
 
@@ -3300,7 +3300,7 @@ _Данный подзаголовок содержит в себе информ
 }
 ```
 
-13. Удаление ответа на вопрос в технической поддержке со стороны пользователя:
+13. Удаление сообщения пользователем:
    * Доступ: User
    * Метод: DELETE
    * Запрос: `https://r.api.incase.com/api/support-topic/answer/{id}`
@@ -3321,8 +3321,8 @@ _Данный подзаголовок содержит в себе информ
 }
 ```
 
-14. Удаление ответа на вопрос в технической поддержке со стороны администратора:
-   * Доступ: Support, Owner, Bot
+14. Удаление сообщения тех поддержкой:
+   * Доступ: Admin, Owner
    * Метод: DELETE
    * Запрос: `https://r.api.incase.com/api/support-topic/support/answer/{id}`
 
@@ -3367,6 +3367,52 @@ _Данный подзаголовок содержит в себе информ
 {
   "success": false,
   "data": "SupportTopicAnswer is not found. "
+}
+```
+
+16. Отправка сообщения технической поддержке на вопрос:
+    * Доступ: User
+    * Метод: POST
+    * Запрос: `https://r.api.incase.com/api/support-topic/answer`
+
+![](https://img.shields.io/static/v1?label=&message=Request_Body:&color=blue)
+```JSON
+{
+  "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "content": "string",
+  "date": "2023-04-09T23:38:56.236Z",
+  "plaintiffId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "topicId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+```JSON
+{
+  "success": true,
+  "data": {
+    "content": "ответочка от админочка",
+    "date": "2023-04-09T23:24:25.874Z",
+    "plaintiff": null,
+    "images": null,
+    "id": "1564eebe-b240-4902-b963-535c235dc10d"
+  }
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "SupportTopic is not found. "
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_409:&color=orange)
+```JSON
+{
+  "success": false,
+  "data": "описание ошибки"
 }
 ```
 
