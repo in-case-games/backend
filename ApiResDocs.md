@@ -592,6 +592,46 @@ _Данный подзаголовок содержит в себе информ
 }
 ```
 
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "Game is not found. "
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "GameItem is not found. "
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "GameItemType is not found. "
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "GameItemRarity is not found. "
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "GameItemQuality is not found. "
+}
+```
+
 7. Обновление предмета:
    * Доступ: Admin, Owner, Bot
    * Метод: PUT 
@@ -634,6 +674,46 @@ _Данный подзаголовок содержит в себе информ
 {
   "success": false,
   "data": "GameItem is not found. "
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "Game is not found. "
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "GameItem is not found. "
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "GameItemType is not found. "
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "GameItemRarity is not found. "
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "GameItemQuality is not found. "
 }
 ```
 
@@ -870,6 +950,45 @@ _Данный подзаголовок содержит в себе информ
 {
   "success": false,
   "data": "GroupLootBox is not found. "
+}
+```
+
+7. Получить все группы по id игры:
+   * Доступ: Allow Anonymous
+   * Метод: GET
+   * Запрос: `https://r.api.incase.com/api/loot-box-group/game/{id}`
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+```JSON
+{
+  "success": true,
+  "data": [
+    {
+      "group": {
+        "name": "string",
+        "id": "1a97a421-16ed-4b96-a4b9-8ebfda7ae79c"
+      },
+      "box": {
+        "name": "string",
+        "cost": 0,
+        "balance": 0,
+        "virtualBalance": 0,
+        "imageUri": "string",
+        "isLocked": false,
+        "inventories": null,
+        "id": "38bd74d4-6b26-4725-84a7-b86b5c6703ad"
+      },
+      "id": "6966ff94-26af-429f-b4d3-afbdfd679481"
+    }
+  ]
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "Game is not found. "
 }
 ```
 
