@@ -726,7 +726,16 @@ _Данный подзаголовок содержит в себе информ
 ```JSON
 {
   "success": true,
-  "data": "GameItem is succesfully removed"
+  "data": {
+    "name": "НОЖ",
+    "cost": 150,
+    "imageUri": "string",
+    "idForPlatform": "string",
+    "quality": null,
+    "type": null,
+    "rarity": null,
+    "id": "becb3051-91aa-4e52-b3f4-f26001afd8ed"
+  }
 }
 ```
 
@@ -854,27 +863,27 @@ _Данный подзаголовок содержит в себе информ
 }
 ```
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_409:&color=orange)
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
 ```JSON
 {
   "success": false,
-  "data": "Конфликт инструкции INSERT с ограничением FOREIGN KEY \"fk_loot_box_group_loot_box_box_id\". Конфликт произошел в базе данных \"InCase.Dev\", таблица \"dbo.LootBox\", column 'id'.\r\nВыполнение данной инструкции было прервано."
+  "data": "Game is not found. "
 }
 ```
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_409:&color=orange)
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
 ```JSON
 {
   "success": false,
-  "data": "Конфликт инструкции INSERT с ограничением FOREIGN KEY \"fk_loot_box_group_group_loot_box_group_id\". Конфликт произошел в базе данных \"InCase.Dev\", таблица \"dbo.GroupLootBox\", column 'id'.\r\nВыполнение данной инструкции было прервано."
+  "data": "GroupLootBox is not found. "
 }
 ```
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_409:&color=orange)
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
 ```JSON
 {
   "success": false,
-  "data": "Конфликт инструкции INSERT с ограничением FOREIGN KEY \"fk_loot_box_group_game_game_id\". Конфликт произошел в базе данных \"InCase.Dev\", таблица \"dbo.Game\", column 'id'.\r\nВыполнение данной инструкции было прервано."
+  "data": "LootBox is not found. "
 }
 ```
 
@@ -906,7 +915,7 @@ _Данный подзаголовок содержит в себе информ
 ```JSON
 {
   "success": false,
-  "data": "Не удается вставить повторяющуюся строку ключа в объект \"dbo.GroupLootBox\" с уникальным индексом \"ix_group_loot_box_name\". Повторяющееся значение ключа: (string).\r\nВыполнение данной инструкции было прервано."
+  "data": "The group name is already in use"
 }
 ```
 
@@ -916,11 +925,15 @@ _Данный подзаголовок содержит в себе информ
    * Метод: DELETE
    * Запрос: `https://r.api.incase.com/api/loot-box-group/{id}`
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=orange)
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
 ```JSON
 {
   "success": true,
-  "data": "LootBoxGroup"
+  "data": {
+    "group": null,
+    "box": null,
+    "id": "bf73c90b-8df5-4940-8cb4-fa23da9536f1"
+  }
 }
 ```
 
@@ -937,11 +950,14 @@ _Данный подзаголовок содержит в себе информ
    * Метод: DELETE
    * Запрос: `https://r.api.incase.com/api/loot-box-group/group/{id}`
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=orange)
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
 ```JSON
 {
   "success": true,
-  "data": "GroupLootBox"
+  "data": {
+    "name": "string",
+    "id": "1a97a421-16ed-4b96-a4b9-8ebfda7ae79c"
+  }
 }
 ```
 
@@ -1189,11 +1205,11 @@ _Данный подзаголовок содержит в себе информ
 }
 ```
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_409:&color=orange)
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
 ```JSON
 {
   "success": false,
-  "data": "Конфликт инструкции INSERT с ограничением FOREIGN KEY \"fk_loot_box_game_game_id\". Конфликт произошел в базе данных \"InCase.Dev\", таблица \"dbo.Game\", column 'id'.\r\nВыполнение данной инструкции было прервано."
+  "data": "Game is not found. "
 }
 ```
 
@@ -1233,11 +1249,11 @@ _Данный подзаголовок содержит в себе информ
 }
 ```
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_409:&color=orange)
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
 ```JSON
 {
   "success": false,
-  "data": "Конфликт инструкции UPDATE с ограничением FOREIGN KEY \"fk_loot_box_game_game_id\". Конфликт произошел в базе данных \"InCase.Dev\", таблица \"dbo.Game\", column 'id'."
+  "data": "Game is not found. "
 }
 ```
 
@@ -1270,19 +1286,19 @@ _Данный подзаголовок содержит в себе информ
 }
 ```
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_409:&color=orange)
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
 ```JSON
 {
   "success": false,
-  "data": "Конфликт инструкции INSERT с ограничением FOREIGN KEY \"fk_loot_box_inventory_game_item_item_id\". Конфликт произошел в базе данных \"InCase.Dev\", таблица \"dbo.GameItem\", column 'id'.\r\nВыполнение данной инструкции было прервано."
+  "data": "GameItem is not found. "
 }
 ```
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_409:&color=orange)
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
 ```JSON
 {
   "success": false,
-  "data": "Конфликт инструкции INSERT с ограничением FOREIGN KEY \"fk_loot_box_inventory_loot_box_box_id\". Конфликт произошел в базе данных \"InCase.Dev\", таблица \"dbo.LootBox\", column 'id'.\r\nВыполнение данной инструкции было прервано."
+  "data": "LootBox is not found. "
 }
 ```
 
@@ -1322,15 +1338,15 @@ _Данный подзаголовок содержит в себе информ
 ```JSON
 {
   "success": false,
-  "data": "Конфликт инструкции INSERT с ограничением FOREIGN KEY \"fk_loot_box_banner_loot_boxes_box_id\". Конфликт произошел в базе данных \"InCase.Dev\", таблица \"dbo.LootBox\", column 'id'.\r\nВыполнение данной инструкции было прервано."
+  "data": "The banner is already used by this loot box"
 }
 ```
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_409:&color=orange)
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
 ```JSON
 {
   "success": false,
-  "data": "Не удается вставить повторяющуюся строку ключа в объект \"dbo.LootBoxBanner\" с уникальным индексом \"ix_loot_box_banner_box_id\". Повторяющееся значение ключа: (3fa85f64-5717-4562-b3fc-2c963f66afa6).\r\nВыполнение данной инструкции было прервано."
+  "data": "LootBox is not found. "
 }
 ```
 
@@ -1370,7 +1386,15 @@ _Данный подзаголовок содержит в себе информ
 ```JSON
 {
   "success": false,
-  "data": "Конфликт инструкции UPDATE с ограничением FOREIGN KEY \"fk_loot_box_banner_loot_boxes_box_id\". Конфликт произошел в базе данных \"InCase.Dev\", таблица \"dbo.LootBox\", column 'id'."
+  "data": "The banner is already used by this loot box"
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "LootBox is not found. "
 }
 ```
 
@@ -1614,15 +1638,15 @@ _Данный подзаголовок содержит в себе информ
 ```JSON
 {
   "success": false,
-  "data": "Не удается вставить повторяющуюся строку ключа в объект \"dbo.Promocode\" с уникальным индексом \"ix_promocode_name\". Повторяющееся значение ключа: (ЛУЧШИЙ-ПРОМОКОД).\r\nВыполнение данной инструкции было прервано."
+  "data": "The promocode name is already in use "
 }
 ```
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_409:&color=orange)
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
 ```JSON
 {
   "success": false,
-  "data": "Не удается вставить повторяющуюся строку ключа в объект \"dbo.Promocode\" с уникальным индексом \"ix_promocode_name\". Повторяющееся значение ключа: (string).\r\nВыполнение данной инструкции было прервано."
+  "data": "PromocodeType is not found. "
 }
 ```
 
@@ -1662,7 +1686,15 @@ _Данный подзаголовок содержит в себе информ
 ```JSON
 {
   "success": false,
-  "data": "Конфликт инструкции UPDATE с ограничением FOREIGN KEY \"fk_promocode_promocode_types_type_id\". Конфликт произошел в базе данных \"InCase.Dev\", таблица \"dbo.PromocodeType\", column 'id'."
+  "data": "The promocode name is already in use "
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "PromocodeType is not found. "
 }
 ```
 
@@ -1806,19 +1838,19 @@ _Данный подзаголовок содержит в себе информ
 }
 ```
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_409:&color=orange)
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
 ```JSON
 {
   "success": false,
-  "data": "Конфликт инструкции UPDATE с ограничением FOREIGN KEY \"fk_user_additional_info_user_roles_role_id\". Конфликт произошел в базе данных \"InCase.Dev\", таблица \"dbo.UserRole\", column 'id'."
+  "data": "User is not found. "
 }
 ```
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_409:&color=orange)
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
 ```JSON
 {
   "success": false,
-  "data": "Конфликт инструкции UPDATE с ограничением FOREIGN KEY \"fk_user_additional_info_users_user_id\". Конфликт произошел в базе данных \"InCase.Dev\", таблица \"dbo.User\", column 'id'."
+  "data": "UserRole is not found. "
 }
 ```
 
@@ -2221,11 +2253,19 @@ _Данный подзаголовок содержит в себе информ
 }
 ```
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_409:&color=orange)
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
 ```JSON
 {
   "success": false,
-  "data": "Конфликт инструкции INSERT с ограничением FOREIGN KEY \"fk_user_restriction_restriction_type_type_id\". Конфликт произошел в базе данных \"InCase.Dev\", таблица \"dbo.RestrictionType\", column 'id'.\r\nВыполнение данной инструкции было прервано."
+  "data": "User is not found. "
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "RestrictionType is not found. "
 }
 ```
 
@@ -2255,11 +2295,19 @@ _Данный подзаголовок содержит в себе информ
 }
 ```
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_409:&color=orange)
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
 ```JSON
 {
   "success": false,
-  "data": "Конфликт инструкции UPDATE с ограничением FOREIGN KEY \"fk_user_restriction_restriction_type_type_id\". Конфликт произошел в базе данных \"InCase.Dev\", таблица \"dbo.RestrictionType\", column 'id'."
+  "data": "User is not found. "
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "RestrictionType is not found. "
 }
 ```
 
@@ -2416,9 +2464,12 @@ _Данный подзаголовок содержит в себе информ
 }
 ```
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=orange)
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
 ```JSON
-User
+{
+  "success": false,
+  "data": "User is not found. "
+}
 ```
 
 5. Получить все свои отзывы:
@@ -2493,10 +2544,12 @@ User
 }
 ```
 
-
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=orange)
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
 ```JSON
-UserReview
+{
+  "success": false,
+  "data": "UserReview is not found. "
+}
 ```
 
 8. Получить картинку отзыва по id:
