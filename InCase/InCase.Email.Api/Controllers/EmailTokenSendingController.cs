@@ -50,7 +50,10 @@ namespace InCase.Email.Api.Controllers
             MapDataMailLink(ref data, in user);
 
             if (user.AdditionalInfo!.IsConfirmed is false)
-                return await _emailService.SendSignUp(data);
+            {
+                await _emailService.SendSignUp(data);
+                return ResponseUtil.SendEmail();
+            }
 
             return await _emailService.SendSignIn(data);
         }
