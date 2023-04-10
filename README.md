@@ -2,6 +2,8 @@
 # _InCase_ - Открытие кейсов CS:GO
 _Документация к базе данных:_<br/>
 [dbdocs:)](https://github.com/InCase-buy-and-opening-cases/InCase_backend/blob/InCase.dev/DbDocs.md)
+_Документация к ресурсному апи:_<br/>
+[dbdocs:)](https://github.com/InCase-buy-and-opening-cases/InCase_backend/blob/InCase.dev/ApiResDocs.md)
 <br/>_Первый коммерческий проект, представляющий собой кроссплатформенное приложение (Web, PC, Android/IoS)<br/>_
 ## _Репозиторий содержит в себе:_
 - CaseApplication.Auth - Private API для работы с JWT токенами
