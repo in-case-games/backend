@@ -50,7 +50,7 @@ namespace InCase.Authentication.Api.Controllers
             if (user is null) 
                 return ResponseUtil.NotFound("User");
             if (!ValidationService.IsValidUserPassword(in user, userDto.Password!))
-                return Forbid("Invalid data");
+                return ResponseUtil.Conflict("Invalid data");
 
             return await _emailService.SendSignIn(new DataMailLink()
             {

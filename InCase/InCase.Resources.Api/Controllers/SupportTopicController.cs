@@ -173,7 +173,7 @@ namespace InCase.Resources.Api.Controllers
                 .ToListAsync();
 
             if (supportTopics.Count == 3)
-                return Forbid("Access denied");
+                return ResponseUtil.Conflict("Access denied");
 
             try
             {
@@ -248,6 +248,9 @@ namespace InCase.Resources.Api.Controllers
 
             if (answer is null)
                 return ResponseUtil.NotFound(nameof(SupportTopicAnswer));
+
+            if (!answerDto.PlaintiffId.Equals(UserId))
+                return ResponseUtil.Conflict("Permission denied");
 
             answerDto.PlaintiffId = UserId;
 
