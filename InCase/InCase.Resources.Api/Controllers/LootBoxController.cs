@@ -101,56 +101,72 @@ namespace InCase.Resources.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(LootBoxDto lootBox)
         {
-            return await EndpointUtil.Create(lootBox.Convert(), _contextFactory);
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            return await EndpointUtil.Create(lootBox.Convert(), context);
         }
 
         [AuthorizeRoles(Roles.AdminOwnerBot)]
         [HttpPost("inventory")]
         public async Task<IActionResult> CreateInventory(LootBoxInventoryDto inventory)
         {
-            return await EndpointUtil.Create(inventory.Convert(), _contextFactory);
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            return await EndpointUtil.Create(inventory.Convert(), context);
         }
 
         [AuthorizeRoles(Roles.AdminOwnerBot)]
         [HttpPost("banner")]
         public async Task<IActionResult> CreateBanner(LootBoxBannerDto banner)
         {
-            return await EndpointUtil.Create(banner.Convert(), _contextFactory);
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            return await EndpointUtil.Create(banner.Convert(), context);
         }
 
         [AuthorizeRoles(Roles.AdminOwnerBot)]
         [HttpPut]
         public async Task<IActionResult> Update(LootBoxDto lootBox)
         {
-            return await EndpointUtil.Update(lootBox.Convert(false), _contextFactory);
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            return await EndpointUtil.Update(lootBox.Convert(false), context);
         }
 
         [AuthorizeRoles(Roles.AdminOwnerBot)]
         [HttpPut("banner")]
         public async Task<IActionResult> UpdateBanner(LootBoxBannerDto banner)
         {
-            return await EndpointUtil.Update(banner.Convert(false), _contextFactory);
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            return await EndpointUtil.Update(banner.Convert(false), context);
         }
 
         [AuthorizeRoles(Roles.AdminOwnerBot)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            return await EndpointUtil.Delete<LootBox>(id, _contextFactory);
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            return await EndpointUtil.Delete<LootBox>(id, context);
         }
 
         [AuthorizeRoles(Roles.AdminOwnerBot)]
         [HttpDelete("banner/{id}")]
         public async Task<IActionResult> DeleteBanner(Guid id)
         {
-            return await EndpointUtil.Delete<LootBoxBanner>(id, _contextFactory);
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            return await EndpointUtil.Delete<LootBoxBanner>(id, context);
         }
 
         [AuthorizeRoles(Roles.AdminOwnerBot)]
         [HttpDelete("inventory/{id}")]
         public async Task<IActionResult> DeleteItemFromInventory(Guid id)
         {
-            return await EndpointUtil.Delete<LootBoxInventory>(id, _contextFactory);
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            return await EndpointUtil.Delete<LootBoxInventory>(id, context);
         }
     }
 }

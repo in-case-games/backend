@@ -53,22 +53,7 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _context.CreateDbContextAsync();
 
-            UserAdditionalInfo? oldInfo = await context.UserAdditionalInfos
-                .FirstOrDefaultAsync(f => f.Id == infoDto.Id);
-
-            if (oldInfo == null)
-                return ResponseUtil.NotFound(nameof(UserAdditionalInfo));
-
-            try
-            {
-                context.Entry(oldInfo).CurrentValues.SetValues(infoDto.Convert(false));
-                await context.SaveChangesAsync();
-            }
-            catch(Exception ex) {
-                return ResponseUtil.Error(ex);
-            }
-
-            return ResponseUtil.Ok(infoDto.Convert(false));
+            return await EndpointUtil.Update(infoDto.Convert(false), context);
         }
     }
 }

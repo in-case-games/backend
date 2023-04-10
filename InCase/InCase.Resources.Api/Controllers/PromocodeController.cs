@@ -76,21 +76,27 @@ namespace InCase.Resources.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(PromocodeDto promocode)
         {
-            return await EndpointUtil.Create(promocode.Convert(), _contextFactory);
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            return await EndpointUtil.Create(promocode.Convert(), context);
         }
 
         [AuthorizeRoles(Roles.AdminOwnerBot)]
         [HttpPut]
         public async Task<IActionResult> Update(PromocodeDto promocode)
         {
-            return await EndpointUtil.Update(promocode.Convert(false), _contextFactory);
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            return await EndpointUtil.Update(promocode.Convert(false), context);
         }
 
         [AuthorizeRoles(Roles.AdminOwnerBot)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            return await EndpointUtil.Delete<Promocode>(id, _contextFactory);
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            return await EndpointUtil.Delete<Promocode>(id, context);
         }
     }
 }

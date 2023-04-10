@@ -175,17 +175,7 @@ namespace InCase.Resources.Api.Controllers
             if (supportTopics.Count == 3)
                 return ResponseUtil.Conflict("Access denied");
 
-            try
-            {
-                await context.SupportTopics.AddAsync(topicDto.Convert());
-                await context.SaveChangesAsync();
-            }
-            catch (Exception ex)
-            {
-                return ResponseUtil.Error(ex);
-            }
-
-            return ResponseUtil.Ok(topicDto.Convert());
+            return await EndpointUtil.Create(topicDto.Convert(), context);
         }
 
         [AuthorizeRoles(Roles.AllExceptAdmin)]
@@ -202,17 +192,7 @@ namespace InCase.Resources.Api.Controllers
 
             answerDto.PlaintiffId = UserId;
 
-            try
-            {
-                await context.SupportTopicAnswers.AddAsync(answerDto.Convert());
-                await context.SaveChangesAsync();
-            }
-            catch (Exception ex)
-            {
-                return ResponseUtil.Error(ex);
-            }
-
-            return ResponseUtil.Ok(answerDto.Convert());
+            return await EndpointUtil.Create(answerDto.Convert(), context);
         }
 
         [AuthorizeRoles(Roles.AllExceptAdmin)]
@@ -223,17 +203,7 @@ namespace InCase.Resources.Api.Controllers
 
             topicDto.UserId = UserId;
 
-            SupportTopic? topic = await context.SupportTopics
-                .AsNoTracking()
-                .FirstOrDefaultAsync(f => f.Id == topicDto.Id);
-
-            if (topic is null)
-                return ResponseUtil.NotFound(nameof(SupportTopicAnswer));
-
-            context.Entry(topic).CurrentValues.SetValues(topicDto.Convert(false));
-            await context.SaveChangesAsync();
-
-            return ResponseUtil.Ok(topicDto.Convert(false));
+            return await EndpointUtil.Update(topicDto.Convert(false), context);
         }
 
         [AuthorizeRoles(Roles.User)]
@@ -254,17 +224,16 @@ namespace InCase.Resources.Api.Controllers
 
             answerDto.PlaintiffId = UserId;
 
-            context.Entry(answer).CurrentValues.SetValues(answerDto.Convert(false));
-            await context.SaveChangesAsync();
-
-            return ResponseUtil.Ok(answerDto.Convert(false));
+            return await EndpointUtil.Update(answer, answerDto.Convert(false), context);
         }
 
         [AuthorizeRoles(Roles.Owner, Roles.Bot)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            return await EndpointUtil.Delete<SupportTopic>(id, _contextFactory);
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            return await EndpointUtil.Delete<SupportTopic>(id, context);
         }
 
         [AuthorizeRoles(Roles.User)]
@@ -280,10 +249,7 @@ namespace InCase.Resources.Api.Controllers
             if (answer is null)
                 return ResponseUtil.NotFound(nameof(SupportTopicAnswer));
 
-            context.SupportTopicAnswers.Remove(answer);
-            await context.SaveChangesAsync();
-
-            return ResponseUtil.Ok(nameof(SupportTopicAnswer));
+            return await EndpointUtil.Delete(answer, context);
         }
 
         [AuthorizeRoles(Roles.SupportOwnerBot)]
@@ -292,17 +258,7 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            SupportTopicAnswer? answer = await context.SupportTopicAnswers
-                .AsNoTracking()
-                .FirstOrDefaultAsync(f => f.Id == id); 
-
-            if (answer is null)
-                return ResponseUtil.NotFound(nameof(SupportTopicAnswer));
-
-            context.SupportTopicAnswers.Remove(answer);
-            await context.SaveChangesAsync();
-
-            return ResponseUtil.Ok(nameof(SupportTopicAnswer));
+            return await EndpointUtil.Delete<SupportTopicAnswer>(id, context);
         }
     }
 }

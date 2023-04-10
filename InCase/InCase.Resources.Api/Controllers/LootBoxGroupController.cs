@@ -54,6 +54,25 @@ namespace InCase.Resources.Api.Controllers
         }
 
         [AllowAnonymous]
+        [HttpGet("game/{id}")]
+        public async Task<IActionResult> GetByGameId(Guid id)
+        {
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            if (!await context.Games.AnyAsync(a => a.Id == id))
+                return ResponseUtil.NotFound(nameof(Game));
+
+            List<LootBoxGroup>? groups = await context.LootBoxGroups
+                .Include(i => i.Group)
+                .Include(i => i.Box)
+                .AsNoTracking()
+                .Where(w => w.GameId == id)
+                .ToListAsync();
+
+            return ResponseUtil.Ok(groups);
+        }
+
+        [AllowAnonymous]
         [HttpGet("groups")]
         public async Task<IActionResult> GetGroups()
         {
@@ -72,17 +91,7 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            try
-            {
-                await context.LootBoxGroups.AddAsync(groupDto.Convert());
-                await context.SaveChangesAsync();
-
-                return ResponseUtil.Ok(groupDto.Convert());
-            }
-            catch (Exception ex)
-            {
-                return ResponseUtil.Error(ex);
-            }
+            return await EndpointUtil.Create(groupDto.Convert(), context);
         }
 
         [AuthorizeRoles(Roles.AdminOwnerBot)]
@@ -93,17 +102,7 @@ namespace InCase.Resources.Api.Controllers
 
             group.Id = Guid.NewGuid();
 
-            try
-            {
-                await context.GroupLootBoxes.AddAsync(group);
-                await context.SaveChangesAsync();
-
-                return ResponseUtil.Ok(group);
-            }
-            catch (Exception ex)
-            {
-                return ResponseUtil.Error(ex);
-            }
+            return await EndpointUtil.Create(group, context);
         }
 
         [AuthorizeRoles(Roles.AdminOwnerBot)]
@@ -112,16 +111,7 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            LootBoxGroup? group = await context.LootBoxGroups
-                .FirstOrDefaultAsync(f => f.Id == id);
-
-            if (group is null)
-                return ResponseUtil.NotFound(nameof(LootBoxGroup));
-
-            context.LootBoxGroups.Remove(group);
-            await context.SaveChangesAsync();
-
-            return ResponseUtil.Ok(nameof(LootBoxGroup));
+            return await EndpointUtil.Delete<LootBoxGroup>(id, context);
         }
 
         [AuthorizeRoles(Roles.AdminOwnerBot)]
@@ -130,17 +120,7 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            GroupLootBox? group = await context.GroupLootBoxes
-                .AsNoTracking()
-                .FirstOrDefaultAsync(f => f.Id == id);
-
-            if (group is null)
-                return ResponseUtil.NotFound(nameof(GroupLootBox));
-
-            context.GroupLootBoxes.Remove(group);
-            await context.SaveChangesAsync();
-
-            return ResponseUtil.Ok(nameof(GroupLootBox));
+            return await EndpointUtil.Delete<GroupLootBox>(id, context);
         }
     }
 }

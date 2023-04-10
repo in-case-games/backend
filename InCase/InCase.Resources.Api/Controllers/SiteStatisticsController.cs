@@ -55,22 +55,10 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            if (await context.SiteStatisticsAdmins.AnyAsync(a => a.Id == statistics.Id))
-            {
-                try
-                {
-                    context.SiteStatisticsAdmins.Update(statistics);
-                    await context.SaveChangesAsync();
+            if (!await context.SiteStatisticsAdmins.AnyAsync(a => a.Id == statistics.Id))
+                return ResponseUtil.NotFound(nameof(SiteStatisticsAdmin));
 
-                    return ResponseUtil.Ok(statistics);
-                }
-                catch (Exception ex)
-                {
-                    return ResponseUtil.Error(ex);
-                }
-            }
-            
-            return ResponseUtil.NotFound(nameof(SiteStatisticsAdmin));
+            return await EndpointUtil.Update(statistics, context);
         }
     }
 }

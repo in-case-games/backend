@@ -166,17 +166,7 @@ namespace InCase.Resources.Api.Controllers
             
             restrictionDto.OwnerId = UserId;
 
-            try
-            {
-                await context.UserRestrictions.AddAsync(restrictionDto.Convert());
-                await context.SaveChangesAsync();
-            }
-            catch(Exception ex)
-            {
-                return ResponseUtil.Error(ex);
-            }
-
-            return ResponseUtil.Ok(restrictionDto.Convert());
+            return await EndpointUtil.Create(restrictionDto.Convert(), context);
         }
 
         [AuthorizeRoles(Roles.AdminOwnerBot)]
@@ -217,17 +207,7 @@ namespace InCase.Resources.Api.Controllers
 
             restrictionDto.OwnerId = UserId;
 
-            try
-            {
-                context.Entry(restriction).CurrentValues.SetValues(restrictionDto.Convert(false));
-                await context.SaveChangesAsync();
-            }
-            catch (Exception ex)
-            {
-                return ResponseUtil.Error(ex);
-            }
-
-            return ResponseUtil.Ok(restrictionDto.Convert(false));
+            return await EndpointUtil.Update(restriction, restrictionDto.Convert(false), context);
         }
 
         [AuthorizeRoles(Roles.AdminOwnerBot)]
@@ -244,10 +224,7 @@ namespace InCase.Resources.Api.Controllers
             if (restriction.UserId == UserId)
                 return Forbid("Access denied");
 
-            context.UserRestrictions.Remove(restriction);
-            await context.SaveChangesAsync();
-
-            return ResponseUtil.Ok(restriction);
+            return await EndpointUtil.Delete(restriction, context);
         }
     }
 }
