@@ -33,6 +33,21 @@ namespace InCase.Resources.Api.Controllers
             List<UserReview> reviews = await context.UserReviews
                 .Include(i => i.Images)
                 .AsNoTracking()
+                .Where(w => w.IsApproved == true)
+                .ToListAsync();
+
+            return ResponseUtil.Ok(reviews);
+        }
+
+        [AuthorizeRoles(Roles.AdminOwnerBot)]
+        [HttpGet("admin")]
+        public async Task<IActionResult> GetByAdmin()
+        {
+            await using ApplicationDbContext context = await _context.CreateDbContextAsync();
+
+            List<UserReview> reviews = await context.UserReviews
+                .Include(i => i.Images)
+                .AsNoTracking()
                 .ToListAsync();
 
             return ResponseUtil.Ok(reviews);
@@ -59,6 +74,9 @@ namespace InCase.Resources.Api.Controllers
         public async Task<IActionResult> GetByUserId(Guid id)
         {
             await using ApplicationDbContext context = await _context.CreateDbContextAsync();
+
+            if (!await context.Users.AnyAsync(a => a.Id == id))
+                return NotFound(nameof(User));
 
             List<UserReview> reviews = await context.UserReviews
                 .Include(i => i.Images)
@@ -88,18 +106,33 @@ namespace InCase.Resources.Api.Controllers
         [HttpGet("images")]
         public async Task<IActionResult> GetImages()
         {
-            return await EndpointUtil.GetAll<ReviewImage>(_context);
+            await using ApplicationDbContext context = await _context.CreateDbContextAsync();
+
+            List<UserReview> reviews = await context.UserReviews
+                .Include(i => i.Images)
+                .AsNoTracking()
+                .Where(w => w.IsApproved == true)
+                .ToListAsync();
+
+            List<ReviewImage> images = new();
+
+            reviews.ForEach(f => images.AddRange(f.Images!));
+
+            return ResponseUtil.Ok(images);
         }
 
         [AllowAnonymous]
-        [HttpGet("{reviewId}/images")]
-        public async Task<IActionResult> GetImages(Guid reviewId)
+        [HttpGet("{id}/images")]
+        public async Task<IActionResult> GetImages(Guid id)
         {
             await using ApplicationDbContext context = await _context.CreateDbContextAsync();
 
+            if (!await context.UserReviews.AnyAsync(a => a.Id == id && a.IsApproved == true))
+                return NotFound(nameof(UserReview));
+
             List<ReviewImage> images = await context.ReviewImages
                 .AsNoTracking()
-                .Where(w => w.ReviewId == reviewId)
+                .Where(w => w.ReviewId == id)
                 .ToListAsync();
 
             return ResponseUtil.Ok(images);
@@ -118,8 +151,8 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _context.CreateDbContextAsync();
 
-            if (reviewDto.UserId != UserId)
-                return Forbid("Access denied");
+            reviewDto.UserId = UserId;
+            reviewDto.IsApproved = false;
 
             try
             {
@@ -168,16 +201,16 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _context.CreateDbContextAsync();
 
-            if (reviewDto.UserId != UserId)
-                return Forbid("Access denied");
-
             UserReview? review = await context.UserReviews
                 .FirstOrDefaultAsync(f => 
-                f.UserId == reviewDto.UserId && 
+                f.UserId == UserId && 
                 f.Id == reviewDto.Id);
 
             if (review == null) 
                 return ResponseUtil.NotFound(nameof(UserReview));
+
+            reviewDto.IsApproved = review.IsApproved;
+            reviewDto.UserId = UserId;
 
             try
             {
@@ -203,6 +236,8 @@ namespace InCase.Resources.Api.Controllers
 
             if (review == null)
                 return ResponseUtil.NotFound(nameof(UserReview));
+
+            reviewDto.UserId = review.UserId;
 
             try
             {
@@ -270,25 +305,26 @@ namespace InCase.Resources.Api.Controllers
         }
 
         [AuthorizeRoles(Roles.User)]
-        [HttpDelete("{id}/image/{imageId}")]
-        public async Task<IActionResult> DeleteImage(Guid id, Guid imageId)
+        [HttpDelete("image/{id}")]
+        public async Task<IActionResult> DeleteImage(Guid id)
         {
             await using ApplicationDbContext context = await _context.CreateDbContextAsync();
 
-            UserReview? review = await context.UserReviews
-                .Include(i => i.Images)
+            ReviewImage? image = await context.ReviewImages
                 .AsNoTracking()
                 .FirstOrDefaultAsync(f => f.Id == id);
+
+            if (image is null)
+                return ResponseUtil.NotFound(nameof(ReviewImage));
+
+            UserReview? review = await context.UserReviews
+                .AsNoTracking()
+                .FirstOrDefaultAsync(f => f.Id == image.ReviewId);
 
             if (review is null)
                 return ResponseUtil.NotFound(nameof(UserReview));
             if (review!.UserId != UserId)
                 return Forbid("Access denied");
-
-            ReviewImage? image = review.Images?.FirstOrDefault(x => x.Id == imageId);
-
-            if (image is null)
-                return ResponseUtil.NotFound(nameof(ReviewImage));
 
             try
             {

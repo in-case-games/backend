@@ -5,6 +5,7 @@ using InCase.Domain.Entities.Resources;
 using InCase.Infrastructure.Data;
 using InCase.Infrastructure.Services;
 using InCase.Infrastructure.Utils;
+using MailKit.Net.Smtp;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -95,18 +96,27 @@ namespace InCase.Authentication.Api.Controllers
                 DeletionDate = DateTime.UtcNow + TimeSpan.FromDays(30),
             };
 
+            try
+            {
+                await _emailService.SendSignUp(new DataMailLink()
+                {
+                    UserEmail = user.Email!,
+                    UserLogin = user.Login!,
+                    EmailToken = _jwtService.CreateEmailToken(user)
+                });
+            }
+            catch (SmtpCommandException)
+            {
+                return ResponseUtil.Conflict("MailBox is not existed!");
+            }
+
             //Create user and additional info
             await context.Users.AddAsync(user);
             await context.UserAdditionalInfos.AddAsync(info);
 
             await context.SaveChangesAsync();
 
-            return await _emailService.SendSignUp(new DataMailLink()
-            {
-                UserEmail = user.Email!,
-                UserLogin = user.Login!,
-                EmailToken = _jwtService.CreateEmailToken(user)
-            });
+            return ResponseUtil.SendEmail();
         }
 
         [AllowAnonymous]
