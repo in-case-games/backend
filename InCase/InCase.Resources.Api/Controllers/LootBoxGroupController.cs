@@ -85,7 +85,7 @@ namespace InCase.Resources.Api.Controllers
             return ResponseUtil.Ok(groups);
         }
 
-        [AuthorizeRoles(Roles.AdminOwnerBot)]
+        [AuthorizeRoles(Roles.Owner)]
         [HttpPost]
         public async Task<IActionResult> Create(LootBoxGroupDto groupDto)
         {
@@ -101,7 +101,7 @@ namespace InCase.Resources.Api.Controllers
             return await EndpointUtil.Create(groupDto.Convert(), context);
         }
 
-        [AuthorizeRoles(Roles.AdminOwnerBot)]
+        [AuthorizeRoles(Roles.Owner)]
         [HttpPost("group")]
         public async Task<IActionResult> CreateGroup(GroupLootBox group)
         {
@@ -115,7 +115,7 @@ namespace InCase.Resources.Api.Controllers
             return await EndpointUtil.Create(group, context);
         }
 
-        [AuthorizeRoles(Roles.AdminOwnerBot)]
+        [AuthorizeRoles(Roles.Owner)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
@@ -124,7 +124,7 @@ namespace InCase.Resources.Api.Controllers
             return await EndpointUtil.Delete<LootBoxGroup>(id, context);
         }
 
-        [AuthorizeRoles(Roles.AdminOwnerBot)]
+        [AuthorizeRoles(Roles.Owner)]
         [HttpDelete("group/{id}")]
         public async Task<IActionResult> DeleteGroup(Guid id)
         {

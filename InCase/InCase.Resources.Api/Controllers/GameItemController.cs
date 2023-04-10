@@ -75,7 +75,7 @@ namespace InCase.Resources.Api.Controllers
             return await EndpointUtil.GetAll<GameItemRarity>(_contextFactory);
         }
 
-        [AuthorizeRoles(Roles.AdminOwnerBot)]
+        [AuthorizeRoles(Roles.Owner)]
         [HttpPost]
         public async Task<IActionResult> Create(GameItemDto itemDto)
         {
@@ -93,7 +93,7 @@ namespace InCase.Resources.Api.Controllers
             return await EndpointUtil.Create(itemDto.Convert(), context);
         }
 
-        [AuthorizeRoles(Roles.AdminOwnerBot)]
+        [AuthorizeRoles(Roles.Owner)]
         [HttpPut]
         public async Task<IActionResult> Update(GameItemDto itemDto)
         {
@@ -111,7 +111,7 @@ namespace InCase.Resources.Api.Controllers
             return await EndpointUtil.Update(itemDto.Convert(false), context);
         }
 
-        [AuthorizeRoles(Roles.AdminOwnerBot)]
+        [AuthorizeRoles(Roles.Owner)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {

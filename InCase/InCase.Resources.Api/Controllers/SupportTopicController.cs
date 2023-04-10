@@ -98,7 +98,7 @@ namespace InCase.Resources.Api.Controllers
                 ResponseUtil.Ok(answer);
         }
 
-        [AuthorizeRoles(Roles.SupportOwnerBot)]
+        [AuthorizeRoles(Roles.AdminOwnerBot)]
         [HttpGet("support")]
         public async Task<IActionResult> GetTopicsBySupport()
         {
@@ -111,7 +111,7 @@ namespace InCase.Resources.Api.Controllers
             return ResponseUtil.Ok(supportTopics);
         }
 
-        [AuthorizeRoles(Roles.SupportOwnerBot)]
+        [AuthorizeRoles(Roles.AdminOwnerBot)]
         [HttpGet("{id}/support")]
         public async Task<IActionResult> GetTopicBySupport(Guid id)
         {
@@ -126,7 +126,7 @@ namespace InCase.Resources.Api.Controllers
                 ResponseUtil.Ok(supportTopic);
         }
 
-        [AuthorizeRoles(Roles.SupportOwnerBot)]
+        [AuthorizeRoles(Roles.AdminOwnerBot)]
         [HttpGet("support/answer/{id}")]
         public async Task<IActionResult> GetAnswerBySupport(Guid id)
         {
@@ -143,7 +143,7 @@ namespace InCase.Resources.Api.Controllers
                 ResponseUtil.Ok(answer);
         }
 
-        [AuthorizeRoles(Roles.SupportOwnerBot)]
+        [AuthorizeRoles(Roles.AdminOwnerBot)]
         [HttpGet("{id}/support/answers")]
         public async Task<IActionResult> GetAnswersBySupport(Guid id)
         {
@@ -178,9 +178,26 @@ namespace InCase.Resources.Api.Controllers
             return await EndpointUtil.Create(topicDto.Convert(), context);
         }
 
-        [AuthorizeRoles(Roles.AllExceptAdmin)]
+        [AuthorizeRoles(Roles.User)]
         [HttpPost("answer")]
         public async Task<IActionResult> CreateAnswer(SupportTopicAnswerDto answerDto)
+        {
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            SupportTopic? topic = await context.SupportTopics
+                    .FirstOrDefaultAsync(f => f.Id == answerDto.TopicId && f.UserId == UserId);
+
+            if (topic is null)
+                return ResponseUtil.NotFound(nameof(SupportTopic));
+
+            answerDto.PlaintiffId = UserId;
+
+            return await EndpointUtil.Create(answerDto.Convert(), context);
+        }
+
+        [AuthorizeRoles(Roles.Admin, Roles.Owner)]
+        [HttpPost("support/answer")]
+        public async Task<IActionResult> CreateAnswerBySupport(SupportTopicAnswerDto answerDto)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
@@ -195,18 +212,24 @@ namespace InCase.Resources.Api.Controllers
             return await EndpointUtil.Create(answerDto.Convert(), context);
         }
 
-        [AuthorizeRoles(Roles.AllExceptAdmin)]
+        [AuthorizeRoles(Roles.UserAdminOwner)]
         [HttpPut]
         public async Task<IActionResult> Update(SupportTopicDto topicDto)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            topicDto.UserId = UserId;
+            SupportTopic? topic = await context.SupportTopics
+                    .FirstOrDefaultAsync(f => f.Id == topicDto.Id && f.UserId == UserId);
 
-            return await EndpointUtil.Update(topicDto.Convert(false), context);
+            if (topic is null)
+                return ResponseUtil.NotFound(nameof(SupportTopic));
+
+            topicDto.UserId = topic.UserId;
+
+            return await EndpointUtil.Update(topic, topicDto.Convert(false), context);
         }
 
-        [AuthorizeRoles(Roles.User)]
+        [AuthorizeRoles(Roles.UserAdminOwner)]
         [HttpPut("answer")]
         public async Task<IActionResult> UpdateAnswer(SupportTopicAnswerDto answerDto)
         {
@@ -214,13 +237,11 @@ namespace InCase.Resources.Api.Controllers
 
             SupportTopicAnswer? answer = await context.SupportTopicAnswers
                 .AsNoTracking()
-                .FirstOrDefaultAsync(f => f.Id == answerDto.Id);
+                .FirstOrDefaultAsync(f => f.Id == answerDto.Id && 
+                answerDto.PlaintiffId == UserId);
 
             if (answer is null)
                 return ResponseUtil.NotFound(nameof(SupportTopicAnswer));
-
-            if (!answerDto.PlaintiffId.Equals(UserId))
-                return ResponseUtil.Conflict("Permission denied");
 
             answerDto.PlaintiffId = UserId;
 
@@ -252,7 +273,7 @@ namespace InCase.Resources.Api.Controllers
             return await EndpointUtil.Delete(answer, context);
         }
 
-        [AuthorizeRoles(Roles.SupportOwnerBot)]
+        [AuthorizeRoles(Roles.Admin, Roles.Owner)]
         [HttpDelete("support/answer/{id}")]
         public async Task<IActionResult> DeleteAnswerBySupport(Guid id)
         {

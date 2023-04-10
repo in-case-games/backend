@@ -49,7 +49,7 @@ namespace InCase.Resources.Api.Controllers
                 ResponseUtil.Ok(news);
         }
 
-        [AuthorizeRoles(Roles.AdminOwnerBot)]
+        [AuthorizeRoles(Roles.Admin, Roles.Owner)]
         [HttpPost]
         public async Task<IActionResult> Create(News news)
         {
@@ -60,7 +60,7 @@ namespace InCase.Resources.Api.Controllers
             return await EndpointUtil.Create(news, context);
         }
 
-        [AuthorizeRoles(Roles.AdminOwnerBot)]
+        [AuthorizeRoles(Roles.Admin, Roles.Owner)]
         [HttpPost("image")]
         public async Task<IActionResult> CreateImage(NewsImageDto imageDto)
         {
@@ -72,7 +72,7 @@ namespace InCase.Resources.Api.Controllers
             return await EndpointUtil.Create(imageDto.Convert(), context);
         }
 
-        [AuthorizeRoles(Roles.AdminOwnerBot)]
+        [AuthorizeRoles(Roles.Admin, Roles.Owner)]
         [HttpPut]
         public async Task<IActionResult> Update(News news)
         {
@@ -81,7 +81,7 @@ namespace InCase.Resources.Api.Controllers
             return await EndpointUtil.Update(news, context);
         }
 
-        [AuthorizeRoles(Roles.AdminOwnerBot)]
+        [AuthorizeRoles(Roles.Admin, Roles.Owner)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
@@ -90,7 +90,7 @@ namespace InCase.Resources.Api.Controllers
             return await EndpointUtil.Delete<News>(id, context);
         }
 
-        [AuthorizeRoles(Roles.AdminOwnerBot)]
+        [AuthorizeRoles(Roles.Admin, Roles.Owner)]
         [HttpDelete("image/{id}")]
         public async Task<IActionResult> DeleteImage(Guid id)
         {

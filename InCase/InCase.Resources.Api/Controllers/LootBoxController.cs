@@ -97,7 +97,7 @@ namespace InCase.Resources.Api.Controllers
                 ResponseUtil.Ok(banner);
         }
 
-        [AuthorizeRoles(Roles.AdminOwnerBot)]
+        [AuthorizeRoles(Roles.Owner)]
         [HttpPost]
         public async Task<IActionResult> Create(LootBoxDto boxDto)
         {
@@ -109,7 +109,7 @@ namespace InCase.Resources.Api.Controllers
             return await EndpointUtil.Create(boxDto.Convert(), context);
         }
 
-        [AuthorizeRoles(Roles.AdminOwnerBot)]
+        [AuthorizeRoles(Roles.Owner)]
         [HttpPost("inventory")]
         public async Task<IActionResult> CreateInventory(LootBoxInventoryDto inventoryDto)
         {
@@ -123,7 +123,7 @@ namespace InCase.Resources.Api.Controllers
             return await EndpointUtil.Create(inventoryDto.Convert(), context);
         }
 
-        [AuthorizeRoles(Roles.AdminOwnerBot)]
+        [AuthorizeRoles(Roles.Owner)]
         [HttpPost("banner")]
         public async Task<IActionResult> CreateBanner(LootBoxBannerDto bannerDto)
         {
@@ -137,7 +137,7 @@ namespace InCase.Resources.Api.Controllers
             return await EndpointUtil.Create(bannerDto.Convert(), context);
         }
 
-        [AuthorizeRoles(Roles.AdminOwnerBot)]
+        [AuthorizeRoles(Roles.Owner)]
         [HttpPut]
         public async Task<IActionResult> Update(LootBoxDto boxDto)
         {
@@ -149,7 +149,7 @@ namespace InCase.Resources.Api.Controllers
             return await EndpointUtil.Update(boxDto.Convert(false), context);
         }
 
-        [AuthorizeRoles(Roles.AdminOwnerBot)]
+        [AuthorizeRoles(Roles.Owner)]
         [HttpPut("banner")]
         public async Task<IActionResult> UpdateBanner(LootBoxBannerDto bannerDto)
         {
@@ -168,7 +168,7 @@ namespace InCase.Resources.Api.Controllers
             return await EndpointUtil.Update(banner, bannerDto.Convert(false), context);
         }
 
-        [AuthorizeRoles(Roles.AdminOwnerBot)]
+        [AuthorizeRoles(Roles.Owner)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
@@ -177,7 +177,7 @@ namespace InCase.Resources.Api.Controllers
             return await EndpointUtil.Delete<LootBox>(id, context);
         }
 
-        [AuthorizeRoles(Roles.AdminOwnerBot)]
+        [AuthorizeRoles(Roles.Owner)]
         [HttpDelete("banner/{id}")]
         public async Task<IActionResult> DeleteBanner(Guid id)
         {
@@ -186,7 +186,7 @@ namespace InCase.Resources.Api.Controllers
             return await EndpointUtil.Delete<LootBoxBanner>(id, context);
         }
 
-        [AuthorizeRoles(Roles.AdminOwnerBot)]
+        [AuthorizeRoles(Roles.Owner)]
         [HttpDelete("inventory/{id}")]
         public async Task<IActionResult> DeleteItemFromInventory(Guid id)
         {

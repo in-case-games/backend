@@ -65,14 +65,14 @@ namespace InCase.Resources.Api.Controllers
                 ResponseUtil.Ok(promocode);
         }
 
-        [AuthorizeRoles(Roles.AdminOwnerBot)]
+        [AuthorizeRoles(Roles.All)]
         [HttpGet("types")]
         public async Task<IActionResult> GetTypes()
         {
             return await EndpointUtil.GetAll<PromocodeType>(_contextFactory);
         }
 
-        [AuthorizeRoles(Roles.AdminOwnerBot)]
+        [AuthorizeRoles(Roles.Owner)]
         [HttpPost]
         public async Task<IActionResult> Create(PromocodeDto promocode)
         {
@@ -86,7 +86,7 @@ namespace InCase.Resources.Api.Controllers
             return await EndpointUtil.Create(promocode.Convert(), context);
         }
 
-        [AuthorizeRoles(Roles.AdminOwnerBot)]
+        [AuthorizeRoles(Roles.Owner)]
         [HttpPut]
         public async Task<IActionResult> Update(PromocodeDto promocodeDto)
         {
@@ -105,7 +105,7 @@ namespace InCase.Resources.Api.Controllers
             return await EndpointUtil.Update(promocode, promocodeDto.Convert(false), context);
         }
 
-        [AuthorizeRoles(Roles.AdminOwnerBot)]
+        [AuthorizeRoles(Roles.Admin, Roles.Owner)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
