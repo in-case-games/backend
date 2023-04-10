@@ -2644,3 +2644,558 @@ UserReview
   "data": "UserReview is not found. "
 }
 ```
+### Информация об обращениях в техническую поддержку
+
+1. Получить все обращения авторизованного пользователя в техническую поддержку:
+   * Доступ: User
+   * Метод: GET
+   * Запрос: `https://r.api.incase.com/api/support-topic`
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+```JSON
+{
+  "success": true,
+  "data": [
+    {
+      "title": "test topic",
+      "content": "some content",
+      "date": "2023-04-10T03:54:20.47",
+      "isClosed": false,
+      "answers": null,
+      "id": "82aa8fc8-8cb3-44f1-b852-458a5ccbac38"
+    },
+    {
+      "title": "test topic 2",
+      "content": "some content 2",
+      "date": "2023-04-10T03:55:27.6366667",
+      "isClosed": false,
+      "answers": null,
+      "id": "e98c4b69-a7e3-4407-bbda-65475bcc262d"
+    }
+  ]
+}
+```
+
+2. Получить определенное обращение авторизованного пользователя в техническую поддержку:
+   * Доступ: User
+   * Метод: GET
+   * Запрос: `https://r.api.incase.com/api/support-topic/{id}`
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+```JSON
+{
+  "success": true,
+  "data": {
+    "title": "test topic",
+    "content": "some content",
+    "date": "2023-04-10T03:54:20.47",
+    "isClosed": false,
+    "answers": null,
+    "id": "82aa8fc8-8cb3-44f1-b852-458a5ccbac38"
+  }
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "SupportTopic is not found. "
+}
+```
+
+3. Получить ответы на определенное обращение в техническую поддержку:
+   * Доступ: User
+   * Метод: GET
+   * Запрос: `https://r.api.incase.com/api/support-topic/{id}/answers`
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+```JSON
+{
+  "success": true,
+  "data": [
+    {
+      "content": "string",
+      "date": "2023-04-09T23:01:42.748",
+      "plaintiff": {
+        "login": "zmqp",
+        "email": "zxc.danil@inbox.ru",
+        "passwordHash": "rYcUHdf7vdNMn4xKWN/htkx8k/8sKeJ3BEsg1HdNJGc=",
+        "passwordSalt": "eLTy28AeXkKZu7shyy1VtaspWqUSLLTv0v3MezQ75f0FptyN0g7pzn1lBGKRwYIqTMYR495udcmy1hrSzgCesw==",
+        "additionalInfo": null,
+        "topics": null,
+        "restrictions": null,
+        "ownerRestrictions": null,
+        "reviews": null,
+        "historyPayments": null,
+        "id": "555758dc-51a6-434f-bc3c-0543a005e28d"
+      },
+      "images": [],
+      "id": "2ace9264-d8f7-468f-acfe-0bdb0edf305e"
+    },
+    {
+      "content": "string",
+      "date": "2023-04-09T23:01:42.748",
+      "plaintiff": {
+        "login": "zmqp",
+        "email": "zxc.danil@inbox.ru",
+        "passwordHash": "rYcUHdf7vdNMn4xKWN/htkx8k/8sKeJ3BEsg1HdNJGc=",
+        "passwordSalt": "eLTy28AeXkKZu7shyy1VtaspWqUSLLTv0v3MezQ75f0FptyN0g7pzn1lBGKRwYIqTMYR495udcmy1hrSzgCesw==",
+        "additionalInfo": null,
+        "topics": null,
+        "restrictions": null,
+        "ownerRestrictions": null,
+        "reviews": null,
+        "historyPayments": null,
+        "id": "555758dc-51a6-434f-bc3c-0543a005e28d"
+      },
+      "images": [],
+      "id": "58682361-fe2c-43f8-acc5-9e12ce8e3e85"
+    }
+  ]
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "SupportTopic is not found. "
+}
+```
+
+4. Получить определенный ответ на определенное обращение в техническую поддержку:
+   * Доступ: User
+   * Метод: GET
+   * Запрос: `https://r.api.incase.com/api/support-topic/{id}/answer/{answerId}`
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+```JSON
+{
+  "success": true,
+  "data": {
+    "content": "string",
+    "date": "2023-04-09T23:01:42.748",
+    "plaintiff": {
+      "login": "zmqp",
+      "email": "zxc.danil@inbox.ru",
+      "passwordHash": "rYcUHdf7vdNMn4xKWN/htkx8k/8sKeJ3BEsg1HdNJGc=",
+      "passwordSalt": "eLTy28AeXkKZu7shyy1VtaspWqUSLLTv0v3MezQ75f0FptyN0g7pzn1lBGKRwYIqTMYR495udcmy1hrSzgCesw==",
+      "additionalInfo": null,
+      "topics": null,
+      "restrictions": null,
+      "ownerRestrictions": null,
+      "reviews": null,
+      "historyPayments": null,
+      "id": "555758dc-51a6-434f-bc3c-0543a005e28d"
+    },
+    "images": [],
+    "id": "58682361-fe2c-43f8-acc5-9e12ce8e3e85"
+  }
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "SupportTopicAnswer is not found. "
+}
+```
+
+5. Получить все обращение в техническую поддержку:
+   * Доступ: Support, Owner, Bot
+   * Метод: GET
+   * Запрос: `https://r.api.incase.com/api/support-topic/support`
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+```JSON
+{
+  "success": true,
+  "data": [
+    {
+      "title": "test topic",
+      "content": "some content",
+      "date": "2023-04-10T03:54:20.47",
+      "isClosed": false,
+      "answers": null,
+      "id": "82aa8fc8-8cb3-44f1-b852-458a5ccbac38"
+    },
+    {
+      "title": "test topic 2",
+      "content": "some content 2",
+      "date": "2023-04-10T03:55:27.6366667",
+      "isClosed": false,
+      "answers": null,
+      "id": "e98c4b69-a7e3-4407-bbda-65475bcc262d"
+    },
+    {
+      "title": "добавим",
+      "content": "соли",
+      "date": "2023-04-09T22:57:12.14",
+      "isClosed": true,
+      "answers": null,
+      "id": "a26750f8-f17a-4060-9acd-ca9074a630f7"
+    }
+  ]
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "SupportTopic is not found. "
+}
+```
+
+6. Получить определенный ответ на обращение в техническую поддержку:
+   * Доступ: Support, Owner, Bot
+   * Метод: GET
+   * Запрос: `https://r.api.incase.com/api/support-topic/support/answer/{id}`
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+```JSON
+{
+  "success": true,
+  "data": {
+    "content": "string",
+    "date": "2023-04-09T23:01:42.748",
+    "plaintiff": {
+      "login": "zmqp",
+      "email": "zxc.danil@inbox.ru",
+      "passwordHash": "rYcUHdf7vdNMn4xKWN/htkx8k/8sKeJ3BEsg1HdNJGc=",
+      "passwordSalt": "eLTy28AeXkKZu7shyy1VtaspWqUSLLTv0v3MezQ75f0FptyN0g7pzn1lBGKRwYIqTMYR495udcmy1hrSzgCesw==",
+      "additionalInfo": null,
+      "topics": null,
+      "restrictions": null,
+      "ownerRestrictions": null,
+      "reviews": null,
+      "historyPayments": null,
+      "id": "555758dc-51a6-434f-bc3c-0543a005e28d"
+    },
+    "images": [],
+    "id": "2ace9264-d8f7-468f-acfe-0bdb0edf305e"
+  }
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "SupportTopicAnswer is not found. "
+}
+```
+
+7. Получить все ответы на обращение в техническую поддержку:
+   * Доступ: Support, Owner, Bot
+   * Метод: GET
+   * Запрос: `https://r.api.incase.com/api/support-topic/{id}/support/answers`
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+```JSON
+{
+  "success": true,
+  "data": [
+    {
+      "content": "string",
+      "date": "2023-04-09T23:01:42.748",
+      "plaintiff": {
+        "login": "zmqp",
+        "email": "zxc.danil@inbox.ru",
+        "passwordHash": "rYcUHdf7vdNMn4xKWN/htkx8k/8sKeJ3BEsg1HdNJGc=",
+        "passwordSalt": "eLTy28AeXkKZu7shyy1VtaspWqUSLLTv0v3MezQ75f0FptyN0g7pzn1lBGKRwYIqTMYR495udcmy1hrSzgCesw==",
+        "additionalInfo": null,
+        "topics": null,
+        "restrictions": null,
+        "ownerRestrictions": null,
+        "reviews": null,
+        "historyPayments": null,
+        "id": "555758dc-51a6-434f-bc3c-0543a005e28d"
+      },
+      "images": [],
+      "id": "2ace9264-d8f7-468f-acfe-0bdb0edf305e"
+    }
+  ]
+}
+```
+
+8. Получить определенное обращение в техническую поддержку:
+   * Доступ: Support, Owner, Bot
+   * Метод: GET
+   * Запрос: `https://r.api.incase.com/api/support-topic/{id}/support`
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+```JSON
+{
+  "success": true,
+  "data": {
+    "title": "test topic",
+    "content": "some content",
+    "date": "2023-04-10T03:54:20.47",
+    "isClosed": false,
+    "answers": null,
+    "id": "82aa8fc8-8cb3-44f1-b852-458a5ccbac38"
+  }
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "SupportTopic is not found. "
+}
+```
+
+9. Обратиться в техническую поддержку со стороны пользователя:
+   * Доступ: User
+   * Метод: POST
+   * Запрос: `https://r.api.incase.com/api/support-topic`
+
+![](https://img.shields.io/static/v1?label=&message=Request_Body:&color=blue)
+```JSON
+{
+  "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "title": "string",
+  "content": "string",
+  "date": "2023-04-09T23:39:12.314Z",
+  "isClosed": true,
+  "userId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+```JSON
+{
+  "success": true,
+  "data": {
+    "title": "добавим",
+    "content": "соли",
+    "date": "2023-04-09T22:57:12.14Z",
+    "isClosed": true,
+    "answers": null,
+    "id": "c19c9400-a6b6-4d6d-904c-813771c04e94"
+  }
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_409:&color=orange)
+```JSON
+{
+  "success": false,
+  "data": "Access denied"
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_409:&color=orange)
+```JSON
+{
+  "success": false,
+  "data": "описание ошибки"
+}
+```
+
+10. Ответ на вопрос в технической поддержке:
+   * Доступ: Support, Owner, Bot, User
+   * Метод: POST
+   * Запрос: `https://r.api.incase.com/api/support-topic/answer`
+
+![](https://img.shields.io/static/v1?label=&message=Request_Body:&color=blue)
+```JSON
+{
+  "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "content": "string",
+  "date": "2023-04-09T23:38:56.236Z",
+  "plaintiffId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "topicId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+```JSON
+{
+  "success": true,
+  "data": {
+    "content": "ответочка от админочка",
+    "date": "2023-04-09T23:24:25.874Z",
+    "plaintiff": null,
+    "images": null,
+    "id": "1564eebe-b240-4902-b963-535c235dc10d"
+  }
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "SupportTopic is not found. "
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_409:&color=orange)
+```JSON
+{
+  "success": false,
+  "data": "описание ошибки"
+}
+```
+
+11. Изменение ответа на вопрос в технической поддержке со стороны администрации:
+   * Доступ: Support, Owner, Bot, User
+   * Метод: PUT
+   * Запрос: `https://r.api.incase.com/api/support-topic`
+
+![](https://img.shields.io/static/v1?label=&message=Request_Body:&color=blue)
+```JSON
+{
+  "id": "2D767AF3-6E4B-49D9-BF7B-BCA9E05EE7F1",
+  "content": "string",
+  "date": "2023-04-09T23:55:56.347Z",
+  "plaintiffId": "555758DC-51A6-4342-B23C-0543A005228D",
+  "topicId": "82AA8FC8-8CB3-44F1-B852-458A5CCBAC32"
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+```JSON
+{
+  "success": true,
+  "data": {
+    "title": "string",
+    "content": "string",
+    "date": "2023-04-09T23:29:19.714Z",
+    "isClosed": true,
+    "answers": null,
+    "id": "82aa8fc8-8cb3-44f1-b852-458a5ccbac38"
+  }
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "SupportTopicAnswer is not found. "
+}
+```
+
+12. Изменение ответа на вопрос в технической поддержке со стороны пользователя:
+   * Доступ: User
+   * Метод: PUT
+   * Запрос: `https://r.api.incase.com/api/support-topic/answer`
+
+![](https://img.shields.io/static/v1?label=&message=Request_Body:&color=blue)
+```JSON
+{
+  "id": "2D767AF3-6E4B-49D9-BF7B-BCA9E05EE7F1",
+  "content": "string",
+  "date": "2023-04-09T23:55:56.347Z",
+  "plaintiffId": "555758DC-51A6-4342-B23C-0543A005228D",
+  "topicId": "82AA8FC8-8CB3-44F1-B852-458A5CCBAC32"
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+```JSON
+{
+  "success": true,
+  "data": {
+    "content": "string",
+    "date": "2023-04-09T23:55:56.347Z",
+    "plaintiff": null,
+    "images": null,
+    "id": "2d767af3-6e4b-49d9-bf7b-bca9e05ee7f1"
+  }
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "SupportTopicAnswer is not found. "
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_409:&color=orange)
+```JSON
+{
+  "success": false,
+  "data": "Permission denied"
+}
+```
+
+13. Удаление ответа на вопрос в технической поддержке со стороны пользователя:
+   * Доступ: User
+   * Метод: DELETE
+   * Запрос: `https://r.api.incase.com/api/support-topic/answer/{id}`
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+```JSON
+{
+  "success": true,
+  "data": "SupportTopicAnswer"
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "SupportTopicAnswer is not found. "
+}
+```
+
+14. Удаление ответа на вопрос в технической поддержке со стороны администратора:
+   * Доступ: Support, Owner, Bot
+   * Метод: DELETE
+   * Запрос: `https://r.api.incase.com/api/support-topic/support/answer/{id}`
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+```JSON
+{
+  "success": true,
+  "data": "SupportTopicAnswer"
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "SupportTopicAnswer is not found. "
+}
+```
+
+15. Удаление определенного топика в технической поддержке со стороны администратора:
+   * Доступ: Owner, Bot
+   * Метод: DELETE
+   * Запрос: `https://r.api.incase.com/api/support-topic/{id}`
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+```JSON
+{
+  "success": true,
+  "data": {
+    "title": "test topic",
+    "content": "some content",
+    "date": "2023-04-10T03:54:20.47",
+    "isClosed": false,
+    "answers": null,
+    "id": "82aa8fc8-8cb3-44f1-b852-458a5ccbac38"
+  }
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "SupportTopicAnswer is not found. "
+}
+```
+
+**В дальнейшем данное Api будет дорабатываться с обратной совместимостью, все нововведения будут расписаны**
