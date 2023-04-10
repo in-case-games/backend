@@ -3,26 +3,26 @@
 **Содержание**
 
 * Общее
-  * <a href="https://github.com/InCase-buy-and-opening-cases/InCase_backend/blob/InCase.dev/ApiResDocs.md#информация-об-играх">Информация об играх</a>
-  * Информация о новостях
-  * Информация о статистике сайта
+  * **<a href="https://github.com/InCase-buy-and-opening-cases/InCase_backend/blob/InCase.dev/ApiResDocs.md#информация-об-играх">Информация об играх</a>**
+  * **<a href="https://github.com/InCase-buy-and-opening-cases/InCase_backend/blob/InCase.dev/ApiResDocs.md#информация-о-новостях">Информация о новостях</a>**
+  * **<a href="https://github.com/InCase-buy-and-opening-cases/InCase_backend/blob/InCase.dev/ApiResDocs.md#информация-о-статистике">Информация о статистике сайта</a>**
 
 * Предметы
-  * Информация о предметах (предмете)
-  * Информация о группах кейсов
-  * Информация о кейсе
-  * Информация о промокодах
+  * **<a href="https://github.com/InCase-buy-and-opening-cases/InCase_backend/blob/InCase.dev/ApiResDocs.md#информация-о-предметах">Информация о предметах (предмете)</a>**
+  * **<a href="https://github.com/InCase-buy-and-opening-cases/InCase_backend/blob/InCase.dev/ApiResDocs.md#информация-о-группах-кейсов">Информация о группах кейсов</a>**
+  * **<a href="https://github.com/InCase-buy-and-opening-cases/InCase_backend/blob/InCase.dev/ApiResDocs.md#информация-о-кейсе">Информация о кейсе</a>**
+  * **<a href="https://github.com/InCase-buy-and-opening-cases/InCase_backend/blob/InCase.dev/ApiResDocs.md#информация-о-промокодах">Информация о промокодах</a>**
 
 * Пользователь
-  * Информация о пользователе (пользователях)
-  * Информация об историях
+  * **<a href="https://github.com/InCase-buy-and-opening-cases/InCase_backend/blob/InCase.dev/ApiResDocs.md#информация-о-пользователе">Информация о пользователе (пользователях)</a>**
+  * **<a href="https://github.com/InCase-buy-and-opening-cases/InCase_backend/blob/InCase.dev/ApiResDocs.md#информация-о-историях">Информация об историях</a>**
     * Информация о пополнениях
     * Информация об открытиях
     * Информация об обменах
     * Информация о промокодах
-  * Информация об ограничениях
-  * Информация об отзывах
-  * Информация об обращениях в тех поддержку
+  * **<a href="https://github.com/InCase-buy-and-opening-cases/InCase_backend/blob/InCase.dev/ApiResDocs.md#информация-о-ограничениях">Информация об ограничениях</a>**
+  * **<a href="https://github.com/InCase-buy-and-opening-cases/InCase_backend/blob/InCase.dev/ApiResDocs.md#информация-об-отзывах">Информация об отзывах</a>**
+  * **<a href="https://github.com/InCase-buy-and-opening-cases/InCase_backend/blob/InCase.dev/ApiResDocs.md#информация-об-обращениях-в-техническую-поддержку">Информация об обращениях в тех поддержку</a>**
   
 ## Общее
 
