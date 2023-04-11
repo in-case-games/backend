@@ -68,7 +68,6 @@ namespace InCase.Game.Api.Controllers
                 }
             }
 
-            //Update Balance Case
             lootBox.Balance -= expensesCase;
 
             //Add history and add inventory user
