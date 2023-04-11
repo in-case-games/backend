@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 
 namespace InCase.Infrastructure.Utils
 {
@@ -13,6 +14,14 @@ namespace InCase.Infrastructure.Utils
             return new NotFoundObjectResult(new { 
                 Success = false,
                 Data = $"{name} is not found. {description}" });
+        }
+        public static IActionResult Conflict<T>(T entity)
+        {
+            return new ConflictObjectResult(new
+            {
+                Success = false,
+                Data = entity
+            });
         }
         public static IActionResult Conflict(string message)
         {
