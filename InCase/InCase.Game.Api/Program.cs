@@ -11,11 +11,11 @@ builder.Services.AddPooledDbContextFactory<ApplicationDbContext>(
     options => {
         options.UseSnakeCaseNamingConvention();
         options.UseSqlServer(
-        #if DEBUG
+#if DEBUG
         builder.Configuration["ConnectionStrings:DevelopmentConnection"]
-        #else
+#else
         builder.Configuration["ConnectionStrings:ProductionConnection"]
-        #endif
+#endif
         );
     }
 );
