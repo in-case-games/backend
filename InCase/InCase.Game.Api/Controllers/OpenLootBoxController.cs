@@ -12,7 +12,8 @@ namespace InCase.Game.Api.Controllers
     [ApiController]
     public class OpenLootBoxController : ControllerBase
     {
-        private const decimal RevenuePrecentage = 0.1M; 
+        private const decimal RevenuePrecentage = 0.1M;
+        private const decimal RevenuePrecentageBanner = 0.04M;
         private static readonly Random _random = new();
         private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
         private Guid UserId => Guid
@@ -24,21 +25,26 @@ namespace InCase.Game.Api.Controllers
         }
 
         [AuthorizeRoles(Roles.All)]
-        [HttpGet("{caseId}")]
-        public async Task<IActionResult> GetOpeningCase(Guid caseId)
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetOpeningCase(Guid id)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             UserAdditionalInfo? userInfo = await context.UserAdditionalInfos
                 .FirstOrDefaultAsync(x => x.UserId == UserId);
             LootBox? lootBox = await context.LootBoxes
-                .Include(x => x.Inventories)
-                .FirstOrDefaultAsync(x => x.Id == caseId);
+                .Include(i => i.Inventories)
+                .Include(i => i.Banner)
+                .FirstOrDefaultAsync(x => x.Id == id);
 
             if (userInfo is null || lootBox is null)
                 return ResponseUtil.NotFound(nameof(LootBox));
             if (userInfo.Balance < lootBox.Cost) 
                 return Forbid("Insufficient funds");
+
+            UserPathBanner? pathBanner = await context.UserPathBanners
+                .Include(i => i.Item)
+                .FirstOrDefaultAsync(f => f.BannerId == lootBox.Banner!.Id && f.UserId == UserId);
 
             //Update Balance Case and User
             userInfo.Balance -= lootBox.Cost;
@@ -47,8 +53,22 @@ namespace InCase.Game.Api.Controllers
             //Calling random
             GameItem winGameItem = RandomizeBySmallest(in lootBox);
 
-            //Update Balance Case
             decimal expensesCase = winGameItem.Cost + lootBox.Cost * RevenuePrecentage;
+
+            if (pathBanner is not null)
+            {
+                pathBanner.NumberSteps--;
+                expensesCase = winGameItem.Cost + lootBox.Cost * 
+                    (RevenuePrecentage - RevenuePrecentageBanner);
+
+                if (pathBanner.NumberSteps <= 0 && pathBanner.ItemId == winGameItem.Id)
+                {
+                    winGameItem = pathBanner.Item!;
+                    context.UserPathBanners.Remove(pathBanner);
+                }
+            }
+
+            //Update Balance Case
             lootBox.Balance -= expensesCase;
 
             //Add history and add inventory user
@@ -76,6 +96,7 @@ namespace InCase.Game.Api.Controllers
 
             return Ok(new { Data = winGameItem, Success = true });
         }
+
         // TODO: Rebase this
         #region nonAction
         private static GameItem RandomizeBySmallest(in LootBox lootBox)
