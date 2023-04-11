@@ -160,7 +160,7 @@ namespace InCase.Resources.Api.Controllers
 
             string userRole = user.AdditionalInfo!.Role!.Name!;
 
-            if (userRole == "owner" || userRole == "admin")
+            if (userRole != "user")
                 return Forbid("Access denied");
 
             List<UserRestriction> restrictions = await context.UserRestrictions
@@ -218,7 +218,7 @@ namespace InCase.Resources.Api.Controllers
 
             string userRole = user.AdditionalInfo!.Role!.Name!;
 
-            if (userRole == "owner" || userRole == "admin")
+            if (userRole != "user")
                 return Forbid("Access denied");
 
             List<UserRestriction> restrictions = await context.UserRestrictions
