@@ -1,9 +1,11 @@
-﻿using InCase.Domain.Entities.Resources;
+﻿using InCase.Domain.Dtos;
+using InCase.Domain.Entities.Resources;
 using InCase.IntegrationTests.Services;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System.Diagnostics;
+using System.Net;
 using Xunit.Abstractions;
 
 namespace InCase.IntegrationTests.Tests.GameApi
@@ -40,19 +42,19 @@ namespace InCase.IntegrationTests.Tests.GameApi
         public async Task GET_OpeningLootBox_Output()
         {
             //Arrange
-            Guid caseGuid = Guid.NewGuid();
-            List<Guid> gameItemsGuids = new() {
+            Guid lootBoxGuid = Guid.NewGuid();
+            List<Guid> itemsGuids = new() {
                 Guid.NewGuid(), Guid.NewGuid(),
                 Guid.NewGuid(), Guid.NewGuid(),
                 Guid.NewGuid(), Guid.NewGuid(),
                 Guid.NewGuid(),
             };
 
-            await InitializeTestDependencies(gameItemsGuids, caseGuid);
+            await InitializeTestDependencies(itemsGuids, lootBoxGuid);
 
             //Act
             Stopwatch startTime = Stopwatch.StartNew();
-            Dictionary<string, int> winingItems = await GetWiningItems(caseGuid);
+            Dictionary<string, int> winingItems = await GetWiningItems(lootBoxGuid);
             startTime.Stop();
             var resultTime = startTime.Elapsed;
             string elapsedTime = string.Format("{0:00}.{1:000}",
@@ -69,18 +71,70 @@ namespace InCase.IntegrationTests.Tests.GameApi
             }
 
             LootBox? lootBox = (await _responseResources
-                .ResponseGet<AnswerBoxApi?>($"/api/loot-box/admin/{caseGuid}", AccessToken))!.Data;
+                .ResponseGet<AnswerBoxApi?>($"/api/loot-box/admin/{lootBoxGuid}", AccessToken))!.Data;
 
             _output.WriteLine(
                 $"Профит: {lootBox!.Cost * 0.1M * 1000} Р\n" +
                 $"Баланс: {lootBox.Balance} Р\n" +
                 $"Скорость алгоритма: {elapsedTime}");
 
-            await RemoveTestDependencies(gameItemsGuids, caseGuid);
+            await RemoveTestDependencies(itemsGuids, lootBoxGuid);
+        }
+
+        [Fact]
+        public async Task GET_OpeningLootBoxSubcribedBanner_Output()
+        {
+            //Arrange
+            Guid lootBoxGuid = Guid.NewGuid();
+            Guid bannerGuid = Guid.NewGuid();
+            List<Guid> itemsGuids = new() {
+                Guid.NewGuid(), Guid.NewGuid(),
+                Guid.NewGuid(), Guid.NewGuid(),
+                Guid.NewGuid(), Guid.NewGuid(),
+                Guid.NewGuid(),
+            };
+
+            await InitializeTestDependencies(itemsGuids, lootBoxGuid);
+            await InitializeTestDependencies2(lootBoxGuid, itemsGuids[2], bannerGuid);
+
+            //Act
+            Stopwatch startTime = Stopwatch.StartNew();
+            Dictionary<string, int> winingItems = await GetWiningItems(
+                lootBoxGuid, 
+                itemsGuids[2].ToString(), 
+                bannerGuid.ToString());
+
+            startTime.Stop();
+            var resultTime = startTime.Elapsed;
+            string elapsedTime = string.Format("{0:00}.{1:000}",
+                resultTime.Seconds,
+                resultTime.Milliseconds);
+
+            //Assert
+            _output.WriteLine("Предмет = количество выпадений");
+
+
+            foreach (var winItem in winingItems)
+            {
+                _output.WriteLine($"{winItem.Key} = {winItem.Value}");
+            }
+
+            LootBox? lootBox = (await _responseResources
+                .ResponseGet<AnswerBoxApi?>($"/api/loot-box/admin/{lootBoxGuid}", AccessToken))!.Data;
+
+            _output.WriteLine(
+                $"Профит: {lootBox!.Cost * 0.01M * 1000} Р\n" +
+                $"Баланс: {lootBox.Balance} Р\n" +
+                $"Скорость алгоритма: {elapsedTime}");
+
+            await RemoveTestDependencies(itemsGuids, lootBoxGuid);
         }
 
         #region Начальные данные
-        private async Task<Dictionary<string, int>> GetWiningItems(Guid gameCaseGuid)
+        private async Task<Dictionary<string, int>> GetWiningItems(
+            Guid boxGuid, 
+            string itemGuid = "", 
+            string bannerGuid = "")
         {
             Dictionary<string, int> winItems = new()
             {
@@ -97,14 +151,57 @@ namespace InCase.IntegrationTests.Tests.GameApi
             {
                 //Open Cases
                 GameItem? winItem = (await _responseGame
-                    .ResponseGet<AnswerItemApi?>($"/api/open-loot-box/{gameCaseGuid}", AccessToken) ?? 
-                    throw new Exception("No opened cases")).Data;
+                    .ResponseGet<AnswerItemApi?>($"/api/open-loot-box/{boxGuid}", AccessToken))?.Data ?? 
+                    throw new Exception("No opened cases");
 
                 //Counter wins
                 winItems[winItem!.Name!] += 1;
+
+                if(!string.IsNullOrEmpty(itemGuid))
+                {
+                    UserPathBannerDto pathBannerDto = new()
+                    {
+                        BannerId = Guid.Parse(bannerGuid),
+                        Date = DateTime.UtcNow,
+                        ItemId = Guid.Parse(itemGuid),
+                        NumberSteps = 1,
+                        UserId = Guid.NewGuid()
+                    };
+                    
+                    await _responseResources
+                        .ResponsePostStatusCode("/api/user/banner", pathBannerDto, AccessToken);
+                }
             }
 
             return winItems;
+        }
+
+        private async Task InitializeTestDependencies2(Guid lootBoxGuid, Guid itemGuid, Guid bannerGuid)
+        {
+            LootBoxBanner boxBanner = new()
+            {
+                Id = bannerGuid,
+                BoxId = lootBoxGuid,
+                IsActive = true,
+                ImageUri = "",
+                CreationDate = DateTime.UtcNow,
+                ExpirationDate = DateTime.UtcNow + TimeSpan.FromDays(7)
+            };
+
+            UserPathBannerDto pathBannerDto = new()
+            {
+                BannerId = bannerGuid,
+                Date = DateTime.UtcNow,
+                ItemId = itemGuid,
+                NumberSteps = 1,
+                UserId = Guid.NewGuid()
+            };
+
+            await Context.LootBoxBanners.AddAsync(boxBanner);
+            await Context.SaveChangesAsync();
+
+            await _responseResources
+                .ResponsePostStatusCode("/api/user/banner", pathBannerDto, AccessToken);
         }
 
         private async Task InitializeTestDependencies(List<Guid> gameItemsGuids, Guid gameCaseGuid)

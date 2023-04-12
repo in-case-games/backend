@@ -188,6 +188,39 @@ namespace InCase.Resources.Api.Controllers
             return ResponseUtil.Ok(payments);
         }
 
+        [AuthorizeRoles(Roles.All)]
+        [HttpPost("banner")]
+        public async Task<IActionResult> CreatePathBanner(UserPathBannerDto pathDto)
+        {
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            GameItem? item = await context.GameItems
+                .AsNoTracking()
+                .FirstOrDefaultAsync(f => f.Id == pathDto.ItemId);
+            LootBoxBanner? banner = await context.LootBoxBanners
+                .Include(i => i.Box)
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
+
+            if (item is null)
+                return ResponseUtil.NotFound(nameof(GameItem));
+            if (banner is null)
+                return ResponseUtil.NotFound(nameof(LootBoxBanner));
+            if(await context.UserPathBanners.AnyAsync(a => a.UserId == UserId && a.BannerId == banner.Id))
+                return ResponseUtil.Conflict("User path banner is exist");
+
+            LootBox box = banner.Box!;
+
+            if (item.Cost <= box.Cost)
+                return ResponseUtil.Conflict("The cost of the item cannot be less than the cost of the case");
+
+            pathDto.UserId = UserId;
+            pathDto.Date = DateTime.UtcNow;
+            pathDto.NumberSteps = (int)Math.Ceiling(item.Cost/(box.Cost * 0.14M));
+
+            return await EndpointUtil.Create(pathDto.Convert(), context);
+        }
+
         // TODO Transfer method
         // [AuthorizeRoles(Roles.All)]
         // [HttpPost("promocodes")]

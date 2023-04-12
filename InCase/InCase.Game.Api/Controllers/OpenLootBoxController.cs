@@ -12,8 +12,8 @@ namespace InCase.Game.Api.Controllers
     [ApiController]
     public class OpenLootBoxController : ControllerBase
     {
-        private const decimal RevenuePrecentage = 0.1M;
-        private const decimal RevenuePrecentageBanner = 0.04M;
+        private const decimal RevenuePrecentage = 0.10M;
+        private const decimal RevenuePrecentageBanner = 0.15M;
         private static readonly Random _random = new();
         private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
         private Guid UserId => Guid
@@ -31,10 +31,12 @@ namespace InCase.Game.Api.Controllers
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             UserAdditionalInfo? userInfo = await context.UserAdditionalInfos
+                .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.UserId == UserId);
             LootBox? lootBox = await context.LootBoxes
                 .Include(i => i.Inventories)
                 .Include(i => i.Banner)
+                .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == id);
 
             if (userInfo is null || lootBox is null)
@@ -43,8 +45,8 @@ namespace InCase.Game.Api.Controllers
                 return Forbid("Insufficient funds");
 
             lootBox.Inventories = await context.LootBoxInventories
-                .AsNoTracking()
                 .Include(x => x.Item)
+                .AsNoTracking()
                 .Where(x => x.BoxId == id)
                 .ToListAsync();
 
@@ -53,7 +55,7 @@ namespace InCase.Game.Api.Controllers
             if(lootBox!.Banner?.Id is not null)
             {
                 pathBanner = await context.UserPathBanners
-                .Include(i => i.Item)
+                .AsNoTracking()
                 .FirstOrDefaultAsync(f => f.BannerId == lootBox.Banner!.Id && f.UserId == UserId);
             }
 
@@ -66,20 +68,28 @@ namespace InCase.Game.Api.Controllers
 
             decimal expensesCase = winGameItem.Cost + lootBox.Cost * RevenuePrecentage;
 
-            if (pathBanner is not null)
+            if (pathBanner is not null && lootBox.Banner!.IsActive == true)
             {
                 pathBanner.NumberSteps--;
-                expensesCase = winGameItem.Cost + lootBox.Cost * 
-                    (RevenuePrecentage - RevenuePrecentageBanner);
+                context.UserPathBanners.Attach(pathBanner);
+                context.Entry(pathBanner).Property(x => x.NumberSteps).IsModified = true;
+                expensesCase = winGameItem.Cost + lootBox.Cost * RevenuePrecentageBanner;
 
                 if (pathBanner.NumberSteps <= 0 && pathBanner.ItemId == winGameItem.Id)
                 {
-                    winGameItem = pathBanner.Item!;
+                    winGameItem = lootBox.Inventories
+                        .FirstOrDefault(f => f.ItemId == pathBanner.ItemId)!.Item!;
                     context.UserPathBanners.Remove(pathBanner);
                 }
             }
 
             lootBox.Balance -= expensesCase;
+
+            context.LootBoxes.Attach(lootBox);
+            context.UserAdditionalInfos.Attach(userInfo);
+            context.Entry(userInfo).Property(x => x.Balance).IsModified = true;
+            context.Entry(lootBox).Property(x => x.Balance).IsModified = true;
+            context.Entry(lootBox).Property(x => x.VirtualBalance).IsModified = true;
 
             //Add history and add inventory user
             UserHistoryOpening history = new()
