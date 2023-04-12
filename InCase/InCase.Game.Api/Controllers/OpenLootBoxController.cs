@@ -42,9 +42,20 @@ namespace InCase.Game.Api.Controllers
             if (userInfo.Balance < lootBox.Cost) 
                 return Forbid("Insufficient funds");
 
-            UserPathBanner? pathBanner = await context.UserPathBanners
+            lootBox.Inventories = await context.LootBoxInventories
+                .AsNoTracking()
+                .Include(x => x.Item)
+                .Where(x => x.BoxId == id)
+                .ToListAsync();
+
+            UserPathBanner? pathBanner = null;
+
+            if(lootBox!.Banner?.Id is not null)
+            {
+                pathBanner = await context.UserPathBanners
                 .Include(i => i.Item)
                 .FirstOrDefaultAsync(f => f.BannerId == lootBox.Banner!.Id && f.UserId == UserId);
+            }
 
             //Update Balance Case and User
             userInfo.Balance -= lootBox.Cost;

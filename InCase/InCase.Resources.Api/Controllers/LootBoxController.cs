@@ -6,6 +6,7 @@ using InCase.Infrastructure.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection;
 
 namespace InCase.Resources.Api.Controllers
 {
@@ -30,12 +31,38 @@ namespace InCase.Resources.Api.Controllers
                 .AsNoTracking()
                 .ToListAsync();
 
+            foreach(var lootBox in lootBoxes)
+            {
+                lootBox.Balance = 0;
+                lootBox.VirtualBalance = 0;
+            }
+
             return ResponseUtil.Ok(lootBoxes);
         }
 
         [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(Guid id)
+        {
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            LootBox? lootBox = await context.LootBoxes
+                .AsNoTracking()
+                .Include(i => i.Inventories)
+                .FirstOrDefaultAsync(f => f.Id == id);
+
+            if (lootBox is null)
+                ResponseUtil.NotFound(nameof(LootBox));
+
+            lootBox!.Balance = 0;
+            lootBox!.VirtualBalance = 0;
+
+            return ResponseUtil.Ok(lootBox);
+        }
+
+        [AuthorizeRoles(Roles.UserAdminOwner)]
+        [HttpGet("admin/{id}")]
+        public async Task<IActionResult> GetByAdmin(Guid id)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
@@ -78,6 +105,12 @@ namespace InCase.Resources.Api.Controllers
                 .AsNoTracking()
                 .ToListAsync();
 
+            foreach(var banner in banners)
+            {
+                banner.Box!.Balance = 0;
+                banner.Box!.VirtualBalance = 0;
+            }
+
             return ResponseUtil.Ok(banners);
         }
 
@@ -92,9 +125,13 @@ namespace InCase.Resources.Api.Controllers
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.BoxId == id);
 
-            return banner is null ? 
-                ResponseUtil.NotFound(nameof(LootBoxBanner)) : 
-                ResponseUtil.Ok(banner);
+            if (banner is null)
+                ResponseUtil.NotFound(nameof(LootBoxBanner));
+
+            banner!.Box!.Balance = 0;
+            banner!.Box!.VirtualBalance = 0;
+
+            return ResponseUtil.Ok(banner);
         }
 
         [AuthorizeRoles(Roles.Owner)]
