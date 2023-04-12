@@ -12,8 +12,9 @@ namespace InCase.Domain.Dtos
         public string? Ip { get; set; } = "";
         public string? Platform { get; set; } = "";
 
-        public User Convert() => new()
+        public User Convert(bool IsNewGuid = true) => new()
         {
+            Id = IsNewGuid ? Guid.NewGuid() : Id,
             Login = Login,
             Email = Email
         };

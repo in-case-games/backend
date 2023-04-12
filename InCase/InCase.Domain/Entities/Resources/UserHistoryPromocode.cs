@@ -14,8 +14,9 @@ namespace InCase.Domain.Entities.Resources
         public User? User { get; set; }
         public Promocode? Promocode { get; set; }
 
-        public UserHistoryPromocode Convert() => new()
+        public UserHistoryPromocode Convert(bool IsNewGuid = true) => new()
         {
+            Id = IsNewGuid ? Guid.NewGuid() : Id,
             Date = Date,
             IsActivated = IsActivated,
             UserId = User?.Id ?? UserId,

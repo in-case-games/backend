@@ -9,11 +9,12 @@ namespace InCase.Domain.Entities.Resources
 
         [JsonIgnore]
         public Guid AnswerId { get; set; }
-
+        [JsonIgnore]
         public SupportTopicAnswer? Answer { get; set; }
 
-        public AnswerImageDto Convert() => new()
+        public AnswerImageDto Convert(bool IsNewGuid = true) => new()
         {
+            Id = IsNewGuid ? Guid.NewGuid() : Id,
             ImageUri = ImageUri,
             AnswerId = Answer?.Id ?? AnswerId
         };

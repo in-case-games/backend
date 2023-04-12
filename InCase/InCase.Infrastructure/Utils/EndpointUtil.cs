@@ -33,11 +33,9 @@ namespace InCase.Infrastructure.Utils
             return ResponseUtil.Ok(result);
         }
 
-        public static async Task<IActionResult> Create<T>(T entity, IDbContextFactory<ApplicationDbContext> contextFactory) 
+        public static async Task<IActionResult> Create<T>(T entity, ApplicationDbContext context) 
             where T : BaseEntity
         {
-            await using ApplicationDbContext context = await contextFactory.CreateDbContextAsync();
-
             try
             {
                 await context.Set<T>().AddAsync(entity);
@@ -51,23 +49,21 @@ namespace InCase.Infrastructure.Utils
             }
         }
 
-        public static async Task<IActionResult> Update<T>(T entity, IDbContextFactory<ApplicationDbContext> contextFactory) 
+        public static async Task<IActionResult> Update<T>(T entityNew, ApplicationDbContext context) 
             where T : BaseEntity
         {
-            await using ApplicationDbContext context = await contextFactory.CreateDbContextAsync();
+            T? entityOld = await context.Set<T>()
+                .FirstOrDefaultAsync(f => f.Id == entityNew.Id);
 
-            T? result = await context.Set<T>()
-                .FirstOrDefaultAsync(f => f.Id == entity.Id);
-
-            if (result is null)
+            if (entityOld is null)
                 return ResponseUtil.NotFound(typeof(T).Name);
 
             try
             {
-                context.Entry(result).CurrentValues.SetValues(entity);
+                context.Entry(entityOld).CurrentValues.SetValues(entityNew);
                 await context.SaveChangesAsync();
 
-                return ResponseUtil.Ok(result);
+                return ResponseUtil.Ok(entityNew);
             }
             catch (Exception ex)
             {
@@ -75,11 +71,9 @@ namespace InCase.Infrastructure.Utils
             }
         }
 
-        public static async Task<IActionResult> Delete<T>(Guid id, IDbContextFactory<ApplicationDbContext> contextFactory) 
+        public static async Task<IActionResult> Delete<T>(Guid id, ApplicationDbContext context) 
             where T : BaseEntity
         {
-            await using ApplicationDbContext context = await contextFactory.CreateDbContextAsync();
-
             T? result = await context.Set<T>()
                 .AsNoTracking()
                 .FirstOrDefaultAsync(f => f.Id == id);
@@ -90,7 +84,32 @@ namespace InCase.Infrastructure.Utils
             context.Set<T>().Remove(result);
             await context.SaveChangesAsync();
 
-            return ResponseUtil.Delete(typeof(T).Name);
+            return ResponseUtil.Ok(result);
+        }
+
+        public static async Task<IActionResult> Update<T>(T entityOld, T entityNew, ApplicationDbContext context)
+            where T : BaseEntity
+        {
+            try
+            {
+                context.Entry(entityOld).CurrentValues.SetValues(entityNew);
+                await context.SaveChangesAsync();
+
+                return ResponseUtil.Ok(entityNew);
+            }
+            catch (Exception ex)
+            {
+                return ResponseUtil.Error(ex);
+            }
+        }
+
+        public static async Task<IActionResult> Delete<T>(T entity, ApplicationDbContext context)
+            where T : BaseEntity
+        {
+            context.Set<T>().Remove(entity);
+            await context.SaveChangesAsync();
+
+            return ResponseUtil.Ok(entity);
         }
     }
 }

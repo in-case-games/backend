@@ -50,47 +50,15 @@ namespace InCase.Resources.Api.Controllers
         }
 
         [AuthorizeRoles(Roles.Bot)]
-        [HttpPut]
-        public async Task<IActionResult> Update(SiteStatistics statistics)
-        {
-            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
-
-            if (await context.SiteStatistics.AnyAsync(a => a.Id == statistics.Id))
-                return ResponseUtil.NotFound(nameof(SiteStatistics));
-
-            try
-            {
-                context.SiteStatistics.Update(statistics);
-                await context.SaveChangesAsync();
-
-                return ResponseUtil.Ok(statistics);
-            }
-            catch (Exception ex)
-            {
-                return ResponseUtil.Error(ex);
-            }
-        }
-
-        [AuthorizeRoles(Roles.Bot)]
         [HttpPut("admin")]
         public async Task<IActionResult> UpdateAdmin(SiteStatisticsAdmin statistics)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            if (await context.SiteStatisticsAdmins.AnyAsync(a => a.Id == statistics.Id))
+            if (!await context.SiteStatisticsAdmins.AnyAsync(a => a.Id == statistics.Id))
                 return ResponseUtil.NotFound(nameof(SiteStatisticsAdmin));
 
-            try
-            {
-                context.SiteStatisticsAdmins.Update(statistics);
-                await context.SaveChangesAsync();
-
-                return ResponseUtil.Ok(statistics);
-            }
-            catch (Exception ex)
-            {
-                return ResponseUtil.Error(ex);
-            }
+            return await EndpointUtil.Update(statistics, context);
         }
     }
 }

@@ -9,8 +9,9 @@ namespace InCase.Domain.Dtos
         public Guid GroupId { get; set; }
         public Guid GameId { get; set; }
 
-        public LootBoxGroup Convert() => new()
+        public LootBoxGroup Convert(bool IsNewGuid = true) => new()
         {
+            Id = IsNewGuid ? Guid.NewGuid() : Id,
             BoxId = BoxId,
             GroupId = GroupId,
             GameId = GameId

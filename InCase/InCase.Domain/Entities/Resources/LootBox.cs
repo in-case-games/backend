@@ -24,8 +24,9 @@ namespace InCase.Domain.Entities.Resources
         [JsonIgnore]
         public LootBoxBanner? Banner { get; set; }
 
-        public LootBoxDto Convert() => new()
+        public LootBoxDto Convert(bool IsNewGuid = true) => new()
         {
+            Id = IsNewGuid ? Guid.NewGuid() : Id,
             Name = Name,
             Cost = Cost,
             Balance = Balance,

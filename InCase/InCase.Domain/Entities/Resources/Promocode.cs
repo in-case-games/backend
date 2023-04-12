@@ -18,8 +18,9 @@ namespace InCase.Domain.Entities.Resources
         [JsonIgnore]
         public List<UserHistoryPromocode>? History { get; set; }
 
-        public PromocodeDto Convert() => new()
+        public PromocodeDto Convert(bool IsNewGuid = true) => new()
         {
+            Id = IsNewGuid ? Guid.NewGuid() : Id,
             Name = Name,
             Discount = Discount,
             NumberActivations = NumberActivations,

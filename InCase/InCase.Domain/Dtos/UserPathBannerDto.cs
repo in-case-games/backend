@@ -12,8 +12,9 @@ namespace InCase.Domain.Dtos
         public Guid ItemId { get; set; }
         public Guid BannerId { get; set; }
 
-        public UserPathBanner Convert() => new()
+        public UserPathBanner Convert(bool IsNewGuid = true) => new()
         {
+            Id = IsNewGuid ? Guid.NewGuid() : Id,
             Date = Date,
             NumberSteps = NumberSteps,
             UserId = UserId,

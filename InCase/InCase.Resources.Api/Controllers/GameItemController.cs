@@ -75,25 +75,49 @@ namespace InCase.Resources.Api.Controllers
             return await EndpointUtil.GetAll<GameItemRarity>(_contextFactory);
         }
 
-        [AuthorizeRoles(Roles.AdminOwnerBot)]
+        [AuthorizeRoles(Roles.Owner)]
         [HttpPost]
-        public async Task<IActionResult> Create(GameItemDto gameItem)
+        public async Task<IActionResult> Create(GameItemDto itemDto)
         {
-            return await EndpointUtil.Create(gameItem.Convert(), _contextFactory);  
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            if (!await context.Games.AnyAsync(a => a.Id == itemDto.GameId))
+                return ResponseUtil.NotFound(nameof(Game));
+            if (!await context.GameItemTypes.AnyAsync(a => a.Id == itemDto.TypeId))
+                return ResponseUtil.NotFound(nameof(GameItemType));
+            if (!await context.GameItemRarities.AnyAsync(a => a.Id == itemDto.RarityId))
+                return ResponseUtil.NotFound(nameof(GameItemRarity));
+            if (!await context.GameItemQualities.AnyAsync(a => a.Id == itemDto.QualityId))
+                return ResponseUtil.NotFound(nameof(GameItemQuality));
+
+            return await EndpointUtil.Create(itemDto.Convert(), context);
         }
 
-        [AuthorizeRoles(Roles.AdminOwnerBot)]
+        [AuthorizeRoles(Roles.Owner)]
         [HttpPut]
-        public async Task<IActionResult> Update(GameItemDto item)
+        public async Task<IActionResult> Update(GameItemDto itemDto)
         {
-            return await EndpointUtil.Update(item.Convert(), _contextFactory);
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            if (!await context.Games.AnyAsync(a => a.Id == itemDto.GameId))
+                return ResponseUtil.NotFound(nameof(Game));
+            if (!await context.GameItemTypes.AnyAsync(a => a.Id == itemDto.TypeId))
+                return ResponseUtil.NotFound(nameof(GameItemType));
+            if (!await context.GameItemRarities.AnyAsync(a => a.Id == itemDto.RarityId))
+                return ResponseUtil.NotFound(nameof(GameItemRarity));
+            if (!await context.GameItemQualities.AnyAsync(a => a.Id == itemDto.QualityId))
+                return ResponseUtil.NotFound(nameof(GameItemQuality));
+
+            return await EndpointUtil.Update(itemDto.Convert(false), context);
         }
 
-        [AuthorizeRoles(Roles.AdminOwnerBot)]
+        [AuthorizeRoles(Roles.Owner)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            return await EndpointUtil.Delete<GameItem>(id, _contextFactory);
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            return await EndpointUtil.Delete<GameItem>(id, context);
         }
     }
 }

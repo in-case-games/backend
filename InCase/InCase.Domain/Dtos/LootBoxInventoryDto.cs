@@ -11,8 +11,9 @@ namespace InCase.Domain.Dtos
         public Guid ItemId { get; set; }
         public Guid BoxId { get; set; }
 
-        public LootBoxInventory Convert() => new()
+        public LootBoxInventory Convert(bool IsNewGuid = true) => new()
         {
+            Id = IsNewGuid ? Guid.NewGuid() : Id,
             NumberItems = NumberItems,
             ChanceWining = ChanceWining,
             ItemId = ItemId,

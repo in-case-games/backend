@@ -33,7 +33,23 @@ namespace InCase.Resources.Api.Controllers
             return ResponseUtil.Ok(promocodes);
         }
 
-        [AuthorizeRoles(Roles.AdminOwnerBot)]
+        [AuthorizeRoles(Roles.All)]
+        [HttpGet("name/{name}")]
+        public async Task<IActionResult> GetByName(string? name)
+        {
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            Promocode? promocode = await context.Promocodes
+                .Include(i => i.Type)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(f => f.Name == name);
+
+            return promocode is null ?
+                ResponseUtil.NotFound(nameof(Promocode)) :
+                ResponseUtil.Ok(promocode);
+        }
+
+        [AuthorizeRoles(Roles.All)]
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(Guid id)
         {
@@ -49,39 +65,53 @@ namespace InCase.Resources.Api.Controllers
                 ResponseUtil.Ok(promocode);
         }
 
-        [AuthorizeRoles(Roles.AdminOwnerBot)]
-        [HttpGet("type/{id}")]
-        public async Task<IActionResult> GetType(Guid id)
-        {
-            return await EndpointUtil.GetById<PromocodeType>(id, _contextFactory);
-        }
-
-        [AuthorizeRoles(Roles.AdminOwnerBot)]
+        [AuthorizeRoles(Roles.All)]
         [HttpGet("types")]
         public async Task<IActionResult> GetTypes()
         {
             return await EndpointUtil.GetAll<PromocodeType>(_contextFactory);
         }
 
-        [AuthorizeRoles(Roles.AdminOwnerBot)]
+        [AuthorizeRoles(Roles.Owner)]
         [HttpPost]
         public async Task<IActionResult> Create(PromocodeDto promocode)
         {
-            return await EndpointUtil.Create(promocode.Convert(), _contextFactory);
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            if (!await context.PromocodeTypes.AnyAsync(a => a.Id == promocode.TypeId))
+                return ResponseUtil.NotFound(nameof(PromocodeType));
+            if (await context.Promocodes.AnyAsync(a => a.Name == promocode.Name))
+                return ResponseUtil.Conflict("The promocode name is already in use");
+
+            return await EndpointUtil.Create(promocode.Convert(), context);
         }
 
-        [AuthorizeRoles(Roles.AdminOwnerBot)]
+        [AuthorizeRoles(Roles.Owner)]
         [HttpPut]
-        public async Task<IActionResult> Update(PromocodeDto promocode)
+        public async Task<IActionResult> Update(PromocodeDto promocodeDto)
         {
-            return await EndpointUtil.Update(promocode.Convert(), _contextFactory);
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            Promocode? promocode = await context.Promocodes
+                .FirstOrDefaultAsync(f => f.Id == promocodeDto.Id);
+
+            if (promocode is null)
+                return ResponseUtil.NotFound(nameof(Promocode));
+            if (!await context.PromocodeTypes.AnyAsync(a => a.Id == promocodeDto.TypeId))
+                return ResponseUtil.NotFound(nameof(PromocodeType));
+            if (promocode.Name != promocodeDto.Name && await context.Promocodes.AnyAsync(a => a.Name == promocodeDto.Name))
+                return ResponseUtil.Conflict("The promocode name is already in use");
+
+            return await EndpointUtil.Update(promocode, promocodeDto.Convert(false), context);
         }
 
-        [AuthorizeRoles(Roles.AdminOwnerBot)]
+        [AuthorizeRoles(Roles.Admin, Roles.Owner)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            return await EndpointUtil.Delete<Promocode>(id, _contextFactory);
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            return await EndpointUtil.Delete<Promocode>(id, context);
         }
     }
 }

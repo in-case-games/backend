@@ -21,6 +21,8 @@ namespace InCase.Infrastructure.Configurations
             builder.Property(p => p.SentSites)
                 .HasColumnType("DECIMAL(18,5)")
                 .IsRequired();
+
+            builder.HasData(new SiteStatisticsAdmin());
         }
     }
 }

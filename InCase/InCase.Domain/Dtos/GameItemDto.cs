@@ -15,8 +15,9 @@ namespace InCase.Domain.Dtos
         public Guid? RarityId { get; set; }
         public Guid? QualityId { get; set; }
 
-        public GameItem Convert() => new()
+        public GameItem Convert(bool IsNewGuid = true) => new()
         {
+            Id = IsNewGuid ? Guid.NewGuid() : Id,
             Name = Name,
             Cost = Cost,
             ImageUri = ImageUri,

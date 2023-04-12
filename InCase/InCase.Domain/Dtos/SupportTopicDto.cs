@@ -12,8 +12,9 @@ namespace InCase.Domain.Dtos
 
         public Guid UserId { get; set; }
 
-        public SupportTopic Convert() => new()
+        public SupportTopic Convert(bool IsNewGuid = true) => new()
         {
+            Id = IsNewGuid ? Guid.NewGuid() : Id,
             Title = Title,
             Content = Content,
             Date = Date,

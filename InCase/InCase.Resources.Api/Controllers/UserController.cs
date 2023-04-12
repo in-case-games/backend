@@ -92,19 +92,21 @@ namespace InCase.Resources.Api.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("{id}/history/openings")]
-        public async Task<IActionResult> GetOpeningsByUserId(Guid id)
+        [HttpGet("{id}/history/withdrawns")]
+        public async Task<IActionResult> GetWithdrawnsById(Guid id)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            List<UserHistoryOpening> openings = await context.UserHistoryOpenings
-                .Include(i => i.Box)
-                .Include(i => i.Item)
+            if (!await context.Users.AnyAsync(a => a.Id == id))
+                return ResponseUtil.NotFound(nameof(User));
+
+            List<UserHistoryWithdrawn> withdrawns = await context.UserHistoryWithdrawns
                 .AsNoTracking()
+                .Include(i => i.Item)
                 .Where(w => w.UserId == id)
                 .ToListAsync();
 
-            return ResponseUtil.Ok(openings);
+            return ResponseUtil.Ok(withdrawns);
         }
 
         [AuthorizeRoles(Roles.All)]
@@ -144,6 +146,9 @@ namespace InCase.Resources.Api.Controllers
         public async Task<IActionResult> GetInventoryByUserId(Guid id)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            if (!await context.Users.AnyAsync(a => a.Id == id))
+                return ResponseUtil.NotFound(nameof(User));
 
             List<UserInventory> inventories = await context.UserInventories
                 .Include(i => i.Item)

@@ -8,8 +8,9 @@ namespace InCase.Domain.Dtos
         public string? ImageUri { get; set; } = "";
         public Guid ReviewId { get; set; }
 
-        public ReviewImage Convert() => new()
+        public ReviewImage Convert(bool IsNewGuid = true) => new()
         {
+            Id = IsNewGuid ? Guid.NewGuid() : Id,
             ImageUri = ImageUri,
             ReviewId = ReviewId,
         };

@@ -30,7 +30,6 @@ namespace InCase.Resources.Api.Controllers
             List<LootBoxGroup> groups = await context.LootBoxGroups
                 .Include(i => i.Group)
                 .Include(i => i.Box)
-                .Include(i => i.Game)
                 .AsNoTracking()
                 .ToListAsync();
 
@@ -46,13 +45,31 @@ namespace InCase.Resources.Api.Controllers
             LootBoxGroup? group = await context.LootBoxGroups
                 .Include(i => i.Group)
                 .Include(i => i.Box)
-                .Include(i => i.Game)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == id);
 
             return group is null ? 
                 ResponseUtil.NotFound(nameof(LootBoxGroup)) : 
                 ResponseUtil.Ok(group);
+        }
+
+        [AllowAnonymous]
+        [HttpGet("game/{id}")]
+        public async Task<IActionResult> GetByGameId(Guid id)
+        {
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            if (!await context.Games.AnyAsync(a => a.Id == id))
+                return ResponseUtil.NotFound(nameof(Game));
+
+            List<LootBoxGroup>? groups = await context.LootBoxGroups
+                .Include(i => i.Group)
+                .Include(i => i.Box)
+                .AsNoTracking()
+                .Where(w => w.GameId == id)
+                .ToListAsync();
+
+            return ResponseUtil.Ok(groups);
         }
 
         [AllowAnonymous]
@@ -68,79 +85,52 @@ namespace InCase.Resources.Api.Controllers
             return ResponseUtil.Ok(groups);
         }
 
-        [AuthorizeRoles(Roles.Owner, Roles.Admin)]
+        [AuthorizeRoles(Roles.Owner)]
         [HttpPost]
-        public async Task<IActionResult> Create(LootBoxGroupDto lootBoxGroup)
+        public async Task<IActionResult> Create(LootBoxGroupDto groupDto)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            try
-            {
-                await context.LootBoxGroups.AddAsync(lootBoxGroup.Convert());
-                await context.SaveChangesAsync();
+            if (!await context.Games.AnyAsync(a => a.Id == groupDto.GameId))
+                return ResponseUtil.NotFound(nameof(Game));
+            if (!await context.GroupLootBoxes.AnyAsync(a => a.Id == groupDto.GroupId))
+                return ResponseUtil.NotFound(nameof(Game));
+            if (!await context.LootBoxes.AnyAsync(a => a.Id == groupDto.BoxId))
+                return ResponseUtil.NotFound(nameof(Game));
 
-                return ResponseUtil.Ok(lootBoxGroup);
-            }
-            catch (Exception ex)
-            {
-                return ResponseUtil.Error(ex);
-            }
+            return await EndpointUtil.Create(groupDto.Convert(), context);
         }
 
-        [AuthorizeRoles(Roles.Owner, Roles.Admin)]
+        [AuthorizeRoles(Roles.Owner)]
         [HttpPost("group")]
-        public async Task<IActionResult> CreateGroup(GroupLootBox groupLootBox)
+        public async Task<IActionResult> CreateGroup(GroupLootBox group)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            try
-            {
-                await context.GroupLootBoxes.AddAsync(groupLootBox);
-                await context.SaveChangesAsync();
+            if (await context.GroupLootBoxes.AnyAsync(a => a.Name == group.Name))
+                return ResponseUtil.Conflict("The group name is already in use");
 
-                return ResponseUtil.Ok(groupLootBox);
-            }
-            catch (Exception ex)
-            {
-                return ResponseUtil.Error(ex);
-            }
+            group.Id = Guid.NewGuid();
+
+            return await EndpointUtil.Create(group, context);
         }
 
-        [AuthorizeRoles(Roles.Owner, Roles.Admin)]
+        [AuthorizeRoles(Roles.Owner)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            LootBoxGroup? group = await context.LootBoxGroups
-                .FirstOrDefaultAsync(f => f.Id == id);
-
-            if (group is null)
-                return ResponseUtil.NotFound(nameof(LootBoxGroup));
-
-            context.LootBoxGroups.Remove(group);
-            await context.SaveChangesAsync();
-
-            return ResponseUtil.Delete(nameof(LootBoxGroup));
+            return await EndpointUtil.Delete<LootBoxGroup>(id, context);
         }
 
-        [AuthorizeRoles(Roles.Owner, Roles.Admin)]
+        [AuthorizeRoles(Roles.Owner)]
         [HttpDelete("group/{id}")]
         public async Task<IActionResult> DeleteGroup(Guid id)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            GroupLootBox? group = await context.GroupLootBoxes
-                .AsNoTracking()
-                .FirstOrDefaultAsync(f => f.Id == id);
-
-            if (group is null)
-                return ResponseUtil.NotFound(nameof(GroupLootBox));
-
-            context.GroupLootBoxes.Remove(group);
-            await context.SaveChangesAsync();
-
-            return ResponseUtil.Delete(nameof(GroupLootBox));
+            return await EndpointUtil.Delete<GroupLootBox>(id, context);
         }
     }
 }

@@ -49,56 +49,54 @@ namespace InCase.Resources.Api.Controllers
                 ResponseUtil.Ok(news);
         }
 
-        [AuthorizeRoles(Roles.AdminOwnerBot)]
+        [AuthorizeRoles(Roles.Admin, Roles.Owner)]
         [HttpPost]
         public async Task<IActionResult> Create(News news)
         {
-            return await EndpointUtil.Create(news, _contextFactory);
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            news.Id = Guid.NewGuid();
+
+            return await EndpointUtil.Create(news, context);
         }
 
-        [AuthorizeRoles(Roles.AdminOwnerBot)]
+        [AuthorizeRoles(Roles.Admin, Roles.Owner)]
         [HttpPost("image")]
-        public async Task<IActionResult> CreateImage(NewsImageDto newsImage)
+        public async Task<IActionResult> CreateImage(NewsImageDto imageDto)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            try
-            {
-                if (await context.News.AnyAsync(a => a.Id == newsImage.NewsId))
-                {
-                    await context.NewsImages.AddAsync(newsImage.Convert());
-                    await context.SaveChangesAsync();
-
-                    return ResponseUtil.Ok(newsImage);
-                }
-
+            if (!await context.News.AnyAsync(a => a.Id == imageDto.NewsId))
                 return ResponseUtil.NotFound(nameof(NewsImage));
-            }
-            catch (Exception ex)
-            {
-                return ResponseUtil.Error(ex);
-            }
+
+            return await EndpointUtil.Create(imageDto.Convert(), context);
         }
 
-        [AuthorizeRoles(Roles.AdminOwnerBot)]
+        [AuthorizeRoles(Roles.Admin, Roles.Owner)]
         [HttpPut]
         public async Task<IActionResult> Update(News news)
         {
-            return await EndpointUtil.Update(news, _contextFactory);
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            return await EndpointUtil.Update(news, context);
         }
 
-        [AuthorizeRoles(Roles.AdminOwnerBot)]
+        [AuthorizeRoles(Roles.Admin, Roles.Owner)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            return await EndpointUtil.Delete<News>(id, _contextFactory);
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            return await EndpointUtil.Delete<News>(id, context);
         }
 
-        [AuthorizeRoles(Roles.AdminOwnerBot)]
+        [AuthorizeRoles(Roles.Admin, Roles.Owner)]
         [HttpDelete("image/{id}")]
         public async Task<IActionResult> DeleteImage(Guid id)
         {
-            return await EndpointUtil.Delete<NewsImage>(id, _contextFactory);
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            return await EndpointUtil.Delete<NewsImage>(id, context);
         }
     }
 }

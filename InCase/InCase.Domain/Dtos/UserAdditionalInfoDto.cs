@@ -16,8 +16,9 @@ namespace InCase.Domain.Dtos
         public Guid RoleId { get; set; }
         public Guid UserId { get; set; }
 
-        public UserAdditionalInfo Convert() => new()
+        public UserAdditionalInfo Convert(bool IsNewGuid = true) => new()
         {
+            Id = IsNewGuid ? Guid.NewGuid() : Id,
             Balance = Balance,
             ImageUri = ImageUri,
             IsNotifyEmail = IsNotifyEmail,

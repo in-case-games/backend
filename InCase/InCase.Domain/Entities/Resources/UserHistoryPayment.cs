@@ -13,8 +13,9 @@ namespace InCase.Domain.Entities.Resources
         [JsonIgnore]
         public User? User { get; set; }
 
-        public UserHistoryPaymentDto Convert() => new()
+        public UserHistoryPaymentDto Convert(bool IsNewGuid = true) => new()
         {
+            Id = IsNewGuid ? Guid.NewGuid() : Id,
             Date = Date,
             Amount = Amount,
             UserId = User?.Id ?? UserId

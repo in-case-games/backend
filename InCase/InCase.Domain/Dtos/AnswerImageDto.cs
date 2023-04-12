@@ -9,8 +9,9 @@ namespace InCase.Domain.Dtos
 
         public Guid AnswerId { get; set; }
 
-        public AnswerImage Convert() => new()
+        public AnswerImage Convert(bool IsNewGuid = true) => new()
         {
+            Id = IsNewGuid ? Guid.NewGuid() : Id,
             ImageUri = ImageUri,
             AnswerId = AnswerId
         };

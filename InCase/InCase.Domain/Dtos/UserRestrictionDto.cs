@@ -13,8 +13,9 @@ namespace InCase.Domain.Dtos
         public Guid? OwnerId { get; set; }
         public Guid TypeId { get; set; }
 
-        public UserRestriction Convert() => new()
+        public UserRestriction Convert(bool IsNewGuid = true) => new()
         {
+            Id = IsNewGuid ? Guid.NewGuid() : Id,
             CreationDate = CreationDate,
             ExpirationDate = ExpirationDate,
             Description = Description,

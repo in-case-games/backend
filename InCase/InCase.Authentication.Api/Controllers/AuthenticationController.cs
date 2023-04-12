@@ -5,6 +5,7 @@ using InCase.Domain.Entities.Resources;
 using InCase.Infrastructure.Data;
 using InCase.Infrastructure.Services;
 using InCase.Infrastructure.Utils;
+using MailKit.Net.Smtp;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -37,7 +38,6 @@ namespace InCase.Authentication.Api.Controllers
         [HttpPost("signin")]
         public async Task<IActionResult> SignIn(UserDto userDto)
         {
-            //Check is exist user
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             User? user = await context.Users
@@ -50,7 +50,16 @@ namespace InCase.Authentication.Api.Controllers
             if (user is null) 
                 return ResponseUtil.NotFound("User");
             if (!ValidationService.IsValidUserPassword(in user, userDto.Password!))
-                return Forbid("Invalid data");
+                return ResponseUtil.Conflict("Invalid data");
+
+            List<UserRestriction> bans = await context.UserRestrictions
+                .Include(i => i.Type)
+                .AsNoTracking()
+                .Where(w => w.UserId == user.Id && w.Type!.Name == "ban")
+                .ToListAsync();
+
+            if (bans.Count > 0)
+                return ResponseUtil.Conflict(bans);
 
             return await _emailService.SendSignIn(new DataMailLink()
             {
@@ -77,7 +86,6 @@ namespace InCase.Authentication.Api.Controllers
             if (isExist) 
                 return ResponseUtil.Conflict("User already exists!");
 
-            //Map user and additional info
             User user = userDto.Convert();
 
             byte[] salt = EncryptorService.GenerationSaltTo64Bytes();
@@ -95,18 +103,26 @@ namespace InCase.Authentication.Api.Controllers
                 DeletionDate = DateTime.UtcNow + TimeSpan.FromDays(30),
             };
 
-            //Create user and additional info
+            try
+            {
+                await _emailService.SendSignUp(new DataMailLink()
+                {
+                    UserEmail = user.Email!,
+                    UserLogin = user.Login!,
+                    EmailToken = _jwtService.CreateEmailToken(user)
+                });
+            }
+            catch (SmtpCommandException)
+            {
+                return ResponseUtil.Conflict("MailBox is not existed!");
+            }
+
             await context.Users.AddAsync(user);
             await context.UserAdditionalInfos.AddAsync(info);
 
             await context.SaveChangesAsync();
 
-            return await _emailService.SendSignUp(new DataMailLink()
-            {
-                UserEmail = user.Email!,
-                UserLogin = user.Login!,
-                EmailToken = _jwtService.CreateEmailToken(user)
-            });
+            return ResponseUtil.SendEmail();
         }
 
         [AllowAnonymous]
@@ -125,6 +141,7 @@ namespace InCase.Authentication.Api.Controllers
                 .Value;
 
             User? user = await context.Users
+                .Include(i => i.Restrictions)
                 .Include(x => x.AdditionalInfo)
                 .Include(x => x.AdditionalInfo!.Role)
                 .AsNoTracking()
@@ -134,7 +151,16 @@ namespace InCase.Authentication.Api.Controllers
                 return ResponseUtil.NotFound("User");
             if (!ValidationService.IsValidToken(in user, principal, "refresh"))
                 return Forbid("Invalid refresh token");
-            
+
+            List<UserRestriction> bans = await context.UserRestrictions
+                .Include(i => i.Type)
+                .AsNoTracking()
+                .Where(w => w.UserId == user.Id && w.Type!.Name == "ban")
+                .ToListAsync();
+
+            if (bans.Count > 0)
+                return ResponseUtil.Conflict(bans);
+
             DataSendTokens tokenModel = _jwtService.CreateTokenPair(in user!);
 
             return ResponseUtil.Ok(tokenModel);

@@ -15,8 +15,9 @@ namespace InCase.Domain.Entities.Resources
         public User? User { get; set; }
         public GameItem? Item { get; set; }
 
-        public UserHistoryWithdrawnDto Convert() => new()
+        public UserHistoryWithdrawnDto Convert(bool IsNewGuid = true) => new()
         {
+            Id = IsNewGuid ? Guid.NewGuid() : Id,
             Date = Date,
             UserId = User?.Id ?? UserId,
             ItemId = Item?.Id ?? ItemId

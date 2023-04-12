@@ -23,8 +23,9 @@ namespace InCase.Domain.Entities.Resources
         [JsonIgnore]
         public User? User { get; set; }
 
-        public UserAdditionalInfoDto Convert() => new()
+        public UserAdditionalInfoDto Convert(bool IsNewGuid = true) => new()
         {
+            Id = IsNewGuid ? Guid.NewGuid() : Id,
             Balance = Balance,
             ImageUri = ImageUri,
             IsNotifyEmail = IsNotifyEmail,

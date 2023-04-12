@@ -19,8 +19,9 @@ namespace InCase.Domain.Entities.Resources
         public SupportTopic? Topic { get; set; }
         public List<AnswerImage>? Images { get; set; }
 
-        public SupportTopicAnswerDto Convert() => new()
+        public SupportTopicAnswerDto Convert(bool IsNewGuid = true) => new()
         {
+            Id = IsNewGuid ? Guid.NewGuid() : Id,
             Content = Content,
             Date = Date,
             PlaintiffId = Plaintiff?.Id ?? PlaintiffId,

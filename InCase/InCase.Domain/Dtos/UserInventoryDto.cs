@@ -11,8 +11,9 @@ namespace InCase.Domain.Dtos
         public Guid UserId { get; set; }
         public Guid ItemId { get; set; }
 
-        public UserInventory Convert() => new()
+        public UserInventory Convert(bool IsNewGuid = true) => new()
         {
+            Id = IsNewGuid ? Guid.NewGuid() : Id,
             Date = Date,
             FixedCost = FixedCost,
             UserId = UserId,
