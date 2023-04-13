@@ -7,6 +7,7 @@ namespace InCase.Domain.Dtos
     {
         public DateTime Date { get; set; }
         public int NumberSteps { get; set; }
+        public decimal FixedCost { get; set; }
 
         public Guid UserId { get; set; }
         public Guid ItemId { get; set; }
@@ -17,6 +18,7 @@ namespace InCase.Domain.Dtos
             Id = IsNewGuid ? Guid.NewGuid() : Id,
             Date = Date,
             NumberSteps = NumberSteps,
+            FixedCost = FixedCost,
             UserId = UserId,
             ItemId = ItemId,
             BannerId = BannerId

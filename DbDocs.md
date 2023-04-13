@@ -575,6 +575,7 @@
 |PK|Id|uniqueidentifier|True|NEWID(), UNIQUE|
 ||Date|datetime2(7)|True|-|
 ||NumberSteps|int|True|-|
+||FixedCost|decimal(18, 5)|True|-|
 |FK|UserId|uniqueidentifier|True|-|
 |FK|ItemId|uniqueidentifier|True|-|
 |FK|BannerId|uniqueidentifier|True|-|

@@ -216,9 +216,32 @@ namespace InCase.Resources.Api.Controllers
 
             pathDto.UserId = UserId;
             pathDto.Date = DateTime.UtcNow;
-            pathDto.NumberSteps = (int)Math.Ceiling(item.Cost/(box.Cost * 0.14M));
+            pathDto.NumberSteps = (int)Math.Ceiling(item.Cost/(box.Cost * 0.2M));
+            pathDto.FixedCost = item.Cost;
 
             return await EndpointUtil.Create(pathDto.Convert(), context);
+        }
+
+        [AuthorizeRoles(Roles.All)]
+        [HttpDelete("banner/{id}")]
+        public async Task<IActionResult> RemovePathBanner(Guid id)
+        {
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            UserPathBanner? pathBanner = await context.UserPathBanners
+                .Include(i => i.Banner)
+                .Include(i => i.Banner!.Box)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(f => f.BannerId == id && f.UserId == UserId);
+
+            if (pathBanner is null)
+                return ResponseUtil.NotFound(nameof(UserPathBanner));
+
+            SiteStatisticsAdmin statisticsAdmin = await context.SiteStatisticsAdmins
+                    .FirstAsync();
+            statisticsAdmin.BalanceWithdrawn += pathBanner.NumberSteps * pathBanner.Banner!.Box!.Cost * 0.2M;
+
+            return await EndpointUtil.Delete(pathBanner, context);
         }
 
         // TODO Transfer method

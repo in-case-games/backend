@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using InCase.Domain.Dtos;
+using System.Text.Json.Serialization;
 
 namespace InCase.Domain.Entities.Resources
 {
@@ -6,6 +7,7 @@ namespace InCase.Domain.Entities.Resources
     {
         public DateTime Date { get; set; }
         public int NumberSteps { get; set; }
+        public decimal FixedCost { get; set; }
 
         [JsonIgnore]
         public Guid UserId { get; set; }
@@ -18,11 +20,12 @@ namespace InCase.Domain.Entities.Resources
         public GameItem? Item { get; set; }
         public LootBoxBanner? Banner { get; set; }
 
-        public UserPathBanner Convert(bool IsNewGuid = true) => new()
+        public UserPathBannerDto Convert(bool IsNewGuid = true) => new()
         {
             Id = IsNewGuid ? Guid.NewGuid() : Id,
             Date = Date,
             NumberSteps = NumberSteps,
+            FixedCost = FixedCost,
             UserId = User?.Id ?? UserId,
             ItemId = Item?.Id ?? ItemId,
             BannerId = Banner?.Id ?? BannerId

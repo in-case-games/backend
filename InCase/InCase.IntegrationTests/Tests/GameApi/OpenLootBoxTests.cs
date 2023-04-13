@@ -1,11 +1,13 @@
 ﻿using InCase.Domain.Dtos;
 using InCase.Domain.Entities.Resources;
 using InCase.IntegrationTests.Services;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System.Diagnostics;
 using System.Net;
+using System.Runtime.CompilerServices;
 using Xunit.Abstractions;
 
 namespace InCase.IntegrationTests.Tests.GameApi
@@ -73,10 +75,15 @@ namespace InCase.IntegrationTests.Tests.GameApi
             LootBox? lootBox = (await _responseResources
                 .ResponseGet<AnswerBoxApi?>($"/api/loot-box/admin/{lootBoxGuid}", AccessToken))!.Data;
 
+            SiteStatisticsAdmin statisticsAdmin = await Context.SiteStatisticsAdmins
+                .FirstAsync();
+
             _output.WriteLine(
-                $"Профит: {lootBox!.Cost * 0.1M * 1000} Р\n" +
-                $"Баланс: {lootBox.Balance} Р\n" +
+                $"Профит сайта: {statisticsAdmin.BalanceWithdrawn} Р\n" +
+                $"Баланс кейса: {lootBox!.Balance} Р\n" +
                 $"Скорость алгоритма: {elapsedTime}");
+
+            statisticsAdmin.BalanceWithdrawn = 0;
 
             await RemoveTestDependencies(itemsGuids, lootBoxGuid);
         }
@@ -122,10 +129,17 @@ namespace InCase.IntegrationTests.Tests.GameApi
             LootBox? lootBox = (await _responseResources
                 .ResponseGet<AnswerBoxApi?>($"/api/loot-box/admin/{lootBoxGuid}", AccessToken))!.Data;
 
+            SiteStatisticsAdmin statisticsAdmin = await Context.SiteStatisticsAdmins
+                .FirstAsync();
+
             _output.WriteLine(
-                $"Профит: {lootBox!.Cost * 0.01M * 1000} Р\n" +
-                $"Баланс: {lootBox.Balance} Р\n" +
+                $"Профит сайта: {statisticsAdmin.BalanceWithdrawn} Р\n" +
+                $"Баланс кейса: {lootBox!.Balance} Р\n" +
                 $"Скорость алгоритма: {elapsedTime}");
+
+            statisticsAdmin.BalanceWithdrawn = 0;
+
+            await Context.SaveChangesAsync();
 
             await RemoveTestDependencies(itemsGuids, lootBoxGuid);
         }
