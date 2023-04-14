@@ -20,6 +20,17 @@ namespace InCase.IntegrationTests.Tests.GameApi
         protected readonly ResponseService _responseGame;
         protected readonly ResponseService _responseResources;
 
+        private readonly Dictionary<string, decimal> ItemsAndCost = new()
+        {
+            ["USP-S - Cortex"] = 239.99M,
+            ["AK-47 - Ice Coaled"] = 752M,
+            ["Перчатки «Гидра» - Изумруд"] = 4211M,
+            ["Обмотки рук - Пустынный шемах"] = 4857M,
+            ["Фальшион - Ночь"] = 8000M,
+            ["Glock-18 - Ласка"] = 66M,
+            ["AWP - Ахерон"] = 61M,
+        };
+
         private static readonly IConfiguration _configuration = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddUserSecrets<HostGameApiTests>()
@@ -66,7 +77,6 @@ namespace InCase.IntegrationTests.Tests.GameApi
             //Assert
             _output.WriteLine("Предмет = количество выпадений");
 
-            
             foreach (var winItem in winingItems)
             {
                 _output.WriteLine($"{winItem.Key} = {winItem.Value}");
@@ -120,7 +130,6 @@ namespace InCase.IntegrationTests.Tests.GameApi
             //Assert
             _output.WriteLine("Предмет = количество выпадений");
 
-
             foreach (var winItem in winingItems)
             {
                 _output.WriteLine($"{winItem.Key} = {winItem.Value}");
@@ -135,6 +144,65 @@ namespace InCase.IntegrationTests.Tests.GameApi
             _output.WriteLine(
                 $"Профит сайта: {statisticsAdmin.BalanceWithdrawn} Р\n" +
                 $"Баланс кейса: {lootBox!.Balance} Р\n" +
+                $"Скорость алгоритма: {elapsedTime}");
+
+            statisticsAdmin.BalanceWithdrawn = 0;
+
+            await Context.SaveChangesAsync();
+
+            await RemoveTestDependencies(itemsGuids, lootBoxGuid);
+        }
+
+        [Fact]
+        public async Task GET_RevenueSubcribedBanner_Output()
+        {
+            //Arrange
+            decimal allCostItems = 0;
+            Guid lootBoxGuid = Guid.NewGuid();
+            Guid bannerGuid = Guid.NewGuid();
+            List<Guid> itemsGuids = new() {
+                Guid.NewGuid(), Guid.NewGuid(),
+                Guid.NewGuid(), Guid.NewGuid(),
+                Guid.NewGuid(), Guid.NewGuid(),
+                Guid.NewGuid(),
+            };
+
+            await InitializeTestDependencies(itemsGuids, lootBoxGuid);
+            await InitializeTestDependencies2(lootBoxGuid, itemsGuids[2], bannerGuid);
+
+            //Act
+            Stopwatch startTime = Stopwatch.StartNew();
+            Dictionary<string, int> winingItems = await GetWiningItems(
+                lootBoxGuid,
+                itemsGuids[2].ToString(),
+                bannerGuid.ToString());
+
+            startTime.Stop();
+            var resultTime = startTime.Elapsed;
+            string elapsedTime = string.Format("{0:00}.{1:000}",
+                resultTime.Seconds,
+                resultTime.Milliseconds);
+
+            //Assert
+            _output.WriteLine("Предмет = стоимость лута");
+
+            foreach (var winItem in winingItems)
+            {
+                decimal costWiningItems = ItemsAndCost[winItem.Key] * winItem.Value;
+                allCostItems += costWiningItems;
+                _output.WriteLine($"{winItem.Key} = {costWiningItems}");
+            }
+
+            LootBox? lootBox = (await _responseResources
+                .ResponseGet<AnswerBoxApi?>($"/api/loot-box/admin/{lootBoxGuid}", AccessToken))!.Data;
+
+            SiteStatisticsAdmin statisticsAdmin = await Context.SiteStatisticsAdmins
+                .FirstAsync();
+
+            _output.WriteLine(
+                $"Профит сайта: {statisticsAdmin.BalanceWithdrawn} Р\n" +
+                $"Баланс кейса: {lootBox!.Balance} Р\n" +
+                $"Стоимость всех предметов: {allCostItems}\n" +
                 $"Скорость алгоритма: {elapsedTime}");
 
             statisticsAdmin.BalanceWithdrawn = 0;

@@ -14,6 +14,8 @@ namespace InCase.Game.Api.Controllers
     {
         private const decimal RevenuePrecentage = 0.1M;
         private const decimal DepositPrecentageBanner = 0.2M;
+        private const decimal RevenuePrecentageDifferenceStep = 0.1M;
+        private const decimal RevenuePrecentageCompletedStep = 0.1M;
         private static readonly Random _random = new();
         private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
         private Guid UserId => Guid
@@ -26,37 +28,31 @@ namespace InCase.Game.Api.Controllers
 
         [AuthorizeRoles(Roles.All)]
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetOpeningCase(Guid id)
+        public async Task<IActionResult> GetOpeningLootBox(Guid id)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             UserAdditionalInfo? userInfo = await context.UserAdditionalInfos
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.UserId == UserId);
+
             LootBox? lootBox = await context.LootBoxes
-                .Include(i => i.Inventories)
+                .Include(i => i.Inventories!)
+                    .ThenInclude(ti => ti!.Item)
                 .Include(i => i.Banner)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == id);
+            UserPathBanner? pathBanner = null;
 
             if (userInfo is null || lootBox is null)
                 return ResponseUtil.NotFound(nameof(LootBox));
             if (userInfo.Balance < lootBox.Cost) 
-                return Forbid("Insufficient funds");
-
-            lootBox.Inventories = await context.LootBoxInventories
-                .Include(x => x.Item)
-                .AsNoTracking()
-                .Where(x => x.BoxId == id)
-                .ToListAsync();
-
-            UserPathBanner? pathBanner = null;
-
+                return ResponseUtil.Conflict("Insufficient funds");
             if(lootBox!.Banner?.Id is not null)
             {
                 pathBanner = await context.UserPathBanners
-                .AsNoTracking()
-                .FirstOrDefaultAsync(f => f.BannerId == lootBox.Banner!.Id && f.UserId == UserId);
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(f => f.BannerId == lootBox.Banner!.Id && f.UserId == UserId);
             }
 
             //Update Balance Case and User
@@ -68,39 +64,45 @@ namespace InCase.Game.Api.Controllers
             SiteStatisticsAdmin statisticsAdmin = await context.SiteStatisticsAdmins
                 .FirstAsync();
 
-            decimal expensesCase = winGameItem.Cost + lootBox.Cost * RevenuePrecentage;
+            decimal revenue = lootBox.Cost * RevenuePrecentage;
+            decimal expensesCase = winGameItem.Cost + revenue;
 
             if (pathBanner is not null && lootBox.Banner!.IsActive == true)
             {
+                decimal depositRevenue = lootBox.Cost * DepositPrecentageBanner;
+                decimal ceilingCountStep = Math.Ceiling(pathBanner.FixedCost / depositRevenue);
+                decimal countStep = pathBanner.FixedCost / depositRevenue;
+                revenue = 0;
                 pathBanner.NumberSteps--;
-                context.UserPathBanners.Attach(pathBanner);
-                context.Entry(pathBanner).Property(p => p.NumberSteps).IsModified = true;
-                expensesCase = winGameItem.Cost + lootBox.Cost * DepositPrecentageBanner;
+                expensesCase = winGameItem.Cost + depositRevenue;
 
-                if (pathBanner.NumberSteps <= 0 && pathBanner.ItemId == winGameItem.Id)
+                if (pathBanner.NumberSteps <= 0)
                 {
-                    winGameItem = lootBox.Inventories
-                        .FirstOrDefault(f => f.ItemId == pathBanner.ItemId)!.Item!;
-                    winGameItem.Cost = pathBanner.FixedCost;
-
                     //Зачисление разницы между шагами округления 64.1 это 65 разница 0.9 * на процент шаг с кейса
-                    userInfo.Balance += (Math.Ceiling(pathBanner.FixedCost / (lootBox.Cost * DepositPrecentageBanner)) - (pathBanner.FixedCost / (lootBox.Cost * DepositPrecentageBanner))) * (lootBox.Cost * DepositPrecentageBanner);
-                    
-                    //Зачисление если предмет выпал раньше того как пользователь дойдет до предмета
-                    if (pathBanner.ItemId == winGameItem.Id)
-                    {
-                        userInfo.Balance += ((int)Math.Ceiling(pathBanner.FixedCost / (lootBox.Cost * DepositPrecentageBanner)) - pathBanner.NumberSteps) * (lootBox.Cost * DepositPrecentageBanner) * 0.9M;
-                        statisticsAdmin.BalanceWithdrawn += ((int)Math.Ceiling(pathBanner.FixedCost / (lootBox.Cost * DepositPrecentageBanner)) - pathBanner.NumberSteps) * (lootBox.Cost * DepositPrecentageBanner) * 0.1M;
-                    }    
+                    userInfo.Balance += (ceilingCountStep - countStep) * (depositRevenue);
+
+                    winGameItem = lootBox.Inventories!
+                        .FirstOrDefault(f => f.ItemId == pathBanner.ItemId)!.Item!;
+                    winGameItem.Cost = pathBanner.FixedCost;   
                     
                     context.UserPathBanners.Remove(pathBanner);
                 }
-            }
-            else
-            {
-                statisticsAdmin.BalanceWithdrawn += lootBox.Cost * RevenuePrecentage;
-            } 
+                else if(pathBanner.ItemId == winGameItem.Id)
+                {
+                    //Зачисление если предмет выпал раньше того как пользователь дойдет до предмета
+                    userInfo.Balance += (ceilingCountStep - countStep) * (depositRevenue) * (1M - RevenuePrecentageCompletedStep);
+                    revenue += (ceilingCountStep - countStep) * RevenuePrecentageCompletedStep;
 
+                    context.UserPathBanners.Remove(pathBanner);
+                }
+                else
+                {
+                    context.UserPathBanners.Attach(pathBanner);
+                    context.Entry(pathBanner).Property(p => p.NumberSteps).IsModified = true;
+                }
+            }
+
+            statisticsAdmin.BalanceWithdrawn += revenue;
             lootBox.Balance -= expensesCase;
 
             context.LootBoxes.Attach(lootBox);
@@ -129,6 +131,46 @@ namespace InCase.Game.Api.Controllers
 
             await context.UserHistoryOpenings.AddAsync(history);
             await context.UserInventories.AddAsync(inventory);
+
+            await context.SaveChangesAsync();
+
+            return ResponseUtil.Ok(winGameItem);
+        }
+
+        [AuthorizeRoles(Roles.All)]
+        [HttpGet("virtual/{id}")]
+        public async Task<IActionResult> GetVirtualOpeningLootBox(Guid id)
+        {
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            UserAdditionalInfo? userInfo = await context.UserAdditionalInfos
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.UserId == UserId);
+            LootBox? lootBox = await context.LootBoxes
+                .Include(i => i.Inventories!)
+                    .ThenInclude(ti => ti!.Item)
+                .Include(i => i.Banner)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id == id);
+
+            if (userInfo is null || lootBox is null)
+                return ResponseUtil.NotFound(nameof(LootBox));
+            if (!userInfo.IsGuestMode)
+                return Forbid("On guest mode");
+
+            //Update Balance Case and User
+            lootBox.VirtualBalance += lootBox.Cost;
+
+            //Calling random
+            GameItem winGameItem = RandomizeBySmallest(in lootBox);
+
+            decimal revenue = lootBox.Cost * RevenuePrecentage;
+            decimal expensesCase = winGameItem.Cost + revenue;
+
+            lootBox.VirtualBalance -= expensesCase;
+
+            context.LootBoxes.Attach(lootBox);
+            context.Entry(lootBox).Property(p => p.VirtualBalance).IsModified = true;
 
             await context.SaveChangesAsync();
 
