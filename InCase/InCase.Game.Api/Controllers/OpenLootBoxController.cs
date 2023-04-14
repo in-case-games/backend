@@ -12,10 +12,8 @@ namespace InCase.Game.Api.Controllers
     [ApiController]
     public class OpenLootBoxController : ControllerBase
     {
-        private const decimal RevenuePrecentage = 0.1M;
-        private const decimal DepositPrecentageBanner = 0.2M;
-        private const decimal RevenuePrecentageDifferenceStep = 0.1M;
-        private const decimal RevenuePrecentageCompletedStep = 0.1M;
+        private const decimal RevenuePrecentage = 0.10M;
+        private const decimal RetentionPrecentageBanner = 0.20M;
         private static readonly Random _random = new();
         private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
         private Guid UserId => Guid
@@ -67,51 +65,48 @@ namespace InCase.Game.Api.Controllers
                 .FirstAsync();
 
             decimal revenue = lootBox.Cost * RevenuePrecentage;
-            decimal expensesCase = winGameItem.Cost + revenue;
+            decimal lootBoxExpenses = winGameItem.Cost + revenue;
 
             if (pathBanner is not null && lootBox.Banner!.IsActive == true)
             {
-                decimal depositRevenue = lootBox.Cost * DepositPrecentageBanner;
-                decimal ceilingCountStep = Math.Ceiling(pathBanner.FixedCost / depositRevenue);
-                decimal countStep = pathBanner.FixedCost / depositRevenue;
-                revenue = 0;
-                pathBanner.NumberSteps--;
-                expensesCase = winGameItem.Cost + depositRevenue;
+                --pathBanner.NumberSteps;
 
-                if (pathBanner.NumberSteps <= 0)
+                decimal retentionAmount = lootBox.Cost * RetentionPrecentageBanner;
+                decimal cashBack = GetCashBack(ref winGameItem, in lootBox, pathBanner);
+
+                lootBoxExpenses = winGameItem.Cost + retentionAmount;
+
+                if (pathBanner.NumberSteps == 0)
                 {
-                    //Зачисление разницы между шагами округления 64.1 это 65 разница 0.9 * на процент шаг с кейса
-                    userInfo.Balance += (ceilingCountStep - countStep) * (depositRevenue);
-
                     winGameItem = lootBox.Inventories!
                         .FirstOrDefault(f => f.ItemId == pathBanner.ItemId)!.Item!;
-                    winGameItem.Cost = pathBanner.FixedCost;   
-                    
-                    context.UserPathBanners.Remove(pathBanner);
+                    winGameItem.Cost = pathBanner.FixedCost;
+
+                    lootBoxExpenses = retentionAmount;
                 }
-                else if(pathBanner.ItemId == winGameItem.Id)
+
+                if (cashBack >= 0)
                 {
-                    //Зачисление если предмет выпал раньше того как пользователь дойдет до предмета
-                    userInfo.Balance += (ceilingCountStep - countStep) * (depositRevenue) * (1M - RevenuePrecentageCompletedStep);
-                    revenue += (ceilingCountStep - countStep) * RevenuePrecentageCompletedStep;
+                    userInfo.Balance += cashBack * (1M - RevenuePrecentage);
+                    revenue = cashBack * RevenuePrecentage;
 
                     context.UserPathBanners.Remove(pathBanner);
                 }
                 else
                 {
+                    revenue = 0;
                     context.UserPathBanners.Attach(pathBanner);
                     context.Entry(pathBanner).Property(p => p.NumberSteps).IsModified = true;
                 }
             }
 
             statisticsAdmin.BalanceWithdrawn += revenue;
-            lootBox.Balance -= expensesCase;
+            lootBox.Balance -= lootBoxExpenses;
 
             context.LootBoxes.Attach(lootBox);
             context.UserAdditionalInfos.Attach(userInfo);
             context.Entry(userInfo).Property(p => p.Balance).IsModified = true;
             context.Entry(lootBox).Property(p => p.Balance).IsModified = true;
-            context.Entry(lootBox).Property(p => p.VirtualBalance).IsModified = true;
 
             //Add history and add inventory user
             UserHistoryOpening history = new()
@@ -204,7 +199,25 @@ namespace InCase.Game.Api.Controllers
 
             return winGameItem;
         }
+        private static decimal GetCashBack(
+            ref GameItem winGameItem, 
+            in LootBox lootBox, 
+            UserPathBanner pathBanner)
+        {
+            decimal retentionAmount = lootBox.Cost * RetentionPrecentageBanner;
+            decimal ceilingNumberSteps = Math.Ceiling(pathBanner.FixedCost / retentionAmount);
+            decimal exactNumberSteps = pathBanner.FixedCost / retentionAmount;
 
+            //Зачисление разницы между шагами округления 64.1 это 65 разница 0.9 * на процент шаг с кейса
+            if (pathBanner.NumberSteps == 0)
+                return (ceilingNumberSteps - exactNumberSteps) * retentionAmount;
+
+            //Зачисление если предмет выпал раньше того как пользователь дойдет до предмета
+            if (pathBanner.ItemId == winGameItem.Id)
+                return (ceilingNumberSteps - pathBanner.NumberSteps) * retentionAmount;
+
+            return -1M;
+        }
         private static bool IsProfitCase(GameItem gameItem, LootBox lootBox)
         {
             decimal revenue = lootBox.Balance * RevenuePrecentage;

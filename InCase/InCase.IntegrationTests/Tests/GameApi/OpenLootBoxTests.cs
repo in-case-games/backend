@@ -1,13 +1,10 @@
 ﻿using InCase.Domain.Dtos;
 using InCase.Domain.Entities.Resources;
 using InCase.IntegrationTests.Services;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System.Diagnostics;
-using System.Net;
-using System.Runtime.CompilerServices;
 using Xunit.Abstractions;
 
 namespace InCase.IntegrationTests.Tests.GameApi
@@ -229,7 +226,7 @@ namespace InCase.IntegrationTests.Tests.GameApi
                 ["AWP - Ахерон"] = 0,
             };
 
-            for (int i = 0; i <= 1000; i++)
+            for (int i = 0; i < 1000; i++)
             {
                 //Open Cases
                 GameItem? winItem = (await _responseGame
