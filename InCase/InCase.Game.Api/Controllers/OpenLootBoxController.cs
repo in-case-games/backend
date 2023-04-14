@@ -46,9 +46,11 @@ namespace InCase.Game.Api.Controllers
 
             if (userInfo is null || lootBox is null)
                 return ResponseUtil.NotFound(nameof(LootBox));
+            if (lootBox.IsLocked)
+                return ResponseUtil.Conflict("Loot box is locked");
             if (userInfo.Balance < lootBox.Cost) 
                 return ResponseUtil.Conflict("Insufficient funds");
-            if(lootBox!.Banner?.Id is not null)
+            if (lootBox!.Banner?.Id is not null)
             {
                 pathBanner = await context.UserPathBanners
                     .AsNoTracking()
