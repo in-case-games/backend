@@ -188,6 +188,7 @@ namespace InCase.Resources.Api.Controllers
             return ResponseUtil.Ok(payments);
         }
 
+        // TODO Transfer method
         [AuthorizeRoles(Roles.All)]
         [HttpPost("banner")]
         public async Task<IActionResult> CreatePathBanner(UserPathBannerDto pathDto)
@@ -222,6 +223,7 @@ namespace InCase.Resources.Api.Controllers
             return await EndpointUtil.Create(pathDto.Convert(), context);
         }
 
+        // TODO Transfer method
         [AuthorizeRoles(Roles.All)]
         [HttpDelete("banner/{id}")]
         public async Task<IActionResult> RemovePathBanner(Guid id)
@@ -233,25 +235,23 @@ namespace InCase.Resources.Api.Controllers
                 .Include(i => i.Banner!.Box)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(f => f.BannerId == id && f.UserId == UserId);
+            UserAdditionalInfo? userInfo = await context.UserAdditionalInfos
+                .FirstOrDefaultAsync(f => f.UserId == UserId);
 
+            if (userInfo is null)
+                return ResponseUtil.NotFound(nameof(UserAdditionalInfo));
             if (pathBanner is null)
                 return ResponseUtil.NotFound(nameof(UserPathBanner));
 
             SiteStatisticsAdmin statisticsAdmin = await context.SiteStatisticsAdmins
-                    .FirstAsync();
-            statisticsAdmin.BalanceWithdrawn += pathBanner.NumberSteps * pathBanner.Banner!.Box!.Cost * 0.2M;
+                .FirstAsync();
+
+            decimal totalSpent = pathBanner.NumberSteps * pathBanner.Banner!.Box!.Cost;
+
+            statisticsAdmin.BalanceWithdrawn += totalSpent * 0.1M;
+            userInfo.Balance += totalSpent * 0.9M;
 
             return await EndpointUtil.Delete(pathBanner, context);
         }
-
-        // TODO Transfer method
-        // [AuthorizeRoles(Roles.All)]
-        // [HttpPost("promocodes")]
-        // public async Task<IActionResult> ActivatePromocode(UserHistoryPromocodeDto promocode)
-        // {
-        //     return promocode.UserId == UserId ? 
-        //     await EndpointUtil.Create(promocode.Convert(), _contextFactory) : 
-        //     Forbid("Access denied");
-        // }
     }
 }
