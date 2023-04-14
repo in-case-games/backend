@@ -69,6 +69,14 @@ _Данный подзаголовок содержит в себе информ
 }
 ```
 
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "Game is not found. "
+}
+```
+
 2. Получение определенной игровой сущности: 
    * Доступ: Allow Anonymous
    * Метод: GET 
@@ -124,6 +132,14 @@ _Данный подзаголовок содержит в себе информ
       "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
     }
   ]
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "News is not found. "
 }
 ```
 
@@ -242,6 +258,14 @@ _Данный подзаголовок содержит в себе информ
 }
 ```
 
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "News is not found. "
+}
+```
+
 6. Создание картинки новости:
    * Доступ: Admin, Owner
    * Метод: POST 
@@ -292,6 +316,14 @@ _Данный подзаголовок содержит в себе информ
 }
 ```
 
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "NewsImage is not found. "
+}
+```
+
 
 ### Информация о статистике
 
@@ -315,6 +347,14 @@ _Данный подзаголовок содержит в себе информ
 }
 ```
 
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "SiteStatitics is not found. "
+}
+```
+
 2. Получение админской статистике сайта:
    * Доступ: Owner, Bot
    * Метод: GET 
@@ -330,6 +370,14 @@ _Данный подзаголовок содержит в себе информ
     "sentSites": 0,
     "id": "dcc228c3-6ad8-4021-9677-01b1067b5e23"
   }
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "SiteStatiticsAdmin is not found. "
 }
 ```
 
@@ -403,6 +451,14 @@ _Данный подзаголовок содержит в себе информ
       "id": "47908aed-2372-4965-92f9-0498515aaadb"
     }
   ]
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "GameItem is not found. "
 }
 ```
 
@@ -482,6 +538,13 @@ _Данный подзаголовок содержит в себе информ
   ]
 }
 ```
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "Qualities is not found. "
+}
+```
 
 4. Получение всех типов предмета:
    * Доступ: Allow Anonymous
@@ -514,6 +577,14 @@ _Данный подзаголовок содержит в себе информ
       "id": "f8a8acce-5f41-4417-b6c2-09c11039bc22"
     }
   ]
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "Types is not found. "
 }
 ```
 
@@ -552,6 +623,14 @@ _Данный подзаголовок содержит в себе информ
       "id": "a94fb5be-e114-4816-84dc-5acd485e2fc9"
     }
   ]
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "Rarity is not found. "
 }
 ```
 
@@ -597,14 +676,6 @@ _Данный подзаголовок содержит в себе информ
 {
   "success": false,
   "data": "Game is not found. "
-}
-```
-
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
-```JSON
-{
-  "success": false,
-  "data": "GameItem is not found. "
 }
 ```
 
@@ -781,6 +852,14 @@ _Данный подзаголовок содержит в себе информ
 }
 ```
 
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "LootBoxGroup is not found. "
+}
+```
+
 2. Получение группы кейса по id:
    * Доступ: Allow Anonymous
    * Метод: GET
@@ -833,6 +912,14 @@ _Данный подзаголовок содержит в себе информ
       "id": "1a97a421-16ed-4b96-a4b9-8ebfda7ae79c"
     }
   ]
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "GroupLootBox is not found. "
 }
 ```
 
@@ -1004,6 +1091,14 @@ _Данный подзаголовок содержит в себе информ
 ```JSON
 {
   "success": false,
+  "data": "LootBoxGroup is not found. "
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
   "data": "Game is not found. "
 }
 ```
@@ -1031,6 +1126,14 @@ _Данный подзаголовок содержит в себе информ
       "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
     }
   ]
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "LootBox is not found. "
 }
 ```
 
@@ -1129,6 +1232,14 @@ _Данный подзаголовок содержит в себе информ
       "id": "6441d41f-c2cf-4c6c-91b0-52224cf5b4c3"
     }
   ]
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "LootBox is not found. "
 }
 ```
 
@@ -1246,6 +1357,14 @@ _Данный подзаголовок содержит в себе информ
     "inventories": null,
     "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
   }
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "LootBox is not found. "
 }
 ```
 
@@ -1490,6 +1609,36 @@ _Данный подзаголовок содержит в себе информ
 }
 ```
 
+14. Получение одного кейса по админке:
+   * Доступ: Admin, Owner, Bot
+   * Метод: GET
+   * Запрос: `https://r.api.incase.com/api/loot-box/admin/{id}`
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+```JSON
+{
+  "success": true,
+  "data": {
+    "name": "Самый классный кейс",
+    "cost": 250,
+    "balance": 0,
+    "virtualBalance": 0,
+    "imageUri": "string",
+    "isLocked": false,
+    "inventories": [],
+    "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+  }
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "LootBox is not found. "
+}
+```
+
 
 ### Информация о промокодах
 
@@ -1515,6 +1664,14 @@ _Данный подзаголовок содержит в себе информ
       "id": "bbb36e4a-24f8-445f-8c6d-2df7e5d497ff"
     }
   ]
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "Promocode is not found. "
 }
 ```
 
@@ -1599,6 +1756,14 @@ _Данный подзаголовок содержит в себе информ
       "id": "de145f9a-522d-4e50-b427-c67fd1456e0e"
     }
   ]
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "Promocode is not found. "
 }
 ```
 
@@ -1706,7 +1871,6 @@ _Данный подзаголовок содержит в себе информ
 }
 ```
 
-
 7. Удалить промокод:
    * Доступ: Admin, Owner
    * Метод: DELETE
@@ -1765,6 +1929,14 @@ _Данный подзаголовок содержит в себе информ
 }
 ```
 
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "UserAdditionalInfo is not found. "
+}
+```
+
 2. Получить все роли:
    * Доступ: Allow Anonymous
    * Метод: GET
@@ -1796,6 +1968,14 @@ _Данный подзаголовок содержит в себе информ
       "id": "37df21ec-8723-4ed2-957f-283ba1ecbb7c"
     }
   ]
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "UserRole is not found. "
 }
 ```
 
@@ -1897,6 +2077,14 @@ _Данный подзаголовок содержит в себе информ
 }
 ```
 
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "User is not found. "
+}
+```
+
 5. Получить основную информацию по id:
    * Доступ: Allow Anonymous
    * Метод: GET
@@ -1953,6 +2141,14 @@ _Данный подзаголовок содержит в себе информ
 }
 ```
 
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "UserInventory is not found. "
+}
+```
+
 7. Получить инвентарь пользователя по id:
    * Доступ: Allow Anonymous
    * Метод: GET
@@ -1963,6 +2159,14 @@ _Данный подзаголовок содержит в себе информ
 {
   "success": true,
   "data": []
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "UserInventory is not found. "
 }
 ```
 
@@ -1987,6 +2191,14 @@ _Данный подзаголовок содержит в себе информ
 }
 ```
 
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "UserPathBanner is not found. "
+}
+```
+
 
 ### Информация о историях
 
@@ -2003,6 +2215,14 @@ _Данный подзаголовок содержит в себе информ
 }
 ```
 
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "UserHistoryPayment is not found. "
+}
+```
+
 2. Получить историю вывода:
    * Доступ: All
    * Метод: GET
@@ -2013,6 +2233,14 @@ _Данный подзаголовок содержит в себе информ
 {
   "success": true,
   "data": []
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "UserHistoryOpening is not found. "
 }
 ```
 
@@ -2037,6 +2265,14 @@ _Данный подзаголовок содержит в себе информ
 }
 ```
 
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "UserHistoryWithdrawn is not found. "
+}
+```
+
 4. Получить историю вывода:
    * Доступ: All
    * Метод: GET
@@ -2047,6 +2283,14 @@ _Данный подзаголовок содержит в себе информ
 {
   "success": true,
   "data": []
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "UserHistoryOpening is not found. "
 }
 ```
 
@@ -2063,6 +2307,13 @@ _Данный подзаголовок содержит в себе информ
 }
 ```
 
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "UserHistoryPromocodes is not found. "
+}
+```
 
 ### Информация о ограничениях
 
@@ -2105,6 +2356,14 @@ _Данный подзаголовок содержит в себе информ
 }
 ```
 
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "UserRestriction is not found. "
+}
+```
+
 3. Получить все ограничения пользователя по id:
    * Доступ: Allow Anonymous
    * Метод: GET
@@ -2130,6 +2389,14 @@ _Данный подзаголовок содержит в себе информ
 {
   "success": false,
   "data": "User is not found. "
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "UserRestriction is not found. "
 }
 ```
 
@@ -2161,6 +2428,14 @@ _Данный подзаголовок содержит в себе информ
 }
 ```
 
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "UserRestriction is not found. "
+}
+```
+
 5. Получить все ограничения возложенные обвинителем:
    * Доступ: Admin, Owner, Bot
    * Метод: GET
@@ -2178,6 +2453,14 @@ _Данный подзаголовок содержит в себе информ
       "id": "46247306-910c-4ad8-86d7-8a738e6d5661"
     }
   ]
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "UserRestriction is not found. "
 }
 ```
 
@@ -2209,6 +2492,14 @@ _Данный подзаголовок содержит в себе информ
 }
 ```
 
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "UserRestriction is not found. "
+}
+```
+
 7. Получить все типы ограничений:
    * Доступ: Admin, Owner, Bot
    * Метод: GET
@@ -2232,6 +2523,14 @@ _Данный подзаголовок содержит в себе информ
       "id": "cdc27c2f-8bf6-4cfa-9c3f-021e80c600bf"
     }
   ]
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "UserRestriction is not found. "
 }
 ```
 
@@ -2266,14 +2565,6 @@ _Данный подзаголовок содержит в себе информ
 {
   "success": false,
   "data": "RestrictionType is not found. "
-}
-```
-
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
-```JSON
-{
-  "success": false,
-  "data": "UserRestriction is not found. "
 }
 ```
 
@@ -2376,6 +2667,14 @@ _Данный подзаголовок содержит в себе информ
 }
 ```
 
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "UserReview is not found. "
+}
+```
+
 2. Получить все отзывы по админке:
    * Доступ: Admin, Owner, Bot
    * Метод: GET
@@ -2406,6 +2705,14 @@ _Данный подзаголовок содержит в себе информ
       "id": "80c5950d-07bc-445f-8808-e850cd0d6989"
     }
   ]
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "UserReview is not found. "
 }
 ```
 
@@ -2468,6 +2775,14 @@ _Данный подзаголовок содержит в себе информ
 ```JSON
 {
   "success": false,
+  "data": "UserReview is not found. "
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
   "data": "User is not found. "
 }
 ```
@@ -2500,6 +2815,14 @@ _Данный подзаголовок содержит в себе информ
 }
 ```
 
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "UserReview is not found. "
+}
+```
+
 6. Получить все картинки отзывов:
    * Доступ: Allow Anonymous
    * Метод: GET
@@ -2522,6 +2845,14 @@ _Данный подзаголовок содержит в себе информ
 }
 ```
 
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "UserReviewImage is not found. "
+}
+```
+
 7. Получить все картинки отзыва:
    * Доступ: Allow Anonymous
    * Метод: GET
@@ -2541,6 +2872,14 @@ _Данный подзаголовок содержит в себе информ
       "id": "c4e40610-9501-4a2f-a556-106aeb54edf3"
     }
   ]
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "UserReviewImage is not found. "
 }
 ```
 
@@ -2816,6 +3155,8 @@ _Данный подзаголовок содержит в себе информ
   "data": "UserReview is not found. "
 }
 ```
+
+
 ### Информация об обращениях в техническую поддержку
 
 1. Получить все обращения авторизованного пользователя в техническую поддержку:
@@ -2845,6 +3186,14 @@ _Данный подзаголовок содержит в себе информ
       "id": "e98c4b69-a7e3-4407-bbda-65475bcc262d"
     }
   ]
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "SupportTopic is not found. "
 }
 ```
 
@@ -2933,6 +3282,14 @@ _Данный подзаголовок содержит в себе информ
 {
   "success": false,
   "data": "SupportTopic is not found. "
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "SupportTopicAnswer is not found. "
 }
 ```
 
@@ -3090,6 +3447,14 @@ _Данный подзаголовок содержит в себе информ
       "id": "2ace9264-d8f7-468f-acfe-0bdb0edf305e"
     }
   ]
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+```JSON
+{
+  "success": false,
+  "data": "SupportTopicAnswer is not found. "
 }
 ```
 
