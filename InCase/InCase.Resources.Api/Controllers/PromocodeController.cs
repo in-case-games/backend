@@ -30,7 +30,9 @@ namespace InCase.Resources.Api.Controllers
                 .AsNoTracking()
                 .ToListAsync();
 
-            return ResponseUtil.Ok(promocodes);
+            return promocodes.Count == 0 ? 
+                ResponseUtil.NotFound(nameof(Promocode)) : 
+                ResponseUtil.Ok(promocodes);
         }
 
         [AuthorizeRoles(Roles.All)]

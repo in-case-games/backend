@@ -30,7 +30,9 @@ namespace InCase.Resources.Api.Controllers
                 .Include(i => i.Images)
                 .ToListAsync();
 
-            return ResponseUtil.Ok(news);
+            return news.Count == 0 ? 
+                ResponseUtil.NotFound(nameof(News)) : 
+                ResponseUtil.Ok(news);
         }
 
         [AllowAnonymous]

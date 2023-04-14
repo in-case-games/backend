@@ -37,7 +37,9 @@ namespace InCase.Resources.Api.Controllers
                 .Where(w => w.IsApproved == true)
                 .ToListAsync();
 
-            return ResponseUtil.Ok(reviews);
+            return reviews.Count == 0 ? 
+                ResponseUtil.NotFound(nameof(UserReview)) : 
+                ResponseUtil.Ok(reviews);
         }
 
         [AuthorizeRoles(Roles.AdminOwnerBot)]
@@ -51,7 +53,9 @@ namespace InCase.Resources.Api.Controllers
                 .AsNoTracking()
                 .ToListAsync();
 
-            return ResponseUtil.Ok(reviews);
+            return reviews.Count == 0 ?
+                ResponseUtil.NotFound(nameof(UserReview)) :
+                ResponseUtil.Ok(reviews);
         }
 
         [AllowAnonymous]
@@ -85,7 +89,9 @@ namespace InCase.Resources.Api.Controllers
                 .Where(w => w.UserId == id)
                 .ToListAsync();
 
-            return ResponseUtil.Ok(reviews);
+            return reviews.Count == 0 ?
+                ResponseUtil.NotFound(nameof(UserReview)) :
+                ResponseUtil.Ok(reviews);
         }
 
         [AuthorizeRoles(Roles.User)]
@@ -100,9 +106,12 @@ namespace InCase.Resources.Api.Controllers
                 .Where(w => w.UserId == UserId)
                 .ToListAsync();
 
-            return ResponseUtil.Ok(reviews);
+            return reviews.Count == 0 ?
+                ResponseUtil.NotFound(nameof(UserReview)) :
+                ResponseUtil.Ok(reviews);
         }
 
+        //TODO
         [AllowAnonymous]
         [HttpGet("images")]
         public async Task<IActionResult> GetImages()
@@ -119,7 +128,9 @@ namespace InCase.Resources.Api.Controllers
 
             reviews.ForEach(f => images.AddRange(f.Images!));
 
-            return ResponseUtil.Ok(images);
+            return images.Count == 0 ?
+                ResponseUtil.NotFound(nameof(ReviewImage)) :
+                ResponseUtil.Ok(images);
         }
 
         [AllowAnonymous]
@@ -136,7 +147,9 @@ namespace InCase.Resources.Api.Controllers
                 .Where(w => w.ReviewId == id)
                 .ToListAsync();
 
-            return ResponseUtil.Ok(images);
+            return images.Count == 0 ?
+                ResponseUtil.NotFound(nameof(ReviewImage)) :
+                ResponseUtil.Ok(images);
         }
 
         [AllowAnonymous]

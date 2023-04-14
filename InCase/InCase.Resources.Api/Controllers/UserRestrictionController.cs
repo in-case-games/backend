@@ -53,7 +53,9 @@ namespace InCase.Resources.Api.Controllers
                 .Where(w => w.UserId == UserId)
                 .ToListAsync();
 
-            return ResponseUtil.Ok(restrictions);
+            return restrictions.Count == 0 ? 
+                ResponseUtil.NotFound(nameof(UserRestriction)) : 
+                ResponseUtil.Ok(restrictions);
         }
 
         [AllowAnonymous]
@@ -71,7 +73,9 @@ namespace InCase.Resources.Api.Controllers
                 .Where(w => w.UserId == id)
                 .ToListAsync();
 
-            return ResponseUtil.Ok(restrictions);
+            return restrictions.Count == 0 ?
+                ResponseUtil.NotFound(nameof(UserRestriction)) :
+                ResponseUtil.Ok(restrictions);
         }
 
         [AllowAnonymous]
@@ -91,7 +95,9 @@ namespace InCase.Resources.Api.Controllers
                 .Where(w => w.UserId == userId && w.OwnerId == ownerId)
                 .ToListAsync();
 
-            return ResponseUtil.Ok(restrictions);
+            return restrictions.Count == 0 ?
+                ResponseUtil.NotFound(nameof(UserRestriction)) :
+                ResponseUtil.Ok(restrictions);
         }
 
         [AuthorizeRoles(Roles.AdminOwnerBot)]
@@ -106,7 +112,9 @@ namespace InCase.Resources.Api.Controllers
                 .Where(w => w.OwnerId == UserId)
                 .ToListAsync();
 
-            return ResponseUtil.Ok(restrictions);
+            return restrictions.Count == 0 ?
+                 ResponseUtil.NotFound(nameof(UserRestriction)) :
+                 ResponseUtil.Ok(restrictions);
         }
 
         [AuthorizeRoles(Roles.AdminOwnerBot)]
@@ -124,7 +132,9 @@ namespace InCase.Resources.Api.Controllers
                 .Where(w => w.UserId == userId && w.OwnerId == UserId)
                 .ToListAsync();
 
-            return ResponseUtil.Ok(restrictions);
+            return restrictions.Count == 0 ?
+                ResponseUtil.NotFound(nameof(UserRestriction)) :
+                ResponseUtil.Ok(restrictions);
         }
 
         [AllowAnonymous]

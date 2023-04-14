@@ -33,7 +33,9 @@ namespace InCase.Resources.Api.Controllers
                 .AsNoTracking()
                 .ToListAsync();
 
-            return ResponseUtil.Ok(gameItems);
+            return gameItems.Count == 0 ? 
+                ResponseUtil.NotFound(nameof(GameItem)) : 
+                ResponseUtil.Ok(gameItems);
         }
 
         [AllowAnonymous]

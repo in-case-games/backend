@@ -33,7 +33,9 @@ namespace InCase.Resources.Api.Controllers
                 .Where(w => w.UserId == UserId)
                 .ToListAsync();
 
-            return ResponseUtil.Ok(supportTopics);
+            return supportTopics.Count == 0 ?
+                ResponseUtil.NotFound(nameof(SupportTopic)) :
+                ResponseUtil.Ok(supportTopics);
         }
 
         [AuthorizeRoles(Roles.User)]

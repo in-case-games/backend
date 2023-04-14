@@ -80,7 +80,7 @@ namespace InCase.IntegrationTests.Tests.GameApi
             }
 
             LootBox? lootBox = (await _responseResources
-                .ResponseGet<AnswerBoxApi?>($"/api/loot-box/admin/{lootBoxGuid}", AccessToken))!.Data;
+                .ResponseGet<AnswerBoxApi?>($"/api/loot-box/{lootBoxGuid}/admin", AccessToken))!.Data;
 
             SiteStatisticsAdmin statisticsAdmin = await Context.SiteStatisticsAdmins
                 .FirstAsync();
@@ -133,7 +133,7 @@ namespace InCase.IntegrationTests.Tests.GameApi
             }
 
             LootBox? lootBox = (await _responseResources
-                .ResponseGet<AnswerBoxApi?>($"/api/loot-box/admin/{lootBoxGuid}", AccessToken))!.Data;
+                .ResponseGet<AnswerBoxApi?>($"/api/loot-box/{lootBoxGuid}/admin", AccessToken))!.Data;
 
             SiteStatisticsAdmin statisticsAdmin = await Context.SiteStatisticsAdmins
                 .FirstAsync();
@@ -186,7 +186,7 @@ namespace InCase.IntegrationTests.Tests.GameApi
             }
 
             LootBox? lootBox = (await _responseResources
-                .ResponseGet<AnswerBoxApi?>($"/api/loot-box/admin/{lootBoxGuid}", AccessToken))!.Data;
+                .ResponseGet<AnswerBoxApi?>($"/api/loot-box/{lootBoxGuid}/admin", AccessToken))!.Data;
 
             SiteStatisticsAdmin statisticsAdmin = await Context.SiteStatisticsAdmins
                 .FirstAsync();
@@ -245,7 +245,7 @@ namespace InCase.IntegrationTests.Tests.GameApi
             }
 
             LootBox? lootBox = (await _responseResources
-                .ResponseGet<AnswerBoxApi?>($"/api/loot-box/admin/{lootBoxGuid}", AccessToken))!.Data;
+                .ResponseGet<AnswerBoxApi?>($"/api/loot-box/{lootBoxGuid}/admin", AccessToken))!.Data;
 
             SiteStatisticsAdmin statisticsAdmin = await Context.SiteStatisticsAdmins
                 .FirstAsync();

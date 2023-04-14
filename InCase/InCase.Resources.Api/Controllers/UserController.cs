@@ -36,8 +36,8 @@ namespace InCase.Resources.Api.Controllers
                 .AsNoTracking()
                 .FirstOrDefaultAsync(f => f.Id == UserId);
 
-            return (user is null) ? 
-                ResponseUtil.NotFound(nameof(User)) : 
+            return user is null ? 
+                ResponseUtil.NotFound("User") : 
                 ResponseUtil.Ok(user);
         }
 
@@ -53,7 +53,7 @@ namespace InCase.Resources.Api.Controllers
                 .FirstOrDefaultAsync(f => f.Id == id);
 
             if (user is null)
-                return ResponseUtil.NotFound(nameof(User));
+                return ResponseUtil.NotFound("User");
 
             user.PasswordHash = null;
             user.PasswordSalt = null;
@@ -73,7 +73,9 @@ namespace InCase.Resources.Api.Controllers
                 .Where(w => w.UserId == UserId)
                 .ToListAsync();
 
-            return ResponseUtil.Ok(promocodes);
+            return promocodes.Count == 0 ? 
+                ResponseUtil.NotFound(nameof(UserHistoryPromocode)) : 
+                ResponseUtil.Ok(promocodes);
         }
 
         [AuthorizeRoles(Roles.All)]
@@ -88,7 +90,9 @@ namespace InCase.Resources.Api.Controllers
                 .Where(w => w.UserId == UserId)
                 .ToListAsync();
 
-            return ResponseUtil.Ok(withdrawns);
+            return withdrawns.Count == 0 ?
+                ResponseUtil.NotFound(nameof(UserHistoryWithdrawn)) :
+                ResponseUtil.Ok(withdrawns);
         }
 
         [AllowAnonymous]
@@ -98,7 +102,7 @@ namespace InCase.Resources.Api.Controllers
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             if (!await context.Users.AnyAsync(a => a.Id == id))
-                return ResponseUtil.NotFound(nameof(User));
+                return ResponseUtil.NotFound("User");
 
             List<UserHistoryWithdrawn> withdrawns = await context.UserHistoryWithdrawns
                 .AsNoTracking()
@@ -106,7 +110,9 @@ namespace InCase.Resources.Api.Controllers
                 .Where(w => w.UserId == id)
                 .ToListAsync();
 
-            return ResponseUtil.Ok(withdrawns);
+            return withdrawns.Count == 0 ?
+                ResponseUtil.NotFound(nameof(UserHistoryWithdrawn)) :
+                ResponseUtil.Ok(withdrawns);
         }
 
         [AuthorizeRoles(Roles.All)]
@@ -122,7 +128,9 @@ namespace InCase.Resources.Api.Controllers
                 .Where(w => w.UserId == UserId)
                 .ToListAsync();
 
-            return ResponseUtil.Ok(openings);
+            return openings.Count == 0 ?
+                ResponseUtil.NotFound(nameof(UserHistoryOpening)) :
+                ResponseUtil.Ok(openings);
         }
 
         [AuthorizeRoles(Roles.All)]
@@ -138,7 +146,9 @@ namespace InCase.Resources.Api.Controllers
                 .Where(w => w.UserId == UserId)
                 .ToListAsync();
 
-            return ResponseUtil.Ok(banners);
+            return banners.Count == 0 ?
+                ResponseUtil.NotFound(nameof(UserPathBanner)) :
+                ResponseUtil.Ok(banners);
         }
 
         [AllowAnonymous]
@@ -148,7 +158,7 @@ namespace InCase.Resources.Api.Controllers
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             if (!await context.Users.AnyAsync(a => a.Id == id))
-                return ResponseUtil.NotFound(nameof(User));
+                return ResponseUtil.NotFound("User");
 
             List<UserInventory> inventories = await context.UserInventories
                 .Include(i => i.Item)
@@ -156,7 +166,9 @@ namespace InCase.Resources.Api.Controllers
                 .Where(w => w.UserId == id)
                 .ToListAsync();
 
-            return ResponseUtil.Ok(inventories);
+            return inventories.Count == 0 ?
+                ResponseUtil.NotFound(nameof(UserInventory)) :
+                ResponseUtil.Ok(inventories);
         }
 
         [AuthorizeRoles(Roles.All)]
@@ -171,7 +183,9 @@ namespace InCase.Resources.Api.Controllers
                 .Where(w => w.UserId == UserId)
                 .ToListAsync();
 
-            return ResponseUtil.Ok(inventories);
+            return inventories.Count == 0 ?
+                ResponseUtil.NotFound(nameof(UserInventory)) :
+                ResponseUtil.Ok(inventories);
         }
 
         [AuthorizeRoles(Roles.All)]
@@ -185,7 +199,9 @@ namespace InCase.Resources.Api.Controllers
                 .Where(w => w.UserId == UserId)
                 .ToListAsync();
 
-            return ResponseUtil.Ok(payments);
+            return payments.Count == 0 ?
+                ResponseUtil.NotFound(nameof(UserHistoryPayment)) :
+                ResponseUtil.Ok(payments);
         }
 
         // TODO Transfer method
@@ -219,6 +235,9 @@ namespace InCase.Resources.Api.Controllers
             pathDto.Date = DateTime.UtcNow;
             pathDto.NumberSteps = (int)Math.Ceiling(item.Cost/(box.Cost * 0.2M));
             pathDto.FixedCost = item.Cost;
+
+            if(pathDto.NumberSteps > 100)
+                return ResponseUtil.Conflict("The cost of the selected item cannot exceed the loot box by more than 20 times");
 
             return await EndpointUtil.Create(pathDto.Convert(), context);
         }

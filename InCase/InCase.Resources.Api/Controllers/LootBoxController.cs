@@ -37,7 +37,9 @@ namespace InCase.Resources.Api.Controllers
                 lootBox.VirtualBalance = 0;
             }
 
-            return ResponseUtil.Ok(lootBoxes);
+            return lootBoxes.Count == 0 ? 
+                ResponseUtil.NotFound(nameof(LootBox)) : 
+                ResponseUtil.Ok(lootBoxes);
         }
 
         [AllowAnonymous]
@@ -60,8 +62,8 @@ namespace InCase.Resources.Api.Controllers
             return ResponseUtil.Ok(lootBox);
         }
 
-        [AuthorizeRoles(Roles.UserAdminOwner)]
-        [HttpGet("admin/{id}")]
+        [AuthorizeRoles(Roles.AdminOwnerBot)]
+        [HttpGet("{id}/admin")]
         public async Task<IActionResult> GetByAdmin(Guid id)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
@@ -91,7 +93,9 @@ namespace InCase.Resources.Api.Controllers
                 .Where(w => w.BoxId == id)
                 .ToListAsync();
 
-            return ResponseUtil.Ok(inventories);
+            return inventories.Count == 0? 
+                ResponseUtil.NotFound(nameof(LootBoxInventory)) : 
+                ResponseUtil.Ok(inventories);
         }
 
         [AllowAnonymous]
@@ -111,7 +115,9 @@ namespace InCase.Resources.Api.Controllers
                 banner.Box!.VirtualBalance = 0;
             }
 
-            return ResponseUtil.Ok(banners);
+            return banners.Count == 0 ? 
+                ResponseUtil.NotFound(nameof(LootBoxBanner)) : 
+                ResponseUtil.Ok(banners);
         }
 
         [AllowAnonymous]

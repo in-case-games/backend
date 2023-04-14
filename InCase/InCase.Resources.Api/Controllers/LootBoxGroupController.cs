@@ -33,7 +33,9 @@ namespace InCase.Resources.Api.Controllers
                 .AsNoTracking()
                 .ToListAsync();
 
-            return ResponseUtil.Ok(groups);
+            return groups.Count == 0 ? 
+                ResponseUtil.NotFound(nameof(LootBoxGroup)) : 
+                ResponseUtil.Ok(groups);
         }
 
         [AllowAnonymous]
@@ -69,7 +71,9 @@ namespace InCase.Resources.Api.Controllers
                 .Where(w => w.GameId == id)
                 .ToListAsync();
 
-            return ResponseUtil.Ok(groups);
+            return groups.Count == 0 ?
+                ResponseUtil.NotFound(nameof(LootBoxGroup)) :
+                ResponseUtil.Ok(groups);
         }
 
         [AllowAnonymous]
@@ -82,7 +86,9 @@ namespace InCase.Resources.Api.Controllers
                 .AsNoTracking()
                 .ToListAsync();
 
-            return ResponseUtil.Ok(groups);
+            return groups.Count == 0 ?
+                ResponseUtil.NotFound(nameof(GroupLootBox)) :
+                ResponseUtil.Ok(groups);
         }
 
         [AuthorizeRoles(Roles.Owner)]

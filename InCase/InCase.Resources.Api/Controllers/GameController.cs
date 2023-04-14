@@ -30,7 +30,9 @@ namespace InCase.Resources.Api.Controllers
                 .AsNoTracking()
                 .ToListAsync();
 
-            return ResponseUtil.Ok(games);
+            return games.Count == 0 ?
+                ResponseUtil.NotFound(nameof(Game)) : 
+                ResponseUtil.Ok(games);
         }
 
         [AllowAnonymous]
@@ -45,7 +47,9 @@ namespace InCase.Resources.Api.Controllers
                 .AsNoTracking()
                 .FirstOrDefaultAsync(f => f.Id == id);
 
-            return game is null ? ResponseUtil.NotFound(nameof(Game)) : ResponseUtil.Ok(game);
+            return game is null ? 
+                ResponseUtil.NotFound(nameof(Game)) : 
+                ResponseUtil.Ok(game);
         }
     }
 }
