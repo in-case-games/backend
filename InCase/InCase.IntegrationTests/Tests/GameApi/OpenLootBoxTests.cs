@@ -151,6 +151,60 @@ namespace InCase.IntegrationTests.Tests.GameApi
         }
 
         [Fact]
+        public async Task GET_RevenueNoSubcribedBanner_Output()
+        {
+            //Arrange
+            decimal allCostItems = 0;
+            Guid lootBoxGuid = Guid.NewGuid();
+            Guid bannerGuid = Guid.NewGuid();
+            List<Guid> itemsGuids = new() {
+                Guid.NewGuid(), Guid.NewGuid(),
+                Guid.NewGuid(), Guid.NewGuid(),
+                Guid.NewGuid(), Guid.NewGuid(),
+                Guid.NewGuid(),
+            };
+
+            await InitializeTestDependencies(itemsGuids, lootBoxGuid);
+
+            //Act
+            Stopwatch startTime = Stopwatch.StartNew();
+            Dictionary<string, int> winingItems = await GetWiningItems(lootBoxGuid);
+            startTime.Stop();
+            var resultTime = startTime.Elapsed;
+            string elapsedTime = string.Format("{0:00}.{1:000}",
+                resultTime.Seconds,
+                resultTime.Milliseconds);
+
+            //Assert
+            _output.WriteLine("Предмет = стоимость лута");
+
+            foreach (var winItem in winingItems)
+            {
+                decimal costWiningItems = ItemsAndCost[winItem.Key] * winItem.Value;
+                allCostItems += costWiningItems;
+                _output.WriteLine($"{winItem.Key} = {costWiningItems}");
+            }
+
+            LootBox? lootBox = (await _responseResources
+                .ResponseGet<AnswerBoxApi?>($"/api/loot-box/admin/{lootBoxGuid}", AccessToken))!.Data;
+
+            SiteStatisticsAdmin statisticsAdmin = await Context.SiteStatisticsAdmins
+                .FirstAsync();
+
+            _output.WriteLine(
+                $"Профит сайта: {statisticsAdmin.BalanceWithdrawn} Р\n" +
+                $"Баланс кейса: {lootBox!.Balance} Р\n" +
+                $"Стоимость всех предметов: {allCostItems}\n" +
+                $"Скорость алгоритма: {elapsedTime}");
+
+            statisticsAdmin.BalanceWithdrawn = 0;
+
+            await Context.SaveChangesAsync();
+
+            await RemoveTestDependencies(itemsGuids, lootBoxGuid);
+        }
+
+        [Fact]
         public async Task GET_RevenueSubcribedBanner_Output()
         {
             //Arrange
