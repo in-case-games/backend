@@ -12,7 +12,7 @@ using System.Text;
 
 namespace InCase.Payment.Api.Controllers
 {
-    [Route("payment/api/[controller]")]
+    [Route("api/payment")]
     [ApiController]
     public class PaymentController : ControllerBase
     {
