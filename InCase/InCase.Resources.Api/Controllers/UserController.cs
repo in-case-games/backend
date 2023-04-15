@@ -32,12 +32,12 @@ namespace InCase.Resources.Api.Controllers
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             User? user = await context.Users
-                .Include(x => x.AdditionalInfo)
+                .Include(i => i.AdditionalInfo)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(f => f.Id == UserId);
 
-            return user is null ? 
-                ResponseUtil.NotFound("User") : 
+            return user is null ?
+                ResponseUtil.NotFound("User") :
                 ResponseUtil.Ok(user);
         }
 
@@ -48,7 +48,7 @@ namespace InCase.Resources.Api.Controllers
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             User? user = await context.Users
-                .Include(x => x.AdditionalInfo)
+                .Include(i => i.AdditionalInfo)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(f => f.Id == id);
 
@@ -73,8 +73,8 @@ namespace InCase.Resources.Api.Controllers
                 .Where(w => w.UserId == UserId)
                 .ToListAsync();
 
-            return promocodes.Count == 0 ? 
-                ResponseUtil.NotFound(nameof(UserHistoryPromocode)) : 
+            return promocodes.Count == 0 ?
+                ResponseUtil.NotFound(nameof(UserHistoryPromocode)) :
                 ResponseUtil.Ok(promocodes);
         }
 
@@ -101,18 +101,18 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            if (!await context.Users.AnyAsync(a => a.Id == id))
+            User? user = await context.Users
+                .Include(i => i.HistoryWithdrawns!)
+                    .ThenInclude(ti => ti.Item)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(f => f.Id == id);
+
+            if (user is null)
                 return ResponseUtil.NotFound("User");
 
-            List<UserHistoryWithdrawn> withdrawns = await context.UserHistoryWithdrawns
-                .AsNoTracking()
-                .Include(i => i.Item)
-                .Where(w => w.UserId == id)
-                .ToListAsync();
-
-            return withdrawns.Count == 0 ?
-                ResponseUtil.NotFound(nameof(UserHistoryWithdrawn)) :
-                ResponseUtil.Ok(withdrawns);
+            return user.HistoryWithdrawns is null || user.HistoryWithdrawns.Count == 0 ?
+                ResponseUtil.NotFound(nameof(UserHistoryWithdrawn)) : 
+                ResponseUtil.Ok(user.HistoryWithdrawns);
         }
 
         [AuthorizeRoles(Roles.All)]
@@ -157,18 +157,18 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            if (!await context.Users.AnyAsync(a => a.Id == id))
+            User? user = await context.Users
+               .Include(i => i.Inventories!)
+                   .ThenInclude(ti => ti.Item)
+               .AsNoTracking()
+               .FirstOrDefaultAsync(f => f.Id == id);
+
+            if (user is null)
                 return ResponseUtil.NotFound("User");
 
-            List<UserInventory> inventories = await context.UserInventories
-                .Include(i => i.Item)
-                .AsNoTracking()
-                .Where(w => w.UserId == id)
-                .ToListAsync();
-
-            return inventories.Count == 0 ?
+            return user.Inventories is null || user.Inventories.Count == 0 ?
                 ResponseUtil.NotFound(nameof(UserInventory)) :
-                ResponseUtil.Ok(inventories);
+                ResponseUtil.Ok(user.Inventories);
         }
 
         [AuthorizeRoles(Roles.All)]

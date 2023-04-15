@@ -80,18 +80,18 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _context.CreateDbContextAsync();
 
-            if (!await context.Users.AnyAsync(a => a.Id == id))
-                return NotFound("User");
-
-            List<UserReview> reviews = await context.UserReviews
-                .Include(i => i.Images)
+            User? user = await context.Users
+                .Include(i => i.Reviews!)
+                    .ThenInclude(ti => ti.Images)
                 .AsNoTracking()
-                .Where(w => w.UserId == id)
-                .ToListAsync();
+                .FirstOrDefaultAsync(f => f.Id == id);
 
-            return reviews.Count == 0 ?
+            if (user is null)
+                return ResponseUtil.NotFound("User");
+
+            return user.Reviews is null || user.Reviews.Count == 0 ?
                 ResponseUtil.NotFound(nameof(UserReview)) :
-                ResponseUtil.Ok(reviews);
+                ResponseUtil.Ok(user.Reviews);
         }
 
         [AuthorizeRoles(Roles.User)]
@@ -139,17 +139,17 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _context.CreateDbContextAsync();
 
-            if (!await context.UserReviews.AnyAsync(a => a.Id == id && a.IsApproved == true))
-                return NotFound("UserReview");
-
-            List<ReviewImage> images = await context.ReviewImages
+            UserReview? review = await context.UserReviews
+                .Include(i => i.Images)
                 .AsNoTracking()
-                .Where(w => w.ReviewId == id)
-                .ToListAsync();
+                .FirstOrDefaultAsync(f => f.Id == id && f.IsApproved == true);
 
-            return images.Count == 0 ?
+            if (review is null)
+                return ResponseUtil.NotFound(nameof(UserReview));
+
+            return review.Images is null || review.Images.Count == 0 ?
                 ResponseUtil.NotFound(nameof(ReviewImage)) :
-                ResponseUtil.Ok(images);
+                ResponseUtil.Ok(review.Images);
         }
 
         [AllowAnonymous]
@@ -177,13 +177,13 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _context.CreateDbContextAsync();
 
-            UserReview? userReview = await context.UserReviews
+            UserReview? review = await context.UserReviews
                 .AsNoTracking()
                 .FirstOrDefaultAsync(f => f.Id == imageDto.ReviewId);
 
-            if (userReview is null)
+            if (review is null)
                 return ResponseUtil.NotFound(nameof(UserReview));
-            if (userReview.UserId != UserId)
+            if (review.UserId != UserId)
                 return Forbid("Access denied");
 
             return await EndpointUtil.Create(imageDto.Convert(), context);
@@ -196,9 +196,7 @@ namespace InCase.Resources.Api.Controllers
             await using ApplicationDbContext context = await _context.CreateDbContextAsync();
 
             UserReview? review = await context.UserReviews
-                .FirstOrDefaultAsync(f => 
-                f.UserId == UserId && 
-                f.Id == reviewDto.Id);
+                .FirstOrDefaultAsync(f => f.UserId == UserId && f.Id == reviewDto.Id);
 
             if (review == null) 
                 return ResponseUtil.NotFound(nameof(UserReview));
@@ -271,7 +269,7 @@ namespace InCase.Resources.Api.Controllers
 
             if (review is null)
                 return ResponseUtil.NotFound(nameof(UserReview));
-            if (review!.UserId != UserId)
+            if (review.UserId != UserId)
                 return Forbid("Access denied");
 
             return await EndpointUtil.Delete(image, context);

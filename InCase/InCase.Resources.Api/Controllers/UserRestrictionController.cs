@@ -64,18 +64,18 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _context.CreateDbContextAsync();
 
-            if (!await context.Users.AnyAsync(a => a.Id == id))
-                return ResponseUtil.NotFound(nameof(User));
+            User? user = await context.Users
+               .Include(i => i.Restrictions!)
+                   .ThenInclude(ti => ti.Type)
+               .AsNoTracking()
+               .FirstOrDefaultAsync(f => f.Id == id);
 
-            List<UserRestriction> restrictions = await context.UserRestrictions
-                .Include(i => i.Type)
-                .AsNoTracking()
-                .Where(w => w.UserId == id)
-                .ToListAsync();
+            if (user is null)
+                return ResponseUtil.NotFound("User");
 
-            return restrictions.Count == 0 ?
-                ResponseUtil.NotFound(nameof(UserRestriction)) :
-                ResponseUtil.Ok(restrictions);
+            return user.Restrictions is null || user.Restrictions.Count == 0 ?
+                ResponseUtil.NotFound(nameof(UserRestriction)) : 
+                ResponseUtil.Ok(user.Restrictions);
         }
 
         [AllowAnonymous]
@@ -84,16 +84,20 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _context.CreateDbContextAsync();
 
-            if (!await context.Users.AnyAsync(a => a.Id == ownerId))
-                return ResponseUtil.NotFound(nameof(User));
-            if (!await context.Users.AnyAsync(a => a.Id == userId))
-                return ResponseUtil.NotFound(nameof(User));
+            User? user = await context.Users
+               .Include(i => i.Restrictions!)
+                   .ThenInclude(ti => ti.Type)
+               .AsNoTracking()
+               .FirstOrDefaultAsync(f => f.Id == userId);
 
-            List<UserRestriction> restrictions = await context.UserRestrictions
-                .Include(i => i.Type)
-                .AsNoTracking()
-                .Where(w => w.UserId == userId && w.OwnerId == ownerId)
-                .ToListAsync();
+            if (user is null)
+                return ResponseUtil.NotFound("User");
+            if (user.Restrictions is null)
+                return ResponseUtil.NotFound(nameof(UserRestriction));
+
+            List<UserRestriction> restrictions = user.Restrictions
+                .Where(w => w.OwnerId == ownerId)
+                .ToList();
 
             return restrictions.Count == 0 ?
                 ResponseUtil.NotFound(nameof(UserRestriction)) :
@@ -123,14 +127,18 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _context.CreateDbContextAsync();
 
-            if (!await context.Users.AnyAsync(a => a.Id == userId))
-                return ResponseUtil.NotFound(nameof(User));
+            User? user = await context.Users
+               .Include(i => i.OwnerRestrictions!)
+                   .ThenInclude(ti => ti.Type)
+               .AsNoTracking()
+               .FirstOrDefaultAsync(f => f.Id == UserId);
 
-            List<UserRestriction> restrictions = await context.UserRestrictions
-                .Include(i => i.Type)
-                .AsNoTracking()
-                .Where(w => w.UserId == userId && w.OwnerId == UserId)
-                .ToListAsync();
+            if (user!.Restrictions is null)
+                return ResponseUtil.NotFound(nameof(UserRestriction));
+
+            List<UserRestriction> restrictions = user.Restrictions
+                .Where(w => w.UserId == UserId)
+                .ToList();
 
             return restrictions.Count == 0 ?
                 ResponseUtil.NotFound(nameof(UserRestriction)) :
@@ -161,7 +169,7 @@ namespace InCase.Resources.Api.Controllers
                 .Include(i => i.AdditionalInfo)
                 .Include(i => i.AdditionalInfo!.Role)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(a => a.Id == restrictionDto.UserId);
+                .FirstOrDefaultAsync(f => f.Id == restrictionDto.UserId);
 
             if (restrictionType is null)
                 return ResponseUtil.NotFound(nameof(RestrictionType));
@@ -217,7 +225,7 @@ namespace InCase.Resources.Api.Controllers
                 .Include(i => i.AdditionalInfo)
                 .Include(i => i.AdditionalInfo!.Role)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(a => a.Id == restrictionDto.UserId);
+                .FirstOrDefaultAsync(f => f.Id == restrictionDto.UserId);
 
             if (restrictionType is null)
                 return ResponseUtil.NotFound(nameof(RestrictionType));

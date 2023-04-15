@@ -32,14 +32,14 @@ namespace InCase.Game.Api.Controllers
 
             UserAdditionalInfo? userInfo = await context.UserAdditionalInfos
                 .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.UserId == UserId);
+                .FirstOrDefaultAsync(f => f.UserId == UserId);
 
             LootBox? lootBox = await context.LootBoxes
                 .Include(i => i.Inventories!)
                     .ThenInclude(ti => ti!.Item)
                 .Include(i => i.Banner)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.Id == id);
+                .FirstOrDefaultAsync(f => f.Id == id);
             UserPathBanner? pathBanner = null;
 
             if (userInfo is null || lootBox is null)
@@ -84,7 +84,6 @@ namespace InCase.Game.Api.Controllers
 
                     lootBoxExpenses = retentionAmount;
                 }
-
                 if (cashBack >= 0)
                 {
                     userInfo.Balance += cashBack * (1M - RevenuePrecentage);
@@ -142,13 +141,13 @@ namespace InCase.Game.Api.Controllers
 
             UserAdditionalInfo? userInfo = await context.UserAdditionalInfos
                 .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.UserId == UserId);
+                .FirstOrDefaultAsync(f => f.UserId == UserId);
             LootBox? lootBox = await context.LootBoxes
                 .Include(i => i.Inventories!)
                     .ThenInclude(ti => ti!.Item)
                 .Include(i => i.Banner)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.Id == id);
+                .FirstOrDefaultAsync(f => f.Id == id);
 
             if (userInfo is null || lootBox is null)
                 return ResponseUtil.NotFound(nameof(LootBox));

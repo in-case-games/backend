@@ -48,7 +48,7 @@ namespace InCase.Resources.Api.Controllers
                 .Include(i => i.Group)
                 .Include(i => i.Box)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.Id == id);
+                .FirstOrDefaultAsync(f => f.Id == id);
 
             return group is null ? 
                 ResponseUtil.NotFound(nameof(LootBoxGroup)) : 
@@ -61,19 +61,20 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            if (!await context.Games.AnyAsync(a => a.Id == id))
+            Game? game = await context.Games
+                .Include(i => i.Groups!)
+                    .ThenInclude(ti => ti.Group)
+                .Include(i => i.Groups!)
+                    .ThenInclude(ti => ti.Box)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(f => f.Id == id);
+
+            if (game is null)
                 return ResponseUtil.NotFound(nameof(Game));
 
-            List<LootBoxGroup>? groups = await context.LootBoxGroups
-                .Include(i => i.Group)
-                .Include(i => i.Box)
-                .AsNoTracking()
-                .Where(w => w.GameId == id)
-                .ToListAsync();
-
-            return groups.Count == 0 ?
-                ResponseUtil.NotFound(nameof(LootBoxGroup)) :
-                ResponseUtil.Ok(groups);
+            return game.Groups is null || game.Groups.Count == 0 ?
+                ResponseUtil.NotFound(nameof(LootBoxGroup)) : 
+                ResponseUtil.Ok(game.Groups);
         }
 
         [AllowAnonymous]

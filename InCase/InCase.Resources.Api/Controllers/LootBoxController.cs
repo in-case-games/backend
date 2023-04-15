@@ -27,19 +27,19 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            List<LootBox> lootBoxes = await context.LootBoxes
+            List<LootBox> boxes = await context.LootBoxes
                 .AsNoTracking()
                 .ToListAsync();
 
-            foreach(var lootBox in lootBoxes)
+            foreach(var box in boxes)
             {
-                lootBox.Balance = 0;
-                lootBox.VirtualBalance = 0;
+                box.Balance = 0;
+                box.VirtualBalance = 0;
             }
 
-            return lootBoxes.Count == 0 ? 
+            return boxes.Count == 0 ? 
                 ResponseUtil.NotFound(nameof(LootBox)) : 
-                ResponseUtil.Ok(lootBoxes);
+                ResponseUtil.Ok(boxes);
         }
 
         [AllowAnonymous]
@@ -48,18 +48,18 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            LootBox? lootBox = await context.LootBoxes
+            LootBox? box = await context.LootBoxes
                 .AsNoTracking()
                 .Include(i => i.Inventories)
                 .FirstOrDefaultAsync(f => f.Id == id);
 
-            if (lootBox is null)
-                ResponseUtil.NotFound(nameof(LootBox));
+            if (box is null)
+                return ResponseUtil.NotFound(nameof(LootBox));
 
-            lootBox!.Balance = 0;
-            lootBox!.VirtualBalance = 0;
+            box.Balance = 0;
+            box.VirtualBalance = 0;
 
-            return ResponseUtil.Ok(lootBox);
+            return ResponseUtil.Ok(box);
         }
 
         [AuthorizeRoles(Roles.AdminOwnerBot)]
@@ -68,14 +68,14 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            LootBox? lootBox = await context.LootBoxes
+            LootBox? box = await context.LootBoxes
                 .AsNoTracking()
                 .Include(i => i.Inventories)
                 .FirstOrDefaultAsync(f => f.Id == id);
 
-            return lootBox is null ? 
+            return box is null ? 
                 ResponseUtil.NotFound(nameof(LootBox)) : 
-                ResponseUtil.Ok(lootBox);
+                ResponseUtil.Ok(box);
         }
 
         [AllowAnonymous]
@@ -84,18 +84,21 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            if (!await context.LootBoxes.AnyAsync(x => x.Id == id))
+            LootBox? box = await context.LootBoxes
+                .Include(i => i.Inventories!)
+                    .ThenInclude(ti => ti.Item)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(f => f.Id == id);
+
+            if (box is null)
                 return ResponseUtil.NotFound(nameof(LootBox));
 
-            List<LootBoxInventory> inventories = await context.LootBoxInventories
-                .Include(i => i.Item)
-                .AsNoTracking()
-                .Where(w => w.BoxId == id)
-                .ToListAsync();
+            box.Balance = 0;
+            box.VirtualBalance = 0;
 
-            return inventories.Count == 0? 
+            return box.Inventories is null || box.Inventories.Count == 0 ?
                 ResponseUtil.NotFound(nameof(LootBoxInventory)) : 
-                ResponseUtil.Ok(inventories);
+                ResponseUtil.Ok(box.Inventories!);
         }
 
         [AllowAnonymous]
@@ -129,13 +132,13 @@ namespace InCase.Resources.Api.Controllers
             LootBoxBanner? banner = await context.LootBoxBanners
                 .Include(i => i.Box)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.BoxId == id);
+                .FirstOrDefaultAsync(f => f.BoxId == id);
 
             if (banner is null)
-                ResponseUtil.NotFound(nameof(LootBoxBanner));
+                return ResponseUtil.NotFound(nameof(LootBoxBanner));
 
-            banner!.Box!.Balance = 0;
-            banner!.Box!.VirtualBalance = 0;
+            banner.Box!.Balance = 0;
+            banner.Box!.VirtualBalance = 0;
 
             return ResponseUtil.Ok(banner);
         }
@@ -201,11 +204,13 @@ namespace InCase.Resources.Api.Controllers
             LootBoxBanner? banner = await context.LootBoxBanners
                 .FirstOrDefaultAsync(f => f.Id == bannerDto.Id);
 
-            if(banner is null)
+            bool IsUsedBox = await context.LootBoxBanners.AnyAsync(a => a.BoxId == bannerDto.BoxId);
+
+            if (banner is null)
                 return ResponseUtil.NotFound(nameof(LootBoxBanner));
             if (!await context.LootBoxes.AnyAsync(a => a.Id == bannerDto.BoxId))
                 return ResponseUtil.NotFound(nameof(LootBox));
-            if (banner.BoxId != bannerDto.BoxId && await context.LootBoxBanners.AnyAsync(a => a.BoxId == bannerDto.BoxId))
+            if (banner.BoxId != bannerDto.BoxId && IsUsedBox)
                 return ResponseUtil.Conflict("The banner is already used by this loot box");
 
             return await EndpointUtil.Update(banner, bannerDto.Convert(false), context);

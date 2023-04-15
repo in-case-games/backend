@@ -26,16 +26,16 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            List<GameItem> gameItems = await context.GameItems
+            List<GameItem> items = await context.GameItems
                 .Include(i => i.Type)
                 .Include(i => i.Quality)
                 .Include(i => i.Rarity)
                 .AsNoTracking()
                 .ToListAsync();
 
-            return gameItems.Count == 0 ? 
+            return items.Count == 0 ? 
                 ResponseUtil.NotFound(nameof(GameItem)) : 
-                ResponseUtil.Ok(gameItems);
+                ResponseUtil.Ok(items);
         }
 
         [AllowAnonymous]
@@ -44,16 +44,16 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            GameItem? gameItem = await context.GameItems
+            GameItem? item = await context.GameItems
                 .Include(i => i.Type)
                 .Include(i => i.Rarity)
                 .Include(i => i.Quality)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(f => f.Id == id);
 
-            return gameItem is null ? 
+            return item is null ? 
                 ResponseUtil.NotFound(nameof(GameItem)) : 
-                ResponseUtil.Ok(gameItem);
+                ResponseUtil.Ok(item);
         }
 
         [AllowAnonymous]
