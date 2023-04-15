@@ -15,6 +15,7 @@ namespace InCase.Domain.Entities.Payment
         public override string ToString()
         {
             string rand = string.IsNullOrEmpty(Rand) ? "" : $"rand:{Rand}";
+
             return
                 $"state:{StatusAnswer};" +
                 $"invoice:{Invoice};" +

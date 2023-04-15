@@ -107,7 +107,7 @@ namespace InCase.Payment.Api.Controllers
         public async Task<IActionResult> TopUpBalance(ResponsePaymentGM paymentAnswer)
         {
             if (paymentAnswer.StatusAnswer != "success")
-                return BadRequest(paymentAnswer.ParametersAnswer);
+                return ResponseUtil.Conflict(paymentAnswer.ParametersAnswer ?? "Error");
 
             byte[] hashOfDataInSignIn = Encoding.ASCII.GetBytes(paymentAnswer.ToString());
             byte[] signature = Encoding.ASCII.GetBytes(paymentAnswer.SignatureRSA!);
@@ -139,50 +139,19 @@ namespace InCase.Payment.Api.Controllers
             return ResponseUtil.Ok("Balance top up");
         }
 
-        [AuthorizeRoles(Roles.All)]
-        [HttpPut("exchange/{id}")]
-        public async Task<IActionResult> ExchangeGameItem(GameItem gameItem, Guid id)
-        {
-            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
-
-            UserInventory? searchInventory = await context.UserInventories
-                .Include(x => x.Item)
-                .FirstOrDefaultAsync(x => x.UserId == UserId && x.Id == id);
-            GameItem? searchGameItem = await context.GameItems
-                .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.Id == gameItem.Id);
-            UserAdditionalInfo? info = await context.UserAdditionalInfos
-                .FirstOrDefaultAsync(x => x.UserId == UserId);
-
-            if (searchInventory == null || searchGameItem == null || info == null)
-                return ResponseUtil.NotFound("Data");
-
-            decimal differenceCost = searchInventory.Item!.Cost - searchGameItem.Cost;
-
-            if (differenceCost < 0) 
-                return Forbid();
-
-            searchInventory.ItemId = searchGameItem.Id;
-            info.Balance += differenceCost;
-
-            await context.SaveChangesAsync();
-
-            return ResponseUtil.Ok("Item was succesfully exchanged");
-        }
-
-        [AuthorizeRoles(Roles.AdminOwnerBot)]
-        [HttpGet("admin/gamemoney/balance/{currency}")]
+        [AuthorizeRoles(Roles.Owner, Roles.Bot)]
+        [HttpGet("gamemoney/balance/{currency}")]
         public async Task<IActionResult> GetGameMoneyBalance(string currency)
         {
             ResponseBalanceGM? answerBalanceInfoGM = await _gameMoneyService.GetBalanceInfo(currency);
 
             return answerBalanceInfoGM is null ?
-                ResponseUtil.NotFound("Data") : 
+                ResponseUtil.NotFound(nameof(ResponseBalanceGM)) : 
                 ResponseUtil.Ok(answerBalanceInfoGM);
         }
 
-        [AuthorizeRoles(Roles.AdminOwnerBot)]
-        [HttpGet("admin/market/balance")]
+        [AuthorizeRoles(Roles.Owner, Roles.Bot)]
+        [HttpGet("market/balance")]
         public async Task<IActionResult> GetTradeMarketBalance()
         {
             return ResponseUtil.Ok(await _marketTMService.GetTradeMarketInfo());

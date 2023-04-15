@@ -6,7 +6,6 @@ using InCase.Infrastructure.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Reflection;
 using System.Security.Claims;
 
 namespace InCase.Resources.Api.Controllers
@@ -202,6 +201,42 @@ namespace InCase.Resources.Api.Controllers
             return payments.Count == 0 ?
                 ResponseUtil.NotFound(nameof(UserHistoryPayment)) :
                 ResponseUtil.Ok(payments);
+        }
+
+        // TODO Transfer method
+        [AuthorizeRoles(Roles.All)]
+        [HttpGet("inventory/{id}/exchange/{itemId}")]
+        public async Task<IActionResult> ExchangeGameItem(Guid id, Guid itemId)
+        {
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            UserInventory? inventory = await context.UserInventories
+                .Include(i => i.Item)
+                .FirstOrDefaultAsync(f => f.UserId == UserId && f.Id == id);
+            GameItem? item = await context.GameItems
+                .AsNoTracking()
+                .FirstOrDefaultAsync(i => i.Id == itemId);
+            UserAdditionalInfo? info = await context.UserAdditionalInfos
+                .FirstOrDefaultAsync(f => f.UserId == UserId);
+
+            if (inventory is null)
+                return ResponseUtil.NotFound(nameof(UserInventory));
+            if (item is null)
+                return ResponseUtil.NotFound(nameof(GameItem));
+            if (info is null)
+                return ResponseUtil.NotFound(nameof(UserAdditionalInfo));
+
+            decimal differenceCost = inventory.Item!.Cost - item.Cost;
+
+            if (differenceCost < 0)
+                return ResponseUtil.Conflict("The value of the item in the exchange cannot be higher");
+
+            inventory.ItemId = item.Id;
+            info.Balance += differenceCost;
+
+            await context.SaveChangesAsync();
+
+            return ResponseUtil.Ok(inventory);
         }
 
         // TODO Transfer method
