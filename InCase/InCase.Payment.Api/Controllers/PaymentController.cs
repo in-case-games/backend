@@ -65,7 +65,7 @@ namespace InCase.Payment.Api.Controllers
 
             decimal minItemPriceTM = decimal.Parse(itemInfoTM.MinPrice!) / 100;
 
-            if (minItemPriceTM > gameItem.Cost / 7 * 1.1M)
+            if (minItemPriceTM > gameItem.Cost / 7 * 1.1M || minItemPriceTM < gameItem.Cost / 7 * 0.9M)
                 return ResponseUtil.Conflict("Item no stability price, exchange");
 
             //Check balance tm
@@ -136,7 +136,7 @@ namespace InCase.Payment.Api.Controllers
 
             await context.SaveChangesAsync();
 
-            return Ok(new { Success = true });
+            return ResponseUtil.Ok("Balance top up");
         }
 
         [AuthorizeRoles(Roles.All)]

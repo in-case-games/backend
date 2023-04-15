@@ -27,7 +27,7 @@ namespace InCase.Infrastructure.Services
 
         public async Task<ResponseBuyItemTM?> BuyMarketItem(GameItem gameItem, string partner, string token)
         {
-            string requestUrl = string.Format("https://{0}.com/api/Buy/{1}/?key={2}/partner={3}/token={4}",
+            string requestUrl = string.Format("https://market.{0}.com/api/Buy/{1}/?key={2}/partner={3}/token={4}",
                 gameItem.Name!.ToLower(),
                 gameItem.IdForPlatform,
                 _configuration["MarketTM:Secret"],
