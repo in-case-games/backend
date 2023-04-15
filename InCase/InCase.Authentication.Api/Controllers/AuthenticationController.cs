@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace InCase.Authentication.Api.Controllers
 {
@@ -61,14 +62,20 @@ namespace InCase.Authentication.Api.Controllers
             if (bans.Count > 0)
                 return ResponseUtil.Conflict(bans);
 
-            return await _emailService.SendSignIn(new DataMailLink()
-            {
-                UserEmail = user.Email!,
-                UserLogin = user.Login!,
-                EmailToken = _jwtService.CreateEmailToken(user),
-                UserIp = userDto.Ip!,
-                UserPlatforms = userDto.Platform!,
-            });
+            return await _emailService.SendEmail(user.Email!,
+                "Подтверждение входа.",
+                new()
+                {
+                    HeaderTitle = "Подтверждение",
+                    HeaderSubtitle = "входа",
+                    BodyTitle = $"Дорогой {user.Login!}",
+                    BodyDescription = $"Подтвердите вход в аккаунт с устройства {userDto.Platform!}. " +
+                    $"Если это были не вы, то срочно измените пароль в настройках вашего аккаунта, " +
+                    $"вас автоматически отключит со всех устройств.<br>" +
+                    $"С уважением команда InCase",
+                    BodyButtonText = "Подтверждаю",
+                    BodyButtonLink = $"/api/email/confirm/account?token={_jwtService.CreateEmailToken(user)}"
+                });
         }
 
         [AllowAnonymous]
@@ -105,12 +112,20 @@ namespace InCase.Authentication.Api.Controllers
 
             try
             {
-                await _emailService.SendSignUp(new DataMailLink()
-                {
-                    UserEmail = user.Email!,
-                    UserLogin = user.Login!,
-                    EmailToken = _jwtService.CreateEmailToken(user)
-                });
+                await _emailService.SendEmail(user.Email!,
+                    "Подтверждение регистрации.",
+                    new()
+                    {
+                        HeaderTitle = "Завершение",
+                        HeaderSubtitle = "Регистрации",
+                        BodyTitle = $"Дорогой {user.Login!}",
+                        BodyDescription = $"Для завершения этапа регистрации, " +
+                        $"вам необходимо нажать на кнопку ниже для подтверждения почты. " +
+                        $"Если это были не вы, проигнорируйте это сообщение.<br>" +
+                        $"С уважением команда InCase",
+                        BodyButtonText = "Подтверждаю",
+                        BodyButtonLink = $"/api/email/confirm/account?token={_jwtService.CreateEmailToken(user)}"
+                    });
             }
             catch (SmtpCommandException)
             {

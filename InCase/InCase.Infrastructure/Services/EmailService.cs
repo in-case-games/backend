@@ -4,6 +4,7 @@ using MailKit.Net.Smtp;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using MimeKit;
+using Org.BouncyCastle.Crypto;
 
 namespace InCase.Infrastructure.Services
 {
@@ -24,138 +25,13 @@ namespace InCase.Infrastructure.Services
             _requestUrl = configuration["EmailConfig:AddressCallback"]!;
         }
 
-        public async Task<IActionResult> SendNotifyToEmail(string email, string subject, EmailTemplate emailTemplate)
+        public async Task<IActionResult> SendEmail(string email, string subject, EmailTemplate template)
         {
-            //TODO
-            string body = emailTemplate.CreateEmailTemplate();
             try
             {
-                await SendToEmail(email, subject, body);
-                return ResponseUtil.SendEmail();
-            }
-            catch(Exception ex)
-            {
-                return ResponseUtil.Error(ex);
-            }
-        }
+                template.BodyButtonLink = _requestUrl + template.BodyButtonLink;
+                await SendToEmail(email, subject, template.CreateEmailTemplate());
 
-        public async Task SendSignUp(DataMailLink data)
-        {
-            string subject = "Подтверждение регистрации.";
-            string uri = $"{_requestUrl}/api/email/confirm/account?token={data.EmailToken}";
-            string body = data.CreateSignUpTemplate(uri);
-
-            await SendToEmail(data.UserEmail, subject, body);
-        }
-
-        public async Task<IActionResult> SendSignIn(DataMailLink data)
-        {
-            string subject = "Подтверждение входа.";
-            string uri = $"{_requestUrl}/api/email/confirm/account?token={data.EmailToken}";
-            string body = data.CreateSignInTemplate(uri);
-            try
-            {
-                await SendToEmail(data.UserEmail, subject, body);
-                return ResponseUtil.SendEmail();
-            }
-            catch (Exception ex)
-            {
-                return ResponseUtil.Error(ex);
-            }
-        }
-
-        public async Task<IActionResult> SendSuccessVerifedAccount(DataMailLink data)
-        {
-            string subject = "Подтверждение входа.";
-            string body = data.CreateSuccessVerifedAccountTemplate();
-
-            try
-            {
-                await SendToEmail(data.UserEmail, subject, body);
-                return ResponseUtil.SendEmail();
-            }
-            catch (Exception ex)
-            {
-                return ResponseUtil.Error(ex);
-            }
-        }
-
-        public async Task<IActionResult> SendLoginAttempt(DataMailLink data)
-        {
-            string subject = "Вход в аккаунт.";
-            string body = data.CreateLoginAttemptTemplate();
-
-            try
-            {
-                await SendToEmail(data.UserEmail, subject, body);
-                return ResponseUtil.SendEmail();
-            }
-            catch (Exception ex)
-            {
-                return ResponseUtil.Error(ex);
-            }
-        }
-
-        public async Task<IActionResult> SendDeleteAccount(DataMailLink data)
-        {
-            string subject = "Подтвердите удаление аккаунта";
-            string uri = $"{_requestUrl}/api/email/confirm/delete?token={data.EmailToken}";
-            string body = data.CreateDeleteAccountTemplate(uri);
-
-            try
-            {
-                await SendToEmail(data.UserEmail, subject, body);
-                return ResponseUtil.SendEmail();
-            }
-            catch (Exception ex)
-            {
-                return ResponseUtil.Error(ex);
-            }
-        }
-
-        public async Task<IActionResult> SendChangePassword(DataMailLink data)
-        {
-            string subject = "Подтвердите изменение пароля";
-            string uri = $"{_requestUrl}/api/email/confirm/update/password?token={data.EmailToken}";
-            string body = data.CreateChangePasswordTemplate(uri);
-
-            try
-            {
-                await SendToEmail(data.UserEmail, subject, body);
-                return ResponseUtil.SendEmail();
-            }
-            catch (Exception ex)
-            {
-                return ResponseUtil.Error(ex);
-            }
-        }
-
-        public async Task<IActionResult> SendChangeEmail(DataMailLink data)
-        {
-            string subject = "Подтвердите изменение почты";
-            string uri = $"{_requestUrl}/api/email/confirm/update/email?token={data.EmailToken}";
-            string body = data.CreateChangeEmailTemplate(uri);
-
-            try
-            {
-                await SendToEmail(data.UserEmail, subject, body);
-                return ResponseUtil.SendEmail();
-            }
-            catch (Exception ex)
-            {
-                return ResponseUtil.Error(ex);
-            }
-        }
-
-        public async Task<IActionResult> SendConfirmNewEmail(DataMailLink data)
-        {
-            string subject = "Подтвердите изменение почты";
-            string uri = $"{_requestUrl}/api/email/confirm/new?token={data.EmailToken}";
-            string body = data.CreateConfirmNewEmailTemplate(uri);
-
-            try
-            {
-                await SendToEmail(data.UserEmail, subject, body);
                 return ResponseUtil.SendEmail();
             }
             catch (Exception ex)
