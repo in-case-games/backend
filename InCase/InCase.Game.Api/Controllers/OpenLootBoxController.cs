@@ -48,7 +48,7 @@ namespace InCase.Game.Api.Controllers
                 return ResponseUtil.Conflict("Loot box is locked");
             if (userInfo.Balance < lootBox.Cost) 
                 return ResponseUtil.Conflict("Insufficient funds");
-            if (lootBox!.Banner?.Id is not null)
+            if (lootBox.Banner?.Id is not null)
             {
                 pathBanner = await context.UserPathBanners
                     .AsNoTracking()
@@ -65,25 +65,17 @@ namespace InCase.Game.Api.Controllers
                 .FirstAsync();
 
             decimal revenue = lootBox.Cost * RevenuePrecentage;
-            decimal lootBoxExpenses = winGameItem.Cost + revenue;
+            decimal expenses = winGameItem.Cost + revenue;
 
             if (pathBanner is not null && lootBox.Banner!.IsActive == true)
             {
                 --pathBanner.NumberSteps;
 
                 decimal retentionAmount = lootBox.Cost * RetentionPrecentageBanner;
-                decimal cashBack = GetCashBack(ref winGameItem, in lootBox, pathBanner);
+                decimal cashBack = GetCashBack(winGameItem.Id, lootBox.Cost, pathBanner);
 
-                lootBoxExpenses = winGameItem.Cost + retentionAmount;
+                CheckWinItemAndExpenses(ref winGameItem, ref expenses, lootBox, pathBanner);
 
-                if (pathBanner.NumberSteps == 0)
-                {
-                    winGameItem = lootBox.Inventories!
-                        .FirstOrDefault(f => f.ItemId == pathBanner.ItemId)!.Item!;
-                    winGameItem.Cost = pathBanner.FixedCost;
-
-                    lootBoxExpenses = retentionAmount;
-                }
                 if (cashBack >= 0)
                 {
                     userInfo.Balance += cashBack * (1M - RevenuePrecentage);
@@ -100,7 +92,7 @@ namespace InCase.Game.Api.Controllers
             }
 
             statisticsAdmin.BalanceWithdrawn += revenue;
-            lootBox.Balance -= lootBoxExpenses;
+            lootBox.Balance -= expenses;
 
             context.LootBoxes.Attach(lootBox);
             context.UserAdditionalInfos.Attach(userInfo);
@@ -199,24 +191,43 @@ namespace InCase.Game.Api.Controllers
             return winGameItem;
         }
         private static decimal GetCashBack(
-            ref GameItem winGameItem, 
-            in LootBox lootBox, 
+            Guid itemGuid, 
+            decimal boxCost, 
             UserPathBanner pathBanner)
         {
-            decimal retentionAmount = lootBox.Cost * RetentionPrecentageBanner;
+            decimal retentionAmount = boxCost * RetentionPrecentageBanner;
             decimal ceilingNumberSteps = Math.Ceiling(pathBanner.FixedCost / retentionAmount);
             decimal exactNumberSteps = pathBanner.FixedCost / retentionAmount;
 
             //Зачисление разницы между шагами округления 64.1 это 65 разница 0.9 * на процент шаг с кейса
             if (pathBanner.NumberSteps == 0)
                 return (ceilingNumberSteps - exactNumberSteps) * retentionAmount;
-
             //Зачисление если предмет выпал раньше того как пользователь дойдет до предмета
-            if (pathBanner.ItemId == winGameItem.Id)
+            else if (pathBanner.ItemId == itemGuid)
                 return (ceilingNumberSteps - pathBanner.NumberSteps) * retentionAmount;
-
-            return -1M;
+            else
+                return -1M;
         }
+
+        private static void CheckWinItemAndExpenses(
+            ref GameItem winItem, 
+            ref decimal expenses,
+            in LootBox box,
+            UserPathBanner pathBanner)
+        {
+            decimal retentionAmount = box.Cost * RetentionPrecentageBanner;
+            expenses = winItem.Cost + retentionAmount;
+
+            if (pathBanner.NumberSteps == 0)
+            {
+                winItem = box.Inventories!
+                    .FirstOrDefault(f => f.ItemId == pathBanner.ItemId)!.Item!;
+                winItem.Cost = pathBanner.FixedCost;
+
+                expenses = retentionAmount;
+            }
+        }
+
         private static bool IsProfitCase(GameItem gameItem, LootBox lootBox)
         {
             decimal revenue = lootBox.Balance * RevenuePrecentage;
