@@ -223,7 +223,7 @@ namespace InCase.Resources.Api.Controllers
                 return ResponseUtil.NotFound(nameof(GameItem));
             if (banner is null)
                 return ResponseUtil.NotFound(nameof(LootBoxBanner));
-            if(await context.UserPathBanners.AnyAsync(a => a.UserId == UserId && a.BannerId == banner.Id))
+            if (await context.UserPathBanners.AnyAsync(a => a.UserId == UserId && a.BannerId == banner.Id))
                 return ResponseUtil.Conflict("User path banner is exist");
 
             LootBox box = banner.Box!;
@@ -249,28 +249,28 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            UserPathBanner? pathBanner = await context.UserPathBanners
+            UserPathBanner? path = await context.UserPathBanners
                 .Include(i => i.Banner)
                 .Include(i => i.Banner!.Box)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(f => f.BannerId == id && f.UserId == UserId);
-            UserAdditionalInfo? userInfo = await context.UserAdditionalInfos
+            UserAdditionalInfo? info = await context.UserAdditionalInfos
                 .FirstOrDefaultAsync(f => f.UserId == UserId);
 
-            if (userInfo is null)
+            if (info is null)
                 return ResponseUtil.NotFound(nameof(UserAdditionalInfo));
-            if (pathBanner is null)
+            if (path is null)
                 return ResponseUtil.NotFound(nameof(UserPathBanner));
 
             SiteStatisticsAdmin statisticsAdmin = await context.SiteStatisticsAdmins
                 .FirstAsync();
 
-            decimal totalSpent = pathBanner.NumberSteps * pathBanner.Banner!.Box!.Cost;
+            decimal totalSpent = path.NumberSteps * path.Banner!.Box!.Cost;
 
             statisticsAdmin.BalanceWithdrawn += totalSpent * 0.1M;
-            userInfo.Balance += totalSpent * 0.9M;
+            info.Balance += totalSpent * 0.9M;
 
-            return await EndpointUtil.Delete(pathBanner, context);
+            return await EndpointUtil.Delete(path, context);
         }
     }
 }

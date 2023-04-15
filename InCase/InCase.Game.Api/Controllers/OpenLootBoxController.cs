@@ -60,21 +60,21 @@ namespace InCase.Game.Api.Controllers
             lootBox.Balance += lootBox.Cost;
 
             //Calling random
-            GameItem winGameItem = RandomizeBySmallest(in lootBox);
+            GameItem winItem = RandomizeBySmallest(in lootBox);
             SiteStatisticsAdmin statisticsAdmin = await context.SiteStatisticsAdmins
                 .FirstAsync();
 
             decimal revenue = lootBox.Cost * RevenuePrecentage;
-            decimal expenses = winGameItem.Cost + revenue;
+            decimal expenses = winItem.Cost + revenue;
 
             if (pathBanner is not null && lootBox.Banner!.IsActive == true)
             {
                 --pathBanner.NumberSteps;
 
                 decimal retentionAmount = lootBox.Cost * RetentionPrecentageBanner;
-                decimal cashBack = GetCashBack(winGameItem.Id, lootBox.Cost, pathBanner);
+                decimal cashBack = GetCashBack(winItem.Id, lootBox.Cost, pathBanner);
 
-                CheckWinItemAndExpenses(ref winGameItem, ref expenses, lootBox, pathBanner);
+                CheckWinItemAndExpenses(ref winItem, ref expenses, lootBox, pathBanner);
 
                 if (cashBack >= 0)
                 {
@@ -105,16 +105,16 @@ namespace InCase.Game.Api.Controllers
                 Id = new Guid(),
                 UserId = UserId,
                 BoxId = lootBox.Id,
-                ItemId = winGameItem.Id,
+                ItemId = winItem.Id,
                 Date = DateTime.UtcNow
             };
             UserInventory inventory = new()
             {
                 Id = new Guid(),
                 UserId = UserId,
-                ItemId = winGameItem.Id,
+                ItemId = winItem.Id,
                 Date = DateTime.UtcNow,
-                FixedCost = winGameItem.Cost
+                FixedCost = winItem.Cost
             };
 
             await context.UserHistoryOpenings.AddAsync(history);
@@ -122,7 +122,7 @@ namespace InCase.Game.Api.Controllers
 
             await context.SaveChangesAsync();
 
-            return ResponseUtil.Ok(winGameItem);
+            return ResponseUtil.Ok(winItem);
         }
 
         [AuthorizeRoles(Roles.All)]
@@ -150,10 +150,10 @@ namespace InCase.Game.Api.Controllers
             lootBox.VirtualBalance += lootBox.Cost;
 
             //Calling random
-            GameItem winGameItem = RandomizeBySmallest(in lootBox);
+            GameItem winItem = RandomizeBySmallest(in lootBox);
 
             decimal revenue = lootBox.Cost * RevenuePrecentage;
-            decimal expensesCase = winGameItem.Cost + revenue;
+            decimal expensesCase = winItem.Cost + revenue;
 
             lootBox.VirtualBalance -= expensesCase;
 
@@ -162,33 +162,30 @@ namespace InCase.Game.Api.Controllers
 
             await context.SaveChangesAsync();
 
-            return ResponseUtil.Ok(winGameItem);
+            return ResponseUtil.Ok(winItem);
         }
 
         // TODO: Rebase this
         #region nonAction
-        private static GameItem RandomizeBySmallest(in LootBox lootBox)
+        private static GameItem RandomizeBySmallest(in LootBox box)
         {
-            List<int> lossChances = lootBox.Inventories!
+            List<int> chances = box.Inventories!
                 .Select(x => x.ChanceWining)
                 .ToList();
 
-            int winIndexItem = Randomizer(lossChances);
-            GameItem winGameItem = lootBox.Inventories![winIndexItem].Item!;
-            Guid winIdGameItem = winGameItem.Id;
+            int winIndex = Randomizer(chances);
+            GameItem winItem = box.Inventories![winIndex].Item!;
 
-            //Check it will become negative case balance
-            if (IsProfitCase(winGameItem, lootBox) is false)
+            if (IsProfitCase(winItem, box) is false)
             {
-                List<GameItem> gameItems = lootBox.Inventories
+                List<GameItem> items = box.Inventories
                     .Select(x => x.Item)
                     .ToList()!;
-                winGameItem = gameItems
-                    .MinBy(x => x.Cost)!;
-                winIdGameItem = winGameItem.Id;
+
+                winItem = items.MinBy(x => x.Cost)!;
             }
 
-            return winGameItem;
+            return winItem;
         }
         private static decimal GetCashBack(
             Guid itemGuid, 
@@ -196,15 +193,13 @@ namespace InCase.Game.Api.Controllers
             UserPathBanner pathBanner)
         {
             decimal retentionAmount = boxCost * RetentionPrecentageBanner;
-            decimal ceilingNumberSteps = Math.Ceiling(pathBanner.FixedCost / retentionAmount);
-            decimal exactNumberSteps = pathBanner.FixedCost / retentionAmount;
+            decimal exactSteps = pathBanner.FixedCost / retentionAmount;
+            decimal ceilingSteps = Math.Ceiling(exactSteps);
 
-            //Зачисление разницы между шагами округления 64.1 это 65 разница 0.9 * на процент шаг с кейса
             if (pathBanner.NumberSteps == 0)
-                return (ceilingNumberSteps - exactNumberSteps) * retentionAmount;
-            //Зачисление если предмет выпал раньше того как пользователь дойдет до предмета
+                return (ceilingSteps - exactSteps) * retentionAmount;
             else if (pathBanner.ItemId == itemGuid)
-                return (ceilingNumberSteps - pathBanner.NumberSteps) * retentionAmount;
+                return (ceilingSteps - pathBanner.NumberSteps) * retentionAmount;
             else
                 return -1M;
         }
@@ -228,35 +223,34 @@ namespace InCase.Game.Api.Controllers
             }
         }
 
-        private static bool IsProfitCase(GameItem gameItem, LootBox lootBox)
+        private static bool IsProfitCase(GameItem item, LootBox box)
         {
-            decimal revenue = lootBox.Balance * RevenuePrecentage;
-            decimal availableBalance = lootBox.Balance - revenue;
+            decimal revenue = box.Balance * RevenuePrecentage;
+            decimal availableBalance = box.Balance - revenue;
 
-            return gameItem.Cost <= availableBalance;
+            return item.Cost <= availableBalance;
         }
 
-        private static int Randomizer(List<int> lossChance)
+        private static int Randomizer(List<int> chances)
         {
-            List<List<int>> partsCaseChance = new();
+            List<List<int>> partsChances = new();
             int startParts = 0;
             int lengthPart;
-            int maxRandomValue;
-            int randomNumber;
             int winIndex = 0;
 
-            for (int i = 0; i < lossChance.Count; i++)
+            for (int i = 0; i < chances.Count; i++)
             {
-                lengthPart = lossChance[i];
-                partsCaseChance.Add(new List<int>() { startParts, startParts + lengthPart - 1 });
+                lengthPart = chances[i];
+                partsChances.Add(new List<int>() { startParts, startParts + lengthPart - 1 });
                 startParts += lengthPart;
             }
-            maxRandomValue = partsCaseChance[^1][1];
-            randomNumber = _random.Next(0, maxRandomValue + 1);
 
-            for (int i = 0; i < partsCaseChance.Count; i++)
+            int maxRandomValue = partsChances[^1][1];
+            int randomNumber = _random.Next(0, maxRandomValue + 1);
+
+            for (int i = 0; i < partsChances.Count; i++)
             {
-                List<int> part = partsCaseChance[i];
+                List<int> part = partsChances[i];
                 if (part[0] <= randomNumber && part[1] >= randomNumber)
                 {
                     winIndex = i;

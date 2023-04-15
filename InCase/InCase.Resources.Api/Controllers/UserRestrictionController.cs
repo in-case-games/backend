@@ -152,7 +152,6 @@ namespace InCase.Resources.Api.Controllers
             return await EndpointUtil.GetAll<RestrictionType>(_context);
         }
 
-        //TODO CUT
         [AuthorizeRoles(Roles.AdminOwnerBot)]
         [HttpPost]
         public async Task<IActionResult> Create(UserRestrictionDto restrictionDto)
@@ -161,7 +160,7 @@ namespace InCase.Resources.Api.Controllers
 
             restrictionDto.OwnerId = UserId;
 
-            RestrictionType? restrictionType = await context.RestrictionTypes
+            RestrictionType? type = await context.RestrictionTypes
                 .AsNoTracking()
                 .FirstOrDefaultAsync(f => f.Id == restrictionDto.TypeId);
 
@@ -171,7 +170,7 @@ namespace InCase.Resources.Api.Controllers
                 .AsNoTracking()
                 .FirstOrDefaultAsync(f => f.Id == restrictionDto.UserId);
 
-            if (restrictionType is null)
+            if (type is null)
                 return ResponseUtil.NotFound(nameof(RestrictionType));
             if (user is null)
                 return ResponseUtil.NotFound("User");
@@ -187,7 +186,7 @@ namespace InCase.Resources.Api.Controllers
                 .Where(w => w.UserId == restrictionDto.UserId)
                 .ToListAsync();
 
-            int numberWarns = (restrictionType.Name == "warn") ? 1 : 0;
+            int numberWarns = (type.Name == "warn") ? 1 : 0;
 
             foreach(var restriction in restrictions)
             {
@@ -208,7 +207,6 @@ namespace InCase.Resources.Api.Controllers
             return await EndpointUtil.Create(restrictionDto.Convert(), context);
         }
 
-        //TODO CUT
         [AuthorizeRoles(Roles.AdminOwnerBot)]
         [HttpPut]
         public async Task<IActionResult> Update(UserRestrictionDto restrictionDto)
@@ -217,7 +215,7 @@ namespace InCase.Resources.Api.Controllers
 
             restrictionDto.OwnerId = UserId;
 
-            RestrictionType? restrictionType = await context.RestrictionTypes
+            RestrictionType? type = await context.RestrictionTypes
                 .AsNoTracking()
                 .FirstOrDefaultAsync(f => f.Id == restrictionDto.TypeId);
 
@@ -227,10 +225,10 @@ namespace InCase.Resources.Api.Controllers
                 .AsNoTracking()
                 .FirstOrDefaultAsync(f => f.Id == restrictionDto.UserId);
 
-            if (restrictionType is null)
+            if (type is null)
                 return ResponseUtil.NotFound(nameof(RestrictionType));
             if (!await context.UserRestrictions.AnyAsync(a => a.Id == restrictionDto.Id))
-                return ResponseUtil.NotFound("UserRestriction");
+                return ResponseUtil.NotFound(nameof(UserRestriction));
             if (user is null)
                 return ResponseUtil.NotFound("User");
 
@@ -245,7 +243,7 @@ namespace InCase.Resources.Api.Controllers
                 .Where(w => w.UserId == restrictionDto.UserId)
                 .ToListAsync();
 
-            int numberWarns = (restrictionType.Name == "warn") ? 1 : 0;
+            int numberWarns = (type.Name == "warn") ? 1 : 0;
 
             foreach (var restriction in restrictions)
             {
