@@ -75,9 +75,11 @@ namespace InCase.Game.Api.Controllers
                 discount = promocode.Promocode!.Discount;
 
                 promocode.IsActivated = true;
+                promocode.Date = DateTime.UtcNow;
 
                 context.UserHistoryPromocodes.Attach(promocode);
                 context.Entry(promocode).Property(p => p.IsActivated).IsModified = true;
+                context.Entry(promocode).Property(p => p.Date).IsModified = true;
             }
 
             //Update Balance Case and User

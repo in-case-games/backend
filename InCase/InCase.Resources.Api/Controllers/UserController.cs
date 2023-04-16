@@ -6,6 +6,7 @@ using InCase.Infrastructure.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Drawing.Drawing2D;
 using System.Security.Claims;
 
 namespace InCase.Resources.Api.Controllers
@@ -201,6 +202,84 @@ namespace InCase.Resources.Api.Controllers
             return payments.Count == 0 ?
                 ResponseUtil.NotFound(nameof(UserHistoryPayment)) :
                 ResponseUtil.Ok(payments);
+        }
+
+        //TODO Transfer method
+        [AuthorizeRoles(Roles.All)]
+        [HttpGet("activate/promocode/{name}")]
+        public async Task<IActionResult> ActivatePromocode(string name)
+        {
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            Promocode? promocode = await context.Promocodes
+                .Include(i => i.Type)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(f => f.Name == name);
+
+            if (promocode is null)
+                return ResponseUtil.NotFound(nameof(Promocode));
+
+            UserHistoryPromocode? historyPromocode = await context.UserHistoryPromocodes
+                .AsNoTracking()
+                .FirstOrDefaultAsync(f => f.PromocodeId == promocode.Id);
+
+            UserHistoryPromocode? historyPromocodeTypes = await context.UserHistoryPromocodes
+                .Include(i => i.Promocode)
+                .Include(i => i.Promocode!.Type)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(f => f.Promocode!.Type!.Id == promocode.TypeId && f.IsActivated == false);
+
+            if (historyPromocode is not null && historyPromocode.IsActivated)
+                return ResponseUtil.Conflict("Promocode has already been used");
+            if (historyPromocodeTypes is not null)
+                return ResponseUtil.Conflict("Promocode type is already in use");
+
+            historyPromocode = new() { 
+                IsActivated = false,
+                PromocodeId = promocode.Id,
+                UserId = UserId
+            };
+
+            return await EndpointUtil.Create(historyPromocode, context);
+        }
+
+        //TODO Transfer method
+        [AuthorizeRoles(Roles.All)]
+        [HttpGet("exchange/promocode/{name}")]
+        public async Task<IActionResult> ExchangePromocode(string name)
+        {
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            Promocode? promocode = await context.Promocodes
+                .Include(i => i.Type)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(f => f.Name == name);
+
+            if (promocode is null)
+                return ResponseUtil.NotFound(nameof(Promocode));
+
+            bool IsUsed = await context.UserHistoryPromocodes
+                .AnyAsync(a => a.PromocodeId == promocode.Id && a.IsActivated == true);
+
+            if (IsUsed)
+                return ResponseUtil.Conflict("Promocode has already been used");
+
+            UserHistoryPromocode? promocodeOld = await context.UserHistoryPromocodes
+                .Include(i => i.Promocode)
+                .Include(i => i.Promocode!.Type)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(f => f.Promocode!.Type!.Id == promocode.TypeId && f.IsActivated == false);
+
+            if (promocodeOld is null)
+                return ResponseUtil.Conflict("Promocode no exchange");
+
+            UserHistoryPromocode? promocodeNew = new()
+            {
+                UserId = UserId,
+                PromocodeId = promocode.Id
+            };
+
+            return await EndpointUtil.Update(promocodeOld, promocodeNew, context);
         }
 
         // TODO Transfer method

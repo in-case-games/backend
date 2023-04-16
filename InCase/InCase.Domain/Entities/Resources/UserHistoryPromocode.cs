@@ -4,7 +4,7 @@ namespace InCase.Domain.Entities.Resources
 {
     public class UserHistoryPromocode : BaseEntity
     {
-        public DateTime? Date { get; set; } = DateTime.UtcNow;
+        public DateTime? Date { get; set; }
         public bool IsActivated { get; set; } = false;
         [JsonIgnore]
         public Guid UserId { get; set; }
