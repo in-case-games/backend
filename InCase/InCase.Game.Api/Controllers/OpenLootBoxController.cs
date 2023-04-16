@@ -30,20 +30,33 @@ namespace InCase.Game.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            UserAdditionalInfo? userInfo = await context.UserAdditionalInfos
-                .AsNoTracking()
-                .FirstOrDefaultAsync(f => f.UserId == UserId);
-
             LootBox? lootBox = await context.LootBoxes
                 .Include(i => i.Inventories!)
                     .ThenInclude(ti => ti!.Item)
                 .Include(i => i.Banner)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(f => f.Id == id);
+
             UserPathBanner? pathBanner = null;
 
-            if (userInfo is null || lootBox is null)
+            if (lootBox is null)
                 return ResponseUtil.NotFound(nameof(LootBox));
+
+            User? user = await context.Users
+                .Include(i => i.AdditionalInfo)
+                .Include(i => i.HistoryPromocodes!)
+                    .ThenInclude(ti => ti.Promocode)
+                        .ThenInclude(ti => ti!.Type)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(f => f.Id == UserId);
+
+            if(user is null || user.AdditionalInfo is null)
+                return ResponseUtil.NotFound("User");
+
+            UserAdditionalInfo userInfo = user.AdditionalInfo;
+            UserHistoryPromocode? promocode = user.HistoryPromocodes?
+                .FirstOrDefault(f => f.IsActivated == false && f.Promocode?.Type?.Name == "case");
+
             if (lootBox.IsLocked)
                 return ResponseUtil.Conflict("Loot box is locked");
             if (userInfo.Balance < lootBox.Cost) 
@@ -55,9 +68,21 @@ namespace InCase.Game.Api.Controllers
                     .FirstOrDefaultAsync(f => f.BannerId == lootBox.Banner!.Id && f.UserId == UserId);
             }
 
+            decimal discount = 0;
+
+            if (promocode is not null)
+            {
+                discount = promocode.Promocode!.Discount;
+
+                promocode.IsActivated = true;
+
+                context.UserHistoryPromocodes.Attach(promocode);
+                context.Entry(promocode).Property(p => p.IsActivated).IsModified = true;
+            }
+
             //Update Balance Case and User
-            userInfo.Balance -= lootBox.Cost;
-            lootBox.Balance += lootBox.Cost;
+            userInfo.Balance -= lootBox.Cost * (1M - discount);
+            lootBox.Balance += lootBox.Cost * (1M - discount);
 
             //Calling random
             GameItem winItem = RandomizeBySmallest(in lootBox);
