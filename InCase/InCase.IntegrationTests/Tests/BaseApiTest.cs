@@ -1,7 +1,11 @@
+<<<<<<< HEAD
 ﻿using InCase.Domain.Entities.Resources;
 using InCase.Infrastructure.Data;
 using InCase.Infrastructure.Services;
 using InCase.IntegrationTests.Services;
+=======
+﻿using InCase.Infrastructure.Data;
+>>>>>>> 4f685b9f8571d38687d066efd499714c0dbbbbaf
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System.IdentityModel.Tokens.Jwt;

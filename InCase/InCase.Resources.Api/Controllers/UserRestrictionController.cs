@@ -6,7 +6,7 @@ using InCase.Infrastructure.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Runtime.CompilerServices;
+using Org.BouncyCastle.Asn1.IsisMtt.X509;
 using System.Security.Claims;
 
 namespace InCase.Resources.Api.Controllers
@@ -180,29 +180,7 @@ namespace InCase.Resources.Api.Controllers
             if (userRole != "user")
                 return Forbid("Access denied");
 
-            List<UserRestriction> restrictions = await context.UserRestrictions
-                .Include(i => i.Type)
-                .AsNoTracking()
-                .Where(w => w.UserId == restrictionDto.UserId)
-                .ToListAsync();
-
-            int numberWarns = (type.Name == "warn") ? 1 : 0;
-
-            foreach(var restriction in restrictions)
-            {
-                if (restriction.Type!.Name == "warn")
-                    ++numberWarns;
-            }
-
-            if(numberWarns >= 3)
-            {
-                RestrictionType? ban = await context.RestrictionTypes
-                    .AsNoTracking()
-                    .FirstOrDefaultAsync(f => f.Name == "ban");
-
-                restrictionDto.TypeId = ban!.Id;
-                restrictionDto.ExpirationDate = DateTime.UtcNow + TimeSpan.FromDays(30);
-            }
+            restrictionDto = await CheckUserRestriction(restrictionDto, type, context);
 
             return await EndpointUtil.Create(restrictionDto.Convert(), context);
         }
@@ -237,6 +215,33 @@ namespace InCase.Resources.Api.Controllers
             if (userRole != "user")
                 return Forbid("Access denied");
 
+            restrictionDto = await CheckUserRestriction(restrictionDto, type, context);
+
+            return await EndpointUtil.Update(restrictionDto.Convert(false), context);
+        }
+
+        [AuthorizeRoles(Roles.AdminOwnerBot)]
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            await using ApplicationDbContext context = await _context.CreateDbContextAsync();
+
+            UserRestriction? restriction = await context.UserRestrictions
+                .AsNoTracking()
+                .FirstOrDefaultAsync(f => f.Id == id);
+
+            if (restriction == null)
+                return ResponseUtil.NotFound(nameof(UserRestriction));
+            if (restriction.UserId == UserId)
+                return Forbid("Access denied");
+
+            return await EndpointUtil.Delete(restriction, context);
+        }
+
+        private static async Task<UserRestrictionDto> CheckUserRestriction(UserRestrictionDto restrictionDto,
+            RestrictionType type,
+            ApplicationDbContext context)
+        {
             List<UserRestriction> restrictions = await context.UserRestrictions
                 .Include(i => i.Type)
                 .AsNoTracking()
@@ -261,25 +266,7 @@ namespace InCase.Resources.Api.Controllers
                 restrictionDto.ExpirationDate = DateTime.UtcNow + TimeSpan.FromDays(30);
             }
 
-            return await EndpointUtil.Update(restrictionDto.Convert(false), context);
-        }
-
-        [AuthorizeRoles(Roles.AdminOwnerBot)]
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(Guid id)
-        {
-            await using ApplicationDbContext context = await _context.CreateDbContextAsync();
-
-            UserRestriction? restriction = await context.UserRestrictions
-                .AsNoTracking()
-                .FirstOrDefaultAsync(f => f.Id == id);
-
-            if (restriction == null)
-                return ResponseUtil.NotFound(nameof(UserRestriction));
-            if (restriction.UserId == UserId)
-                return Forbid("Access denied");
-
-            return await EndpointUtil.Delete(restriction, context);
+            return restrictionDto;
         }
     }
 }

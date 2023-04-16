@@ -1,5 +1,4 @@
 ﻿using InCase.Domain.Entities.Auth;
-using InCase.Domain.Entities.Email;
 using InCase.Domain.Entities.Resources;
 using InCase.Infrastructure.Data;
 using InCase.Infrastructure.Services;
@@ -8,7 +7,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace InCase.Email.Api.Controllers
 {
@@ -55,56 +53,54 @@ namespace InCase.Email.Api.Controllers
 
             if (user == null) 
                 return ResponseUtil.NotFound("User");
-            if(!ValidationService.IsValidToken(in user, principal, "email")) 
+            if (!ValidationService.IsValidToken(in user, principal, "email")) 
                 return Forbid("Access denied invalid email token");
 
             UserAdditionalInfo userInfo = user.AdditionalInfo!;
 
-            //TODO CUT
-            if(userInfo.DeletionDate != null)
+            if (!userInfo.IsConfirmed)
             {
-                //TODO Send cancel deleted account
+                userInfo.IsConfirmed = true;
+                userInfo.DeletionDate = null;
+
+                await context.SaveChangesAsync();
+
+                return await _emailService.SendToEmail(user.Email!, "Добро пожаловать в InCase!", new()
+                {
+                    HeaderTitle = "Конец этапа",
+                    HeaderSubtitle = "регистрации",
+                    BodyTitle = $"Добро пожаловать {user.Login!}",
+                    BodyDescription = $"Мы рады, что вы новый участник нашего проекта. " +
+                    $"Надеемся, что вам понравится наша реализация открытия кейсов. " +
+                    $"Подарит множество эмоций и новых предметов."
+                });
+            }
+
+            if (userInfo.DeletionDate != null)
+            {
+                await _emailService.SendToEmail(user.Email!, "Отмена удаления аккаунта", new()
+                {
+                    BodyTitle = $"Дорогой {user.Login!}",
+                    BodyDescription = $"Ваш аккаунт больше не в списках на удаление." +
+                    $"Спасибо, что остаётесь с нами!"
+                });
+
                 userInfo.DeletionDate = null;
 
                 await context.SaveChangesAsync();
             }
 
-            if (userInfo.IsConfirmed)
+            await _emailService.SendToEmail(user.Email!, "Успешный вход в аккаунт", new()
             {
-                await _emailService.SendEmail(user.Email!,
-                    "Вход в аккаунт",
-                    new()
-                    {
-                        HeaderTitle = "Вход в",
-                        HeaderSubtitle = "аккаунт",
-                        BodyTitle = $"Добро пожаловать {user.Login!}",
-                        BodyDescription = $"В ваш аккаунт вошли." +
-                        $"Если это были не вы, то срочно измените пароль в настройках вашего аккаунта, " +
-                        $"вас автоматически отключит со всех устройств." +
-                        $"С уважением команда InCase"
-                    });
+                BodyTitle = $"Добро пожаловать {user.Login!}",
+                BodyDescription = $"В ваш аккаунт вошли." +
+                $"Если это были не вы, то срочно измените пароль в настройках вашего аккаунта, " +
+                $"вас автоматически отключит со всех устройств."
+            });
 
-                DataSendTokens tokenModel = _jwtService.CreateTokenPair(in user);
+            DataSendTokens tokenModel = _jwtService.CreateTokenPair(in user);
 
-                return ResponseUtil.Ok(tokenModel);
-            }
-
-            userInfo.IsConfirmed = true;
-
-            await context.SaveChangesAsync();
-
-            return await _emailService.SendEmail(user.Email!,
-                "Подтверждение входа.",
-                new()
-                {
-                    HeaderTitle = "Подтверждение",
-                    HeaderSubtitle = "аккаунта",
-                    BodyTitle = $"Добро пожаловать {user.Login!}",
-                    BodyDescription = $"Мы рады, что вы новый участник нашего проекта. " +
-                    $"Надеемся, что вам понравится наша реализация открытия кейсов. " +
-                    $"Подарит множество эмоций и новых предметов." +
-                    $"С уважением команда InCase"
-                });
+            return ResponseUtil.Ok(tokenModel);
         }
 
         [AllowAnonymous]
@@ -141,16 +137,12 @@ namespace InCase.Email.Api.Controllers
 
             await context.SaveChangesAsync();
 
-            return await _emailService.SendEmail(email,
-                "Администрация сайта",
-                new()
-                {
-                    HeaderTitle = "Смена",
-                    HeaderSubtitle = "почты",
-                    BodyTitle = $"Дорогой {user.Login!}",
-                    BodyDescription = $"Вы изменили email аккаунта.<br>" +
-                    $"С уважением команда InCase",
-                });
+            return await _emailService.SendToEmail(email, "Ваш аккаунт сменил почту", new()
+            {
+                BodyTitle = $"Дорогой {user.Login!}",
+                BodyDescription = $"Вы изменили email своего аккаунта." +
+                $"Если это были не вы обратитесь в тех поддержку.",
+            });
         }
 
         [AllowAnonymous]
@@ -176,7 +168,6 @@ namespace InCase.Email.Api.Controllers
             if (!ValidationService.IsValidToken(in user, principal, "email"))
                 return Forbid("Access denied invalid email token");
 
-            //Gen hash and salt
             byte[] salt = EncryptorService.GenerationSaltTo64Bytes();
             string hash = EncryptorService.GenerationHashSHA512(password, salt);
 
@@ -185,16 +176,13 @@ namespace InCase.Email.Api.Controllers
 
             await context.SaveChangesAsync();
 
-            return await _emailService.SendEmail(user.Email!,
-                "Администрация сайта",
-                new()
-                {
-                    HeaderTitle = "Смена",
-                    HeaderSubtitle = "пароля",
-                    BodyTitle = $"Дорогой {user.Login!}",
-                    BodyDescription = $"Вы сменили пароль.<br>" +
-                    $"С уважением команда InCase",
-                });
+            return await _emailService.SendToEmail(user.Email!, "Ваш аккаунт сменил пароль", new()
+            {
+                BodyTitle = $"Дорогой {user.Login!}",
+                BodyDescription = $"Вы изменили пароль своего аккаунта." +
+                $"Если это были не вы смените пароль," +
+                $"если у вас нет доступа обратитесь в тех поддержку.",
+            });
         }
 
         [AllowAnonymous]
@@ -225,16 +213,14 @@ namespace InCase.Email.Api.Controllers
 
             await context.SaveChangesAsync();
 
-            return await _emailService.SendEmail(user.Email!,
-                "Администрация сайта",
-                new()
-                {
-                    HeaderTitle = "Смена",
-                    HeaderSubtitle = "пароля",
-                    BodyTitle = $"Дорогой {user.Login!}",
-                    BodyDescription = $"Ваш аккаунт будет удален через 30 дней.<br>" +
-                    $"С уважением команда InCase",
-                });
+            return await _emailService.SendToEmail(user.Email!, "Ваш аккаунт будет удален", new()
+            {
+                BodyTitle = $"Дорогой {user.Login!}.",
+                BodyDescription = $"Ваш аккаунт будет удален в течении 30 дней." +
+                $"Если вы передумали в своем решении просто войдите в аккаунт," +
+                $"и произойдет отмена удаления." +
+                $"Если это не пытались удалить аккаунт срочно поменяйте пароль.",
+            });
         }
     }
 }

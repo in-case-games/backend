@@ -63,6 +63,8 @@ namespace InCase.Game.Api.Controllers
             GameItem winItem = RandomizeBySmallest(in lootBox);
             SiteStatisticsAdmin statisticsAdmin = await context.SiteStatisticsAdmins
                 .FirstAsync();
+            SiteStatistics statistics = await context.SiteStatistics
+                .FirstAsync();
 
             decimal revenue = lootBox.Cost * RevenuePrecentage;
             decimal expenses = winItem.Cost + revenue;
@@ -91,6 +93,7 @@ namespace InCase.Game.Api.Controllers
                 }
             }
 
+            statistics.LootBoxes++;
             statisticsAdmin.BalanceWithdrawn += revenue;
             lootBox.Balance -= expenses;
 

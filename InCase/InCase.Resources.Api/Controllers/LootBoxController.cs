@@ -6,7 +6,6 @@ using InCase.Infrastructure.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Reflection;
 
 namespace InCase.Resources.Api.Controllers
 {
