@@ -42,6 +42,7 @@ namespace InCase.Authentication.Api.Controllers
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             User? user = await context.Users
+                .Include(i => i.AdditionalInfo)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => 
                 x.Id == userDto.Id ||
@@ -61,19 +62,26 @@ namespace InCase.Authentication.Api.Controllers
 
             if (bans.Count > 0)
                 return ResponseUtil.Conflict(bans);
+            if(!user.AdditionalInfo!.IsConfirmed)
+                return await _emailService.SendToEmail(user.Email!,
+                    "Подтверждение регистрации",
+                    new()
+                    {
+                        BodyTitle = $"Дорогой {user.Login!}",
+                        BodyDescription = $"Для завершения этапа регистрации, " +
+                        $"вам необходимо нажать на кнопку ниже для подтверждения почты. " +
+                        $"Если это были не вы, проигнорируйте это сообщение.",
+                        BodyButtonLink = $"/api/email/confirm/account?token={_jwtService.CreateEmailToken(user)}"
+                    });
 
-            return await _emailService.SendEmail(user.Email!,
-                "Подтверждение входа.",
+            return await _emailService.SendToEmail(user.Email!,
+                "Подтверждение входа",
                 new()
                 {
-                    HeaderTitle = "Подтверждение",
-                    HeaderSubtitle = "входа",
                     BodyTitle = $"Дорогой {user.Login!}",
                     BodyDescription = $"Подтвердите вход в аккаунт с устройства {userDto.Platform!}. " +
                     $"Если это были не вы, то срочно измените пароль в настройках вашего аккаунта, " +
-                    $"вас автоматически отключит со всех устройств.<br>" +
-                    $"С уважением команда InCase",
-                    BodyButtonText = "Подтверждаю",
+                    $"вас автоматически отключит со всех устройств.",
                     BodyButtonLink = $"/api/email/confirm/account?token={_jwtService.CreateEmailToken(user)}"
                 });
         }
@@ -112,18 +120,14 @@ namespace InCase.Authentication.Api.Controllers
 
             try
             {
-                await _emailService.SendEmail(user.Email!,
-                    "Подтверждение регистрации.",
+                await _emailService.SendToEmail(user.Email!,
+                    "Подтверждение регистрации",
                     new()
                     {
-                        HeaderTitle = "Завершение",
-                        HeaderSubtitle = "Регистрации",
                         BodyTitle = $"Дорогой {user.Login!}",
                         BodyDescription = $"Для завершения этапа регистрации, " +
                         $"вам необходимо нажать на кнопку ниже для подтверждения почты. " +
-                        $"Если это были не вы, проигнорируйте это сообщение.<br>" +
-                        $"С уважением команда InCase",
-                        BodyButtonText = "Подтверждаю",
+                        $"Если это были не вы, проигнорируйте это сообщение.",
                         BodyButtonLink = $"/api/email/confirm/account?token={_jwtService.CreateEmailToken(user)}"
                     });
             }

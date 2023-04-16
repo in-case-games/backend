@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace InCase.Email.Api.Controllers
 {
@@ -71,17 +70,14 @@ namespace InCase.Email.Api.Controllers
 
             if (userInfo.IsConfirmed)
             {
-                await _emailService.SendEmail(user.Email!,
-                    "Вход в аккаунт",
+                await _emailService.SendToEmail(user.Email!,
+                    "Успешный вход в аккаунт",
                     new()
                     {
-                        HeaderTitle = "Вход в",
-                        HeaderSubtitle = "аккаунт",
                         BodyTitle = $"Добро пожаловать {user.Login!}",
                         BodyDescription = $"В ваш аккаунт вошли." +
                         $"Если это были не вы, то срочно измените пароль в настройках вашего аккаунта, " +
-                        $"вас автоматически отключит со всех устройств." +
-                        $"С уважением команда InCase"
+                        $"вас автоматически отключит со всех устройств."
                     });
 
                 DataSendTokens tokenModel = _jwtService.CreateTokenPair(in user);
@@ -93,17 +89,16 @@ namespace InCase.Email.Api.Controllers
 
             await context.SaveChangesAsync();
 
-            return await _emailService.SendEmail(user.Email!,
-                "Подтверждение входа.",
+            return await _emailService.SendToEmail(user.Email!,
+                "Добро пожаловать в InCase!",
                 new()
                 {
-                    HeaderTitle = "Подтверждение",
-                    HeaderSubtitle = "аккаунта",
+                    HeaderTitle = "Конец этапа",
+                    HeaderSubtitle = "регистрации",
                     BodyTitle = $"Добро пожаловать {user.Login!}",
                     BodyDescription = $"Мы рады, что вы новый участник нашего проекта. " +
                     $"Надеемся, что вам понравится наша реализация открытия кейсов. " +
-                    $"Подарит множество эмоций и новых предметов." +
-                    $"С уважением команда InCase"
+                    $"Подарит множество эмоций и новых предметов."
                 });
         }
 
@@ -141,15 +136,13 @@ namespace InCase.Email.Api.Controllers
 
             await context.SaveChangesAsync();
 
-            return await _emailService.SendEmail(email,
-                "Администрация сайта",
+            return await _emailService.SendToEmail(email,
+                "Ваш аккаунт сменил почту",
                 new()
                 {
-                    HeaderTitle = "Смена",
-                    HeaderSubtitle = "почты",
                     BodyTitle = $"Дорогой {user.Login!}",
-                    BodyDescription = $"Вы изменили email аккаунта.<br>" +
-                    $"С уважением команда InCase",
+                    BodyDescription = $"Вы изменили email своего аккаунта." +
+                    $"Если это были не вы обратитесь в тех поддержку.",
                 });
         }
 
@@ -185,15 +178,14 @@ namespace InCase.Email.Api.Controllers
 
             await context.SaveChangesAsync();
 
-            return await _emailService.SendEmail(user.Email!,
-                "Администрация сайта",
+            return await _emailService.SendToEmail(user.Email!,
+                "Ваш аккаунт сменил пароль",
                 new()
                 {
-                    HeaderTitle = "Смена",
-                    HeaderSubtitle = "пароля",
                     BodyTitle = $"Дорогой {user.Login!}",
-                    BodyDescription = $"Вы сменили пароль.<br>" +
-                    $"С уважением команда InCase",
+                    BodyDescription = $"Вы изменили пароль своего аккаунта." +
+                    $"Если это были не вы смените пароль," +
+                    $"если у вас нет доступа обратитесь в тех поддержку.",
                 });
         }
 
@@ -225,15 +217,15 @@ namespace InCase.Email.Api.Controllers
 
             await context.SaveChangesAsync();
 
-            return await _emailService.SendEmail(user.Email!,
-                "Администрация сайта",
+            return await _emailService.SendToEmail(user.Email!,
+                "Ваш аккаунт будет удален",
                 new()
                 {
-                    HeaderTitle = "Смена",
-                    HeaderSubtitle = "пароля",
-                    BodyTitle = $"Дорогой {user.Login!}",
-                    BodyDescription = $"Ваш аккаунт будет удален через 30 дней.<br>" +
-                    $"С уважением команда InCase",
+                    BodyTitle = $"Дорогой {user.Login!}.",
+                    BodyDescription = $"Ваш аккаунт будет удален в течении 30 дней." +
+                    $"Если вы передумали в своем решении просто войдите в аккаунт," +
+                    $"и произойдет отмена удаления." +
+                    $"Если это не пытались удалить аккаунт срочно поменяйте пароль.",
                 });
         }
     }

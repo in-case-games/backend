@@ -52,34 +52,26 @@ namespace InCase.Email.Api.Controllers
 
             if (user.AdditionalInfo!.IsConfirmed is false)
             {
-                return await _emailService.SendEmail(user.Email!,
-                    "Подтверждение регистрации.",
+                return await _emailService.SendToEmail(user.Email!,
+                    "Завершение регистрации в системе",
                     new()
                     {
-                        HeaderTitle = "Завершение",
-                        HeaderSubtitle = "Регистрации",
                         BodyTitle = $"Дорогой {user.Login!}",
-                        BodyDescription = $"Для завершения этапа регистрации, " +
-                        $"вам необходимо нажать на кнопку ниже для подтверждения почты. " +
-                        $"Если это были не вы, проигнорируйте это сообщение.<br>" +
-                        $"С уважением команда InCase",
-                        BodyButtonText = "Подтверждаю",
+                        BodyDescription = $"Для завершения этапа регистрации," +
+                        $"вам необходимо нажать на кнопку ниже для подтверждения почты." +
+                        $"Если это были не вы, проигнорируйте это сообщение.",
                         BodyButtonLink = $"/api/email/confirm/account?token={data.EmailToken}"
                     });
             }
 
-            return await _emailService.SendEmail(user.Email!,
-                "Подтверждение входа.",
+            return await _emailService.SendToEmail(user.Email!,
+                "Подтверждение входа в систему",
                 new()
                 {
-                    HeaderTitle = "Подтверждение",
-                    HeaderSubtitle = "входа",
                     BodyTitle = $"Дорогой {user.Login!}",
-                    BodyDescription = $"Подтвердите вход в аккаунт с устройства {data.UserPlatforms}. " +
+                    BodyDescription = $"Подтвердите вход в аккаунт с устройства {data.UserPlatforms}." +
                     $"Если это были не вы, то срочно измените пароль в настройках вашего аккаунта, " +
-                    $"вас автоматически отключит со всех устройств.<br>" +
-                    $"С уважением команда InCase",
-                    BodyButtonText = "Подтверждаю",
+                    $"вас автоматически отключит со всех устройств.",
                     BodyButtonLink = $"/api/email/confirm/account?token={data.EmailToken}"
                 });
         }
@@ -119,20 +111,15 @@ namespace InCase.Email.Api.Controllers
             MapDataMailLink(ref data, in user);
             data.UserEmail = email;
 
-            return await _emailService.SendEmail(data.UserEmail,
-                "Подтвердите изменение почты",
+            return await _emailService.SendToEmail(data.UserEmail,
+                "Подтвердите новую почту аккаунта",
                 new()
                 {
-                    HeaderTitle = "Смена",
-                    HeaderSubtitle = "Почты",
                     BodyTitle = $"Дорогой, {data.UserLogin}",
-                    BodyDescription = $"Подтвердите, что это ваш новый email. " +
-                    $"Отправка с устройства {data.UserPlatforms}. " +
-                    $"Если это были не вы, то срочно измените пароль в настройках вашего аккаунта, " +
-                    $"вас автоматически отключит со всех устройств" +
-                    $"<br>" +
-                    $"С уважением команда InCase",
-                    BodyButtonText = "Подтверждаю",
+                    BodyDescription = $"Подтвердите, что это ваш новый email." +
+                    $"Отправка с устройства {data.UserPlatforms}." +
+                    $"Если это были не вы, то срочно измените пароль в настройках вашего аккаунта," +
+                    $"вас автоматически отключит со всех устройств.",
                     BodyButtonLink = $"/api/email/confirm/update/password?token={data.EmailToken}"
                 });
         }
@@ -154,19 +141,15 @@ namespace InCase.Email.Api.Controllers
 
             MapDataMailLink(ref data, in user);
 
-            return await _emailService.SendEmail(data.UserEmail,
-                "Подтвердите изменение пароля",
+            return await _emailService.SendToEmail(data.UserEmail,
+                "Забыли пароль?",
                 new()
                 {
-                    HeaderTitle = "Смена",
-                    HeaderSubtitle = "пароля",
                     BodyTitle = $"Дорогой {data.UserLogin}",
                     BodyDescription = $"Подтвердите, " +
                     $"что это вы хотите поменять пароль с устройства {data.UserPlatforms}. " +
                     $"Если это были не вы, то срочно измените пароль в настройках вашего аккаунта, " +
-                    $"вас автоматически отключит со всех устройств.<br>" +
-                    $"С уважением команда InCase",
-                    BodyButtonText = "Подтверждаю",
+                    $"вас автоматически отключит со всех устройств.",
                     BodyButtonLink = $"/api/email/confirm/update/password?token={data.EmailToken}"
                 });
         }
@@ -188,8 +171,8 @@ namespace InCase.Email.Api.Controllers
 
             MapDataMailLink(ref data, in user);
 
-            return await _emailService.SendEmail(data.UserEmail,
-                "Подтвердите изменение почты",
+            return await _emailService.SendToEmail(data.UserEmail,
+                "Подтвердите смену почты",
                 new()
                 {
                     HeaderTitle = "Смена",
@@ -223,8 +206,8 @@ namespace InCase.Email.Api.Controllers
 
             MapDataMailLink(ref data, in user);
 
-            return await _emailService.SendEmail(data.UserEmail,
-                "Подтвердите изменение пароля",
+            return await _emailService.SendToEmail(data.UserEmail,
+                "Подтвердите смену пароля",
                 new()
                 {
                     HeaderTitle = "Смена",
@@ -233,9 +216,7 @@ namespace InCase.Email.Api.Controllers
                     BodyDescription = $"Подтвердите, " +
                     $"что это вы хотите поменять пароль с устройства {data.UserPlatforms}. " +
                     $"Если это были не вы, то срочно измените пароль в настройках вашего аккаунта, " +
-                    $"вас автоматически отключит со всех устройств.<br>" +
-                    $"С уважением команда InCase",
-                    BodyButtonText = "Подтверждаю",
+                    $"вас автоматически отключит со всех устройств.",
                     BodyButtonLink = $"/api/email/confirm/update/password?token={data.EmailToken}"
                 });
         }
@@ -257,7 +238,7 @@ namespace InCase.Email.Api.Controllers
 
             MapDataMailLink(ref data, in user);
 
-            return await _emailService.SendEmail(data.UserEmail,
+            return await _emailService.SendToEmail(data.UserEmail,
                 "Подтвердите удаление аккаунта",
                 new()
                 {
@@ -267,9 +248,7 @@ namespace InCase.Email.Api.Controllers
                     BodyDescription = $"Подтвердите, что это вы удаляете аккаунт. " +
                     $"Если это были не вы, то срочно измените пароль в настройках вашего аккаунта, " +
                     $"вас автоматически отключит со всех устройств. " +
-                    $"Мы удалим ваш аккаунт при достижении 30 дней с момента нажатия на эту кнопку.<br>" +
-                    $"С уважением команда InCase",
-                    BodyButtonText = "Подтверждаю",
+                    $"Мы удалим ваш аккаунт при достижении 30 дней с момента нажатия на эту кнопку.",
                     BodyButtonLink = $"/api/email/confirm/delete?token={data.EmailToken}"
                 });
         }

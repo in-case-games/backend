@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using MimeKit;
 using Org.BouncyCastle.Crypto;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace InCase.Infrastructure.Services
 {
@@ -25,24 +26,12 @@ namespace InCase.Infrastructure.Services
             _requestUrl = configuration["EmailConfig:AddressCallback"]!;
         }
 
-        public async Task<IActionResult> SendEmail(string email, string subject, EmailTemplate template)
-        {
-            try
-            {
-                template.BodyButtonLink = _requestUrl + template.BodyButtonLink;
-                await SendToEmail(email, subject, template.CreateEmailTemplate());
-
-                return ResponseUtil.SendEmail();
-            }
-            catch (Exception ex)
-            {
-                return ResponseUtil.Error(ex);
-            }
-        }
-
-        private async Task SendToEmail(string email, string subject, string body)
+        public async Task<IActionResult> SendToEmail(string email, string subject, EmailTemplate template)
         {
             using var client = new SmtpClient();
+            
+            string body = CreateBodyLetter(subject, template);
+
             try
             {
                 var emailMessage = new MimeMessage();
@@ -56,12 +45,43 @@ namespace InCase.Infrastructure.Services
                 client.AuthenticationMechanisms.Remove("XOAUTH2");
                 await client.AuthenticateAsync(_smtpEmail, _smtpPassword);
                 await client.SendAsync(emailMessage);
+
+                return ResponseUtil.SendEmail();
+            }
+            catch (Exception ex)
+            {
+                return ResponseUtil.Error(ex);
             }
             finally
             {
                 await client.DisconnectAsync(true);
                 client.Dispose();
             }
+        }
+
+        private string CreateBodyLetter(string subject, EmailTemplate template)
+        {
+            if (!string.IsNullOrEmpty(template.BodyButtonLink))
+                template.BodyButtonLink = _requestUrl + template.BodyButtonLink;
+
+            if (string.IsNullOrEmpty(template.HeaderTitle))
+            {
+                List<string> headerWords = subject.Split(" ").ToList();
+
+                template.HeaderTitle = headerWords[0];
+                headerWords.Remove(headerWords[0]);
+
+                if(headerWords.Count >= 2)
+                {
+                    template.HeaderTitle += " " + headerWords[0];
+                    headerWords.Remove(headerWords[0]);
+                }
+
+                foreach (var word in headerWords)
+                    template.HeaderSubtitle += word + " ";
+            }
+
+            return template.CreateEmailTemplate();
         }
     }
 }
