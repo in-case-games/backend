@@ -1,7 +1,11 @@
-﻿using InCase.Infrastructure.Data;
+﻿using InCase.Domain.Entities.Resources;
+using InCase.Infrastructure.Data;
+using InCase.Infrastructure.Services;
 using InCase.IntegrationTests.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using Xunit.Abstractions;
 
 [assembly: CollectionBehavior(DisableTestParallelization = true)]
@@ -21,10 +25,12 @@ namespace InCase.IntegrationTests.Tests
             var options = new DbContextOptionsBuilder<ApplicationDbContext>()
                 .EnableSensitiveDataLogging()
                 .UseSnakeCaseNamingConvention()
-                .UseSqlServer(configuration["ConnectionStrings:DevelopmentConnection"])
+                .UseSqlServer(configuration["ConnectionStrings:TestingConnection"])
                 .Options;
 
             Context = new ApplicationDbContext(options);
+            Context.Database.Migrate();
+
             _output = output;
         }
     }
