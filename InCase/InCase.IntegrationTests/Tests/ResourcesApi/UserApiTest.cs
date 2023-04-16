@@ -3,6 +3,7 @@ using InCase.IntegrationTests.Services;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using System.Net;
 using Xunit.Abstractions;
 
 namespace InCase.IntegrationTests.Tests.ResourcesApi
@@ -12,7 +13,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
         private readonly ResponseService _responseService;
         private static readonly IConfiguration _configuration = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
-            .AddUserSecrets<HostGameApiTests>()
+            .AddUserSecrets<HostResourcesApiTests>()
             .Build();
 
         public UserApiTest(WebApplicationFactory<HostResourcesApiTests> webApplicationFactory,
@@ -21,41 +22,94 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
             _responseService = new(webApplicationFactory.CreateClient());
         }
         [Fact]
-        public async Task GET_GetAllUsers_ReturnsOk()
+        public async Task GET_GetUserAfterAuthorize_ReturnsOk()
         {
             // Arrange
-            Guid id = Guid.NewGuid();
-            await InitializeDependency(id);
-        }
+            Guid guid = Guid.NewGuid();
+            await InitializeUserDependency(guid, "admin");
 
-        #region Начальные данные
-        private async Task InitializeDependency(Guid guid, string roleName = "user")
+            // Act
+            HttpStatusCode getStatusCode = await _responseService
+                .ResponseGetStatusCode("/api/user", AccessToken);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, getStatusCode);
+            await RemoveUserDependency(guid);
+        }
+        [Fact]
+        public async Task GET_GetUserById_ReturnsOk()
         {
-            UserRole? userRole = await Context.UserRoles.FirstOrDefaultAsync(x => x.Name == roleName);
+            // Arrange 
+            Guid guid = Guid.NewGuid();
+            await InitializeUserDependency(guid);
 
-            UserAdditionalInfo userInfo = new()
-            {
-                IsConfirmed = true,
-                Balance = 99999999M,
-                Role = userRole!,
-                RoleId = userRole!.Id,
-                IsNotifyEmail = true,
-                IsGuestMode = false
-            };
-            User user = new()
-            {
-                Id = guid,
-                Login = "UserUserForTests1",
-                Email = "sex@mail.ru",
-                PasswordHash = "UserHashForTest1",
-                PasswordSalt = "UserSaltForTest1",
-                AdditionalInfo = userInfo,
-            };
+            // Act
+            HttpStatusCode getStatusCode = await _responseService
+                .ResponseGetStatusCode($"/api/user/{guid}", AccessToken);
 
-            await Context.Users.AddAsync(user);
-            await Context.UserAdditionalInfos.AddAsync(userInfo);
-            await Context.SaveChangesAsync();
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, getStatusCode);
+            await RemoveUserDependency(guid);
         }
-        #endregion
+        [Fact]
+        public async Task GET_GetEmptyUserPromocodeHistories_ReturnsNotFound()
+        {
+            // Arrange
+            Guid guid = Guid.NewGuid();
+            await InitializeUserDependency(guid);
+
+            // Act
+            HttpStatusCode getStatusCode = await _responseService
+                .ResponseGetStatusCode("/api/user/history/promocodes");
+
+            // Assert
+            Assert.Equal(HttpStatusCode.NotFound, getStatusCode);
+            await RemoveUserDependency(guid);
+        }
+        [Fact]
+        public async Task GET_GetEmptyUserWithdrawnHistories_ReturnsNotFound()
+        {
+            // Arrange
+            Guid guid = Guid.NewGuid();
+            await InitializeUserDependency(guid);
+
+            // Act
+            HttpStatusCode getStatusCode = await _responseService
+                .ResponseGetStatusCode("/api/user/history/withdrawns");
+
+            // Assert
+            Assert.Equal(HttpStatusCode.NotFound, getStatusCode);
+            await RemoveUserDependency(guid);
+        }
+        [Fact]
+        public async Task GET_GetEmptyWithdrawnHistoriesById_ReturnsNotFound()
+        {
+            // Arrange
+            Guid guid = Guid.NewGuid();
+            await InitializeUserDependency(guid);
+
+            // Act 
+            HttpStatusCode getStatusCode = await _responseService
+                .ResponseGetStatusCode($"/api/user/{guid}/history/withdrawns");
+
+            // Assert
+            Assert.Equal(HttpStatusCode.NotFound, getStatusCode);
+            await RemoveUserDependency(guid);
+        }
+        [Fact]
+        public async Task GET_GetEmptyUserHistoryOpenings_ReturnsNotFound()
+        {
+            // Arrange
+            Guid guid = Guid.NewGuid();
+            await InitializeUserDependency(guid);
+
+            // Act
+            HttpStatusCode getStatusCode = await _responseService
+                .ResponseGetStatusCode("/api/user/history/openings");
+
+            // Assert
+            Assert.Equal(HttpStatusCode.NotFound, getStatusCode);
+            await RemoveUserDependency(guid); 
+        }
     }
 }

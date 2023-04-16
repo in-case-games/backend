@@ -52,6 +52,9 @@ namespace InCase.IntegrationTests.Tests.GameApi
         public async Task GET_OpeningLootBox_Output()
         {
             //Arrange
+            Guid userGuid = Guid.NewGuid();
+            await InitializeUserDependency(userGuid, "bot");
+
             Guid lootBoxGuid = Guid.NewGuid();
             List<Guid> itemsGuids = new() {
                 Guid.NewGuid(), Guid.NewGuid(),
@@ -92,6 +95,7 @@ namespace InCase.IntegrationTests.Tests.GameApi
 
             statisticsAdmin.BalanceWithdrawn = 0;
 
+            await RemoveUserDependency(userGuid);
             await RemoveTestDependencies(itemsGuids, lootBoxGuid);
         }
 
@@ -99,6 +103,9 @@ namespace InCase.IntegrationTests.Tests.GameApi
         public async Task GET_OpeningLootBoxSubcribedBanner_Output()
         {
             //Arrange
+            Guid userGuid = Guid.NewGuid();
+            await InitializeUserDependency(userGuid, "bot");
+
             Guid lootBoxGuid = Guid.NewGuid();
             Guid bannerGuid = Guid.NewGuid();
             List<Guid> itemsGuids = new() {
@@ -147,6 +154,7 @@ namespace InCase.IntegrationTests.Tests.GameApi
 
             await Context.SaveChangesAsync();
 
+            await RemoveUserDependency(userGuid);
             await RemoveTestDependencies(itemsGuids, lootBoxGuid);
         }
 
@@ -154,6 +162,9 @@ namespace InCase.IntegrationTests.Tests.GameApi
         public async Task GET_RevenueNoSubcribedBanner_Output()
         {
             //Arrange
+            Guid userGuid = Guid.NewGuid();
+            await InitializeUserDependency(userGuid, "bot");
+
             decimal allCostItems = 0;
             Guid lootBoxGuid = Guid.NewGuid();
             Guid bannerGuid = Guid.NewGuid();
@@ -201,6 +212,7 @@ namespace InCase.IntegrationTests.Tests.GameApi
 
             await Context.SaveChangesAsync();
 
+            await RemoveUserDependency(userGuid);
             await RemoveTestDependencies(itemsGuids, lootBoxGuid);
         }
 
@@ -208,6 +220,9 @@ namespace InCase.IntegrationTests.Tests.GameApi
         public async Task GET_RevenueSubcribedBanner_Output()
         {
             //Arrange
+            Guid userGuid = Guid.NewGuid();
+            await InitializeUserDependency(userGuid, "bot");
+
             decimal allCostItems = 0;
             Guid lootBoxGuid = Guid.NewGuid();
             Guid bannerGuid = Guid.NewGuid();
@@ -260,6 +275,7 @@ namespace InCase.IntegrationTests.Tests.GameApi
 
             await Context.SaveChangesAsync();
 
+            await RemoveUserDependency(userGuid);
             await RemoveTestDependencies(itemsGuids, lootBoxGuid);
         }
 
