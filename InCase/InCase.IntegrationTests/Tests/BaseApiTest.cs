@@ -1,5 +1,4 @@
 ﻿using InCase.Infrastructure.Data;
-using InCase.IntegrationTests.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Xunit.Abstractions;

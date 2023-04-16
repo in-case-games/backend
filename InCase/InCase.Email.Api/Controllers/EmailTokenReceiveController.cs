@@ -1,5 +1,4 @@
 ﻿using InCase.Domain.Entities.Auth;
-using InCase.Domain.Entities.Email;
 using InCase.Domain.Entities.Resources;
 using InCase.Infrastructure.Data;
 using InCase.Infrastructure.Services;
@@ -59,10 +58,18 @@ namespace InCase.Email.Api.Controllers
 
             UserAdditionalInfo userInfo = user.AdditionalInfo!;
 
-            //TODO CUT
             if(userInfo.DeletionDate != null)
             {
-                //TODO Send cancel deleted account
+                if(userInfo.IsConfirmed)
+                    await _emailService.SendToEmail(user.Email!,
+                        "Отмена удаления аккаунта",
+                        new()
+                        {
+                            BodyTitle = $"Дорогой {user.Login!}",
+                            BodyDescription = $"Ваш аккаунт больше не в списках на удаление." +
+                            $"Спасибо, что остаётесь с нами!"
+                        });
+
                 userInfo.DeletionDate = null;
 
                 await context.SaveChangesAsync();
