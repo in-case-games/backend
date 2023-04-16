@@ -6,7 +6,6 @@ using InCase.Infrastructure.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Drawing.Drawing2D;
 using System.Security.Claims;
 
 namespace InCase.Resources.Api.Controllers
@@ -223,15 +222,15 @@ namespace InCase.Resources.Api.Controllers
                 .AsNoTracking()
                 .FirstOrDefaultAsync(f => f.PromocodeId == promocode.Id);
 
-            UserHistoryPromocode? historyPromocodeTypes = await context.UserHistoryPromocodes
+            UserHistoryPromocode? historyPromocodeType = await context.UserHistoryPromocodes
                 .Include(i => i.Promocode)
                 .Include(i => i.Promocode!.Type)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(f => f.Promocode!.Type!.Id == promocode.TypeId && f.IsActivated == false);
+                .FirstOrDefaultAsync(f => f.Promocode!.Type!.Id == promocode.TypeId && f.IsActivated == false && f.UserId == UserId);
 
             if (historyPromocode is not null && historyPromocode.IsActivated)
                 return ResponseUtil.Conflict("Promocode has already been used");
-            if (historyPromocodeTypes is not null)
+            if (historyPromocodeType is not null)
                 return ResponseUtil.Conflict("Promocode type is already in use");
 
             historyPromocode = new() { 

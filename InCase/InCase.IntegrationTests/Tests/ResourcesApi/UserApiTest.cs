@@ -111,6 +111,283 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
             Assert.Equal(HttpStatusCode.NotFound, getStatusCode);
             await RemoveUserDependency(guid);
         }
+        [Fact]
+        public async Task GET_GetWithdrawnHistoriesById_ReturnsOk()
+        {
+            // Arrange
+            Guid guid = Guid.NewGuid();
+            await InitializeUserDependency(guid);
+            await InitializeDependencies(guid);
+
+            // Act 
+            HttpStatusCode getStatusCode = await _responseService
+                .ResponseGetStatusCode($"/api/user/{guid}/history/withdrawns", AccessToken);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, getStatusCode);
+            await RemoveUserDependency(guid);
+        }
+        [Fact]
+        public async Task GET_GetUserInventoryById_ReturnsOk()
+        {
+            // Arrange
+            Guid guid = Guid.NewGuid();
+            await InitializeUserDependency(guid);
+            await InitializeDependencies(guid);
+
+            // Act
+            HttpStatusCode getStatusCode = await _responseService
+                .ResponseGetStatusCode($"/api/user/{guid}/inventory");
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, getStatusCode);
+            await RemoveUserDependency(guid);
+        }
+        [Fact]
+        public async Task GET_ActivatePromocode_ReturnsOk()
+        {
+            // Arrange
+            Guid guid = Guid.NewGuid();
+            await InitializeUserDependency(guid);
+
+            Promocode promocode = new()
+            {
+                Name = GenerateString(8),
+                NumberActivations = 999,
+                Discount = 999,
+                ExpirationDate = DateTime.UtcNow,
+                TypeId = Context!.PromocodeTypes!.FirstOrDefault(f => f.Name == "case")!.Id
+            };
+
+            await Context.Promocodes.AddAsync(promocode);
+            await Context.SaveChangesAsync();
+
+            // Act
+            HttpStatusCode getStatusCode = await _responseService
+                .ResponseGetStatusCode($"/api/user/activate/promocode/{promocode.Name}", AccessToken);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, getStatusCode);
+            await RemoveUserDependency(guid);
+        }
+        [Fact]
+        public async Task GET_ExchangePromocode_ReturnsOk()
+        {
+            // Arrange
+            Guid guid = Guid.NewGuid();
+            await InitializeUserDependency(guid);
+
+            Promocode promocode = new()
+            {
+                Name = GenerateString(8),
+                NumberActivations = 999,
+                Discount = 999,
+                ExpirationDate = DateTime.UtcNow,
+                TypeId = Context!.PromocodeTypes!.FirstOrDefault(f => f.Name == "case")!.Id
+            };
+
+            await Context.Promocodes.AddAsync(promocode);
+            await Context.SaveChangesAsync();
+
+            await _responseService
+                .ResponseGetStatusCode($"/api/user/activate/promocode/{promocode.Name}", AccessToken);
+
+            // Act
+            HttpStatusCode getStatusCode = await _responseService
+                .ResponseGetStatusCode($"/api/user/exchange/promocode/{promocode.Name}", AccessToken);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, getStatusCode);
+            await RemoveUserDependency(guid);
+        }
+        [Fact]
+        public async Task GET_ExchangeGameItem_ReturnsOk()
+        {
+            // Arrange
+            Guid guid = Guid.NewGuid();
+            await InitializeUserDependency(guid);
+
+            List<GameItemRarity> rarities = await Context.GameItemRarities.ToListAsync();
+
+            List<GameItemType> types = await Context.GameItemTypes.ToListAsync();
+
+            List<GameItemQuality> qualities = await Context.GameItemQualities.ToListAsync();
+
+            List<Domain.Entities.Resources.Game> games = await Context.Games.ToListAsync();
+
+            Guid csgoGameId = games.FirstOrDefault(f => f.Name == "csgo")!.Id;
+
+            GameItem item1 = new()
+            {
+                Name = GenerateString(8),
+                Cost = 239.99M,
+                ImageUri = "GOCSATImage1",
+                RarityId = rarities.FirstOrDefault(f => f.Name == "pink")!.Id,
+                TypeId = types.FirstOrDefault(f => f.Name == "pistol")!.Id,
+                GameId = csgoGameId,
+                QualityId = qualities.FirstOrDefault(f => f.Name == "minimal wear")!.Id
+            };
+
+            UserInventory inventory = new()
+            {
+                Date = DateTime.UtcNow,
+                ItemId = item1.Id,
+                UserId = guid,
+                FixedCost = 12345M
+            };
+
+            await Context.GameItems.AddAsync(item1);
+            await Context.UserInventories.AddAsync(inventory);
+            await Context.SaveChangesAsync();
+
+
+            // Act
+            HttpStatusCode getStatusCode = await _responseService
+                .ResponseGetStatusCode($"/api/user/inventory/{inventory.Id}/exchange/{item1.Id}", AccessToken);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, getStatusCode);
+            await RemoveUserDependency(guid);
+        }
+        [Fact]
+        public async Task POST_CreatePathBanner_ReturnsOk()
+        {
+            // Arrange
+            Guid guid = Guid.NewGuid();
+            await InitializeUserDependency(guid);
+
+            List<GameItemRarity> rarities = await Context.GameItemRarities.ToListAsync();
+
+            List<GameItemType> types = await Context.GameItemTypes.ToListAsync();
+
+            List<GameItemQuality> qualities = await Context.GameItemQualities.ToListAsync();
+
+            List<Domain.Entities.Resources.Game> games = await Context.Games.ToListAsync();
+
+            Guid csgoGameId = games.FirstOrDefault(f => f.Name == "csgo")!.Id;
+
+            GameItem item1 = new()
+            {
+                Name = GenerateString(8),
+                Cost = 539.99M,
+                ImageUri = "GOCSATImage1",
+                RarityId = rarities.FirstOrDefault(f => f.Name == "pink")!.Id,
+                TypeId = types.FirstOrDefault(f => f.Name == "pistol")!.Id,
+                GameId = csgoGameId,
+                QualityId = qualities.FirstOrDefault(f => f.Name == "minimal wear")!.Id
+            };
+
+            //Create Game Case
+            LootBox lootBox = new()
+            {
+                Name = GenerateString(8),
+                Cost = 400,
+                ImageUri = "GCIGOCATImage",
+                GameId = csgoGameId
+            };
+
+            LootBoxBanner boxBanner = new()
+            {
+                BoxId = lootBox.Id,
+                IsActive = true,
+                ImageUri = "",
+                CreationDate = DateTime.UtcNow,
+                ExpirationDate = DateTime.UtcNow + TimeSpan.FromDays(7)
+            };
+
+            UserPathBannerDto pathBannerDto = new()
+            {
+                BannerId = boxBanner.Id,
+                Date = DateTime.UtcNow,
+                ItemId = item1.Id,
+                NumberSteps = 1,
+                UserId = guid
+            };
+
+            await Context.GameItems.AddAsync(item1);
+            await Context.LootBoxes.AddAsync(lootBox);
+            await Context.LootBoxBanners.AddAsync(boxBanner);
+
+            await Context.SaveChangesAsync();
+
+            // Act
+            HttpStatusCode postStatusCode = await _responseService
+                .ResponsePostStatusCode("/api/user/banner", pathBannerDto, AccessToken);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, postStatusCode);
+            await RemoveUserDependency(guid);
+        }
+        [Fact]
+        public async Task DELETE_RemovePathBanner_ReturnsOk()
+        {
+            // Arrange
+            Guid guid = Guid.NewGuid();
+            await InitializeUserDependency(guid);
+
+            List<GameItemRarity> rarities = await Context.GameItemRarities.ToListAsync();
+
+            List<GameItemType> types = await Context.GameItemTypes.ToListAsync();
+
+            List<GameItemQuality> qualities = await Context.GameItemQualities.ToListAsync();
+
+            List<Domain.Entities.Resources.Game> games = await Context.Games.ToListAsync();
+
+            Guid csgoGameId = games.FirstOrDefault(f => f.Name == "csgo")!.Id;
+
+            GameItem item1 = new()
+            {
+                Name = GenerateString(8),
+                Cost = 539.99M,
+                ImageUri = "GOCSATImage1",
+                RarityId = rarities.FirstOrDefault(f => f.Name == "pink")!.Id,
+                TypeId = types.FirstOrDefault(f => f.Name == "pistol")!.Id,
+                GameId = csgoGameId,
+                QualityId = qualities.FirstOrDefault(f => f.Name == "minimal wear")!.Id
+            };
+
+            //Create Game Case
+            LootBox lootBox = new()
+            {
+                Name = GenerateString(8),
+                Cost = 400,
+                ImageUri = "GCIGOCATImage",
+                GameId = csgoGameId
+            };
+
+            LootBoxBanner boxBanner = new()
+            {
+                BoxId = lootBox.Id,
+                IsActive = true,
+                ImageUri = "",
+                CreationDate = DateTime.UtcNow,
+                ExpirationDate = DateTime.UtcNow + TimeSpan.FromDays(7)
+            };
+
+            UserPathBannerDto pathBannerDto = new()
+            {
+                BannerId = boxBanner.Id,
+                Date = DateTime.UtcNow,
+                ItemId = item1.Id,
+                NumberSteps = 1,
+                UserId = guid
+            };
+
+            await Context.GameItems.AddAsync(item1);
+            await Context.LootBoxes.AddAsync(lootBox);
+            await Context.LootBoxBanners.AddAsync(boxBanner);
+            await Context.UserPathBanners.AddAsync(pathBannerDto.Convert());
+
+            await Context.SaveChangesAsync();
+
+            // Act
+            HttpStatusCode deleteStatusCode = await _responseService
+                .ResponseDelete($"/api/user/banner/{pathBannerDto.BannerId}", AccessToken);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, deleteStatusCode);
+        }
+        #region Начальные данные
         private async Task InitializeDependencies(Guid userId)
         {
             Promocode promocode = new()
@@ -224,5 +501,6 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
 
             await Context.SaveChangesAsync();
         }
+        #endregion
     }
 }

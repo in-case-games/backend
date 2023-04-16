@@ -80,17 +80,17 @@ namespace InCase.Resources.Api.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("5564ae71-fe1a-4240-985c-24fc3f292f29"),
+                            Id = new Guid("82b0d525-7322-4ecc-ad3b-08f6cb6bb49b"),
                             Name = "csgo"
                         },
                         new
                         {
-                            Id = new Guid("6dd532ff-ffb6-4257-bc30-1325e6c3b3c5"),
+                            Id = new Guid("0f2ac08e-26c1-45a5-bdd7-9c1b0ed381f2"),
                             Name = "dota"
                         },
                         new
                         {
-                            Id = new Guid("6bd2b9e5-d7e9-4c77-8bc5-8447396fe775"),
+                            Id = new Guid("33a23f9d-b9ad-40e9-8eae-2f5ffb5a9374"),
                             Name = "genshin"
                         });
                 });
@@ -188,32 +188,32 @@ namespace InCase.Resources.Api.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("cdd4d1aa-0b20-4af8-8ab6-a5050ee4c648"),
+                            Id = new Guid("cfe8b814-671d-4bc4-9ba4-2fa8ee2d80f6"),
                             Name = "none"
                         },
                         new
                         {
-                            Id = new Guid("c729669d-057a-40a3-9d47-ba922827050b"),
+                            Id = new Guid("aee7dfb8-2bf2-43b2-b9b6-e5eb46aba66e"),
                             Name = "battle scarred"
                         },
                         new
                         {
-                            Id = new Guid("3b5ec317-8a61-4532-b898-afc1525a3c48"),
+                            Id = new Guid("5b1086d8-7aea-40e0-8057-b97edf579e03"),
                             Name = "well worn"
                         },
                         new
                         {
-                            Id = new Guid("09058ca3-39c3-4fce-9279-85ae10508be1"),
+                            Id = new Guid("aee8bc10-20a6-48f3-9360-bd196f156a83"),
                             Name = "field tested"
                         },
                         new
                         {
-                            Id = new Guid("82b5f6ba-a672-40a5-adf7-4e8f5823267a"),
+                            Id = new Guid("bbd08f8b-0e6b-40a0-a2f0-8d3a3fd72af6"),
                             Name = "minimal wear"
                         },
                         new
                         {
-                            Id = new Guid("0b2841e8-9ae1-4cd6-877b-498a00491de9"),
+                            Id = new Guid("6dd91246-8562-4b82-9527-96fc3c4ee472"),
                             Name = "factory new"
                         });
                 });
@@ -247,32 +247,32 @@ namespace InCase.Resources.Api.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("500b5fe2-1288-4cf0-8470-f55f770ad949"),
+                            Id = new Guid("c29d3bb7-d285-44f5-9678-760a33a26c4c"),
                             Name = "white"
                         },
                         new
                         {
-                            Id = new Guid("1986f9b5-cb07-4a41-b828-5bc336a9d7e9"),
+                            Id = new Guid("28d0ee7b-1b09-4a96-be27-db34bcf30d45"),
                             Name = "blue"
                         },
                         new
                         {
-                            Id = new Guid("d136e105-1fea-459a-b968-dc9f6ceba884"),
+                            Id = new Guid("e2d25346-8be1-40e8-9c37-1e9c4f1784d1"),
                             Name = "violet"
                         },
                         new
                         {
-                            Id = new Guid("c2c9635d-231e-47f0-b266-ec30fc20a02e"),
+                            Id = new Guid("67923ff7-25f4-4f6d-a73d-7c0d308f3065"),
                             Name = "pink"
                         },
                         new
                         {
-                            Id = new Guid("c9e355ac-4dab-442a-a0bc-43daeb8730a2"),
+                            Id = new Guid("c3fe54d2-67c0-4e2b-adfd-0e5dc46a81a4"),
                             Name = "red"
                         },
                         new
                         {
-                            Id = new Guid("48cb0213-3b8a-4870-a701-6e1c5eb23b61"),
+                            Id = new Guid("37c44b3d-04e8-4431-8eda-5568bf50d2ae"),
                             Name = "gold"
                         });
                 });
@@ -306,32 +306,32 @@ namespace InCase.Resources.Api.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("45a2ae70-9c9c-45fa-8f4b-bc4a29b5cc0a"),
+                            Id = new Guid("8bb1058c-e315-493f-93dd-93014170774a"),
                             Name = "none"
                         },
                         new
                         {
-                            Id = new Guid("a7dc09a7-8c68-485a-b8d8-896be3c1c485"),
+                            Id = new Guid("0712231e-da57-4bff-b1c9-18e55dac749b"),
                             Name = "pistol"
                         },
                         new
                         {
-                            Id = new Guid("633f8ab2-3ccd-41e1-86bf-2e208be73065"),
+                            Id = new Guid("39382a4a-21e3-4cd7-a661-2f0a7bbfdf25"),
                             Name = "weapon"
                         },
                         new
                         {
-                            Id = new Guid("f5ec451c-f4d3-4fa5-8cb9-05154ab32207"),
+                            Id = new Guid("db90b5d0-ef4d-4942-b6ee-3b7bd2c7c421"),
                             Name = "rifle"
                         },
                         new
                         {
-                            Id = new Guid("480bc8d8-7fd9-4c66-a3e6-e33f8f9e6591"),
+                            Id = new Guid("d66f671e-1528-4d14-8a4d-6d1e6fa973ff"),
                             Name = "knife"
                         },
                         new
                         {
-                            Id = new Guid("2277266b-f015-43ff-960a-15a5c0a4ece5"),
+                            Id = new Guid("8318a181-f24a-478a-8779-7073ecb33c6c"),
                             Name = "gloves"
                         });
                 });
@@ -718,12 +718,12 @@ namespace InCase.Resources.Api.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("afce668a-3a0e-4fc3-8de6-3abb5c777d27"),
+                            Id = new Guid("6e3d0b4a-4e9f-4ac9-8f7a-2700a79f074b"),
                             Name = "balance"
                         },
                         new
                         {
-                            Id = new Guid("2d1482ce-b971-4ee8-a5e9-5585f497c7de"),
+                            Id = new Guid("a618f47b-44e0-410d-80e1-b98ee1267826"),
                             Name = "case"
                         });
                 });
@@ -757,17 +757,17 @@ namespace InCase.Resources.Api.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("7bcf501e-5a80-4bc0-8517-9ed8bdf0ccb2"),
+                            Id = new Guid("85130d4d-7857-415b-91f9-4047ae4476a7"),
                             Name = "mute"
                         },
                         new
                         {
-                            Id = new Guid("f295122c-46b2-44dc-91c6-5c31fe51d2ff"),
+                            Id = new Guid("15a5b268-1c04-4e52-8776-cadd7a9ac82e"),
                             Name = "ban"
                         },
                         new
                         {
-                            Id = new Guid("6a6bf19b-1626-4467-9840-7b3df0f1a978"),
+                            Id = new Guid("97e76ee9-07e2-4306-8d80-bf197d1c2fb4"),
                             Name = "warn"
                         });
                 });
@@ -840,7 +840,7 @@ namespace InCase.Resources.Api.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("5cffa140-a37b-44a2-8e50-582f3633ed61"),
+                            Id = new Guid("88d670b1-34d2-42e3-a0c2-29b0486a6890"),
                             LootBoxes = 0,
                             Reviews = 0,
                             Users = 0,
@@ -880,7 +880,7 @@ namespace InCase.Resources.Api.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("65b61b3f-d872-46c9-af63-8f2b4c3d3da1"),
+                            Id = new Guid("a0f59be9-a12e-44b5-8609-e6eabf218979"),
                             BalanceWithdrawn = 0m,
                             SentSites = 0m,
                             TotalReplenished = 0m
@@ -1163,7 +1163,6 @@ namespace InCase.Resources.Api.Migrations
                         .HasColumnName("id");
 
                     b.Property<DateTime?>("Date")
-                        .IsRequired()
                         .HasColumnType("datetime2")
                         .HasColumnName("date");
 
@@ -1439,22 +1438,22 @@ namespace InCase.Resources.Api.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("019753cc-e47e-49c9-9012-7c09dd0660dd"),
+                            Id = new Guid("4ad63c1a-6a38-4e6a-972e-53fbffb475b5"),
                             Name = "user"
                         },
                         new
                         {
-                            Id = new Guid("826a3541-1379-48c9-8916-4fa33915e8cf"),
+                            Id = new Guid("86472095-32d3-4556-885e-43bc5c675eca"),
                             Name = "admin"
                         },
                         new
                         {
-                            Id = new Guid("865ece45-5668-40da-8934-1df83e371cb6"),
+                            Id = new Guid("43ca3eca-22a8-42cb-89ac-3c932943507e"),
                             Name = "owner"
                         },
                         new
                         {
-                            Id = new Guid("a55a30ec-2bba-4ffb-b019-a0da0dda95ca"),
+                            Id = new Guid("a58e3a8f-099e-4d55-87cb-0d7dc9e9f9a1"),
                             Name = "bot"
                         });
                 });
