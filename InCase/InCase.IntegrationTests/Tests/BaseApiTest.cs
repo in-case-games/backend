@@ -97,7 +97,10 @@ namespace InCase.IntegrationTests.Tests
         }
 
         #region Начальные данные
-        protected async Task InitializeUserDependency(Guid guid, string roleName = "user")
+        protected async Task InitializeUserDependency(
+            Guid guid, 
+            string roleName = "user", 
+            decimal balance = 1111111111111M)
         {
             UpdateContext();
             UserRole? userRole = await Context.UserRoles.FirstOrDefaultAsync(x => x.Name == roleName);
@@ -105,7 +108,7 @@ namespace InCase.IntegrationTests.Tests
             UserAdditionalInfo userInfo = new()
             {
                 IsConfirmed = true,
-                Balance = 99999999M,
+                Balance = balance,
                 Role = userRole!,
                 RoleId = userRole!.Id,
                 IsNotifyEmail = true,

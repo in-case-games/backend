@@ -22,6 +22,7 @@ namespace InCase.Infrastructure.Configurations
                 .HasMaxLength(50)
                 .IsRequired();
             builder.Property(p => p.Discount)
+                .HasColumnType("DECIMAL(5,5)")
                 .IsRequired();
             builder.Property(p => p.NumberActivations)
                 .IsRequired();

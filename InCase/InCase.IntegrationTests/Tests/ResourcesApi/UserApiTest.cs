@@ -1,5 +1,4 @@
-﻿using InCase.Domain.Dtos;
-using InCase.Domain.Entities.Resources;
+﻿using InCase.Domain.Entities.Resources;
 using InCase.IntegrationTests.Services;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
@@ -35,6 +34,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
         {
             _responseService = new(webApplicationFactory.CreateClient());
         }
+
         [Theory]
         [InlineData("/api/user/history/promocodes", HttpStatusCode.NotFound)]
         [InlineData("/api/user/history/withdrawns", HttpStatusCode.NotFound)]
@@ -42,7 +42,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
         [InlineData("/api/user/banners", HttpStatusCode.NotFound)]
         [InlineData("/api/user/inventory", HttpStatusCode.NotFound)]
         [InlineData("/api/history/payments", HttpStatusCode.NotFound)]
-        public async Task GET_GetEmptyUserData_ReturnsNotFound(string uri, HttpStatusCode statusCode, string userRole = "bot")
+        public async Task GET_GetUserData_NotFound(string uri, HttpStatusCode statusCode, string userRole = "bot")
         {
             // Arrange
             await InitializeUserDependency(DependenciesGuids["User"], userRole);
@@ -63,7 +63,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
         [InlineData("/api/user/banners", HttpStatusCode.OK)]
         [InlineData("/api/user/inventory", HttpStatusCode.OK)]
         [InlineData("/api/user/history/payments", HttpStatusCode.OK, "user")]
-        public async Task GET_GetUserData_ReturnsOk(string uri, HttpStatusCode statusCode, string userRole = "bot")
+        public async Task GET_GetUserData_OK(string uri, HttpStatusCode statusCode, string userRole = "bot")
         {
             // Arrange
             await InitializeUserDependency(DependenciesGuids["User"], userRole);
@@ -86,7 +86,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
         [InlineData("/api/user/banners", HttpStatusCode.Unauthorized)]
         [InlineData("/api/user/inventory", HttpStatusCode.Unauthorized)]
         [InlineData("/api/user/history/payments", HttpStatusCode.Unauthorized)]
-        public async Task GET_GetUserDataButUnauthorized_ReturnsOk(string uri, HttpStatusCode statusCode, string userRole = "bot")
+        public async Task GET_GetUserData_Unauthorized(string uri, HttpStatusCode statusCode, string userRole = "bot")
         {
             // Arrange
             await InitializeUserDependency(DependenciesGuids["User"], userRole);
@@ -102,7 +102,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
             Assert.Equal(statusCode, getStatusCode);
         }
         [Fact]
-        public async Task GET_GetNotExistedUserData_ReturnsNotFound()
+        public async Task GET_GetUserMainData_NotFound()
         {
             // Arrange
             await InitializeUserDependency(DependenciesGuids["User"]);
@@ -116,7 +116,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
             Assert.Equal(HttpStatusCode.NotFound, getStatusCode);
         }
         [Fact]
-        public async Task GET_GetUserById_ReturnsOk()
+        public async Task GET_GetUserDataById_OK()
         {
             // Arrange 
             await InitializeUserDependency(DependenciesGuids["User"]);
@@ -130,7 +130,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
             Assert.Equal(HttpStatusCode.OK, getStatusCode);
         }
         [Fact]
-        public async Task GET_GetEmptyWithdrawnHistoriesByInvalidId_ReturnsNotFound()
+        public async Task GET_GetWithdrawnHistoriesById_NotFoundUser()
         {
             // Arrange
             Guid guid = Guid.NewGuid();
@@ -143,7 +143,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
             Assert.Equal(HttpStatusCode.NotFound, getStatusCode);
         }
         [Fact]
-        public async Task GET_GetEmptyWithdrawnHistoriesById_ReturnsNotFound()
+        public async Task GET_GetWithdrawnHistoriesById_NotFoundHistory()
         {
             // Arrange
             await InitializeUserDependency(DependenciesGuids["User"]);
@@ -157,7 +157,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
             Assert.Equal(HttpStatusCode.NotFound, getStatusCode);
         }
         [Fact]
-        public async Task GET_GetEmptyUserInventoryById_ReturnsNotFound()
+        public async Task GET_GetUserInventoryById_NotFoundInventory()
         {
             // Arrange
             await InitializeUserDependency(DependenciesGuids["User"]);
@@ -171,7 +171,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
             Assert.Equal(HttpStatusCode.NotFound, getStatusCode);
         }
         [Fact]
-        public async Task GET_GetEmptyUserInventoryByInvalidId_ReturnsNotFound()
+        public async Task GET_GetUserInventoryById_NotFoundUser()
         {
             // Arrange
             Guid guid = Guid.NewGuid();
@@ -184,7 +184,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
             Assert.Equal(HttpStatusCode.NotFound, getStatusCode);
         }
         [Fact]
-        public async Task GET_GetWithdrawnHistoriesById_ReturnsOk()
+        public async Task GET_GetWithdrawnHistoriesById_OK()
         {
             // Arrange
             await InitializeUserDependency(DependenciesGuids["User"]);
@@ -200,7 +200,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
             Assert.Equal(HttpStatusCode.OK, getStatusCode);
         }
         [Fact]
-        public async Task GET_GetUserInventoryById_ReturnsOk()
+        public async Task GET_GetUserInventoryById_OK()
         {
             // Arrange
             await InitializeUserDependency(DependenciesGuids["User"]);
@@ -215,9 +215,8 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
             await RemoveUserDependency(DependenciesGuids["User"]);
             Assert.Equal(HttpStatusCode.OK, getStatusCode);
         }
-
         [Fact]
-        public async Task GET_ActivatePromocode_ReturnsOk()
+        public async Task GET_ActivatePromocode_OK()
         {
             // Arrange
             await InitializeUserDependency(DependenciesGuids["User"]);
@@ -241,7 +240,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
             Assert.Equal(HttpStatusCode.OK, getStatusCode);
         }
         [Fact]
-        public async Task GET_ActivateNotExistedPromocode_ReturnsNotFound()
+        public async Task GET_ActivatePromocode_NotFound()
         {
             // Arrange
             await InitializeUserDependency(DependenciesGuids["User"]);
@@ -255,7 +254,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
             Assert.Equal(HttpStatusCode.NotFound, getStatusCode);
         }
         [Fact]
-        public async Task GET_ActivateUsedPromocode_ReturnsConflict()
+        public async Task GET_ActivateUsedPromocode_Conflict()
         {
             // Arrange
             await InitializeUserDependency(DependenciesGuids["User"]);
@@ -274,7 +273,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
             Assert.Equal(HttpStatusCode.Conflict, getStatusCode);
         }
         [Fact]
-        public async Task GET_ActivateAlreadyUsedPromocode_ReturnsConflict()
+        public async Task GET_ActivateAlreadyUsedPromocode_Conflict()
         {
             // Arrange
             await InitializeUserDependency(DependenciesGuids["User"]);
@@ -298,7 +297,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
             Assert.Equal(HttpStatusCode.Conflict, getStatusCode);
         }
         [Fact]
-        public async Task GET_ActivatePromocodeButUnauthorized_ReturnsUnauthorized()
+        public async Task GET_ActivatePromocode_Unauthorized()
         {
             // Arrange
             await InitializeUserDependency(DependenciesGuids["User"]);
@@ -322,7 +321,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
             Assert.Equal(HttpStatusCode.Unauthorized, getStatusCode);
         }
         [Fact]
-        public async Task GET_ExchangePromocode_ReturnsOk()
+        public async Task GET_ExchangePromocode_OK()
         {
             // Arrange
             await InitializeUserDependency(DependenciesGuids["User"]);
@@ -349,7 +348,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
             Assert.Equal(HttpStatusCode.OK, getStatusCode);
         }
         [Fact]
-        public async Task GET_ExchangeNotExistedPromocode_ReturnsNotFound()
+        public async Task GET_ExchangePromocode_NotFound()
         {
             // Arrange
             await InitializeUserDependency(DependenciesGuids["User"]);
@@ -363,7 +362,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
             Assert.Equal(HttpStatusCode.NotFound, getStatusCode);
         }
         [Fact]
-        public async Task GET_ExchangePromocodeButUnauthorized_ReturnsUnauthorized()
+        public async Task GET_ExchangePromocode_Unauthorized()
         {
             // Arrange
             await InitializeUserDependency(DependenciesGuids["User"]);
@@ -390,7 +389,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
             Assert.Equal(HttpStatusCode.Unauthorized, getStatusCode);
         }
         [Fact]
-        public async Task GET_ExchangeGameItemButUnauthorized_ReturnsUnauthorized()
+        public async Task GET_ExchangeGameItem_Unauthorized()
         {
             // Arrange
             await InitializeUserDependency(DependenciesGuids["User"]);
@@ -407,7 +406,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
             Assert.Equal(HttpStatusCode.Unauthorized, getStatusCode);
         }
         [Fact]
-        public async Task GET_ExchangeGameItem_ReturnsOk()
+        public async Task GET_ExchangeGameItem_OK()
         {
             // Arrange
             await InitializeUserDependency(DependenciesGuids["User"]);
@@ -423,9 +422,8 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
             await RemoveUserDependency(DependenciesGuids["User"]);
             Assert.Equal(HttpStatusCode.OK, getStatusCode);
         }
-
         [Fact]
-        public async Task POST_CreatePathBanner_ReturnsOk()
+        public async Task POST_CreatePathBanner_OK()
         {
             // Arrange
             await InitializeUserDependency(DependenciesGuids["User"]);
@@ -445,9 +443,8 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
             await RemoveUserDependency(DependenciesGuids["User"]);
             Assert.Equal(HttpStatusCode.OK, postStatusCode);
         }
-
         [Fact]
-        public async Task POST_CreatePathBannerButUnauthorized_ReturnsUnauthorized()
+        public async Task POST_CreatePathBanner_Unauthorized()
         {
             // Arrange
             await InitializeUserDependency(DependenciesGuids["User"]);
@@ -467,9 +464,8 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
             await RemoveUserDependency(DependenciesGuids["User"]);
             Assert.Equal(HttpStatusCode.Unauthorized, postStatusCode);
         }
-
         [Fact]
-        public async Task DELETE_RemovePathBanner_ReturnsOk()
+        public async Task DELETE_RemovePathBanner_OK()
         {
             // Arrange
             await InitializeUserDependency(DependenciesGuids["User"]);
@@ -485,9 +481,8 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
 
             Assert.Equal(HttpStatusCode.OK, deleteStatusCode);
         }
-
         [Fact]
-        public async Task DELETE_RemovePathBannerButUnauthorized_ReturnsUnauthorized()
+        public async Task DELETE_RemovePathBanner_Unauthorized()
         {
             // Arrange
             await InitializeUserDependency(DependenciesGuids["User"]);
@@ -513,7 +508,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
                 Id = DependenciesGuids["Promocode"],
                 Name = GenerateString(8),
                 NumberActivations = 999,
-                Discount = 999,
+                Discount = 0.99999M,
                 ExpirationDate = DateTime.UtcNow,
                 TypeId = Context!.PromocodeTypes!.FirstOrDefault(f => f.Name == "balance")!.Id
             };

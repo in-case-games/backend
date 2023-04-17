@@ -84,6 +84,8 @@ namespace InCase.Resources.Api.Controllers
                 return ResponseUtil.NotFound(nameof(PromocodeType));
             if (await context.Promocodes.AnyAsync(a => a.Name == promocode.Name))
                 return ResponseUtil.Conflict("The promocode name is already in use");
+            if (promocode.Discount >= 1M)
+                return ResponseUtil.Conflict("The discount promo code cannot exceed and equal 100 percent");
 
             return await EndpointUtil.Create(promocode.Convert(), context);
         }

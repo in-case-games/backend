@@ -4,7 +4,9 @@ using InCase.IntegrationTests.Services;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Org.BouncyCastle.Crypto.Engines;
 using System.Diagnostics;
+using System.Net;
 using Xunit.Abstractions;
 
 namespace InCase.IntegrationTests.Tests.GameApi
@@ -26,7 +28,9 @@ namespace InCase.IntegrationTests.Tests.GameApi
         {
             ["User"] = Guid.NewGuid(),
             ["LootBox"] = Guid.NewGuid(),
-            ["LootBoxBanner"] = Guid.NewGuid()
+            ["LootBoxBanner"] = Guid.NewGuid(),
+            ["Promocode"] = Guid.NewGuid(),
+            ["UserHistoryPromocode"] = Guid.NewGuid()
         };
         private readonly Dictionary<string, decimal> ItemsAndCost = new()
         {
@@ -60,10 +64,258 @@ namespace InCase.IntegrationTests.Tests.GameApi
         }
 
         [Fact]
+        public async Task GET_OpeningLootBox_NotFoundBox()
+        {
+            //Arrange
+            await InitializeUserDependency(DependenciesGuids["User"]);
+            await InitializeTestDependencies();
+
+            //Act
+            HttpStatusCode statusCode = await _responseGame
+                .ResponseGetStatusCode($"/api/open-loot-box/{Guid.NewGuid()}", AccessToken);
+
+            //Assert
+            await RemoveUserDependency(DependenciesGuids["User"]);
+            await RemoveTestDependencies();
+            Assert.Equal(HttpStatusCode.NotFound, statusCode);
+        }
+
+        [Fact]
+        public async Task GET_OpeningLootBox_NotFoundUser()
+        {
+            //Arrange
+            await InitializeUserDependency(DependenciesGuids["User"]);
+            await RemoveUserDependency(DependenciesGuids["User"]);
+            await InitializeTestDependencies();
+
+            //Act
+            HttpStatusCode statusCode = await _responseGame
+                .ResponseGetStatusCode($"/api/open-loot-box/{DependenciesGuids["LootBox"]}", AccessToken);
+
+            //Assert
+            await RemoveTestDependencies();
+            Assert.Equal(HttpStatusCode.NotFound, statusCode);
+        }
+
+        [Fact]
+        public async Task GET_OpeningLootBox_ConflictLocked()
+        {
+            //Arrange
+            await InitializeUserDependency(DependenciesGuids["User"]);
+            await InitializeTestDependencies();
+
+            UpdateContext();
+            LootBox box = await Context.LootBoxes
+                .FirstAsync(f => f.Id == DependenciesGuids["LootBox"]);
+            box.IsLocked = true;
+            await Context.SaveChangesAsync();
+
+            //Act
+            HttpStatusCode statusCode = await _responseGame
+                .ResponseGetStatusCode($"/api/open-loot-box/{DependenciesGuids["LootBox"]}", AccessToken);
+
+            //Assert
+            await RemoveUserDependency(DependenciesGuids["User"]);
+            await RemoveTestDependencies();
+            Assert.Equal(HttpStatusCode.Conflict, statusCode);
+        }
+
+        [Fact]
+        public async Task GET_OpeningLootBox_ConflictBalance()
+        {
+            //Arrange
+            await InitializeUserDependency(DependenciesGuids["User"], "user", 0M);
+            await InitializeTestDependencies();
+
+            //Act
+            HttpStatusCode statusCode = await _responseGame
+                .ResponseGetStatusCode($"/api/open-loot-box/{DependenciesGuids["LootBox"]}", AccessToken);
+
+            //Assert
+            await RemoveUserDependency(DependenciesGuids["User"]);
+            await RemoveTestDependencies();
+            Assert.Equal(HttpStatusCode.Conflict, statusCode);
+        }
+
+        [Fact]
+        public async Task GET_OpeningLootBoxUsePromocode_OK()
+        {
+            //Arrange
+            await InitializeUserDependency(DependenciesGuids["User"], "user", 400M);
+            await InitializeTestDependencies();
+
+            Promocode promocode = new()
+            {
+                Id = DependenciesGuids["Promocode"],
+                Name = GenerateString(8),
+                NumberActivations = 1,
+                Discount = 0.1M,
+                ExpirationDate = DateTime.UtcNow,
+                TypeId = Context!.PromocodeTypes!.First(f => f.Name == "case")!.Id
+            };
+
+            UserHistoryPromocode historyPromocode = new()
+            {
+                Id = DependenciesGuids["UserHistoryPromocode"],
+                IsActivated = false,
+                UserId = DependenciesGuids["User"],
+                PromocodeId = promocode.Id
+            };
+
+            await Context.Promocodes.AddAsync(promocode);
+            await Context.UserHistoryPromocodes.AddAsync(historyPromocode);
+            await Context.SaveChangesAsync();
+
+            //Act
+            HttpStatusCode statusCode = await _responseGame
+                .ResponseGetStatusCode($"/api/open-loot-box/{DependenciesGuids["LootBox"]}", AccessToken);
+
+            UpdateContext();
+
+            UserAdditionalInfo info = await Context.UserAdditionalInfos
+                .AsNoTracking()
+                .FirstAsync(f => f.UserId == DependenciesGuids["User"]);
+
+            LootBox box = await Context.LootBoxes
+                .AsNoTracking()
+                .FirstAsync(f => f.Id == DependenciesGuids["LootBox"]);
+
+            Context.Promocodes.Remove(promocode);
+            await Context.SaveChangesAsync();
+
+            //Assert
+            await RemoveUserDependency(DependenciesGuids["User"]);
+            await RemoveTestDependencies();
+
+            Assert.Equal(
+                (HttpStatusCode.OK, info.Balance), 
+                (statusCode, 40));
+        }
+
+        [Fact]
+        public async Task GET_OpeningLootBoxUsePromocodeFor99Percent_OK()
+        {
+            //Arrange
+            await InitializeUserDependency(DependenciesGuids["User"], "user", 400M);
+            await InitializeTestDependencies();
+
+            Promocode promocode = new()
+            {
+                Id = DependenciesGuids["Promocode"],
+                Name = GenerateString(8),
+                NumberActivations = 1,
+                Discount = 0.99M,
+                ExpirationDate = DateTime.UtcNow,
+                TypeId = Context!.PromocodeTypes!.First(f => f.Name == "case")!.Id
+            };
+
+            UserHistoryPromocode historyPromocode = new()
+            {
+                Id = DependenciesGuids["UserHistoryPromocode"],
+                IsActivated = false,
+                UserId = DependenciesGuids["User"],
+                PromocodeId = promocode.Id
+            };
+
+            await Context.Promocodes.AddAsync(promocode);
+            await Context.UserHistoryPromocodes.AddAsync(historyPromocode);
+            await Context.SaveChangesAsync();
+
+            //Act
+            HttpStatusCode statusCode = await _responseGame
+                .ResponseGetStatusCode($"/api/open-loot-box/{DependenciesGuids["LootBox"]}", AccessToken);
+
+            UpdateContext();
+
+            UserAdditionalInfo info = await Context.UserAdditionalInfos
+                .AsNoTracking()
+                .FirstAsync(f => f.UserId == DependenciesGuids["User"]);
+
+            Context.Promocodes.Remove(promocode);
+            await Context.SaveChangesAsync();
+
+            //Assert
+            await RemoveUserDependency(DependenciesGuids["User"]);
+            await RemoveTestDependencies();
+
+            Assert.Equal(
+                (HttpStatusCode.OK, info.Balance),
+                (statusCode, 399));
+        }
+
+        [Fact]
+        public async Task GET_OpeningLootBoxCantBeNevativeBalance_OK()
+        {
+            //Arrange
+            await InitializeUserDependency(DependenciesGuids["User"], "owner", 400M);
+            await InitializeTestDependencies();
+
+            Promocode promocode = new()
+            {
+                Id = DependenciesGuids["Promocode"],
+                Name = GenerateString(8),
+                NumberActivations = 1,
+                Discount = 0.99M,
+                ExpirationDate = DateTime.UtcNow,
+                TypeId = Context!.PromocodeTypes!.First(f => f.Name == "case")!.Id
+            };
+
+            UserHistoryPromocode historyPromocode = new()
+            {
+                Id = DependenciesGuids["UserHistoryPromocode"],
+                IsActivated = false,
+                UserId = DependenciesGuids["User"],
+                PromocodeId = promocode.Id
+            };
+
+            await Context.Promocodes.AddAsync(promocode);
+            await Context.UserHistoryPromocodes.AddAsync(historyPromocode);
+            await Context.SaveChangesAsync();
+
+            //Act
+            HttpStatusCode statusCode = await _responseGame
+                .ResponseGetStatusCode($"/api/open-loot-box/{DependenciesGuids["LootBox"]}", AccessToken);
+
+            UpdateContext();
+
+            LootBox box = await Context.LootBoxes
+                .AsNoTracking()
+                .FirstAsync(f => f.Id == DependenciesGuids["LootBox"]);
+
+            SiteStatisticsAdmin statisticsAdmin = await Context.SiteStatisticsAdmins
+                .FirstAsync();
+
+            Context.Promocodes.Remove(promocode);
+            await Context.SaveChangesAsync();
+
+            //Assert
+            await RemoveUserDependency(DependenciesGuids["User"]);
+            await RemoveTestDependencies();
+
+            Assert.True(HttpStatusCode.OK == statusCode && 
+                box.Balance >= 0 && statisticsAdmin.BalanceWithdrawn < 0);
+        }
+
+        [Fact]
+        public async Task GET_OpeningLootBox_Unauthorized()
+        {
+            //Arrange
+            await InitializeTestDependencies();
+
+            //Act
+            HttpStatusCode statusCode = await _responseGame
+                .ResponseGetStatusCode($"/api/open-loot-box/{DependenciesGuids["LootBox"]}");
+
+            //Assert
+            await RemoveTestDependencies();
+            Assert.Equal(HttpStatusCode.Unauthorized, statusCode);
+        }
+
+        [Fact]
         public async Task GET_OpeningLootBox_Output()
         {
             //Arrange
-            await InitializeUserDependency(DependenciesGuids["User"], "bot");
+            await InitializeUserDependency(DependenciesGuids["User"], "admin");
             await InitializeTestDependencies();
 
             //Act & Assert
@@ -77,9 +329,9 @@ namespace InCase.IntegrationTests.Tests.GameApi
         public async Task GET_OpeningLootBoxSubcribedBanner_Output()
         {
             //Arrange
-            await InitializeUserDependency(DependenciesGuids["User"], "bot");
+            await InitializeUserDependency(DependenciesGuids["User"], "admin");
             await InitializeTestDependencies();
-            await InitializeTestDependencies2(2);
+            await InitializeDependeciesForBanner(2);
 
             //Act & Assert
             await RunOpenLootBoxTest(2);
@@ -89,12 +341,12 @@ namespace InCase.IntegrationTests.Tests.GameApi
         }
 
         #region Начальные данные
-        private async Task RunOpenLootBoxTest(int itemIndex = -1, int numberOpening = 1000)
+        private async Task RunOpenLootBoxTest(int pathItemIndex = -1, int numberOpening = 1000)
         {
             //Act
             decimal allCostItems = 0;
             Stopwatch startTime = Stopwatch.StartNew();
-            Dictionary<string, int> winingItems = await GetWiningItems(itemIndex, numberOpening);
+            Dictionary<string, int> winingItems = await GetWiningItems(pathItemIndex, numberOpening);
 
             startTime.Stop();
             var resultTime = startTime.Elapsed;
@@ -125,7 +377,7 @@ namespace InCase.IntegrationTests.Tests.GameApi
                 $"Стоимость всех предметов: {allCostItems}\n" +
                 $"Скорость алгоритма: {elapsedTime}");
         }
-        private async Task<Dictionary<string, int>> GetWiningItems(int itemIndex = -1, int numberOpening = 1000)
+        private async Task<Dictionary<string, int>> GetWiningItems(int pathItemIndex = -1, int numberOpening = 1000)
         {
             Dictionary<string, int> winItems = new()
             {
@@ -149,13 +401,13 @@ namespace InCase.IntegrationTests.Tests.GameApi
                 //Counter wins
                 winItems[winItem!.Name!] += 1;
 
-                if(itemIndex >= 0)
+                if(pathItemIndex >= 0)
                 {
                     UserPathBannerDto pathBannerDto = new()
                     {
                         BannerId = DependenciesGuids["LootBoxBanner"],
                         Date = DateTime.UtcNow,
-                        ItemId = ItemsGuids[itemIndex],
+                        ItemId = ItemsGuids[pathItemIndex],
                         NumberSteps = 1,
                         UserId = DependenciesGuids["User"]
                     };
@@ -168,7 +420,7 @@ namespace InCase.IntegrationTests.Tests.GameApi
             return winItems;
         }
 
-        private async Task InitializeTestDependencies2(int itemIndex)
+        private async Task InitializeDependeciesForBanner(int itemIndex)
         {
             UpdateContext();
 

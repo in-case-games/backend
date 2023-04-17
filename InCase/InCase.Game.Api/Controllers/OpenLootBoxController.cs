@@ -82,9 +82,11 @@ namespace InCase.Game.Api.Controllers
                 context.Entry(promocode).Property(p => p.Date).IsModified = true;
             }
 
+            decimal lootBoxCost = discount >= 0.99M ? 1 : lootBox.Cost * (1M - discount);
+
             //Update Balance Case and User
-            userInfo.Balance -= lootBox.Cost * (1M - discount);
-            lootBox.Balance += lootBox.Cost * (1M - discount);
+            userInfo.Balance -= lootBoxCost;
+            lootBox.Balance += lootBoxCost;
 
             //Calling random
             GameItem winItem = RandomizeBySmallest(in lootBox);
@@ -121,8 +123,16 @@ namespace InCase.Game.Api.Controllers
             }
 
             statistics.LootBoxes++;
+
             statisticsAdmin.BalanceWithdrawn += revenue;
             lootBox.Balance -= expenses;
+
+            if (lootBox.Balance < 0)
+            {
+                //Notify admin negative balance
+                statisticsAdmin.BalanceWithdrawn += lootBox.Balance;
+                lootBox.Balance = 0;
+            }
 
             context.LootBoxes.Attach(lootBox);
             context.UserAdditionalInfos.Attach(userInfo);
