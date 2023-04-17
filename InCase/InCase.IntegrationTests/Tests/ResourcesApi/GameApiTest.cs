@@ -22,7 +22,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
         }
 
         [Fact]
-        public async Task GET_GetGames_OK()
+        public async Task GET_Games_OK()
         {
             //Arrange
             //Act
@@ -34,7 +34,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
         }
 
         [Fact]
-        public async Task GET_GetGame_NotFoundGame()
+        public async Task GET_Game_NotFoundGame()
         {
             //Arrange
             //Act
@@ -46,7 +46,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
         }
 
         [Fact]
-        public async Task GET_GetGame_OK()
+        public async Task GET_Game_OK()
         {
             //Arrange
             AnswerGame? answerGame = await _responseService

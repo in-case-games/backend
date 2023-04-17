@@ -244,7 +244,7 @@ namespace InCase.IntegrationTests.Tests.GameApi
         }
 
         [Fact]
-        public async Task GET_OpeningLootBoxCantBeNevativeBalance_OK()
+        public async Task GET_OpeningLootBoxCanNotBeNevativeBalance_OK()
         {
             //Arrange
             await InitializeUserDependency(DependenciesGuids["User"], "owner", 400M);

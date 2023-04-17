@@ -26,7 +26,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
         [Theory]
         [InlineData("/api/user-additional-info/guest-mode")]
         [InlineData("/api/user-additional-info")]
-        public async Task GET_TurnOnOrTurnOffGuestModeButUnauthorized_Unauthorized(string uri)
+        public async Task GET_TurnOnOrTurnOffGuestMode_Unauthorized(string uri)
         {
             // Arrange
 
@@ -38,7 +38,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
             Assert.Equal(HttpStatusCode.Unauthorized, getStatusCode);
         }
         [Fact]
-        public async Task GET_GetAdditionalInfo_OK()
+        public async Task GET_AdditionalInfo_OK()
         {
             // Arrange
             await InitializeUserDependency(UserGuid);
@@ -52,7 +52,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
             Assert.Equal(HttpStatusCode.OK, getStatusCode);
         }
         [Fact]
-        public async Task GET_GetNotExistedAdditionalInfo_NotFound()
+        public async Task GET_AdditionalInfo_NotFound()
         {
             // Arrange
             string fakeAccessToken = await CreateFakeToken();
@@ -65,7 +65,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
             Assert.Equal(HttpStatusCode.NotFound, getStatusCode);
         }
         [Fact]
-        public async Task GET_GetUserRoles_OK()
+        public async Task GET_UserRoles_OK()
         {
             // Arrange
 
@@ -96,7 +96,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
             Assert.True(getTurnOffGuestMode == getTurnOnGuestMode);
         }
         [Fact]
-        public async Task GET_TurnOnOrTurnOffGuestModeButAccessDenied_Forbidden()
+        public async Task GET_TurnOnOrTurnOffGuestMode_Forbidden()
         {
             // Arrange
             string fakeAccessToken = await CreateFakeToken("user");
@@ -113,7 +113,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
         [InlineData(Roles.Admin, HttpStatusCode.Forbidden)]
         [InlineData(Roles.Owner, HttpStatusCode.OK)]
         [InlineData(Roles.Bot, HttpStatusCode.OK)]
-        public async Task PUT_UpdateAdditionalInfo(string roleName, HttpStatusCode result)
+        public async Task PUT_AdditionalInfo_ForbiddenAndOK(string roleName, HttpStatusCode result)
         {
             // Arrange
             await InitializeUserDependency(UserGuid, roleName);
@@ -146,7 +146,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
             Assert.Equal(result, putStatusCode);
         }
         [Fact]
-        public async Task PUT_UpdateAdditionalInfoButUnauthorized_Unauthorized()
+        public async Task PUT_AdditionalInfo_Unauthorized()
         {
             UserRole? userRole = await Context.UserRoles.FirstOrDefaultAsync(x => x.Name == "bot");
 
@@ -169,7 +169,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
             Assert.Equal(HttpStatusCode.Unauthorized, putStatusCode);
         }
         [Fact]
-        public async Task PUT_UpdateAdditionalInfoButRoleIsNotExist_NotFound()
+        public async Task PUT_AdditionalInfo_NotFoundRole()
         {
             // Arrange
             await InitializeUserDependency(UserGuid, "bot");
@@ -198,7 +198,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
             Assert.Equal(HttpStatusCode.NotFound, putStatusCode);
         }
         [Fact]
-        public async Task PUT_UpdateAdditionalInfoButUserIsNotExist_NotFound()
+        public async Task PUT_AdditionalInfo_NotFoundUser()
         {
             // Arrange
             await InitializeUserDependency(UserGuid, "bot");
@@ -229,7 +229,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
             Assert.Equal(HttpStatusCode.NotFound, putStatusCode);
         }
         [Fact]
-        public async Task PUT_UpdateAdditionalInfoButInfoNotExist_NotFound()
+        public async Task PUT_AdditionalInfo_NotFoundInfo()
         {
             // Arrange
             await InitializeUserDependency(UserGuid, "bot");
