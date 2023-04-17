@@ -49,7 +49,7 @@ namespace InCase.Resources.Api.Controllers
 
         [AuthorizeRoles(Roles.AdminOwnerBot)]
         [HttpGet("guest-mode")]
-        public async Task<IActionResult> OnOfGuestMode()
+        public async Task<IActionResult> OnOffGuestMode()
         {
             await using ApplicationDbContext context = await _context.CreateDbContextAsync();
 

@@ -86,9 +86,9 @@ namespace InCase.IntegrationTests.Tests
             };
         }
 
-        protected string GenerateString(int length = 8)
+        protected static string GenerateString(int length = 8)
         {
-            Random random = new Random();
+            Random random = new();
         
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
@@ -138,10 +138,10 @@ namespace InCase.IntegrationTests.Tests
             Context.Users.Remove(user!);
             await Context.SaveChangesAsync();
         }
-        protected async Task<string> CreateFakeToken()
+        protected async Task<string> CreateFakeToken(string roleName = "bot")
         {
             UpdateContext();
-            UserRole? userRole = await Context.UserRoles.FirstOrDefaultAsync(x => x.Name == "bot");
+            UserRole? userRole = await Context.UserRoles.FirstOrDefaultAsync(x => x.Name == roleName);
 
             UserAdditionalInfo userInfo = new()
             {
