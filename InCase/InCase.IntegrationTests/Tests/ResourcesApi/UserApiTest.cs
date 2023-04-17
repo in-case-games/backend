@@ -12,6 +12,19 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
     public class UserApiTest: BaseApiTest, IClassFixture<WebApplicationFactory<HostResourcesApiTests>>
     {
         private readonly ResponseService _responseService;
+        private readonly Dictionary<string, Guid> DependenciesGuids = new() {
+            ["User"] = Guid.NewGuid(),
+            ["Promocode"] = Guid.NewGuid(),
+            ["GameItem"] = Guid.NewGuid(),
+            ["LootBox"] = Guid.NewGuid(),
+            ["LootBoxBanner"] = Guid.NewGuid(),
+            ["UserHistoryPromocode"] = Guid.NewGuid(),
+            ["UserHistoryWithdrawn"] = Guid.NewGuid(),
+            ["UserHistoryOpening"] = Guid.NewGuid(),
+            ["UserPathBanner"] = Guid.NewGuid(),
+            ["UserInventory"] = Guid.NewGuid(),
+            ["UserHistoryPayment"] = Guid.NewGuid(),
+        };
         private static readonly IConfiguration _configuration = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddUserSecrets<HostResourcesApiTests>()
@@ -32,16 +45,15 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
         public async Task GET_GetEmptyUserData_ReturnsNotFound(string uri, HttpStatusCode statusCode, string userRole = "bot")
         {
             // Arrange
-            Guid guid = Guid.NewGuid();
-            await InitializeUserDependency(guid, userRole);
+            await InitializeUserDependency(DependenciesGuids["User"], userRole);
 
             // Act
             HttpStatusCode getStatusCode = await _responseService
                 .ResponseGetStatusCode(uri, AccessToken);
 
             // Assert
+            await RemoveUserDependency(DependenciesGuids["User"]);
             Assert.Equal(statusCode, getStatusCode);
-            await RemoveUserDependency(guid);
         }
         [Theory]
         [InlineData("/api/user", HttpStatusCode.OK)]
@@ -54,17 +66,17 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
         public async Task GET_GetUserData_ReturnsOk(string uri, HttpStatusCode statusCode, string userRole = "bot")
         {
             // Arrange
-            Guid guid = Guid.NewGuid();
-            await InitializeUserDependency(guid, userRole);
-            await InitializeDependencies(guid);
+            await InitializeUserDependency(DependenciesGuids["User"], userRole);
+            await InitializeDependencies();
 
             // Act
             HttpStatusCode getStatusCode = await _responseService
                 .ResponseGetStatusCode(uri, AccessToken);
 
             // Assert
+            await RemoveDependencies();
+            await RemoveUserDependency(DependenciesGuids["User"]);
             Assert.Equal(statusCode, getStatusCode);
-            await RemoveUserDependency(guid);
         }
         [Theory]
         [InlineData("/api/user", HttpStatusCode.Unauthorized)]
@@ -77,45 +89,24 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
         public async Task GET_GetUserDataButUnauthorized_ReturnsOk(string uri, HttpStatusCode statusCode, string userRole = "bot")
         {
             // Arrange
-            Guid guid = Guid.NewGuid();
-            await InitializeUserDependency(guid, userRole);
-            await InitializeDependencies(guid);
+            await InitializeUserDependency(DependenciesGuids["User"], userRole);
+            await InitializeDependencies();
 
             // Act
             HttpStatusCode getStatusCode = await _responseService
                 .ResponseGetStatusCode(uri);
 
             // Assert
+            await RemoveDependencies();
+            await RemoveUserDependency(DependenciesGuids["User"]);
             Assert.Equal(statusCode, getStatusCode);
-            await RemoveUserDependency(guid);
         }
         [Fact]
         public async Task GET_GetNotExistedUserData_ReturnsNotFound()
         {
             // Arrange
-            Guid guid = Guid.NewGuid();
-            UserRole? userRole = await Context.UserRoles.FirstOrDefaultAsync(x => x.Name == "bot");
-
-            UserAdditionalInfo userInfo = new()
-            {
-                IsConfirmed = true,
-                Balance = 99999999M,
-                Role = userRole!,
-                RoleId = userRole!.Id,
-                IsNotifyEmail = true,
-                IsGuestMode = false
-            };
-            User user = new()
-            {
-                Id = guid,
-                Login = $"{GenerateString()}UserApiTest",
-                Email = $"{GenerateString()}@mail.ru",
-                PasswordHash = "UserHashForTest1",
-                PasswordSalt = "UserSaltForTest1",
-                AdditionalInfo = userInfo,
-            };
-
-            AccessToken = CreateToken(user);
+            await InitializeUserDependency(DependenciesGuids["User"]);
+            await RemoveUserDependency(DependenciesGuids["User"]);
 
             // Act
             HttpStatusCode getStatusCode = await _responseService
@@ -128,16 +119,15 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
         public async Task GET_GetUserById_ReturnsOk()
         {
             // Arrange 
-            Guid guid = Guid.NewGuid();
-            await InitializeUserDependency(guid);
+            await InitializeUserDependency(DependenciesGuids["User"]);
 
             // Act
             HttpStatusCode getStatusCode = await _responseService
-                .ResponseGetStatusCode($"/api/user/{guid}", AccessToken);
+                .ResponseGetStatusCode($"/api/user/{DependenciesGuids["User"]}", AccessToken);
 
             // Assert
+            await RemoveUserDependency(DependenciesGuids["User"]);
             Assert.Equal(HttpStatusCode.OK, getStatusCode);
-            await RemoveUserDependency(guid);
         }
         [Fact]
         public async Task GET_GetEmptyWithdrawnHistoriesByInvalidId_ReturnsNotFound()
@@ -156,31 +146,29 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
         public async Task GET_GetEmptyWithdrawnHistoriesById_ReturnsNotFound()
         {
             // Arrange
-            Guid guid = Guid.NewGuid();
-            await InitializeUserDependency(guid);
+            await InitializeUserDependency(DependenciesGuids["User"]);
 
             // Act 
             HttpStatusCode getStatusCode = await _responseService
-                .ResponseGetStatusCode($"/api/user/{guid}/history/withdrawns", AccessToken);
+                .ResponseGetStatusCode($"/api/user/{DependenciesGuids["User"]}/history/withdrawns", AccessToken);
 
             // Assert
+            await RemoveUserDependency(DependenciesGuids["User"]);
             Assert.Equal(HttpStatusCode.NotFound, getStatusCode);
-            await RemoveUserDependency(guid);
         }
         [Fact]
         public async Task GET_GetEmptyUserInventoryById_ReturnsNotFound()
         {
             // Arrange
-            Guid guid = Guid.NewGuid();
-            await InitializeUserDependency(guid);
+            await InitializeUserDependency(DependenciesGuids["User"]);
 
             // Act
             HttpStatusCode getStatusCode = await _responseService
-                .ResponseGetStatusCode($"/api/user/{guid}/inventory");
+                .ResponseGetStatusCode($"/api/user/{DependenciesGuids["User"]}/inventory");
 
             // Assert
+            await RemoveUserDependency(DependenciesGuids["User"]);
             Assert.Equal(HttpStatusCode.NotFound, getStatusCode);
-            await RemoveUserDependency(guid);
         }
         [Fact]
         public async Task GET_GetEmptyUserInventoryByInvalidId_ReturnsNotFound()
@@ -199,51 +187,48 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
         public async Task GET_GetWithdrawnHistoriesById_ReturnsOk()
         {
             // Arrange
-            Guid guid = Guid.NewGuid();
-            await InitializeUserDependency(guid);
-            await InitializeDependencies(guid);
+            await InitializeUserDependency(DependenciesGuids["User"]);
+            await InitializeDependencies();
 
             // Act 
             HttpStatusCode getStatusCode = await _responseService
-                .ResponseGetStatusCode($"/api/user/{guid}/history/withdrawns", AccessToken);
+                .ResponseGetStatusCode($"/api/user/{DependenciesGuids["User"]}/history/withdrawns", AccessToken);
 
             // Assert
+            await RemoveDependencies();
+            await RemoveUserDependency(DependenciesGuids["User"]);
             Assert.Equal(HttpStatusCode.OK, getStatusCode);
-            await RemoveUserDependency(guid);
         }
         [Fact]
         public async Task GET_GetUserInventoryById_ReturnsOk()
         {
             // Arrange
-            Guid guid = Guid.NewGuid();
-            await InitializeUserDependency(guid);
-            await InitializeDependencies(guid);
+            await InitializeUserDependency(DependenciesGuids["User"]);
+            await InitializeDependencies();
 
             // Act
             HttpStatusCode getStatusCode = await _responseService
-                .ResponseGetStatusCode($"/api/user/{guid}/inventory");
+                .ResponseGetStatusCode($"/api/user/{DependenciesGuids["User"]}/inventory");
 
             // Assert
+            await RemoveDependencies();
+            await RemoveUserDependency(DependenciesGuids["User"]);
             Assert.Equal(HttpStatusCode.OK, getStatusCode);
-            await RemoveUserDependency(guid);
         }
+
         [Fact]
         public async Task GET_ActivatePromocode_ReturnsOk()
         {
             // Arrange
-            Guid guid = Guid.NewGuid();
-            await InitializeUserDependency(guid);
+            await InitializeUserDependency(DependenciesGuids["User"]);
+            await InitializeDependencies();
 
-            Promocode promocode = new()
-            {
-                Name = GenerateString(8),
-                NumberActivations = 999,
-                Discount = 999,
-                ExpirationDate = DateTime.UtcNow,
-                TypeId = Context!.PromocodeTypes!.FirstOrDefault(f => f.Name == "case")!.Id
-            };
+            Promocode promocode = await Context.Promocodes
+                .FirstAsync(f => f.Id == DependenciesGuids["Promocode"]);
 
-            await Context.Promocodes.AddAsync(promocode);
+            UserHistoryPromocode historyPromocode = await Context.UserHistoryPromocodes
+                .FirstAsync(f => f.Id == DependenciesGuids["UserHistoryPromocode"]);
+            Context.UserHistoryPromocodes.Remove(historyPromocode);
             await Context.SaveChangesAsync();
 
             // Act
@@ -251,86 +236,56 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
                 .ResponseGetStatusCode($"/api/user/activate/promocode/{promocode.Name}", AccessToken);
 
             // Assert
+            await RemoveDependencies();
+            await RemoveUserDependency(DependenciesGuids["User"]);
             Assert.Equal(HttpStatusCode.OK, getStatusCode);
-            await RemoveUserDependency(guid);
         }
         [Fact]
         public async Task GET_ActivateNotExistedPromocode_ReturnsNotFound()
         {
             // Arrange
-            Guid guid = Guid.NewGuid();
-            await InitializeUserDependency(guid);
+            await InitializeUserDependency(DependenciesGuids["User"]);
 
             // Act
             HttpStatusCode getStatusCode = await _responseService
                 .ResponseGetStatusCode($"/api/user/activate/promocode/fxckyousaw98134122", AccessToken);
 
             // Assert
+            await RemoveUserDependency(DependenciesGuids["User"]);
             Assert.Equal(HttpStatusCode.NotFound, getStatusCode);
-            await RemoveUserDependency(guid);
         }
         [Fact]
         public async Task GET_ActivateUsedPromocode_ReturnsConflict()
         {
             // Arrange
-            Guid guid = Guid.NewGuid();
-            await InitializeUserDependency(guid);
+            await InitializeUserDependency(DependenciesGuids["User"]);
+            await InitializeDependencies();
 
-            Promocode promocode = new()
-            {
-                Name = GenerateString(8),
-                NumberActivations = 999,
-                Discount = 999,
-                ExpirationDate = DateTime.UtcNow,
-                TypeId = Context!.PromocodeTypes!.FirstOrDefault(f => f.Name == "case")!.Id
-            };
-
-            UserHistoryPromocode historyPromocode = new()
-            {
-                Date = DateTime.UtcNow,
-                IsActivated = true,
-                PromocodeId = promocode.Id,
-                UserId = guid
-            };
-
-            await Context.Promocodes.AddAsync(promocode);
-            await Context.UserHistoryPromocodes.AddAsync(historyPromocode);
-            await Context.SaveChangesAsync();
+            Promocode promocode = await Context.Promocodes
+                .FirstAsync(f => f.Id == DependenciesGuids["Promocode"]);
 
             // Act
             HttpStatusCode getStatusCode = await _responseService
                 .ResponseGetStatusCode($"/api/user/activate/promocode/{promocode.Name}", AccessToken);
 
             // Assert
+            await RemoveDependencies();
+            await RemoveUserDependency(DependenciesGuids["User"]);
             Assert.Equal(HttpStatusCode.Conflict, getStatusCode);
-            await RemoveUserDependency(guid);
         }
         [Fact]
         public async Task GET_ActivateAlreadyUsedPromocode_ReturnsConflict()
         {
             // Arrange
-            Guid guid = Guid.NewGuid();
-            await InitializeUserDependency(guid);
+            await InitializeUserDependency(DependenciesGuids["User"]);
+            await InitializeDependencies();
 
-            Promocode promocode = new()
-            {
-                Name = GenerateString(8),
-                NumberActivations = 999,
-                Discount = 999,
-                ExpirationDate = DateTime.UtcNow,
-                TypeId = Context!.PromocodeTypes!.FirstOrDefault(f => f.Name == "case")!.Id
-            };
+            Promocode promocode = await Context.Promocodes
+                .FirstAsync(f => f.Id == DependenciesGuids["Promocode"]);
 
-            UserHistoryPromocode historyPromocode = new()
-            {
-                Date = DateTime.UtcNow,
-                IsActivated = false,
-                PromocodeId = promocode.Id,
-                UserId = guid
-            };
-
-            await Context.Promocodes.AddAsync(promocode);
-            await Context.UserHistoryPromocodes.AddAsync(historyPromocode);
+            UserHistoryPromocode historyPromocode = await Context.UserHistoryPromocodes
+                .FirstAsync(f => f.Id == DependenciesGuids["UserHistoryPromocode"]);
+            historyPromocode.IsActivated = true;
             await Context.SaveChangesAsync();
 
             // Act
@@ -338,26 +293,23 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
                 .ResponseGetStatusCode($"/api/user/activate/promocode/{promocode.Name}", AccessToken);
 
             // Assert
+            await RemoveDependencies();
+            await RemoveUserDependency(DependenciesGuids["User"]);
             Assert.Equal(HttpStatusCode.Conflict, getStatusCode);
-            await RemoveUserDependency(guid);
         }
         [Fact]
         public async Task GET_ActivatePromocodeButUnauthorized_ReturnsUnauthorized()
         {
             // Arrange
-            Guid guid = Guid.NewGuid();
-            await InitializeUserDependency(guid);
+            await InitializeUserDependency(DependenciesGuids["User"]);
+            await InitializeDependencies();
 
-            Promocode promocode = new()
-            {
-                Name = GenerateString(8),
-                NumberActivations = 999,
-                Discount = 999,
-                ExpirationDate = DateTime.UtcNow,
-                TypeId = Context!.PromocodeTypes!.FirstOrDefault(f => f.Name == "case")!.Id
-            };
+            Promocode promocode = await Context.Promocodes
+                .FirstAsync(f => f.Id == DependenciesGuids["Promocode"]);
 
-            await Context.Promocodes.AddAsync(promocode);
+            UserHistoryPromocode historyPromocode = await Context.UserHistoryPromocodes
+                .FirstAsync(f => f.Id == DependenciesGuids["UserHistoryPromocode"]);
+            Context.UserHistoryPromocodes.Remove(historyPromocode);
             await Context.SaveChangesAsync();
 
             // Act
@@ -365,26 +317,23 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
                 .ResponseGetStatusCode($"/api/user/activate/promocode/{promocode.Name}");
 
             // Assert
+            await RemoveDependencies();
+            await RemoveUserDependency(DependenciesGuids["User"]);
             Assert.Equal(HttpStatusCode.Unauthorized, getStatusCode);
-            await RemoveUserDependency(guid);
         }
         [Fact]
         public async Task GET_ExchangePromocode_ReturnsOk()
         {
             // Arrange
-            Guid guid = Guid.NewGuid();
-            await InitializeUserDependency(guid);
+            await InitializeUserDependency(DependenciesGuids["User"]);
+            await InitializeDependencies();
 
-            Promocode promocode = new()
-            {
-                Name = GenerateString(8),
-                NumberActivations = 999,
-                Discount = 999,
-                ExpirationDate = DateTime.UtcNow,
-                TypeId = Context!.PromocodeTypes!.FirstOrDefault(f => f.Name == "case")!.Id
-            };
+            Promocode promocode = await Context.Promocodes
+                .FirstAsync(f => f.Id == DependenciesGuids["Promocode"]);
 
-            await Context.Promocodes.AddAsync(promocode);
+            UserHistoryPromocode historyPromocode = await Context.UserHistoryPromocodes
+                .FirstAsync(f => f.Id == DependenciesGuids["UserHistoryPromocode"]);
+            Context.UserHistoryPromocodes.Remove(historyPromocode);
             await Context.SaveChangesAsync();
 
             await _responseService
@@ -395,41 +344,37 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
                 .ResponseGetStatusCode($"/api/user/exchange/promocode/{promocode.Name}", AccessToken);
 
             // Assert
+            await RemoveDependencies();
+            await RemoveUserDependency(DependenciesGuids["User"]);
             Assert.Equal(HttpStatusCode.OK, getStatusCode);
-            await RemoveUserDependency(guid);
         }
         [Fact]
         public async Task GET_ExchangeNotExistedPromocode_ReturnsNotFound()
         {
             // Arrange
-            Guid guid = Guid.NewGuid();
-            await InitializeUserDependency(guid);
+            await InitializeUserDependency(DependenciesGuids["User"]);
 
             // Act
             HttpStatusCode getStatusCode = await _responseService
                 .ResponseGetStatusCode($"/api/user/exchange/promocode/fxckyuopusdjfa213123", AccessToken);
 
             // Assert
+            await RemoveUserDependency(DependenciesGuids["User"]);
             Assert.Equal(HttpStatusCode.NotFound, getStatusCode);
-            await RemoveUserDependency(guid);
         }
         [Fact]
         public async Task GET_ExchangePromocodeButUnauthorized_ReturnsUnauthorized()
         {
             // Arrange
-            Guid guid = Guid.NewGuid();
-            await InitializeUserDependency(guid);
+            await InitializeUserDependency(DependenciesGuids["User"]);
+            await InitializeDependencies();
 
-            Promocode promocode = new()
-            {
-                Name = GenerateString(8),
-                NumberActivations = 999,
-                Discount = 999,
-                ExpirationDate = DateTime.UtcNow,
-                TypeId = Context!.PromocodeTypes!.FirstOrDefault(f => f.Name == "case")!.Id
-            };
+            Promocode promocode = await Context.Promocodes
+                .FirstAsync(f => f.Id == DependenciesGuids["Promocode"]);
 
-            await Context.Promocodes.AddAsync(promocode);
+            UserHistoryPromocode historyPromocode = await Context.UserHistoryPromocodes
+                .FirstAsync(f => f.Id == DependenciesGuids["UserHistoryPromocode"]);
+            Context.UserHistoryPromocodes.Remove(historyPromocode);
             await Context.SaveChangesAsync();
 
             await _responseService
@@ -440,388 +385,132 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
                 .ResponseGetStatusCode($"/api/user/exchange/promocode/{promocode.Name}");
 
             // Assert
+            await RemoveDependencies();
+            await RemoveUserDependency(DependenciesGuids["User"]);
             Assert.Equal(HttpStatusCode.Unauthorized, getStatusCode);
-            await RemoveUserDependency(guid);
         }
         [Fact]
         public async Task GET_ExchangeGameItemButUnauthorized_ReturnsUnauthorized()
         {
             // Arrange
-            Guid guid = Guid.NewGuid();
-            await InitializeUserDependency(guid);
-
-            List<GameItemRarity> rarities = await Context.GameItemRarities.ToListAsync();
-
-            List<GameItemType> types = await Context.GameItemTypes.ToListAsync();
-
-            List<GameItemQuality> qualities = await Context.GameItemQualities.ToListAsync();
-
-            List<Domain.Entities.Resources.Game> games = await Context.Games.ToListAsync();
-
-            Guid csgoGameId = games.FirstOrDefault(f => f.Name == "csgo")!.Id;
-
-            GameItem item1 = new()
-            {
-                Name = GenerateString(8),
-                Cost = 239.99M,
-                ImageUri = "GOCSATImage1",
-                RarityId = rarities.FirstOrDefault(f => f.Name == "pink")!.Id,
-                TypeId = types.FirstOrDefault(f => f.Name == "pistol")!.Id,
-                GameId = csgoGameId,
-                QualityId = qualities.FirstOrDefault(f => f.Name == "minimal wear")!.Id
-            };
-
-            UserInventory inventory = new()
-            {
-                Date = DateTime.UtcNow,
-                ItemId = item1.Id,
-                UserId = guid,
-                FixedCost = 12345M
-            };
-
-            await Context.GameItems.AddAsync(item1);
-            await Context.UserInventories.AddAsync(inventory);
-            await Context.SaveChangesAsync();
-
+            await InitializeUserDependency(DependenciesGuids["User"]);
+            await InitializeDependencies();
 
             // Act
             HttpStatusCode getStatusCode = await _responseService
-                .ResponseGetStatusCode($"/api/user/inventory/{inventory.Id}/exchange/{item1.Id}");
+                .ResponseGetStatusCode($"/api/user/inventory/{DependenciesGuids["UserInventory"]}/" +
+                $"exchange/{DependenciesGuids["GameItem"]}");
 
             // Assert
+            await RemoveDependencies();
+            await RemoveUserDependency(DependenciesGuids["User"]);
             Assert.Equal(HttpStatusCode.Unauthorized, getStatusCode);
-            await RemoveUserDependency(guid);
         }
         [Fact]
         public async Task GET_ExchangeGameItem_ReturnsOk()
         {
             // Arrange
-            Guid guid = Guid.NewGuid();
-            await InitializeUserDependency(guid);
-
-            List<GameItemRarity> rarities = await Context.GameItemRarities.ToListAsync();
-
-            List<GameItemType> types = await Context.GameItemTypes.ToListAsync();
-
-            List<GameItemQuality> qualities = await Context.GameItemQualities.ToListAsync();
-
-            List<Domain.Entities.Resources.Game> games = await Context.Games.ToListAsync();
-
-            Guid csgoGameId = games.FirstOrDefault(f => f.Name == "csgo")!.Id;
-
-            GameItem item1 = new()
-            {
-                Name = GenerateString(8),
-                Cost = 239.99M,
-                ImageUri = "GOCSATImage1",
-                RarityId = rarities.FirstOrDefault(f => f.Name == "pink")!.Id,
-                TypeId = types.FirstOrDefault(f => f.Name == "pistol")!.Id,
-                GameId = csgoGameId,
-                QualityId = qualities.FirstOrDefault(f => f.Name == "minimal wear")!.Id
-            };
-
-            UserInventory inventory = new()
-            {
-                Date = DateTime.UtcNow,
-                ItemId = item1.Id,
-                UserId = guid,
-                FixedCost = 12345M
-            };
-
-            await Context.GameItems.AddAsync(item1);
-            await Context.UserInventories.AddAsync(inventory);
-            await Context.SaveChangesAsync();
-
+            await InitializeUserDependency(DependenciesGuids["User"]);
+            await InitializeDependencies();
 
             // Act
             HttpStatusCode getStatusCode = await _responseService
-                .ResponseGetStatusCode($"/api/user/inventory/{inventory.Id}/exchange/{item1.Id}", AccessToken);
+                .ResponseGetStatusCode($"/api/user/inventory/{DependenciesGuids["UserInventory"]}/" +
+                $"exchange/{DependenciesGuids["GameItem"]}", AccessToken);
 
             // Assert
+            await RemoveDependencies();
+            await RemoveUserDependency(DependenciesGuids["User"]);
             Assert.Equal(HttpStatusCode.OK, getStatusCode);
-            await RemoveUserDependency(guid);
         }
+
         [Fact]
         public async Task POST_CreatePathBanner_ReturnsOk()
         {
             // Arrange
-            Guid guid = Guid.NewGuid();
-            await InitializeUserDependency(guid);
+            await InitializeUserDependency(DependenciesGuids["User"]);
+            await InitializeDependencies();
 
-            List<GameItemRarity> rarities = await Context.GameItemRarities.ToListAsync();
-
-            List<GameItemType> types = await Context.GameItemTypes.ToListAsync();
-
-            List<GameItemQuality> qualities = await Context.GameItemQualities.ToListAsync();
-
-            List<Domain.Entities.Resources.Game> games = await Context.Games.ToListAsync();
-
-            Guid csgoGameId = games.FirstOrDefault(f => f.Name == "csgo")!.Id;
-
-            GameItem item1 = new()
-            {
-                Name = GenerateString(8),
-                Cost = 539.99M,
-                ImageUri = "GOCSATImage1",
-                RarityId = rarities.FirstOrDefault(f => f.Name == "pink")!.Id,
-                TypeId = types.FirstOrDefault(f => f.Name == "pistol")!.Id,
-                GameId = csgoGameId,
-                QualityId = qualities.FirstOrDefault(f => f.Name == "minimal wear")!.Id
-            };
-
-            //Create Game Case
-            LootBox lootBox = new()
-            {
-                Name = GenerateString(8),
-                Cost = 400,
-                ImageUri = "GCIGOCATImage",
-                GameId = csgoGameId
-            };
-
-            LootBoxBanner boxBanner = new()
-            {
-                BoxId = lootBox.Id,
-                IsActive = true,
-                ImageUri = "",
-                CreationDate = DateTime.UtcNow,
-                ExpirationDate = DateTime.UtcNow + TimeSpan.FromDays(7)
-            };
-
-            UserPathBannerDto pathBannerDto = new()
-            {
-                BannerId = boxBanner.Id,
-                Date = DateTime.UtcNow,
-                ItemId = item1.Id,
-                NumberSteps = 1,
-                UserId = guid
-            };
-
-            await Context.GameItems.AddAsync(item1);
-            await Context.LootBoxes.AddAsync(lootBox);
-            await Context.LootBoxBanners.AddAsync(boxBanner);
-
+            UserPathBanner pathBanner = await Context.UserPathBanners
+                .FirstAsync(f => f.Id == DependenciesGuids["UserPathBanner"]);
+            Context.UserPathBanners.Remove(pathBanner);
             await Context.SaveChangesAsync();
 
             // Act
             HttpStatusCode postStatusCode = await _responseService
-                .ResponsePostStatusCode("/api/user/banner", pathBannerDto, AccessToken);
+                .ResponsePostStatusCode("/api/user/banner", pathBanner.Convert(false), AccessToken);
 
             // Assert
+            await RemoveDependencies();
+            await RemoveUserDependency(DependenciesGuids["User"]);
             Assert.Equal(HttpStatusCode.OK, postStatusCode);
-            await RemoveUserDependency(guid);
         }
+
         [Fact]
         public async Task POST_CreatePathBannerButUnauthorized_ReturnsUnauthorized()
         {
             // Arrange
-            Guid guid = Guid.NewGuid();
-            await InitializeUserDependency(guid);
+            await InitializeUserDependency(DependenciesGuids["User"]);
+            await InitializeDependencies();
 
-            List<GameItemRarity> rarities = await Context.GameItemRarities.ToListAsync();
-
-            List<GameItemType> types = await Context.GameItemTypes.ToListAsync();
-
-            List<GameItemQuality> qualities = await Context.GameItemQualities.ToListAsync();
-
-            List<Domain.Entities.Resources.Game> games = await Context.Games.ToListAsync();
-
-            Guid csgoGameId = games.FirstOrDefault(f => f.Name == "csgo")!.Id;
-
-            GameItem item1 = new()
-            {
-                Name = GenerateString(8),
-                Cost = 539.99M,
-                ImageUri = "GOCSATImage1",
-                RarityId = rarities.FirstOrDefault(f => f.Name == "pink")!.Id,
-                TypeId = types.FirstOrDefault(f => f.Name == "pistol")!.Id,
-                GameId = csgoGameId,
-                QualityId = qualities.FirstOrDefault(f => f.Name == "minimal wear")!.Id
-            };
-
-            //Create Game Case
-            LootBox lootBox = new()
-            {
-                Name = GenerateString(8),
-                Cost = 400,
-                ImageUri = "GCIGOCATImage",
-                GameId = csgoGameId
-            };
-
-            LootBoxBanner boxBanner = new()
-            {
-                BoxId = lootBox.Id,
-                IsActive = true,
-                ImageUri = "",
-                CreationDate = DateTime.UtcNow,
-                ExpirationDate = DateTime.UtcNow + TimeSpan.FromDays(7)
-            };
-
-            UserPathBannerDto pathBannerDto = new()
-            {
-                BannerId = boxBanner.Id,
-                Date = DateTime.UtcNow,
-                ItemId = item1.Id,
-                NumberSteps = 1,
-                UserId = guid
-            };
-
-            await Context.GameItems.AddAsync(item1);
-            await Context.LootBoxes.AddAsync(lootBox);
-            await Context.LootBoxBanners.AddAsync(boxBanner);
-
+            UserPathBanner pathBanner = await Context.UserPathBanners
+                .FirstAsync(f => f.Id == DependenciesGuids["UserPathBanner"]);
+            Context.UserPathBanners.Remove(pathBanner);
             await Context.SaveChangesAsync();
 
             // Act
             HttpStatusCode postStatusCode = await _responseService
-                .ResponsePostStatusCode("/api/user/banner", pathBannerDto);
+                .ResponsePostStatusCode("/api/user/banner", pathBanner.Convert(false));
 
             // Assert
+            await RemoveDependencies();
+            await RemoveUserDependency(DependenciesGuids["User"]);
             Assert.Equal(HttpStatusCode.Unauthorized, postStatusCode);
-            await RemoveUserDependency(guid);
         }
+
         [Fact]
         public async Task DELETE_RemovePathBanner_ReturnsOk()
         {
             // Arrange
-            Guid guid = Guid.NewGuid();
-            await InitializeUserDependency(guid);
-
-            List<GameItemRarity> rarities = await Context.GameItemRarities.ToListAsync();
-
-            List<GameItemType> types = await Context.GameItemTypes.ToListAsync();
-
-            List<GameItemQuality> qualities = await Context.GameItemQualities.ToListAsync();
-
-            List<Domain.Entities.Resources.Game> games = await Context.Games.ToListAsync();
-
-            Guid csgoGameId = games.FirstOrDefault(f => f.Name == "csgo")!.Id;
-
-            GameItem item1 = new()
-            {
-                Name = GenerateString(8),
-                Cost = 539.99M,
-                ImageUri = "GOCSATImage1",
-                RarityId = rarities.FirstOrDefault(f => f.Name == "pink")!.Id,
-                TypeId = types.FirstOrDefault(f => f.Name == "pistol")!.Id,
-                GameId = csgoGameId,
-                QualityId = qualities.FirstOrDefault(f => f.Name == "minimal wear")!.Id
-            };
-
-            //Create Game Case
-            LootBox lootBox = new()
-            {
-                Name = GenerateString(8),
-                Cost = 400,
-                ImageUri = "GCIGOCATImage",
-                GameId = csgoGameId
-            };
-
-            LootBoxBanner boxBanner = new()
-            {
-                BoxId = lootBox.Id,
-                IsActive = true,
-                ImageUri = "",
-                CreationDate = DateTime.UtcNow,
-                ExpirationDate = DateTime.UtcNow + TimeSpan.FromDays(7)
-            };
-
-            UserPathBannerDto pathBannerDto = new()
-            {
-                BannerId = boxBanner.Id,
-                Date = DateTime.UtcNow,
-                ItemId = item1.Id,
-                NumberSteps = 1,
-                UserId = guid
-            };
-
-            await Context.GameItems.AddAsync(item1);
-            await Context.LootBoxes.AddAsync(lootBox);
-            await Context.LootBoxBanners.AddAsync(boxBanner);
-            await Context.UserPathBanners.AddAsync(pathBannerDto.Convert());
-
-            await Context.SaveChangesAsync();
+            await InitializeUserDependency(DependenciesGuids["User"]);
+            await InitializeDependencies();
 
             // Act
             HttpStatusCode deleteStatusCode = await _responseService
-                .ResponseDelete($"/api/user/banner/{pathBannerDto.BannerId}", AccessToken);
+                .ResponseDelete($"/api/user/banner/{DependenciesGuids["LootBoxBanner"]}", AccessToken);
 
             // Assert
+            await RemoveDependencies();
+            await RemoveUserDependency(DependenciesGuids["User"]);
+
             Assert.Equal(HttpStatusCode.OK, deleteStatusCode);
         }
+
         [Fact]
         public async Task DELETE_RemovePathBannerButUnauthorized_ReturnsUnauthorized()
         {
             // Arrange
-            Guid guid = Guid.NewGuid();
-            await InitializeUserDependency(guid);
-
-            List<GameItemRarity> rarities = await Context.GameItemRarities.ToListAsync();
-
-            List<GameItemType> types = await Context.GameItemTypes.ToListAsync();
-
-            List<GameItemQuality> qualities = await Context.GameItemQualities.ToListAsync();
-
-            List<Domain.Entities.Resources.Game> games = await Context.Games.ToListAsync();
-
-            Guid csgoGameId = games.FirstOrDefault(f => f.Name == "csgo")!.Id;
-
-            GameItem item1 = new()
-            {
-                Name = GenerateString(8),
-                Cost = 539.99M,
-                ImageUri = "GOCSATImage1",
-                RarityId = rarities.FirstOrDefault(f => f.Name == "pink")!.Id,
-                TypeId = types.FirstOrDefault(f => f.Name == "pistol")!.Id,
-                GameId = csgoGameId,
-                QualityId = qualities.FirstOrDefault(f => f.Name == "minimal wear")!.Id
-            };
-
-            //Create Game Case
-            LootBox lootBox = new()
-            {
-                Name = GenerateString(8),
-                Cost = 400,
-                ImageUri = "GCIGOCATImage",
-                GameId = csgoGameId
-            };
-
-            LootBoxBanner boxBanner = new()
-            {
-                BoxId = lootBox.Id,
-                IsActive = true,
-                ImageUri = "",
-                CreationDate = DateTime.UtcNow,
-                ExpirationDate = DateTime.UtcNow + TimeSpan.FromDays(7)
-            };
-
-            UserPathBannerDto pathBannerDto = new()
-            {
-                BannerId = boxBanner.Id,
-                Date = DateTime.UtcNow,
-                ItemId = item1.Id,
-                NumberSteps = 1,
-                UserId = guid
-            };
-
-            await Context.GameItems.AddAsync(item1);
-            await Context.LootBoxes.AddAsync(lootBox);
-            await Context.LootBoxBanners.AddAsync(boxBanner);
-            await Context.UserPathBanners.AddAsync(pathBannerDto.Convert());
-
-            await Context.SaveChangesAsync();
+            await InitializeUserDependency(DependenciesGuids["User"]);
+            await InitializeDependencies();
 
             // Act
             HttpStatusCode deleteStatusCode = await _responseService
-                .ResponseDelete($"/api/user/banner/{pathBannerDto.BannerId}");
+                .ResponseDelete($"/api/user/banner/{DependenciesGuids["UserPathBanner"]}");
 
             // Assert
+            await RemoveDependencies();
+            await RemoveUserDependency(DependenciesGuids["User"]);
+
             Assert.Equal(HttpStatusCode.Unauthorized, deleteStatusCode);
         }
+
         #region Начальные данные
-        private async Task InitializeDependencies(Guid userId)
+        private async Task InitializeDependencies()
         {
+            UpdateContext();
             Promocode promocode = new()
             {
+                Id = DependenciesGuids["Promocode"],
                 Name = GenerateString(8),
                 NumberActivations = 999,
                 Discount = 999,
@@ -842,8 +531,9 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
             //Create Game Item
             GameItem item1 = new()
             {
+                Id = DependenciesGuids["GameItem"],
                 Name = GenerateString(8),
-                Cost = 239.99M,
+                Cost = 539.99M,
                 ImageUri = "GOCSATImage1",
                 RarityId = rarities.FirstOrDefault(f => f.Name == "pink")!.Id,
                 TypeId = types.FirstOrDefault(f => f.Name == "pistol")!.Id,
@@ -854,6 +544,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
             //Create Game Case
             LootBox lootBox = new()
             {
+                Id = DependenciesGuids["LootBox"],
                 Name = GenerateString(8),
                 Cost = 400,
                 ImageUri = "GCIGOCATImage",
@@ -862,6 +553,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
 
             LootBoxBanner boxBanner = new()
             {
+                Id = DependenciesGuids["LootBoxBanner"],
                 BoxId = lootBox.Id,
                 IsActive = true,
                 ImageUri = "",
@@ -877,58 +569,76 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
 
             UserHistoryPromocode historyPromocode = new()
             {
+                Id = DependenciesGuids["UserHistoryPromocode"],
                 Date = DateTime.UtcNow,
                 IsActivated = false,
                 PromocodeId = promocode.Id,
-                UserId = userId
+                UserId = DependenciesGuids["User"]
             };
 
             UserHistoryWithdrawn withdrawn = new()
             {
+                Id = DependenciesGuids["UserHistoryWithdrawn"],
                 Date = DateTime.UtcNow,
                 ItemId = item1.Id,
-                UserId = userId
+                UserId = DependenciesGuids["User"]
             };
 
             UserHistoryOpening opening = new()
             {
+                Id = DependenciesGuids["UserHistoryOpening"],
                 BoxId = lootBox.Id,
-                UserId = userId,
+                UserId = DependenciesGuids["User"],
                 Date = DateTime.UtcNow,
                 ItemId = item1.Id
             };
 
-            UserPathBannerDto pathBannerDto = new()
+            UserPathBanner pathBanner = new()
             {
+                Id = DependenciesGuids["UserPathBanner"],
                 BannerId = boxBanner.Id,
                 Date = DateTime.UtcNow,
                 ItemId = item1.Id,
                 NumberSteps = 1,
-                UserId = userId
+                UserId = DependenciesGuids["User"]
             };
             
             UserInventory inventory = new()
             {
+                Id = DependenciesGuids["UserInventory"],
                 Date = DateTime.UtcNow,
                 ItemId = item1.Id,
-                UserId = userId,
+                UserId = DependenciesGuids["User"],
                 FixedCost = 12345M
             };
 
             UserHistoryPayment payment = new()
             {
+                Id = DependenciesGuids["UserHistoryPayment"],
                 Amount = 145M,
                 Date = DateTime.UtcNow,
-                UserId = userId
+                UserId = DependenciesGuids["User"]
             };
 
             await Context.UserHistoryPayments.AddAsync(payment);
             await Context.UserHistoryPromocodes.AddAsync(historyPromocode);
             await Context.UserHistoryWithdrawns.AddAsync(withdrawn);
             await Context.UserHistoryOpenings.AddAsync(opening);
-            await Context.UserPathBanners.AddAsync(pathBannerDto.Convert());
+            await Context.UserPathBanners.AddAsync(pathBanner);
             await Context.UserInventories.AddAsync(inventory);
 
+            await Context.SaveChangesAsync();
+        }
+
+        private async Task RemoveDependencies()
+        {
+            UpdateContext();
+            GameItem item = await Context.GameItems
+                .FirstAsync(f => f.Id == DependenciesGuids["GameItem"]);
+            LootBox box = await Context.LootBoxes
+                .FirstAsync(f => f.Id == DependenciesGuids["LootBox"]);
+            Context.GameItems.Remove(item);
+            Context.LootBoxes.Remove(box);
             await Context.SaveChangesAsync();
         }
         #endregion

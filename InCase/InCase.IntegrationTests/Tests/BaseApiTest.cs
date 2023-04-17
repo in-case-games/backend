@@ -17,24 +17,36 @@ namespace InCase.IntegrationTests.Tests
         protected string AccessToken = "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjhjMTgzYjc2LTY4MGMtNDY1MC04ZTY2LWRlMTAyZDE3MGRkNCIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6Im93bmVyIiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvbmFtZSI6IkdJUyIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL2VtYWlsYWRkcmVzcyI6Inl0X2ZlcmJyYXlAbWFpbC5ydSIsImV4cCI6MTY4MTkyOTc3OCwiaXNzIjoiaHR0cHM6Ly9sb2NhbGhvc3QiLCJhdWQiOiJodHRwczovL2xvY2FsaG9zdCJ9.WycgIJ3rEyC6Yn3uczRo6tUhulME-zJePLY9nX0XRycA0HN437Kui7bt5aJJJix_GhUKgOE_K-xwRxsQB1SHXw";
         protected string RefreshToken = "";
         private readonly IConfiguration _configuration;
-        protected ApplicationDbContext Context { get; }
+        protected ApplicationDbContext Context { get; private set; }
 
         public BaseApiTest(
             ITestOutputHelper output,
             IConfiguration configuration)
         {
-            var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-                .EnableSensitiveDataLogging()
-                .UseSnakeCaseNamingConvention()
-                .UseSqlServer(configuration["ConnectionStrings:DevelopmentConnection"])
-                .Options;
-            
             _configuration = configuration;
+
+            var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+                    .EnableSensitiveDataLogging()
+                    .UseSnakeCaseNamingConvention()
+                    .UseSqlServer(_configuration["ConnectionStrings:DevelopmentConnection"])
+                    .Options;
 
             Context = new ApplicationDbContext(options);
 
             _output = output;
         }
+
+        public void UpdateContext()
+        {
+            var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+                    .EnableSensitiveDataLogging()
+                    .UseSnakeCaseNamingConvention()
+                    .UseSqlServer(_configuration["ConnectionStrings:DevelopmentConnection"])
+                    .Options;
+
+            Context = new ApplicationDbContext(options);
+        }
+
         private JwtSecurityToken GenerateToken(
             Claim[] claims,
             TimeSpan expiration)
@@ -49,6 +61,7 @@ namespace InCase.IntegrationTests.Tests
                 expires: DateTime.UtcNow.Add(expiration),
                 signingCredentials: credentials);
         }
+
         public string CreateToken(User user)
         {
             Claim[] claims = GenerateClaimsForAccessToken(user);
@@ -72,6 +85,7 @@ namespace InCase.IntegrationTests.Tests
                 new Claim(ClaimTypes.Email, user.Email!)
             };
         }
+
         protected string GenerateString(int length = 8)
         {
             Random random = new Random();
@@ -81,9 +95,11 @@ namespace InCase.IntegrationTests.Tests
             return new string(Enumerable.Repeat(chars, length)
                 .Select(s => s[random.Next(s.Length)]).ToArray());
         }
+
         #region Начальные данные
         protected async Task InitializeUserDependency(Guid guid, string roleName = "user")
         {
+            UpdateContext();
             UserRole? userRole = await Context.UserRoles.FirstOrDefaultAsync(x => x.Name == roleName);
 
             UserAdditionalInfo userInfo = new()
@@ -114,6 +130,7 @@ namespace InCase.IntegrationTests.Tests
 
         protected async Task RemoveUserDependency(Guid guid)
         {
+            UpdateContext();
             User? user = await Context.Users.FindAsync(guid);
             Context.Users.Remove(user!);
             await Context.SaveChangesAsync();

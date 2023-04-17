@@ -16,7 +16,18 @@ namespace InCase.IntegrationTests.Tests.GameApi
     {
         protected readonly ResponseService _responseGame;
         protected readonly ResponseService _responseResources;
-
+        private readonly List<Guid> ItemsGuids = new() {
+            Guid.NewGuid(), Guid.NewGuid(),
+            Guid.NewGuid(), Guid.NewGuid(),
+            Guid.NewGuid(), Guid.NewGuid(),
+            Guid.NewGuid()
+        };
+        private readonly Dictionary<string, Guid> DependenciesGuids = new()
+        {
+            ["User"] = Guid.NewGuid(),
+            ["LootBox"] = Guid.NewGuid(),
+            ["LootBoxBanner"] = Guid.NewGuid()
+        };
         private readonly Dictionary<string, decimal> ItemsAndCost = new()
         {
             ["USP-S - Cortex"] = 239.99M,
@@ -52,238 +63,69 @@ namespace InCase.IntegrationTests.Tests.GameApi
         public async Task GET_OpeningLootBox_Output()
         {
             //Arrange
-            Guid userGuid = Guid.NewGuid();
-            await InitializeUserDependency(userGuid, "bot");
+            await InitializeUserDependency(DependenciesGuids["User"], "bot");
+            await InitializeTestDependencies();
 
-            Guid lootBoxGuid = Guid.NewGuid();
-            List<Guid> itemsGuids = new() {
-                Guid.NewGuid(), Guid.NewGuid(),
-                Guid.NewGuid(), Guid.NewGuid(),
-                Guid.NewGuid(), Guid.NewGuid(),
-                Guid.NewGuid(),
-            };
+            //Act & Assert
+            await RunOpenLootBoxTest();
 
-            await InitializeTestDependencies(itemsGuids, lootBoxGuid);
-
-            //Act
-            Stopwatch startTime = Stopwatch.StartNew();
-            Dictionary<string, int> winingItems = await GetWiningItems(lootBoxGuid);
-            startTime.Stop();
-            var resultTime = startTime.Elapsed;
-            string elapsedTime = string.Format("{0:00}.{1:000}",
-                resultTime.Seconds,
-                resultTime.Milliseconds);
-
-            //Assert
-            _output.WriteLine("Предмет = количество выпадений");
-
-            foreach (var winItem in winingItems)
-            {
-                _output.WriteLine($"{winItem.Key} = {winItem.Value}");
-            }
-
-            LootBox? lootBox = (await _responseResources
-                .ResponseGet<AnswerBoxApi?>($"/api/loot-box/{lootBoxGuid}/admin", AccessToken))!.Data;
-
-            SiteStatisticsAdmin statisticsAdmin = await Context.SiteStatisticsAdmins
-                .FirstAsync();
-
-            _output.WriteLine(
-                $"Профит сайта: {statisticsAdmin.BalanceWithdrawn} Р\n" +
-                $"Баланс кейса: {lootBox!.Balance} Р\n" +
-                $"Скорость алгоритма: {elapsedTime}");
-
-            statisticsAdmin.BalanceWithdrawn = 0;
-
-            await RemoveUserDependency(userGuid);
-            await RemoveTestDependencies(itemsGuids, lootBoxGuid);
+            await RemoveUserDependency(DependenciesGuids["User"]);
+            await RemoveTestDependencies();
         }
 
         [Fact]
         public async Task GET_OpeningLootBoxSubcribedBanner_Output()
         {
             //Arrange
-            Guid userGuid = Guid.NewGuid();
-            await InitializeUserDependency(userGuid, "bot");
+            await InitializeUserDependency(DependenciesGuids["User"], "bot");
+            await InitializeTestDependencies();
+            await InitializeTestDependencies2(2);
 
-            Guid lootBoxGuid = Guid.NewGuid();
-            Guid bannerGuid = Guid.NewGuid();
-            List<Guid> itemsGuids = new() {
-                Guid.NewGuid(), Guid.NewGuid(),
-                Guid.NewGuid(), Guid.NewGuid(),
-                Guid.NewGuid(), Guid.NewGuid(),
-                Guid.NewGuid(),
-            };
+            //Act & Assert
+            await RunOpenLootBoxTest(2);
 
-            await InitializeTestDependencies(itemsGuids, lootBoxGuid);
-            await InitializeTestDependencies2(lootBoxGuid, itemsGuids[2], bannerGuid);
-
-            //Act
-            Stopwatch startTime = Stopwatch.StartNew();
-            Dictionary<string, int> winingItems = await GetWiningItems(
-                lootBoxGuid, 
-                itemsGuids[2].ToString(), 
-                bannerGuid.ToString());
-
-            startTime.Stop();
-            var resultTime = startTime.Elapsed;
-            string elapsedTime = string.Format("{0:00}.{1:000}",
-                resultTime.Seconds,
-                resultTime.Milliseconds);
-
-            //Assert
-            _output.WriteLine("Предмет = количество выпадений");
-
-            foreach (var winItem in winingItems)
-            {
-                _output.WriteLine($"{winItem.Key} = {winItem.Value}");
-            }
-
-            LootBox? lootBox = (await _responseResources
-                .ResponseGet<AnswerBoxApi?>($"/api/loot-box/{lootBoxGuid}/admin", AccessToken))!.Data;
-
-            SiteStatisticsAdmin statisticsAdmin = await Context.SiteStatisticsAdmins
-                .FirstAsync();
-
-            _output.WriteLine(
-                $"Профит сайта: {statisticsAdmin.BalanceWithdrawn} Р\n" +
-                $"Баланс кейса: {lootBox!.Balance} Р\n" +
-                $"Скорость алгоритма: {elapsedTime}");
-
-            statisticsAdmin.BalanceWithdrawn = 0;
-
-            await Context.SaveChangesAsync();
-
-            await RemoveUserDependency(userGuid);
-            await RemoveTestDependencies(itemsGuids, lootBoxGuid);
-        }
-
-        [Fact]
-        public async Task GET_RevenueNoSubcribedBanner_Output()
-        {
-            //Arrange
-            Guid userGuid = Guid.NewGuid();
-            await InitializeUserDependency(userGuid, "bot");
-
-            decimal allCostItems = 0;
-            Guid lootBoxGuid = Guid.NewGuid();
-            Guid bannerGuid = Guid.NewGuid();
-            List<Guid> itemsGuids = new() {
-                Guid.NewGuid(), Guid.NewGuid(),
-                Guid.NewGuid(), Guid.NewGuid(),
-                Guid.NewGuid(), Guid.NewGuid(),
-                Guid.NewGuid(),
-            };
-
-            await InitializeTestDependencies(itemsGuids, lootBoxGuid);
-
-            //Act
-            Stopwatch startTime = Stopwatch.StartNew();
-            Dictionary<string, int> winingItems = await GetWiningItems(lootBoxGuid);
-            startTime.Stop();
-            var resultTime = startTime.Elapsed;
-            string elapsedTime = string.Format("{0:00}.{1:000}",
-                resultTime.Seconds,
-                resultTime.Milliseconds);
-
-            //Assert
-            _output.WriteLine("Предмет = стоимость лута");
-
-            foreach (var winItem in winingItems)
-            {
-                decimal costWiningItems = ItemsAndCost[winItem.Key] * winItem.Value;
-                allCostItems += costWiningItems;
-                _output.WriteLine($"{winItem.Key} = {costWiningItems}");
-            }
-
-            LootBox? lootBox = (await _responseResources
-                .ResponseGet<AnswerBoxApi?>($"/api/loot-box/{lootBoxGuid}/admin", AccessToken))!.Data;
-
-            SiteStatisticsAdmin statisticsAdmin = await Context.SiteStatisticsAdmins
-                .FirstAsync();
-
-            _output.WriteLine(
-                $"Профит сайта: {statisticsAdmin.BalanceWithdrawn} Р\n" +
-                $"Баланс кейса: {lootBox!.Balance} Р\n" +
-                $"Стоимость всех предметов: {allCostItems}\n" +
-                $"Скорость алгоритма: {elapsedTime}");
-
-            statisticsAdmin.BalanceWithdrawn = 0;
-
-            await Context.SaveChangesAsync();
-
-            await RemoveUserDependency(userGuid);
-            await RemoveTestDependencies(itemsGuids, lootBoxGuid);
-        }
-
-        [Fact]
-        public async Task GET_RevenueSubcribedBanner_Output()
-        {
-            //Arrange
-            Guid userGuid = Guid.NewGuid();
-            await InitializeUserDependency(userGuid, "bot");
-
-            decimal allCostItems = 0;
-            Guid lootBoxGuid = Guid.NewGuid();
-            Guid bannerGuid = Guid.NewGuid();
-            List<Guid> itemsGuids = new() {
-                Guid.NewGuid(), Guid.NewGuid(),
-                Guid.NewGuid(), Guid.NewGuid(),
-                Guid.NewGuid(), Guid.NewGuid(),
-                Guid.NewGuid(),
-            };
-
-            await InitializeTestDependencies(itemsGuids, lootBoxGuid);
-            await InitializeTestDependencies2(lootBoxGuid, itemsGuids[2], bannerGuid);
-
-            //Act
-            Stopwatch startTime = Stopwatch.StartNew();
-            Dictionary<string, int> winingItems = await GetWiningItems(
-                lootBoxGuid,
-                itemsGuids[2].ToString(),
-                bannerGuid.ToString());
-
-            startTime.Stop();
-            var resultTime = startTime.Elapsed;
-            string elapsedTime = string.Format("{0:00}.{1:000}",
-                resultTime.Seconds,
-                resultTime.Milliseconds);
-
-            //Assert
-            _output.WriteLine("Предмет = стоимость лута");
-
-            foreach (var winItem in winingItems)
-            {
-                decimal costWiningItems = ItemsAndCost[winItem.Key] * winItem.Value;
-                allCostItems += costWiningItems;
-                _output.WriteLine($"{winItem.Key} = {costWiningItems}");
-            }
-
-            LootBox? lootBox = (await _responseResources
-                .ResponseGet<AnswerBoxApi?>($"/api/loot-box/{lootBoxGuid}/admin", AccessToken))!.Data;
-
-            SiteStatisticsAdmin statisticsAdmin = await Context.SiteStatisticsAdmins
-                .FirstAsync();
-
-            _output.WriteLine(
-                $"Профит сайта: {statisticsAdmin.BalanceWithdrawn} Р\n" +
-                $"Баланс кейса: {lootBox!.Balance} Р\n" +
-                $"Стоимость всех предметов: {allCostItems}\n" +
-                $"Скорость алгоритма: {elapsedTime}");
-
-            statisticsAdmin.BalanceWithdrawn = 0;
-
-            await Context.SaveChangesAsync();
-
-            await RemoveUserDependency(userGuid);
-            await RemoveTestDependencies(itemsGuids, lootBoxGuid);
+            await RemoveUserDependency(DependenciesGuids["User"]);
+            await RemoveTestDependencies();
         }
 
         #region Начальные данные
-        private async Task<Dictionary<string, int>> GetWiningItems(
-            Guid boxGuid, 
-            string itemGuid = "", 
-            string bannerGuid = "")
+        private async Task RunOpenLootBoxTest(int itemIndex = -1, int numberOpening = 1000)
+        {
+            //Act
+            decimal allCostItems = 0;
+            Stopwatch startTime = Stopwatch.StartNew();
+            Dictionary<string, int> winingItems = await GetWiningItems(itemIndex, numberOpening);
+
+            startTime.Stop();
+            var resultTime = startTime.Elapsed;
+            string elapsedTime = string.Format("{0:00}.{1:000}",
+                resultTime.Seconds,
+                resultTime.Milliseconds);
+
+            //Assert
+            _output.WriteLine("Предмет - количество - стоимость лута");
+
+            foreach (var winItem in winingItems)
+            {
+                decimal costWiningItems = ItemsAndCost[winItem.Key] * winItem.Value;
+                allCostItems += costWiningItems;
+                _output.WriteLine($"{winItem.Key} - {winItem.Value} - {costWiningItems}");
+            }
+
+            LootBox? lootBox = (await _responseResources
+                .ResponseGet<AnswerBoxApi?>($"/api/loot-box/{DependenciesGuids["LootBox"]}/admin",
+                AccessToken))!.Data;
+
+            SiteStatisticsAdmin statisticsAdmin = await Context.SiteStatisticsAdmins
+                .FirstAsync();
+
+            _output.WriteLine(
+                $"Профит сайта: {statisticsAdmin.BalanceWithdrawn} Р\n" +
+                $"Баланс кейса: {lootBox!.Balance} Р\n" +
+                $"Стоимость всех предметов: {allCostItems}\n" +
+                $"Скорость алгоритма: {elapsedTime}");
+        }
+        private async Task<Dictionary<string, int>> GetWiningItems(int itemIndex = -1, int numberOpening = 1000)
         {
             Dictionary<string, int> winItems = new()
             {
@@ -296,25 +138,26 @@ namespace InCase.IntegrationTests.Tests.GameApi
                 ["AWP - Ахерон"] = 0,
             };
 
-            for (int i = 0; i < 1000; i++)
+            for (int i = 0; i < numberOpening; i++)
             {
                 //Open Cases
                 GameItem? winItem = (await _responseGame
-                    .ResponseGet<AnswerItemApi?>($"/api/open-loot-box/{boxGuid}", AccessToken))?.Data ?? 
+                    .ResponseGet<AnswerItemApi?>($"/api/open-loot-box/{DependenciesGuids["LootBox"]}", 
+                    AccessToken))?.Data ?? 
                     throw new Exception("No opened cases");
 
                 //Counter wins
                 winItems[winItem!.Name!] += 1;
 
-                if(!string.IsNullOrEmpty(itemGuid))
+                if(itemIndex >= 0)
                 {
                     UserPathBannerDto pathBannerDto = new()
                     {
-                        BannerId = Guid.Parse(bannerGuid),
+                        BannerId = DependenciesGuids["LootBoxBanner"],
                         Date = DateTime.UtcNow,
-                        ItemId = Guid.Parse(itemGuid),
+                        ItemId = ItemsGuids[itemIndex],
                         NumberSteps = 1,
-                        UserId = Guid.NewGuid()
+                        UserId = DependenciesGuids["User"]
                     };
                     
                     await _responseResources
@@ -325,12 +168,14 @@ namespace InCase.IntegrationTests.Tests.GameApi
             return winItems;
         }
 
-        private async Task InitializeTestDependencies2(Guid lootBoxGuid, Guid itemGuid, Guid bannerGuid)
+        private async Task InitializeTestDependencies2(int itemIndex)
         {
+            UpdateContext();
+
             LootBoxBanner boxBanner = new()
             {
-                Id = bannerGuid,
-                BoxId = lootBoxGuid,
+                Id = DependenciesGuids["LootBoxBanner"],
+                BoxId = DependenciesGuids["LootBox"],
                 IsActive = true,
                 ImageUri = "",
                 CreationDate = DateTime.UtcNow,
@@ -339,11 +184,11 @@ namespace InCase.IntegrationTests.Tests.GameApi
 
             UserPathBannerDto pathBannerDto = new()
             {
-                BannerId = bannerGuid,
+                BannerId = DependenciesGuids["LootBoxBanner"],
                 Date = DateTime.UtcNow,
-                ItemId = itemGuid,
+                ItemId = ItemsGuids[itemIndex],
                 NumberSteps = 1,
-                UserId = Guid.NewGuid()
+                UserId = DependenciesGuids["User"]
             };
 
             await Context.LootBoxBanners.AddAsync(boxBanner);
@@ -353,8 +198,9 @@ namespace InCase.IntegrationTests.Tests.GameApi
                 .ResponsePostStatusCode("/api/user/banner", pathBannerDto, AccessToken);
         }
 
-        private async Task InitializeTestDependencies(List<Guid> gameItemsGuids, Guid gameCaseGuid)
+        private async Task InitializeTestDependencies()
         {
+            UpdateContext();
             List<GameItemRarity> rarities = await Context.GameItemRarities.ToListAsync();
 
             List<GameItemType> types = await Context.GameItemTypes.ToListAsync();
@@ -368,7 +214,7 @@ namespace InCase.IntegrationTests.Tests.GameApi
             //Create Game Item
             GameItem item1 = new()
             {
-                Id = gameItemsGuids[0],
+                Id = ItemsGuids[0],
                 Name = "USP-S - Cortex",
                 Cost = 239.99M,
                 ImageUri = "GOCSATImage1",
@@ -379,7 +225,7 @@ namespace InCase.IntegrationTests.Tests.GameApi
             };
             GameItem item2 = new()
             {
-                Id = gameItemsGuids[1],
+                Id = ItemsGuids[1],
                 Name = "AK-47 - Ice Coaled",
                 Cost = 752M,
                 ImageUri = "GOCSATImage2",
@@ -390,7 +236,7 @@ namespace InCase.IntegrationTests.Tests.GameApi
             };
             GameItem item3 = new()
             {
-                Id = gameItemsGuids[2],
+                Id = ItemsGuids[2],
                 Name = "Перчатки «Гидра» - Изумруд",
                 Cost = 4211M,
                 ImageUri = "GOCSATImage3",
@@ -401,7 +247,7 @@ namespace InCase.IntegrationTests.Tests.GameApi
             };
             GameItem item4 = new()
             {
-                Id = gameItemsGuids[3],
+                Id = ItemsGuids[3],
                 Name = "Обмотки рук - Пустынный шемах",
                 Cost = 4857M,
                 ImageUri = "GOCSATImage4",
@@ -412,7 +258,7 @@ namespace InCase.IntegrationTests.Tests.GameApi
             };
             GameItem item5 = new()
             {
-                Id = gameItemsGuids[4],
+                Id = ItemsGuids[4],
                 Name = "Фальшион - Ночь",
                 Cost = 8000M,
                 ImageUri = "GOCSATImage5",
@@ -423,7 +269,7 @@ namespace InCase.IntegrationTests.Tests.GameApi
             };
             GameItem item6 = new()
             {
-                Id = gameItemsGuids[5],
+                Id = ItemsGuids[5],
                 Name = "Glock-18 - Ласка",
                 Cost = 66M,
                 ImageUri = "GOCSATImage6",
@@ -434,7 +280,7 @@ namespace InCase.IntegrationTests.Tests.GameApi
             };
             GameItem item7 = new()
             {
-                Id = gameItemsGuids[6],
+                Id = ItemsGuids[6],
                 Name = "AWP - Ахерон",
                 Cost = 61M,
                 ImageUri = "GOCSATImage7",
@@ -452,7 +298,7 @@ namespace InCase.IntegrationTests.Tests.GameApi
             //Create Game Case
             LootBox lootBox = new()
             {
-                Id = gameCaseGuid,
+                Id = DependenciesGuids["LootBox"],
                 Name = "GCNGOCATName",
                 Cost = 400,
                 ImageUri = "GCIGOCATImage",
@@ -528,17 +374,25 @@ namespace InCase.IntegrationTests.Tests.GameApi
             await Context.SaveChangesAsync();
         }
 
-        private async Task RemoveTestDependencies(List<Guid> gameItemsGuids, Guid gameCaseGuid)
+        private async Task RemoveTestDependencies()
         {
-            foreach (Guid id in gameItemsGuids)
+            UpdateContext();
+            foreach (Guid id in ItemsGuids)
             {
-                GameItem? gameItem = await Context.GameItems.FirstOrDefaultAsync(x => x.Id == id);
+                GameItem? gameItem = await Context.GameItems
+                    .FirstOrDefaultAsync(f => f.Id == id);
                 Context.GameItems.Remove(gameItem!);
             }
 
-            LootBox? lootBox = await Context.LootBoxes.FirstOrDefaultAsync(x => x.Id == gameCaseGuid);
+            LootBox? lootBox = await Context.LootBoxes
+                .FirstOrDefaultAsync(f => f.Id == DependenciesGuids["LootBox"]);
+            SiteStatisticsAdmin statisticsAdmin = await Context.SiteStatisticsAdmins
+                .FirstAsync();
+            SiteStatistics statistics = await Context.SiteStatistics
+                .FirstAsync();
             Context.LootBoxes.Remove(lootBox!);
-
+            statisticsAdmin.BalanceWithdrawn = 0;
+            statistics.LootBoxes = 0;
             await Context.SaveChangesAsync();
         }
         #endregion
