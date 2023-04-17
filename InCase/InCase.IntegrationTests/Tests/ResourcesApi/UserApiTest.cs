@@ -3,6 +3,7 @@ using InCase.IntegrationTests.Services;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using System;
 using System.Net;
 using Xunit.Abstractions;
 
@@ -423,6 +424,122 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
             Assert.Equal(HttpStatusCode.OK, getStatusCode);
         }
         [Fact]
+        public async Task GET_ExchangeGameItemNotExistedInventory_NotFound()
+        {
+            // Arrange
+            await InitializeUserDependency(DependenciesGuids["User"]);
+            await InitializeDependencies();
+
+            // Act
+            HttpStatusCode getStatusCode = await _responseService
+                .ResponseGetStatusCode($"/api/user/inventory/{Guid.NewGuid()}/" +
+                $"exchange/{DependenciesGuids["GameItem"]}", AccessToken);
+
+            // Assert
+            await RemoveDependencies();
+            await RemoveUserDependency(DependenciesGuids["User"]);
+            Assert.Equal(HttpStatusCode.NotFound, getStatusCode);
+        }
+        [Fact]
+        public async Task GET_ExchangeGameItemNotExistedItem_NotFound()
+        {
+            // Arrange
+            await InitializeUserDependency(DependenciesGuids["User"]);
+            await InitializeDependencies();
+
+            // Act
+            HttpStatusCode getStatusCode = await _responseService
+                .ResponseGetStatusCode($"/api/user/inventory/{DependenciesGuids["UserInventory"]}/" +
+                $"exchange/{Guid.NewGuid()}", AccessToken);
+
+            // Assert
+            await RemoveDependencies();
+            await RemoveUserDependency(DependenciesGuids["User"]);
+            Assert.Equal(HttpStatusCode.NotFound, getStatusCode);
+        }
+        [Fact]
+        public async Task GET_ExchangeGameItemNotExistedUser_NotFound()
+        {
+            // Arrange
+            await InitializeUserDependency(DependenciesGuids["User"]);
+            await InitializeDependencies();
+            string fakeUserToken = await CreateFakeToken();
+
+            // Act
+            HttpStatusCode getStatusCode = await _responseService
+                .ResponseGetStatusCode($"/api/user/inventory/{DependenciesGuids["UserInventory"]}/" +
+                $"exchange/{DependenciesGuids["GameItem"]}", fakeUserToken);
+
+            // Assert
+            await RemoveDependencies();
+            Assert.Equal(HttpStatusCode.NotFound, getStatusCode);
+        }
+        [Fact]
+        public async Task GET_ExchangeGameItemDifferentCostException_Conflict()
+        {
+            // Arrange
+            Guid item2Guid = Guid.NewGuid();
+            await InitializeUserDependency(DependenciesGuids["User"]);
+            List<GameItemRarity> rarities = await Context.GameItemRarities.ToListAsync();
+
+            List<GameItemType> types = await Context.GameItemTypes.ToListAsync();
+
+            List<GameItemQuality> qualities = await Context.GameItemQualities.ToListAsync();
+
+            List<Domain.Entities.Resources.Game> games = await Context.Games.ToListAsync();
+
+            Guid csgoGameId = games.FirstOrDefault(f => f.Name == "csgo")!.Id;
+
+            GameItem item1 = new()
+            {
+                Id = DependenciesGuids["GameItem"],
+                Name = GenerateString(8),
+                Cost = 1M,
+                ImageUri = "GOCSATImage1",
+                RarityId = rarities.FirstOrDefault(f => f.Name == "pink")!.Id,
+                TypeId = types.FirstOrDefault(f => f.Name == "pistol")!.Id,
+                GameId = csgoGameId,
+                QualityId = qualities.FirstOrDefault(f => f.Name == "minimal wear")!.Id
+            };
+
+            GameItem item2 = new()
+            {
+                Id = item2Guid,
+                Name = GenerateString(8),
+                Cost = 1000M,
+                ImageUri = "GOCSATImage1",
+                RarityId = rarities.FirstOrDefault(f => f.Name == "pink")!.Id,
+                TypeId = types.FirstOrDefault(f => f.Name == "pistol")!.Id,
+                GameId = csgoGameId,
+                QualityId = qualities.FirstOrDefault(f => f.Name == "minimal wear")!.Id
+            };
+
+            UserInventory inventory = new()
+            {
+                Id = DependenciesGuids["UserInventory"],
+                Date = DateTime.UtcNow,
+                ItemId = item1.Id,
+                UserId = DependenciesGuids["User"],
+                FixedCost = 0M
+            };
+
+            await Context.GameItems.AddRangeAsync(item1, item2);
+            await Context.UserInventories.AddAsync(inventory);
+            await Context.SaveChangesAsync();
+
+            // Act
+            HttpStatusCode getStatusCode = await _responseService
+                .ResponseGetStatusCode($"/api/user/inventory/{DependenciesGuids["UserInventory"]}/" +
+                $"exchange/{item2Guid}", AccessToken);
+
+            // Assert
+            Context.GameItems.RemoveRange(item1, item2);
+            Context.UserInventories.Remove(inventory);
+            await Context.SaveChangesAsync();
+            await RemoveUserDependency(DependenciesGuids["User"]);
+            Assert.Equal(HttpStatusCode.Conflict, getStatusCode);
+        }
+        [Fact]
         public async Task POST_CreatePathBanner_OK()
         {
             // Arrange
@@ -442,6 +559,139 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
             await RemoveDependencies();
             await RemoveUserDependency(DependenciesGuids["User"]);
             Assert.Equal(HttpStatusCode.OK, postStatusCode);
+        }
+        [Fact]
+        public async Task POST_CreatePathBannerButAlreadyExisted_Conflict()
+        {
+            // Arrange
+            await InitializeUserDependency(DependenciesGuids["User"]);
+            await InitializeDependencies();
+
+            UserPathBanner pathBanner = await Context.UserPathBanners
+                .FirstAsync(f => f.Id == DependenciesGuids["UserPathBanner"]);
+
+            // Act
+            HttpStatusCode postStatusCode = await _responseService
+                .ResponsePostStatusCode("/api/user/banner", pathBanner.Convert(false), AccessToken);
+
+            // Assert
+            await RemoveDependencies();
+            await RemoveUserDependency(DependenciesGuids["User"]);
+            Assert.Equal(HttpStatusCode.Conflict, postStatusCode);
+        }
+        [Fact]
+        public async Task POST_CreatePathBannerWithNotExistedItem_NotFound()
+        {
+            // Arrange
+            await InitializeUserDependency(DependenciesGuids["User"]);
+            await InitializeDependencies();
+
+            UserPathBanner pathBanner = await Context.UserPathBanners
+                .FirstAsync(f => f.Id == DependenciesGuids["UserPathBanner"]);
+            Context.UserPathBanners.Remove(pathBanner);
+            await Context.SaveChangesAsync();
+
+            GameItem item = await Context.GameItems
+                .FirstAsync(f => f.Id == DependenciesGuids["GameItem"]);
+            item.Id = Guid.NewGuid();
+
+            pathBanner.Item = item;
+            pathBanner.ItemId = item.Id;
+
+            // Act
+            HttpStatusCode postStatusCode = await _responseService
+                .ResponsePostStatusCode("/api/user/banner", pathBanner.Convert(false), AccessToken);
+
+            // Assert
+            await RemoveDependencies();
+            await RemoveUserDependency(DependenciesGuids["User"]);
+            Assert.Equal(HttpStatusCode.NotFound, postStatusCode);
+        }
+        [Fact]
+        public async Task POST_CreatePathBannerWithNotExistedBanner_NotFound()
+        {
+            // Arrange
+            await InitializeUserDependency(DependenciesGuids["User"]);
+            await InitializeDependencies();
+
+            UserPathBanner pathBanner = await Context.UserPathBanners
+                .FirstAsync(f => f.Id == DependenciesGuids["UserPathBanner"]);
+            Context.UserPathBanners.Remove(pathBanner);
+            await Context.SaveChangesAsync();
+
+            LootBoxBanner banner = await Context.LootBoxBanners
+                .FirstAsync(f => f.Id == DependenciesGuids["LootBoxBanner"]);
+            banner.Id = Guid.NewGuid();
+
+            pathBanner.Banner = banner;
+            pathBanner.BannerId = banner.Id;
+
+            // Act
+            HttpStatusCode postStatusCode = await _responseService
+                .ResponsePostStatusCode("/api/user/banner", pathBanner.Convert(false), AccessToken);
+
+            // Assert
+            await RemoveDependencies();
+            await RemoveUserDependency(DependenciesGuids["User"]);
+            Assert.Equal(HttpStatusCode.NotFound, postStatusCode);
+        }
+        [Fact]
+        public async Task POST_CreatePathBannerWithSmallestItemCost_Conflict()
+        {
+            // Arrange
+            await InitializeUserDependency(DependenciesGuids["User"]);
+            await InitializeDependencies();
+
+            UserPathBanner pathBanner = await Context.UserPathBanners
+                .FirstAsync(f => f.Id == DependenciesGuids["UserPathBanner"]);
+            Context.UserPathBanners.Remove(pathBanner);
+
+            GameItem item = await Context.GameItems
+                .FirstAsync(f => f.Id == DependenciesGuids["GameItem"]);
+            item.Cost = -123;
+
+            await Context.SaveChangesAsync();
+
+            pathBanner.Item = item;
+            pathBanner.ItemId = item.Id;
+
+            // Act
+            HttpStatusCode postStatusCode = await _responseService
+                .ResponsePostStatusCode("/api/user/banner", pathBanner.Convert(false), AccessToken);
+
+            // Assert
+            await RemoveDependencies();
+            await RemoveUserDependency(DependenciesGuids["User"]);
+            Assert.Equal(HttpStatusCode.Conflict, postStatusCode);
+        }
+        [Fact]
+        public async Task POST_CreatePathBannerWithBiggestThanHungredSteps_Conflict()
+        {
+            // Arrange
+            await InitializeUserDependency(DependenciesGuids["User"]);
+            await InitializeDependencies();
+
+            UserPathBanner pathBanner = await Context.UserPathBanners
+                .FirstAsync(f => f.Id == DependenciesGuids["UserPathBanner"]);
+            Context.UserPathBanners.Remove(pathBanner);
+
+            GameItem item = await Context.GameItems
+               .FirstAsync(f => f.Id == DependenciesGuids["GameItem"]);
+            item.Cost = 123455667;
+
+            await Context.SaveChangesAsync();
+
+            pathBanner.Item = item;
+            pathBanner.ItemId = item.Id;
+
+            // Act
+            HttpStatusCode postStatusCode = await _responseService
+                .ResponsePostStatusCode("/api/user/banner", pathBanner.Convert(false), AccessToken);
+
+            // Assert
+            await RemoveDependencies();
+            await RemoveUserDependency(DependenciesGuids["User"]);
+            Assert.Equal(HttpStatusCode.Conflict, postStatusCode);
         }
         [Fact]
         public async Task POST_CreatePathBanner_Unauthorized()
@@ -480,6 +730,44 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
             await RemoveUserDependency(DependenciesGuids["User"]);
 
             Assert.Equal(HttpStatusCode.OK, deleteStatusCode);
+        }
+        [Fact]
+        public async Task DELETE_RemovePathBannerButUserInfoNotExist_NotFound()
+        {
+            // Arrange
+            await InitializeUserDependency(DependenciesGuids["User"]);
+            await InitializeDependencies();
+            string fakeUserToken = await CreateFakeToken();
+            // Act
+            HttpStatusCode deleteStatusCode = await _responseService
+                .ResponseDelete($"/api/user/banner/{DependenciesGuids["LootBoxBanner"]}", fakeUserToken);
+
+            // Assert
+            await RemoveDependencies();
+            await RemoveUserDependency(DependenciesGuids["User"]);
+
+            Assert.Equal(HttpStatusCode.NotFound, deleteStatusCode);
+        }
+        [Fact]
+        public async Task DELETE_RemovePathBannerButPathNotExist_NotFound()
+        {
+            // Arrange
+            await InitializeUserDependency(DependenciesGuids["User"]);
+            await InitializeDependencies();
+            UserPathBanner pathBanner = await Context.UserPathBanners
+                .FirstAsync(f => f.Id == DependenciesGuids["UserPathBanner"]);
+            Context.UserPathBanners.Remove(pathBanner);
+            await Context.SaveChangesAsync();
+
+            // Act
+            HttpStatusCode deleteStatusCode = await _responseService
+                .ResponseDelete($"/api/user/banner/{DependenciesGuids["LootBoxBanner"]}", AccessToken);
+
+            // Assert
+            await RemoveDependencies();
+            await RemoveUserDependency(DependenciesGuids["User"]);
+
+            Assert.Equal(HttpStatusCode.NotFound, deleteStatusCode);
         }
         [Fact]
         public async Task DELETE_RemovePathBanner_Unauthorized()

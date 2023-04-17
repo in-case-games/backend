@@ -138,6 +138,31 @@ namespace InCase.IntegrationTests.Tests
             Context.Users.Remove(user!);
             await Context.SaveChangesAsync();
         }
+        protected async Task<string> CreateFakeToken()
+        {
+            UpdateContext();
+            UserRole? userRole = await Context.UserRoles.FirstOrDefaultAsync(x => x.Name == "bot");
+
+            UserAdditionalInfo userInfo = new()
+            {
+                IsConfirmed = true,
+                Balance = 999999,
+                Role = userRole!,
+                RoleId = userRole!.Id,
+                IsNotifyEmail = true,
+                IsGuestMode = false
+            };
+            User user = new()
+            {
+                Login = $"{GenerateString()}UserApiTest",
+                Email = $"{GenerateString()}@mail.ru",
+                PasswordHash = "UserHashForTest1",
+                PasswordSalt = "UserSaltForTest1",
+                AdditionalInfo = userInfo,
+            };
+
+            return CreateToken(user);
+        }
         #endregion
     }
 }

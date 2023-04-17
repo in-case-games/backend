@@ -330,7 +330,7 @@ namespace InCase.Resources.Api.Controllers
             LootBoxBanner? banner = await context.LootBoxBanners
                 .Include(i => i.Box)
                 .AsNoTracking()
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync(f => f.Id == pathDto.BannerId);
 
             if (item is null)
                 return ResponseUtil.NotFound(nameof(GameItem));
