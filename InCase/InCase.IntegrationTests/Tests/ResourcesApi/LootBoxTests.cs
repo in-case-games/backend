@@ -602,8 +602,6 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
             Context.LootBoxBanners.Remove(banner);
             await Context.SaveChangesAsync();
 
-            banner.BoxId = Guid.NewGuid();
-
             //Act
             HttpStatusCode statusCode = await _responseService
                 .ResponsePostStatusCode($"/api/loot-box/banner", banner.Convert());
@@ -633,6 +631,458 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
             //Act
             HttpStatusCode statusCode = await _responseService
                 .ResponsePostStatusCode($"/api/loot-box/banner", banner.Convert(), AccessToken);
+
+            //Assert
+            await RemoveUserDependency(DependenciesGuids["User"]);
+            await RemoveTestDependencies();
+
+            Assert.Equal(HttpStatusCode.Forbidden, statusCode);
+        }
+        [Fact]
+        public async Task PUT_LootBox_OK()
+        {
+            //Arrange
+            await InitializeUserDependency(DependenciesGuids["User"], "owner");
+            await InitializeTestDependencies();
+
+            LootBox box = await Context.LootBoxes
+                .AsNoTracking()
+                .FirstAsync(f => f.Id == DependenciesGuids["LootBox"]);
+
+            //Act
+            HttpStatusCode statusCode = await _responseService
+                .ResponsePut($"/api/loot-box", box.Convert(false), AccessToken);
+
+            //Assert
+            await RemoveUserDependency(DependenciesGuids["User"]);
+            await RemoveTestDependencies();
+
+            Assert.Equal(HttpStatusCode.OK, statusCode);
+        }
+        [Fact]
+        public async Task PUT_LootBox_NotFoundGame()
+        {
+            //Arrange
+            await InitializeUserDependency(DependenciesGuids["User"], "owner");
+            await InitializeTestDependencies();
+
+            LootBox box = await Context.LootBoxes
+                .AsNoTracking()
+                .FirstAsync(f => f.Id == DependenciesGuids["LootBox"]);
+
+            box.GameId = Guid.NewGuid();
+
+            //Act
+            HttpStatusCode statusCode = await _responseService
+                .ResponsePut($"/api/loot-box", box.Convert(false), AccessToken);
+
+            //Assert
+            await RemoveUserDependency(DependenciesGuids["User"]);
+            await RemoveTestDependencies();
+
+            Assert.Equal(HttpStatusCode.NotFound, statusCode);
+        }
+        [Fact]
+        public async Task PUT_LootBox_NotFoundBox()
+        {
+            //Arrange
+            await InitializeUserDependency(DependenciesGuids["User"], "owner");
+            await InitializeTestDependencies();
+
+            LootBox box = await Context.LootBoxes
+                .AsNoTracking()
+                .FirstAsync(f => f.Id == DependenciesGuids["LootBox"]);
+
+            //Act
+            HttpStatusCode statusCode = await _responseService
+                .ResponsePut($"/api/loot-box", box.Convert(), AccessToken);
+
+            //Assert
+            await RemoveUserDependency(DependenciesGuids["User"]);
+            await RemoveTestDependencies();
+
+            Assert.Equal(HttpStatusCode.NotFound, statusCode);
+        }
+        [Fact]
+        public async Task PUT_LootBox_Unauthorized()
+        {
+            //Arrange
+            await InitializeTestDependencies();
+
+            LootBox box = await Context.LootBoxes
+                .AsNoTracking()
+                .FirstAsync(f => f.Id == DependenciesGuids["LootBox"]);
+
+            //Act
+            HttpStatusCode statusCode = await _responseService
+                .ResponsePut($"/api/loot-box", box.Convert(false));
+
+            //Assert
+            await RemoveTestDependencies();
+
+            Assert.Equal(HttpStatusCode.Unauthorized, statusCode);
+        }
+        [Theory]
+        [InlineData("user")]
+        [InlineData("admin")]
+        [InlineData("bot")]
+        public async Task PUT_LootBox_Forbidden(string role)
+        {
+            //Arrange
+            await InitializeUserDependency(DependenciesGuids["User"], role);
+            await InitializeTestDependencies();
+
+            LootBox box = await Context.LootBoxes
+                .AsNoTracking()
+                .FirstAsync(f => f.Id == DependenciesGuids["LootBox"]);
+
+            //Act
+            HttpStatusCode statusCode = await _responseService
+                .ResponsePut($"/api/loot-box", box.Convert(false), AccessToken);
+
+            //Assert
+            await RemoveUserDependency(DependenciesGuids["User"]);
+            await RemoveTestDependencies();
+
+            Assert.Equal(HttpStatusCode.Forbidden, statusCode);
+        }
+        [Fact]
+        public async Task PUT_LootBoxBanner_OK()
+        {
+            //Arrange
+            await InitializeUserDependency(DependenciesGuids["User"], "owner");
+            await InitializeTestDependencies();
+
+            LootBoxBanner banner = await Context.LootBoxBanners
+                .AsNoTracking()
+                .FirstAsync(f => f.Id == DependenciesGuids["LootBoxBanner"]);
+
+            //Act
+            HttpStatusCode statusCode = await _responseService
+                .ResponsePut($"/api/loot-box/banner", banner.Convert(false), AccessToken);
+
+            //Assert
+            await RemoveUserDependency(DependenciesGuids["User"]);
+            await RemoveTestDependencies();
+
+            Assert.Equal(HttpStatusCode.OK, statusCode);
+        }
+        [Fact]
+        public async Task PUT_LootBoxBanner_NotFoundBox()
+        {
+            //Arrange
+            await InitializeUserDependency(DependenciesGuids["User"], "owner");
+            await InitializeTestDependencies();
+
+            LootBoxBanner banner = await Context.LootBoxBanners
+                .AsNoTracking()
+                .FirstAsync(f => f.Id == DependenciesGuids["LootBoxBanner"]);
+
+            banner.BoxId = Guid.NewGuid();
+
+            //Act
+            HttpStatusCode statusCode = await _responseService
+                .ResponsePut($"/api/loot-box/banner", banner.Convert(false), AccessToken);
+
+            //Assert
+            await RemoveUserDependency(DependenciesGuids["User"]);
+            await RemoveTestDependencies();
+
+            Assert.Equal(HttpStatusCode.NotFound, statusCode);
+        }
+        [Fact]
+        public async Task PUT_LootBoxBanner_NotFoundBanner()
+        {
+            //Arrange
+            await InitializeUserDependency(DependenciesGuids["User"], "owner");
+            await InitializeTestDependencies();
+
+            LootBoxBanner banner = await Context.LootBoxBanners
+                .AsNoTracking()
+                .FirstAsync(f => f.Id == DependenciesGuids["LootBoxBanner"]);
+
+            //Act
+            HttpStatusCode statusCode = await _responseService
+                .ResponsePut($"/api/loot-box/banner", banner.Convert(), AccessToken);
+
+            //Assert
+            await RemoveUserDependency(DependenciesGuids["User"]);
+            await RemoveTestDependencies();
+
+            Assert.Equal(HttpStatusCode.NotFound, statusCode);
+        }
+        [Fact]
+        public async Task PUT_LootBoxInventory_Conflict()
+        {
+            //Arrange
+            await InitializeUserDependency(DependenciesGuids["User"], "owner");
+            await InitializeTestDependencies();
+
+            LootBoxBanner banner = await Context.LootBoxBanners
+                .AsNoTracking()
+                .FirstAsync(f => f.Id == DependenciesGuids["LootBoxBanner"]);
+            LootBox box = await Context.LootBoxes
+                .AsNoTracking()
+                .FirstAsync(f => f.Id == DependenciesGuids["LootBox"]);
+
+            box.Id = Guid.NewGuid();
+            banner.Id = Guid.NewGuid();
+            banner.BoxId = box.Id;
+
+            await Context.LootBoxes.AddAsync(box);
+            await Context.LootBoxBanners.AddAsync(banner);
+            await Context.SaveChangesAsync();
+
+            banner.Box = null;
+            banner.BoxId = DependenciesGuids["LootBox"];
+
+            //Act
+            HttpStatusCode statusCode = await _responseService
+                .ResponsePut($"/api/loot-box/banner", banner.Convert(false), AccessToken);
+
+            //Assert
+            await RemoveUserDependency(DependenciesGuids["User"]);
+            await RemoveTestDependencies();
+
+            Assert.Equal(HttpStatusCode.Conflict, statusCode);
+        }
+        [Fact]
+        public async Task PUT_LootBoxBanner_Unauthorized()
+        {
+            //Arrange
+            await InitializeTestDependencies();
+
+            LootBoxBanner banner = await Context.LootBoxBanners
+                .AsNoTracking()
+                .FirstAsync(f => f.Id == DependenciesGuids["LootBoxBanner"]);
+
+            //Act
+            HttpStatusCode statusCode = await _responseService
+                .ResponsePut($"/api/loot-box/banner", banner.Convert(false));
+
+            //Assert
+            await RemoveTestDependencies();
+
+            Assert.Equal(HttpStatusCode.Unauthorized, statusCode);
+        }
+        [Theory]
+        [InlineData("user")]
+        [InlineData("admin")]
+        [InlineData("bot")]
+        public async Task PUT_LootBoxBanner_Forbidden(string role)
+        {
+            //Arrange
+            await InitializeUserDependency(DependenciesGuids["User"], role);
+            await InitializeTestDependencies();
+
+            LootBoxBanner banner = await Context.LootBoxBanners
+                .AsNoTracking()
+                .FirstAsync(f => f.Id == DependenciesGuids["LootBoxBanner"]);
+
+            //Act
+            HttpStatusCode statusCode = await _responseService
+                .ResponsePut($"/api/loot-box/banner", banner.Convert(false), AccessToken);
+
+            //Assert
+            await RemoveUserDependency(DependenciesGuids["User"]);
+            await RemoveTestDependencies();
+
+            Assert.Equal(HttpStatusCode.Forbidden, statusCode);
+        }
+        [Fact]
+        public async Task DELETE_LootBox_OK()
+        {
+            //Arrange
+            await InitializeUserDependency(DependenciesGuids["User"], "owner");
+            await InitializeTestDependencies();
+
+            //Act
+            HttpStatusCode statusCode = await _responseService
+                .ResponseDelete($"/api/loot-box/{DependenciesGuids["LootBox"]}", AccessToken);
+
+            //Assert
+            await RemoveUserDependency(DependenciesGuids["User"]);
+            await RemoveTestDependencies();
+
+            Assert.Equal(HttpStatusCode.OK, statusCode);
+        }
+        [Fact]
+        public async Task DELETE_LootBox_NotFound()
+        {
+            //Arrange
+            await InitializeUserDependency(DependenciesGuids["User"], "owner");
+
+            //Act
+            HttpStatusCode statusCode = await _responseService
+                .ResponseDelete($"/api/loot-box/{DependenciesGuids["LootBox"]}", AccessToken);
+
+            //Assert
+            await RemoveUserDependency(DependenciesGuids["User"]);
+
+            Assert.Equal(HttpStatusCode.NotFound, statusCode);
+        }
+        [Fact]
+        public async Task DELETE_LootBox_Unauthorized()
+        {
+            //Arrange
+            await InitializeTestDependencies();
+
+            //Act
+            HttpStatusCode statusCode = await _responseService
+                .ResponseDelete($"/api/loot-box/{DependenciesGuids["LootBox"]}");
+
+            //Assert
+            await RemoveTestDependencies();
+
+            Assert.Equal(HttpStatusCode.Unauthorized, statusCode);
+        }
+        [Theory]
+        [InlineData("user")]
+        [InlineData("admin")]
+        [InlineData("bot")]
+        public async Task Delete_LootBox_Forbidden(string role)
+        {
+            //Arrange
+            await InitializeUserDependency(DependenciesGuids["User"], role);
+            await InitializeTestDependencies();
+
+            //Act
+            HttpStatusCode statusCode = await _responseService
+                .ResponseDelete($"/api/loot-box/{DependenciesGuids["LootBox"]}", AccessToken);
+
+            //Assert
+            await RemoveUserDependency(DependenciesGuids["User"]);
+            await RemoveTestDependencies();
+
+            Assert.Equal(HttpStatusCode.Forbidden, statusCode);
+        }
+        [Fact]
+        public async Task DELETE_LootBoxBanner_OK()
+        {
+            //Arrange
+            await InitializeUserDependency(DependenciesGuids["User"], "owner");
+            await InitializeTestDependencies();
+
+            //Act
+            HttpStatusCode statusCode = await _responseService
+                .ResponseDelete($"/api/loot-box/banner/{DependenciesGuids["LootBoxBanner"]}", AccessToken);
+
+            //Assert
+            await RemoveUserDependency(DependenciesGuids["User"]);
+            await RemoveTestDependencies();
+
+            Assert.Equal(HttpStatusCode.OK, statusCode);
+        }
+        [Fact]
+        public async Task DELETE_LootBoxBanner_NotFound()
+        {
+            //Arrange
+            await InitializeUserDependency(DependenciesGuids["User"], "owner");
+
+            //Act
+            HttpStatusCode statusCode = await _responseService
+                .ResponseDelete($"/api/loot-box/banner/{DependenciesGuids["LootBoxBanner"]}", AccessToken);
+
+            //Assert
+            await RemoveUserDependency(DependenciesGuids["User"]);
+
+            Assert.Equal(HttpStatusCode.NotFound, statusCode);
+        }
+        [Fact]
+        public async Task DELETE_LootBoxBanner_Unauthorized()
+        {
+            //Arrange
+            await InitializeTestDependencies();
+
+            //Act
+            HttpStatusCode statusCode = await _responseService
+                .ResponseDelete($"/api/loot-box/banner/{DependenciesGuids["LootBoxBanner"]}");
+
+            //Assert
+            await RemoveTestDependencies();
+
+            Assert.Equal(HttpStatusCode.Unauthorized, statusCode);
+        }
+        [Theory]
+        [InlineData("user")]
+        [InlineData("admin")]
+        [InlineData("bot")]
+        public async Task Delete_LootBoxBanner_Forbidden(string role)
+        {
+            //Arrange
+            await InitializeUserDependency(DependenciesGuids["User"], role);
+            await InitializeTestDependencies();
+
+            //Act
+            HttpStatusCode statusCode = await _responseService
+                .ResponseDelete($"/api/loot-box/banner/{DependenciesGuids["LootBoxBanner"]}", AccessToken);
+
+            //Assert
+            await RemoveUserDependency(DependenciesGuids["User"]);
+            await RemoveTestDependencies();
+
+            Assert.Equal(HttpStatusCode.Forbidden, statusCode);
+        }
+        [Fact]
+        public async Task DELETE_LootBoxInventory_OK()
+        {
+            //Arrange
+            await InitializeUserDependency(DependenciesGuids["User"], "owner");
+            await InitializeTestDependencies();
+
+            //Act
+            HttpStatusCode statusCode = await _responseService
+                .ResponseDelete($"/api/loot-box/inventory/{DependenciesGuids["LootBoxInventory"]}", AccessToken);
+
+            //Assert
+            await RemoveUserDependency(DependenciesGuids["User"]);
+            await RemoveTestDependencies();
+
+            Assert.Equal(HttpStatusCode.OK, statusCode);
+        }
+        [Fact]
+        public async Task DELETE_LootBoxInventory_NotFound()
+        {
+            //Arrange
+            await InitializeUserDependency(DependenciesGuids["User"], "owner");
+
+            //Act
+            HttpStatusCode statusCode = await _responseService
+                .ResponseDelete($"/api/loot-box/inventory/{DependenciesGuids["LootBoxInventory"]}", AccessToken);
+
+            //Assert
+            await RemoveUserDependency(DependenciesGuids["User"]);
+
+            Assert.Equal(HttpStatusCode.NotFound, statusCode);
+        }
+        [Fact]
+        public async Task DELETE_LootBoxInventory_Unauthorized()
+        {
+            //Arrange
+            await InitializeTestDependencies();
+
+            //Act
+            HttpStatusCode statusCode = await _responseService
+                .ResponseDelete($"/api/loot-box/inventory/{DependenciesGuids["LootBoxInventory"]}");
+
+            //Assert
+            await RemoveTestDependencies();
+
+            Assert.Equal(HttpStatusCode.Unauthorized, statusCode);
+        }
+        [Theory]
+        [InlineData("user")]
+        [InlineData("admin")]
+        [InlineData("bot")]
+        public async Task Delete_LootBoxInventory_Forbidden(string role)
+        {
+            //Arrange
+            await InitializeUserDependency(DependenciesGuids["User"], role);
+            await InitializeTestDependencies();
+
+            //Act
+            HttpStatusCode statusCode = await _responseService
+                .ResponseDelete($"/api/loot-box/inventory/{DependenciesGuids["LootBoxInventory"]}", AccessToken);
 
             //Assert
             await RemoveUserDependency(DependenciesGuids["User"]);
