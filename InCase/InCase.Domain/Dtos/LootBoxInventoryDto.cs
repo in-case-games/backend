@@ -5,7 +5,6 @@ namespace InCase.Domain.Dtos
 {
     public class LootBoxInventoryDto : BaseEntity
     {
-        public int NumberItems { get; set; }
         public int ChanceWining { get; set; }
 
         public Guid ItemId { get; set; }
@@ -14,7 +13,6 @@ namespace InCase.Domain.Dtos
         public LootBoxInventory Convert(bool IsNewGuid = true) => new()
         {
             Id = IsNewGuid ? Guid.NewGuid() : Id,
-            NumberItems = NumberItems,
             ChanceWining = ChanceWining,
             ItemId = ItemId,
             BoxId = BoxId

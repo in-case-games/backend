@@ -108,7 +108,6 @@ namespace InCase.IntegrationTests.Services
             return await response.Content
                 .ReadFromJsonAsync<O>(new JsonSerializerOptions(JsonSerializerDefaults.Web));
         }
-
         public async Task<HttpStatusCode> ResponsePut<T>(string uri, T entity, string token = "")
             where T : BaseEntity
         {

@@ -49,7 +49,6 @@ namespace InCase.Resources.Api.Controllers
 
             LootBox? box = await context.LootBoxes
                 .AsNoTracking()
-                .Include(i => i.Inventories)
                 .FirstOrDefaultAsync(f => f.Id == id);
 
             if (box is null)
@@ -69,7 +68,6 @@ namespace InCase.Resources.Api.Controllers
 
             LootBox? box = await context.LootBoxes
                 .AsNoTracking()
-                .Include(i => i.Inventories)
                 .FirstOrDefaultAsync(f => f.Id == id);
 
             return box is null ? 

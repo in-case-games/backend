@@ -184,13 +184,13 @@ namespace InCase.Game.Api.Controllers
             if (userInfo is null || lootBox is null)
                 return ResponseUtil.NotFound(nameof(LootBox));
             if (!userInfo.IsGuestMode)
-                return Forbid("On guest mode");
+                return Forbid();
 
             //Update Balance Case and User
             lootBox.VirtualBalance += lootBox.Cost;
 
             //Calling random
-            GameItem winItem = RandomizeBySmallest(in lootBox);
+            GameItem winItem = RandomizeBySmallest(in lootBox, true);
 
             decimal revenue = lootBox.Cost * RevenuePrecentage;
             decimal expensesCase = winItem.Cost + revenue;
@@ -207,7 +207,7 @@ namespace InCase.Game.Api.Controllers
 
         // TODO: Rebase this
         #region nonAction
-        private static GameItem RandomizeBySmallest(in LootBox box)
+        private static GameItem RandomizeBySmallest(in LootBox box, bool IsVirtual = false)
         {
             List<int> chances = box.Inventories!
                 .Select(x => x.ChanceWining)
@@ -216,7 +216,7 @@ namespace InCase.Game.Api.Controllers
             int winIndex = Randomizer(chances);
             GameItem winItem = box.Inventories![winIndex].Item!;
 
-            if (IsProfitCase(winItem, box) is false)
+            if (IsProfitCase(winItem, box, IsVirtual) is false)
             {
                 List<GameItem> items = box.Inventories
                     .Select(x => x.Item)
@@ -263,10 +263,11 @@ namespace InCase.Game.Api.Controllers
             }
         }
 
-        private static bool IsProfitCase(GameItem item, LootBox box)
+        private static bool IsProfitCase(GameItem item, LootBox box, bool IsVirtual = false)
         {
-            decimal revenue = box.Balance * RevenuePrecentage;
-            decimal availableBalance = box.Balance - revenue;
+            decimal boxBalance = IsVirtual ? box.VirtualBalance : box.Balance;
+            decimal revenue = boxBalance * RevenuePrecentage;
+            decimal availableBalance = boxBalance - revenue;
 
             return item.Cost <= availableBalance;
         }

@@ -17,8 +17,6 @@ namespace InCase.Infrastructure.Configurations
             builder.HasIndex(i => i.ItemId)
                 .IsUnique(false);
 
-            builder.Property(p => p.NumberItems)
-                .IsRequired();
             builder.Property(p => p.ChanceWining)
                 .IsRequired();
 
