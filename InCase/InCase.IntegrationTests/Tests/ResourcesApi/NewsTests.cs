@@ -82,6 +82,395 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
             //Assert
             Assert.Equal(HttpStatusCode.NotFound, statusCode);
         }
+        [Fact]
+        public async Task POST_News_OK()
+        {
+            //Arrange
+            await InitializeUserDependency(DependenciesGuids["User"], "admin");
+            await InitializeTestDependencies();
+
+            News news = await Context.News
+                .AsNoTracking()
+                .FirstAsync(f => f.Id == DependenciesGuids["News"]);
+
+            Context.News.Remove(news);
+            await Context.SaveChangesAsync();
+
+            //Act
+            HttpStatusCode statusCode = await _responseService
+                .ResponsePostStatusCode($"/api/news", news, AccessToken);
+
+            //Assert
+            await RemoveUserDependency(DependenciesGuids["User"]);
+            await RemoveTestDependencies();
+
+            Assert.Equal(HttpStatusCode.OK, statusCode);
+        }
+        [Fact]
+        public async Task POST_News_Unauthorized()
+        {
+            //Arrange
+            await InitializeTestDependencies();
+
+            News news = await Context.News
+                .AsNoTracking()
+                .FirstAsync(f => f.Id == DependenciesGuids["News"]);
+
+            Context.News.Remove(news);
+            await Context.SaveChangesAsync();
+
+            //Act
+            HttpStatusCode statusCode = await _responseService
+                .ResponsePostStatusCode($"/api/news", news);
+
+            //Assert
+            await RemoveTestDependencies();
+
+            Assert.Equal(HttpStatusCode.Unauthorized, statusCode);
+        }
+        [Theory]
+        [InlineData("user")]
+        [InlineData("bot")]
+        public async Task POST_News_Forbidden(string role)
+        {
+            //Arrange
+            await InitializeUserDependency(DependenciesGuids["User"], role);
+            await InitializeTestDependencies();
+
+            News news = await Context.News
+                .AsNoTracking()
+                .FirstAsync(f => f.Id == DependenciesGuids["News"]);
+
+            Context.News.Remove(news);
+            await Context.SaveChangesAsync();
+
+            //Act
+            HttpStatusCode statusCode = await _responseService
+                .ResponsePostStatusCode($"/api/news", news, AccessToken);
+
+            //Assert
+            await RemoveUserDependency(DependenciesGuids["User"]);
+            await RemoveTestDependencies();
+
+            Assert.Equal(HttpStatusCode.Forbidden, statusCode);
+        }
+        [Fact]
+        public async Task POST_NewsImage_OK()
+        {
+            //Arrange
+            await InitializeUserDependency(DependenciesGuids["User"], "admin");
+            await InitializeTestDependencies();
+
+            NewsImage image = await Context.NewsImages
+                .AsNoTracking()
+                .FirstAsync(f => f.Id == DependenciesGuids["NewsImage"]);
+
+            Context.NewsImages.Remove(image);
+            await Context.SaveChangesAsync();
+
+            //Act
+            HttpStatusCode statusCode = await _responseService
+                .ResponsePostStatusCode($"/api/news/image", image.Convert(), AccessToken);
+
+            //Assert
+            await RemoveUserDependency(DependenciesGuids["User"]);
+            await RemoveTestDependencies();
+
+            Assert.Equal(HttpStatusCode.OK, statusCode);
+        }
+        [Fact]
+        public async Task POST_NewsImage_NotFound()
+        {
+            //Arrange
+            await InitializeUserDependency(DependenciesGuids["User"], "admin");
+            await InitializeTestDependencies();
+
+            NewsImage image = await Context.NewsImages
+                .AsNoTracking()
+                .FirstAsync(f => f.Id == DependenciesGuids["NewsImage"]);
+
+            Context.NewsImages.Remove(image);
+            await Context.SaveChangesAsync();
+
+            image.News = null;
+            image.NewsId = Guid.NewGuid();
+
+            //Act
+            HttpStatusCode statusCode = await _responseService
+                .ResponsePostStatusCode($"/api/news/image", image.Convert(), AccessToken);
+
+            //Assert
+            await RemoveUserDependency(DependenciesGuids["User"]);
+            await RemoveTestDependencies();
+
+            Assert.Equal(HttpStatusCode.NotFound, statusCode);
+        }
+        [Fact]
+        public async Task POST_NewsImage_Unauthorized()
+        {
+            //Arrange
+            await InitializeTestDependencies();
+
+            NewsImage image = await Context.NewsImages
+                .AsNoTracking()
+                .FirstAsync(f => f.Id == DependenciesGuids["NewsImage"]);
+
+            Context.NewsImages.Remove(image);
+            await Context.SaveChangesAsync();
+
+            //Act
+            HttpStatusCode statusCode = await _responseService
+                .ResponsePostStatusCode($"/api/news/image", image.Convert());
+
+            //Assert
+            await RemoveTestDependencies();
+
+            Assert.Equal(HttpStatusCode.Unauthorized, statusCode);
+        }
+        [Theory]
+        [InlineData("user")]
+        [InlineData("bot")]
+        public async Task POST_NewsImage_Forbidden(string role)
+        {
+            //Arrange
+            await InitializeUserDependency(DependenciesGuids["User"], role);
+            await InitializeTestDependencies();
+
+            NewsImage image = await Context.NewsImages
+                .AsNoTracking()
+                .FirstAsync(f => f.Id == DependenciesGuids["NewsImage"]);
+
+            Context.NewsImages.Remove(image);
+            await Context.SaveChangesAsync();
+
+            //Act
+            HttpStatusCode statusCode = await _responseService
+                .ResponsePostStatusCode($"/api/news/image", image.Convert(), AccessToken);
+
+            //Assert
+            await RemoveUserDependency(DependenciesGuids["User"]);
+            await RemoveTestDependencies();
+
+            Assert.Equal(HttpStatusCode.Forbidden, statusCode);
+        }
+        [Fact]
+        public async Task PUT_News_OK()
+        {
+            //Arrange
+            await InitializeUserDependency(DependenciesGuids["User"], "admin");
+            await InitializeTestDependencies();
+
+            News news = await Context.News
+                .AsNoTracking()
+                .FirstAsync(f => f.Id == DependenciesGuids["News"]);
+
+            //Act
+            HttpStatusCode statusCode = await _responseService
+                .ResponsePut($"/api/news", news, AccessToken);
+
+            //Assert
+            await RemoveUserDependency(DependenciesGuids["User"]);
+            await RemoveTestDependencies();
+
+            Assert.Equal(HttpStatusCode.OK, statusCode);
+        }
+        [Fact]
+        public async Task PUT_News_NotFound()
+        {
+            //Arrange
+            await InitializeUserDependency(DependenciesGuids["User"], "admin");
+            await InitializeTestDependencies();
+
+            News news = await Context.News
+                .AsNoTracking()
+                .FirstAsync(f => f.Id == DependenciesGuids["News"]);
+
+            news.Id = Guid.NewGuid();
+
+            //Act
+            HttpStatusCode statusCode = await _responseService
+                .ResponsePut($"/api/news", news, AccessToken);
+
+            //Assert
+            await RemoveUserDependency(DependenciesGuids["User"]);
+            await RemoveTestDependencies();
+
+            Assert.Equal(HttpStatusCode.NotFound, statusCode);
+        }
+        [Fact]
+        public async Task PUT_News_Unauthorized()
+        {
+            //Arrange
+            await InitializeTestDependencies();
+
+            News news = await Context.News
+                .AsNoTracking()
+                .FirstAsync(f => f.Id == DependenciesGuids["News"]);
+
+            //Act
+            HttpStatusCode statusCode = await _responseService
+                .ResponsePut($"/api/news", news);
+
+            //Assert
+            await RemoveTestDependencies();
+
+            Assert.Equal(HttpStatusCode.Unauthorized, statusCode);
+        }
+        [Theory]
+        [InlineData("user")]
+        [InlineData("bot")]
+        public async Task PUT_News_Forbidden(string role)
+        {
+            //Arrange
+            await InitializeUserDependency(DependenciesGuids["User"], role);
+            await InitializeTestDependencies();
+
+            News news = await Context.News
+                .AsNoTracking()
+                .FirstAsync(f => f.Id == DependenciesGuids["News"]);
+
+            //Act
+            HttpStatusCode statusCode = await _responseService
+                .ResponsePut($"/api/news", news, AccessToken);
+
+            //Assert
+            await RemoveUserDependency(DependenciesGuids["User"]);
+            await RemoveTestDependencies();
+
+            Assert.Equal(HttpStatusCode.Forbidden, statusCode);
+        }
+        [Fact]
+        public async Task DELETE_News_OK()
+        {
+            //Arrange
+            await InitializeUserDependency(DependenciesGuids["User"], "admin");
+            await InitializeTestDependencies();
+
+            //Act
+            HttpStatusCode statusCode = await _responseService
+                .ResponseDelete($"/api/news/{DependenciesGuids["News"]}", AccessToken);
+
+            //Assert
+            await RemoveUserDependency(DependenciesGuids["User"]);
+            await RemoveTestDependencies();
+
+            Assert.Equal(HttpStatusCode.OK, statusCode);
+        }
+        [Fact]
+        public async Task DELETE_News_NotFound()
+        {
+            //Arrange
+            await InitializeUserDependency(DependenciesGuids["User"], "admin");
+
+            //Act
+            HttpStatusCode statusCode = await _responseService
+                .ResponseDelete($"/api/news/{DependenciesGuids["News"]}", AccessToken);
+
+            //Assert
+            await RemoveUserDependency(DependenciesGuids["User"]);
+
+            Assert.Equal(HttpStatusCode.NotFound, statusCode);
+        }
+        [Fact]
+        public async Task DELETE_News_Unauthorized()
+        {
+            //Arrange
+            await InitializeTestDependencies();
+
+            //Act
+            HttpStatusCode statusCode = await _responseService
+                .ResponseDelete($"/api/news/{DependenciesGuids["News"]}");
+
+            //Assert
+            await RemoveTestDependencies();
+
+            Assert.Equal(HttpStatusCode.Unauthorized, statusCode);
+        }
+        [Theory]
+        [InlineData("user")]
+        [InlineData("bot")]
+        public async Task DELETE_News_Forbidden(string role)
+        {
+            //Arrange
+            await InitializeUserDependency(DependenciesGuids["User"], role);
+            await InitializeTestDependencies();
+
+            //Act
+            HttpStatusCode statusCode = await _responseService
+                .ResponseDelete($"/api/news/{DependenciesGuids["News"]}", AccessToken);
+
+            //Assert
+            await RemoveUserDependency(DependenciesGuids["User"]);
+            await RemoveTestDependencies();
+
+            Assert.Equal(HttpStatusCode.Forbidden, statusCode);
+        }
+        [Fact]
+        public async Task DELETE_NewsImage_OK()
+        {
+            //Arrange
+            await InitializeUserDependency(DependenciesGuids["User"], "admin");
+            await InitializeTestDependencies();
+
+            //Act
+            HttpStatusCode statusCode = await _responseService
+                .ResponseDelete($"/api/news/image/{DependenciesGuids["NewsImage"]}", AccessToken);
+
+            //Assert
+            await RemoveUserDependency(DependenciesGuids["User"]);
+            await RemoveTestDependencies();
+
+            Assert.Equal(HttpStatusCode.OK, statusCode);
+        }
+        [Fact]
+        public async Task DELETE_NewsImage_NotFound()
+        {
+            //Arrange
+            await InitializeUserDependency(DependenciesGuids["User"], "admin");
+
+            //Act
+            HttpStatusCode statusCode = await _responseService
+                .ResponseDelete($"/api/news/image/{DependenciesGuids["NewsImage"]}", AccessToken);
+
+            //Assert
+            await RemoveUserDependency(DependenciesGuids["User"]);
+
+            Assert.Equal(HttpStatusCode.NotFound, statusCode);
+        }
+        [Fact]
+        public async Task DELETE_NewsImage_Unauthorized()
+        {
+            //Arrange
+            await InitializeTestDependencies();
+
+            //Act
+            HttpStatusCode statusCode = await _responseService
+                .ResponseDelete($"/api/news/image/{DependenciesGuids["NewsImage"]}");
+
+            //Assert
+            await RemoveTestDependencies();
+
+            Assert.Equal(HttpStatusCode.Unauthorized, statusCode);
+        }
+        [Theory]
+        [InlineData("user")]
+        [InlineData("bot")]
+        public async Task DELETE_NewsImage_Forbidden(string role)
+        {
+            //Arrange
+            await InitializeUserDependency(DependenciesGuids["User"], role);
+            await InitializeTestDependencies();
+
+            //Act
+            HttpStatusCode statusCode = await _responseService
+                .ResponseDelete($"/api/news/image/{DependenciesGuids["NewsImage"]}", AccessToken);
+
+            //Assert
+            await RemoveUserDependency(DependenciesGuids["User"]);
+            await RemoveTestDependencies();
+
+            Assert.Equal(HttpStatusCode.Forbidden, statusCode);
+        }
 
         #region Начальные данные
         private async Task InitializeTestDependencies()
