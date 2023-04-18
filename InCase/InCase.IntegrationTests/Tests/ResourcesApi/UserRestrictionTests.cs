@@ -40,7 +40,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
                 .ResponseGetStatusCode($"/api/user-restriction/{DependencyGuids["Restriction"]}");
 
             // Assert
-            await RemoveDependencies();
+            await ClearTableData("UserRestriction", "User");
             Assert.Equal(HttpStatusCode.OK, getStatusCode);
         }
         [Fact]
@@ -66,7 +66,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
                 .ResponseGetStatusCode($"/api/user-restriction/user/{DependencyGuids["Slave"]}");
 
             // Assert
-            await RemoveDependencies();
+            await ClearTableData("UserRestriction", "User");
             Assert.Equal(HttpStatusCode.OK, getStatusCode);
         }
         [Fact]
@@ -80,7 +80,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
                 .ResponseGetStatusCode($"/api/user-restriction/user/{DependencyGuids["Slave"]}");
 
             // Assert
-            await RemoveDependencies();
+            await ClearTableData("UserRestriction", "User");
             Assert.Equal(HttpStatusCode.OK, getStatusCode);
         }
         [Fact]
@@ -94,7 +94,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
                 .ResponseGetStatusCode($"/api/user-restriction/user/{DependencyGuids["User"]}");
 
             // Assert
-            await RemoveUserDependency(DependencyGuids["User"]);
+            await ClearTableData("UserRestriction", "User");
             Assert.Equal(HttpStatusCode.NotFound, getStatusCode);
         }
         [Fact]
@@ -114,7 +114,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
                 .ResponseGetStatusCode("/api/user-restriction", token);
 
             // Assert
-            await RemoveDependencies();
+            await ClearTableData("UserRestriction", "User");
             Assert.Equal(HttpStatusCode.OK, getStatusCode);
         }
         [Fact]
@@ -128,7 +128,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
                 .ResponseGetStatusCode("/api/user-restriction", AccessToken);
 
             // Assert
-            await RemoveUserDependency(DependencyGuids["User"]);
+            await ClearTableData("UserRestriction", "User");
             Assert.Equal(HttpStatusCode.NotFound, getStatusCode);
         }
         [Fact]
@@ -141,6 +141,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
                .ResponseGetStatusCode("/api/user-restriction");
 
             // Assert
+            await ClearTableData("UserRestriction", "User");
             Assert.Equal(HttpStatusCode.Unauthorized, getStatusCode);
         }
 
@@ -155,7 +156,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
                 .ResponseGetStatusCode($"/api/user-restriction/{DependencyGuids["Owner"]}&{DependencyGuids["Slave"]}");
 
             // Assert
-            await RemoveDependencies();
+            await ClearTableData("UserRestriction", "User");
             Assert.Equal(HttpStatusCode.OK, getStatusCode);
         }
         [Fact]
@@ -169,7 +170,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
                 .ResponseGetStatusCode($"/api/user-restriction/{DependencyGuids["Owner"]}&{Guid.NewGuid()}");
 
             // Assert
-            await RemoveDependencies();
+            await ClearTableData("UserRestriction", "User");
             Assert.Equal(HttpStatusCode.NotFound, getStatusCode);
         }
         [Fact]
@@ -184,8 +185,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
                 .ResponseGetStatusCode($"/api/user-restriction/{DependencyGuids["Owner"]}&{DependencyGuids["User"]}");
 
             // Assert
-            await RemoveUserDependency(DependencyGuids["User"]);
-            await RemoveDependencies();
+            await ClearTableData("UserRestriction", "User");
             Assert.Equal(HttpStatusCode.NotFound, getStatusCode);
         }
         [Fact]
@@ -205,14 +205,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
                 .ResponseGetStatusCode($"/api/user-restriction/{DependencyGuids["Owner"]}&{DependencyGuids["Slave"]}");
 
             // Assert
-            UpdateContext();
-            User? owner = await Context.Users.FirstOrDefaultAsync(f => f.Id == DependencyGuids["Owner"]);
-            User? slave = await Context.Users.FirstOrDefaultAsync(f => f.Id == DependencyGuids["Slave"]);
-           
-            Context.Users.RemoveRange(owner!, slave!);
-
-            await Context.SaveChangesAsync();
-
+            await ClearTableData("UserRestriction", "User");
             Assert.Equal(HttpStatusCode.NotFound, getStatusCode);
         }
         [Fact]
@@ -232,11 +225,11 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
                 .ResponseGetStatusCode("/api/user-restriction/owner", token);
 
             // Assert
-            await RemoveDependencies();
+            await ClearTableData("UserRestriction", "User");
             Assert.Equal(HttpStatusCode.OK, getStatusCode);
         }
         [Fact]
-        public async Task GET_RestrictionByAdminAndUserId_Ok()
+        public async Task GET_GetRestrictionByAdminAndUserId_OK()
         {
             // Arrange
             await InitializeDependencies();
@@ -252,8 +245,42 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
                 .ResponseGetStatusCode($"/api/user-restriction/owner/{DependencyGuids["Slave"]}", token);
 
             // Assert
-            await RemoveDependencies();
+            await ClearTableData("UserRestriction", "User");
             Assert.Equal(HttpStatusCode.OK, getStatusCode);
+        }
+        [Fact]
+        public async Task GET_RestrictionByAdminAndUserWithoutAdminRestrictionId_NotFound()
+        {
+            // Arrange
+            await InitializeUserDependency(DependencyGuids["User"], "bot");
+
+            // Act
+            HttpStatusCode getStatusCode = await _responseService
+                .ResponseGetStatusCode($"/api/user-restriction/owner/{DependencyGuids["Slave"]}", AccessToken);
+
+            // Assert
+            await RemoveUserDependency(DependencyGuids["User"]);
+            Assert.Equal(HttpStatusCode.NotFound, getStatusCode);
+        }
+        [Fact]
+        public async Task GET_RestrictionByAdminAndUserWithoutUserRestrictionId_NotFound()
+        {
+            // Arrange
+            await InitializeDependencies();
+            UpdateContext();
+            User? owner = await Context.Users
+                .Include(x => x.AdditionalInfo)
+                .ThenInclude(x => x!.Role)
+                .FirstOrDefaultAsync(f => f.Id == DependencyGuids["Owner"]);
+            string token = CreateToken(owner!);
+
+            // Act
+            HttpStatusCode getStatusCode = await _responseService
+                .ResponseGetStatusCode($"/api/user-restriction/owner/{DependencyGuids["User"]}", token);
+
+            // Assert
+            await ClearTableData("UserRestriction", "User");
+            Assert.Equal(HttpStatusCode.NotFound, getStatusCode);
         }
         [Fact]
         public async Task GET_RestrictionByAdmin_NotFound()
@@ -285,55 +312,30 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
             await RemoveUserDependency(DependencyGuids["User"]);
             Assert.Equal(HttpStatusCode.Forbidden, getStatusCode);
         }
-        #region Зависимости
-        private async Task InitializeDependencies()
+        [Fact]
+        public async Task GET_GetRestrictionTypes_OK()
         {
+            // Assert
+
+            // Act
+            HttpStatusCode getStatusCode = await _responseService
+                .ResponseGetStatusCode("/api/user-restriction/types");
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, getStatusCode);
+        }
+        [Fact]
+        public async Task POST_CreateRestriction_OK()
+        {
+            // Assert
+            await CreateUser(DependencyGuids["Owner"], "bot");
+            await CreateUser(DependencyGuids["Slave"], "user");
             UpdateContext();
-            UserRole? userRole = await Context.UserRoles.FirstOrDefaultAsync(x => x.Name == "bot");
-
-            UserAdditionalInfo ownerInfo = new()
-            {
-                IsConfirmed = true,
-                Balance = 1234,
-                RoleId = userRole!.Id,
-                IsNotifyEmail = true,
-                IsGuestMode = false
-            };
-
-            User owner = new()
-            {
-                Id = DependencyGuids["Owner"],
-                Login = $"{GenerateString()}RestrictionApiTest",
-                Email = $"{GenerateString()}@mail.ru",
-                PasswordHash = "UserHashForTest1",
-                PasswordSalt = "UserSaltForTest1",
-                AdditionalInfo = ownerInfo,
-            };
-
-
-            await Context.Users.AddAsync(owner);
-            await Context.UserAdditionalInfos.AddAsync(ownerInfo);
-            await Context.SaveChangesAsync();
-
-            UpdateContext();
-
-            UserAdditionalInfo slaveInfo = new()
-            {
-                IsConfirmed = true,
-                Balance = 1234,
-                RoleId = userRole!.Id,
-                IsNotifyEmail = true,
-                IsGuestMode = false
-            };
-            User slave = new()
-            {
-                Id = DependencyGuids["Slave"],
-                Login = $"{GenerateString()}RestrictionApiTest",
-                Email = $"{GenerateString()}@mail.ru",
-                PasswordHash = "UserHashForTest1",
-                PasswordSalt = "UserSaltForTest1",
-                AdditionalInfo = slaveInfo,
-            };
+            User? owner = await Context.Users
+                .Include(x => x.AdditionalInfo)
+                .ThenInclude(x => x!.Role)
+                .FirstOrDefaultAsync(f => f.Id == DependencyGuids["Owner"]);
+            string token = CreateToken(owner!);
 
             RestrictionType? restrictionType = await Context.RestrictionTypes.FirstOrDefaultAsync(f => f.Name == "warn");
 
@@ -349,22 +351,241 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
                 TypeId = restrictionType!.Id
             };
 
-            await Context.Users.AddAsync(slave);
-            await Context.UserAdditionalInfos.AddAsync(slaveInfo);
+            // Act
+            HttpStatusCode postStatusCode = await _responseService
+                .ResponsePostStatusCode("/api/user-restriction", restriction.Convert(false), token);
+
+            // Assert
+            await ClearTableData("UserRestriction", "User");
+            Assert.Equal(HttpStatusCode.OK, postStatusCode);
+        }
+        [Theory]
+        [InlineData("user")]
+        public async Task POST_CreateRestriction_Forbid(string roleName)
+        {
+            // Assert
+            await CreateUser(DependencyGuids["Owner"], roleName);
+            await CreateUser(DependencyGuids["Slave"], "user");
+            UpdateContext();
+            User? owner = await Context.Users
+                .Include(x => x.AdditionalInfo)
+                .ThenInclude(x => x!.Role)
+                .FirstOrDefaultAsync(f => f.Id == DependencyGuids["Owner"]);
+            string token = CreateToken(owner!);
+
+            RestrictionType? restrictionType = await Context.RestrictionTypes.FirstOrDefaultAsync(f => f.Name == "warn");
+
+            UserRestriction restriction = new()
+            {
+                Id = DependencyGuids["Restriction"],
+                CreationDate = DateTime.UtcNow,
+                Description = $"{GenerateString(8)}RestrictionDescription",
+                OwnerId = DependencyGuids["Owner"],
+                UserId = DependencyGuids["Slave"],
+                ExpirationDate = DateTime.UtcNow + TimeSpan.FromDays(2),
+                Type = restrictionType,
+                TypeId = restrictionType!.Id
+            };
+
+            // Act
+            HttpStatusCode postStatusCode = await _responseService
+                .ResponsePostStatusCode("/api/user-restriction", restriction.Convert(false), token);
+
+            // Assert
+            await ClearTableData("UserRestriction", "User");
+            Assert.Equal(HttpStatusCode.Forbidden, postStatusCode);
+        }
+        [Fact]
+        public async Task POST_CreateRestrictionNotExistedType_NotFound()
+        {
+            // Assert
+            await CreateUser(DependencyGuids["Owner"], "bot");
+            await CreateUser(DependencyGuids["Slave"], "user");
+            UpdateContext();
+            User? owner = await Context.Users
+                .Include(x => x.AdditionalInfo)
+                .ThenInclude(x => x!.Role)
+                .FirstOrDefaultAsync(f => f.Id == DependencyGuids["Owner"]);
+            string token = CreateToken(owner!);
+
+            RestrictionType? restrictionType = await Context.RestrictionTypes.FirstOrDefaultAsync(f => f.Name == "warn");
+
+            UserRestriction restriction = new()
+            {
+                Id = DependencyGuids["Restriction"],
+                CreationDate = DateTime.UtcNow,
+                Description = $"{GenerateString(8)}RestrictionDescription",
+                OwnerId = DependencyGuids["Owner"],
+                UserId = DependencyGuids["Slave"],
+                ExpirationDate = DateTime.UtcNow + TimeSpan.FromDays(2),
+                TypeId = DependencyGuids["Slave"]
+            };
+
+            // Act
+            HttpStatusCode postStatusCode = await _responseService
+                .ResponsePostStatusCode("/api/user-restriction", restriction.Convert(false), token);
+
+            // Assert
+            await ClearTableData("UserRestriction", "User");
+            Assert.Equal(HttpStatusCode.NotFound, postStatusCode);
+        }
+        [Fact]
+        public async Task POST_CreateRestriction_Unauthorized()
+        {
+            // Assert
+            await CreateUser(DependencyGuids["Owner"], "bot");
+            await CreateUser(DependencyGuids["Slave"], "user");
+            UpdateContext();
+            User? owner = await Context.Users
+                .Include(x => x.AdditionalInfo)
+                .ThenInclude(x => x!.Role)
+                .FirstOrDefaultAsync(f => f.Id == DependencyGuids["Owner"]);
+            string token = CreateToken(owner!);
+
+            RestrictionType? restrictionType = await Context.RestrictionTypes.FirstOrDefaultAsync(f => f.Name == "warn");
+
+            UserRestriction restriction = new()
+            {
+                Id = DependencyGuids["Restriction"],
+                CreationDate = DateTime.UtcNow,
+                Description = $"{GenerateString(8)}RestrictionDescription",
+                OwnerId = DependencyGuids["Owner"],
+                UserId = DependencyGuids["Slave"],
+                ExpirationDate = DateTime.UtcNow + TimeSpan.FromDays(2),
+                Type = restrictionType,
+                TypeId = restrictionType!.Id
+            };
+
+            // Act
+            HttpStatusCode postStatusCode = await _responseService
+                .ResponsePostStatusCode("/api/user-restriction", restriction.Convert(false));
+
+            // Assert
+            await ClearTableData("UserRestriction", "User");
+            Assert.Equal(HttpStatusCode.Unauthorized, postStatusCode);
+        }
+        [Fact]
+        public async Task POST_CreateRestrictionNotExistedUser_NotFound()
+        {
+            // Assert
+            await CreateUser(DependencyGuids["Owner"], "bot");
+            await CreateUser(DependencyGuids["Slave"], "user");
+            UpdateContext();
+            User? owner = await Context.Users
+                .Include(x => x.AdditionalInfo)
+                .ThenInclude(x => x!.Role)
+                .FirstOrDefaultAsync(f => f.Id == DependencyGuids["Owner"]);
+            string token = CreateToken(owner!);
+
+            RestrictionType? restrictionType = await Context.RestrictionTypes.FirstOrDefaultAsync(f => f.Name == "warn");
+
+            UserRestriction restriction = new()
+            {
+                Id = DependencyGuids["Restriction"],
+                CreationDate = DateTime.UtcNow,
+                Description = $"{GenerateString(8)}RestrictionDescription",
+                OwnerId = DependencyGuids["Owner"],
+                UserId = DependencyGuids["User"],
+                ExpirationDate = DateTime.UtcNow + TimeSpan.FromDays(2),
+                Type = restrictionType,
+                TypeId = restrictionType!.Id
+            };
+
+            // Act
+            HttpStatusCode postStatusCode = await _responseService
+                .ResponsePostStatusCode("/api/user-restriction", restriction.Convert(false), token);
+
+            // Assert
+            await ClearTableData("UserRestriction", "User");
+            Assert.Equal(HttpStatusCode.NotFound, postStatusCode);
+        }
+        [Fact]
+        public async Task POST_CreateRestrictionInvalidRole_Conflict()
+        {
+            // Assert
+            await CreateUser(DependencyGuids["Owner"], "bot");
+            await CreateUser(DependencyGuids["Slave"], "bot");
+            UpdateContext();
+            User? owner = await Context.Users
+                .Include(x => x.AdditionalInfo)
+                .ThenInclude(x => x!.Role)
+                .FirstOrDefaultAsync(f => f.Id == DependencyGuids["Owner"]);
+            string token = CreateToken(owner!);
+
+            RestrictionType? restrictionType = await Context.RestrictionTypes.FirstOrDefaultAsync(f => f.Name == "warn");
+
+            UserRestriction restriction = new()
+            {
+                Id = DependencyGuids["Restriction"],
+                CreationDate = DateTime.UtcNow,
+                Description = $"{GenerateString(8)}RestrictionDescription",
+                OwnerId = DependencyGuids["Owner"],
+                UserId = DependencyGuids["Slave"],
+                ExpirationDate = DateTime.UtcNow + TimeSpan.FromDays(2),
+                Type = restrictionType,
+                TypeId = restrictionType!.Id
+            };
+
+            // Act
+            HttpStatusCode postStatusCode = await _responseService
+                .ResponsePostStatusCode("/api/user-restriction", restriction.Convert(false), token);
+
+            // Assert
+            await ClearTableData("UserRestriction", "User");
+            Assert.Equal(HttpStatusCode.Conflict, postStatusCode);
+        }
+        #region Зависимости
+        private async Task InitializeDependencies(string ownerRoleName = "bot", string slaveRoleName = "user")
+        {
+            UpdateContext();
+
+            await CreateUser(DependencyGuids["Owner"], ownerRoleName);
+            await CreateUser(DependencyGuids["Slave"], slaveRoleName);
+
+            RestrictionType? restrictionType = await Context.RestrictionTypes.FirstOrDefaultAsync(f => f.Name == "warn");
+
+            UserRestriction restriction = new()
+            {
+                Id = DependencyGuids["Restriction"],
+                CreationDate = DateTime.UtcNow,
+                Description = $"{GenerateString(8)}RestrictionDescription",
+                OwnerId = DependencyGuids["Owner"],
+                UserId = DependencyGuids["Slave"],
+                ExpirationDate = DateTime.UtcNow + TimeSpan.FromDays(2),
+                Type = restrictionType,
+                TypeId = restrictionType!.Id
+            };
+
             await Context.UserRestrictions.AddAsync(restriction);
             await Context.SaveChangesAsync();
         }
-        private async Task RemoveDependencies()
+        private async Task CreateUser(Guid guid, string roleName)
         {
             UpdateContext();
-            User? owner = await Context.Users.FirstOrDefaultAsync(f => f.Id == DependencyGuids["Owner"]);
-            User? slave = await Context.Users.FirstOrDefaultAsync(f => f.Id == DependencyGuids["Slave"]);
-            UserRestriction? restriction = await Context.UserRestrictions
-                .FirstOrDefaultAsync(f => f.Id == DependencyGuids["Restriction"]);
+            UserRole? userRole = await Context.UserRoles.FirstOrDefaultAsync(x => x.Name == roleName);
 
-            Context.UserRestrictions.Remove(restriction!);
-            Context.Users.RemoveRange(owner!, slave!);
+            UserAdditionalInfo userInfo = new()
+            {
+                IsConfirmed = true,
+                Balance = 1234,
+                RoleId = userRole!.Id,
+                IsNotifyEmail = true,
+                IsGuestMode = false
+            };
 
+            User user = new()
+            {
+                Id = guid,
+                Login = $"{GenerateString()}RestrictionApiTest",
+                Email = $"{GenerateString()}@mail.ru",
+                PasswordHash = "UserHashForTest1",
+                PasswordSalt = "UserSaltForTest1",
+                AdditionalInfo = userInfo,
+            };
+
+
+            await Context.Users.AddAsync(user);
+            await Context.UserAdditionalInfos.AddAsync(userInfo);
             await Context.SaveChangesAsync();
         }
         #endregion

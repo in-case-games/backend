@@ -46,6 +46,14 @@ namespace InCase.IntegrationTests.Tests
 
             Context = new ApplicationDbContext(options);
         }
+        protected async Task ClearTableData(params string[] tableNameArgs)
+        {
+            UpdateContext();
+            foreach (string tableName in tableNameArgs)
+            {
+                await Context.Database.ExecuteSqlRawAsync($"DELETE FROM \"{tableName}\"");
+            }
+        }
 
         private JwtSecurityToken GenerateToken(
             Claim[] claims,

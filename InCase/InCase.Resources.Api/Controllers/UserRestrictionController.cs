@@ -178,7 +178,7 @@ namespace InCase.Resources.Api.Controllers
             string userRole = user.AdditionalInfo!.Role!.Name!;
 
             if (userRole != "user")
-                return Forbid("Access denied");
+                return Conflict("Access denied");
 
             restrictionDto = await CheckUserRestriction(restrictionDto, type, context);
 
