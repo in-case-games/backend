@@ -483,7 +483,6 @@ namespace InCase.Resources.Api.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    number_items = table.Column<int>(type: "int", nullable: false),
                     chance_wining = table.Column<int>(type: "int", nullable: false),
                     item_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     box_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
@@ -722,9 +721,9 @@ namespace InCase.Resources.Api.Migrations
                 columns: new[] { "id", "name" },
                 values: new object[,]
                 {
-                    { new Guid("0eeac1a2-a4bf-4c51-b279-eddd04bb648b"), "genshin" },
-                    { new Guid("7614be92-a295-4737-8c18-82f0f3e22634"), "csgo" },
-                    { new Guid("a9626006-2554-4668-a9de-317f04775320"), "dota" }
+                    { new Guid("15caaa84-6248-424c-815b-4acd77ac2ef4"), "dota" },
+                    { new Guid("6772cac5-bd6c-41cc-9020-3e88bf0b652d"), "genshin" },
+                    { new Guid("ffdad23e-e5ae-4368-a4fc-750eb8477ae7"), "csgo" }
                 });
 
             migrationBuilder.InsertData(
@@ -732,12 +731,12 @@ namespace InCase.Resources.Api.Migrations
                 columns: new[] { "id", "name" },
                 values: new object[,]
                 {
-                    { new Guid("086522a9-c28e-4552-a1f0-b020604a69a3"), "minimal wear" },
-                    { new Guid("5d9ff1af-79d1-4237-9acf-03b4ef631174"), "well worn" },
-                    { new Guid("5dd66b38-b7af-4a4b-9efc-1bd37a5dc0bd"), "field tested" },
-                    { new Guid("aae6b629-d4b9-4cd1-8cc2-feb7bec99a98"), "none" },
-                    { new Guid("d0befe4f-8547-4d65-ab86-314043cc9413"), "battle scarred" },
-                    { new Guid("fcf1206f-31aa-474e-b8db-d7daf46430f9"), "factory new" }
+                    { new Guid("0ee8f072-b7b4-4c7a-8ece-fc0162ccecc2"), "none" },
+                    { new Guid("605483d7-c821-4fa7-a463-1777ad90e73b"), "battle scarred" },
+                    { new Guid("717bcff7-bd5e-4b2e-9a37-d971f3e48ef5"), "minimal wear" },
+                    { new Guid("7b1958ad-8b17-41cb-9a6f-547627e74fee"), "factory new" },
+                    { new Guid("8870c25b-f36b-432c-907e-9ef8b949609d"), "well worn" },
+                    { new Guid("d1d71564-2f59-47d1-93ab-befef7493020"), "field tested" }
                 });
 
             migrationBuilder.InsertData(
@@ -745,12 +744,12 @@ namespace InCase.Resources.Api.Migrations
                 columns: new[] { "id", "name" },
                 values: new object[,]
                 {
-                    { new Guid("136a93ae-8b13-494d-a041-f18aecf403e4"), "pink" },
-                    { new Guid("3946dd39-f8d8-4510-990f-1b361ccef01a"), "violet" },
-                    { new Guid("42ea2848-fadf-4cbd-a611-99f50ffcee2c"), "red" },
-                    { new Guid("739497c7-c0d9-4b4f-a2bc-e98af0ea4c71"), "white" },
-                    { new Guid("8d87469e-db80-4d79-b886-51b62783c464"), "gold" },
-                    { new Guid("ac2234d6-3083-414a-b9ac-4e9796cfe5cb"), "blue" }
+                    { new Guid("02201b04-7dc1-4fd6-b71b-0a3e1367db02"), "blue" },
+                    { new Guid("0e15ada2-77c5-4c7d-945f-ee3777e42bd4"), "violet" },
+                    { new Guid("5b0641d6-4af9-4c22-807b-2e4dba0d59de"), "red" },
+                    { new Guid("d2d9ae18-dc68-4c83-8d3a-7f6ab606033b"), "white" },
+                    { new Guid("d3cd96da-926e-4dbb-9162-56740489edef"), "pink" },
+                    { new Guid("d4a24e85-622e-4f77-88d5-deb42fdcd227"), "gold" }
                 });
 
             migrationBuilder.InsertData(
@@ -758,12 +757,12 @@ namespace InCase.Resources.Api.Migrations
                 columns: new[] { "id", "name" },
                 values: new object[,]
                 {
-                    { new Guid("044c50f0-0fe4-4461-9f46-e94481dd855d"), "rifle" },
-                    { new Guid("3a49b877-00b5-4cad-a4e1-24ed6696a829"), "gloves" },
-                    { new Guid("433a34dc-d8e7-44a5-8b30-79081e16a323"), "none" },
-                    { new Guid("787fc0c2-3106-4d2f-8542-882086a6010b"), "knife" },
-                    { new Guid("918ac2ea-ab63-4b0f-866f-3884f28473ba"), "pistol" },
-                    { new Guid("cee4786c-fca8-4c30-9d49-77bdce034ad6"), "weapon" }
+                    { new Guid("5d83a878-88ba-4adb-b66e-9c421fcbc84a"), "weapon" },
+                    { new Guid("7b790df7-5595-4d7f-ace6-32be36d80b51"), "pistol" },
+                    { new Guid("9bef3b4f-df17-46e9-8615-ab87eca71318"), "knife" },
+                    { new Guid("9fcbd31c-3d60-410a-bd9b-5653ec09e95a"), "none" },
+                    { new Guid("a5ce067b-c4c6-45d1-9293-9e8aa37fac8c"), "gloves" },
+                    { new Guid("b6c87f32-d87d-4472-97bf-4227ce767624"), "rifle" }
                 });
 
             migrationBuilder.InsertData(
@@ -771,8 +770,8 @@ namespace InCase.Resources.Api.Migrations
                 columns: new[] { "id", "name" },
                 values: new object[,]
                 {
-                    { new Guid("019f66af-d724-471d-b9ee-dff64b247025"), "case" },
-                    { new Guid("17dfdb29-223c-4b24-aea7-7b531f96c83b"), "balance" }
+                    { new Guid("15ec0e5c-4e8c-4880-b565-17d476f5e136"), "balance" },
+                    { new Guid("a689e1a7-567f-4b63-8057-f41da4aa800f"), "case" }
                 });
 
             migrationBuilder.InsertData(
@@ -780,30 +779,30 @@ namespace InCase.Resources.Api.Migrations
                 columns: new[] { "id", "name" },
                 values: new object[,]
                 {
-                    { new Guid("66c42454-0897-442f-86d7-5d49909191ff"), "warn" },
-                    { new Guid("e64bfbbc-7d20-4c91-a8db-7d89ffe48979"), "ban" },
-                    { new Guid("ed8a7e1a-03a3-4191-a879-3e726aef392d"), "mute" }
+                    { new Guid("5ed32647-9b68-4520-a31d-2b134e30c182"), "mute" },
+                    { new Guid("8b3070ab-45bd-4d18-989e-b94de6658ba9"), "warn" },
+                    { new Guid("edae7a5c-73d2-472d-afae-eb085af91353"), "ban" }
                 });
 
             migrationBuilder.InsertData(
                 table: "SiteStatistics",
                 columns: new[] { "id", "loot_boxes", "reviews", "users", "withdrawn_funds", "withdrawn_items" },
-                values: new object[] { new Guid("5f5f9030-5245-4985-a20a-1b330184e432"), 0, 0, 0, 0, 0 });
+                values: new object[] { new Guid("dc69f098-f4d9-4c99-a6ce-1f4b2ab64f2b"), 0, 0, 0, 0, 0 });
 
             migrationBuilder.InsertData(
                 table: "SiteStatisticsAdmin",
                 columns: new[] { "id", "balance_withdrawn", "sent_sites", "total_replenished" },
-                values: new object[] { new Guid("eb018062-e3e8-42ef-9fa4-45a9390d8fc1"), 0m, 0m, 0m });
+                values: new object[] { new Guid("9f16398d-1161-4702-9359-a4981bdd9d9b"), 0m, 0m, 0m });
 
             migrationBuilder.InsertData(
                 table: "UserRole",
                 columns: new[] { "id", "name" },
                 values: new object[,]
                 {
-                    { new Guid("23d29583-6676-42e0-a4de-6b8f5ffd0274"), "owner" },
-                    { new Guid("66c5b461-c133-4e51-9d68-558ac8e4e581"), "admin" },
-                    { new Guid("abb7abe7-db00-4819-b98c-0b3c8e588a3e"), "bot" },
-                    { new Guid("e0abd769-21d5-4eff-9e7d-fd2c51c744c0"), "user" }
+                    { new Guid("36bc712e-58a8-4bb6-a25d-3618682baefe"), "admin" },
+                    { new Guid("6561baad-b806-4cd3-a281-e24d23c2c3be"), "owner" },
+                    { new Guid("7f7f35d5-044a-4457-b985-ca8e4cebce60"), "user" },
+                    { new Guid("d7e9a0cf-3d5a-4ef3-ad49-155de84a59db"), "bot" }
                 });
 
             migrationBuilder.CreateIndex(

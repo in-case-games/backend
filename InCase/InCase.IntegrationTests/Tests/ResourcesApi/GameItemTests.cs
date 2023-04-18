@@ -522,7 +522,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
             Guid csgoGameId = games.FirstOrDefault(f => f.Name == "csgo")!.Id;
 
             //Create Game Item
-            GameItem item1 = new()
+            GameItem item = new()
             {
                 Id = DependenciesGuids["GameItem"],
                 Name = GenerateString(8),
@@ -534,7 +534,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
                 QualityId = qualities.FirstOrDefault(f => f.Name == "minimal wear")!.Id
             };
 
-            await Context.GameItems.AddAsync(item1);
+            await Context.GameItems.AddAsync(item);
             await Context.SaveChangesAsync();
         }
 

@@ -605,7 +605,8 @@ namespace InCase.IntegrationTests.Tests.GameApi
         }
 
         #region Начальные данные
-        private async Task RunOpenLootBoxTest(bool IsVirtual = false, int pathItemIndex = -1, int numberOpening = 1000)
+        private async Task RunOpenLootBoxTest(
+            bool IsVirtual = false, int pathItemIndex = -1, int numberOpening = 1000)
         {
             //Act
             decimal allCostItems = 0;
@@ -645,7 +646,8 @@ namespace InCase.IntegrationTests.Tests.GameApi
                 $"Стоимость всех предметов: {allCostItems}\n" +
                 $"Скорость алгоритма: {elapsedTime}");
         }
-        private async Task<Dictionary<string, int>> GetWiningItems(bool IsVirtual = false, int pathItemIndex = -1, int numberOpening = 1000)
+        private async Task<Dictionary<string, int>> GetWiningItems(
+            bool IsVirtual = false, int pathItemIndex = -1, int numberOpening = 1000)
         {
             Dictionary<string, int> winItems = new()
             {
@@ -816,50 +818,43 @@ namespace InCase.IntegrationTests.Tests.GameApi
             {
                 BoxId = lootBox.Id,
                 ItemId = gameItems[0].Id,
-                ChanceWining = 1000,
-                NumberItems = 1
+                ChanceWining = 1000
             };
             LootBoxInventory inventory2 = new()
             {
                 BoxId = lootBox.Id,
                 ItemId = gameItems[1].Id,
-                ChanceWining = 1000,
-                NumberItems = 1
+                ChanceWining = 1000
             };
             LootBoxInventory inventory3 = new()
             {
                 BoxId = lootBox.Id,
                 ItemId = gameItems[2].Id,
-                ChanceWining = 1000,
-                NumberItems = 1
+                ChanceWining = 1000
             };
             LootBoxInventory inventory4 = new()
             {
                 BoxId = lootBox.Id,
                 ItemId = gameItems[3].Id,
-                ChanceWining = 3000,
-                NumberItems = 1
+                ChanceWining = 3000
             };
             LootBoxInventory inventory5 = new()
             {
                 BoxId = lootBox.Id,
                 ItemId = gameItems[4].Id,
-                ChanceWining = 7000,
-                NumberItems = 1
+                ChanceWining = 7000
             };
             LootBoxInventory inventory6 = new()
             {
                 BoxId = lootBox.Id,
                 ItemId = gameItems[5].Id,
-                ChanceWining = 20545,
-                NumberItems = 1
+                ChanceWining = 20545
             };
             LootBoxInventory inventory7 = new()
             {
                 BoxId = lootBox.Id,
                 ItemId = gameItems[6].Id,
-                ChanceWining = 20918,
-                NumberItems = 1
+                ChanceWining = 20918
             };
 
             List<LootBoxInventory> caseInventories = new() {

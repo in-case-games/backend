@@ -916,10 +916,19 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
         private async Task RemoveDependencies()
         {
             UpdateContext();
+            List<Promocode> promocodes = await Context.Promocodes
+                .AsNoTracking()
+                .ToListAsync();
             GameItem item = await Context.GameItems
                 .FirstAsync(f => f.Id == DependenciesGuids["GameItem"]);
             LootBox box = await Context.LootBoxes
                 .FirstAsync(f => f.Id == DependenciesGuids["LootBox"]);
+            
+            foreach(var promocode in promocodes)
+            {
+                Context.Promocodes.Remove(promocode);
+            }
+
             Context.GameItems.Remove(item);
             Context.LootBoxes.Remove(box);
             await Context.SaveChangesAsync();

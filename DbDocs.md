@@ -120,7 +120,7 @@
 | :- | :- | :- | :- | :- |
 |PK|Id|uniqueidentifier|True|NEWID(), UNIQUE|
 ||Name|nvarchar(50)|True|UNIQUE|
-||Discount|int|True|-|
+||Discount|decimal(5,5)|True|-|
 ||NumberActivations|int|True|-|
 ||ExpirationDate|datetime2(7)|True|-|
 |FK|TypeId|uniqueidentifier|True|-|
@@ -430,7 +430,6 @@
 |Key|Name|Type|IsRequired|Constrains|
 | :- | :- | :- | :- | :- |
 |PK|Id|uniqueidentifier|True|NEWID(), UNIQUE|
-||NumberItems|int|True|-|
 ||ChanceWining|int|True|-|
 |FK|BoxId|uniqueidentifier|True|-|
 |FK|ItemId|uniqueidentifier|True|-|
