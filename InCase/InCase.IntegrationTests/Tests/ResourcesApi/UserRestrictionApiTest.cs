@@ -216,26 +216,10 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
             // Arrange
             await InitializeDependencies();
             UserRole? userRole = await Context.UserRoles.FirstOrDefaultAsync(x => x.Name == "bot");
-
-            UserAdditionalInfo userInfo = new()
-            {
-                IsConfirmed = true,
-                Balance = 1234,
-                Role = userRole!,
-                RoleId = userRole!.Id,
-                IsNotifyEmail = true,
-                IsGuestMode = false
-            };
-            User owner = new()
-            {
-                Id = DependencyGuids["Owner"],
-                Login = $"{GenerateString()}RestrictionApiTest",
-                Email = $"{GenerateString()}@mail.ru",
-                PasswordHash = "UserHashForTest1",
-                PasswordSalt = "UserSaltForTest1",
-                AdditionalInfo = userInfo,
-            };
-            string token = CreateToken(owner);
+            UserRestriction? restriction = await Context.UserRestrictions
+                .Include(x => x.User)
+                .FirstOrDefaultAsync(x => x.Id == DependencyGuids["Restriction"]);
+            string token = CreateToken(restriction!.Owner);
 
             // Act
             HttpStatusCode getStatusCode = await _responseService
@@ -250,27 +234,9 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
         {
             // Arrange
             await InitializeDependencies();
-            UserRole? userRole = await Context.UserRoles.FirstOrDefaultAsync(x => x.Name == "bot");
-
-            UserAdditionalInfo userInfo = new()
-            {
-                IsConfirmed = true,
-                Balance = 1234,
-                Role = userRole!,
-                RoleId = userRole!.Id,
-                IsNotifyEmail = true,
-                IsGuestMode = false
-            };
-            User owner = new()
-            {
-                Id = DependencyGuids["Owner"],
-                Login = $"{GenerateString()}RestrictionApiTest",
-                Email = $"{GenerateString()}@mail.ru",
-                PasswordHash = "UserHashForTest1",
-                PasswordSalt = "UserSaltForTest1",
-                AdditionalInfo = userInfo,
-            };
-            string token = CreateToken(owner);
+            UpdateContext();
+            User? owner = await Context.Users.FirstOrDefaultAsync(f => f.Id == DependencyGuids["Owner"]);
+            string token = CreateToken(owner!);
 
             // Act
             HttpStatusCode getStatusCode = await _responseService
