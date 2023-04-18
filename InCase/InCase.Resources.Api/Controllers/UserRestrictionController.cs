@@ -133,11 +133,11 @@ namespace InCase.Resources.Api.Controllers
                .AsNoTracking()
                .FirstOrDefaultAsync(f => f.Id == UserId);
 
-            if (user!.Restrictions is null)
+            if (user!.OwnerRestrictions is null)
                 return ResponseUtil.NotFound(nameof(UserRestriction));
 
-            List<UserRestriction> restrictions = user.Restrictions
-                .Where(w => w.UserId == UserId)
+            List<UserRestriction> restrictions = user.OwnerRestrictions
+                .Where(w => w.UserId == userId)
                 .ToList();
 
             return restrictions.Count == 0 ?

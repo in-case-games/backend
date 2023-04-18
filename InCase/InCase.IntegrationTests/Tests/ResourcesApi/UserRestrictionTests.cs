@@ -102,8 +102,12 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
         {
             // Arrange
             await InitializeDependencies();
-            User? user = await Context.Users.FirstOrDefaultAsync(f => f.Id == DependencyGuids["Slave"]);
-            string token = CreateToken(user!);
+            UpdateContext();
+            User? owner = await Context.Users
+                .Include(x => x.AdditionalInfo)
+                .ThenInclude(x => x!.Role)
+                .FirstOrDefaultAsync(f => f.Id == DependencyGuids["Slave"]);
+            string token = CreateToken(owner!);
 
             // Act
             HttpStatusCode getStatusCode = await _responseService
@@ -215,11 +219,12 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
         {
             // Arrange
             await InitializeDependencies();
-            UserRole? userRole = await Context.UserRoles.FirstOrDefaultAsync(x => x.Name == "bot");
-            UserRestriction? restriction = await Context.UserRestrictions
-                .Include(x => x.User)
-                .FirstOrDefaultAsync(x => x.Id == DependencyGuids["Restriction"]);
-            string token = CreateToken(restriction!.Owner);
+            UpdateContext();
+            User? owner = await Context.Users
+                .Include(x => x.AdditionalInfo)
+                .ThenInclude(x => x!.Role)
+                .FirstOrDefaultAsync(f => f.Id == DependencyGuids["Owner"]);
+            string token = CreateToken(owner!);
 
             // Act
             HttpStatusCode getStatusCode = await _responseService
@@ -235,7 +240,10 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
             // Arrange
             await InitializeDependencies();
             UpdateContext();
-            User? owner = await Context.Users.FirstOrDefaultAsync(f => f.Id == DependencyGuids["Owner"]);
+            User? owner = await Context.Users
+                .Include(x => x.AdditionalInfo)
+                .ThenInclude(x => x!.Role)
+                .FirstOrDefaultAsync(f => f.Id == DependencyGuids["Owner"]);
             string token = CreateToken(owner!);
 
             // Act
@@ -282,15 +290,15 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
             UpdateContext();
             UserRole? userRole = await Context.UserRoles.FirstOrDefaultAsync(x => x.Name == "bot");
 
-            UserAdditionalInfo userInfo = new()
+            UserAdditionalInfo ownerInfo = new()
             {
                 IsConfirmed = true,
                 Balance = 1234,
-                Role = userRole!,
                 RoleId = userRole!.Id,
                 IsNotifyEmail = true,
                 IsGuestMode = false
             };
+
             User owner = new()
             {
                 Id = DependencyGuids["Owner"],
@@ -298,7 +306,23 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
                 Email = $"{GenerateString()}@mail.ru",
                 PasswordHash = "UserHashForTest1",
                 PasswordSalt = "UserSaltForTest1",
-                AdditionalInfo = userInfo,
+                AdditionalInfo = ownerInfo,
+            };
+
+
+            await Context.Users.AddAsync(owner);
+            await Context.UserAdditionalInfos.AddAsync(ownerInfo);
+            await Context.SaveChangesAsync();
+
+            UpdateContext();
+
+            UserAdditionalInfo slaveInfo = new()
+            {
+                IsConfirmed = true,
+                Balance = 1234,
+                RoleId = userRole!.Id,
+                IsNotifyEmail = true,
+                IsGuestMode = false
             };
             User slave = new()
             {
@@ -307,7 +331,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
                 Email = $"{GenerateString()}@mail.ru",
                 PasswordHash = "UserHashForTest1",
                 PasswordSalt = "UserSaltForTest1",
-                AdditionalInfo = userInfo,
+                AdditionalInfo = slaveInfo,
             };
 
             RestrictionType? restrictionType = await Context.RestrictionTypes.FirstOrDefaultAsync(f => f.Name == "warn");
@@ -324,7 +348,8 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
                 TypeId = restrictionType!.Id
             };
 
-            await Context.Users.AddRangeAsync(owner, slave);
+            await Context.Users.AddAsync(slave);
+            await Context.UserAdditionalInfos.AddAsync(slaveInfo);
             await Context.UserRestrictions.AddAsync(restriction);
             await Context.SaveChangesAsync();
         }
