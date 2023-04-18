@@ -84,8 +84,10 @@ namespace InCase.Resources.Api.Controllers
                 return ResponseUtil.NotFound(nameof(PromocodeType));
             if (await context.Promocodes.AnyAsync(a => a.Name == promocode.Name))
                 return ResponseUtil.Conflict("The promocode name is already in use");
-            if (promocode.Discount >= 1M)
-                return ResponseUtil.Conflict("The discount promo code cannot exceed and equal 100 percent");
+            if (promocode.Discount >= 1M || promocode.Discount <= 0)
+                return ResponseUtil.Conflict("The discount promo code must be greater than 0 and less than 1");
+            if (promocode.NumberActivations < 0)
+                return ResponseUtil.Conflict("The number activations promo code cannot negative");
 
             return await EndpointUtil.Create(promocode.Convert(), context);
         }
@@ -107,6 +109,10 @@ namespace InCase.Resources.Api.Controllers
                 return ResponseUtil.NotFound(nameof(PromocodeType));
             if (promocode.Name != promocodeDto.Name && IsExist)
                 return ResponseUtil.Conflict("The promocode name is already in use");
+            if (promocodeDto.Discount >= 1M)
+                return ResponseUtil.Conflict("The discount promo code cannot exceed and equal 100 percent");
+            if (promocodeDto.NumberActivations < 0)
+                return ResponseUtil.Conflict("The number activations promo code cannot negative");
 
             return await EndpointUtil.Update(promocode, promocodeDto.Convert(false), context);
         }

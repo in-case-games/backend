@@ -212,11 +212,12 @@ namespace InCase.Resources.Api.Controllers
 
             Promocode? promocode = await context.Promocodes
                 .Include(i => i.Type)
-                .AsNoTracking()
                 .FirstOrDefaultAsync(f => f.Name == name);
 
             if (promocode is null)
                 return ResponseUtil.NotFound(nameof(Promocode));
+            if (promocode.NumberActivations <= 0 || promocode.ExpirationDate <= DateTime.UtcNow)
+                return ResponseUtil.Conflict("The promo code is exhausted");
 
             UserHistoryPromocode? historyPromocode = await context.UserHistoryPromocodes
                 .AsNoTracking()
@@ -232,6 +233,8 @@ namespace InCase.Resources.Api.Controllers
                 return ResponseUtil.Conflict("Promocode has already been used");
             if (historyPromocodeType is not null)
                 return ResponseUtil.Conflict("Promocode type is already in use");
+
+            promocode.NumberActivations--;
 
             historyPromocode = new() { 
                 IsActivated = false,
@@ -251,11 +254,12 @@ namespace InCase.Resources.Api.Controllers
 
             Promocode? promocode = await context.Promocodes
                 .Include(i => i.Type)
-                .AsNoTracking()
                 .FirstOrDefaultAsync(f => f.Name == name);
 
             if (promocode is null)
                 return ResponseUtil.NotFound(nameof(Promocode));
+            if (promocode.NumberActivations <= 0 || promocode.ExpirationDate <= DateTime.UtcNow)
+                return ResponseUtil.Conflict("The promo code is exhausted");
 
             bool IsUsed = await context.UserHistoryPromocodes
                 .AnyAsync(a => a.PromocodeId == promocode.Id && a.IsActivated == true);
@@ -266,16 +270,23 @@ namespace InCase.Resources.Api.Controllers
             UserHistoryPromocode? promocodeOld = await context.UserHistoryPromocodes
                 .Include(i => i.Promocode)
                 .Include(i => i.Promocode!.Type)
-                .AsNoTracking()
                 .FirstOrDefaultAsync(f => f.Promocode!.Type!.Id == promocode.TypeId && f.IsActivated == false);
 
             if (promocodeOld is null)
                 return ResponseUtil.Conflict("Promocode no exchange");
+            if (promocodeOld.Promocode!.Id == promocode.Id)
+                return ResponseUtil.Conflict("This promo code has already been activated");
+
+            promocodeOld.Promocode.NumberActivations++;
+            promocode.NumberActivations--;
 
             UserHistoryPromocode? promocodeNew = new()
             {
+                Id = promocodeOld.Id,
                 UserId = UserId,
-                PromocodeId = promocode.Id
+                PromocodeId = promocode.Id,
+                IsActivated = false,
+                Date = null
             };
 
             return await EndpointUtil.Update(promocodeOld, promocodeNew, context);

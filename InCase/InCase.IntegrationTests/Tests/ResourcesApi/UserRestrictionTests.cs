@@ -184,6 +184,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
                 .ResponseGetStatusCode($"/api/user-restriction/{DependencyGuids["Owner"]}&{DependencyGuids["User"]}");
 
             // Assert
+            await RemoveUserDependency(DependencyGuids["User"]);
             await RemoveDependencies();
             Assert.Equal(HttpStatusCode.NotFound, getStatusCode);
         }

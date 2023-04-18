@@ -329,23 +329,33 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
             await InitializeDependencies();
 
             Promocode promocode = await Context.Promocodes
+                .AsNoTracking()
                 .FirstAsync(f => f.Id == DependenciesGuids["Promocode"]);
 
             UserHistoryPromocode historyPromocode = await Context.UserHistoryPromocodes
+                .AsNoTracking()
                 .FirstAsync(f => f.Id == DependenciesGuids["UserHistoryPromocode"]);
+
             Context.UserHistoryPromocodes.Remove(historyPromocode);
             await Context.SaveChangesAsync();
 
             await _responseService
                 .ResponseGetStatusCode($"/api/user/activate/promocode/{promocode.Name}", AccessToken);
 
+            promocode.Id = Guid.NewGuid();
+            promocode.Name = GenerateString(8);
+
+            await Context.Promocodes.AddAsync(promocode);
+            await Context.SaveChangesAsync();
+
             // Act
             HttpStatusCode getStatusCode = await _responseService
                 .ResponseGetStatusCode($"/api/user/exchange/promocode/{promocode.Name}", AccessToken);
 
             // Assert
-            await RemoveDependencies();
             await RemoveUserDependency(DependenciesGuids["User"]);
+            await RemoveDependencies();
+
             Assert.Equal(HttpStatusCode.OK, getStatusCode);
         }
         [Fact]
@@ -471,6 +481,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
                 $"exchange/{DependenciesGuids["GameItem"]}", fakeUserToken);
 
             // Assert
+            await RemoveUserDependency(DependenciesGuids["User"]);
             await RemoveDependencies();
             Assert.Equal(HttpStatusCode.NotFound, getStatusCode);
         }
@@ -797,7 +808,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
                 Name = GenerateString(8),
                 NumberActivations = 999,
                 Discount = 0.99999M,
-                ExpirationDate = DateTime.UtcNow,
+                ExpirationDate = DateTime.UtcNow + TimeSpan.FromHours(1),
                 TypeId = Context!.PromocodeTypes!.FirstOrDefault(f => f.Name == "balance")!.Id
             };
 
@@ -911,11 +922,14 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
             await Context.UserInventories.AddAsync(inventory);
 
             await Context.SaveChangesAsync();
+
+            UpdateContext();
         }
 
         private async Task RemoveDependencies()
         {
             UpdateContext();
+
             List<Promocode> promocodes = await Context.Promocodes
                 .AsNoTracking()
                 .ToListAsync();
@@ -932,6 +946,8 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
             Context.GameItems.Remove(item);
             Context.LootBoxes.Remove(box);
             await Context.SaveChangesAsync();
+
+            UpdateContext();
         }
         #endregion
     }
