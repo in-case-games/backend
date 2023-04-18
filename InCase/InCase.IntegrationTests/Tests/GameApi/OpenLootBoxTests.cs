@@ -933,11 +933,5 @@ namespace InCase.IntegrationTests.Tests.GameApi
             public bool Success { get; set; }
             public GameItem? Data { get; set; }
         }
-
-        private class AnswerBoxApi
-        {
-            public bool Success { get; set; }
-            public LootBox? Data { get; set; }
-        }
     }
 }

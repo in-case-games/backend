@@ -10,7 +10,7 @@ using Xunit.Abstractions;
 
 namespace InCase.IntegrationTests.Tests.ResourcesApi
 {
-    public class UserRestrictionApiTest: BaseApiTest, IClassFixture<WebApplicationFactory<HostResourcesApiTests>>
+    public class UserRestrictionTests: BaseApiTest, IClassFixture<WebApplicationFactory<HostResourcesApiTests>>
     {
         private readonly ResponseService _responseService;
         private static readonly IConfiguration _configuration = new ConfigurationBuilder()
@@ -24,7 +24,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
             ["Slave"] = Guid.NewGuid(),
             ["Restriction"] = Guid.NewGuid()
         };
-        public UserRestrictionApiTest(WebApplicationFactory<HostResourcesApiTests> webApplicationFactory,
+        public UserRestrictionTests(WebApplicationFactory<HostResourcesApiTests> webApplicationFactory,
             ITestOutputHelper output) : base(output, _configuration)
         {
             _responseService = new(webApplicationFactory.CreateClient());

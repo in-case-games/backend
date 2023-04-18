@@ -9,7 +9,7 @@ using Xunit.Abstractions;
 
 namespace InCase.IntegrationTests.Tests.ResourcesApi
 {
-    public class UserApiTest: BaseApiTest, IClassFixture<WebApplicationFactory<HostResourcesApiTests>>
+    public class UserTests: BaseApiTest, IClassFixture<WebApplicationFactory<HostResourcesApiTests>>
     {
         private readonly ResponseService _responseService;
         private readonly Dictionary<string, Guid> DependenciesGuids = new() {
@@ -30,7 +30,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
             .AddUserSecrets<HostResourcesApiTests>()
             .Build();
 
-        public UserApiTest(WebApplicationFactory<HostResourcesApiTests> webApplicationFactory,
+        public UserTests(WebApplicationFactory<HostResourcesApiTests> webApplicationFactory,
             ITestOutputHelper output): base(output, _configuration)
         {
             _responseService = new(webApplicationFactory.CreateClient());

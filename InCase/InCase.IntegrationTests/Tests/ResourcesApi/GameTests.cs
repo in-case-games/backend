@@ -6,7 +6,7 @@ using Xunit.Abstractions;
 
 namespace InCase.IntegrationTests.Tests.ResourcesApi
 {
-    public class GameApiTest : BaseApiTest, IClassFixture<WebApplicationFactory<HostResourcesApiTests>>
+    public class GameTests : BaseApiTest, IClassFixture<WebApplicationFactory<HostResourcesApiTests>>
     {
         private readonly ResponseService _responseService;
 
@@ -15,7 +15,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
             .AddUserSecrets<HostResourcesApiTests>()
             .Build();
 
-        public GameApiTest(WebApplicationFactory<HostResourcesApiTests> webApplicationFactory,
+        public GameTests(WebApplicationFactory<HostResourcesApiTests> webApplicationFactory,
             ITestOutputHelper output) : base(output, _configuration)
         {
             _responseService = new(webApplicationFactory.CreateClient());
