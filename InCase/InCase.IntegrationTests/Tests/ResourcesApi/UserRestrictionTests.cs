@@ -250,7 +250,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
             Assert.Equal(HttpStatusCode.OK, getStatusCode);
         }
         [Fact]
-        public async Task GET_RestrictionByAdminAndUserWithoutAdminRestrictionId_NotFound()
+        public async Task GET_OwnerRestrictionByUserId_NotFoundUser()
         {
             // Arrange
             await InitializeUserDependency(DependencyGuids["User"], "bot");
@@ -264,7 +264,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
             Assert.Equal(HttpStatusCode.NotFound, getStatusCode);
         }
         [Fact]
-        public async Task GET_RestrictionByAdminAndUserWithoutUserRestrictionId_NotFound()
+        public async Task GET_OwnerRestrictionByUserId_NotFoundRestrictions()
         {
             // Arrange
             await InitializeDependencies();
@@ -284,7 +284,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
             Assert.Equal(HttpStatusCode.NotFound, getStatusCode);
         }
         [Fact]
-        public async Task GET_RestrictionByAdmin_NotFound()
+        public async Task GET_OwnerRestriction_NotFound()
         {
             // Arrange
             await InitializeUserDependency(DependencyGuids["User"], "admin");
