@@ -41,51 +41,54 @@ namespace InCase.Payment.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            UserInventory? userInventory = await context.UserInventories
+            UserInventory? inventory = await context.UserInventories
                 .Include(i => i.Item)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(f => f.ItemId == withdrawItem.GameItemId && f.UserId == UserId);
+                .FirstOrDefaultAsync(f => f.ItemId == withdrawItem.ItemId && f.UserId == UserId);
 
-            if (userInventory == null)
+            if (inventory == null)
                 return ResponseUtil.NotFound("User inventory");
 
-            GameItem gameItem = userInventory.Item!;
+            GameItem item = inventory.Item!;
 
-            if (string.IsNullOrEmpty(gameItem.IdForPlatform))
+            item.Game = await context.Games
+                .FirstAsync(f => f.Id == item.GameId);
+
+            if (string.IsNullOrEmpty(item.IdForPlatform))
             {
                 //TODO Notify admin by telegram auto withdrawn no work
                 return ResponseUtil.Ok("Wait for the admin to accept");
             }
 
             //Check info item in tm
-            ItemInfoTM? itemInfoTM = await _marketTMService.GetMarketItemInfo(gameItem);
+            ItemInfoTM? itemInfoTM = await _marketTMService.GetMarketItemInfo(item);
 
             if (itemInfoTM == null || itemInfoTM.Offers!.Count <= 0)
                 return ResponseUtil.NotFound("Game item for platform");
 
             decimal minItemPriceTM = decimal.Parse(itemInfoTM.MinPrice!) / 100;
 
-            if (minItemPriceTM > gameItem.Cost / 7 * 1.1M || minItemPriceTM < gameItem.Cost / 7 * 0.9M)
+            if (minItemPriceTM > item.Cost / 7 * 1.1M)
                 return ResponseUtil.Conflict("Item no stability price, exchange");
 
             //Check balance tm
             decimal balanceTM = await _marketTMService.GetTradeMarketInfo();
 
-            if (balanceTM <= gameItem.Cost / 7)
+            if (balanceTM <= item.Cost / 7)
                 return ResponseUtil.Conflict("Wait payment");
 
-            await _gameMoneyService.TransferMoneyToTradeMarket(gameItem.Cost / 7);
+            await _gameMoneyService.TransferMoneyToTradeMarket(item.Cost / 7);
 
             //Buy item tm
             ResponseBuyItemTM? itemBuyTM = await _marketTMService.BuyMarketItem(
-                gameItem,
-                withdrawItem.SteamTradePartner!,
-                withdrawItem.SteamTradeToken!);
+                item,
+                withdrawItem.TradeUrl!,
+                withdrawItem.TradeUrl!);
 
             if (itemBuyTM is null)
                 return ResponseUtil.NotFound("Trade url");
 
-            context.UserInventories.Remove(userInventory);
+            context.UserInventories.Remove(inventory);
 
             return ResponseUtil.Ok("Item was withdrawed");
         }
