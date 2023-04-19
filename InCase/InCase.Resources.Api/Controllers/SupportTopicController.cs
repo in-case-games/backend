@@ -174,6 +174,7 @@ namespace InCase.Resources.Api.Controllers
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             topicDto.UserId = UserId;
+            topicDto.IsClosed = false;
 
             List<SupportTopic> topics = await context.SupportTopics
                 .AsNoTracking()
@@ -221,7 +222,7 @@ namespace InCase.Resources.Api.Controllers
             return await EndpointUtil.Create(answerDto.Convert(), context);
         }
 
-        [AuthorizeRoles(Roles.UserAdminOwner)]
+        [AuthorizeRoles(Roles.User)]
         [HttpPut]
         public async Task<IActionResult> Update(SupportTopicDto topicDto)
         {
@@ -238,6 +239,24 @@ namespace InCase.Resources.Api.Controllers
             return await EndpointUtil.Update(topic, topicDto.Convert(false), context);
         }
 
+        [AuthorizeRoles(Roles.Admin, Roles.Owner)]
+        [HttpGet("{id}/close")]
+        public async Task<IActionResult> Close(Guid id)
+        {
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            SupportTopic? topic = await context.SupportTopics
+                .FirstOrDefaultAsync(f => f.Id == id);
+
+            if (topic is null)
+                return ResponseUtil.NotFound(nameof(SupportTopic));
+
+            topic.IsClosed = true;
+            await context.SaveChangesAsync();
+
+            return ResponseUtil.Ok(topic.Convert(false));
+        }
+
         [AuthorizeRoles(Roles.UserAdminOwner)]
         [HttpPut("answer")]
         public async Task<IActionResult> UpdateAnswer(SupportTopicAnswerDto answerDto)
@@ -245,7 +264,10 @@ namespace InCase.Resources.Api.Controllers
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             SupportTopicAnswer? answer = await context.SupportTopicAnswers
-                .FirstOrDefaultAsync(f => f.Id == answerDto.Id && f.PlaintiffId == UserId);
+                .FirstOrDefaultAsync(f => 
+                f.Id == answerDto.Id && 
+                f.PlaintiffId == UserId && 
+                f.TopicId == answerDto.TopicId);
 
             if (answer is null)
                 return ResponseUtil.NotFound(nameof(SupportTopicAnswer));

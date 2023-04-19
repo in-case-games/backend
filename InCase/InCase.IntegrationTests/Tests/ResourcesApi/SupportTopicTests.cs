@@ -1,5 +1,6 @@
 ﻿using InCase.Domain.Entities.Resources;
 using InCase.IntegrationTests.Services;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -512,6 +513,84 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
             Assert.Equal(HttpStatusCode.Forbidden, statusCode);
         }
         [Fact]
+        public async Task GET_SupportTopicClose_OK()
+        {
+            //Arrange
+            await InitializeUserDependency(DependenciesGuids["User"], "user");
+            await InitializeUserDependency(DependenciesGuids["Support"], "admin");
+            await InitializeTestDependencies();
+
+            //Act
+            HttpStatusCode statusCode = await _responseService
+                .ResponseGetStatusCode($"/api/support-topic/" +
+                $"{DependenciesGuids["SupportTopic"]}" +
+                $"/close", 
+                AccessToken);
+
+            //Assert
+            await RemoveUserDependency(DependenciesGuids["User"]);
+            await RemoveUserDependency(DependenciesGuids["Support"]);
+            await RemoveTestDependencies();
+
+            Assert.Equal(HttpStatusCode.OK, statusCode);
+        }
+        [Fact]
+        public async Task GET_SupportTopicClose_NotFound()
+        {
+            //Arrange
+            await InitializeUserDependency(DependenciesGuids["Support"], "admin");
+
+            //Act
+            HttpStatusCode statusCode = await _responseService
+                .ResponseGetStatusCode($"/api/support-topic/" +
+                $"{DependenciesGuids["SupportTopic"]}" +
+                $"/close",
+                AccessToken);
+
+            //Assert
+            await RemoveUserDependency(DependenciesGuids["Support"]);
+
+            Assert.Equal(HttpStatusCode.NotFound, statusCode);
+        }
+        [Fact]
+        public async Task GET_SupportTopicClose_Unauthorized()
+        {
+            //Arrange
+            //Act
+            HttpStatusCode statusCode = await _responseService
+                .ResponseGetStatusCode($"/api/support-topic/" +
+                $"{DependenciesGuids["SupportTopic"]}" +
+                $"/close");
+
+            //Assert
+            Assert.Equal(HttpStatusCode.Unauthorized, statusCode);
+        }
+        [Theory]
+        [InlineData("user")]
+        [InlineData("bot")]
+        public async Task GET_SupportTopicClose_Forbidden(string role)
+        {
+            //Arrange
+            await InitializeUserDependency(DependenciesGuids["Support"], "admin");
+            await InitializeUserDependency(DependenciesGuids["User"], role);
+            await InitializeTestDependencies();
+
+            //Act
+            //Act
+            HttpStatusCode statusCode = await _responseService
+                .ResponseGetStatusCode($"/api/support-topic/" +
+                $"{DependenciesGuids["SupportTopic"]}" +
+                $"/close",
+                AccessToken);
+
+            //Assert
+            await RemoveUserDependency(DependenciesGuids["User"]);
+            await RemoveUserDependency(DependenciesGuids["Support"]);
+            await RemoveTestDependencies();
+
+            Assert.Equal(HttpStatusCode.Forbidden, statusCode);
+        }
+        [Fact]
         public async Task GET_SupportTopicById_OK()
         {
             //Arrange
@@ -678,6 +757,627 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
             Assert.Equal(
                 (HttpStatusCode.Forbidden, HttpStatusCode.Forbidden),
                 (statusCode1, statusCode2));
+        }
+        [Fact]
+        public async Task GET_SupportTopicAnswersById_OK()
+        {
+            //Arrange
+            await InitializeUserDependency(DependenciesGuids["User"], "user");
+            await InitializeUserDependency(DependenciesGuids["Support"], "admin");
+            await InitializeTestDependencies();
+
+            //Act
+            HttpStatusCode statusCode = await _responseService
+                .ResponseGetStatusCode($"/api/support-topic/" +
+                $"{DependenciesGuids["SupportTopic"]}" +
+                $"/support/answers",
+                AccessToken);
+
+            //Assert
+            await RemoveUserDependency(DependenciesGuids["User"]);
+            await RemoveUserDependency(DependenciesGuids["Support"]);
+            await RemoveTestDependencies();
+
+            Assert.Equal(HttpStatusCode.OK, statusCode);
+        }
+        [Fact]
+        public async Task GET_SupportTopicAnswersById_NotFoundAnswers()
+        {
+            //Arrange
+            await InitializeUserDependency(DependenciesGuids["User"], "user");
+            await InitializeUserDependency(DependenciesGuids["Support"], "admin");
+            await InitializeTestDependencies();
+
+            List<SupportTopicAnswer> answers = await Context.SupportTopicAnswers
+                .AsNoTracking()
+                .ToListAsync();
+
+            foreach (var answer in answers)
+                Context.SupportTopicAnswers.Remove(answer);
+
+            await Context.SaveChangesAsync();
+
+            //Act
+            HttpStatusCode statusCode = await _responseService
+                .ResponseGetStatusCode($"/api/support-topic/" +
+                $"{DependenciesGuids["SupportTopic"]}" +
+                $"/support/answers",
+                AccessToken);
+
+            //Assert
+            await RemoveUserDependency(DependenciesGuids["User"]);
+            await RemoveUserDependency(DependenciesGuids["Support"]);
+            await RemoveTestDependencies();
+
+            Assert.Equal(HttpStatusCode.NotFound, statusCode);
+        }
+        [Fact]
+        public async Task GET_SupportTopicAnswersById_NotFoundTopic()
+        {
+            //Arrange
+            await InitializeUserDependency(DependenciesGuids["Support"], "admin");
+
+            //Act
+            HttpStatusCode statusCode = await _responseService
+                .ResponseGetStatusCode($"/api/support-topic/" +
+                $"{DependenciesGuids["SupportTopic"]}" +
+                $"/support/answers",
+                AccessToken);
+
+            //Assert
+            await RemoveUserDependency(DependenciesGuids["Support"]);
+
+            Assert.Equal(HttpStatusCode.NotFound, statusCode);
+        }
+        [Fact]
+        public async Task GET_SupportTopicAnswersById_Unauthorized()
+        {
+            //Arrange
+            //Act
+            HttpStatusCode statusCode = await _responseService
+                .ResponseGetStatusCode($"/api/support-topic/" +
+                $"{DependenciesGuids["SupportTopic"]}" +
+                $"/support/answers");
+
+            //Assert
+            Assert.Equal(HttpStatusCode.Unauthorized, statusCode);
+        }
+        [Fact]
+        public async Task GET_SupportTopicAnswersById_Forbidden()
+        {
+            //Arrange
+            await InitializeUserDependency(DependenciesGuids["Support"], "admin");
+            await InitializeUserDependency(DependenciesGuids["User"], "user");
+            await InitializeTestDependencies();
+
+            //Act
+            HttpStatusCode statusCode = await _responseService
+                .ResponseGetStatusCode($"/api/support-topic/" +
+                $"{DependenciesGuids["SupportTopic"]}" +
+                $"/support/answers", AccessToken);
+
+            //Assert
+            await RemoveUserDependency(DependenciesGuids["User"]);
+            await RemoveUserDependency(DependenciesGuids["Support"]);
+            await RemoveTestDependencies();
+
+            Assert.Equal(HttpStatusCode.Forbidden, statusCode);
+        }
+        [Fact]
+        public async Task POST_UserTopic_OK()
+        {
+            //Arrange
+            await InitializeUserDependency(DependenciesGuids["Support"], "admin");
+            await InitializeUserDependency(DependenciesGuids["User"], "user");
+            await InitializeTestDependencies();
+
+            SupportTopic topic = await Context.SupportTopics
+                .AsNoTracking()
+                .FirstAsync();
+
+            await RemoveTestDependencies();
+
+            //Act
+            HttpStatusCode statusCode = await _responseService
+                .ResponsePostStatusCode($"/api/support-topic", topic.Convert(), AccessToken);
+
+            //Assert
+            await RemoveUserDependency(DependenciesGuids["User"]);
+            await RemoveUserDependency(DependenciesGuids["Support"]);
+            await RemoveTestDependencies();
+
+            Assert.Equal(HttpStatusCode.OK, statusCode);
+        }
+        [Fact]
+        public async Task POST_UserTopic_Conflict()
+        {
+            //Arrange
+            await InitializeUserDependency(DependenciesGuids["Support"], "admin");
+            await InitializeUserDependency(DependenciesGuids["User"], "user");
+            await InitializeTestDependencies();
+
+            SupportTopic topic = await Context.SupportTopics
+                .AsNoTracking()
+                .FirstAsync();
+
+            await RemoveTestDependencies();
+
+            //Act
+            HttpStatusCode statusCode1 = await _responseService
+                .ResponsePostStatusCode($"/api/support-topic", topic.Convert(), AccessToken);
+            HttpStatusCode statusCode2 = await _responseService
+                .ResponsePostStatusCode($"/api/support-topic", topic.Convert(), AccessToken);
+            HttpStatusCode statusCode3 = await _responseService
+                .ResponsePostStatusCode($"/api/support-topic", topic.Convert(), AccessToken);
+            HttpStatusCode statusCode4 = await _responseService
+                .ResponsePostStatusCode($"/api/support-topic", topic.Convert(), AccessToken);
+
+            //Assert
+            await RemoveUserDependency(DependenciesGuids["User"]);
+            await RemoveUserDependency(DependenciesGuids["Support"]);
+            await RemoveTestDependencies();
+
+            Assert.Equal(
+                (HttpStatusCode.OK, HttpStatusCode.OK, HttpStatusCode.OK, HttpStatusCode.Conflict), 
+                (statusCode1, statusCode2, statusCode3, statusCode4));
+        }
+        [Fact]
+        public async Task POST_UserTopic_Unauthorized()
+        {
+            //Arrange
+            SupportTopic topic = new();
+
+            //Act
+            HttpStatusCode statusCode = await _responseService
+                .ResponsePostStatusCode($"/api/support-topic", topic.Convert());
+
+            //Assert
+            Assert.Equal(HttpStatusCode.Unauthorized, statusCode);
+        }
+        [Theory]
+        [InlineData("admin")]
+        [InlineData("owner")]
+        [InlineData("bot")]
+        public async Task POST_UserTopic_Forbidden(string role)
+        {
+            //Arrange
+            await InitializeUserDependency(DependenciesGuids["User"], role);
+
+            SupportTopic topic = new();
+
+            //Act
+            HttpStatusCode statusCode = await _responseService
+                .ResponsePostStatusCode($"/api/support-topic", topic.Convert(), AccessToken);
+
+            //Assert
+            await RemoveUserDependency(DependenciesGuids["User"]);
+
+            Assert.Equal(HttpStatusCode.Forbidden, statusCode);
+        }
+        [Fact]
+        public async Task POST_UserTopicAnswer_OK()
+        {
+            //Arrange
+            await InitializeUserDependency(DependenciesGuids["Support"], "admin");
+            await InitializeUserDependency(DependenciesGuids["User"], "user");
+            await InitializeTestDependencies();
+
+            SupportTopicAnswer answer = await Context.SupportTopicAnswers
+                .AsNoTracking()
+                .FirstAsync(f => f.PlaintiffId == DependenciesGuids["User"]);
+
+            //Act
+            HttpStatusCode statusCode = await _responseService
+                .ResponsePostStatusCode($"/api/support-topic/answer", answer.Convert(), AccessToken);
+
+            //Assert
+            await RemoveUserDependency(DependenciesGuids["User"]);
+            await RemoveUserDependency(DependenciesGuids["Support"]);
+            await RemoveTestDependencies();
+
+            Assert.Equal(HttpStatusCode.OK, statusCode);
+        }
+        [Fact]
+        public async Task POST_UserTopicAnswer_NotFoundTopic()
+        {
+            //Arrange
+            await InitializeUserDependency(DependenciesGuids["Support"], "admin");
+            await InitializeUserDependency(DependenciesGuids["User"], "user");
+            await InitializeTestDependencies();
+
+            SupportTopicAnswer answer = await Context.SupportTopicAnswers
+                .AsNoTracking()
+                .FirstAsync(f => f.PlaintiffId == DependenciesGuids["User"]);
+
+            answer.TopicId = Guid.NewGuid();
+
+            //Act
+            HttpStatusCode statusCode = await _responseService
+                .ResponsePostStatusCode($"/api/support-topic/answer", answer.Convert(), AccessToken);
+
+            //Assert
+            await RemoveUserDependency(DependenciesGuids["User"]);
+            await RemoveUserDependency(DependenciesGuids["Support"]);
+            await RemoveTestDependencies();
+
+            Assert.Equal(HttpStatusCode.NotFound, statusCode);
+        }
+        [Fact]
+        public async Task POST_UserTopicAnswer_NotFoundUser()
+        {
+            //Arrange
+            await InitializeUserDependency(DependenciesGuids["Support"], "admin");
+            await InitializeUserDependency(DependenciesGuids["User"], "user");
+            await InitializeTestDependencies();
+
+            Guid randomUserGuid = Guid.NewGuid();
+
+            await InitializeUserDependency(randomUserGuid, "user");
+
+            SupportTopicAnswer answer = await Context.SupportTopicAnswers
+                .AsNoTracking()
+                .FirstAsync(f => f.PlaintiffId == DependenciesGuids["User"]);
+
+            answer.PlaintiffId = randomUserGuid;
+
+            //Act
+            HttpStatusCode statusCode = await _responseService
+                .ResponsePostStatusCode($"/api/support-topic/answer", answer.Convert(), AccessToken);
+
+            //Assert
+            await RemoveUserDependency(DependenciesGuids["User"]);
+            await RemoveUserDependency(DependenciesGuids["Support"]);
+            await RemoveUserDependency(randomUserGuid);
+            await RemoveTestDependencies();
+
+            Assert.Equal(HttpStatusCode.NotFound, statusCode);
+        }
+        [Fact]
+        public async Task POST_UserTopicAnswer_Unauthorized()
+        {
+            //Arrange
+            SupportTopicAnswer answer = new();
+
+            //Act
+            HttpStatusCode statusCode = await _responseService
+                .ResponsePostStatusCode($"/api/support-topic/answer", answer.Convert());
+
+            //Assert
+            Assert.Equal(HttpStatusCode.Unauthorized, statusCode);
+        }
+        [Theory]
+        [InlineData("admin")]
+        [InlineData("owner")]
+        [InlineData("bot")]
+        public async Task POST_UserTopicAnswer_Forbidden(string role)
+        {
+            //Arrange
+            await InitializeUserDependency(DependenciesGuids["Support"], "admin");
+            await InitializeUserDependency(DependenciesGuids["User"], role);
+            await InitializeTestDependencies();
+
+            SupportTopicAnswer answer = await Context.SupportTopicAnswers
+                .AsNoTracking()
+                .FirstAsync(f => f.PlaintiffId == DependenciesGuids["User"]);
+
+            //Act
+            HttpStatusCode statusCode = await _responseService
+                .ResponsePostStatusCode($"/api/support-topic/answer", answer.Convert(), AccessToken);
+
+            //Assert
+            await RemoveUserDependency(DependenciesGuids["User"]);
+            await RemoveUserDependency(DependenciesGuids["Support"]);
+            await RemoveTestDependencies();
+
+            Assert.Equal(HttpStatusCode.Forbidden, statusCode);
+        }
+        [Fact]
+        public async Task POST_SupportTopicAnswer_OK()
+        {
+            //Arrange
+            await InitializeUserDependency(DependenciesGuids["User"], "user");
+            await InitializeUserDependency(DependenciesGuids["Support"], "admin");
+            await InitializeTestDependencies();
+
+            SupportTopicAnswer answer = await Context.SupportTopicAnswers
+                .AsNoTracking()
+                .FirstAsync(f => f.PlaintiffId == DependenciesGuids["Support"]);
+
+            //Act
+            HttpStatusCode statusCode = await _responseService
+                .ResponsePostStatusCode($"/api/support-topic/support/answer", 
+                answer.Convert(), 
+                AccessToken);
+
+            //Assert
+            await RemoveUserDependency(DependenciesGuids["User"]);
+            await RemoveUserDependency(DependenciesGuids["Support"]);
+            await RemoveTestDependencies();
+
+            Assert.Equal(HttpStatusCode.OK, statusCode);
+        }
+        [Fact]
+        public async Task POST_SupportTopicAnswer_NotFound()
+        {
+            //Arrange
+            await InitializeUserDependency(DependenciesGuids["User"], "user");
+            await InitializeUserDependency(DependenciesGuids["Support"], "admin");
+            await InitializeTestDependencies();
+
+            SupportTopicAnswer answer = await Context.SupportTopicAnswers
+                .AsNoTracking()
+                .FirstAsync(f => f.PlaintiffId == DependenciesGuids["Support"]);
+
+            answer.TopicId = Guid.NewGuid();
+
+            //Act
+            HttpStatusCode statusCode = await _responseService
+                .ResponsePostStatusCode($"/api/support-topic/support/answer",
+                answer.Convert(),
+                AccessToken);
+
+            //Assert
+            await RemoveUserDependency(DependenciesGuids["User"]);
+            await RemoveUserDependency(DependenciesGuids["Support"]);
+            await RemoveTestDependencies();
+
+            Assert.Equal(HttpStatusCode.NotFound, statusCode);
+        }
+        [Fact]
+        public async Task POST_SupportTopicAnswer_Unauthorized()
+        {
+            //Arrange
+            SupportTopicAnswer answer = new();
+
+            //Act
+            HttpStatusCode statusCode = await _responseService
+                .ResponsePostStatusCode($"/api/support-topic/support/answer", answer.Convert());
+
+            //Assert
+            Assert.Equal(HttpStatusCode.Unauthorized, statusCode);
+        }
+        [Theory]
+        [InlineData("user")]
+        [InlineData("bot")]
+        public async Task POST_SupportTopicAnswer_Forbidden(string role)
+        {
+            //Arrange
+            await InitializeUserDependency(DependenciesGuids["User"], "user");
+            await InitializeUserDependency(DependenciesGuids["Support"], role);
+            await InitializeTestDependencies();
+
+            SupportTopicAnswer answer = await Context.SupportTopicAnswers
+                .AsNoTracking()
+                .FirstAsync(f => f.PlaintiffId == DependenciesGuids["Support"]);
+
+            //Act
+            HttpStatusCode statusCode = await _responseService
+                .ResponsePostStatusCode($"/api/support-topic/support/answer",
+                answer.Convert(),
+                AccessToken);
+
+            //Assert
+            await RemoveUserDependency(DependenciesGuids["User"]);
+            await RemoveUserDependency(DependenciesGuids["Support"]);
+            await RemoveTestDependencies();
+
+            Assert.Equal(HttpStatusCode.Forbidden, statusCode);
+        }
+        [Fact]
+        public async Task PUT_UserTopic_OK()
+        {
+            //Arrange
+            await InitializeUserDependency(DependenciesGuids["Support"], "admin");
+            await InitializeUserDependency(DependenciesGuids["User"], "user");
+            await InitializeTestDependencies();
+
+            SupportTopic topic = await Context.SupportTopics
+                .AsNoTracking()
+                .FirstAsync();
+
+            //Act
+            HttpStatusCode statusCode = await _responseService
+                .ResponsePut($"/api/support-topic", topic.Convert(false), AccessToken);
+
+            //Assert
+            await RemoveUserDependency(DependenciesGuids["User"]);
+            await RemoveUserDependency(DependenciesGuids["Support"]);
+            await RemoveTestDependencies();
+
+            Assert.Equal(HttpStatusCode.OK, statusCode);
+        }
+        [Fact]
+        public async Task PUT_UserTopic_NotFoundTopic()
+        {
+            //Arrange
+            await InitializeUserDependency(DependenciesGuids["Support"], "admin");
+            await InitializeUserDependency(DependenciesGuids["User"], "user");
+            await InitializeTestDependencies();
+
+            SupportTopic topic = await Context.SupportTopics
+                .AsNoTracking()
+                .FirstAsync();
+
+            //Act
+            HttpStatusCode statusCode = await _responseService
+                .ResponsePut($"/api/support-topic", topic.Convert(), AccessToken);
+
+            //Assert
+            await RemoveUserDependency(DependenciesGuids["User"]);
+            await RemoveUserDependency(DependenciesGuids["Support"]);
+            await RemoveTestDependencies();
+
+            Assert.Equal(HttpStatusCode.NotFound, statusCode);
+        }
+        [Fact]
+        public async Task PUT_UserTopic_NotFoundUser()
+        {
+            //Arrange
+            await InitializeUserDependency(DependenciesGuids["Support"], "admin");
+            await InitializeUserDependency(DependenciesGuids["User"], "user");
+            await InitializeTestDependencies();
+
+            Guid randomUserGuid = Guid.NewGuid();
+
+            await InitializeUserDependency(randomUserGuid, "user");
+
+            SupportTopic topic = await Context.SupportTopics
+                .AsNoTracking()
+                .FirstAsync();
+
+            //Act
+            HttpStatusCode statusCode = await _responseService
+                .ResponsePut($"/api/support-topic", topic.Convert(false), AccessToken);
+
+            //Assert
+            await RemoveUserDependency(DependenciesGuids["User"]);
+            await RemoveUserDependency(DependenciesGuids["Support"]);
+            await RemoveUserDependency(randomUserGuid);
+            await RemoveTestDependencies();
+
+            Assert.Equal(HttpStatusCode.NotFound, statusCode);
+        }
+        [Fact]
+        public async Task PUT_UserTopic_Unauthorized()
+        {
+            //Arrange
+            SupportTopic topic = new();
+
+            //Act
+            HttpStatusCode statusCode = await _responseService
+                 .ResponsePut($"/api/support-topic", topic.Convert(false));
+
+            //Assert
+            Assert.Equal(HttpStatusCode.Unauthorized, statusCode);
+        }
+        [Theory]
+        [InlineData("admin")]
+        [InlineData("owner")]
+        [InlineData("bot")]
+        public async Task PUT_UserTopic_Forbidden(string role)
+        {
+            //Arrange
+            await InitializeUserDependency(DependenciesGuids["User"], role);
+
+            SupportTopic topic = new();
+
+            //Act
+            HttpStatusCode statusCode = await _responseService
+                .ResponsePut($"/api/support-topic", topic.Convert(), AccessToken);
+
+            //Assert
+            await RemoveUserDependency(DependenciesGuids["User"]);
+
+            Assert.Equal(HttpStatusCode.Forbidden, statusCode);
+        }
+        [Theory]
+        [InlineData("user")]
+        [InlineData("admin")]
+        [InlineData("owner")]
+        public async Task PUT_UserSupportTopicAnswer_OK(string role)
+        {
+            //Arrange
+            await InitializeUserDependency(DependenciesGuids["Support"], "admin");
+            await InitializeUserDependency(DependenciesGuids["User"], role);
+            await InitializeTestDependencies();
+
+            SupportTopicAnswer answer = await Context.SupportTopicAnswers
+                .AsNoTracking()
+                .FirstAsync(f => f.PlaintiffId == DependenciesGuids["User"]);
+
+            //Act
+            HttpStatusCode statusCode = await _responseService
+                .ResponsePut($"/api/support-topic/answer", answer.Convert(false), AccessToken);
+
+            //Assert
+            await RemoveUserDependency(DependenciesGuids["User"]);
+            await RemoveUserDependency(DependenciesGuids["Support"]);
+            await RemoveTestDependencies();
+
+            Assert.Equal(HttpStatusCode.OK, statusCode);
+        }
+        [Fact]
+        public async Task PUT_UserTopicAnswer_NotFoundTopic()
+        {
+            //Arrange
+            await InitializeUserDependency(DependenciesGuids["Support"], "admin");
+            await InitializeUserDependency(DependenciesGuids["User"], "user");
+            await InitializeTestDependencies();
+
+            SupportTopicAnswer answer = await Context.SupportTopicAnswers
+                .AsNoTracking()
+                .FirstAsync(f => f.PlaintiffId == DependenciesGuids["User"]);
+
+            answer.TopicId = Guid.NewGuid();
+
+            //Act
+            HttpStatusCode statusCode = await _responseService
+                .ResponsePut($"/api/support-topic/answer", answer.Convert(false), AccessToken);
+
+            //Assert
+            await RemoveUserDependency(DependenciesGuids["User"]);
+            await RemoveUserDependency(DependenciesGuids["Support"]);
+            await RemoveTestDependencies();
+
+            Assert.Equal(HttpStatusCode.NotFound, statusCode);
+        }
+        [Fact]
+        public async Task PUT_UserTopicAnswer_NotFoundUser()
+        {
+            //Arrange
+            await InitializeUserDependency(DependenciesGuids["Support"], "admin");
+            await InitializeUserDependency(DependenciesGuids["User"], "user");
+            await InitializeTestDependencies();
+
+            Guid randomUserGuid = Guid.NewGuid();
+
+            await InitializeUserDependency(randomUserGuid, "user");
+
+            SupportTopicAnswer answer = await Context.SupportTopicAnswers
+                .AsNoTracking()
+                .FirstAsync(f => f.PlaintiffId == DependenciesGuids["User"]);
+
+            //Act
+            HttpStatusCode statusCode = await _responseService
+                .ResponsePut($"/api/support-topic/answer", answer.Convert(false), AccessToken);
+
+            //Assert
+            await RemoveUserDependency(DependenciesGuids["User"]);
+            await RemoveUserDependency(DependenciesGuids["Support"]);
+            await RemoveUserDependency(randomUserGuid);
+            await RemoveTestDependencies();
+
+            Assert.Equal(HttpStatusCode.NotFound, statusCode);
+        }
+        [Fact]
+        public async Task PUT_UserTopicAnswer_Unauthorized()
+        {
+            //Arrange
+            SupportTopicAnswer answer = new();
+
+            //Act
+            HttpStatusCode statusCode = await _responseService
+                .ResponsePut($"/api/support-topic/answer", answer.Convert(false));
+
+            //Assert
+            Assert.Equal(HttpStatusCode.Unauthorized, statusCode);
+        }
+        [Fact]
+        public async Task PUT_UserTopicAnswer_Forbidden()
+        {
+            //Arrange
+            await InitializeUserDependency(DependenciesGuids["User"], "bot");
+
+            SupportTopicAnswer answer = new();
+
+            //Act
+            HttpStatusCode statusCode = await _responseService
+                .ResponsePut($"/api/support-topic/answer", answer.Convert(false), AccessToken);
+
+            //Assert
+            await RemoveUserDependency(DependenciesGuids["User"]);
+
+            Assert.Equal(HttpStatusCode.Forbidden, statusCode);
         }
 
         #region Начальные данные
