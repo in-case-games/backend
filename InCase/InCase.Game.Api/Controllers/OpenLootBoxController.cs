@@ -139,6 +139,8 @@ namespace InCase.Game.Api.Controllers
             context.Entry(userInfo).Property(p => p.Balance).IsModified = true;
             context.Entry(lootBox).Property(p => p.Balance).IsModified = true;
 
+            DateTime date = DateTime.UtcNow; 
+
             //Add history and add inventory user
             UserHistoryOpening history = new()
             {
@@ -146,14 +148,14 @@ namespace InCase.Game.Api.Controllers
                 UserId = UserId,
                 BoxId = lootBox.Id,
                 ItemId = winItem.Id,
-                Date = DateTime.UtcNow
+                Date = date
             };
             UserInventory inventory = new()
             {
                 Id = new Guid(),
                 UserId = UserId,
                 ItemId = winItem.Id,
-                Date = DateTime.UtcNow,
+                Date = date,
                 FixedCost = winItem.Cost
             };
 
