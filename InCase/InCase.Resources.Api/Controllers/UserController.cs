@@ -292,7 +292,60 @@ namespace InCase.Resources.Api.Controllers
             return await EndpointUtil.Update(promocodeOld, promocodeNew, context);
         }
 
-        // TODO Transfer method
+        //TODO Transfer method
+        [AuthorizeRoles(Roles.All)]
+        [HttpGet("inventory/sell/{id}")]
+        public async Task<IActionResult> SellLastOpeningGameItem(Guid id)
+        {
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            UserAdditionalInfo? info = await context.UserAdditionalInfos
+                .FirstOrDefaultAsync(f => f.UserId == UserId);
+
+            if (info is null)
+                return ResponseUtil.NotFound(nameof(UserAdditionalInfo));
+
+            List<UserInventory> inventories = await context.UserInventories
+                .AsNoTracking()
+                .Where(w => w.UserId == UserId && w.ItemId == id)
+                .ToListAsync();
+
+            if (inventories.Count == 0)
+                return ResponseUtil.NotFound(nameof(UserInventory));
+
+            UserInventory inventory = inventories.MinBy(m => m.Date)!;
+
+            info.Balance += inventory.FixedCost;
+
+            return await EndpointUtil.Delete(inventory, context);
+        }
+
+        //TODO Transfer method
+        [AuthorizeRoles(Roles.All)]
+        [HttpGet("inventory/{id}/sell")]
+        public async Task<IActionResult> SellGameItemByInventory(Guid id)
+        {
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            UserAdditionalInfo? info = await context.UserAdditionalInfos
+                .FirstOrDefaultAsync(f => f.UserId == UserId);
+
+            if (info is null)
+                return ResponseUtil.NotFound(nameof(UserAdditionalInfo));
+
+            UserInventory? inventory = await context.UserInventories
+                .AsNoTracking()
+                .FirstOrDefaultAsync(f => f.Id == id && f.UserId == UserId);
+
+            if (inventory is null)
+                return ResponseUtil.NotFound(nameof(UserInventory));
+
+            info.Balance += inventory.FixedCost;
+
+            return await EndpointUtil.Delete(inventory, context);
+        }
+
+        //TODO Transfer method
         [AuthorizeRoles(Roles.All)]
         [HttpGet("inventory/{id}/exchange/{itemId}")]
         public async Task<IActionResult> ExchangeGameItem(Guid id, Guid itemId)
@@ -328,7 +381,7 @@ namespace InCase.Resources.Api.Controllers
             return ResponseUtil.Ok(inventory);
         }
 
-        // TODO Transfer method
+        //TODO Transfer method
         [AuthorizeRoles(Roles.All)]
         [HttpPost("banner")]
         public async Task<IActionResult> CreatePathBanner(UserPathBannerDto pathDto)
@@ -366,7 +419,7 @@ namespace InCase.Resources.Api.Controllers
             return await EndpointUtil.Create(pathDto.Convert(), context);
         }
 
-        // TODO Transfer method
+        //TODO Transfer method
         [AuthorizeRoles(Roles.All)]
         [HttpDelete("banner/{id}")]
         public async Task<IActionResult> RemovePathBanner(Guid id)

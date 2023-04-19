@@ -4,7 +4,6 @@ using InCase.IntegrationTests.Services;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Org.BouncyCastle.Crypto.Engines;
 using System.Diagnostics;
 using System.Net;
 using Xunit.Abstractions;

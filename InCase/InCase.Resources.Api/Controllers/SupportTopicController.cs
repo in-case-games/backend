@@ -81,18 +81,21 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            bool IsExist = await context.SupportTopics
+            SupportTopic? topic = await context.SupportTopics
+                .Include(i => i.Answers!)
+                    .ThenInclude(ti => ti.Plaintiff)
+                .Include(i => i.Answers!)
+                    .ThenInclude(ti => ti.Images)
                 .AsNoTracking()
-                .AnyAsync(a => a.Id == id && a.UserId == UserId);
+                .FirstOrDefaultAsync(f => f.Id == id && f.UserId == UserId);
 
-            if (!IsExist)
+            if (topic is null)
                 return ResponseUtil.NotFound(nameof(SupportTopic));
+            if (topic.Answers is null || topic.Answers.Count == 0)
+                return ResponseUtil.NotFound(nameof(SupportTopicAnswer));
 
-            SupportTopicAnswer? answer = await context.SupportTopicAnswers
-                .Include(i => i.Plaintiff)
-                .Include(i => i.Images)
-                .AsNoTracking()
-                .FirstOrDefaultAsync(f => f.Id == answerId);
+            SupportTopicAnswer? answer = topic.Answers
+                .FirstOrDefault(f => f.Id == answerId);
 
             return answer is null ?
                 ResponseUtil.NotFound(nameof(SupportTopicAnswer)) :
@@ -252,7 +255,7 @@ namespace InCase.Resources.Api.Controllers
             return await EndpointUtil.Update(answer, answerDto.Convert(false), context);
         }
 
-        [AuthorizeRoles(Roles.Owner, Roles.Bot)]
+        [AuthorizeRoles(Roles.Owner)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
