@@ -1,4 +1,5 @@
 ﻿using InCase.Domain.Common;
+using InCase.Domain.Dtos;
 using InCase.Domain.Entities.Resources;
 using InCase.IntegrationTests.Services;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -498,6 +499,123 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
             // Assert
             await ClearTableData("UserRestriction", "User");
             Assert.Equal(HttpStatusCode.NotFound, postStatusCode);
+        }
+        [Fact]
+        public async Task UPDATE_UserRestriction_OK()
+        {
+            // Arrange
+            await InitializeDependencies();
+            User? user = await Context.Users
+                .Include(x => x.AdditionalInfo)
+                .ThenInclude(y => y!.Role)
+                .FirstOrDefaultAsync(f => f.Id == DependencyGuids["Owner"]);
+            UserRestriction? restriction = await Context.UserRestrictions
+                .FirstOrDefaultAsync(f => f.Id == DependencyGuids["Restriction"]);
+
+            string token = CreateToken(user!);
+
+            // Act
+            HttpStatusCode updateStatusCode = await _responseService
+                .ResponsePut<UserRestrictionDto>("/api/user-restriction", restriction!.Convert(false), token);
+
+            // Assert 
+            await ClearTableData("UserRestriction", "User");
+            Assert.Equal(HttpStatusCode.OK, updateStatusCode);
+        }
+        [Fact]
+        public async Task UPDATE_UserRestrictionNotExistedType_NotFound()
+        {
+            // Arrange
+            await InitializeDependencies();
+            User? user = await Context.Users
+                .Include(x => x.AdditionalInfo)
+                .ThenInclude(y => y!.Role)
+                .FirstOrDefaultAsync(f => f.Id == DependencyGuids["Owner"]);
+            UserRestriction? restriction = await Context.UserRestrictions
+                .FirstOrDefaultAsync(f => f.Id == DependencyGuids["Restriction"]);
+
+            restriction!.Type = null;
+            restriction!.TypeId = Guid.NewGuid();
+
+            string token = CreateToken(user!);
+
+            // Act
+            HttpStatusCode updateStatusCode = await _responseService
+                .ResponsePut<UserRestrictionDto>("/api/user-restriction", restriction!.Convert(false), token);
+
+            // Assert 
+            await ClearTableData("UserRestriction", "User");
+            Assert.Equal(HttpStatusCode.NotFound, updateStatusCode);
+        }
+        [Fact]
+        public async Task UPDATE_UserRestrictionNotExistedRestriction_NotFound()
+        {
+            // Arrange
+            await InitializeDependencies();
+            User? user = await Context.Users
+                .Include(x => x.AdditionalInfo)
+                .ThenInclude(y => y!.Role)
+                .FirstOrDefaultAsync(f => f.Id == DependencyGuids["Owner"]);
+            UserRestriction? restriction = await Context.UserRestrictions
+                .FirstOrDefaultAsync(f => f.Id == DependencyGuids["Restriction"]);
+
+            restriction!.Id = Guid.NewGuid();
+
+            string token = CreateToken(user!);
+
+            // Act
+            HttpStatusCode updateStatusCode = await _responseService
+                .ResponsePut<UserRestrictionDto>("/api/user-restriction", restriction!.Convert(false), token);
+
+            // Assert 
+            await ClearTableData("UserRestriction", "User");
+            Assert.Equal(HttpStatusCode.NotFound, updateStatusCode);
+        }
+        [Fact]
+        public async Task UPDATE_UserRestrictionNotExistedUser_NotFound()
+        {
+            // Arrange
+            await InitializeDependencies();
+            User? user = await Context.Users
+                .Include(x => x.AdditionalInfo)
+                .ThenInclude(y => y!.Role)
+                .FirstOrDefaultAsync(f => f.Id == DependencyGuids["Owner"]);
+            UserRestriction? restriction = await Context.UserRestrictions
+                .FirstOrDefaultAsync(f => f.Id == DependencyGuids["Restriction"]);
+
+            restriction!.UserId = Guid.NewGuid();
+
+            string token = CreateToken(user!);
+
+            // Act
+            HttpStatusCode updateStatusCode = await _responseService
+                .ResponsePut<UserRestrictionDto>("/api/user-restriction", restriction!.Convert(false), token);
+
+            // Assert 
+            await ClearTableData("UserRestriction", "User");
+            Assert.Equal(HttpStatusCode.NotFound, updateStatusCode);
+        }
+        [Fact]
+        public async Task UPDATE_UserRestrictionNotAccessUser_Forbidden()
+        {
+            // Arrange
+            await InitializeDependencies("bot", "admin");
+            User? user = await Context.Users
+                .Include(x => x.AdditionalInfo)
+                .ThenInclude(y => y!.Role)
+                .FirstOrDefaultAsync(f => f.Id == DependencyGuids["Owner"]);
+            UserRestriction? restriction = await Context.UserRestrictions
+                .FirstOrDefaultAsync(f => f.Id == DependencyGuids["Restriction"]);
+
+            string token = CreateToken(user!);
+
+            // Act
+            HttpStatusCode updateStatusCode = await _responseService
+                .ResponsePut<UserRestrictionDto>("/api/user-restriction", restriction!.Convert(false), token);
+
+            // Assert 
+            await ClearTableData("UserRestriction", "User");
+            Assert.Equal(HttpStatusCode.Forbidden, updateStatusCode);
         }
         [Fact]
         public async Task POST_CreateRestrictionInvalidRole_Conflict()
