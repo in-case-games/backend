@@ -314,7 +314,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
             Assert.Equal(HttpStatusCode.Forbidden, getStatusCode);
         }
         [Fact]
-        public async Task GET_GetRestrictionTypes_OK()
+        public async Task GET_RestrictionTypes_OK()
         {
             // Assert
 
@@ -326,7 +326,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
             Assert.Equal(HttpStatusCode.OK, getStatusCode);
         }
         [Fact]
-        public async Task POST_CreateRestriction_OK()
+        public async Task POST_Restriction_OK()
         {
             // Assert
             await CreateUser(DependencyGuids["Owner"], "bot");
@@ -362,7 +362,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
         }
         [Theory]
         [InlineData("user")]
-        public async Task POST_CreateRestriction_Forbid(string roleName)
+        public async Task POST_Restriction_Forbidden(string roleName)
         {
             // Assert
             await CreateUser(DependencyGuids["Owner"], roleName);
@@ -397,7 +397,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
             Assert.Equal(HttpStatusCode.Forbidden, postStatusCode);
         }
         [Fact]
-        public async Task POST_CreateRestrictionNotExistedType_NotFound()
+        public async Task POST_Restriction_NotFoundType()
         {
             // Assert
             await CreateUser(DependencyGuids["Owner"], "bot");
@@ -431,7 +431,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
             Assert.Equal(HttpStatusCode.NotFound, postStatusCode);
         }
         [Fact]
-        public async Task POST_CreateRestriction_Unauthorized()
+        public async Task POST_Restriction_Unauthorized()
         {
             // Assert
             await CreateUser(DependencyGuids["Owner"], "bot");
@@ -466,7 +466,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
             Assert.Equal(HttpStatusCode.Unauthorized, postStatusCode);
         }
         [Fact]
-        public async Task POST_CreateRestrictionNotExistedUser_NotFound()
+        public async Task POST_Restriction_NotFoundUser()
         {
             // Assert
             await CreateUser(DependencyGuids["Owner"], "bot");
@@ -501,7 +501,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
             Assert.Equal(HttpStatusCode.NotFound, postStatusCode);
         }
         [Fact]
-        public async Task UPDATE_UserRestriction_OK()
+        public async Task PUT_UserRestriction_OK()
         {
             // Arrange
             await InitializeDependencies();
@@ -523,7 +523,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
             Assert.Equal(HttpStatusCode.OK, updateStatusCode);
         }
         [Fact]
-        public async Task UPDATE_UserRestrictionNotExistedType_NotFound()
+        public async Task PUT_UserRestriction_NotFoundType()
         {
             // Arrange
             await InitializeDependencies();
@@ -548,7 +548,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
             Assert.Equal(HttpStatusCode.NotFound, updateStatusCode);
         }
         [Fact]
-        public async Task UPDATE_UserRestrictionNotExistedRestriction_NotFound()
+        public async Task PUT_UserRestriction_NotFoundRestriction()
         {
             // Arrange
             await InitializeDependencies();
@@ -572,7 +572,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
             Assert.Equal(HttpStatusCode.NotFound, updateStatusCode);
         }
         [Fact]
-        public async Task UPDATE_UserRestrictionNotExistedUser_NotFound()
+        public async Task PUT_UserRestriction_NotFoundUser()
         {
             // Arrange
             await InitializeDependencies();
@@ -596,7 +596,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
             Assert.Equal(HttpStatusCode.NotFound, updateStatusCode);
         }
         [Fact]
-        public async Task UPDATE_UserRestrictionNotAccessUser_Forbidden()
+        public async Task PUT_UserRestrictionNotAccessUser_Forbidden()
         {
             // Arrange
             await InitializeDependencies("bot", "admin");
@@ -618,7 +618,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
             Assert.Equal(HttpStatusCode.Forbidden, updateStatusCode);
         }
         [Fact]
-        public async Task POST_CreateRestrictionInvalidRole_Conflict()
+        public async Task POST_Restriction_ConflictInvalidRole()
         {
             // Assert
             await CreateUser(DependencyGuids["Owner"], "bot");
@@ -652,6 +652,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
             await ClearTableData("UserRestriction", "User");
             Assert.Equal(HttpStatusCode.Conflict, postStatusCode);
         }
+
         #region Зависимости
         private async Task InitializeDependencies(string ownerRoleName = "bot", string slaveRoleName = "user")
         {
