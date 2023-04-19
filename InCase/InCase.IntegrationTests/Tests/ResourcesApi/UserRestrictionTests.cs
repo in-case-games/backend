@@ -583,7 +583,31 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
             UserRestriction? restriction = await Context.UserRestrictions
                 .FirstOrDefaultAsync(f => f.Id == DependencyGuids["Restriction"]);
 
-            restriction!.UserId = Guid.NewGuid();
+            UserRestrictionDto sendRestriction = restriction!.Convert(false);
+
+            sendRestriction.UserId = Guid.NewGuid();
+
+            string token = CreateToken(user!);
+
+            // Act
+            HttpStatusCode updateStatusCode = await _responseService
+                .ResponsePut<UserRestrictionDto>("/api/user-restriction", sendRestriction, token);
+
+            // Assert 
+            await ClearTableData("UserRestriction", "User");
+            Assert.Equal(HttpStatusCode.NotFound, updateStatusCode);
+        }
+        [Fact]
+        public async Task PUT_UserRestrictionNotAccessUser_Conflict()
+        {
+            // Arrange
+            await InitializeDependencies("bot", "admin");
+            User? user = await Context.Users
+                .Include(x => x.AdditionalInfo)
+                .ThenInclude(y => y!.Role)
+                .FirstOrDefaultAsync(f => f.Id == DependencyGuids["Owner"]);
+            UserRestriction? restriction = await Context.UserRestrictions
+                .FirstOrDefaultAsync(f => f.Id == DependencyGuids["Restriction"]);
 
             string token = CreateToken(user!);
 
@@ -593,13 +617,34 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
 
             // Assert 
             await ClearTableData("UserRestriction", "User");
-            Assert.Equal(HttpStatusCode.NotFound, updateStatusCode);
+            Assert.Equal(HttpStatusCode.Conflict, updateStatusCode);
         }
         [Fact]
-        public async Task PUT_UserRestrictionNotAccessUser_Forbidden()
+        public async Task PUT_UserRestriction_Unauthorized()
         {
             // Arrange
-            await InitializeDependencies("bot", "admin");
+            await InitializeDependencies();
+            User? user = await Context.Users
+                .Include(x => x.AdditionalInfo)
+                .ThenInclude(y => y!.Role)
+                .FirstOrDefaultAsync(f => f.Id == DependencyGuids["Owner"]);
+            UserRestriction? restriction = await Context.UserRestrictions
+                .FirstOrDefaultAsync(f => f.Id == DependencyGuids["Restriction"]);
+
+            // Act
+            HttpStatusCode updateStatusCode = await _responseService
+                .ResponsePut<UserRestrictionDto>("/api/user-restriction", restriction!.Convert(false));
+
+            // Assert 
+            await ClearTableData("UserRestriction", "User");
+            Assert.Equal(HttpStatusCode.Unauthorized, updateStatusCode);
+        }
+        [Theory]
+        [InlineData("user")]
+        public async Task PUT_UserRestriction_Forbidden(string roleName)
+        {
+            // Arrange
+            await InitializeDependencies(ownerRoleName: roleName, slaveRoleName: "bot");
             User? user = await Context.Users
                 .Include(x => x.AdditionalInfo)
                 .ThenInclude(y => y!.Role)
@@ -652,7 +697,81 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
             await ClearTableData("UserRestriction", "User");
             Assert.Equal(HttpStatusCode.Conflict, postStatusCode);
         }
+        [Fact]
+        public async Task DELETE_RemoveRestriction_OK()
+        {
+            // Arrange
+            await InitializeDependencies();
+            UpdateContext();
+            User? owner = await Context.Users
+                .Include(x => x.AdditionalInfo)
+                .ThenInclude(x => x!.Role)
+                .FirstOrDefaultAsync(f => f.Id == DependencyGuids["Owner"]);
+            string token = CreateToken(owner!);
 
+            // Act
+            HttpStatusCode deleteStatusCode = await _responseService
+                .ResponseDelete($"/api/user-restriction/{DependencyGuids["Restriction"]}", token);
+
+            // Assert
+            await ClearTableData("UserRestriction", "User");
+            Assert.Equal(HttpStatusCode.OK, deleteStatusCode);
+        }
+        [Fact]
+        public async Task DELETE_RemoveRestriction_NotFound()
+        {
+            // Arrange
+            await InitializeUserDependency(DependencyGuids["User"], "bot");
+
+            // Act
+            HttpStatusCode deleteStatusCode = await _responseService
+                .ResponseDelete($"/api/user-restriction/{DependencyGuids["Restriction"]}", AccessToken);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.NotFound, deleteStatusCode);
+        }
+        [Fact]
+        public async Task DELETE_RemoveRestriction_Conflict()
+        {
+            // Arrange
+            await InitializeDependencies();
+            UpdateContext();
+            User? owner = await Context.Users
+                .Include(x => x.AdditionalInfo)
+                .ThenInclude(x => x!.Role)
+                .FirstOrDefaultAsync(f => f.Id == DependencyGuids["Owner"]);
+            string token = CreateToken(owner!);
+
+            UpdateContext();
+            UserRestriction? restriction = await Context.UserRestrictions
+                .FirstOrDefaultAsync(f => f.Id == DependencyGuids["Restriction"]);
+
+            restriction!.UserId = DependencyGuids["Owner"];
+            Context.UserRestrictions.Update(restriction);
+            await Context.SaveChangesAsync();
+
+            // Act
+            HttpStatusCode deleteStatusCode = await _responseService
+                .ResponseDelete($"/api/user-restriction/{DependencyGuids["Restriction"]}", token);
+
+            // Assert
+            await ClearTableData("UserRestriction", "User");
+            Assert.Equal(HttpStatusCode.Conflict, deleteStatusCode);
+        }
+        [Theory]
+        [InlineData("user")]
+        public async Task DELETE_RemoveRestriction_Forbidden(string roleName)
+        {
+            // Arrange
+            await InitializeUserDependency(DependencyGuids["User"], roleName);
+
+            // Act
+            HttpStatusCode deleteStatusCode = await _responseService
+                .ResponseDelete($"/api/user-restriction/{DependencyGuids["Restriction"]}", AccessToken);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.Forbidden, deleteStatusCode);
+        }
         #region Зависимости
         private async Task InitializeDependencies(string ownerRoleName = "bot", string slaveRoleName = "user")
         {

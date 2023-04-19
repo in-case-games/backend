@@ -213,7 +213,7 @@ namespace InCase.Resources.Api.Controllers
             string userRole = user.AdditionalInfo!.Role!.Name!;
 
             if (userRole != "user")
-                return Forbid("Access denied");
+                return Conflict("Access denied");
 
             restrictionDto = await CheckUserRestriction(restrictionDto, type, context);
 
@@ -233,7 +233,7 @@ namespace InCase.Resources.Api.Controllers
             if (restriction == null)
                 return ResponseUtil.NotFound(nameof(UserRestriction));
             if (restriction.UserId == UserId)
-                return Forbid("Access denied");
+                return Conflict("Access denied");
 
             return await EndpointUtil.Delete(restriction, context);
         }

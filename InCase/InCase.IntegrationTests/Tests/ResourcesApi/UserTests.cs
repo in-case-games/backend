@@ -241,6 +241,58 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
             Assert.Equal(HttpStatusCode.OK, getStatusCode);
         }
         [Fact]
+        public async Task GET_ActivatePromocodeNullNumberActivation_Conflict()
+        {
+            // Arrange
+            await InitializeUserDependency(DependenciesGuids["User"]);
+            await InitializeDependencies();
+
+            Promocode promocode = await Context.Promocodes
+                .FirstAsync(f => f.Id == DependenciesGuids["Promocode"]);
+
+            UserHistoryPromocode historyPromocode = await Context.UserHistoryPromocodes
+                .FirstAsync(f => f.Id == DependenciesGuids["UserHistoryPromocode"]);
+            promocode.NumberActivations = -1;
+            Context.Promocodes.Update(promocode);
+            Context.UserHistoryPromocodes.Remove(historyPromocode);
+            await Context.SaveChangesAsync();
+
+            // Act
+            HttpStatusCode getStatusCode = await _responseService
+                .ResponseGetStatusCode($"/api/user/activate/promocode/{promocode.Name}", AccessToken);
+
+            // Assert
+            await RemoveDependencies();
+            await RemoveUserDependency(DependenciesGuids["User"]);
+            Assert.Equal(HttpStatusCode.Conflict, getStatusCode);
+        }
+        [Fact]
+        public async Task GET_ActivatePromocodeTimeIsUp_Conflict()
+        {
+            // Arrange
+            await InitializeUserDependency(DependenciesGuids["User"]);
+            await InitializeDependencies();
+
+            Promocode promocode = await Context.Promocodes
+                .FirstAsync(f => f.Id == DependenciesGuids["Promocode"]);
+
+            UserHistoryPromocode historyPromocode = await Context.UserHistoryPromocodes
+                .FirstAsync(f => f.Id == DependenciesGuids["UserHistoryPromocode"]);
+            promocode.ExpirationDate = DateTime.UtcNow - TimeSpan.FromDays(5);
+            Context.Promocodes.Update(promocode);
+            Context.UserHistoryPromocodes.Remove(historyPromocode);
+            await Context.SaveChangesAsync();
+
+            // Act
+            HttpStatusCode getStatusCode = await _responseService
+                .ResponseGetStatusCode($"/api/user/activate/promocode/{promocode.Name}", AccessToken);
+
+            // Assert
+            await RemoveDependencies();
+            await RemoveUserDependency(DependenciesGuids["User"]);
+            Assert.Equal(HttpStatusCode.Conflict, getStatusCode);
+        }
+        [Fact]
         public async Task GET_ActivatePromocode_NotFound()
         {
             // Arrange
@@ -359,6 +411,44 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
             Assert.Equal(HttpStatusCode.OK, getStatusCode);
         }
         [Fact]
+        public async Task GET_ExchangePromocodeNullNumberActivations_Conflict()
+        {
+            // Arrange
+            await InitializeUserDependency(DependenciesGuids["User"]);
+            await InitializeDependencies();
+
+            Promocode promocode = await Context.Promocodes
+                .AsNoTracking()
+                .FirstAsync(f => f.Id == DependenciesGuids["Promocode"]);
+
+            UserHistoryPromocode historyPromocode = await Context.UserHistoryPromocodes
+                .AsNoTracking()
+                .FirstAsync(f => f.Id == DependenciesGuids["UserHistoryPromocode"]);
+
+            Context.UserHistoryPromocodes.Remove(historyPromocode);
+            await Context.SaveChangesAsync();
+
+            await _responseService
+                .ResponseGetStatusCode($"/api/user/activate/promocode/{promocode.Name}", AccessToken);
+
+            promocode.Id = Guid.NewGuid();
+            promocode.Name = GenerateString(8);
+            promocode.NumberActivations = -1;
+
+            await Context.Promocodes.AddAsync(promocode);
+            await Context.SaveChangesAsync();
+
+            // Act
+            HttpStatusCode getStatusCode = await _responseService
+                .ResponseGetStatusCode($"/api/user/exchange/promocode/{promocode.Name}", AccessToken);
+
+            // Assert
+            await RemoveUserDependency(DependenciesGuids["User"]);
+            await RemoveDependencies();
+
+            Assert.Equal(HttpStatusCode.Conflict, getStatusCode);
+        }
+        [Fact]
         public async Task GET_ExchangePromocode_NotFound()
         {
             // Arrange
@@ -398,6 +488,119 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
             await RemoveDependencies();
             await RemoveUserDependency(DependenciesGuids["User"]);
             Assert.Equal(HttpStatusCode.Unauthorized, getStatusCode);
+        }
+        [Fact]
+        public async Task GET_SellLastOpeningItem_OK()
+        {
+            // Arrange
+            await InitializeUserDependency(DependenciesGuids["User"]);
+            await InitializeDependencies();
+
+            // Act
+            HttpStatusCode getStatusCode = await _responseService
+                .ResponseGetStatusCode($"/api/user/inventory/sell/{DependenciesGuids["GameItem"]}", AccessToken);
+
+            // Assert
+            await RemoveDependencies();
+            Assert.Equal(HttpStatusCode.OK, getStatusCode);
+        }
+        [Fact]
+        public async Task GET_SellItemByInventoryId_OK()
+        {
+            // Arrange
+            await InitializeUserDependency(DependenciesGuids["User"]);
+            await InitializeDependencies();
+
+            // Act
+            HttpStatusCode getStatusCode = await _responseService
+                .ResponseGetStatusCode($"/api/user/inventory/{DependenciesGuids["UserInventory"]}/sell", AccessToken);
+
+            // Assert
+            await RemoveDependencies();
+            Assert.Equal(HttpStatusCode.OK, getStatusCode);
+        }
+        [Fact]
+        public async Task GET_SellItemByInventoryId_Unauthorized()
+        {
+            // Arrange
+
+            // Act
+            HttpStatusCode getStatusCode = await _responseService
+                .ResponseGetStatusCode($"/api/user/inventory/{DependenciesGuids["GameItem"]}/sell");
+
+            // Assert
+            Assert.Equal(HttpStatusCode.Unauthorized, getStatusCode);
+        }
+        [Fact]
+        public async Task GET_SellItemByInventoryId_NotFoundInventory()
+        {
+            // Arrange
+            await InitializeUserDependency(DependenciesGuids["User"]);
+            await InitializeDependencies();
+
+            // Act
+            HttpStatusCode getStatusCode = await _responseService
+                .ResponseGetStatusCode($"/api/inventory/{Guid.NewGuid()}/sell", AccessToken);
+
+            // Assert
+            await RemoveDependencies();
+            Assert.Equal(HttpStatusCode.NotFound, getStatusCode);
+        }
+        [Fact]
+        public async Task GET_SellItemByInventoryId_NotFoundUser()
+        {
+            // Arrange
+            string fakeUserToken = await CreateFakeToken();
+
+            // Act
+            HttpStatusCode getStatusCode = await _responseService
+                .ResponseGetStatusCode($"/api/inventory/{DependenciesGuids["GameItem"]}/sell", fakeUserToken);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.NotFound, getStatusCode);
+        }
+        [Fact]
+        public async Task GET_SellLastOpeningItem_Unauthorized()
+        {
+            // Arrange
+            await InitializeUserDependency(DependenciesGuids["User"]);
+            await InitializeDependencies();
+
+            // Act
+            HttpStatusCode getStatusCode = await _responseService
+                .ResponseGetStatusCode($"/api/user/inventory/sell/{DependenciesGuids["GameItem"]}");
+
+            // Assert
+            await RemoveDependencies();
+            Assert.Equal(HttpStatusCode.Unauthorized, getStatusCode);
+        }
+        [Fact]
+        public async Task GET_SellLastOpeningItem_NotFoundUser()
+        {
+            // Arrange
+            string fakeUserToken = await CreateFakeToken();
+
+            // Act
+            HttpStatusCode getStatusCode = await _responseService
+                .ResponseGetStatusCode($"/api/user/inventory/sell/{DependenciesGuids["GameItem"]}", fakeUserToken);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.NotFound, getStatusCode);
+        }
+        [Fact]
+        public async Task GET_SellLastOpeningItem_NotFoundItems()
+        {
+            // Arrange
+            await InitializeUserDependency(DependenciesGuids["User"]);
+            await InitializeDependencies();
+
+            // Act
+            HttpStatusCode getStatusCode = await _responseService
+                .ResponseGetStatusCode($"/api/user/inventory/sell/{Guid.NewGuid()}", AccessToken);
+
+            // Assert
+            await ClearTableData("Promocode", "GameItem", "LootBox", "User");
+            Assert.Equal(HttpStatusCode.NotFound, getStatusCode);
         }
         [Fact]
         public async Task GET_ExchangeGameItem_Unauthorized()
