@@ -182,7 +182,7 @@ namespace InCase.Resources.Api.Controllers
             if (review is null)
                 return ResponseUtil.NotFound(nameof(UserReview));
             if (review.UserId != UserId)
-                return Forbid("Access denied");
+                return Conflict("Access denied");
 
             return await EndpointUtil.Create(imageDto.Convert(), context);
         }
@@ -234,7 +234,7 @@ namespace InCase.Resources.Api.Controllers
             if (review == null)
                 return ResponseUtil.NotFound(nameof(UserReview));
             if (review.UserId != UserId)
-                return Forbid("Access denied");
+                return Conflict("Access denied");
 
             return await EndpointUtil.Delete(review, context);
         }
@@ -265,10 +265,11 @@ namespace InCase.Resources.Api.Controllers
                 .AsNoTracking()
                 .FirstOrDefaultAsync(f => f.Id == image.ReviewId);
 
-            if (review is null)
-                return ResponseUtil.NotFound(nameof(UserReview));
-            if (review.UserId != UserId)
-                return Forbid("Access denied");
+            // Бесполезная проверка
+            // if (review is null)
+            //     return ResponseUtil.NotFound(nameof(UserReview));
+            if (review!.UserId != UserId)
+                return Conflict("Access denied");
 
             return await EndpointUtil.Delete(image, context);
         }
