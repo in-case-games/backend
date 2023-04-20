@@ -31,7 +31,7 @@ namespace InCase.Infrastructure.Configurations
 
             builder.HasOne(o => o.Game)
                 .WithMany(o => o.Markets)
-                .HasForeignKey(o => o.GameId)
+                .HasForeignKey(fk => fk.GameId)
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }

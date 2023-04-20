@@ -84,11 +84,13 @@ namespace InCase.Payment.Api.Controllers
                 StatusId = status.Id,
                 Date = DateTime.UtcNow,
                 ItemId = item.Id,
-                UserId = UserId
+                UserId = UserId,
+                MarketId = buyItem.Market!.Id
             };
 
             await context.UserHistoryWithdraws.AddAsync(withdraw);
             context.UserInventories.Remove(inventory);
+
             await context.SaveChangesAsync();
 
             return ResponseUtil.Ok("Item was withdrawed");

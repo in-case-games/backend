@@ -8,5 +8,6 @@ namespace InCase.Domain.Interfaces
         public Task<decimal> GetBalance();
         public Task<ItemInfo> GetItemInfo(GameItem item);
         public Task<BuyItem> BuyItem(GameItem item, string tradeUrl);
+        public Task<TradeInfo> GetTradeInfo(UserHistoryWithdraw withdraw);
     }
 }

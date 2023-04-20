@@ -37,6 +37,10 @@ namespace InCase.Infrastructure.Configurations
             builder.HasOne(o => o.Status)
                 .WithOne(o => o.HistoryWithdraw)
                 .OnDelete(DeleteBehavior.NoAction);
+            builder.HasOne(o => o.Market)
+                .WithMany(m => m.HistoryWithdraws)
+                .HasForeignKey(fk => fk.MarketId)
+                .OnDelete(DeleteBehavior.ClientCascade);
         }
     }
 }

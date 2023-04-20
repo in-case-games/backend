@@ -9,6 +9,8 @@ namespace InCase.Domain.Entities.Resources
         public DateTime Date { get; set; }
 
         [JsonIgnore]
+        public Guid MarketId { get; set; }
+        [JsonIgnore]
         public Guid StatusId { get; set; }
         [JsonIgnore]
         public Guid UserId { get; set; }
@@ -17,6 +19,7 @@ namespace InCase.Domain.Entities.Resources
 
         public User? User { get; set; }
         public GameItem? Item { get; set; }
+        public GameMarket? Market { get; set; }
         public ItemWithdrawStatus? Status { get; set; }
 
         public UserHistoryWithdrawDto Convert(bool IsNewGuid = true) => new()
@@ -25,6 +28,7 @@ namespace InCase.Domain.Entities.Resources
             Date = Date,
             UserId = User?.Id ?? UserId,
             ItemId = Item?.Id ?? ItemId,
+            MarketId = Market?.Id ?? MarketId,
             StatusId = Status?.Id ?? StatusId,
             IdForMarket = IdForMarket
         };

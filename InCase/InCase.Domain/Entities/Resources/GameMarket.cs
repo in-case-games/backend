@@ -13,6 +13,8 @@ namespace InCase.Domain.Entities.Resources
         public Guid GameId { get; set; }
         [JsonIgnore]
         public Game? Game { get; set; }
+        [JsonIgnore]
+        public List<UserHistoryWithdraw>? HistoryWithdraws { get; set; }
 
         public GameMarketDto Convert(bool IsNewGuid = true) => new()
         {

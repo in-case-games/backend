@@ -7,6 +7,7 @@ namespace InCase.Domain.Dtos
     {
         public int IdForMarket { get; set; }
         public DateTime Date { get; set; }
+        public Guid MarketId { get; set; }
         public Guid StatusId { get; set; }
         public Guid UserId { get; set; }
         public Guid ItemId { get; set; }
@@ -18,6 +19,7 @@ namespace InCase.Domain.Dtos
             StatusId = StatusId,
             UserId = UserId,
             ItemId = ItemId,
+            MarketId = MarketId,
             IdForMarket = IdForMarket
         };
     }

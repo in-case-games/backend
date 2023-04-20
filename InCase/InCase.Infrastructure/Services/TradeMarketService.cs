@@ -85,6 +85,11 @@ namespace InCase.Infrastructure.Services
             return responseEntity;
         }
 
+        public Task<TradeInfo> GetTradeInfo(UserHistoryWithdraw withdraw)
+        {
+            throw new NotImplementedException();
+        }
+
         private class ResponseBuyItemTM
         {
             [JsonPropertyName("result")] public string? Result { get; set; }

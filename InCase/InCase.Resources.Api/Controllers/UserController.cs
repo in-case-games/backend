@@ -382,6 +382,8 @@ namespace InCase.Resources.Api.Controllers
         }
 
         //TODO Transfer method
+
+        //TODO Transfer method
         [AuthorizeRoles(Roles.All)]
         [HttpPost("banner")]
         public async Task<IActionResult> CreatePathBanner(UserPathBannerDto pathDto)

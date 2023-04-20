@@ -81,6 +81,7 @@ namespace InCase.Infrastructure.Services
             {
                 info = await GetItemInfo(info.Item);
                 buyItem = await _tradeMarketServices[name].BuyItem(info.Item, tradeUrl);
+                buyItem.Market = info.Market;
                 numberAttempts--;
             }
 
@@ -88,6 +89,18 @@ namespace InCase.Infrastructure.Services
                 throw new Exception("Buy item no success");
 
             return buyItem;
+        }
+
+        public async Task<TradeInfo> GetTradeInfo(UserHistoryWithdraw withdraw)
+        {
+            string name = withdraw.Market!.Name!;
+
+            bool IsExistService = _tradeMarketServices.ContainsKey(name);
+
+            if (!IsExistService)
+                throw new ArgumentException("None service");
+
+            return new();
         }
     }
 }
