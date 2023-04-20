@@ -61,7 +61,7 @@ namespace InCase.Infrastructure.Services
             }
 
             if (itemInfos.Count == 0)
-                throw new Exception("VSE OTKISLO");
+                throw new Exception("No items market");
 
             return itemInfos.MinBy(m => m.Price)!;
         }
