@@ -19,7 +19,8 @@ namespace InCase.Infrastructure.Services
 
         public async Task<decimal> GetBalance(GameMarket market)
         {
-            string name = market.Name!;
+            string name = market.Name ?? throw new ArgumentNullException("GameMarket",
+                    "Along with the game, it is necessary to transfer the markets");
 
             bool IsExistService = _tradeMarketServices.ContainsKey(name);
 
@@ -67,7 +68,8 @@ namespace InCase.Infrastructure.Services
 
         public async Task<BuyItem> BuyItem(ItemInfo info, string tradeUrl)
         {
-            string name = info.Market.Name!;
+            string name = info.Market.Name ?? throw new ArgumentNullException("GameMarket",
+                    "Along with the game, it is necessary to transfer the markets");
 
             bool IsExistService = _tradeMarketServices.ContainsKey(name);
 
@@ -93,14 +95,15 @@ namespace InCase.Infrastructure.Services
 
         public async Task<TradeInfo> GetTradeInfo(UserHistoryWithdraw withdraw)
         {
-            string name = withdraw.Market!.Name!;
+            string name = withdraw.Market?.Name ?? throw new ArgumentNullException("GameMarket",
+                    "Along with the game, it is necessary to transfer the markets");
 
             bool IsExistService = _tradeMarketServices.ContainsKey(name);
 
             if (!IsExistService)
                 throw new ArgumentException("None service");
 
-            return new();
+            return await _tradeMarketServices[name].GetTradeInfo(withdraw);
         }
     }
 }
