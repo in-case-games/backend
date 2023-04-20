@@ -25,7 +25,7 @@ namespace InCase.Domain.Entities.Resources
         [JsonIgnore]
         public Game? Game { get; set; }
         [JsonIgnore]
-        public List<UserHistoryWithdrawn>? HistoryWithdrawns { get; set; }
+        public List<UserHistoryWithdraw>? HistoryWithdrawns { get; set; }
         [JsonIgnore]
         public List<LootBoxInventory>? Inventories { get; set; }
         [JsonIgnore]

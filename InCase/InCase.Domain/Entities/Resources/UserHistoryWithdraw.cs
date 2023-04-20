@@ -3,10 +3,13 @@ using InCase.Domain.Dtos;
 
 namespace InCase.Domain.Entities.Resources
 {
-    public class UserHistoryWithdrawn : BaseEntity
+    public class UserHistoryWithdraw : BaseEntity
     {
+        public int IdForMarket { get; set; }
         public DateTime Date { get; set; }
 
+        [JsonIgnore]
+        public Guid StatusId { get; set; }
         [JsonIgnore]
         public Guid UserId { get; set; }
         [JsonIgnore]
@@ -14,13 +17,16 @@ namespace InCase.Domain.Entities.Resources
 
         public User? User { get; set; }
         public GameItem? Item { get; set; }
+        public ItemWithdrawStatus? Status { get; set; }
 
-        public UserHistoryWithdrawnDto Convert(bool IsNewGuid = true) => new()
+        public UserHistoryWithdrawDto Convert(bool IsNewGuid = true) => new()
         {
             Id = IsNewGuid ? Guid.NewGuid() : Id,
             Date = Date,
             UserId = User?.Id ?? UserId,
-            ItemId = Item?.Id ?? ItemId
+            ItemId = Item?.Id ?? ItemId,
+            StatusId = Status?.Id ?? StatusId,
+            IdForMarket = IdForMarket
         };
     }
 }

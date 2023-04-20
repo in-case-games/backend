@@ -6,11 +6,11 @@ namespace InCase.Infrastructure.Services
 {
     public class WithdrawItemService
     {
-        private readonly Dictionary<string, ITradeMarket> TradeMarketServices = new();
+        private readonly Dictionary<string, ITradeMarket> _tradeMarketServices;
 
         public WithdrawItemService(TradeMarketService marketTMService)
         {
-            TradeMarketServices = new()
+            _tradeMarketServices = new()
             {
                 ["tm"] = marketTMService,
                 ["codashop"] = marketTMService,
@@ -21,12 +21,12 @@ namespace InCase.Infrastructure.Services
         {
             string name = market.Name!;
 
-            bool IsExistService = TradeMarketServices.ContainsKey(name);
+            bool IsExistService = _tradeMarketServices.ContainsKey(name);
 
             if (!IsExistService)
                 throw new ArgumentException("None service");
 
-            return await TradeMarketServices[name].GetBalance();
+            return await _tradeMarketServices[name].GetBalance();
         }
 
         public async Task<ItemInfo> GetItemInfo(GameItem item)
@@ -48,7 +48,7 @@ namespace InCase.Infrastructure.Services
                 GameMarket market = markets[indexMarket];
                 string name = market.Name!;
 
-                ItemInfo itemInfo = await TradeMarketServices[name].GetItemInfo(item);
+                ItemInfo itemInfo = await _tradeMarketServices[name].GetItemInfo(item);
 
                 if(itemInfo.Price > 0 && itemInfo.Count > 0)
                 {
@@ -69,7 +69,7 @@ namespace InCase.Infrastructure.Services
         {
             string name = info.Market.Name!;
 
-            bool IsExistService = TradeMarketServices.ContainsKey(name);
+            bool IsExistService = _tradeMarketServices.ContainsKey(name);
 
             if (!IsExistService)
                 throw new ArgumentException("None service");
@@ -80,7 +80,7 @@ namespace InCase.Infrastructure.Services
             while(numberAttempts != 0 || buyItem.Result != "OK")
             {
                 info = await GetItemInfo(info.Item);
-                buyItem = await TradeMarketServices[name].BuyItem(info.Item, tradeUrl);
+                buyItem = await _tradeMarketServices[name].BuyItem(info.Item, tradeUrl);
                 numberAttempts--;
             }
 

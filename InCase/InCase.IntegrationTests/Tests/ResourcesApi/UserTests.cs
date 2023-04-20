@@ -59,7 +59,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
         [Theory]
         [InlineData("/api/user", HttpStatusCode.OK)]
         [InlineData("/api/user/history/promocodes", HttpStatusCode.OK)]
-        [InlineData("/api/user/history/withdrawns", HttpStatusCode.OK)]
+        [InlineData("/api/user/history/withdraws", HttpStatusCode.OK)]
         [InlineData("/api/user/history/openings", HttpStatusCode.OK)]
         [InlineData("/api/user/banners", HttpStatusCode.OK)]
         [InlineData("/api/user/inventory", HttpStatusCode.OK)]
@@ -82,7 +82,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
         [Theory]
         [InlineData("/api/user", HttpStatusCode.Unauthorized)]
         [InlineData("/api/user/history/promocodes", HttpStatusCode.Unauthorized)]
-        [InlineData("/api/user/history/withdrawns", HttpStatusCode.Unauthorized)]
+        [InlineData("/api/user/history/withdraws", HttpStatusCode.Unauthorized)]
         [InlineData("/api/user/history/openings", HttpStatusCode.Unauthorized)]
         [InlineData("/api/user/banners", HttpStatusCode.Unauthorized)]
         [InlineData("/api/user/inventory", HttpStatusCode.Unauthorized)]
@@ -131,27 +131,27 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
             Assert.Equal(HttpStatusCode.OK, getStatusCode);
         }
         [Fact]
-        public async Task GET_WithdrawnHistoriesById_NotFoundUser()
+        public async Task GET_WithdrawHistoriesById_NotFoundUser()
         {
             // Arrange
             Guid guid = Guid.NewGuid();
 
             // Act 
             HttpStatusCode getStatusCode = await _responseService
-                .ResponseGetStatusCode($"/api/user/{guid}/history/withdrawns");
+                .ResponseGetStatusCode($"/api/user/{guid}/history/withdraws");
 
             // Assert
             Assert.Equal(HttpStatusCode.NotFound, getStatusCode);
         }
         [Fact]
-        public async Task GET_WithdrawnHistoriesById_NotFoundHistory()
+        public async Task GET_WithdrawHistoriesById_NotFoundHistory()
         {
             // Arrange
             await InitializeUserDependency(DependenciesGuids["User"]);
 
             // Act 
             HttpStatusCode getStatusCode = await _responseService
-                .ResponseGetStatusCode($"/api/user/{DependenciesGuids["User"]}/history/withdrawns", AccessToken);
+                .ResponseGetStatusCode($"/api/user/{DependenciesGuids["User"]}/history/withdraws", AccessToken);
 
             // Assert
             await RemoveUserDependency(DependenciesGuids["User"]);
@@ -185,7 +185,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
             Assert.Equal(HttpStatusCode.NotFound, getStatusCode);
         }
         [Fact]
-        public async Task GET_WithdrawnHistoriesById_OK()
+        public async Task GET_WithdrawHistoriesById_OK()
         {
             // Arrange
             await InitializeUserDependency(DependenciesGuids["User"]);
@@ -193,7 +193,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
 
             // Act 
             HttpStatusCode getStatusCode = await _responseService
-                .ResponseGetStatusCode($"/api/user/{DependenciesGuids["User"]}/history/withdrawns", AccessToken);
+                .ResponseGetStatusCode($"/api/user/{DependenciesGuids["User"]}/history/withdraws", AccessToken);
 
             // Assert
             await RemoveDependencies();
@@ -1073,12 +1073,14 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
                 UserId = DependenciesGuids["User"]
             };
 
-            UserHistoryWithdrawn withdrawn = new()
+            UserHistoryWithdraw withdraw = new()
             {
                 Id = DependenciesGuids["UserHistoryWithdrawn"],
+                IdForMarket = 10000,
                 Date = DateTime.UtcNow,
                 ItemId = item1.Id,
-                UserId = DependenciesGuids["User"]
+                UserId = DependenciesGuids["User"],
+                StatusId = (await Context.ItemWithdrawStatuses.FirstAsync(f => f.Name == "given")).Id
             };
 
             UserHistoryOpening opening = new()
@@ -1119,7 +1121,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
 
             await Context.UserHistoryPayments.AddAsync(payment);
             await Context.UserHistoryPromocodes.AddAsync(historyPromocode);
-            await Context.UserHistoryWithdrawns.AddAsync(withdrawn);
+            await Context.UserHistoryWithdraws.AddAsync(withdraw);
             await Context.UserHistoryOpenings.AddAsync(opening);
             await Context.UserPathBanners.AddAsync(pathBanner);
             await Context.UserInventories.AddAsync(inventory);

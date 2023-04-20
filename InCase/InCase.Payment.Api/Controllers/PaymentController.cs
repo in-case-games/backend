@@ -36,7 +36,7 @@ namespace InCase.Payment.Api.Controllers
         }
 
         [AuthorizeRoles(Roles.All)]
-        [HttpGet("withdrawn")]
+        [HttpGet("withdraw")]
         public async Task<IActionResult> WithdrawItem(DataWithdrawItem data)
         {
             //Transfer for bot await _gameMoneyService.TransferMoneyToTradeMarket(item.Cost / 7);
@@ -74,14 +74,14 @@ namespace InCase.Payment.Api.Controllers
             if (buyItem.Result != "OK")
                 return ResponseUtil.Conflict("Unknown error");
 
-            UserHistoryWithdrawn withdrawn = new()
+            UserHistoryWithdraw withdraw = new()
             {
                 Date = DateTime.UtcNow,
                 ItemId = item.Id,
                 UserId = UserId
             };
 
-            await context.UserHistoryWithdrawns.AddAsync(withdrawn);
+            await context.UserHistoryWithdraws.AddAsync(withdraw);
             context.UserInventories.Remove(inventory);
             await context.SaveChangesAsync();
 

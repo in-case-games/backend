@@ -34,7 +34,8 @@ namespace InCase.Infrastructure.Data
         public DbSet<UserHistoryOpening> UserHistoryOpenings => Set<UserHistoryOpening>();
         public DbSet<UserHistoryPayment> UserHistoryPayments => Set<UserHistoryPayment>();
         public DbSet<UserHistoryPromocode> UserHistoryPromocodes => Set<UserHistoryPromocode>();
-        public DbSet<UserHistoryWithdrawn> UserHistoryWithdrawns => Set<UserHistoryWithdrawn>();
+        public DbSet<UserHistoryWithdraw> UserHistoryWithdraws => Set<UserHistoryWithdraw>();
+        public DbSet<ItemWithdrawStatus> ItemWithdrawStatuses => Set<ItemWithdrawStatus>();
         public DbSet<UserInventory> UserInventories => Set<UserInventory>();
         public DbSet<UserPathBanner> UserPathBanners => Set<UserPathBanner>();
         public DbSet<UserRestriction> UserRestrictions => Set<UserRestriction>();
@@ -49,10 +50,6 @@ namespace InCase.Infrastructure.Data
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
-
-            #region DevelopmentTemplateData
-            // coming soon
-            #endregion
         }
     }
 }

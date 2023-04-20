@@ -78,24 +78,24 @@ namespace InCase.Resources.Api.Controllers
         }
 
         [AuthorizeRoles(Roles.All)]
-        [HttpGet("history/withdrawns")]
+        [HttpGet("history/withdraws")]
         public async Task<IActionResult> GetWithdrawns()
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            List<UserHistoryWithdrawn> withdrawns = await context.UserHistoryWithdrawns
+            List<UserHistoryWithdraw> withdrawns = await context.UserHistoryWithdraws
                 .AsNoTracking()
                 .Include(i => i.Item)
                 .Where(w => w.UserId == UserId)
                 .ToListAsync();
 
             return withdrawns.Count == 0 ?
-                ResponseUtil.NotFound(nameof(UserHistoryWithdrawn)) :
+                ResponseUtil.NotFound(nameof(UserHistoryWithdraw)) :
                 ResponseUtil.Ok(withdrawns);
         }
 
         [AllowAnonymous]
-        [HttpGet("{id}/history/withdrawns")]
+        [HttpGet("{id}/history/withdraws")]
         public async Task<IActionResult> GetWithdrawnsById(Guid id)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
@@ -110,7 +110,7 @@ namespace InCase.Resources.Api.Controllers
                 return ResponseUtil.NotFound("User");
 
             return user.HistoryWithdrawns is null || user.HistoryWithdrawns.Count == 0 ?
-                ResponseUtil.NotFound(nameof(UserHistoryWithdrawn)) : 
+                ResponseUtil.NotFound(nameof(UserHistoryWithdraw)) : 
                 ResponseUtil.Ok(user.HistoryWithdrawns);
         }
 

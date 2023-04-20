@@ -496,7 +496,7 @@
 |PK|Id|uniqueidentifier|True|NEWID(), UNIQUE|
 ||Name|nvarchar(50)|True|UNIQUE|
 
-**UserHistoryWithdrawn**
+**UserHistoryWithdraw**
 
 Описание:
 
@@ -506,14 +506,33 @@
 
 - User(Многие к одному)
 - GameItem:Item(Многие к одному)
+- ItemWithdrawStatus:Status(Один к одному)
 
 
 |Key|Name|Type|IsRequired|Constrains|
 | :- | :- | :- | :- | :- |
 |PK|Id|uniqueidentifier|True|NEWID(), UNIQUE|
+||IdForMarket|int|True|UNIQUE|
 ||Date|datetime2(7)|True|-|
 |FK|UserId|uniqueidentifier|True|-|
 |FK|ItemId|uniqueidentifier|True|-|
+|FK|StatusId|uniqueidentifier|True|-|
+
+**ItemWithdrawStatus**
+
+Описание:
+
+- Таблица представляет из себя статусы вывода предмета
+
+Связи:
+
+- UserHistoryWithdraw:HistoryWithdraw(Один к одному)
+
+
+|Key|Name|Type|IsRequired|Constrains|
+| :- | :- | :- | :- | :- |
+|PK|Id|uniqueidentifier|True|NEWID(), UNIQUE|
+||Name|nvarchar(50)|True|UNIQUE|
 
 **UserInventory**
 
