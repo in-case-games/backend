@@ -70,11 +70,10 @@ namespace InCase.Payment.Api.Controllers
                 return ResponseUtil.Conflict("Wait payment");
             }
 
-            //Buy item tm
-            /*ResponseBuyItemTM? itemBuyTM = await _withdrawService.BuyItem(itemInfo, withdrawItem.TradeUrl);
+            BuyItem buyItem = await _withdrawService.BuyItem(itemInfo, withdrawItem.TradeUrl!);
 
-            if (itemBuyTM is null)
-                return ResponseUtil.NotFound("Trade url");*/
+            if (buyItem.Result != "OK")
+                return ResponseUtil.Conflict("Unknown error");
 
             UserHistoryWithdrawn withdrawn = new()
             {
