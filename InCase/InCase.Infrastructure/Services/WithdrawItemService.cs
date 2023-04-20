@@ -12,13 +12,21 @@ namespace InCase.Infrastructure.Services
         {
             TradeMarketServices = new()
             {
-                ["market"] = marketTMService,
+                ["tm"] = marketTMService,
+                ["codashop"] = marketTMService,
             };
         }
 
         public async Task<decimal> GetBalance(GamePlatform platform)
         {
-            return 0M;
+            string name = platform.Name!;
+
+            bool IsExistService = TradeMarketServices.ContainsKey(name);
+
+            if (!IsExistService)
+                throw new ArgumentException("None service");
+
+            return await TradeMarketServices[name].GetBalance();
         }
 
         public async Task<ItemInfo> GetItemInfo(GameItem item)
@@ -32,31 +40,42 @@ namespace InCase.Infrastructure.Services
             if (platforms.Count == 0)
                 throw new ArgumentException("The game has no ways to output an item");
 
-            ItemInfo? itemInfo = new();
+            List<ItemInfo> itemInfos = new();
             int indexPlatform = 0;
 
-            while(itemInfo.Price <= 0 || indexPlatform < platforms.Count)
+            while(indexPlatform < platforms.Count)
             {
                 GamePlatform platform = platforms[indexPlatform];
+                string name = platform.Name!;
 
-                itemInfo = await TradeMarketServices[platform.Name!].GetItemInfo(item);
-                itemInfo.Platform = platforms[indexPlatform];
-                itemInfo.Item = item;
+                ItemInfo itemInfo = await TradeMarketServices[name].GetItemInfo(item);
+
+                if(itemInfo.Price > 0 && itemInfo.Count > 0)
+                {
+                    itemInfo.Platform = platform;
+                    itemInfos.Add(itemInfo);
+                }
 
                 indexPlatform++;
             }
 
-            if (itemInfo.Price <= 0)
-                throw new Exception("POSHLI VSE NAXYI SERVICE OTKIS");
-            if (itemInfo.Count <= 0)
-                throw new Exception("POSHLI VSE NAXYI PREDMETOV NET");
+            if (itemInfos.Count == 0)
+                throw new Exception("VSE OTKISLO");
 
-            return itemInfo;
+            return itemInfos.MinBy(m => m.Price)!;
         }
 
-        public async Task BuyItem(ItemInfo info, string tradeUrl)
+        //TODO Если не получается купить на одном сервисе запускать поиск и заново попытаться
+        public async Task<BuyItem> BuyItem(ItemInfo info, string tradeUrl)
         {
+            string name = info.Platform.Name!;
 
+            bool IsExistService = TradeMarketServices.ContainsKey(name);
+
+            if (!IsExistService)
+                throw new ArgumentException("None service");
+
+            return await TradeMarketServices[name].BuyItem(info.Item, tradeUrl);
         }
     }
 }

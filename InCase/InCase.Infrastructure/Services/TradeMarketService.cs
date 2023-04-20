@@ -59,7 +59,8 @@ namespace InCase.Infrastructure.Services
             ItemInfo info = new()
             {
                 Count = infoTM.Offers!.Count,
-                Price = decimal.Parse(infoTM.MinPrice!)
+                Price = decimal.Parse(infoTM.MinPrice!),
+                Item = gameItem
             };
 
             return info;
