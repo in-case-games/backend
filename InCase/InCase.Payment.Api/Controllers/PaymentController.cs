@@ -37,14 +37,15 @@ namespace InCase.Payment.Api.Controllers
 
         [AuthorizeRoles(Roles.All)]
         [HttpGet("withdrawn")]
-        public async Task<IActionResult> WithdrawItem(DataWithdrawItem withdrawItem)
+        public async Task<IActionResult> WithdrawItem(DataWithdrawItem data)
         {
+            //Transfer for bot await _gameMoneyService.TransferMoneyToTradeMarket(item.Cost / 7);
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             UserInventory? inventory = await context.UserInventories
                 .Include(i => i.Item)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(f => f.ItemId == withdrawItem.ItemId && f.UserId == UserId);
+                .FirstOrDefaultAsync(f => f.ItemId == data.ItemId && f.UserId == UserId);
 
             if (inventory == null)
                 return ResponseUtil.NotFound("User inventory");
@@ -65,12 +66,10 @@ namespace InCase.Payment.Api.Controllers
 
             decimal balance = await _withdrawService.GetBalance(itemInfo.Market);
 
-            if (balance <= itemInfoPrice) {
-                await _gameMoneyService.TransferMoneyToTradeMarket(item.Cost / 7);
+            if (balance <= itemInfoPrice) 
                 return ResponseUtil.Conflict("Wait payment");
-            }
 
-            BuyItem buyItem = await _withdrawService.BuyItem(itemInfo, withdrawItem.TradeUrl!);
+            BuyItem buyItem = await _withdrawService.BuyItem(itemInfo, data.TradeUrl!);
 
             if (buyItem.Result != "OK")
                 return ResponseUtil.Conflict("Unknown error");
@@ -103,19 +102,19 @@ namespace InCase.Payment.Api.Controllers
 
         [AllowAnonymous]
         [HttpPost("deposit")]
-        public async Task<IActionResult> TopUpBalance(ResponsePaymentGM paymentAnswer)
+        public async Task<IActionResult> TopUpBalance(ResponsePaymentGM answer)
         {
-            if (paymentAnswer.StatusAnswer != "success")
-                return ResponseUtil.Conflict(paymentAnswer.ParametersAnswer ?? "Error");
+            if (answer.StatusAnswer != "success")
+                return ResponseUtil.Conflict(answer.ParametersAnswer ?? "Error");
 
-            byte[] hashOfDataInSignIn = Encoding.ASCII.GetBytes(paymentAnswer.ToString());
-            byte[] signature = Encoding.ASCII.GetBytes(paymentAnswer.SignatureRSA!);
+            byte[] hashOfDataInSignIn = Encoding.ASCII.GetBytes(answer.ToString());
+            byte[] signature = Encoding.ASCII.GetBytes(answer.SignatureRSA!);
 
             if (!_rsaService.VerifySignatureRSA(hashOfDataInSignIn, signature))
                 return Forbid("Poshel hacker lesom");
 
             ResponseInvoiceStatusGM? invoiceInfoStatus = await _gameMoneyService
-                .GetInvoiceStatusInfo(paymentAnswer.Invoice);
+                .GetInvoiceStatusInfo(answer.Invoice);
 
             if (invoiceInfoStatus is null || invoiceInfoStatus.Status != "Paid")
                 return ResponseUtil.Ok("Payed. Wait some time for replenishment");
@@ -139,7 +138,7 @@ namespace InCase.Payment.Api.Controllers
         }
 
         [AuthorizeRoles(Roles.Owner, Roles.Bot)]
-        [HttpGet("terminal/balance/{currency}")]
+        [HttpGet("balance/{currency}")]
         public async Task<IActionResult> GetTerminalBalance(string currency)
         {
             ResponseBalanceGM? answerBalanceInfoGM = await _gameMoneyService.GetBalance(currency);
