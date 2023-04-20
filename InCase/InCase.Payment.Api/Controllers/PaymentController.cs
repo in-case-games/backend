@@ -74,8 +74,14 @@ namespace InCase.Payment.Api.Controllers
             if (buyItem.Result != "OK")
                 return ResponseUtil.Conflict("Unknown error");
 
+            ItemWithdrawStatus status = await context.ItemWithdrawStatuses
+                .AsNoTracking()
+                .FirstAsync(f => f.Name == "purchase");
+
             UserHistoryWithdraw withdraw = new()
             {
+                IdForMarket = buyItem.Id,
+                StatusId = status.Id,
                 Date = DateTime.UtcNow,
                 ItemId = item.Id,
                 UserId = UserId
