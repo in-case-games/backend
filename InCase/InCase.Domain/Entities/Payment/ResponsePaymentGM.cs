@@ -2,7 +2,7 @@
 
 namespace InCase.Domain.Entities.Payment
 {
-    public class ResponsePaymentGM : PaymentEntity
+    public class ResponsePaymentGM
     {
         [JsonPropertyName("state")] public string? StatusAnswer { get; set; }
         [JsonPropertyName("invoice")] public int Invoice { get; set; }

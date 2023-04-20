@@ -17,7 +17,7 @@ namespace InCase.Payment.Api.Controllers
     public class PaymentController : ControllerBase
     {
         private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
-        private readonly TradeMarketService _marketTMService;
+        private readonly WithdrawItemService _withdrawService;
         private readonly EncryptorService _rsaService;
         private readonly GameMoneyService _gameMoneyService;
         private Guid UserId => Guid
@@ -25,12 +25,12 @@ namespace InCase.Payment.Api.Controllers
 
         public PaymentController(
             IDbContextFactory<ApplicationDbContext> contextFactory,
-            TradeMarketService marketTMService,
+            WithdrawItemService withdrawService,
             EncryptorService rsaService,
             GameMoneyService gameMoneyService)
         {
             _contextFactory = contextFactory;
-            _marketTMService = marketTMService;
+            _withdrawService = withdrawService;
             _rsaService = rsaService;
             _gameMoneyService = gameMoneyService;
         }
@@ -52,41 +52,31 @@ namespace InCase.Payment.Api.Controllers
             GameItem item = inventory.Item!;
 
             item.Game = await context.Games
+                .Include(i => i.Platforms)
+                .AsNoTracking()
                 .FirstAsync(f => f.Id == item.GameId);
 
-            if (string.IsNullOrEmpty(item.IdForPlatform))
-            {
-                //TODO Notify admin by telegram auto withdrawn no work
-                return ResponseUtil.Ok("Wait for the admin to accept");
-            }
-
             //Check info item in tm
-            ItemInfoTM? itemInfoTM = await _marketTMService.GetMarketItemInfo(item);
+            ItemInfo itemInfo = await _withdrawService.GetItemInfo(item);
 
-            if (itemInfoTM == null || itemInfoTM.Offers!.Count <= 0)
-                return ResponseUtil.NotFound("Game item for platform");
+            decimal minItemPriceTM = itemInfo.Price / 7;
 
-            decimal minItemPriceTM = decimal.Parse(itemInfoTM.MinPrice!) / 100;
-
-            if (minItemPriceTM > item.Cost / 7 * 1.1M)
+            if (minItemPriceTM > item.Cost * 1.1M)
                 return ResponseUtil.Conflict("Item no stability price, exchange");
 
             //Check balance tm
-            decimal balanceTM = await _marketTMService.GetTradeMarketInfo();
+            decimal balance = await _withdrawService.GetBalance(itemInfo.Platform);
 
-            if (balanceTM <= item.Cost / 7)
+            if (balance <= minItemPriceTM)
                 return ResponseUtil.Conflict("Wait payment");
 
             await _gameMoneyService.TransferMoneyToTradeMarket(item.Cost / 7);
 
             //Buy item tm
-            ResponseBuyItemTM? itemBuyTM = await _marketTMService.BuyMarketItem(
-                item,
-                withdrawItem.TradeUrl!,
-                withdrawItem.TradeUrl!);
+            /*ResponseBuyItemTM? itemBuyTM = await _withdrawService.BuyItem(itemInfo, withdrawItem.TradeUrl);
 
             if (itemBuyTM is null)
-                return ResponseUtil.NotFound("Trade url");
+                return ResponseUtil.NotFound("Trade url");*/
 
             context.UserInventories.Remove(inventory);
 
@@ -155,9 +145,9 @@ namespace InCase.Payment.Api.Controllers
 
         [AuthorizeRoles(Roles.Owner, Roles.Bot)]
         [HttpGet("market/balance")]
-        public async Task<IActionResult> GetTradeMarketBalance()
+        public async Task<IActionResult> GetTradeMarketBalance(GamePlatform platform)
         {
-            return ResponseUtil.Ok(await _marketTMService.GetTradeMarketInfo());
+            return ResponseUtil.Ok(await _withdrawService.GetBalance(platform));
         }
     }
 }

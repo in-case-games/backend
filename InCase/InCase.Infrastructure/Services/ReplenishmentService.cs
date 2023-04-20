@@ -6,7 +6,6 @@ namespace InCase.Infrastructure.Services
     {
         public ReplenishmentService()
         {
-            
         }
 
         public async Task GetInvoiceStatus(string invoice)

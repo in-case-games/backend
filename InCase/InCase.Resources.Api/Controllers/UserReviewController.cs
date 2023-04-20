@@ -265,9 +265,6 @@ namespace InCase.Resources.Api.Controllers
                 .AsNoTracking()
                 .FirstOrDefaultAsync(f => f.Id == image.ReviewId);
 
-            // Бесполезная проверка
-            // if (review is null)
-            //     return ResponseUtil.NotFound(nameof(UserReview));
             if (review!.UserId != UserId)
                 return Conflict("Access denied");
 

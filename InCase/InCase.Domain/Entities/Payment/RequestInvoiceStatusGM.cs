@@ -2,7 +2,7 @@
 
 namespace InCase.Domain.Entities.Payment
 {
-    public class RequestInvoiceStatusGM : PaymentEntity
+    public class RequestInvoiceStatusGM
     {
         [JsonPropertyName("project")] public int ProjectId { get; set; }
         [JsonPropertyName("invoice")] public int InvoiceId { get; set; }
