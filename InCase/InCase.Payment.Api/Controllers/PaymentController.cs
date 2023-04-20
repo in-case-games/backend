@@ -56,21 +56,19 @@ namespace InCase.Payment.Api.Controllers
                 .AsNoTracking()
                 .FirstAsync(f => f.Id == item.GameId);
 
-            //Check info item in tm
             ItemInfo itemInfo = await _withdrawService.GetItemInfo(item);
 
-            decimal minItemPriceTM = itemInfo.Price / 7;
+            decimal itemInfoPrice = itemInfo.Price / 7;
 
-            if (minItemPriceTM > item.Cost * 1.1M)
+            if (itemInfoPrice > item.Cost * 1.1M)
                 return ResponseUtil.Conflict("Item no stability price, exchange");
 
-            //Check balance tm
             decimal balance = await _withdrawService.GetBalance(itemInfo.Platform);
 
-            if (balance <= minItemPriceTM)
+            if (balance <= itemInfoPrice) {
+                await _gameMoneyService.TransferMoneyToTradeMarket(item.Cost / 7);
                 return ResponseUtil.Conflict("Wait payment");
-
-            await _gameMoneyService.TransferMoneyToTradeMarket(item.Cost / 7);
+            }
 
             //Buy item tm
             /*ResponseBuyItemTM? itemBuyTM = await _withdrawService.BuyItem(itemInfo, withdrawItem.TradeUrl);
@@ -78,7 +76,16 @@ namespace InCase.Payment.Api.Controllers
             if (itemBuyTM is null)
                 return ResponseUtil.NotFound("Trade url");*/
 
+            UserHistoryWithdrawn withdrawn = new()
+            {
+                Date = DateTime.UtcNow,
+                ItemId = item.Id,
+                UserId = UserId
+            };
+
+            await context.UserHistoryWithdrawns.AddAsync(withdrawn);
             context.UserInventories.Remove(inventory);
+            await context.SaveChangesAsync();
 
             return ResponseUtil.Ok("Item was withdrawed");
         }

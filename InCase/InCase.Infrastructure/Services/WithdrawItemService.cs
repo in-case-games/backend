@@ -65,7 +65,6 @@ namespace InCase.Infrastructure.Services
             return itemInfos.MinBy(m => m.Price)!;
         }
 
-        //TODO Если не получается купить на одном сервисе запускать поиск и заново попытаться
         public async Task<BuyItem> BuyItem(ItemInfo info, string tradeUrl)
         {
             string name = info.Platform.Name!;
@@ -75,7 +74,20 @@ namespace InCase.Infrastructure.Services
             if (!IsExistService)
                 throw new ArgumentException("None service");
 
-            return await TradeMarketServices[name].BuyItem(info.Item, tradeUrl);
+            BuyItem buyItem = new();
+            int numberAttempts = 5;
+
+            while(numberAttempts != 0 || buyItem.Result != "OK")
+            {
+                info = await GetItemInfo(info.Item);
+                buyItem = await TradeMarketServices[name].BuyItem(info.Item, tradeUrl);
+                numberAttempts--;
+            }
+
+            if (buyItem.Result != "OK")
+                throw new Exception("Buy item no success");
+
+            return buyItem;
         }
     }
 }
