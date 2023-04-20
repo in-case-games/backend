@@ -8,7 +8,7 @@ namespace InCase.Domain.Entities.Resources
         public string? Name { get; set; }
         public decimal Cost { get; set; }
         public string? ImageUri { get; set; }
-        public string? IdForPlatform { get; set; }
+        public string? IdForMarket { get; set; }
 
         [JsonIgnore]
         public Guid GameId { get; set; }
@@ -41,7 +41,7 @@ namespace InCase.Domain.Entities.Resources
             Name = Name,
             Cost = Cost,
             ImageUri = ImageUri,
-            IdForPlatform = IdForPlatform,
+            IdForMarket = IdForMarket,
             TypeId = Type?.Id ?? TypeId,
             RarityId = Rarity?.Id ?? RarityId,
             GameId = Game?.Id ?? GameId,

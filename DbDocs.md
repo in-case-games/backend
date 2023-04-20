@@ -396,11 +396,11 @@
 |PK|Id|uniqueidentifier|True|NEWID(), UNIQUE|
 ||Name|nvarchar(50)|True|UNIQUE|
 
-**GamePlatform**
+**GameMarket**
 
 Описание:
 
-- Таблица представляет из себя коллекцию платформ для игры
+- Таблица представляет из себя коллекцию магазинов для игры
 
 Связи:
 
@@ -454,7 +454,7 @@
 ||Name|nvarchar(50)|True|-|
 ||Cost|decimal(18, 5)|True|-|
 ||ImageUri|nvarchar(MAX)|True|-|
-||IdForPlatform|nvarchar(MAX)|False|-|
+||IdForMarket|nvarchar(MAX)|False|-|
 |FK|GameId|uniqueidentifier|True|-|
 |FK|TypeId|uniqueidentifier|False|-|
 |FK|RarityId|uniqueidentifier|False|-|

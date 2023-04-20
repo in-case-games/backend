@@ -4,13 +4,13 @@ using InCase.Domain.Entities.Resources;
 
 namespace InCase.Infrastructure.Configurations
 {
-    internal class GamePlatformConfiguration : BaseEntityConfiguration<GamePlatform>
+    internal class GameMarketConfiguration : BaseEntityConfiguration<GameMarket>
     {
-        public override void Configure(EntityTypeBuilder<GamePlatform> builder)
+        public override void Configure(EntityTypeBuilder<GameMarket> builder)
         {
             base.Configure(builder);
 
-            builder.ToTable(nameof(GamePlatform));
+            builder.ToTable(nameof(GameMarket));
 
             builder.HasIndex(i => i.GameId)
                 .IsUnique(false);
@@ -30,7 +30,7 @@ namespace InCase.Infrastructure.Configurations
                 .IsRequired();
 
             builder.HasOne(o => o.Game)
-                .WithMany(o => o.Platforms)
+                .WithMany(o => o.Markets)
                 .HasForeignKey(o => o.GameId)
                 .OnDelete(DeleteBehavior.Cascade);
         }

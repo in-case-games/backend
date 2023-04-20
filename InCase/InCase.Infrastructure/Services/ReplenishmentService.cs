@@ -18,7 +18,7 @@ namespace InCase.Infrastructure.Services
 
         }
 
-        public async Task TransferMoneyToTradeMarket(GamePlatform platform, decimal amount)
+        public async Task TransferMoneyToTradeMarket(GameMarket market, decimal amount)
         {
 
         }

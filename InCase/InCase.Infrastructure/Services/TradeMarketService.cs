@@ -31,7 +31,7 @@ namespace InCase.Infrastructure.Services
         {
             string requestUrl = string.Format("https://market.{0}.com/api/Buy/{1}/?key={2}/partner={3}/token={4}",
                 gameItem.Name!.ToLower(),
-                gameItem.IdForPlatform,
+                gameItem.IdForMarket,
                 _configuration["MarketTM:Secret"],
                 tradeUrl,
                 tradeUrl);
@@ -51,7 +51,7 @@ namespace InCase.Infrastructure.Services
         {
             string requestUrl = string.Format("https://{0}.com/api/ItemInfo/{1}/ru/?key={2}",
                 gameItem.Name!.ToLower(),
-                gameItem.IdForPlatform,
+                gameItem.IdForMarket,
                 _configuration["MarketTM:Secret"]);
 
             ItemInfoTM infoTM = (await TakeResponse<ItemInfoTM>(requestUrl))!;

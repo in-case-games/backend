@@ -29,7 +29,7 @@ namespace InCase.Infrastructure.Configurations
                 .IsRequired();
             builder.Property(p => p.ImageUri)
                 .IsRequired();
-            builder.Property(p => p.IdForPlatform)
+            builder.Property(p => p.IdForMarket)
                 .IsRequired(false);
 
             builder.HasOne(o => o.Game)

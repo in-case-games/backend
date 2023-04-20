@@ -17,9 +17,9 @@ namespace InCase.Infrastructure.Services
             };
         }
 
-        public async Task<decimal> GetBalance(GamePlatform platform)
+        public async Task<decimal> GetBalance(GameMarket market)
         {
-            string name = platform.Name!;
+            string name = market.Name!;
 
             bool IsExistService = TradeMarketServices.ContainsKey(name);
 
@@ -34,29 +34,29 @@ namespace InCase.Infrastructure.Services
             Game game = item.Game ?? throw new ArgumentNullException("Game", 
                 "Along with the item, it is necessary to transfer the game");
 
-            List<GamePlatform> platforms = game.Platforms ?? throw new ArgumentNullException("GamePlatform",
-                "Along with the game, it is necessary to transfer the platforms");
+            List<GameMarket> markets = game.Markets ?? throw new ArgumentNullException("GameMarket",
+                "Along with the game, it is necessary to transfer the markets");
 
-            if (platforms.Count == 0)
+            if (markets.Count == 0)
                 throw new ArgumentException("The game has no ways to output an item");
 
             List<ItemInfo> itemInfos = new();
-            int indexPlatform = 0;
+            int indexMarket = 0;
 
-            while(indexPlatform < platforms.Count)
+            while(indexMarket < markets.Count)
             {
-                GamePlatform platform = platforms[indexPlatform];
-                string name = platform.Name!;
+                GameMarket market = markets[indexMarket];
+                string name = market.Name!;
 
                 ItemInfo itemInfo = await TradeMarketServices[name].GetItemInfo(item);
 
                 if(itemInfo.Price > 0 && itemInfo.Count > 0)
                 {
-                    itemInfo.Platform = platform;
+                    itemInfo.Market = market;
                     itemInfos.Add(itemInfo);
                 }
 
-                indexPlatform++;
+                indexMarket++;
             }
 
             if (itemInfos.Count == 0)
@@ -67,7 +67,7 @@ namespace InCase.Infrastructure.Services
 
         public async Task<BuyItem> BuyItem(ItemInfo info, string tradeUrl)
         {
-            string name = info.Platform.Name!;
+            string name = info.Market.Name!;
 
             bool IsExistService = TradeMarketServices.ContainsKey(name);
 

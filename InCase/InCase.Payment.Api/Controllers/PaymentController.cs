@@ -52,7 +52,7 @@ namespace InCase.Payment.Api.Controllers
             GameItem item = inventory.Item!;
 
             item.Game = await context.Games
-                .Include(i => i.Platforms)
+                .Include(i => i.Markets)
                 .AsNoTracking()
                 .FirstAsync(f => f.Id == item.GameId);
 
@@ -63,7 +63,7 @@ namespace InCase.Payment.Api.Controllers
             if (itemInfoPrice > item.Cost * 1.1M)
                 return ResponseUtil.Conflict("Item no stability price, exchange");
 
-            decimal balance = await _withdrawService.GetBalance(itemInfo.Platform);
+            decimal balance = await _withdrawService.GetBalance(itemInfo.Market);
 
             if (balance <= itemInfoPrice) {
                 await _gameMoneyService.TransferMoneyToTradeMarket(item.Cost / 7);
@@ -139,10 +139,10 @@ namespace InCase.Payment.Api.Controllers
         }
 
         [AuthorizeRoles(Roles.Owner, Roles.Bot)]
-        [HttpGet("gamemoney/balance/{currency}")]
-        public async Task<IActionResult> GetGameMoneyBalance(string currency)
+        [HttpGet("terminal/balance/{currency}")]
+        public async Task<IActionResult> GetTerminalBalance(string currency)
         {
-            ResponseBalanceGM? answerBalanceInfoGM = await _gameMoneyService.GetBalanceInfo(currency);
+            ResponseBalanceGM? answerBalanceInfoGM = await _gameMoneyService.GetBalance(currency);
 
             return answerBalanceInfoGM is null ?
                 ResponseUtil.NotFound(nameof(ResponseBalanceGM)) : 
@@ -151,9 +151,9 @@ namespace InCase.Payment.Api.Controllers
 
         [AuthorizeRoles(Roles.Owner, Roles.Bot)]
         [HttpGet("market/balance")]
-        public async Task<IActionResult> GetTradeMarketBalance(GamePlatform platform)
+        public async Task<IActionResult> GetMarketBalance(GameMarket market)
         {
-            return ResponseUtil.Ok(await _withdrawService.GetBalance(platform));
+            return ResponseUtil.Ok(await _withdrawService.GetBalance(market));
         }
     }
 }

@@ -13,7 +13,7 @@ namespace InCase.Infrastructure.Data
         public DbSet<GameItemQuality> GameItemQualities => Set<GameItemQuality>();
         public DbSet<GameItemRarity> GameItemRarities => Set<GameItemRarity>();
         public DbSet<GameItemType> GameItemTypes => Set<GameItemType>();
-        public DbSet<GamePlatform> GamePlatforms => Set<GamePlatform>();
+        public DbSet<GameMarket> GameMarkets => Set<GameMarket>();
         public DbSet<GroupLootBox> GroupLootBoxes => Set<GroupLootBox>();
         public DbSet<LootBox> LootBoxes => Set<LootBox>();
         public DbSet<LootBoxBanner> LootBoxBanners => Set<LootBoxBanner>();

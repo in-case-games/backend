@@ -3,7 +3,7 @@ using InCase.Domain.Dtos;
 
 namespace InCase.Domain.Entities.Resources
 {
-    public class GamePlatform : BaseEntity
+    public class GameMarket : BaseEntity
     {
         public string? Name { get; set; }
         public string? DomainUri { get; set; }
@@ -14,7 +14,7 @@ namespace InCase.Domain.Entities.Resources
         [JsonIgnore]
         public Game? Game { get; set; }
 
-        public GamePlatformDto Convert(bool IsNewGuid = true) => new()
+        public GameMarketDto Convert(bool IsNewGuid = true) => new()
         {
             Id = IsNewGuid ? Guid.NewGuid() : Id,
             Name = Name,

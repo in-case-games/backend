@@ -20,7 +20,7 @@ namespace InCase.Infrastructure.Services
             _configuration = configuration;
         }
 
-        public async Task<ResponseBalanceGM?> GetBalanceInfo(string currency)
+        public async Task<ResponseBalanceGM?> GetBalance(string currency)
         {
             RequestBalanceGM requestBalanceInfo = new()
             {
@@ -67,7 +67,8 @@ namespace InCase.Infrastructure.Services
             return await PaymentResponse<ResponseInvoiceStatusGM, RequestInvoiceStatusGM>
                 (PaygateEndpoint.InvoiceInfo, requestInvoice);
         }
-        public async Task<T> PaymentResponse<T, O>(string url, O entity) where T : PaymentEntity
+        public async Task<T> PaymentResponse<T, O>(string url, O entity) 
+            where T : new()
         {
             JsonContent json = JsonContent.Create(entity);
             HttpResponseMessage response = await _httpClient.PostAsync(url, json);
