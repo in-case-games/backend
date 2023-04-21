@@ -2,6 +2,7 @@
 using InCase.Domain.Entities.Resources;
 using InCase.Domain.Interfaces;
 using Microsoft.Extensions.Configuration;
+using System;
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -11,32 +12,59 @@ namespace InCase.Infrastructure.Services
     public class TradeMarketService : ITradeMarket
     {
         private readonly IConfiguration _configuration;
-        private readonly HttpClient _httpClient = new();
+        private readonly ResponseService _responseService;
+        private readonly Dictionary<string, string> DomainUri = new()
+        {
+            ["csgo"] = "https://market.csgo.com",
+            ["dota2"] = "https://market.dota2.net"
+        };
 
-        public TradeMarketService(IConfiguration configuration)
+        private readonly Dictionary<string, string> TradeStatuses = new()
+        {
+            ["h_1"] = "purchase",
+            ["h_2"] = "given",
+            ["h_5"] = "cancel",
+            ["t_1"] = "waiting",
+            ["t_2"] = "waiting",
+            ["t_3"] = "waiting",
+            ["t_4"] = "transfer"
+        };
+
+        public TradeMarketService(IConfiguration configuration, ResponseService responseService)
         {
             _configuration = configuration;
+            _responseService = responseService;
         }
 
         public async Task<decimal> GetBalance()
         {
             string requestUrl = $"https://market.csgo.com/api/GetMoney/?key={_configuration["MarketTM:Secret"]}";
 
-            ResponseBalanceTM? balanceTM = await TakeResponse<ResponseBalanceTM>(requestUrl);
+            ResponseBalanceTM? balanceTM = await _responseService.ResponseGet<ResponseBalanceTM>(requestUrl);
 
-            return balanceTM!.Money;
+            if (balanceTM is null)
+                throw new Exception("Затычка");
+
+            return balanceTM.MoneyKopecks * 0.1M;
         }
 
-        public async Task<BuyItem> BuyItem(GameItem gameItem, string tradeUrl)
+        public async Task<BuyItem> BuyItem(ItemInfo info, string tradeUrl)
         {
-            string requestUrl = string.Format("https://market.{0}.com/api/Buy/{1}/?key={2}/partner={3}/token={4}",
-                gameItem.Name!.ToLower(),
-                gameItem.IdForMarket,
-                _configuration["MarketTM:Secret"],
-                tradeUrl,
-                tradeUrl);
+            int price = info.PriceKopecks;
+            string name = info.Item.Game!.Name!;
+            string uri = DomainUri[name];
+            string id = info.Item.IdForMarket!;
+            string[] splitTrade = tradeUrl.Split("&");
+            string partner = splitTrade[0].Split("=")[1];
+            string token = splitTrade[1].Split("=")[1];
 
-            ResponseBuyItemTM response = (await TakeResponse<ResponseBuyItemTM>(requestUrl))!;
+            string requestUrl = $"{uri}/api/Buy/{id}/{price}//?key={_configuration["MarketTM:Secret"]}" +
+                $"/partner={partner}/token={token}";
+
+            ResponseBuyItemTM? response = await _responseService.ResponseGet<ResponseBuyItemTM>(requestUrl);
+
+            if (response is null)
+                throw new Exception("Затычка");
 
             BuyItem item = new()
             {
@@ -47,49 +75,114 @@ namespace InCase.Infrastructure.Services
             return item;
         }
 
-        public async Task<ItemInfo> GetItemInfo(GameItem gameItem)
+        public async Task<ItemInfo> GetItemInfo(GameItem item)
         {
-            string requestUrl = string.Format("https://{0}.com/api/ItemInfo/{1}/ru/?key={2}",
-                gameItem.Name!.ToLower(),
-                gameItem.IdForMarket,
-                _configuration["MarketTM:Secret"]);
+            string name = item.Game!.Name!;
+            string uri = DomainUri[name];
+            string id = item.IdForMarket!;
 
-            ItemInfoTM infoTM = (await TakeResponse<ItemInfoTM>(requestUrl))!;
+            string requestUrl = $"{uri}/api/ItemInfo/{id}/ru/?key={_configuration["MarketTM:Secret"]}";
+
+            ItemInfoTM? infoTM = await _responseService.ResponseGet<ItemInfoTM>(requestUrl);
+
+            if (infoTM is null)
+                throw new Exception("Затычка");
 
             ItemInfo info = new()
             {
                 Count = infoTM.Offers!.Count,
-                Price = decimal.Parse(infoTM.MinPrice!),
-                Item = gameItem
+                PriceKopecks = int.Parse(infoTM.MinPrice!),
+                Item = item
             };
 
             return info;
         }
-        public async Task<T?> TakeResponse<T>(string url)
-        {
-            HttpResponseMessage response = await _httpClient.GetAsync(url);
 
-            if (!response.IsSuccessStatusCode)
+        public async Task<TradeInfo> GetTradeInfo(UserHistoryWithdraw withdraw)
+        {
+            string name = withdraw.Item!.Game!.Name!;
+            string uri = DomainUri[name];
+            int id = withdraw.IdForMarket;
+
+            string requestUrl = $"{uri}/api/Trades/?key={_configuration["MarketTM:Secret"]}";
+
+            List<ResponseTradeTM>? tradesTM = await _responseService
+                .ResponseGet<List<ResponseTradeTM>>(requestUrl);
+
+            if(tradesTM is null)
+                throw new Exception("Затычка");
+
+            ResponseTradeTM? tradeTM = tradesTM
+                .FirstOrDefault(f => f.Id == withdraw.IdForMarket);
+
+            if(tradeTM is null)
             {
-                throw new Exception(
-                    response.StatusCode.ToString() +
-                    response.RequestMessage! +
-                    response.Headers +
-                    response.ReasonPhrase! +
-                    response.Content);
+                long startTime = ((DateTimeOffset)withdraw.Date).ToUnixTimeSeconds();
+                long endTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+
+                requestUrl = $"{uri}/api/OperationHistory/{startTime}/{endTime}" +
+                    $"/?key={_configuration["MarketTM:Secret"]}";
+
+                List<ResponseOperationHistoryTM>? historiesTM = await _responseService
+                    .ResponseGet<List<ResponseOperationHistoryTM>>(requestUrl);
+
+                if (historiesTM is null)
+                    throw new Exception("Затычка");
+
+                ResponseOperationHistoryTM? historyTM = historiesTM
+                    .FirstOrDefault(f => f.Id == withdraw.IdForMarket);
+
+                if(historyTM is null)
+                    throw new Exception("Затычка");
+
+                return new()
+                {
+                    Id = withdraw.IdForMarket,
+                    Item = withdraw.Item,
+                    Status = TradeStatuses[historyTM.Status!]
+                };
             }
 
-            T? responseEntity = await response.Content
-                .ReadFromJsonAsync<T>(new JsonSerializerOptions(JsonSerializerDefaults.Web));
-
-            return responseEntity;
+            return new()
+            {
+                Id = withdraw.IdForMarket,
+                Item = withdraw.Item,
+                Status = TradeStatuses[tradeTM.Status!]
+            };
         }
 
-        public Task<TradeInfo> GetTradeInfo(UserHistoryWithdraw withdraw)
+        private class ResponseOperationHistoryTM
         {
-            throw new NotImplementedException();
-        }
+            private string? _status;
 
+            [JsonPropertyName("h_id")] public int Id { get; set; }
+            [JsonPropertyName("h_event")] public string? Type { get; set; }
+            [JsonPropertyName("stage")] public string? Status {
+                get => _status;
+                set
+                {
+                    _status = "h_" + value;
+                }
+            }
+        }
+        private class ResponseTradeTM
+        {
+            private string? _status;
+
+            [JsonPropertyName("ui_id")] public int Id { get; set; }
+            [JsonPropertyName("ui_status")] public string? Status
+            {
+                get => _status;
+                set
+                {
+                    _status = "t_" + value;
+                }
+            }
+            [JsonPropertyName("ui_price")] public decimal Price { get; set; }
+            [JsonPropertyName("position")] public int Position { get; set; }
+            [JsonPropertyName("left")] public int Left { get; set; }
+
+        }
         private class ResponseBuyItemTM
         {
             [JsonPropertyName("result")] public string? Result { get; set; }
@@ -97,7 +190,7 @@ namespace InCase.Infrastructure.Services
         }
         private class ResponseBalanceTM
         {
-            [JsonPropertyName("money")] public decimal Money { get; set; }
+            [JsonPropertyName("money")] public int MoneyKopecks { get; set; }
         }
         private class BuyOfferTM
         {

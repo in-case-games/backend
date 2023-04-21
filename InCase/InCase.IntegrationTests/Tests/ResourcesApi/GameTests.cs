@@ -1,4 +1,4 @@
-﻿using InCase.IntegrationTests.Services;
+﻿using InCase.Infrastructure.Services;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
 using System.Net;

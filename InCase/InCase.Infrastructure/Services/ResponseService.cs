@@ -2,9 +2,8 @@
 using System.Net.Http.Json;
 using System.Net;
 using System.Text.Json;
-using InCase.Domain.Entities;
 
-namespace InCase.IntegrationTests.Services
+namespace InCase.Infrastructure.Services
 {
     public class ResponseService
     {
@@ -82,7 +81,7 @@ namespace InCase.IntegrationTests.Services
         }
 
         public async Task<O?> ResponsePost<T, O>(string uri, T entity, string token = "")
-            where T : BaseEntity
+            where T : new()
         {
             _httpClient.DefaultRequestHeaders.Authorization = default;
 
@@ -109,7 +108,7 @@ namespace InCase.IntegrationTests.Services
                 .ReadFromJsonAsync<O>(new JsonSerializerOptions(JsonSerializerDefaults.Web));
         }
         public async Task<HttpStatusCode> ResponsePut<T>(string uri, T entity, string token = "")
-            where T : BaseEntity
+            where T : new()
         {
             _httpClient.DefaultRequestHeaders.Authorization = default;
 

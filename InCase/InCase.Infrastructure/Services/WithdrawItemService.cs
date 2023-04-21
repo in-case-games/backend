@@ -8,12 +8,12 @@ namespace InCase.Infrastructure.Services
     {
         private readonly Dictionary<string, ITradeMarket> _tradeMarketServices;
 
-        public WithdrawItemService(TradeMarketService marketTMService)
+        public WithdrawItemService(TradeMarketService tradeMarketService)
         {
             _tradeMarketServices = new()
             {
-                ["tm"] = marketTMService,
-                ["codashop"] = marketTMService,
+                ["tm"] = tradeMarketService,
+                ["codashop"] = tradeMarketService,
             };
         }
 
@@ -30,7 +30,7 @@ namespace InCase.Infrastructure.Services
             return await _tradeMarketServices[name].GetBalance();
         }
 
-        public async Task<ItemInfo> GetItemInfo(GameItem item)
+        public async Task<ItemInfo?> GetItemInfo(GameItem item)
         {
             Game game = item.Game ?? throw new ArgumentNullException("Game", 
                 "Along with the item, it is necessary to transfer the game");
@@ -51,7 +51,7 @@ namespace InCase.Infrastructure.Services
 
                 ItemInfo itemInfo = await _tradeMarketServices[name].GetItemInfo(item);
 
-                if(itemInfo.Price > 0 && itemInfo.Count > 0)
+                if(itemInfo.PriceKopecks > 0 && itemInfo.Count > 0)
                 {
                     itemInfo.Market = market;
                     itemInfos.Add(itemInfo);
@@ -60,10 +60,7 @@ namespace InCase.Infrastructure.Services
                 indexMarket++;
             }
 
-            if (itemInfos.Count == 0)
-                throw new Exception("No items market");
-
-            return itemInfos.MinBy(m => m.Price)!;
+            return itemInfos.MinBy(m => m.PriceKopecks);
         }
 
         public async Task<BuyItem> BuyItem(ItemInfo info, string tradeUrl)
@@ -81,14 +78,16 @@ namespace InCase.Infrastructure.Services
 
             while(numberAttempts != 0 || buyItem.Result != "OK")
             {
-                info = await GetItemInfo(info.Item);
-                buyItem = await _tradeMarketServices[name].BuyItem(info.Item, tradeUrl);
-                buyItem.Market = info.Market;
+                ItemInfo? getInfo = await GetItemInfo(info.Item);
+
+                if (getInfo is not null)
+                {
+                    buyItem = await _tradeMarketServices[name].BuyItem(getInfo, tradeUrl);
+                    buyItem.Market = info.Market;
+                }
+
                 numberAttempts--;
             }
-
-            if (buyItem.Result != "OK")
-                throw new Exception("Buy item no success");
 
             return buyItem;
         }

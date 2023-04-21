@@ -16,6 +16,8 @@ namespace InCase.Payment.Api.Controllers
     [ApiController]
     public class PaymentController : ControllerBase
     {
+        private const decimal CostInCoin = 7M;
+        private const decimal UpperLimitCost = 1.1M;
         private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
         private readonly WithdrawItemService _withdrawService;
         private readonly EncryptorService _rsaService;
@@ -39,29 +41,28 @@ namespace InCase.Payment.Api.Controllers
         [HttpGet("withdraw")]
         public async Task<IActionResult> WithdrawItem(DataWithdrawItem data)
         {
-            //Transfer for bot await _gameMoneyService.TransferMoneyToTradeMarket(item.Cost / 7);
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             UserInventory? inventory = await context.UserInventories
                 .Include(i => i.Item)
+                .Include(i => i.Item!.Game!)
+                    .ThenInclude(ti => ti.Markets)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(f => f.ItemId == data.ItemId && f.UserId == UserId);
 
             if (inventory == null)
-                return ResponseUtil.NotFound("User inventory");
+                return ResponseUtil.NotFound(nameof(UserInventory));
 
             GameItem item = inventory.Item!;
 
-            item.Game = await context.Games
-                .Include(i => i.Markets)
-                .AsNoTracking()
-                .FirstAsync(f => f.Id == item.GameId);
+            ItemInfo? itemInfo = await _withdrawService.GetItemInfo(item);
 
-            ItemInfo itemInfo = await _withdrawService.GetItemInfo(item);
+            if (itemInfo is null)
+                return ResponseUtil.Conflict(nameof(ItemInfo));
 
-            decimal itemInfoPrice = itemInfo.Price / 7;
+            decimal itemInfoPrice = itemInfo.PriceKopecks * 0.1M;
 
-            if (itemInfoPrice > item.Cost * 1.1M)
+            if (itemInfoPrice > item.Cost * UpperLimitCost / CostInCoin)
                 return ResponseUtil.Conflict("Item no stability price, exchange");
 
             decimal balance = await _withdrawService.GetBalance(itemInfo.Market);
@@ -71,8 +72,8 @@ namespace InCase.Payment.Api.Controllers
 
             BuyItem buyItem = await _withdrawService.BuyItem(itemInfo, data.TradeUrl!);
 
-            if (buyItem.Result != "OK")
-                return ResponseUtil.Conflict("Unknown error");
+            if (buyItem.Result != "ok")
+                return ResponseUtil.Conflict(nameof(BuyItem));
 
             ItemWithdrawStatus status = await context.ItemWithdrawStatuses
                 .AsNoTracking()
@@ -94,7 +95,7 @@ namespace InCase.Payment.Api.Controllers
 
             await context.SaveChangesAsync();
 
-            return ResponseUtil.Ok("Item was withdrawed");
+            return ResponseUtil.Ok(withdraw);
         }
 
         [AuthorizeRoles(Roles.All)]
@@ -120,41 +121,41 @@ namespace InCase.Payment.Api.Controllers
             byte[] signature = Encoding.ASCII.GetBytes(answer.SignatureRSA!);
 
             if (!_rsaService.VerifySignatureRSA(hashOfDataInSignIn, signature))
-                return Forbid("Poshel hacker lesom");
+                return Forbid("No verify signature rsa");
 
             ResponseInvoiceStatusGM? invoiceInfoStatus = await _gameMoneyService
                 .GetInvoiceStatusInfo(answer.Invoice);
 
             if (invoiceInfoStatus is null || invoiceInfoStatus.Status != "Paid")
-                return ResponseUtil.Ok("Payed. Wait some time for replenishment");
+                return ResponseUtil.Ok("Wait some time for replenishment");
 
             byte[] signatureInvoice = Encoding.ASCII.GetBytes(invoiceInfoStatus.SignatureRSA!);
             byte[] hashOfDataInvoice = Encoding.ASCII.GetBytes(invoiceInfoStatus.ToString()!);
 
             if (!_rsaService.VerifySignatureRSA(hashOfDataInvoice, signatureInvoice))
-                return Forbid("Poshel hacker lesom");
+                return Forbid("No verify signature rsa");
 
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             UserAdditionalInfo info = (await context.UserAdditionalInfos
                 .FirstOrDefaultAsync(x => x.UserId == invoiceInfoStatus.UserId))!;
 
-            info.Balance += invoiceInfoStatus.Amount * 7; //TODO Check current answer
+            info.Balance += invoiceInfoStatus.Amount * CostInCoin; //TODO Check current answer
 
             await context.SaveChangesAsync();
 
-            return ResponseUtil.Ok("Balance top up");
+            return ResponseUtil.Ok(info);
         }
 
         [AuthorizeRoles(Roles.Owner, Roles.Bot)]
         [HttpGet("balance/{currency}")]
         public async Task<IActionResult> GetTerminalBalance(string currency)
         {
-            ResponseBalanceGM? answerBalanceInfoGM = await _gameMoneyService.GetBalance(currency);
+            ResponseBalanceGM? balance = await _gameMoneyService.GetBalance(currency);
 
-            return answerBalanceInfoGM is null ?
+            return balance is null ?
                 ResponseUtil.NotFound(nameof(ResponseBalanceGM)) : 
-                ResponseUtil.Ok(answerBalanceInfoGM);
+                ResponseUtil.Ok(balance);
         }
 
         [AuthorizeRoles(Roles.Owner, Roles.Bot)]
@@ -162,6 +163,14 @@ namespace InCase.Payment.Api.Controllers
         public async Task<IActionResult> GetMarketBalance(GameMarket market)
         {
             return ResponseUtil.Ok(await _withdrawService.GetBalance(market));
+        }
+
+        //TODO Transfer method
+        [AuthorizeRoles(Roles.Bot)]
+        [HttpGet("withdraw/status")]
+        public async Task<IActionResult> GetWithdrawStatus(UserHistoryWithdraw withdraw)
+        {
+            return ResponseUtil.Ok(await _withdrawService.GetTradeInfo(withdraw));
         }
     }
 }
