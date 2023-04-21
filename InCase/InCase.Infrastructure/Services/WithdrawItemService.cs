@@ -80,7 +80,8 @@ namespace InCase.Infrastructure.Services
 
                 if (getInfo is not null)
                 {
-                    buyItem = Task.Run(async() => await _tradeMarketServices[name].BuyItem(getInfo, tradeUrl)).Result;
+                    //Возможно вернуть task run result проверить это
+                    buyItem = await _tradeMarketServices[name].BuyItem(getInfo, tradeUrl);
                     buyItem.Market = info.Market;
                 }
 
