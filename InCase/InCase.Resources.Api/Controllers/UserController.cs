@@ -79,7 +79,7 @@ namespace InCase.Resources.Api.Controllers
 
         [AuthorizeRoles(Roles.All)]
         [HttpGet("history/withdraws")]
-        public async Task<IActionResult> GetWithdrawns()
+        public async Task<IActionResult> GetWithdraws()
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
@@ -96,12 +96,12 @@ namespace InCase.Resources.Api.Controllers
 
         [AllowAnonymous]
         [HttpGet("{id}/history/withdraws")]
-        public async Task<IActionResult> GetWithdrawnsById(Guid id)
+        public async Task<IActionResult> GetWithdrawsById(Guid id)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             User? user = await context.Users
-                .Include(i => i.HistoryWithdrawns!)
+                .Include(i => i.HistoryWithdraws!)
                     .ThenInclude(ti => ti.Item)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(f => f.Id == id);
@@ -109,9 +109,9 @@ namespace InCase.Resources.Api.Controllers
             if (user is null)
                 return ResponseUtil.NotFound("User");
 
-            return user.HistoryWithdrawns is null || user.HistoryWithdrawns.Count == 0 ?
+            return user.HistoryWithdraws is null || user.HistoryWithdraws.Count == 0 ?
                 ResponseUtil.NotFound(nameof(UserHistoryWithdraw)) : 
-                ResponseUtil.Ok(user.HistoryWithdrawns);
+                ResponseUtil.Ok(user.HistoryWithdraws);
         }
 
         [AuthorizeRoles(Roles.All)]
@@ -382,8 +382,6 @@ namespace InCase.Resources.Api.Controllers
         }
 
         //TODO Transfer method
-
-        //TODO Transfer method
         [AuthorizeRoles(Roles.All)]
         [HttpPost("banner")]
         public async Task<IActionResult> CreatePathBanner(UserPathBannerDto pathDto)
@@ -419,6 +417,36 @@ namespace InCase.Resources.Api.Controllers
                 return ResponseUtil.Conflict("The cost of the selected item cannot exceed the loot box by more than 20 times");
 
             return await EndpointUtil.Create(pathDto.Convert(), context);
+        }
+
+        //TODO Transfer method
+        [AuthorizeRoles(Roles.All)]
+        [HttpDelete("transfer/withdraw/{id}/inventory")]
+        public async Task<IActionResult> TransferWithdrawToInventory(Guid id)
+        {
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            UserHistoryWithdraw? withdraw = await context.UserHistoryWithdraws
+                .Include(i => i.Status)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(f => f.Id == id && f.UserId == UserId);
+
+            if (withdraw is null)
+                return ResponseUtil.NotFound(nameof(UserHistoryWithdraw));
+            if (withdraw.Status?.Name is null || withdraw.Status.Name != "cancel")
+                return ResponseUtil.Conflict("Your item is withdrawing, you can return it in case of cancellation");
+
+            UserInventory inventory = new()
+            {
+                Date = withdraw.Date,
+                FixedCost = withdraw.FixedCost,
+                ItemId = withdraw.ItemId,
+                UserId = UserId
+            };
+
+            await context.UserInventories.AddAsync(inventory);
+
+            return await EndpointUtil.Delete(withdraw, context);
         }
 
         //TODO Transfer method

@@ -6,8 +6,6 @@ namespace InCase.Domain.Entities.Resources
     public class GameMarket : BaseEntity
     {
         public string? Name { get; set; }
-        public string? DomainUri { get; set; }
-        public string? ImageUri { get; set; }
 
         [JsonIgnore]
         public Guid GameId { get; set; }
@@ -20,8 +18,6 @@ namespace InCase.Domain.Entities.Resources
         {
             Id = IsNewGuid ? Guid.NewGuid() : Id,
             Name = Name,
-            ImageUri = ImageUri,
-            DomainUri = DomainUri,
             GameId = Game?.Id ?? GameId,
         };
     }

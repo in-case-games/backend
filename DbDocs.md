@@ -411,8 +411,6 @@
 | :- | :- | :- | :- | :- |
 |PK|Id|uniqueidentifier|True|NEWID(), UNIQUE|
 ||Name|nvarchar(50)|True|UNIQUE|
-||ImageUri|nvarchar(MAX)|True|-|
-||DomainUri|nvarchar(MAX)|True|UNIQUE|
 |FK|GameId|uniqueidentifier|True|-|
 
 **LootBoxInventory**
@@ -507,6 +505,7 @@
 - User(Многие к одному)
 - GameItem:Item(Многие к одному)
 - ItemWithdrawStatus:Status(Один к одному)
+- GameMarket:Market(Многие к одному)
 
 
 |Key|Name|Type|IsRequired|Constrains|
@@ -514,19 +513,17 @@
 |PK|Id|uniqueidentifier|True|NEWID(), UNIQUE|
 ||IdForMarket|int|True|UNIQUE|
 ||Date|datetime2(7)|True|-|
+||FixedCost|decimal(18,5)|True|-|
 |FK|UserId|uniqueidentifier|True|-|
 |FK|ItemId|uniqueidentifier|True|-|
 |FK|StatusId|uniqueidentifier|True|-|
+|FK|MarketId|uniqueidentifier|True|-|
 
 **ItemWithdrawStatus**
 
 Описание:
 
 - Таблица представляет из себя статусы вывода предмета
-
-Связи:
-
-- UserHistoryWithdraw:HistoryWithdraw(Один к одному)
 
 
 |Key|Name|Type|IsRequired|Constrains|

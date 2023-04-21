@@ -29,7 +29,7 @@ namespace InCase.Domain.Entities.Resources
         [JsonIgnore]
         public List<UserInventory>? Inventories { get; set; }
         [JsonIgnore]
-        public List<UserHistoryWithdraw>? HistoryWithdrawns { get; set; }
+        public List<UserHistoryWithdraw>? HistoryWithdraws { get; set; }
 
         public UserDto Convert(bool IsNewGuid = true) => new()
         {

@@ -6,6 +6,7 @@ namespace InCase.Domain.Entities.Resources
     public class UserHistoryWithdraw : BaseEntity
     {
         public int IdForMarket { get; set; }
+        public decimal FixedCost { get; set; }
         public DateTime Date { get; set; }
 
         [JsonIgnore]
@@ -26,6 +27,7 @@ namespace InCase.Domain.Entities.Resources
         {
             Id = IsNewGuid ? Guid.NewGuid() : Id,
             Date = Date,
+            FixedCost = FixedCost,
             UserId = User?.Id ?? UserId,
             ItemId = Item?.Id ?? ItemId,
             MarketId = Market?.Id ?? MarketId,

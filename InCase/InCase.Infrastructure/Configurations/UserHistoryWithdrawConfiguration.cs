@@ -25,13 +25,16 @@ namespace InCase.Infrastructure.Configurations
                 .IsRequired();
             builder.Property(p => p.IdForMarket)
                 .IsRequired();
+            builder.Property(p => p.FixedCost)
+                .HasColumnType("DECIMAL(18,5)")
+                .IsRequired();
 
             builder.HasOne(o => o.User)
-                .WithMany(m => m.HistoryWithdrawns)
+                .WithMany(m => m.HistoryWithdraws)
                 .HasForeignKey(fk => fk.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
             builder.HasOne(o => o.Item)
-                .WithMany(m => m.HistoryWithdrawns)
+                .WithMany(m => m.HistoryWithdraws)
                 .HasForeignKey(fk => fk.ItemId)
                 .OnDelete(DeleteBehavior.Cascade);
             builder.HasOne(o => o.Status)

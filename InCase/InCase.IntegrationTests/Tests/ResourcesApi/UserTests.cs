@@ -1078,6 +1078,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
                 Id = DependenciesGuids["UserHistoryWithdrawn"],
                 IdForMarket = 10000,
                 Date = DateTime.UtcNow,
+                FixedCost = 500M,
                 ItemId = item1.Id,
                 UserId = DependenciesGuids["User"],
                 StatusId = (await Context.ItemWithdrawStatuses.FirstAsync(f => f.Name == "given")).Id,

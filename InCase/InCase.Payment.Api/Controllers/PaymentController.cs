@@ -85,7 +85,8 @@ namespace InCase.Payment.Api.Controllers
                 Date = DateTime.UtcNow,
                 ItemId = item.Id,
                 UserId = UserId,
-                MarketId = buyItem.Market!.Id
+                MarketId = buyItem.Market!.Id,
+                FixedCost = inventory.FixedCost
             };
 
             await context.UserHistoryWithdraws.AddAsync(withdraw);

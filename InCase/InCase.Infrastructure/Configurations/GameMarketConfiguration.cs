@@ -17,13 +17,6 @@ namespace InCase.Infrastructure.Configurations
 
             builder.HasIndex(i => i.Name)
                 .IsUnique();
-            builder.HasIndex(i => i.DomainUri)
-                .IsUnique();
-
-            builder.Property(p => p.ImageUri)
-                .IsRequired();
-            builder.Property(p => p.DomainUri)
-                .IsRequired();
 
             builder.Property(p => p.Name)
                 .HasMaxLength(50)

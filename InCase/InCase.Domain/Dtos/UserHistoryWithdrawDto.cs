@@ -6,6 +6,7 @@ namespace InCase.Domain.Dtos
     public class UserHistoryWithdrawDto : BaseEntity
     {
         public int IdForMarket { get; set; }
+        public decimal FixedCost { get; set; }
         public DateTime Date { get; set; }
         public Guid MarketId { get; set; }
         public Guid StatusId { get; set; }
@@ -16,6 +17,7 @@ namespace InCase.Domain.Dtos
         {
             Id = IsNewGuid ? Guid.NewGuid() : Id,
             Date = Date,
+            FixedCost = FixedCost,
             StatusId = StatusId,
             UserId = UserId,
             ItemId = ItemId,

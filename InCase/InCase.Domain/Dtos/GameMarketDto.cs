@@ -6,8 +6,6 @@ namespace InCase.Domain.Dtos
     public class GameMarketDto : BaseEntity
     {
         public string? Name { get; set; }
-        public string? DomainUri { get; set; }
-        public string? ImageUri { get; set; }
 
         public Guid GameId { get; set; }
 
@@ -15,9 +13,7 @@ namespace InCase.Domain.Dtos
         {
             Id = IsNewGuid ? Guid.NewGuid() : Id,
             Name = Name,
-            ImageUri = ImageUri,
             GameId = GameId,
-            DomainUri = DomainUri,
         };
     }
 }
