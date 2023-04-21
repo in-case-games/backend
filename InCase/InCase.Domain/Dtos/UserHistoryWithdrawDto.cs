@@ -5,7 +5,7 @@ namespace InCase.Domain.Dtos
 {
     public class UserHistoryWithdrawDto : BaseEntity
     {
-        public int IdForMarket { get; set; }
+        public string? IdForMarket { get; set; }
         public decimal FixedCost { get; set; }
         public DateTime Date { get; set; }
         public Guid MarketId { get; set; }

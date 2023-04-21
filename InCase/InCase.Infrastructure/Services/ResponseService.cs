@@ -8,16 +8,18 @@ namespace InCase.Infrastructure.Services
     public class ResponseService
     {
         private readonly HttpClient _httpClient;
-        public string BaseUrl { get; set; } = "https://localhost:7102";
+        public string BaseUrl { get; set; }
 
-        public ResponseService()
+        public ResponseService(string baseUrl = "")
         {
             _httpClient = new();
+            BaseUrl = baseUrl;
         }
 
-        public ResponseService(HttpClient httpClient)
+        public ResponseService(HttpClient httpClient, string baseUrl = "")
         {
             _httpClient = httpClient;
+            BaseUrl = baseUrl;
         }
 
         public async Task<HttpStatusCode> ResponseGetStatusCode(string uri, string token = "")

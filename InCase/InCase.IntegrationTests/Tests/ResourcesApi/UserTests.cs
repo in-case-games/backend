@@ -33,7 +33,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
         public UserTests(WebApplicationFactory<HostResourcesApiTests> webApplicationFactory,
             ITestOutputHelper output): base(output, _configuration)
         {
-            _responseService = new(webApplicationFactory.CreateClient());
+            _responseService = new(webApplicationFactory.CreateClient(), "https://localhost:7102");
         }
 
         [Theory]
@@ -1076,7 +1076,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
             UserHistoryWithdraw withdraw = new()
             {
                 Id = DependenciesGuids["UserHistoryWithdrawn"],
-                IdForMarket = 10000,
+                IdForMarket = "111",
                 Date = DateTime.UtcNow,
                 FixedCost = 500M,
                 ItemId = item1.Id,

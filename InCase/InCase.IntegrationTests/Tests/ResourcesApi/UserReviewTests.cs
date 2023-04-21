@@ -24,7 +24,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
         public UserReviewTests(WebApplicationFactory<HostResourcesApiTests> webApplicationFactory,
             ITestOutputHelper output) : base(output, _configuration)
         {
-            _responseService = new(webApplicationFactory.CreateClient());
+            _responseService = new(webApplicationFactory.CreateClient(), "https://localhost:7102");
         }
         [Theory]
         [InlineData(HttpStatusCode.OK)]

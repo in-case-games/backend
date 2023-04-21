@@ -70,6 +70,7 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
+builder.Services.AddSingleton<EncryptorService>();
 builder.Services.AddSingleton<ResponseService>();
 builder.Services.AddSingleton<GameMoneyService>();
 builder.Services.AddSingleton<TradeMarketService>();
@@ -95,3 +96,5 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+public partial class HostPaymentApiTests { }

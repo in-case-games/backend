@@ -17,15 +17,13 @@ namespace InCase.Infrastructure.Services
             };
         }
 
-        public async Task<decimal> GetBalance(GameMarket market)
+        public async Task<decimal> GetBalance(string name)
         {
-            string name = market.Name ?? throw new ArgumentNullException("GameMarket",
-                    "Along with the game, it is necessary to transfer the markets");
-
             bool IsExistService = _tradeMarketServices.ContainsKey(name);
 
             if (!IsExistService)
-                throw new ArgumentException("None service");
+                throw new ArgumentNullException("GameMarket",
+                    "Along with the game, it is necessary to transfer the markets");
 
             return await _tradeMarketServices[name].GetBalance();
         }
@@ -76,13 +74,13 @@ namespace InCase.Infrastructure.Services
             BuyItem buyItem = new();
             int numberAttempts = 5;
 
-            while(numberAttempts != 0 || buyItem.Result != "OK")
+            while(numberAttempts != 0 && buyItem.Result != "ok")
             {
                 ItemInfo? getInfo = await GetItemInfo(info.Item);
 
                 if (getInfo is not null)
                 {
-                    buyItem = await _tradeMarketServices[name].BuyItem(getInfo, tradeUrl);
+                    buyItem = Task.Run(async() => await _tradeMarketServices[name].BuyItem(getInfo, tradeUrl)).Result;
                     buyItem.Market = info.Market;
                 }
 

@@ -28,7 +28,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
         public UserRestrictionTests(WebApplicationFactory<HostResourcesApiTests> webApplicationFactory,
             ITestOutputHelper output) : base(output, _configuration)
         {
-            _responseService = new(webApplicationFactory.CreateClient());
+            _responseService = new(webApplicationFactory.CreateClient(), "https://localhost:7102");
         }
         [Fact]
         public async Task GET_RestrictionById_OK()

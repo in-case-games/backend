@@ -45,7 +45,7 @@ namespace InCase.Infrastructure.Services
             if (balanceTM is null)
                 throw new Exception("Затычка");
 
-            return balanceTM.MoneyKopecks * 0.1M;
+            return balanceTM.MoneyKopecks * 0.01M;
         }
 
         public async Task<BuyItem> BuyItem(ItemInfo info, string tradeUrl)
@@ -53,13 +53,13 @@ namespace InCase.Infrastructure.Services
             int price = info.PriceKopecks;
             string name = info.Item.Game!.Name!;
             string uri = DomainUri[name];
-            string id = info.Item.IdForMarket!;
+            string id = info.Item.IdForMarket!.Replace("-", "_");
             string[] splitTrade = tradeUrl.Split("&");
             string partner = splitTrade[0].Split("=")[1];
             string token = splitTrade[1].Split("=")[1];
 
             string requestUrl = $"{uri}/api/Buy/{id}/{price}//?key={_configuration["MarketTM:Secret"]}" +
-                $"/partner={partner}/token={token}";
+                $"&partner={partner}&token={token}";
 
             ResponseBuyItemTM? response = await _responseService.ResponseGet<ResponseBuyItemTM>(requestUrl);
 
@@ -68,7 +68,7 @@ namespace InCase.Infrastructure.Services
 
             BuyItem item = new()
             {
-                Id = response.BuyId,
+                Id = response.Id,
                 Result = response.Result,
             };
 
@@ -79,7 +79,7 @@ namespace InCase.Infrastructure.Services
         {
             string name = item.Game!.Name!;
             string uri = DomainUri[name];
-            string id = item.IdForMarket!;
+            string id = item.IdForMarket!.Replace("-", "_");
 
             string requestUrl = $"{uri}/api/ItemInfo/{id}/ru/?key={_configuration["MarketTM:Secret"]}";
 
@@ -102,7 +102,7 @@ namespace InCase.Infrastructure.Services
         {
             string name = withdraw.Item!.Game!.Name!;
             string uri = DomainUri[name];
-            int id = withdraw.IdForMarket;
+            string id = withdraw.IdForMarket!;
 
             string requestUrl = $"{uri}/api/Trades/?key={_configuration["MarketTM:Secret"]}";
 
@@ -113,7 +113,7 @@ namespace InCase.Infrastructure.Services
                 throw new Exception("Затычка");
 
             ResponseTradeTM? tradeTM = tradesTM
-                .FirstOrDefault(f => f.Id == withdraw.IdForMarket);
+                .FirstOrDefault(f => f.Id == id);
 
             if(tradeTM is null)
             {
@@ -155,7 +155,7 @@ namespace InCase.Infrastructure.Services
         {
             private string? _status;
 
-            [JsonPropertyName("h_id")] public int Id { get; set; }
+            [JsonPropertyName("h_id")] public string? Id { get; set; }
             [JsonPropertyName("h_event")] public string? Type { get; set; }
             [JsonPropertyName("stage")] public string? Status {
                 get => _status;
@@ -169,7 +169,7 @@ namespace InCase.Infrastructure.Services
         {
             private string? _status;
 
-            [JsonPropertyName("ui_id")] public int Id { get; set; }
+            [JsonPropertyName("ui_id")] public string? Id { get; set; }
             [JsonPropertyName("ui_status")] public string? Status
             {
                 get => _status;
@@ -186,7 +186,7 @@ namespace InCase.Infrastructure.Services
         private class ResponseBuyItemTM
         {
             [JsonPropertyName("result")] public string? Result { get; set; }
-            [JsonPropertyName("id")] public int BuyId { get; set; }
+            [JsonPropertyName("id")] public string? Id { get; set; }
         }
         private class ResponseBalanceTM
         {

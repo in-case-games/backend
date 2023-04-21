@@ -4,7 +4,7 @@ namespace InCase.Domain.Entities.Payment
 {
     public class TradeInfo
     {
-        public int Id { get; set; }
+        public string? Id { get; set; }
         public string Status { get; set; } = "";
         public GameItem? Item { get; set; }
     }

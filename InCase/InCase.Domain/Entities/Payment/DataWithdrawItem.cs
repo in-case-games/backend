@@ -2,7 +2,7 @@
 {
     public class DataWithdrawItem
     {
-        public Guid ItemId { get; set; }
+        public Guid InventoryId { get; set; }
         public string? TradeUrl { get; set; }
     }
 }

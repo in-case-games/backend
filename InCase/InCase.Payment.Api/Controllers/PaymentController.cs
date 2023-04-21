@@ -38,7 +38,7 @@ namespace InCase.Payment.Api.Controllers
         }
 
         [AuthorizeRoles(Roles.All)]
-        [HttpGet("withdraw")]
+        [HttpPost("withdraw")]
         public async Task<IActionResult> WithdrawItem(DataWithdrawItem data)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
@@ -48,7 +48,7 @@ namespace InCase.Payment.Api.Controllers
                 .Include(i => i.Item!.Game!)
                     .ThenInclude(ti => ti.Markets)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(f => f.ItemId == data.ItemId && f.UserId == UserId);
+                .FirstOrDefaultAsync(f => f.Id == data.InventoryId && f.UserId == UserId);
 
             if (inventory == null)
                 return ResponseUtil.NotFound(nameof(UserInventory));
@@ -60,12 +60,12 @@ namespace InCase.Payment.Api.Controllers
             if (itemInfo is null)
                 return ResponseUtil.Conflict(nameof(ItemInfo));
 
-            decimal itemInfoPrice = itemInfo.PriceKopecks * 0.1M;
+            decimal itemInfoPrice = itemInfo.PriceKopecks * 0.01M;
 
             if (itemInfoPrice > item.Cost * UpperLimitCost / CostInCoin)
                 return ResponseUtil.Conflict("Item no stability price, exchange");
 
-            decimal balance = await _withdrawService.GetBalance(itemInfo.Market);
+            decimal balance = await _withdrawService.GetBalance(itemInfo.Market.Name!);
 
             if (balance <= itemInfoPrice) 
                 return ResponseUtil.Conflict("Wait payment");
@@ -160,17 +160,36 @@ namespace InCase.Payment.Api.Controllers
 
         [AuthorizeRoles(Roles.Owner, Roles.Bot)]
         [HttpGet("market/balance")]
-        public async Task<IActionResult> GetMarketBalance(GameMarket market)
+        public async Task<IActionResult> GetMarketBalance(string name)
         {
-            return ResponseUtil.Ok(await _withdrawService.GetBalance(market));
+            return ResponseUtil.Ok(await _withdrawService.GetBalance(name));
         }
 
         //TODO Transfer method
-        [AuthorizeRoles(Roles.Bot)]
+        [AuthorizeRoles(Roles.Owner, Roles.Bot)]
         [HttpGet("withdraw/status")]
         public async Task<IActionResult> GetWithdrawStatus(UserHistoryWithdraw withdraw)
         {
             return ResponseUtil.Ok(await _withdrawService.GetTradeInfo(withdraw));
+        }
+
+        //TODO Transfer method
+        [AuthorizeRoles(Roles.Owner, Roles.Bot)]
+        [HttpGet("item/{id}")]
+        public async Task<IActionResult> GetItemInfo(Guid id)
+        {
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            GameItem? item = await context.GameItems
+                .Include(i => i.Game!)
+                    .ThenInclude(ti => ti.Markets)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(f => f.Id == id);
+
+            if(item is null)
+                return ResponseUtil.NotFound(nameof(item));
+
+            return ResponseUtil.Ok(await _withdrawService.GetItemInfo(item));
         }
     }
 }

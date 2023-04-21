@@ -55,14 +55,8 @@ namespace InCase.IntegrationTests.Tests.GameApi
             WebApplicationFactory<HostResourcesApiTests> hostResources,
             ITestOutputHelper output) : base(output, _configuration)
         {
-            _responseGame = new(hostGame.CreateClient())
-            {
-                BaseUrl = "https://localhost:7139"
-            };
-            _responseResources = new(hostResources.CreateClient())
-            {
-                BaseUrl = "https://localhost:7102"
-            };
+            _responseGame = new(hostGame.CreateClient(), "https://localhost:7139");
+            _responseResources = new(hostResources.CreateClient(), "https://localhost:7102");
         }
 
         [Theory]
