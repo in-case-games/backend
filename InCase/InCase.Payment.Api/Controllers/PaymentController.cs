@@ -167,9 +167,22 @@ namespace InCase.Payment.Api.Controllers
 
         //TODO Transfer method
         [AuthorizeRoles(Roles.Owner, Roles.Bot)]
-        [HttpGet("withdraw/status")]
-        public async Task<IActionResult> GetWithdrawStatus(UserHistoryWithdraw withdraw)
+        [HttpGet("withdraw/{id}/status")]
+        public async Task<IActionResult> GetWithdrawStatus(Guid id)
         {
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            UserHistoryWithdraw? withdraw = await context.UserHistoryWithdraws
+                .Include(i => i.Item)
+                .Include(i => i.Item!.Game)
+                .Include(i => i.Market)
+                .Include(i => i.Status)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(f => f.Id == id);
+
+            if (withdraw is null)
+                return ResponseUtil.NotFound(nameof(UserHistoryWithdraw));
+
             return ResponseUtil.Ok(await _withdrawService.GetTradeInfo(withdraw));
         }
 

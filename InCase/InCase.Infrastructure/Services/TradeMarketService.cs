@@ -123,8 +123,13 @@ namespace InCase.Infrastructure.Services
                 requestUrl = $"{uri}/api/OperationHistory/{startTime}/{endTime}" +
                     $"/?key={_configuration["MarketTM:Secret"]}";
 
-                List<ResponseOperationHistoryTM>? historiesTM = await _responseService
-                    .ResponseGet<List<ResponseOperationHistoryTM>>(requestUrl);
+                ResponseAnswerOperationHistoryTM? answer = await _responseService
+                    .ResponseGet<ResponseAnswerOperationHistoryTM>(requestUrl);
+
+                if (answer is null)
+                    throw new Exception("Затычка");
+
+                List<ResponseOperationHistoryTM>? historiesTM = answer.Histories;
 
                 if (historiesTM is null)
                     throw new Exception("Затычка");
@@ -151,12 +156,18 @@ namespace InCase.Infrastructure.Services
             };
         }
 
+        private class ResponseAnswerOperationHistoryTM
+        {
+            [JsonPropertyName("success")] public bool Success { get; set; }
+            [JsonPropertyName("history")] public List<ResponseOperationHistoryTM>? Histories { get; set; }
+        }
         private class ResponseOperationHistoryTM
         {
             private string? _status;
 
-            [JsonPropertyName("h_id")] public string? Id { get; set; }
-            [JsonPropertyName("h_event")] public string? Type { get; set; }
+            [JsonPropertyName("item")] public string? Id { get; set; }
+            [JsonPropertyName("h_id")] public string? HistoryId { get; set; }
+            [JsonPropertyName("market_name")] public string? MarketName { get; set; }
             [JsonPropertyName("stage")] public string? Status {
                 get => _status;
                 set
@@ -164,6 +175,7 @@ namespace InCase.Infrastructure.Services
                     _status = "h_" + value;
                 }
             }
+
         }
         private class ResponseTradeTM
         {
