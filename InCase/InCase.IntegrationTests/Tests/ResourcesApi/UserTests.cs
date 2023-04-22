@@ -1114,7 +1114,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
                 Date = DateTime.UtcNow,
                 ItemId = item1.Id,
                 UserId = DependenciesGuids["User"],
-                FixedCost = 200000M
+                FixedCost = 400000M
             };
 
             UserHistoryPayment payment = new()

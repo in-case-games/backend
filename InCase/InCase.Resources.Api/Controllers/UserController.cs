@@ -375,19 +375,19 @@ namespace InCase.Resources.Api.Controllers
             if (info is null)
                 return ResponseUtil.NotFound(nameof(UserAdditionalInfo));
 
-            decimal differenceCost = inventory.Item!.Cost - item.Cost;
+            decimal differenceCost = inventory.FixedCost - item.Cost;
 
             if (differenceCost < 0)
                 return ResponseUtil.Conflict("The value of the item in the exchange cannot be higher");
 
-            ItemInfo? itemInfo = await _withdrawService.GetItemInfo(inventory.Item);
+            ItemInfo? itemInfo = await _withdrawService.GetItemInfo(inventory.Item!);
 
             if (itemInfo is null || itemInfo.Result != "ok")
                 return ResponseUtil.Conflict(nameof(ItemInfo));
 
             decimal itemInfoPrice = itemInfo.PriceKopecks * 0.01M;
 
-            if (itemInfoPrice <= item.Cost * 0.1M / 7)
+            if (itemInfoPrice <= inventory.FixedCost * 0.1M / 7)
                 return ResponseUtil.Conflict("The item can be exchanged only in case of price instability");
 
             inventory.ItemId = item.Id;
