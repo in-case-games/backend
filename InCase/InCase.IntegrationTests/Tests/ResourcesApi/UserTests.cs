@@ -1033,7 +1033,8 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
                 Id = DependenciesGuids["GameItem"],
                 Name = GenerateString(8),
                 HashName = GenerateString(8),
-                Cost = 539.99M,
+                Cost = 300000M,
+                IdForMarket = "3608091581-519977179",
                 ImageUri = "GOCSATImage1",
                 RarityId = rarities.FirstOrDefault(f => f.Name == "pink")!.Id,
                 TypeId = types.FirstOrDefault(f => f.Name == "pistol")!.Id,
@@ -1046,7 +1047,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
             {
                 Id = DependenciesGuids["LootBox"],
                 Name = GenerateString(8),
-                Cost = 400,
+                Cost = 40000,
                 ImageUri = "GCIGOCATImage",
                 GameId = csgoGameId
             };
@@ -1056,7 +1057,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
                 Id = DependenciesGuids["LootBoxBanner"],
                 BoxId = lootBox.Id,
                 IsActive = true,
-                ImageUri = "",
+                ImageUri = "3608091581-519977179",
                 CreationDate = DateTime.UtcNow,
                 ExpirationDate = DateTime.UtcNow + TimeSpan.FromDays(7)
             };
@@ -1079,9 +1080,9 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
             UserHistoryWithdraw withdraw = new()
             {
                 Id = DependenciesGuids["UserHistoryWithdrawn"],
-                IdForMarket = "111",
+                IdForMarket = "3608091581-519977179",
                 Date = DateTime.UtcNow,
-                FixedCost = 500M,
+                FixedCost = 500000M,
                 ItemId = item1.Id,
                 UserId = DependenciesGuids["User"],
                 StatusId = (await Context.ItemWithdrawStatuses.FirstAsync(f => f.Name == "given")).Id,
@@ -1113,7 +1114,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
                 Date = DateTime.UtcNow,
                 ItemId = item1.Id,
                 UserId = DependenciesGuids["User"],
-                FixedCost = 12345M
+                FixedCost = 200000M
             };
 
             UserHistoryPayment payment = new()

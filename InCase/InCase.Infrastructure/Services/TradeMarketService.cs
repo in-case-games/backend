@@ -102,7 +102,7 @@ namespace InCase.Infrastructure.Services
             string id = item.IdForMarket!.Replace("-", "_");
 
             string requestUrl = $"{uri}/api/ItemInfo/{id}/ru/?key={_configuration["MarketTM:Secret"]}";
-
+            
             try
             {
                 ItemInfoTM? infoTM = await _responseService.ResponseGet<ItemInfoTM>(requestUrl);
@@ -115,7 +115,7 @@ namespace InCase.Infrastructure.Services
                     Result = "ok"
                 };
             }
-            catch(Exception)
+            catch (Exception)
             {
                 //TODO Write logs
                 return new()
@@ -223,8 +223,8 @@ namespace InCase.Infrastructure.Services
                 }
             }
             [JsonPropertyName("ui_price")] public decimal Price { get; set; }
-            [JsonPropertyName("position")] public int Position { get; set; }
-            [JsonPropertyName("left")] public int Left { get; set; }
+            [JsonPropertyName("position")] public string? Position { get; set; }
+            [JsonPropertyName("left")] public string? Left { get; set; }
 
         }
         private class ResponseBuyItemTM
@@ -250,9 +250,9 @@ namespace InCase.Infrastructure.Services
         }
         private class ItemInfoTM
         {
-            [JsonPropertyName("classid")] public int ClassId { get; set; }
-            [JsonPropertyName("instanceid")] public int InstanceId { get; set; }
-            [JsonPropertyName("our_market_instanceid")] public int? OurMarketInstanceId { get; set; }
+            [JsonPropertyName("classid")] public string? ClassId { get; set; }
+            [JsonPropertyName("instanceid")] public string? InstanceId { get; set; }
+            [JsonPropertyName("our_market_instanceid")] public string? OurMarketInstanceId { get; set; }
             [JsonPropertyName("market_name")] public string? MarketName { get; set; }
             [JsonPropertyName("name")] public string? Name { get; set; }
             [JsonPropertyName("market_hash_name")] public string? MarketHashName { get; set; }

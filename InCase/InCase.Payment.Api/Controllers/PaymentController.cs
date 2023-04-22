@@ -57,7 +57,7 @@ namespace InCase.Payment.Api.Controllers
 
             ItemInfo? itemInfo = await _withdrawService.GetItemInfo(item);
 
-            if (itemInfo is null)
+            if (itemInfo is null || itemInfo.Result != "ok")
                 return ResponseUtil.Conflict(nameof(ItemInfo));
 
             decimal itemInfoPrice = itemInfo.PriceKopecks * 0.01M;

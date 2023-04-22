@@ -1,7 +1,9 @@
 ﻿using InCase.Domain.Common;
 using InCase.Domain.Dtos;
+using InCase.Domain.Entities.Payment;
 using InCase.Domain.Entities.Resources;
 using InCase.Infrastructure.Data;
+using InCase.Infrastructure.Services;
 using InCase.Infrastructure.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -15,13 +17,16 @@ namespace InCase.Resources.Api.Controllers
     public class UserController : ControllerBase
     {
         private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
+        private readonly WithdrawItemService _withdrawService;
 
         private Guid UserId => Guid
             .Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
 
-        public UserController(IDbContextFactory<ApplicationDbContext> contextFactory)
+        public UserController(IDbContextFactory<ApplicationDbContext> contextFactory, 
+            WithdrawItemService withdrawService)
         {
             _contextFactory = contextFactory;
+            _withdrawService = withdrawService;
         }
 
         [AuthorizeRoles(Roles.All)]
@@ -354,6 +359,8 @@ namespace InCase.Resources.Api.Controllers
 
             UserInventory? inventory = await context.UserInventories
                 .Include(i => i.Item)
+                .Include(i => i.Item!.Game!)
+                    .ThenInclude(ti => ti.Markets)
                 .FirstOrDefaultAsync(f => f.UserId == UserId && f.Id == id);
             GameItem? item = await context.GameItems
                 .AsNoTracking()
@@ -372,6 +379,16 @@ namespace InCase.Resources.Api.Controllers
 
             if (differenceCost < 0)
                 return ResponseUtil.Conflict("The value of the item in the exchange cannot be higher");
+
+            ItemInfo? itemInfo = await _withdrawService.GetItemInfo(inventory.Item);
+
+            if (itemInfo is null || itemInfo.Result != "ok")
+                return ResponseUtil.Conflict(nameof(ItemInfo));
+
+            decimal itemInfoPrice = itemInfo.PriceKopecks * 0.01M;
+
+            if (itemInfoPrice <= item.Cost * 0.1M / 7)
+                return ResponseUtil.Conflict("The item can be exchanged only in case of price instability");
 
             inventory.ItemId = item.Id;
             info.Balance += differenceCost;
