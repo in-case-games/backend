@@ -35,15 +35,16 @@ namespace InCase.Infrastructure.Services
 
         public async Task<BalanceMarket> GetBalance()
         {
-            string requestUrl = $"https://market.csgo.com/api/GetMoney/?key={_configuration["MarketTM:Secret"]}";
+            string url = $"https://market.csgo.com/api/GetMoney/?key={_configuration["MarketTM:Secret"]}";
 
             try
             {
-                ResponseBalanceTM? balanceTM = await _responseService.ResponseGet<ResponseBalanceTM>(requestUrl);
+                ResponseBalanceTM? balance = await _responseService
+                    .ResponseGet<ResponseBalanceTM>(url);
 
                 return new()
                 {
-                    Balance = balanceTM!.MoneyKopecks * 0.01M,
+                    Balance = balance!.MoneyKopecks * 0.01M,
                     Result = "ok"
                 };
             }
@@ -65,16 +66,17 @@ namespace InCase.Infrastructure.Services
             string name = info.Item.Game!.Name!;
             string uri = DomainUri[name];
             string id = info.Item.IdForMarket!.Replace("-", "_");
-            string[] splitTrade = tradeUrl.Split("&");
-            string partner = splitTrade[0].Split("=")[1];
-            string token = splitTrade[1].Split("=")[1];
+            string[] split = tradeUrl.Split("&");
+            string partner = split[0].Split("=")[1];
+            string token = split[1].Split("=")[1];
 
-            string requestUrl = $"{uri}/api/Buy/{id}/{price}//?key={_configuration["MarketTM:Secret"]}" +
+            string url = $"{uri}/api/Buy/{id}/{price}//?key={_configuration["MarketTM:Secret"]}" +
                 $"&partner={partner}&token={token}";
              
             try
             {
-                ResponseBuyItemTM? response = await _responseService.ResponseGet<ResponseBuyItemTM>(requestUrl);
+                ResponseBuyItemTM? response = await _responseService
+                    .ResponseGet<ResponseBuyItemTM>(url);
 
                 return new()
                 {
@@ -101,16 +103,17 @@ namespace InCase.Infrastructure.Services
             string uri = DomainUri[name];
             string id = item.IdForMarket!.Replace("-", "_");
 
-            string requestUrl = $"{uri}/api/ItemInfo/{id}/ru/?key={_configuration["MarketTM:Secret"]}";
+            string url = $"{uri}/api/ItemInfo/{id}/ru/?key={_configuration["MarketTM:Secret"]}";
             
             try
             {
-                ItemInfoTM? infoTM = await _responseService.ResponseGet<ItemInfoTM>(requestUrl);
+                ItemInfoTM? info = await _responseService
+                    .ResponseGet<ItemInfoTM>(url);
 
                 return new()
                 {
-                    Count = infoTM!.Offers!.Count,
-                    PriceKopecks = int.Parse(infoTM.MinPrice!),
+                    Count = info!.Offers!.Count,
+                    PriceKopecks = int.Parse(info.MinPrice!),
                     Item = item,
                     Result = "ok"
                 };
@@ -134,16 +137,16 @@ namespace InCase.Infrastructure.Services
             string uri = DomainUri[name];
             string id = withdraw.IdForMarket!;
 
-            long startTime = ((DateTimeOffset)withdraw.Date).ToUnixTimeSeconds();
-            long endTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+            long start = ((DateTimeOffset)withdraw.Date).ToUnixTimeSeconds();
+            long end = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
 
-            string urlTrade = $"{uri}/api/Trades/?key={_configuration["MarketTM:Secret"]}";
-            string urlHistory = $"{uri}/api/OperationHistory/{startTime}/{endTime}" +
+            string tradeUrl = $"{uri}/api/Trades/?key={_configuration["MarketTM:Secret"]}";
+            string historyUrl = $"{uri}/api/OperationHistory/{start}/{end}" +
                 $"/?key={_configuration["MarketTM:Secret"]}";
 
-            ResponseTradeTM? tradeTM = null;
-            ResponseOperationHistoryTM? historyTM = null;
-            TradeInfo tradeInfo = new()
+            ResponseTradeTM? trade = null;
+            ResponseOperationHistoryTM? history = null;
+            TradeInfo info = new()
             {
                 Id = withdraw.IdForMarket,
                 Item = withdraw.Item
@@ -151,41 +154,43 @@ namespace InCase.Infrastructure.Services
 
             try
             {
-                List<ResponseTradeTM>? tradesTM = await _responseService
-                    .ResponseGet<List<ResponseTradeTM>>(urlTrade);
-                tradeTM = tradesTM?
+                List<ResponseTradeTM>? trades = await _responseService
+                    .ResponseGet<List<ResponseTradeTM>>(tradeUrl);
+                trade = trades?
                     .FirstOrDefault(f => f.Id == id);
             }
             catch(Exception)
             { 
-                tradeInfo.Result = "exception";
+                info.Result = "exception";
             }
             
-            if (tradeTM is null)
+            if (trade is null)
             {
                 try
                 {
                     ResponseAnswerOperationHistoryTM? answer = await _responseService
-                        .ResponseGet<ResponseAnswerOperationHistoryTM>(urlHistory);
+                        .ResponseGet<ResponseAnswerOperationHistoryTM>(historyUrl);
 
-                    List<ResponseOperationHistoryTM>? historiesTM = answer?.Histories;
+                    List<ResponseOperationHistoryTM>? histories = answer?.Histories;
 
-                    historyTM = historiesTM?
+                    history = histories?
                         .FirstOrDefault(f => f.Id == withdraw.IdForMarket);
                 }
                 catch (Exception) 
                 {
-                    tradeInfo.Result = "exception";
+                    info.Result = "exception";
                 }
 
-                if (historyTM is null)
-                    return tradeInfo;
+                if (history is null)
+                    return info;
             }
 
-            tradeInfo.Status = (tradeTM is null) ? historyTM!.Status! : tradeTM.Status!;
-            tradeInfo.Result = "ok";
+            string index = (trade is null) ? history!.Status! : trade.Status!;
 
-            return tradeInfo;
+            info.Status = TradeStatuses[index];
+            info.Result = "ok";
+
+            return info;
         }
 
         private class ResponseAnswerOperationHistoryTM

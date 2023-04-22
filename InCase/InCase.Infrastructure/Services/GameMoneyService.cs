@@ -9,36 +9,38 @@ namespace InCase.Infrastructure.Services
 {
     public class GameMoneyService
     {
-        private readonly HttpClient _httpClient = new();
+        private readonly ResponseService _responseService;
         private readonly EncryptorService _rsaService;
         private readonly IConfiguration _configuration;
         public GameMoneyService(
             EncryptorService rsaService,
+            ResponseService responseService,
             IConfiguration configuration)
         {
             _rsaService = rsaService;
+            _responseService = responseService;
             _configuration = configuration;
         }
 
         public async Task<ResponseBalanceGM?> GetBalance(string currency)
         {
-            RequestBalanceGM requestBalanceInfo = new()
+            RequestBalanceGM request = new()
             {
                 Currency = currency,
                 ProjectId = int.Parse(_configuration["GameMoney:projectId"]!),
             };
 
-            string hash = requestBalanceInfo.ToString();
-            requestBalanceInfo.SignatureHMAC = _rsaService.GenerateHMAC(Encoding.ASCII.GetBytes(hash));
+            string hash = request.ToString();
+            request.SignatureHMAC = _rsaService.GenerateHMAC(Encoding.ASCII.GetBytes(hash));
 
-            return await PaymentResponse<ResponseBalanceGM, RequestBalanceGM>
-                (PaygateEndpoint.Balance, requestBalanceInfo);
+            return await _responseService
+                .ResponsePost<RequestBalanceGM, ResponseBalanceGM>(PaygateEndpoint.Balance, request);
         }
 
         //TODO
         public async Task<ResponseInsertGM?> TransferMoneyToTradeMarket(decimal ammount)
         {
-            RequestInsertGM requestInsertGM = new()
+            RequestInsertGM request = new()
             {
                 ProjectId = int.Parse(_configuration["GameMoney:projectId"]!),
                 PaymentId = new Guid(),
@@ -47,41 +49,27 @@ namespace InCase.Infrastructure.Services
                 PaymentAmount = ammount
             };
 
-            byte[] hash = Encoding.ASCII.GetBytes(requestInsertGM.ToString());
-            requestInsertGM.SignatureRSA = Encoding.ASCII.GetString(_rsaService.SignDataRSA(hash));
+            byte[] hash = Encoding.ASCII.GetBytes(request.ToString());
+            request.SignatureRSA = Encoding.ASCII.GetString(_rsaService.SignDataRSA(hash));
 
-            return await PaymentResponse<ResponseInsertGM, RequestInsertGM>
-                (PaygateEndpoint.Transfer, requestInsertGM);
+            return await _responseService
+                .ResponsePost<RequestInsertGM, ResponseInsertGM>(PaygateEndpoint.Transfer, request);
         }
 
-        public async Task<ResponseInvoiceStatusGM?> GetInvoiceStatusInfo(int invoice)
+        public async Task<ResponseInvoiceStatusGM?> GetInvoiceStatusInfo(string invoice)
         {
-            RequestInvoiceStatusGM requestInvoice = new()
+            RequestInvoiceStatusGM request = new()
             {
-                ProjectId = int.Parse(_configuration["GameMoney:projectId"]!),
+                ProjectId = _configuration["GameMoney:projectId"],
                 InvoiceId = invoice,
             };
 
-            requestInvoice.SignatureHMAC = _rsaService.GenerateHMAC(Encoding.ASCII.GetBytes(requestInvoice.ToString()));
+            request.SignatureHMAC = _rsaService.GenerateHMAC(Encoding.ASCII.GetBytes(request.ToString()));
 
-            return await PaymentResponse<ResponseInvoiceStatusGM, RequestInvoiceStatusGM>
-                (PaygateEndpoint.InvoiceInfo, requestInvoice);
+            return await _responseService
+                .ResponsePost<RequestInvoiceStatusGM, ResponseInvoiceStatusGM>(PaygateEndpoint.InvoiceInfo, request);
         }
-        public async Task<T> PaymentResponse<T, O>(string url, O entity) 
-            where T : new()
-        {
-            JsonContent json = JsonContent.Create(entity);
-            HttpResponseMessage response = await _httpClient.PostAsync(url, json);
 
-            if (!response.IsSuccessStatusCode)
-                throw new Exception(response.StatusCode.ToString() + response.RequestMessage!);
-
-            T? responseEntity = await response.Content
-                .ReadFromJsonAsync<T>(
-                new JsonSerializerOptions(JsonSerializerDefaults.Web));
-
-            return responseEntity!;
-        }
         public string CreateHashOfDataForDeposit(Guid userId)
         {
             return $"project:{_configuration["GameMoney:projectId"]};" +

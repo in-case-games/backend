@@ -6,34 +6,34 @@ namespace InCase.Infrastructure.Services
 {
     public class WithdrawItemService
     {
-        private readonly Dictionary<string, ITradeMarket> _tradeMarketServices;
+        private readonly Dictionary<string, ITradeMarket> _marketServices;
 
-        public WithdrawItemService(TradeMarketService tradeMarketService)
+        public WithdrawItemService(TradeMarketService marketService)
         {
-            _tradeMarketServices = new()
+            _marketServices = new()
             {
-                ["tmcsgo"] = tradeMarketService,
-                ["tmdota2"] = tradeMarketService,
-                ["codashop"] = tradeMarketService,
+                ["tmcsgo"] = marketService,
+                ["tmdota2"] = marketService,
+                ["codashop"] = marketService,
             };
         }
 
         public async Task<BalanceMarket> GetBalance(string name)
         {
-            bool IsExistService = _tradeMarketServices.ContainsKey(name);
+            bool IsExist = _marketServices.ContainsKey(name);
 
-            if (!IsExistService)
+            if (!IsExist)
                 throw new ArgumentException("Along with the game, it is necessary to transfer the markets");
 
-            int numberAttempts = 5;
+            int attempts = 5;
 
             BalanceMarket balance = new();
 
-            while(numberAttempts > 0 && balance.Result != "ok")
+            while(attempts > 0 && balance.Result != "ok")
             {
-                balance = await _tradeMarketServices[name].GetBalance();
+                balance = await _marketServices[name].GetBalance();
 
-                numberAttempts--;
+                attempts--;
             }
 
             return balance;
@@ -50,34 +50,34 @@ namespace InCase.Infrastructure.Services
             if (markets.Count == 0)
                 throw new ArgumentException("The game has no ways to output an item");
 
-            List<ItemInfo> itemInfos = new();
-            ItemInfo itemInfo = new();
-            int indexMarket = 0;
+            List<ItemInfo> infos = new();
+            ItemInfo info = new();
+            int i = 0;
 
-            while(indexMarket < markets.Count)
+            while(i < markets.Count)
             {
-                GameMarket market = markets[indexMarket];
+                GameMarket market = markets[i];
                 string name = market.Name!;
 
-                int numberAttempts = 5;
+                int attempts = 5;
 
-                while (numberAttempts > 0 && itemInfo.Result != "ok")
+                while (attempts > 0 && info.Result != "ok")
                 {
-                    itemInfo = await _tradeMarketServices[name].GetItemInfo(item);
+                    info = await _marketServices[name].GetItemInfo(item);
 
-                    numberAttempts--;
+                    attempts--;
                 }
 
-                if (itemInfo.Result == "ok" && itemInfo.Count > 0)
+                if (info.Result == "ok" && info.Count > 0)
                 {
-                    itemInfo!.Market = market;
-                    itemInfos.Add(itemInfo);
+                    info!.Market = market;
+                    infos.Add(info);
                 }
 
-                indexMarket++;
+                i++;
             }
 
-            return itemInfos.MinBy(m => m.PriceKopecks);
+            return infos.MinBy(m => m.PriceKopecks);
         }
 
         public async Task<BuyItem> BuyItem(ItemInfo info, string tradeUrl)
@@ -85,23 +85,23 @@ namespace InCase.Infrastructure.Services
             string name = info.Market.Name ?? throw new ArgumentNullException("GameMarket",
                     "Along with the game, it is necessary to transfer the markets");
 
-            bool IsExistService = _tradeMarketServices.ContainsKey(name);
+            bool IsExist = _marketServices.ContainsKey(name);
 
-            if (!IsExistService)
+            if (!IsExist)
                 throw new ArgumentException("Along with the game, it is necessary to transfer the markets");
 
-            BuyItem? buyItem = new();
-            int numberAttempts = 5;
+            BuyItem? item = new();
+            int attempts = 5;
 
-            while(numberAttempts != 0 && buyItem.Result != "ok")
+            while(attempts != 0 && item.Result != "ok")
             {
-                buyItem = await _tradeMarketServices[name].BuyItem(info, tradeUrl);
-                buyItem.Market = info.Market;
+                item = await _marketServices[name].BuyItem(info, tradeUrl);
+                item.Market = info.Market;
 
-                numberAttempts--;
+                attempts--;
             }
 
-            return buyItem;
+            return item;
         }
 
         public async Task<TradeInfo> GetTradeInfo(UserHistoryWithdraw withdraw)
@@ -109,22 +109,22 @@ namespace InCase.Infrastructure.Services
             string name = withdraw.Market?.Name ?? throw new ArgumentNullException("GameMarket",
                     "Along with the game, it is necessary to transfer the markets");
 
-            bool IsExistService = _tradeMarketServices.ContainsKey(name);
+            bool IsExist = _marketServices.ContainsKey(name);
 
-            if (!IsExistService)
+            if (!IsExist)
                 throw new ArgumentException("Along with the game, it is necessary to transfer the markets");
 
-            TradeInfo tradeInfo = new();
-            int numberAttempts = 5;
+            TradeInfo info = new();
+            int attempts = 5;
 
-            while(numberAttempts > 0 && tradeInfo.Result != "ok")
+            while(attempts > 0 && info.Result != "ok")
             {
-                tradeInfo = await _tradeMarketServices[name].GetTradeInfo(withdraw);
+                info = await _marketServices[name].GetTradeInfo(withdraw);
 
-                numberAttempts--;
+                attempts--;
             }
 
-            return tradeInfo;
+            return info;
         }
     }
 }

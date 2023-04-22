@@ -60,16 +60,16 @@ namespace InCase.Payment.Api.Controllers
             if (itemInfo is null || itemInfo.Result != "ok")
                 return ResponseUtil.Conflict(nameof(ItemInfo));
 
-            decimal itemInfoPrice = itemInfo.PriceKopecks * 0.01M;
+            decimal itemPrice = itemInfo.PriceKopecks * 0.01M;
 
-            if (itemInfoPrice > item.Cost * UpperLimitCost / CostInCoin)
+            if (itemPrice > item.Cost * UpperLimitCost / CostInCoin)
                 return ResponseUtil.Conflict("Item no stability price, exchange");
 
             BalanceMarket balance = await _withdrawService.GetBalance(itemInfo.Market.Name!);
 
             if (balance.Result != "ok")
                 return ResponseUtil.Conflict(nameof(BalanceMarket));
-            if (balance.Balance <= itemInfoPrice) 
+            if (balance.Balance <= itemPrice) 
                 return ResponseUtil.Conflict("Wait payment");
 
             BuyItem buyItem = await _withdrawService.BuyItem(itemInfo, data.TradeUrl!);
@@ -119,27 +119,27 @@ namespace InCase.Payment.Api.Controllers
             if (answer.StatusAnswer != "success")
                 return ResponseUtil.Conflict(answer.ParametersAnswer ?? "Error");
 
-            byte[] hashOfDataInSignIn = Encoding.ASCII.GetBytes(answer.ToString());
+            byte[] hash = Encoding.ASCII.GetBytes(answer.ToString());
             byte[] signature = Encoding.ASCII.GetBytes(answer.SignatureRSA!);
 
-            if (!_rsaService.VerifySignatureRSA(hashOfDataInSignIn, signature))
+            if (!_rsaService.VerifySignatureRSA(hash, signature))
                 return Forbid("No verify signature rsa");
 
-            ResponseInvoiceStatusGM? invoiceInfoStatus = await _gameMoneyService
-                .GetInvoiceStatusInfo(int.Parse(answer.Invoice!));
+            ResponseInvoiceStatusGM? invoice = await _gameMoneyService
+                .GetInvoiceStatusInfo(answer.Invoice!);
 
-            if (invoiceInfoStatus is null)
+            if (invoice is null)
                 return ResponseUtil.Ok("Wait some time for replenishment");
 
-            byte[] signatureInvoice = Encoding.ASCII.GetBytes(invoiceInfoStatus.SignatureRSA!);
-            byte[] hashOfDataInvoice = Encoding.ASCII.GetBytes(invoiceInfoStatus.ToString()!);
+            signature = Encoding.ASCII.GetBytes(invoice.SignatureRSA!);
+            hash = Encoding.ASCII.GetBytes(invoice.ToString()!);
 
-            if (!_rsaService.VerifySignatureRSA(hashOfDataInvoice, signatureInvoice))
+            if (!_rsaService.VerifySignatureRSA(hash, signature))
                 return Forbid("No verify signature rsa");
 
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            string nameStatus = invoiceInfoStatus.Status!.Replace("_", "-").ToLower();
+            string nameStatus = invoice.Status!.Replace("_", "-").ToLower();
 
             InvoicePaymentStatus status = await context.InvoicePaymentStatuses
                 .AsNoTracking()
@@ -147,13 +147,13 @@ namespace InCase.Payment.Api.Controllers
 
             UserHistoryPayment payment = new()
             {
-                Amount = invoiceInfoStatus.Amount,
-                Currency = invoiceInfoStatus.CurrencyProject,
+                Amount = invoice.Amount,
+                Currency = invoice.CurrencyProject,
                 Date = DateTime.Today.AddSeconds(answer.SendTimeAnswer),
-                InvoiceId = invoiceInfoStatus.InvoiceId,
-                Rate = invoiceInfoStatus.Rate,
+                InvoiceId = invoice.InvoiceId,
+                Rate = invoice.Rate,
                 StatusId = status.Id,
-                UserId = invoiceInfoStatus.UserId
+                UserId = invoice.UserId
             };
 
             await context.SaveChangesAsync();

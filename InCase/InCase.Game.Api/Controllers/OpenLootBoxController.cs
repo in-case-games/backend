@@ -30,7 +30,7 @@ namespace InCase.Game.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            LootBox? lootBox = await context.LootBoxes
+            LootBox? box = await context.LootBoxes
                 .Include(i => i.Inventories!)
                     .ThenInclude(ti => ti!.Item)
                 .Include(i => i.Banner)
@@ -39,7 +39,7 @@ namespace InCase.Game.Api.Controllers
 
             UserPathBanner? pathBanner = null;
 
-            if (lootBox is null)
+            if (box is null)
                 return ResponseUtil.NotFound(nameof(LootBox));
 
             User? user = await context.Users
@@ -57,15 +57,15 @@ namespace InCase.Game.Api.Controllers
             UserHistoryPromocode? promocode = user.HistoryPromocodes?
                 .FirstOrDefault(f => f.IsActivated == false && f.Promocode?.Type?.Name == "case");
 
-            if (lootBox.IsLocked)
+            if (box.IsLocked)
                 return ResponseUtil.Conflict("Loot box is locked");
-            if (userInfo.Balance < lootBox.Cost) 
+            if (userInfo.Balance < box.Cost) 
                 return ResponseUtil.Conflict("Insufficient funds");
-            if (lootBox.Banner?.Id is not null)
+            if (box.Banner?.Id is not null)
             {
                 pathBanner = await context.UserPathBanners
                     .AsNoTracking()
-                    .FirstOrDefaultAsync(f => f.BannerId == lootBox.Banner!.Id && f.UserId == UserId);
+                    .FirstOrDefaultAsync(f => f.BannerId == box.Banner!.Id && f.UserId == UserId);
             }
 
             decimal discount = 0;
@@ -82,30 +82,30 @@ namespace InCase.Game.Api.Controllers
                 context.Entry(promocode).Property(p => p.Date).IsModified = true;
             }
 
-            decimal lootBoxCost = discount >= 0.99M ? 1 : lootBox.Cost * (1M - discount);
+            decimal boxCost = discount >= 0.99M ? 1 : box.Cost * (1M - discount);
 
             //Update Balance Case and User
-            userInfo.Balance -= lootBoxCost;
-            lootBox.Balance += lootBoxCost;
+            userInfo.Balance -= boxCost;
+            box.Balance += boxCost;
 
             //Calling random
-            GameItem winItem = RandomizeBySmallest(in lootBox);
+            GameItem winItem = RandomizeBySmallest(in box);
             SiteStatisticsAdmin statisticsAdmin = await context.SiteStatisticsAdmins
                 .FirstAsync();
             SiteStatistics statistics = await context.SiteStatistics
                 .FirstAsync();
 
-            decimal revenue = lootBox.Cost * RevenuePrecentage;
+            decimal revenue = box.Cost * RevenuePrecentage;
             decimal expenses = winItem.Cost + revenue;
 
-            if (pathBanner is not null && lootBox.Banner!.IsActive == true)
+            if (pathBanner is not null && box.Banner!.IsActive == true)
             {
                 --pathBanner.NumberSteps;
 
-                decimal retentionAmount = lootBox.Cost * RetentionPrecentageBanner;
-                decimal cashBack = GetCashBack(winItem.Id, lootBox.Cost, pathBanner);
+                decimal retentionAmount = box.Cost * RetentionPrecentageBanner;
+                decimal cashBack = GetCashBack(winItem.Id, box.Cost, pathBanner);
 
-                CheckWinItemAndExpenses(ref winItem, ref expenses, lootBox, pathBanner);
+                CheckWinItemAndExpenses(ref winItem, ref expenses, box, pathBanner);
 
                 if (cashBack >= 0)
                 {
@@ -125,19 +125,19 @@ namespace InCase.Game.Api.Controllers
             statistics.LootBoxes++;
 
             statisticsAdmin.BalanceWithdrawn += revenue;
-            lootBox.Balance -= expenses;
+            box.Balance -= expenses;
 
-            if (lootBox.Balance < 0)
+            if (box.Balance < 0)
             {
                 //Notify admin negative balance
-                statisticsAdmin.BalanceWithdrawn += lootBox.Balance;
-                lootBox.Balance = 0;
+                statisticsAdmin.BalanceWithdrawn += box.Balance;
+                box.Balance = 0;
             }
 
-            context.LootBoxes.Attach(lootBox);
+            context.LootBoxes.Attach(box);
             context.UserAdditionalInfos.Attach(userInfo);
             context.Entry(userInfo).Property(p => p.Balance).IsModified = true;
-            context.Entry(lootBox).Property(p => p.Balance).IsModified = true;
+            context.Entry(box).Property(p => p.Balance).IsModified = true;
 
             DateTime date = DateTime.UtcNow; 
 
@@ -146,7 +146,7 @@ namespace InCase.Game.Api.Controllers
             {
                 Id = new Guid(),
                 UserId = UserId,
-                BoxId = lootBox.Id,
+                BoxId = box.Id,
                 ItemId = winItem.Id,
                 Date = date
             };
@@ -176,72 +176,71 @@ namespace InCase.Game.Api.Controllers
             UserAdditionalInfo? userInfo = await context.UserAdditionalInfos
                 .AsNoTracking()
                 .FirstOrDefaultAsync(f => f.UserId == UserId);
-            LootBox? lootBox = await context.LootBoxes
+            LootBox? box = await context.LootBoxes
                 .Include(i => i.Inventories!)
                     .ThenInclude(ti => ti!.Item)
                 .Include(i => i.Banner)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(f => f.Id == id);
 
-            if (userInfo is null || lootBox is null)
+            if (userInfo is null || box is null)
                 return ResponseUtil.NotFound(nameof(LootBox));
             if (!userInfo.IsGuestMode)
                 return Forbid();
 
             //Update Balance Case and User
-            lootBox.VirtualBalance += lootBox.Cost;
+            box.VirtualBalance += box.Cost;
 
             //Calling random
-            GameItem winItem = RandomizeBySmallest(in lootBox, true);
+            GameItem winItem = RandomizeBySmallest(in box, true);
 
-            decimal revenue = lootBox.Cost * RevenuePrecentage;
+            decimal revenue = box.Cost * RevenuePrecentage;
             decimal expensesCase = winItem.Cost + revenue;
 
-            lootBox.VirtualBalance -= expensesCase;
+            box.VirtualBalance -= expensesCase;
 
-            context.LootBoxes.Attach(lootBox);
-            context.Entry(lootBox).Property(p => p.VirtualBalance).IsModified = true;
+            context.LootBoxes.Attach(box);
+            context.Entry(box).Property(p => p.VirtualBalance).IsModified = true;
 
             await context.SaveChangesAsync();
 
             return ResponseUtil.Ok(winItem);
         }
 
-        // TODO: Rebase this
         #region nonAction
         private static GameItem RandomizeBySmallest(in LootBox box, bool IsVirtual = false)
         {
             List<int> chances = box.Inventories!
-                .Select(x => x.ChanceWining)
+                .Select(s => s.ChanceWining)
                 .ToList();
 
-            int winIndex = Randomizer(chances);
-            GameItem winItem = box.Inventories![winIndex].Item!;
+            int index = Randomizer(chances);
+            GameItem item = box.Inventories![index].Item!;
 
-            if (IsProfitCase(winItem, box, IsVirtual) is false)
+            if (IsProfitCase(item, box, IsVirtual) is false)
             {
                 List<GameItem> items = box.Inventories
-                    .Select(x => x.Item)
+                    .Select(s => s.Item)
                     .ToList()!;
 
-                winItem = items.MinBy(x => x.Cost)!;
+                item = items.MinBy(m => m.Cost)!;
             }
 
-            return winItem;
+            return item;
         }
         private static decimal GetCashBack(
             Guid itemGuid, 
             decimal boxCost, 
             UserPathBanner pathBanner)
         {
-            decimal retentionAmount = boxCost * RetentionPrecentageBanner;
-            decimal exactSteps = pathBanner.FixedCost / retentionAmount;
-            decimal ceilingSteps = Math.Ceiling(exactSteps);
+            decimal retention = boxCost * RetentionPrecentageBanner;
+            decimal exact = pathBanner.FixedCost / retention;
+            decimal ceiling = Math.Ceiling(exact);
 
             if (pathBanner.NumberSteps == 0)
-                return (ceilingSteps - exactSteps) * retentionAmount;
+                return (ceiling - exact) * retention;
             else if (pathBanner.ItemId == itemGuid)
-                return (ceilingSteps - pathBanner.NumberSteps) * retentionAmount;
+                return (ceiling - pathBanner.NumberSteps) * retention;
             else
                 return -1M;
         }
@@ -252,8 +251,8 @@ namespace InCase.Game.Api.Controllers
             in LootBox box,
             UserPathBanner pathBanner)
         {
-            decimal retentionAmount = box.Cost * RetentionPrecentageBanner;
-            expenses = winItem.Cost + retentionAmount;
+            decimal retention = box.Cost * RetentionPrecentageBanner;
+            expenses = winItem.Cost + retention;
 
             if (pathBanner.NumberSteps == 0)
             {
@@ -261,15 +260,15 @@ namespace InCase.Game.Api.Controllers
                     .FirstOrDefault(f => f.ItemId == pathBanner.ItemId)!.Item!;
                 winItem.Cost = pathBanner.FixedCost;
 
-                expenses = retentionAmount;
+                expenses = retention;
             }
         }
 
         private static bool IsProfitCase(GameItem item, LootBox box, bool IsVirtual = false)
         {
-            decimal boxBalance = IsVirtual ? box.VirtualBalance : box.Balance;
-            decimal revenue = boxBalance * RevenuePrecentage;
-            decimal availableBalance = boxBalance - revenue;
+            decimal balance = IsVirtual ? box.VirtualBalance : box.Balance;
+            decimal revenue = balance * RevenuePrecentage;
+            decimal availableBalance = balance - revenue;
 
             return item.Cost <= availableBalance;
         }
@@ -277,30 +276,30 @@ namespace InCase.Game.Api.Controllers
         private static int Randomizer(List<int> chances)
         {
             List<List<int>> partsChances = new();
-            int startParts = 0;
-            int lengthPart;
-            int winIndex = 0;
+            int start = 0;
+            int length;
+            int index = 0;
 
             for (int i = 0; i < chances.Count; i++)
             {
-                lengthPart = chances[i];
-                partsChances.Add(new List<int>() { startParts, startParts + lengthPart - 1 });
-                startParts += lengthPart;
+                length = chances[i];
+                partsChances.Add(new List<int>() { start, start + length - 1 });
+                start += length;
             }
 
-            int maxRandomValue = partsChances[^1][1];
-            int randomNumber = _random.Next(0, maxRandomValue + 1);
+            int maxValue = partsChances[^1][1];
+            int random = _random.Next(0, maxValue + 1);
 
             for (int i = 0; i < partsChances.Count; i++)
             {
                 List<int> part = partsChances[i];
-                if (part[0] <= randomNumber && part[1] >= randomNumber)
+                if (part[0] <= random && part[1] >= random)
                 {
-                    winIndex = i;
+                    index = i;
                 }
             }
 
-            return winIndex;
+            return index;
         }
         #endregion
     }

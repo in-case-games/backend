@@ -232,7 +232,10 @@ namespace InCase.Resources.Api.Controllers
                 .Include(i => i.Promocode)
                 .Include(i => i.Promocode!.Type)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(f => f.Promocode!.Type!.Id == promocode.TypeId && f.IsActivated == false && f.UserId == UserId);
+                .FirstOrDefaultAsync(f => 
+                f.Promocode!.Type!.Id == promocode.TypeId && 
+                f.IsActivated == false && 
+                f.UserId == UserId);
 
             if (historyPromocode is not null && historyPromocode.IsActivated)
                 return ResponseUtil.Conflict("Promocode has already been used");
@@ -451,7 +454,8 @@ namespace InCase.Resources.Api.Controllers
             if (withdraw is null)
                 return ResponseUtil.NotFound(nameof(UserHistoryWithdraw));
             if (withdraw.Status?.Name is null || withdraw.Status.Name != "cancel")
-                return ResponseUtil.Conflict("Your item is withdrawing, you can return it in case of cancellation");
+                return ResponseUtil.Conflict("Your item is withdrawing, " +
+                    "you can return it in case of cancellation");
 
             UserInventory inventory = new()
             {
@@ -486,12 +490,12 @@ namespace InCase.Resources.Api.Controllers
             if (path is null)
                 return ResponseUtil.NotFound(nameof(UserPathBanner));
 
-            SiteStatisticsAdmin statisticsAdmin = await context.SiteStatisticsAdmins
+            SiteStatisticsAdmin statistics = await context.SiteStatisticsAdmins
                 .FirstAsync();
 
             decimal totalSpent = path.NumberSteps * path.Banner!.Box!.Cost;
 
-            statisticsAdmin.BalanceWithdrawn += totalSpent * 0.1M;
+            statistics.BalanceWithdrawn += totalSpent * 0.1M;
             info.Balance += totalSpent * 0.9M;
 
             return await EndpointUtil.Delete(path, context);
