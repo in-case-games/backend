@@ -1111,6 +1111,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
             {
                 Id = DependenciesGuids["GameItem"],
                 Name = GenerateString(8),
+                HashName = GenerateString(8),
                 Cost = 539.99M,
                 ImageUri = "GOCSATImage1",
                 RarityId = rarities.FirstOrDefault(f => f.Name == "pink")!.Id,

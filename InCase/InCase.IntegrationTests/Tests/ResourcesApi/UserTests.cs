@@ -708,6 +708,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
             {
                 Id = DependenciesGuids["GameItem"],
                 Name = GenerateString(8),
+                HashName = GenerateString(8),
                 Cost = 1M,
                 ImageUri = "GOCSATImage1",
                 RarityId = rarities.FirstOrDefault(f => f.Name == "pink")!.Id,
@@ -720,6 +721,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
             {
                 Id = item2Guid,
                 Name = GenerateString(8),
+                HashName = GenerateString(8),
                 Cost = 1000M,
                 ImageUri = "GOCSATImage1",
                 RarityId = rarities.FirstOrDefault(f => f.Name == "pink")!.Id,
@@ -1030,6 +1032,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
             {
                 Id = DependenciesGuids["GameItem"],
                 Name = GenerateString(8),
+                HashName = GenerateString(8),
                 Cost = 539.99M,
                 ImageUri = "GOCSATImage1",
                 RarityId = rarities.FirstOrDefault(f => f.Name == "pink")!.Id,
@@ -1082,7 +1085,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
                 ItemId = item1.Id,
                 UserId = DependenciesGuids["User"],
                 StatusId = (await Context.ItemWithdrawStatuses.FirstAsync(f => f.Name == "given")).Id,
-                MarketId = (await Context.GameMarkets.FirstAsync(f => f.Name == "tm")).Id
+                MarketId = (await Context.GameMarkets.FirstAsync(f => f.Name == "tmcsgo")).Id
             };
 
             UserHistoryOpening opening = new()
@@ -1117,7 +1120,11 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
             {
                 Id = DependenciesGuids["UserHistoryPayment"],
                 Amount = 145M,
+                Rate = 0,
+                Currency = "RUB",
                 Date = DateTime.UtcNow,
+                InvoiceId = "1111",
+                StatusId = (await Context.InvoicePaymentStatuses.FirstAsync(f => f.Name == "paid")).Id,
                 UserId = DependenciesGuids["User"]
             };
 

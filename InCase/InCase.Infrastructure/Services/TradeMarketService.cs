@@ -2,9 +2,6 @@
 using InCase.Domain.Entities.Resources;
 using InCase.Domain.Interfaces;
 using Microsoft.Extensions.Configuration;
-using System;
-using System.Net.Http.Json;
-using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace InCase.Infrastructure.Services
@@ -36,16 +33,30 @@ namespace InCase.Infrastructure.Services
             _responseService = responseService;
         }
 
-        public async Task<decimal> GetBalance()
+        public async Task<BalanceMarket> GetBalance()
         {
             string requestUrl = $"https://market.csgo.com/api/GetMoney/?key={_configuration["MarketTM:Secret"]}";
 
-            ResponseBalanceTM? balanceTM = await _responseService.ResponseGet<ResponseBalanceTM>(requestUrl);
+            try
+            {
+                ResponseBalanceTM? balanceTM = await _responseService.ResponseGet<ResponseBalanceTM>(requestUrl);
 
-            if (balanceTM is null)
-                throw new Exception("Затычка");
+                return new()
+                {
+                    Balance = balanceTM!.MoneyKopecks * 0.01M,
+                    Result = "ok"
+                };
+            }
+            //TODO Add many check exception
+            catch(Exception)
+            {
+                //TODO Write logs
 
-            return balanceTM.MoneyKopecks * 0.01M;
+                return new() { 
+                    Balance = -1,
+                    Result = "exception"
+                };
+            }
         }
 
         public async Task<BuyItem> BuyItem(ItemInfo info, string tradeUrl)
@@ -60,19 +71,28 @@ namespace InCase.Infrastructure.Services
 
             string requestUrl = $"{uri}/api/Buy/{id}/{price}//?key={_configuration["MarketTM:Secret"]}" +
                 $"&partner={partner}&token={token}";
-
-            ResponseBuyItemTM? response = await _responseService.ResponseGet<ResponseBuyItemTM>(requestUrl);
-
-            if (response is null)
-                throw new Exception("Затычка");
-
-            BuyItem item = new()
+             
+            try
             {
-                Id = response.Id,
-                Result = response.Result,
-            };
+                ResponseBuyItemTM? response = await _responseService.ResponseGet<ResponseBuyItemTM>(requestUrl);
 
-            return item;
+                return new()
+                {
+                    Id = response!.Id,
+                    Result = response.Result,
+                };
+            }
+            //TODO Add many check exception
+            catch (Exception)
+            {
+                //Write logs
+
+                return new()
+                {
+                    Id = "-1",
+                    Result = "exception",
+                };
+            }
         }
 
         public async Task<ItemInfo> GetItemInfo(GameItem item)
@@ -83,19 +103,29 @@ namespace InCase.Infrastructure.Services
 
             string requestUrl = $"{uri}/api/ItemInfo/{id}/ru/?key={_configuration["MarketTM:Secret"]}";
 
-            ItemInfoTM? infoTM = await _responseService.ResponseGet<ItemInfoTM>(requestUrl);
-
-            if (infoTM is null)
-                throw new Exception("Затычка");
-
-            ItemInfo info = new()
+            try
             {
-                Count = infoTM.Offers!.Count,
-                PriceKopecks = int.Parse(infoTM.MinPrice!),
-                Item = item
-            };
+                ItemInfoTM? infoTM = await _responseService.ResponseGet<ItemInfoTM>(requestUrl);
 
-            return info;
+                return new()
+                {
+                    Count = infoTM!.Offers!.Count,
+                    PriceKopecks = int.Parse(infoTM.MinPrice!),
+                    Item = item,
+                    Result = "ok"
+                };
+            }
+            catch(Exception)
+            {
+                //TODO Write logs
+                return new()
+                {
+                    Count = 0,
+                    PriceKopecks = 0,
+                    Item = item,
+                    Result = "exception"
+                };
+            }
         }
 
         public async Task<TradeInfo> GetTradeInfo(UserHistoryWithdraw withdraw)
@@ -104,56 +134,58 @@ namespace InCase.Infrastructure.Services
             string uri = DomainUri[name];
             string id = withdraw.IdForMarket!;
 
-            string requestUrl = $"{uri}/api/Trades/?key={_configuration["MarketTM:Secret"]}";
+            long startTime = ((DateTimeOffset)withdraw.Date).ToUnixTimeSeconds();
+            long endTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
 
-            List<ResponseTradeTM>? tradesTM = await _responseService
-                .ResponseGet<List<ResponseTradeTM>>(requestUrl);
+            string urlTrade = $"{uri}/api/Trades/?key={_configuration["MarketTM:Secret"]}";
+            string urlHistory = $"{uri}/api/OperationHistory/{startTime}/{endTime}" +
+                $"/?key={_configuration["MarketTM:Secret"]}";
 
-            if(tradesTM is null)
-                throw new Exception("Затычка");
-
-            ResponseTradeTM? tradeTM = tradesTM
-                .FirstOrDefault(f => f.Id == id);
-
-            if(tradeTM is null)
-            {
-                long startTime = ((DateTimeOffset)withdraw.Date).ToUnixTimeSeconds();
-                long endTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
-
-                requestUrl = $"{uri}/api/OperationHistory/{startTime}/{endTime}" +
-                    $"/?key={_configuration["MarketTM:Secret"]}";
-
-                ResponseAnswerOperationHistoryTM? answer = await _responseService
-                    .ResponseGet<ResponseAnswerOperationHistoryTM>(requestUrl);
-
-                if (answer is null)
-                    throw new Exception("Затычка");
-
-                List<ResponseOperationHistoryTM>? historiesTM = answer.Histories;
-
-                if (historiesTM is null)
-                    throw new Exception("Затычка");
-
-                ResponseOperationHistoryTM? historyTM = historiesTM
-                    .FirstOrDefault(f => f.Id == withdraw.IdForMarket);
-
-                if(historyTM is null)
-                    throw new Exception("Затычка");
-
-                return new()
-                {
-                    Id = withdraw.IdForMarket,
-                    Item = withdraw.Item,
-                    Status = TradeStatuses[historyTM.Status!]
-                };
-            }
-
-            return new()
+            ResponseTradeTM? tradeTM = null;
+            ResponseOperationHistoryTM? historyTM = null;
+            TradeInfo tradeInfo = new()
             {
                 Id = withdraw.IdForMarket,
-                Item = withdraw.Item,
-                Status = TradeStatuses[tradeTM.Status!]
+                Item = withdraw.Item
             };
+
+            try
+            {
+                List<ResponseTradeTM>? tradesTM = await _responseService
+                    .ResponseGet<List<ResponseTradeTM>>(urlTrade);
+                tradeTM = tradesTM?
+                    .FirstOrDefault(f => f.Id == id);
+            }
+            catch(Exception)
+            { 
+                tradeInfo.Result = "exception";
+            }
+            
+            if (tradeTM is null)
+            {
+                try
+                {
+                    ResponseAnswerOperationHistoryTM? answer = await _responseService
+                        .ResponseGet<ResponseAnswerOperationHistoryTM>(urlHistory);
+
+                    List<ResponseOperationHistoryTM>? historiesTM = answer?.Histories;
+
+                    historyTM = historiesTM?
+                        .FirstOrDefault(f => f.Id == withdraw.IdForMarket);
+                }
+                catch (Exception) 
+                {
+                    tradeInfo.Result = "exception";
+                }
+
+                if (historyTM is null)
+                    return tradeInfo;
+            }
+
+            tradeInfo.Status = (tradeTM is null) ? historyTM!.Status! : tradeTM.Status!;
+            tradeInfo.Result = "ok";
+
+            return tradeInfo;
         }
 
         private class ResponseAnswerOperationHistoryTM

@@ -246,6 +246,7 @@
 | :- | :- | :- | :- | :- |
 |PK|Id|uniqueidentifier|True|NEWID(), UNIQUE|
 ||Date|datetime2(7)|True|-|
+||Currency|nvarchar(MAX)|True|-|
 ||Amount|decimal(18, 5)|True|-|
 |FK|UserId|uniqueidentifier|True|-|
 
@@ -450,6 +451,7 @@
 | :- | :- | :- | :- | :- |
 |PK|Id|uniqueidentifier|True|NEWID(), UNIQUE|
 ||Name|nvarchar(50)|True|-|
+||HashName|nvarchar(MAX)|True|-|
 ||Cost|decimal(18, 5)|True|-|
 ||ImageUri|nvarchar(MAX)|True|-|
 ||IdForMarket|nvarchar(MAX)|False|-|

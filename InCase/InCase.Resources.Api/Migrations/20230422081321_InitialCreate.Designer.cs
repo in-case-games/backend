@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InCase.Resources.Api.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230421082216_InitialCreate")]
+    [Migration("20230422081321_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -83,17 +83,17 @@ namespace InCase.Resources.Api.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("8b4d5fea-a77e-4929-92cd-c37659538d2f"),
+                            Id = new Guid("4fe55ff2-1503-416b-8cee-3641afaa3336"),
                             Name = "csgo"
                         },
                         new
                         {
-                            Id = new Guid("7c2ac042-8bec-4d32-84f2-f75cb1a8faae"),
+                            Id = new Guid("1900c471-149a-4a39-b5df-402f5fb68571"),
                             Name = "dota2"
                         },
                         new
                         {
-                            Id = new Guid("2dc5b95f-19d7-484c-8b21-a6b9edeaf773"),
+                            Id = new Guid("0ea6a922-9651-4946-a5a5-986a4388bd9b"),
                             Name = "genshin"
                         });
                 });
@@ -112,6 +112,11 @@ namespace InCase.Resources.Api.Migrations
                     b.Property<Guid>("GameId")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("game_id");
+
+                    b.Property<string>("HashName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("hash_name");
 
                     b.Property<string>("IdForMarket")
                         .HasColumnType("nvarchar(max)")
@@ -191,32 +196,32 @@ namespace InCase.Resources.Api.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("8f61244e-2806-4ea4-b95c-335fc7ad8478"),
+                            Id = new Guid("61c67299-4834-4b5d-a325-041334288496"),
                             Name = "none"
                         },
                         new
                         {
-                            Id = new Guid("78e54a7b-666a-4ce9-b825-fbd8bb311a24"),
+                            Id = new Guid("0c1f04d0-de6b-408d-96cb-71fd478abcf6"),
                             Name = "battle scarred"
                         },
                         new
                         {
-                            Id = new Guid("ee86dd8d-b6d7-4ec9-86a4-2de1c3815776"),
+                            Id = new Guid("501eca94-fbc0-4d45-9429-5c609115fc14"),
                             Name = "well worn"
                         },
                         new
                         {
-                            Id = new Guid("bf3daee2-c80a-488c-974a-0cbf657e6e96"),
+                            Id = new Guid("a9d34584-da18-4e32-9385-7293b2f4a157"),
                             Name = "field tested"
                         },
                         new
                         {
-                            Id = new Guid("96cab676-749e-4930-b338-f09793a48694"),
+                            Id = new Guid("4113635a-86f1-48c9-808c-ae62123c8ac2"),
                             Name = "minimal wear"
                         },
                         new
                         {
-                            Id = new Guid("e28b6a07-6f5b-4650-a6da-6790b83b9c56"),
+                            Id = new Guid("e53c05a6-0b20-4572-aaa3-288f26655f88"),
                             Name = "factory new"
                         });
                 });
@@ -250,32 +255,32 @@ namespace InCase.Resources.Api.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("92368d36-5990-4c60-ae4b-86b732eea7a9"),
+                            Id = new Guid("742450b1-66e8-4b00-aacb-5edfaec0b693"),
                             Name = "white"
                         },
                         new
                         {
-                            Id = new Guid("0b496ed7-d94a-43aa-bf5c-397bb4c4a58d"),
+                            Id = new Guid("31838d28-6ff9-45bc-9c0f-3d650e3ba48b"),
                             Name = "blue"
                         },
                         new
                         {
-                            Id = new Guid("5aa88315-de1f-465c-9e55-dc36095d4b9f"),
+                            Id = new Guid("dc66ff67-1fcb-4823-becf-0a29f0cd3532"),
                             Name = "violet"
                         },
                         new
                         {
-                            Id = new Guid("d2b4740c-798c-4cc6-94e0-ef6ff8facea3"),
+                            Id = new Guid("28f30bf6-9d2f-49be-84ff-355b26e03f9e"),
                             Name = "pink"
                         },
                         new
                         {
-                            Id = new Guid("6c28eeb2-0715-4a3e-9854-7a939fb94dba"),
+                            Id = new Guid("d15d7a75-abba-43a9-9479-7e3550ceb554"),
                             Name = "red"
                         },
                         new
                         {
-                            Id = new Guid("b54b5da3-25b3-49d7-b7bc-bba5433af286"),
+                            Id = new Guid("fbbcbf6a-2b17-4afc-897d-fe4b3a3b4161"),
                             Name = "gold"
                         });
                 });
@@ -309,32 +314,32 @@ namespace InCase.Resources.Api.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("0c6bb6e0-52a9-4a51-86b8-8a2afef6b667"),
+                            Id = new Guid("f56f6b7a-d87c-42c5-98d9-e6f33a0e71af"),
                             Name = "none"
                         },
                         new
                         {
-                            Id = new Guid("a41e47ec-8c02-481d-bc0c-aff69b3da6da"),
+                            Id = new Guid("e6f85688-a201-489f-8c89-1c83a0378f44"),
                             Name = "pistol"
                         },
                         new
                         {
-                            Id = new Guid("22e0eb1e-b757-4af2-9990-fae1c2ae0685"),
+                            Id = new Guid("e17f1020-2c1d-4eab-8616-2a444033bd97"),
                             Name = "weapon"
                         },
                         new
                         {
-                            Id = new Guid("509f7883-8fda-45d3-ac5c-7c7687e6ecc2"),
+                            Id = new Guid("8e399e95-9d18-427c-aa9d-89215a9942e1"),
                             Name = "rifle"
                         },
                         new
                         {
-                            Id = new Guid("0a5b015f-17c3-47e6-87a1-51df41171dac"),
+                            Id = new Guid("1c891103-2070-496b-bf89-9feeae48aff1"),
                             Name = "knife"
                         },
                         new
                         {
-                            Id = new Guid("78a86859-86f4-4067-ae23-4b520ddc67aa"),
+                            Id = new Guid("129e09cf-a193-4626-a3f5-92118051b437"),
                             Name = "gloves"
                         });
                 });
@@ -400,6 +405,70 @@ namespace InCase.Resources.Api.Migrations
                     b.ToTable("GroupLootBox", (string)null);
                 });
 
+            modelBuilder.Entity("InCase.Domain.Entities.Resources.InvoicePaymentStatus", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("id");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasColumnName("name");
+
+                    b.HasKey("Id")
+                        .HasName("pk_invoice_payment_status");
+
+                    b.HasIndex("Id")
+                        .IsUnique()
+                        .HasDatabaseName("ix_invoice_payment_status_id");
+
+                    b.HasIndex("Name")
+                        .IsUnique()
+                        .HasDatabaseName("ix_invoice_payment_status_name");
+
+                    b.ToTable("InvoicePaymentStatus", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("8c441f99-50a9-4607-9b55-c23909acd9ff"),
+                            Name = "new"
+                        },
+                        new
+                        {
+                            Id = new Guid("8aa72acd-b281-4922-85dd-5357e15a59b3"),
+                            Name = "processing"
+                        },
+                        new
+                        {
+                            Id = new Guid("7cde74a5-db50-48ec-b546-852fcc99fd51"),
+                            Name = "paid"
+                        },
+                        new
+                        {
+                            Id = new Guid("427409a5-ecc1-4b74-b7d3-6f8c92179ca7"),
+                            Name = "chargeback"
+                        },
+                        new
+                        {
+                            Id = new Guid("5e9b2d77-0265-45a5-9ad9-5e9d87f0cb6d"),
+                            Name = "refund"
+                        },
+                        new
+                        {
+                            Id = new Guid("80bd46ba-a169-456c-8ece-683ecdf120cd"),
+                            Name = "chargeback-cancel"
+                        },
+                        new
+                        {
+                            Id = new Guid("068c140e-eb24-4d60-83ce-83e7ad271de9"),
+                            Name = "refused"
+                        });
+                });
+
             modelBuilder.Entity("InCase.Domain.Entities.Resources.ItemWithdrawStatus", b =>
                 {
                     b.Property<Guid>("Id")
@@ -429,27 +498,27 @@ namespace InCase.Resources.Api.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("d2889a2a-8621-4e74-9200-d35191830706"),
+                            Id = new Guid("9884b963-201e-4e3e-95b5-50d8662cea76"),
                             Name = "purchase"
                         },
                         new
                         {
-                            Id = new Guid("b3472056-eacd-4983-bf1c-f673cd76044c"),
+                            Id = new Guid("f034336a-276a-4f53-ab87-47c92ae1822c"),
                             Name = "waiting"
                         },
                         new
                         {
-                            Id = new Guid("b3693938-f3ea-41eb-8196-46dad9e55454"),
+                            Id = new Guid("4d45dbdc-ee95-4ee7-b017-87d96a76a327"),
                             Name = "transfer"
                         },
                         new
                         {
-                            Id = new Guid("f069d222-2f40-4e7c-ac78-5ef2985d74ee"),
+                            Id = new Guid("fd601683-2d17-4290-9fd6-0f14c027fc82"),
                             Name = "given"
                         },
                         new
                         {
-                            Id = new Guid("73885ca4-0ff0-4fc8-b912-76607d985e09"),
+                            Id = new Guid("1cb178fd-8f57-4987-a3a7-bd96d3421a04"),
                             Name = "cancel"
                         });
                 });
@@ -757,12 +826,12 @@ namespace InCase.Resources.Api.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("38c160e9-c44c-4fdd-a592-e445b9a7a1f2"),
+                            Id = new Guid("ae142cfe-0694-4c16-abf3-74ee06076f54"),
                             Name = "balance"
                         },
                         new
                         {
-                            Id = new Guid("156a80e6-6661-4efb-ae0d-5f60d6a50f3a"),
+                            Id = new Guid("451323af-0364-4537-820f-561919efaceb"),
                             Name = "case"
                         });
                 });
@@ -796,17 +865,17 @@ namespace InCase.Resources.Api.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("5778b7b9-9dca-4153-92d2-576ab600df90"),
+                            Id = new Guid("72873316-4c74-4d2b-9893-d7ad68dd8d95"),
                             Name = "mute"
                         },
                         new
                         {
-                            Id = new Guid("05267079-9a25-4f43-9c6f-9fa1e8d09a5a"),
+                            Id = new Guid("99813a33-6724-4fcb-93c2-21fa0d861457"),
                             Name = "ban"
                         },
                         new
                         {
-                            Id = new Guid("58a9f461-eba1-42e6-812e-0eeab78213b8"),
+                            Id = new Guid("908201ab-704c-457b-8a83-a72531f1f5bd"),
                             Name = "warn"
                         });
                 });
@@ -879,7 +948,7 @@ namespace InCase.Resources.Api.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("0e1fc3f3-7d44-4df3-976f-7997e6cba4bd"),
+                            Id = new Guid("b75661cf-301a-4f1b-bb94-3aa0d3e2503d"),
                             LootBoxes = 0,
                             Reviews = 0,
                             Users = 0,
@@ -919,7 +988,7 @@ namespace InCase.Resources.Api.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("24483035-6234-4d6f-b6f6-787fd67b48d0"),
+                            Id = new Guid("3075322f-ffbf-441f-9d17-31f18b73e133"),
                             BalanceWithdrawn = 0m,
                             SentSites = 0m,
                             TotalReplenished = 0m
@@ -1173,9 +1242,26 @@ namespace InCase.Resources.Api.Migrations
                         .HasColumnType("DECIMAL(18,5)")
                         .HasColumnName("amount");
 
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("currency");
+
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2")
                         .HasColumnName("date");
+
+                    b.Property<string>("InvoiceId")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("invoice_id");
+
+                    b.Property<decimal>("Rate")
+                        .HasColumnType("DECIMAL(6,5)")
+                        .HasColumnName("rate");
+
+                    b.Property<Guid>("StatusId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("status_id");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier")
@@ -1187,6 +1273,9 @@ namespace InCase.Resources.Api.Migrations
                     b.HasIndex("Id")
                         .IsUnique()
                         .HasDatabaseName("ix_user_history_payment_id");
+
+                    b.HasIndex("StatusId")
+                        .HasDatabaseName("ix_user_history_payment_status_id");
 
                     b.HasIndex("UserId")
                         .HasDatabaseName("ix_user_history_payment_user_id");
@@ -1504,22 +1593,22 @@ namespace InCase.Resources.Api.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("6a078d1a-ff5e-428f-86b0-933b9c9c8abc"),
+                            Id = new Guid("d93c205b-053d-4617-a25c-b6b493ce15cc"),
                             Name = "user"
                         },
                         new
                         {
-                            Id = new Guid("19051a6b-59d4-4471-b901-425b1d7bc5a6"),
+                            Id = new Guid("b33abdfa-be7b-41ee-b711-c9b69436f906"),
                             Name = "admin"
                         },
                         new
                         {
-                            Id = new Guid("f377bcc5-ba28-4d00-ba3d-5660e7d3a5f8"),
+                            Id = new Guid("afd073c3-533f-4b96-98cd-5c93f70b5d7e"),
                             Name = "owner"
                         },
                         new
                         {
-                            Id = new Guid("d22e15a1-ba78-4584-bf61-98d8cbcb3963"),
+                            Id = new Guid("2f9a160d-6a1f-45f2-b0e0-ea70f8555b2b"),
                             Name = "bot"
                         });
                 });
@@ -1779,12 +1868,21 @@ namespace InCase.Resources.Api.Migrations
 
             modelBuilder.Entity("InCase.Domain.Entities.Resources.UserHistoryPayment", b =>
                 {
+                    b.HasOne("InCase.Domain.Entities.Resources.InvoicePaymentStatus", "Status")
+                        .WithOne("HistoryPayment")
+                        .HasForeignKey("InCase.Domain.Entities.Resources.UserHistoryPayment", "StatusId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired()
+                        .HasConstraintName("fk_user_history_payment_invoice_payment_status_status_id");
+
                     b.HasOne("InCase.Domain.Entities.Resources.User", "User")
                         .WithMany("HistoryPayments")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_user_history_payment_user_user_id");
+
+                    b.Navigation("Status");
 
                     b.Navigation("User");
                 });
@@ -1988,6 +2086,11 @@ namespace InCase.Resources.Api.Migrations
             modelBuilder.Entity("InCase.Domain.Entities.Resources.GroupLootBox", b =>
                 {
                     b.Navigation("Group");
+                });
+
+            modelBuilder.Entity("InCase.Domain.Entities.Resources.InvoicePaymentStatus", b =>
+                {
+                    b.Navigation("HistoryPayment");
                 });
 
             modelBuilder.Entity("InCase.Domain.Entities.Resources.ItemWithdrawStatus", b =>

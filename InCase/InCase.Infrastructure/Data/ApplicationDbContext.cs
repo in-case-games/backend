@@ -33,6 +33,7 @@ namespace InCase.Infrastructure.Data
         public DbSet<UserAdditionalInfo> UserAdditionalInfos => Set<UserAdditionalInfo>();
         public DbSet<UserHistoryOpening> UserHistoryOpenings => Set<UserHistoryOpening>();
         public DbSet<UserHistoryPayment> UserHistoryPayments => Set<UserHistoryPayment>();
+        public DbSet<InvoicePaymentStatus> InvoicePaymentStatuses => Set<InvoicePaymentStatus>();
         public DbSet<UserHistoryPromocode> UserHistoryPromocodes => Set<UserHistoryPromocode>();
         public DbSet<UserHistoryWithdraw> UserHistoryWithdraws => Set<UserHistoryWithdraw>();
         public DbSet<ItemWithdrawStatus> ItemWithdrawStatuses => Set<ItemWithdrawStatus>();

@@ -8,5 +8,6 @@ namespace InCase.Domain.Entities.Payment
         public int Count { get; set; }
         public GameItem Item { get; set; } = null!;
         public GameMarket Market { get; set; } = null!;
+        public string? Result { get; set; }
     }
 }

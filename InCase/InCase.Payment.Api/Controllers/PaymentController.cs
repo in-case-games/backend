@@ -65,9 +65,11 @@ namespace InCase.Payment.Api.Controllers
             if (itemInfoPrice > item.Cost * UpperLimitCost / CostInCoin)
                 return ResponseUtil.Conflict("Item no stability price, exchange");
 
-            decimal balance = await _withdrawService.GetBalance(itemInfo.Market.Name!);
+            BalanceMarket balance = await _withdrawService.GetBalance(itemInfo.Market.Name!);
 
-            if (balance <= itemInfoPrice) 
+            if (balance.Result != "ok")
+                return ResponseUtil.Conflict(nameof(BalanceMarket));
+            if (balance.Balance <= itemInfoPrice) 
                 return ResponseUtil.Conflict("Wait payment");
 
             BuyItem buyItem = await _withdrawService.BuyItem(itemInfo, data.TradeUrl!);
@@ -124,9 +126,9 @@ namespace InCase.Payment.Api.Controllers
                 return Forbid("No verify signature rsa");
 
             ResponseInvoiceStatusGM? invoiceInfoStatus = await _gameMoneyService
-                .GetInvoiceStatusInfo(answer.Invoice);
+                .GetInvoiceStatusInfo(int.Parse(answer.Invoice!));
 
-            if (invoiceInfoStatus is null || invoiceInfoStatus.Status != "Paid")
+            if (invoiceInfoStatus is null)
                 return ResponseUtil.Ok("Wait some time for replenishment");
 
             byte[] signatureInvoice = Encoding.ASCII.GetBytes(invoiceInfoStatus.SignatureRSA!);
@@ -137,19 +139,31 @@ namespace InCase.Payment.Api.Controllers
 
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            UserAdditionalInfo info = (await context.UserAdditionalInfos
-                .FirstOrDefaultAsync(x => x.UserId == invoiceInfoStatus.UserId))!;
+            string nameStatus = invoiceInfoStatus.Status!.Replace("_", "-").ToLower();
 
-            info.Balance += invoiceInfoStatus.Amount * CostInCoin; //TODO Check current answer
+            InvoicePaymentStatus status = await context.InvoicePaymentStatuses
+                .AsNoTracking()
+                .FirstAsync(f => f.Name == nameStatus);
+
+            UserHistoryPayment payment = new()
+            {
+                Amount = invoiceInfoStatus.Amount,
+                Currency = invoiceInfoStatus.CurrencyProject,
+                Date = DateTime.Today.AddSeconds(answer.SendTimeAnswer),
+                InvoiceId = invoiceInfoStatus.InvoiceId,
+                Rate = invoiceInfoStatus.Rate,
+                StatusId = status.Id,
+                UserId = invoiceInfoStatus.UserId
+            };
 
             await context.SaveChangesAsync();
 
-            return ResponseUtil.Ok(info);
+            return ResponseUtil.Ok(payment);
         }
 
         [AuthorizeRoles(Roles.Owner, Roles.Bot)]
-        [HttpGet("balance/{currency}")]
-        public async Task<IActionResult> GetTerminalBalance(string currency)
+        [HttpGet("paygate/balance/{currency}")]
+        public async Task<IActionResult> GetPaygateBalance(string currency)
         {
             ResponseBalanceGM? balance = await _gameMoneyService.GetBalance(currency);
 
@@ -162,11 +176,15 @@ namespace InCase.Payment.Api.Controllers
         [HttpGet("market/balance")]
         public async Task<IActionResult> GetMarketBalance(string name)
         {
-            return ResponseUtil.Ok(await _withdrawService.GetBalance(name));
+            BalanceMarket balance = await _withdrawService.GetBalance(name);
+
+            return balance.Result == "ok" ?
+                ResponseUtil.Ok(balance.Balance) : 
+                ResponseUtil.Conflict(nameof(BalanceMarket));
         }
 
         //TODO Transfer method
-        [AuthorizeRoles(Roles.Owner, Roles.Bot)]
+        [AuthorizeRoles(Roles.AdminOwnerBot)]
         [HttpGet("withdraw/{id}/status")]
         public async Task<IActionResult> GetWithdrawStatus(Guid id)
         {
@@ -183,11 +201,15 @@ namespace InCase.Payment.Api.Controllers
             if (withdraw is null)
                 return ResponseUtil.NotFound(nameof(UserHistoryWithdraw));
 
-            return ResponseUtil.Ok(await _withdrawService.GetTradeInfo(withdraw));
+            TradeInfo info = await _withdrawService.GetTradeInfo(withdraw);
+
+            return info.Result == "ok" ? 
+                ResponseUtil.Ok(info) :
+                ResponseUtil.Conflict(nameof(TradeInfo));
         }
 
         //TODO Transfer method
-        [AuthorizeRoles(Roles.Owner, Roles.Bot)]
+        [AuthorizeRoles(Roles.AdminOwnerBot)]
         [HttpGet("item/{id}")]
         public async Task<IActionResult> GetItemInfo(Guid id)
         {
@@ -202,7 +224,11 @@ namespace InCase.Payment.Api.Controllers
             if(item is null)
                 return ResponseUtil.NotFound(nameof(item));
 
-            return ResponseUtil.Ok(await _withdrawService.GetItemInfo(item));
+            ItemInfo? info = await _withdrawService.GetItemInfo(item);
+
+            return info is null ?
+                ResponseUtil.Conflict(nameof(ItemInfo)) : 
+                ResponseUtil.Ok(await _withdrawService.GetItemInfo(item));
         }
     }
 }

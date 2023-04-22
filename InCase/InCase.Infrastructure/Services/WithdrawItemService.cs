@@ -12,20 +12,31 @@ namespace InCase.Infrastructure.Services
         {
             _tradeMarketServices = new()
             {
-                ["tm"] = tradeMarketService,
+                ["tmcsgo"] = tradeMarketService,
+                ["tmdota2"] = tradeMarketService,
                 ["codashop"] = tradeMarketService,
             };
         }
 
-        public async Task<decimal> GetBalance(string name)
+        public async Task<BalanceMarket> GetBalance(string name)
         {
             bool IsExistService = _tradeMarketServices.ContainsKey(name);
 
             if (!IsExistService)
-                throw new ArgumentNullException("GameMarket",
-                    "Along with the game, it is necessary to transfer the markets");
+                throw new ArgumentException("Along with the game, it is necessary to transfer the markets");
 
-            return await _tradeMarketServices[name].GetBalance();
+            int numberAttempts = 5;
+
+            BalanceMarket balance = new();
+
+            while(numberAttempts > 0 && balance.Result != "ok")
+            {
+                balance = await _tradeMarketServices[name].GetBalance();
+
+                numberAttempts--;
+            }
+
+            return balance;
         }
 
         public async Task<ItemInfo?> GetItemInfo(GameItem item)
@@ -40,6 +51,7 @@ namespace InCase.Infrastructure.Services
                 throw new ArgumentException("The game has no ways to output an item");
 
             List<ItemInfo> itemInfos = new();
+            ItemInfo itemInfo = new();
             int indexMarket = 0;
 
             while(indexMarket < markets.Count)
@@ -47,11 +59,18 @@ namespace InCase.Infrastructure.Services
                 GameMarket market = markets[indexMarket];
                 string name = market.Name!;
 
-                ItemInfo itemInfo = await _tradeMarketServices[name].GetItemInfo(item);
+                int numberAttempts = 5;
 
-                if(itemInfo.PriceKopecks > 0 && itemInfo.Count > 0)
+                while (numberAttempts > 0 && itemInfo.Result != "ok")
                 {
-                    itemInfo.Market = market;
+                    itemInfo = await _tradeMarketServices[name].GetItemInfo(item);
+
+                    numberAttempts--;
+                }
+
+                if (itemInfo.Result == "ok" && itemInfo.Count > 0)
+                {
+                    itemInfo!.Market = market;
                     itemInfos.Add(itemInfo);
                 }
 
@@ -69,21 +88,15 @@ namespace InCase.Infrastructure.Services
             bool IsExistService = _tradeMarketServices.ContainsKey(name);
 
             if (!IsExistService)
-                throw new ArgumentException("None service");
+                throw new ArgumentException("Along with the game, it is necessary to transfer the markets");
 
-            BuyItem buyItem = new();
+            BuyItem? buyItem = new();
             int numberAttempts = 5;
 
             while(numberAttempts != 0 && buyItem.Result != "ok")
             {
-                ItemInfo? getInfo = await GetItemInfo(info.Item);
-
-                if (getInfo is not null)
-                {
-                    //Возможно вернуть task run result проверить это
-                    buyItem = await _tradeMarketServices[name].BuyItem(getInfo, tradeUrl);
-                    buyItem.Market = info.Market;
-                }
+                buyItem = await _tradeMarketServices[name].BuyItem(info, tradeUrl);
+                buyItem.Market = info.Market;
 
                 numberAttempts--;
             }
@@ -99,9 +112,19 @@ namespace InCase.Infrastructure.Services
             bool IsExistService = _tradeMarketServices.ContainsKey(name);
 
             if (!IsExistService)
-                throw new ArgumentException("None service");
+                throw new ArgumentException("Along with the game, it is necessary to transfer the markets");
 
-            return await _tradeMarketServices[name].GetTradeInfo(withdraw);
+            TradeInfo tradeInfo = new();
+            int numberAttempts = 5;
+
+            while(numberAttempts > 0 && tradeInfo.Result != "ok")
+            {
+                tradeInfo = await _tradeMarketServices[name].GetTradeInfo(withdraw);
+
+                numberAttempts--;
+            }
+
+            return tradeInfo;
         }
     }
 }

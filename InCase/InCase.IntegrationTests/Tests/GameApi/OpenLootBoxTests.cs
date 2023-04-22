@@ -714,6 +714,7 @@ namespace InCase.IntegrationTests.Tests.GameApi
             {
                 Id = ItemsGuids[0],
                 Name = "USP-S - Cortex",
+                HashName = GenerateString(8),
                 Cost = 239.99M,
                 ImageUri = "GOCSATImage1",
                 RarityId = rarities.FirstOrDefault(f => f.Name == "pink")!.Id,
@@ -725,6 +726,7 @@ namespace InCase.IntegrationTests.Tests.GameApi
             {
                 Id = ItemsGuids[1],
                 Name = "AK-47 - Ice Coaled",
+                HashName = GenerateString(8),
                 Cost = 752M,
                 ImageUri = "GOCSATImage2",
                 RarityId = rarities.FirstOrDefault(f => f.Name == "pink")!.Id,
@@ -736,6 +738,7 @@ namespace InCase.IntegrationTests.Tests.GameApi
             {
                 Id = ItemsGuids[2],
                 Name = "Перчатки «Гидра» - Изумруд",
+                HashName = GenerateString(8),
                 Cost = 4211M,
                 ImageUri = "GOCSATImage3",
                 RarityId = rarities.FirstOrDefault(f => f.Name == "gold")!.Id,
@@ -747,6 +750,7 @@ namespace InCase.IntegrationTests.Tests.GameApi
             {
                 Id = ItemsGuids[3],
                 Name = "Обмотки рук - Пустынный шемах",
+                HashName = GenerateString(8),
                 Cost = 4857M,
                 ImageUri = "GOCSATImage4",
                 RarityId = rarities.FirstOrDefault(f => f.Name == "gold")!.Id,
@@ -758,6 +762,7 @@ namespace InCase.IntegrationTests.Tests.GameApi
             {
                 Id = ItemsGuids[4],
                 Name = "Фальшион - Ночь",
+                HashName = GenerateString(8),
                 Cost = 8000M,
                 ImageUri = "GOCSATImage5",
                 RarityId = rarities.FirstOrDefault(f => f.Name == "gold")!.Id,
@@ -769,6 +774,7 @@ namespace InCase.IntegrationTests.Tests.GameApi
             {
                 Id = ItemsGuids[5],
                 Name = "Glock-18 - Ласка",
+                HashName = GenerateString(8),
                 Cost = 66M,
                 ImageUri = "GOCSATImage6",
                 RarityId = rarities.FirstOrDefault(f => f.Name == "blue")!.Id,
@@ -780,6 +786,7 @@ namespace InCase.IntegrationTests.Tests.GameApi
             {
                 Id = ItemsGuids[6],
                 Name = "AWP - Ахерон",
+                HashName = GenerateString(8),
                 Cost = 61M,
                 ImageUri = "GOCSATImage7",
                 RarityId = rarities.FirstOrDefault(f => f.Name == "blue")!.Id,
