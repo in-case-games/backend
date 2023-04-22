@@ -391,6 +391,7 @@ namespace InCase.Resources.Api.Controllers
                 return ResponseUtil.Conflict("The item can be exchanged only in case of price instability");
 
             inventory.ItemId = item.Id;
+            inventory.FixedCost = item.Cost;
             info.Balance += differenceCost;
 
             await context.SaveChangesAsync();
