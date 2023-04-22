@@ -431,10 +431,9 @@ namespace InCase.Resources.Api.Controllers
             pathDto.NumberSteps = (int)Math.Ceiling(item.Cost/(box.Cost * 0.2M));
             pathDto.FixedCost = item.Cost;
 
-            if(pathDto.NumberSteps > 100)
-                return ResponseUtil.Conflict("The cost of the selected item cannot exceed the loot box by more than 20 times");
-
-            return await EndpointUtil.Create(pathDto.Convert(), context);
+            return pathDto.NumberSteps <= 100 ? 
+                await EndpointUtil.Create(pathDto.Convert(), context) :
+                ResponseUtil.Conflict("The cost of the item exceeds the cost of the case by 20 times");
         }
 
         //TODO Transfer method
