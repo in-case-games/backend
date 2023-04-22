@@ -240,15 +240,31 @@
 Связи:
 
 - User(Многие к одному)
+- InvoicePaymentStatus:Status(Один к одному)
 
 
 |Key|Name|Type|IsRequired|Constrains|
 | :- | :- | :- | :- | :- |
 |PK|Id|uniqueidentifier|True|NEWID(), UNIQUE|
+||InvoiceId|nvarchar(MAX)|True|-|
 ||Date|datetime2(7)|True|-|
 ||Currency|nvarchar(MAX)|True|-|
 ||Amount|decimal(18, 5)|True|-|
+||Rate|decimal(6, 5)|True|-|
+|FK|StatusId|uniqueidentifier|True|-|
 |FK|UserId|uniqueidentifier|True|-|
+
+**InvoicePaymentStatus**
+
+Описание:
+
+- Таблица представляет из себя коллекцию видов статусов оплаты
+
+
+|Key|Name|Type|IsRequired|Constrains|
+| :- | :- | :- | :- | :- |
+|PK|Id|uniqueidentifier|True|NEWID(), UNIQUE|
+||Name|nvarchar(50)|True|UNIQUE|
 
 **NewsImage**
 
