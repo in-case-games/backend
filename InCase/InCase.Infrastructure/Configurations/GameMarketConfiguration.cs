@@ -16,7 +16,7 @@ namespace InCase.Infrastructure.Configurations
                 .IsUnique(false);
 
             builder.HasIndex(i => i.Name)
-                .IsUnique();
+                .IsUnique(false);
 
             builder.Property(p => p.Name)
                 .HasMaxLength(50)

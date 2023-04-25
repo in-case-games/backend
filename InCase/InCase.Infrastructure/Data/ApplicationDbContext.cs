@@ -19,8 +19,6 @@ namespace InCase.Infrastructure.Data
         public DbSet<LootBoxBanner> LootBoxBanners => Set<LootBoxBanner>();
         public DbSet<LootBoxGroup> LootBoxGroups => Set<LootBoxGroup>();
         public DbSet<LootBoxInventory> LootBoxInventories => Set<LootBoxInventory>();
-        public DbSet<News> News => Set<News>();
-        public DbSet<NewsImage> NewsImages => Set<NewsImage>();
         public DbSet<Promocode> Promocodes => Set<Promocode>();
         public DbSet<PromocodeType> PromocodeTypes => Set<PromocodeType>();
         public DbSet<RestrictionType> RestrictionTypes => Set<RestrictionType>();

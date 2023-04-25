@@ -12,8 +12,7 @@ namespace InCase.Infrastructure.Services
         {
             _marketServices = new()
             {
-                ["tmcsgo"] = marketService,
-                ["tmdota2"] = marketService,
+                ["tm"] = marketService,
                 ["codashop"] = marketService,
             };
         }

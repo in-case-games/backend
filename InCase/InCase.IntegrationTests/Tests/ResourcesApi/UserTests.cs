@@ -1086,7 +1086,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
                 ItemId = item1.Id,
                 UserId = DependenciesGuids["User"],
                 StatusId = (await Context.ItemWithdrawStatuses.FirstAsync(f => f.Name == "given")).Id,
-                MarketId = (await Context.GameMarkets.FirstAsync(f => f.Name == "tmcsgo")).Id
+                MarketId = (await Context.GameMarkets.FirstAsync(f => f.Name == "tm")).Id
             };
 
             UserHistoryOpening opening = new()
