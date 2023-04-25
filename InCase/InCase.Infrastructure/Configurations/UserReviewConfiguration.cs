@@ -23,6 +23,8 @@ namespace InCase.Infrastructure.Configurations
                 .IsRequired();
             builder.Property(p => p.CreationDate)
                 .IsRequired();
+            builder.Property(p => p.Score)
+                .IsRequired();
             builder.Property(p => p.IsApproved)
                 .IsRequired();
 

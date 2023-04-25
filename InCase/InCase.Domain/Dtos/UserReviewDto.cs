@@ -9,6 +9,7 @@ namespace InCase.Domain.Dtos
         public string? Content { get; set; }
         public DateTime CreationDate { get; set; }
         public bool IsApproved { get; set; } = false;
+        public int Score { get; set; }
 
         public Guid UserId { get; set; }
 
@@ -19,6 +20,7 @@ namespace InCase.Domain.Dtos
             Content = Content,
             CreationDate = CreationDate,
             IsApproved = IsApproved,
+            Score = Score,
             UserId = UserId
         };
     }

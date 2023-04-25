@@ -935,6 +935,7 @@ namespace InCase.IntegrationTests.Tests.ResourcesApi
                 Title = $"{GenerateString()}ReviewTest",
                 Content = $"{GenerateString()}ReviewContentTest",
                 IsApproved = true,
+                Score = 5,
                 UserId = userGuid
             };
 

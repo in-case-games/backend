@@ -163,6 +163,9 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _context.CreateDbContextAsync();
 
+            if (reviewDto.Score < 0 || reviewDto.Score > 10)
+                return ResponseUtil.Conflict("The review score cannot be less than 0 or more than 10");
+
             reviewDto.UserId = UserId;
             reviewDto.IsApproved = false;
             reviewDto.CreationDate = DateTime.UtcNow;
@@ -199,6 +202,8 @@ namespace InCase.Resources.Api.Controllers
 
             if (review == null) 
                 return ResponseUtil.NotFound(nameof(UserReview));
+            if (reviewDto.Score < 0 || reviewDto.Score > 10)
+                return ResponseUtil.Conflict("The review score cannot be less than 0 or more than 10");
 
             reviewDto.IsApproved = review.IsApproved;
             reviewDto.UserId = UserId;
@@ -218,6 +223,8 @@ namespace InCase.Resources.Api.Controllers
 
             if (review == null)
                 return ResponseUtil.NotFound(nameof(UserReview));
+            if (reviewDto.Score < 0 || reviewDto.Score > 10)
+                return ResponseUtil.Conflict("The review score cannot be less than 0 or more than 10");
 
             reviewDto.UserId = review.UserId;
 
