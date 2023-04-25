@@ -21,6 +21,8 @@ namespace InCase.Infrastructure.Configurations
             builder.Property(p => p.Content)
                 .HasMaxLength(120)
                 .IsRequired();
+            builder.Property(p => p.CreationDate)
+                .IsRequired();
             builder.Property(p => p.IsApproved)
                 .IsRequired();
 

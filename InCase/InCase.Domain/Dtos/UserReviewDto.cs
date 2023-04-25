@@ -7,6 +7,7 @@ namespace InCase.Domain.Dtos
     {
         public string? Title { get; set; }
         public string? Content { get; set; }
+        public DateTime CreationDate { get; set; }
         public bool IsApproved { get; set; } = false;
 
         public Guid UserId { get; set; }
@@ -16,6 +17,7 @@ namespace InCase.Domain.Dtos
             Id = IsNewGuid ? Guid.NewGuid() : Id,
             Title = Title,
             Content = Content,
+            CreationDate = CreationDate,
             IsApproved = IsApproved,
             UserId = UserId
         };

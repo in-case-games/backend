@@ -165,6 +165,7 @@ namespace InCase.Resources.Api.Controllers
 
             reviewDto.UserId = UserId;
             reviewDto.IsApproved = false;
+            reviewDto.CreationDate = DateTime.UtcNow;
 
             return await EndpointUtil.Create(reviewDto.Convert(), context);
         }
@@ -201,6 +202,7 @@ namespace InCase.Resources.Api.Controllers
 
             reviewDto.IsApproved = review.IsApproved;
             reviewDto.UserId = UserId;
+            reviewDto.CreationDate = review.CreationDate;
 
             return await EndpointUtil.Update(review, reviewDto.Convert(false), context);
         }

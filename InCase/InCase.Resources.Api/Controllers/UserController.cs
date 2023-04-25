@@ -105,18 +105,17 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            User? user = await context.Users
-                .Include(i => i.HistoryWithdraws!)
-                    .ThenInclude(ti => ti.Item)
+            List<UserHistoryWithdraw> withdraws = await context.UserHistoryWithdraws
+                .Include(i => i.Item)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(f => f.Id == id);
+                .Where(w => w.UserId == id)
+                .OrderByDescending(w => w.Date)
+                .Take(100)
+                .ToListAsync();
 
-            if (user is null)
-                return ResponseUtil.NotFound("User");
-
-            return user.HistoryWithdraws is null || user.HistoryWithdraws.Count == 0 ?
+            return withdraws.Count == 0 ?
                 ResponseUtil.NotFound(nameof(UserHistoryWithdraw)) : 
-                ResponseUtil.Ok(user.HistoryWithdraws);
+                ResponseUtil.Ok(withdraws);
         }
 
         [AuthorizeRoles(Roles.All)]
@@ -161,18 +160,17 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            User? user = await context.Users
-               .Include(i => i.Inventories!)
-                   .ThenInclude(ti => ti.Item)
-               .AsNoTracking()
-               .FirstOrDefaultAsync(f => f.Id == id);
+            List<UserInventory> inventories = await context.UserInventories
+                .Include(i => i.Item)
+                .AsNoTracking()
+                .Where(w => w.UserId == id)
+                .OrderByDescending(w => w.Date)
+                .Take(100)
+                .ToListAsync();
 
-            if (user is null)
-                return ResponseUtil.NotFound("User");
-
-            return user.Inventories is null || user.Inventories.Count == 0 ?
+            return inventories.Count == 0 ?
                 ResponseUtil.NotFound(nameof(UserInventory)) :
-                ResponseUtil.Ok(user.Inventories);
+                ResponseUtil.Ok(inventories);
         }
 
         [AuthorizeRoles(Roles.All)]
@@ -500,5 +498,44 @@ namespace InCase.Resources.Api.Controllers
 
             return await EndpointUtil.Delete(path, context);
         }
+
+
+        //TODO Transfer methods
+        /*[AllowAnonymous]
+        [HttpGet("history/withdraws/100")]
+        public async Task<IActionResult> GetLast100Withdraws()
+        {
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            List<UserHistoryWithdraw> withdraws = await context.UserHistoryWithdraws
+                .Include(i => i.Item)
+                .AsNoTracking()
+                .OrderByDescending(w => w.Date)
+                .Take(100)
+                .ToListAsync();
+
+            return withdraws.Count == 0 ?
+                ResponseUtil.NotFound(nameof(UserHistoryWithdraw)) :
+                ResponseUtil.Ok(withdraws);
+        }
+
+        [AuthorizeRoles(Roles.All)]
+        [HttpGet("history/openings/100")]
+        public async Task<IActionResult> GetLast100Openings()
+        {
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            List<UserHistoryOpening> openings = await context.UserHistoryOpenings
+                .Include(i => i.Box)
+                .Include(i => i.Item)
+                .AsNoTracking()
+                .OrderByDescending(w => w.Date)
+                .Take(100)
+                .ToListAsync();
+
+            return openings.Count == 0 ?
+                ResponseUtil.NotFound(nameof(UserHistoryOpening)) :
+                ResponseUtil.Ok(openings);
+        }*/
     }
 }

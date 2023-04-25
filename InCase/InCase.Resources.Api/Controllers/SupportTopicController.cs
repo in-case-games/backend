@@ -103,6 +103,41 @@ namespace InCase.Resources.Api.Controllers
         }
 
         [AuthorizeRoles(Roles.AdminOwnerBot)]
+        [HttpGet("support/opened")]
+        public async Task<IActionResult> GetTopicsOpenedBySupport()
+        {
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            List<SupportTopic> topics = await context.SupportTopics
+                .AsNoTracking()
+                .Where(w => w.IsClosed == false)
+                .ToListAsync();
+
+            return topics.Count == 0 ?
+                ResponseUtil.NotFound(nameof(SupportTopic)) :
+                ResponseUtil.Ok(topics);
+        }
+
+        [AuthorizeRoles(Roles.AdminOwnerBot)]
+        [HttpGet("support/{timeStart}&{timeEnd}")]
+        public async Task<IActionResult> GetTopicsOpenedBySupport(DateTime timeStart, DateTime timeEnd)
+        {
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            if (timeStart > timeEnd)
+                return ResponseUtil.Conflict("Time start longer time end");
+
+            List<SupportTopic> topics = await context.SupportTopics
+                .AsNoTracking()
+                .Where(w => w.Date >= timeStart && w.Date <= timeEnd)
+                .ToListAsync();
+
+            return topics.Count == 0 ?
+                ResponseUtil.NotFound(nameof(SupportTopic)) :
+                ResponseUtil.Ok(topics);
+        }
+
+        [AuthorizeRoles(Roles.AdminOwnerBot)]
         [HttpGet("support")]
         public async Task<IActionResult> GetTopicsBySupport()
         {
@@ -175,6 +210,7 @@ namespace InCase.Resources.Api.Controllers
 
             topicDto.UserId = UserId;
             topicDto.IsClosed = false;
+            topicDto.Date = DateTime.UtcNow;
 
             List<SupportTopic> topics = await context.SupportTopics
                 .AsNoTracking()
@@ -200,6 +236,7 @@ namespace InCase.Resources.Api.Controllers
                 return ResponseUtil.NotFound(nameof(SupportTopic));
 
             answerDto.PlaintiffId = UserId;
+            answerDto.Date = DateTime.UtcNow;
 
             return await EndpointUtil.Create(answerDto.Convert(), context);
         }
@@ -218,6 +255,7 @@ namespace InCase.Resources.Api.Controllers
                 return ResponseUtil.NotFound(nameof(SupportTopic));
 
             answerDto.PlaintiffId = UserId;
+            answerDto.Date = DateTime.UtcNow;
 
             return await EndpointUtil.Create(answerDto.Convert(), context);
         }
@@ -235,6 +273,7 @@ namespace InCase.Resources.Api.Controllers
                 return ResponseUtil.NotFound(nameof(SupportTopic));
 
             topicDto.UserId = topic.UserId;
+            topicDto.Date = topic.Date;
 
             return await EndpointUtil.Update(topic, topicDto.Convert(false), context);
         }
@@ -252,6 +291,8 @@ namespace InCase.Resources.Api.Controllers
                 return ResponseUtil.NotFound(nameof(SupportTopic));
 
             topic.IsClosed = true;
+            topic.Date = DateTime.UtcNow;
+
             await context.SaveChangesAsync();
 
             return ResponseUtil.Ok(topic.Convert(false));
@@ -273,6 +314,7 @@ namespace InCase.Resources.Api.Controllers
                 return ResponseUtil.NotFound(nameof(SupportTopicAnswer));
 
             answerDto.PlaintiffId = UserId;
+            answerDto.Date = DateTime.UtcNow;
 
             return await EndpointUtil.Update(answer, answerDto.Convert(false), context);
         }
