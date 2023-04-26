@@ -501,7 +501,7 @@ namespace InCase.Resources.Api.Controllers
 
 
         //TODO Transfer methods
-        /*[AllowAnonymous]
+        [AllowAnonymous]
         [HttpGet("history/withdraws/100")]
         public async Task<IActionResult> GetLast100Withdraws()
         {
@@ -536,6 +536,6 @@ namespace InCase.Resources.Api.Controllers
             return openings.Count == 0 ?
                 ResponseUtil.NotFound(nameof(UserHistoryOpening)) :
                 ResponseUtil.Ok(openings);
-        }*/
+        }
     }
 }

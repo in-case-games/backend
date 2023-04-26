@@ -9,7 +9,8 @@ namespace InCase.Infrastructure.Configurations
         private readonly List<GameItemType> types = new() {
             new() { Name = "none" }, new() { Name = "pistol" },
             new() { Name = "weapon" }, new() { Name = "rifle" },
-            new() { Name = "knife" }, new() { Name = "gloves" }
+            new() { Name = "knife" }, new() { Name = "gloves" },
+            new() { Name = "other" }
         };
 
         public override void Configure(EntityTypeBuilder<GameItemType> builder)
