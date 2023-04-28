@@ -13,14 +13,12 @@ namespace InCase.Infrastructure.Data
         public DbSet<GameItemQuality> GameItemQualities => Set<GameItemQuality>();
         public DbSet<GameItemRarity> GameItemRarities => Set<GameItemRarity>();
         public DbSet<GameItemType> GameItemTypes => Set<GameItemType>();
-        public DbSet<GamePlatform> GamePlatforms => Set<GamePlatform>();
+        public DbSet<GameMarket> GameMarkets => Set<GameMarket>();
         public DbSet<GroupLootBox> GroupLootBoxes => Set<GroupLootBox>();
         public DbSet<LootBox> LootBoxes => Set<LootBox>();
         public DbSet<LootBoxBanner> LootBoxBanners => Set<LootBoxBanner>();
         public DbSet<LootBoxGroup> LootBoxGroups => Set<LootBoxGroup>();
         public DbSet<LootBoxInventory> LootBoxInventories => Set<LootBoxInventory>();
-        public DbSet<News> News => Set<News>();
-        public DbSet<NewsImage> NewsImages => Set<NewsImage>();
         public DbSet<Promocode> Promocodes => Set<Promocode>();
         public DbSet<PromocodeType> PromocodeTypes => Set<PromocodeType>();
         public DbSet<RestrictionType> RestrictionTypes => Set<RestrictionType>();
@@ -33,8 +31,10 @@ namespace InCase.Infrastructure.Data
         public DbSet<UserAdditionalInfo> UserAdditionalInfos => Set<UserAdditionalInfo>();
         public DbSet<UserHistoryOpening> UserHistoryOpenings => Set<UserHistoryOpening>();
         public DbSet<UserHistoryPayment> UserHistoryPayments => Set<UserHistoryPayment>();
+        public DbSet<InvoicePaymentStatus> InvoicePaymentStatuses => Set<InvoicePaymentStatus>();
         public DbSet<UserHistoryPromocode> UserHistoryPromocodes => Set<UserHistoryPromocode>();
-        public DbSet<UserHistoryWithdrawn> UserHistoryWithdrawns => Set<UserHistoryWithdrawn>();
+        public DbSet<UserHistoryWithdraw> UserHistoryWithdraws => Set<UserHistoryWithdraw>();
+        public DbSet<ItemWithdrawStatus> ItemWithdrawStatuses => Set<ItemWithdrawStatus>();
         public DbSet<UserInventory> UserInventories => Set<UserInventory>();
         public DbSet<UserPathBanner> UserPathBanners => Set<UserPathBanner>();
         public DbSet<UserRestriction> UserRestrictions => Set<UserRestriction>();
@@ -49,10 +49,6 @@ namespace InCase.Infrastructure.Data
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
-
-            #region DevelopmentTemplateData
-            // coming soon
-            #endregion
         }
     }
 }

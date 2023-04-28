@@ -18,7 +18,7 @@ namespace InCase.Infrastructure.Configurations
                 .IsUnique(false);
 
             builder.Property(p => p.Date)
-                .IsRequired();
+                .IsRequired(false);
             builder.Property(p => p.IsActivated)
                 .IsRequired();
 

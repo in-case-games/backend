@@ -1,4 +1,5 @@
 using InCase.Infrastructure.Data;
+using InCase.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -69,6 +70,9 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
+builder.Services.AddSingleton<ResponseService>();
+builder.Services.AddSingleton<TradeMarketService>();
+builder.Services.AddSingleton<WithdrawItemService>();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddAuthorization();
@@ -90,4 +94,4 @@ app.MapControllers();
 
 app.Run();
 
-public partial class Program { }
+public partial class HostResourcesApiTests { }

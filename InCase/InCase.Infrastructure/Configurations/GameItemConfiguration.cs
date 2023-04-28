@@ -24,12 +24,14 @@ namespace InCase.Infrastructure.Configurations
             builder.Property(p => p.Name)
                 .HasMaxLength(50)
                 .IsRequired();
+            builder.Property(p => p.HashName)
+                .IsRequired();
             builder.Property(p => p.Cost)
                 .HasColumnType("DECIMAL(18,5)")
                 .IsRequired();
             builder.Property(p => p.ImageUri)
                 .IsRequired();
-            builder.Property(p => p.IdForPlatform)
+            builder.Property(p => p.IdForMarket)
                 .IsRequired(false);
 
             builder.HasOne(o => o.Game)

@@ -2,12 +2,12 @@
 
 namespace InCase.Domain.Entities.Payment
 {
-    public class ResponseInvoiceStatusGM : PaymentEntity
+    public class ResponseInvoiceStatusGM
     {
         [JsonPropertyName("user")] public Guid UserId { get; set; }
         [JsonPropertyName("state")] public string? State { get; set; }
-        [JsonPropertyName("project")] public int ProjectId { get; set; }
-        [JsonPropertyName("invoice")] public int InvoiceId { get; set; }
+        [JsonPropertyName("project")] public string? ProjectId { get; set; }
+        [JsonPropertyName("invoice")] public string? InvoiceId { get; set; }
         [JsonPropertyName("status")] public string? Status { get; set; }
         [JsonPropertyName("amount")] public decimal Amount { get; set; }
         [JsonPropertyName("net_amount")] public decimal AmountUser { get; set; }
@@ -15,12 +15,12 @@ namespace InCase.Domain.Entities.Payment
         [JsonPropertyName("type")] public string? Type { get; set; }
         [JsonPropertyName("wallet")] public string? Wallet { get; set; }
         [JsonPropertyName("comment")] public string? Comment { get; set; }
-        [JsonPropertyName("time")] public int Time { get; set; }
+        [JsonPropertyName("time")] public long Time { get; set; }
         [JsonPropertyName("currency_project")] public string? CurrencyProject { get; set; }
         [JsonPropertyName("currency_user")] public string? CurrencyUser { get; set; }
         [JsonPropertyName("date_create")] public DateTime DateCreate { get; set; }
         [JsonPropertyName("date_pay")] public DateTime DatePay { get; set; }
-        [JsonPropertyName("rate")] public decimal? Rate { get; set; }
+        [JsonPropertyName("rate")] public decimal Rate { get; set; } = 0M;
         [JsonPropertyName("rand")] public string? Rand { get; set; }
         [JsonPropertyName("reason")] public string? Reason { get; set; }
         [JsonPropertyName("signature")] public string? SignatureRSA { get; set; }
@@ -30,7 +30,7 @@ namespace InCase.Domain.Entities.Payment
             string rand = string.IsNullOrEmpty(Rand) ? "" : $"rand:{Rand}";
             string reason = string.IsNullOrEmpty(Reason) ? "" : $"reason:{Reason}";
             string comment = string.IsNullOrEmpty(Comment) ? "" : $"comment:{Comment}";
-            string rate = Rate is null ? "" : $"rate:{Rate}";
+            string rate = Rate == 0 ? "" : $"rate:{Rate}";
             return
                 $"state:{State};" +
                 $"project:{ProjectId};" +

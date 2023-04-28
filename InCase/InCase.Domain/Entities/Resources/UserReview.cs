@@ -7,6 +7,8 @@ namespace InCase.Domain.Entities.Resources
     {
         public string? Title { get; set; }
         public string? Content { get; set; }
+        public DateTime CreationDate { get; set; }
+        public int Score { get; set; }
         public bool IsApproved { get; set; } = false;
 
         [JsonIgnore]
@@ -22,7 +24,9 @@ namespace InCase.Domain.Entities.Resources
             Id = IsNewGuid ? Guid.NewGuid() : Id,
             Title = Title,
             Content = Content,
+            CreationDate = CreationDate,
             IsApproved = IsApproved,
+            Score = Score,
             UserId = User?.Id ?? UserId
         };
     }

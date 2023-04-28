@@ -6,9 +6,10 @@ namespace InCase.Domain.Dtos
     public class GameItemDto : BaseEntity
     {
         public string? Name { get; set; }
+        public string? HashName { get; set; }
         public decimal Cost { get; set; }
         public string? ImageUri { get; set; }
-        public string? IdForPlatform { get; set; }
+        public string? IdForMarket { get; set; }
 
         public Guid GameId { get; set; }
         public Guid? TypeId { get; set; }
@@ -19,9 +20,10 @@ namespace InCase.Domain.Dtos
         {
             Id = IsNewGuid ? Guid.NewGuid() : Id,
             Name = Name,
+            HashName = HashName,
             Cost = Cost,
             ImageUri = ImageUri,
-            IdForPlatform = IdForPlatform,
+            IdForMarket = IdForMarket,
             TypeId = TypeId,
             RarityId = RarityId,
             GameId = GameId,

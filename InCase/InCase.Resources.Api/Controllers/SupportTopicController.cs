@@ -28,12 +28,14 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            List<SupportTopic> supportTopics = await context.SupportTopics
+            List<SupportTopic> topics = await context.SupportTopics
                 .AsNoTracking()
                 .Where(w => w.UserId == UserId)
                 .ToListAsync();
 
-            return ResponseUtil.Ok(supportTopics);
+            return topics.Count == 0 ?
+                ResponseUtil.NotFound(nameof(SupportTopic)) :
+                ResponseUtil.Ok(topics);
         }
 
         [AuthorizeRoles(Roles.User)]
@@ -42,13 +44,13 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            SupportTopic? supportTopic = await context.SupportTopics
+            SupportTopic? topic = await context.SupportTopics
                 .AsNoTracking()
                 .FirstOrDefaultAsync(f => f.Id == id && f.UserId == UserId);
 
-            return supportTopic is null ?
+            return topic is null ?
                 ResponseUtil.NotFound(nameof(SupportTopic)) :
-                ResponseUtil.Ok(supportTopic);
+                ResponseUtil.Ok(topic);
         }
 
         [AuthorizeRoles(Roles.User)]
@@ -57,21 +59,20 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            bool IsExistTopic = await context.SupportTopics
+            SupportTopic? topic = await context.SupportTopics
+                .Include(i => i.Answers!)
+                    .ThenInclude(ti => ti.Plaintiff)
+                .Include(i => i.Answers!)
+                    .ThenInclude(ti => ti.Images)
                 .AsNoTracking()
-                .AnyAsync(a => a.Id == id && a.UserId == UserId);
+                .FirstOrDefaultAsync(f => f.Id == id && f.UserId == UserId);
 
-            if (IsExistTopic is false)
+            if (topic is null)
                 return ResponseUtil.NotFound(nameof(SupportTopic));
 
-            List<SupportTopicAnswer> answers = await context.SupportTopicAnswers
-                .Include(i => i.Plaintiff)
-                .Include(i => i.Images)
-                .AsNoTracking()
-                .Where(w => w.TopicId == id)
-                .ToListAsync();
-
-            return ResponseUtil.Ok(answers);
+            return topic.Answers is null || topic.Answers.Count == 0 ?
+                ResponseUtil.NotFound(nameof(SupportTopicAnswer)) : 
+                ResponseUtil.Ok(topic.Answers);
         }
 
         [AuthorizeRoles(Roles.User)]
@@ -80,22 +81,60 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            bool IsExistTopic = await context.SupportTopics
+            SupportTopic? topic = await context.SupportTopics
+                .Include(i => i.Answers!)
+                    .ThenInclude(ti => ti.Plaintiff)
+                .Include(i => i.Answers!)
+                    .ThenInclude(ti => ti.Images)
                 .AsNoTracking()
-                .AnyAsync(a => a.Id == id && a.UserId == UserId);
+                .FirstOrDefaultAsync(f => f.Id == id && f.UserId == UserId);
 
-            if (IsExistTopic is false)
+            if (topic is null)
                 return ResponseUtil.NotFound(nameof(SupportTopic));
+            if (topic.Answers is null || topic.Answers.Count == 0)
+                return ResponseUtil.NotFound(nameof(SupportTopicAnswer));
 
-            SupportTopicAnswer? answer = await context.SupportTopicAnswers
-                .Include(i => i.Plaintiff)
-                .Include(i => i.Images)
-                .AsNoTracking()
-                .FirstOrDefaultAsync(f => f.Id == answerId);
+            SupportTopicAnswer? answer = topic.Answers
+                .FirstOrDefault(f => f.Id == answerId);
 
             return answer is null ?
                 ResponseUtil.NotFound(nameof(SupportTopicAnswer)) :
                 ResponseUtil.Ok(answer);
+        }
+
+        [AuthorizeRoles(Roles.AdminOwnerBot)]
+        [HttpGet("support/opened")]
+        public async Task<IActionResult> GetTopicsOpenedBySupport()
+        {
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            List<SupportTopic> topics = await context.SupportTopics
+                .AsNoTracking()
+                .Where(w => w.IsClosed == false)
+                .ToListAsync();
+
+            return topics.Count == 0 ?
+                ResponseUtil.NotFound(nameof(SupportTopic)) :
+                ResponseUtil.Ok(topics);
+        }
+
+        [AuthorizeRoles(Roles.AdminOwnerBot)]
+        [HttpGet("support/{timeStart}&{timeEnd}")]
+        public async Task<IActionResult> GetTopicsOpenedBySupport(DateTime timeStart, DateTime timeEnd)
+        {
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            if (timeStart > timeEnd)
+                return ResponseUtil.Conflict("Time start longer time end");
+
+            List<SupportTopic> topics = await context.SupportTopics
+                .AsNoTracking()
+                .Where(w => w.Date >= timeStart && w.Date <= timeEnd)
+                .ToListAsync();
+
+            return topics.Count == 0 ?
+                ResponseUtil.NotFound(nameof(SupportTopic)) :
+                ResponseUtil.Ok(topics);
         }
 
         [AuthorizeRoles(Roles.AdminOwnerBot)]
@@ -104,11 +143,13 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            List<SupportTopic> supportTopics = await context.SupportTopics
+            List<SupportTopic> topics = await context.SupportTopics
                 .AsNoTracking()
                 .ToListAsync();
 
-            return ResponseUtil.Ok(supportTopics);
+            return topics.Count == 0 ?
+                ResponseUtil.NotFound(nameof(SupportTopic)) :
+                ResponseUtil.Ok(topics);
         }
 
         [AuthorizeRoles(Roles.AdminOwnerBot)]
@@ -117,13 +158,13 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            SupportTopic? supportTopic = await context.SupportTopics
+            SupportTopic? topic = await context.SupportTopics
                 .AsNoTracking()
                 .FirstOrDefaultAsync(f => f.Id == id);
 
-            return supportTopic is null ?
+            return topic is null ?
                 ResponseUtil.NotFound(nameof(SupportTopic)) :
-                ResponseUtil.Ok(supportTopic);
+                ResponseUtil.Ok(topic);
         }
 
         [AuthorizeRoles(Roles.AdminOwnerBot)]
@@ -156,7 +197,9 @@ namespace InCase.Resources.Api.Controllers
                 .Where(w => w.TopicId == id)
                 .ToListAsync();
 
-            return ResponseUtil.Ok(answers);
+            return answers.Count == 0 ?
+                ResponseUtil.NotFound(nameof(SupportTopicAnswer)) :
+                ResponseUtil.Ok(answers);
         }
 
         [AuthorizeRoles(Roles.User)]
@@ -166,13 +209,15 @@ namespace InCase.Resources.Api.Controllers
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             topicDto.UserId = UserId;
+            topicDto.IsClosed = false;
+            topicDto.Date = DateTime.UtcNow;
 
-            List<SupportTopic> supportTopics = await context.SupportTopics
+            List<SupportTopic> topics = await context.SupportTopics
                 .AsNoTracking()
                 .Where(w => w.UserId == topicDto.UserId)
                 .ToListAsync();
 
-            if (supportTopics.Count == 3)
+            if (topics.Count == 3)
                 return ResponseUtil.Conflict("Access denied");
 
             return await EndpointUtil.Create(topicDto.Convert(), context);
@@ -185,12 +230,13 @@ namespace InCase.Resources.Api.Controllers
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             SupportTopic? topic = await context.SupportTopics
-                    .FirstOrDefaultAsync(f => f.Id == answerDto.TopicId && f.UserId == UserId);
+                .FirstOrDefaultAsync(f => f.Id == answerDto.TopicId && f.UserId == UserId);
 
             if (topic is null)
                 return ResponseUtil.NotFound(nameof(SupportTopic));
 
             answerDto.PlaintiffId = UserId;
+            answerDto.Date = DateTime.UtcNow;
 
             return await EndpointUtil.Create(answerDto.Convert(), context);
         }
@@ -202,31 +248,54 @@ namespace InCase.Resources.Api.Controllers
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             SupportTopic? topic = await context.SupportTopics
-                    .FirstOrDefaultAsync(f => f.Id == answerDto.TopicId);
+                .AsNoTracking()
+                .FirstOrDefaultAsync(f => f.Id == answerDto.TopicId);
 
             if (topic is null)
                 return ResponseUtil.NotFound(nameof(SupportTopic));
 
             answerDto.PlaintiffId = UserId;
+            answerDto.Date = DateTime.UtcNow;
 
             return await EndpointUtil.Create(answerDto.Convert(), context);
         }
 
-        [AuthorizeRoles(Roles.UserAdminOwner)]
+        [AuthorizeRoles(Roles.User)]
         [HttpPut]
         public async Task<IActionResult> Update(SupportTopicDto topicDto)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             SupportTopic? topic = await context.SupportTopics
-                    .FirstOrDefaultAsync(f => f.Id == topicDto.Id && f.UserId == UserId);
+                .FirstOrDefaultAsync(f => f.Id == topicDto.Id && f.UserId == UserId);
 
             if (topic is null)
                 return ResponseUtil.NotFound(nameof(SupportTopic));
 
             topicDto.UserId = topic.UserId;
+            topicDto.Date = topic.Date;
 
             return await EndpointUtil.Update(topic, topicDto.Convert(false), context);
+        }
+
+        [AuthorizeRoles(Roles.Admin, Roles.Owner)]
+        [HttpGet("{id}/close")]
+        public async Task<IActionResult> Close(Guid id)
+        {
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            SupportTopic? topic = await context.SupportTopics
+                .FirstOrDefaultAsync(f => f.Id == id);
+
+            if (topic is null)
+                return ResponseUtil.NotFound(nameof(SupportTopic));
+
+            topic.IsClosed = true;
+            topic.Date = DateTime.UtcNow;
+
+            await context.SaveChangesAsync();
+
+            return ResponseUtil.Ok(topic.Convert(false));
         }
 
         [AuthorizeRoles(Roles.UserAdminOwner)]
@@ -236,19 +305,21 @@ namespace InCase.Resources.Api.Controllers
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             SupportTopicAnswer? answer = await context.SupportTopicAnswers
-                .AsNoTracking()
-                .FirstOrDefaultAsync(f => f.Id == answerDto.Id && 
-                answerDto.PlaintiffId == UserId);
+                .FirstOrDefaultAsync(f => 
+                f.Id == answerDto.Id && 
+                f.PlaintiffId == UserId && 
+                f.TopicId == answerDto.TopicId);
 
             if (answer is null)
                 return ResponseUtil.NotFound(nameof(SupportTopicAnswer));
 
             answerDto.PlaintiffId = UserId;
+            answerDto.Date = DateTime.UtcNow;
 
             return await EndpointUtil.Update(answer, answerDto.Convert(false), context);
         }
 
-        [AuthorizeRoles(Roles.Owner, Roles.Bot)]
+        [AuthorizeRoles(Roles.Owner)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {

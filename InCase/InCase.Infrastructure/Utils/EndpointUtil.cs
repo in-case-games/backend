@@ -30,7 +30,9 @@ namespace InCase.Infrastructure.Utils
                 .AsNoTracking()
                 .ToListAsync();
 
-            return ResponseUtil.Ok(result);
+            return result.Count == 0 ? 
+                ResponseUtil.NotFound(typeof(T).Name) : 
+                ResponseUtil.Ok(result);
         }
 
         public static async Task<IActionResult> Create<T>(T entity, ApplicationDbContext context) 

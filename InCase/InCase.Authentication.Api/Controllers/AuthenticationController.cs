@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace InCase.Authentication.Api.Controllers
 {
@@ -41,6 +42,7 @@ namespace InCase.Authentication.Api.Controllers
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             User? user = await context.Users
+                .Include(i => i.AdditionalInfo)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => 
                 x.Id == userDto.Id ||
@@ -61,14 +63,23 @@ namespace InCase.Authentication.Api.Controllers
             if (bans.Count > 0)
                 return ResponseUtil.Conflict(bans);
 
-            return await _emailService.SendSignIn(new DataMailLink()
-            {
-                UserEmail = user.Email!,
-                UserLogin = user.Login!,
-                EmailToken = _jwtService.CreateEmailToken(user),
-                UserIp = userDto.Ip!,
-                UserPlatforms = userDto.Platform!,
-            });
+            return user.AdditionalInfo!.IsConfirmed ? 
+                await _emailService.SendToEmail(user.Email!, "Подтверждение входа", new()
+                {
+                    BodyTitle = $"Дорогой {user.Login!}",
+                    BodyDescription = $"Подтвердите вход в аккаунт с устройства {userDto.Platform!}. " +
+                    $"Если это были не вы, то срочно измените пароль в настройках вашего аккаунта, " +
+                    $"вас автоматически отключит со всех устройств.",
+                    BodyButtonLink = $"/api/email/confirm/account?token={_jwtService.CreateEmailToken(user)}"
+                }) :
+                await _emailService.SendToEmail(user.Email!, "Подтверждение регистрации", new()
+                {
+                    BodyTitle = $"Дорогой {user.Login!}",
+                    BodyDescription = $"Для завершения этапа регистрации, " +
+                    $"вам необходимо нажать на кнопку ниже для подтверждения почты. " +
+                    $"Если это были не вы, проигнорируйте это сообщение.",
+                    BodyButtonLink = $"/api/email/confirm/account?token={_jwtService.CreateEmailToken(user)}"
+                });
         }
 
         [AllowAnonymous]
@@ -105,11 +116,13 @@ namespace InCase.Authentication.Api.Controllers
 
             try
             {
-                await _emailService.SendSignUp(new DataMailLink()
+                await _emailService.SendToEmail(user.Email!, "Подтверждение регистрации", new()
                 {
-                    UserEmail = user.Email!,
-                    UserLogin = user.Login!,
-                    EmailToken = _jwtService.CreateEmailToken(user)
+                    BodyTitle = $"Дорогой {user.Login!}",
+                    BodyDescription = $"Для завершения этапа регистрации, " +
+                    $"вам необходимо нажать на кнопку ниже для подтверждения почты. " +
+                    $"Если это были не вы, проигнорируйте это сообщение.",
+                    BodyButtonLink = $"/api/email/confirm/account?token={_jwtService.CreateEmailToken(user)}"
                 });
             }
             catch (SmtpCommandException)

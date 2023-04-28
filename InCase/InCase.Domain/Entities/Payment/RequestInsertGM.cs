@@ -2,7 +2,7 @@
 
 namespace InCase.Domain.Entities.Payment
 {
-    public class RequestInsertGM : PaymentEntity
+    public class RequestInsertGM
     {
         [JsonPropertyName("project")] public int ProjectId { get; set; }
         [JsonPropertyName("projectId")] public Guid PaymentId { get; set; }

@@ -20,11 +20,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
-    <Folder Include="RsaKeys\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\InCase.Infrastructure\InCase.Infrastructure.csproj" />
   </ItemGroup>
 

@@ -74,17 +74,27 @@ namespace InCase.Resources.Api.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "News",
+                name: "InvoicePaymentStatus",
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    title = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    date = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    content = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_news", x => x.id);
+                    table.PrimaryKey("pk_invoice_payment_status", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ItemWithdrawStatus",
+                columns: table => new
+                {
+                    id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_item_withdraw_status", x => x.id);
                 });
 
             migrationBuilder.CreateTable(
@@ -169,20 +179,18 @@ namespace InCase.Resources.Api.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "GamePlatform",
+                name: "GameMarket",
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    domain_uri = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    image_uri = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     game_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_game_platform", x => x.id);
+                    table.PrimaryKey("pk_game_market", x => x.id);
                     table.ForeignKey(
-                        name: "fk_game_platform_game_game_id",
+                        name: "fk_game_market_game_game_id",
                         column: x => x.game_id,
                         principalTable: "Game",
                         principalColumn: "id",
@@ -218,9 +226,10 @@ namespace InCase.Resources.Api.Migrations
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    hash_name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     cost = table.Column<decimal>(type: "DECIMAL(18,5)", nullable: false),
                     image_uri = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    id_for_platform = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    id_for_market = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     game_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     type_id = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     rarity_id = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
@@ -256,31 +265,12 @@ namespace InCase.Resources.Api.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "NewsImage",
-                columns: table => new
-                {
-                    id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    image_uri = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    news_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("pk_news_image", x => x.id);
-                    table.ForeignKey(
-                        name: "fk_news_image_news_news_id",
-                        column: x => x.news_id,
-                        principalTable: "News",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Promocode",
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    discount = table.Column<int>(type: "int", nullable: false),
+                    discount = table.Column<decimal>(type: "DECIMAL(5,5)", nullable: false),
                     number_activations = table.Column<int>(type: "int", nullable: false),
                     expiration_date = table.Column<DateTime>(type: "datetime2", nullable: false),
                     type_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
@@ -323,13 +313,22 @@ namespace InCase.Resources.Api.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    invoice_id = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     date = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    currency = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     amount = table.Column<decimal>(type: "DECIMAL(18,5)", nullable: false),
+                    rate = table.Column<decimal>(type: "DECIMAL(6,5)", nullable: false),
+                    status_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     user_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("pk_user_history_payment", x => x.id);
+                    table.ForeignKey(
+                        name: "fk_user_history_payment_invoice_payment_status_status_id",
+                        column: x => x.status_id,
+                        principalTable: "InvoicePaymentStatus",
+                        principalColumn: "id");
                     table.ForeignKey(
                         name: "fk_user_history_payment_user_user_id",
                         column: x => x.user_id,
@@ -379,6 +378,8 @@ namespace InCase.Resources.Api.Migrations
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     title = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     content = table.Column<string>(type: "nvarchar(120)", maxLength: 120, nullable: false),
+                    creation_date = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    score = table.Column<int>(type: "int", nullable: false),
                     is_approved = table.Column<bool>(type: "bit", nullable: false),
                     user_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
@@ -483,7 +484,6 @@ namespace InCase.Resources.Api.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    number_items = table.Column<int>(type: "int", nullable: false),
                     chance_wining = table.Column<int>(type: "int", nullable: false),
                     item_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     box_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
@@ -539,25 +539,39 @@ namespace InCase.Resources.Api.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserHistoryWithdrawn",
+                name: "UserHistoryWithdraw",
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    id_for_market = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    fixed_cost = table.Column<decimal>(type: "DECIMAL(18,5)", nullable: false),
                     date = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    market_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    status_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     user_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     item_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_user_history_withdrawn", x => x.id);
+                    table.PrimaryKey("pk_user_history_withdraw", x => x.id);
                     table.ForeignKey(
-                        name: "fk_user_history_withdrawn_game_item_item_id",
+                        name: "fk_user_history_withdraw_game_item_item_id",
                         column: x => x.item_id,
                         principalTable: "GameItem",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "fk_user_history_withdrawn_user_user_id",
+                        name: "fk_user_history_withdraw_game_market_market_id",
+                        column: x => x.market_id,
+                        principalTable: "GameMarket",
+                        principalColumn: "id");
+                    table.ForeignKey(
+                        name: "fk_user_history_withdraw_item_withdraw_status_status_id",
+                        column: x => x.status_id,
+                        principalTable: "ItemWithdrawStatus",
+                        principalColumn: "id");
+                    table.ForeignKey(
+                        name: "fk_user_history_withdraw_user_user_id",
                         column: x => x.user_id,
                         principalTable: "User",
                         principalColumn: "id",
@@ -596,7 +610,7 @@ namespace InCase.Resources.Api.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    date = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    date = table.Column<DateTime>(type: "datetime2", nullable: true),
                     is_activated = table.Column<bool>(type: "bit", nullable: false),
                     user_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     promocode_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
@@ -670,6 +684,7 @@ namespace InCase.Resources.Api.Migrations
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     date = table.Column<DateTime>(type: "datetime2", nullable: false),
                     number_steps = table.Column<int>(type: "int", nullable: false),
+                    fixed_cost = table.Column<decimal>(type: "DECIMAL(18,5)", nullable: false),
                     user_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     item_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     banner_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
@@ -721,9 +736,9 @@ namespace InCase.Resources.Api.Migrations
                 columns: new[] { "id", "name" },
                 values: new object[,]
                 {
-                    { new Guid("3dd16558-0b85-440c-b2bc-85694bc32541"), "csgo" },
-                    { new Guid("5fb2954e-5d5a-487f-8cca-8c7b24f7f53b"), "genshin" },
-                    { new Guid("9b0e52b1-c7fb-4d9c-8841-3ddaa134b661"), "dota" }
+                    { new Guid("2a190be9-ceab-4252-a7a7-d305139c8af0"), "genshin" },
+                    { new Guid("2fcd4179-6632-4ed3-9747-fa94656ffc5d"), "dota2" },
+                    { new Guid("6ebf72d4-fb09-4716-b08e-57cd941da414"), "csgo" }
                 });
 
             migrationBuilder.InsertData(
@@ -731,12 +746,12 @@ namespace InCase.Resources.Api.Migrations
                 columns: new[] { "id", "name" },
                 values: new object[,]
                 {
-                    { new Guid("12fe63c2-856b-4312-9ab3-efcd8b88f597"), "field tested" },
-                    { new Guid("4b6d5ab0-7098-4f47-bf34-7db6c95f9847"), "well worn" },
-                    { new Guid("6b1c3c63-03bd-49c1-a9f0-7a3efbf6cce4"), "minimal wear" },
-                    { new Guid("74d5d1c4-ea8f-487d-ac3f-a37e1c4b1478"), "none" },
-                    { new Guid("8f90954c-17c1-4513-bc51-26c6d25f176c"), "factory new" },
-                    { new Guid("fc9a5f8e-f2cd-42db-aad3-98916a64c0c3"), "battle scarred" }
+                    { new Guid("25a74cf3-3447-45ae-ba60-61363c75698f"), "minimal wear" },
+                    { new Guid("71925c1c-866c-4217-9666-d1ede06e67d6"), "factory new" },
+                    { new Guid("99efc9b5-058f-4910-b2c8-2f7c2476282e"), "well worn" },
+                    { new Guid("b3f62422-12f9-40b1-a818-ff3d0954e269"), "none" },
+                    { new Guid("c752b723-d6d5-4370-8392-b10010e281d5"), "battle scarred" },
+                    { new Guid("e77a70f6-f4ba-4973-9334-fb6decf45112"), "field tested" }
                 });
 
             migrationBuilder.InsertData(
@@ -744,12 +759,12 @@ namespace InCase.Resources.Api.Migrations
                 columns: new[] { "id", "name" },
                 values: new object[,]
                 {
-                    { new Guid("0e79d9d9-c839-4a64-80c2-05fcf0ec2e3d"), "blue" },
-                    { new Guid("2ec47186-4301-4f10-a9d8-3d66e2aebf35"), "red" },
-                    { new Guid("3d8ee93d-ffdc-4d90-9eca-b860be92b415"), "violet" },
-                    { new Guid("8a34dc54-0eaa-4914-9fa8-1476dae638fe"), "pink" },
-                    { new Guid("c23e80b9-6f20-4ba8-af95-59ed41fa5818"), "gold" },
-                    { new Guid("ef1ebb3f-f711-4894-9ed5-a78f4da4e910"), "white" }
+                    { new Guid("28806de3-b5f1-430b-af7c-0fbc5fb8d646"), "gold" },
+                    { new Guid("2c7e92a8-3e12-4107-8035-2f40d77c494c"), "red" },
+                    { new Guid("81a7a225-eb56-49cd-942f-5677dd061574"), "white" },
+                    { new Guid("86388a6e-6c7c-4494-8b85-2ee843e6eea0"), "pink" },
+                    { new Guid("c0503650-1ac9-478a-b5ed-265f94250de4"), "blue" },
+                    { new Guid("ecdf73f2-a2a2-4be0-8bcb-e04ed4aef1e0"), "violet" }
                 });
 
             migrationBuilder.InsertData(
@@ -757,11 +772,39 @@ namespace InCase.Resources.Api.Migrations
                 columns: new[] { "id", "name" },
                 values: new object[,]
                 {
-                    { new Guid("013c5035-7453-4ccf-9275-9541e538c5c8"), "rifle" },
-                    { new Guid("5df79fa7-afbf-4560-a5ee-0f8211cfad0a"), "knife" },
-                    { new Guid("73d4efc4-f833-4b9d-8858-3da47c07ccec"), "weapon" },
-                    { new Guid("a7214871-0380-456f-a212-a2c968c091b8"), "none" },
-                    { new Guid("cd0567ef-72f8-41b0-ac63-78d4bc2081bd"), "pistol" }
+                    { new Guid("126611fd-db44-4626-b0f1-2a472bd97d1d"), "knife" },
+                    { new Guid("546e6bcd-ef8f-48ae-abec-8cfc10725206"), "pistol" },
+                    { new Guid("82a1579f-66d1-423a-aea0-469920c34bfc"), "none" },
+                    { new Guid("c0851265-2702-4b64-ae9a-c4ddab77021e"), "weapon" },
+                    { new Guid("dacfcecd-68a6-45da-a170-5ffc5f6e5b3b"), "gloves" },
+                    { new Guid("e9a19fb3-e113-4e99-98cd-e1754e6aeec8"), "rifle" },
+                    { new Guid("fb9d792b-3a76-425a-8d21-c3abd875e63f"), "other" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "InvoicePaymentStatus",
+                columns: new[] { "id", "name" },
+                values: new object[,]
+                {
+                    { new Guid("226e298e-d651-4319-ab91-73a47890ab72"), "chargeback-cancel" },
+                    { new Guid("4ac594b4-4b6f-4e6e-bd04-565e89dd5a8c"), "chargeback" },
+                    { new Guid("75a1325d-b07b-4472-b00b-eff1c51ca9b5"), "processing" },
+                    { new Guid("ac4dd099-bf4c-43cd-98a2-2f4b1fa44aef"), "new" },
+                    { new Guid("accf45f5-b048-4ad4-ae1a-31648c325591"), "refused" },
+                    { new Guid("dd7b4022-6409-4e3f-a095-0febad064a2b"), "paid" },
+                    { new Guid("e6240b3f-336c-4eea-9ec6-54532bd2a353"), "refund" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "ItemWithdrawStatus",
+                columns: new[] { "id", "name" },
+                values: new object[,]
+                {
+                    { new Guid("2310eb6b-7116-49c7-a4ee-09c5915c4130"), "purchase" },
+                    { new Guid("407c7a64-bc02-4f62-9c61-4da2c2415841"), "given" },
+                    { new Guid("4f369213-2e1e-495e-b5ae-c9990febc000"), "cancel" },
+                    { new Guid("9012c5a2-8744-4280-8be7-2fa90a210864"), "transfer" },
+                    { new Guid("bcaabf8f-108c-499b-88da-1395de230625"), "waiting" }
                 });
 
             migrationBuilder.InsertData(
@@ -769,8 +812,8 @@ namespace InCase.Resources.Api.Migrations
                 columns: new[] { "id", "name" },
                 values: new object[,]
                 {
-                    { new Guid("289afb54-0af0-4059-ad92-fe56789e800f"), "balance" },
-                    { new Guid("2afab74e-bb29-46f1-9e9a-b68aec0718ea"), "case" }
+                    { new Guid("39b6ee52-affe-4c6a-9d9d-4f138197e42e"), "case" },
+                    { new Guid("e72eed46-c949-46f3-bd91-d154a527a1f2"), "balance" }
                 });
 
             migrationBuilder.InsertData(
@@ -778,30 +821,30 @@ namespace InCase.Resources.Api.Migrations
                 columns: new[] { "id", "name" },
                 values: new object[,]
                 {
-                    { new Guid("4951fd13-b7c3-4426-9f9a-9b20ecb2926b"), "ban" },
-                    { new Guid("4f146e9f-952d-43aa-aa05-6486b8b2aa3f"), "mute" },
-                    { new Guid("99f77914-95a2-4761-bdd4-7ede1baa075d"), "warn" }
+                    { new Guid("5f707b6f-dcb4-4040-adf0-b56a5735b42d"), "ban" },
+                    { new Guid("656a32ff-99e6-4065-a339-e9dc71a0d0ad"), "warn" },
+                    { new Guid("d9a865b5-7749-403b-bedc-a084be74b073"), "mute" }
                 });
 
             migrationBuilder.InsertData(
                 table: "SiteStatistics",
                 columns: new[] { "id", "loot_boxes", "reviews", "users", "withdrawn_funds", "withdrawn_items" },
-                values: new object[] { new Guid("6a76e268-6c21-4706-ae1e-bd81711fefb0"), 0, 0, 0, 0, 0 });
+                values: new object[] { new Guid("49feea03-c827-40d2-856b-46bb8bbe9793"), 0, 0, 0, 0, 0 });
 
             migrationBuilder.InsertData(
                 table: "SiteStatisticsAdmin",
                 columns: new[] { "id", "balance_withdrawn", "sent_sites", "total_replenished" },
-                values: new object[] { new Guid("6a526c6b-2b6c-4f64-a9ee-4a331b6fd5a7"), 0m, 0m, 0m });
+                values: new object[] { new Guid("6842ae9b-f7d9-452e-b70a-31bbe7387ff4"), 0m, 0m, 0m });
 
             migrationBuilder.InsertData(
                 table: "UserRole",
                 columns: new[] { "id", "name" },
                 values: new object[,]
                 {
-                    { new Guid("631b5cc7-636e-435a-980e-c75ab9d61596"), "user" },
-                    { new Guid("b14b6765-5acf-45db-8cde-0160e24dd8f6"), "owner" },
-                    { new Guid("c7c0acb3-7430-4443-9c30-c6b7007edde7"), "bot" },
-                    { new Guid("d634954e-d3a4-4867-bd50-3ee083b1c9f4"), "admin" }
+                    { new Guid("5986a9f7-1062-443e-8445-974e086d7e2f"), "admin" },
+                    { new Guid("5ffbb660-ba04-45c2-84f7-3227196b76f0"), "owner" },
+                    { new Guid("b0ad5fd0-1355-4a28-8b30-2f006a82bc64"), "user" },
+                    { new Guid("ea5c1c74-18d8-4888-8245-3071dc4694c6"), "bot" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -890,27 +933,20 @@ namespace InCase.Resources.Api.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "ix_game_platform_domain_uri",
-                table: "GamePlatform",
-                column: "domain_uri",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "ix_game_platform_game_id",
-                table: "GamePlatform",
+                name: "ix_game_market_game_id",
+                table: "GameMarket",
                 column: "game_id");
 
             migrationBuilder.CreateIndex(
-                name: "ix_game_platform_id",
-                table: "GamePlatform",
+                name: "ix_game_market_id",
+                table: "GameMarket",
                 column: "id",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "ix_game_platform_name",
-                table: "GamePlatform",
-                column: "name",
-                unique: true);
+                name: "ix_game_market_name",
+                table: "GameMarket",
+                column: "name");
 
             migrationBuilder.CreateIndex(
                 name: "ix_group_loot_box_id",
@@ -921,6 +957,30 @@ namespace InCase.Resources.Api.Migrations
             migrationBuilder.CreateIndex(
                 name: "ix_group_loot_box_name",
                 table: "GroupLootBox",
+                column: "name",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "ix_invoice_payment_status_id",
+                table: "InvoicePaymentStatus",
+                column: "id",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "ix_invoice_payment_status_name",
+                table: "InvoicePaymentStatus",
+                column: "name",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "ix_item_withdraw_status_id",
+                table: "ItemWithdrawStatus",
+                column: "id",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "ix_item_withdraw_status_name",
+                table: "ItemWithdrawStatus",
                 column: "name",
                 unique: true);
 
@@ -983,23 +1043,6 @@ namespace InCase.Resources.Api.Migrations
                 name: "ix_loot_box_inventory_item_id",
                 table: "LootBoxInventory",
                 column: "item_id");
-
-            migrationBuilder.CreateIndex(
-                name: "ix_news_id",
-                table: "News",
-                column: "id",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "ix_news_image_id",
-                table: "NewsImage",
-                column: "id",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "ix_news_image_news_id",
-                table: "NewsImage",
-                column: "news_id");
 
             migrationBuilder.CreateIndex(
                 name: "ix_promocode_id",
@@ -1155,6 +1198,11 @@ namespace InCase.Resources.Api.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "ix_user_history_payment_status_id",
+                table: "UserHistoryPayment",
+                column: "status_id");
+
+            migrationBuilder.CreateIndex(
                 name: "ix_user_history_payment_user_id",
                 table: "UserHistoryPayment",
                 column: "user_id");
@@ -1176,19 +1224,35 @@ namespace InCase.Resources.Api.Migrations
                 column: "user_id");
 
             migrationBuilder.CreateIndex(
-                name: "ix_user_history_withdrawn_id",
-                table: "UserHistoryWithdrawn",
+                name: "ix_user_history_withdraw_id",
+                table: "UserHistoryWithdraw",
                 column: "id",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "ix_user_history_withdrawn_item_id",
-                table: "UserHistoryWithdrawn",
+                name: "ix_user_history_withdraw_id_for_market",
+                table: "UserHistoryWithdraw",
+                column: "id_for_market",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "ix_user_history_withdraw_item_id",
+                table: "UserHistoryWithdraw",
                 column: "item_id");
 
             migrationBuilder.CreateIndex(
-                name: "ix_user_history_withdrawn_user_id",
-                table: "UserHistoryWithdrawn",
+                name: "ix_user_history_withdraw_market_id",
+                table: "UserHistoryWithdraw",
+                column: "market_id");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_user_history_withdraw_status_id",
+                table: "UserHistoryWithdraw",
+                column: "status_id");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_user_history_withdraw_user_id",
+                table: "UserHistoryWithdraw",
                 column: "user_id");
 
             migrationBuilder.CreateIndex(
@@ -1280,16 +1344,10 @@ namespace InCase.Resources.Api.Migrations
                 name: "AnswerImage");
 
             migrationBuilder.DropTable(
-                name: "GamePlatform");
-
-            migrationBuilder.DropTable(
                 name: "LootBoxGroup");
 
             migrationBuilder.DropTable(
                 name: "LootBoxInventory");
-
-            migrationBuilder.DropTable(
-                name: "NewsImage");
 
             migrationBuilder.DropTable(
                 name: "ReviewImage");
@@ -1313,7 +1371,7 @@ namespace InCase.Resources.Api.Migrations
                 name: "UserHistoryPromocode");
 
             migrationBuilder.DropTable(
-                name: "UserHistoryWithdrawn");
+                name: "UserHistoryWithdraw");
 
             migrationBuilder.DropTable(
                 name: "UserInventory");
@@ -1331,16 +1389,22 @@ namespace InCase.Resources.Api.Migrations
                 name: "GroupLootBox");
 
             migrationBuilder.DropTable(
-                name: "News");
-
-            migrationBuilder.DropTable(
                 name: "UserReview");
 
             migrationBuilder.DropTable(
                 name: "UserRole");
 
             migrationBuilder.DropTable(
+                name: "InvoicePaymentStatus");
+
+            migrationBuilder.DropTable(
                 name: "Promocode");
+
+            migrationBuilder.DropTable(
+                name: "GameMarket");
+
+            migrationBuilder.DropTable(
+                name: "ItemWithdrawStatus");
 
             migrationBuilder.DropTable(
                 name: "GameItem");

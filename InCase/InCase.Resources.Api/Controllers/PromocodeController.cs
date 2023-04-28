@@ -30,7 +30,9 @@ namespace InCase.Resources.Api.Controllers
                 .AsNoTracking()
                 .ToListAsync();
 
-            return ResponseUtil.Ok(promocodes);
+            return promocodes.Count == 0 ? 
+                ResponseUtil.NotFound(nameof(Promocode)) : 
+                ResponseUtil.Ok(promocodes);
         }
 
         [AuthorizeRoles(Roles.All)]
@@ -82,6 +84,10 @@ namespace InCase.Resources.Api.Controllers
                 return ResponseUtil.NotFound(nameof(PromocodeType));
             if (await context.Promocodes.AnyAsync(a => a.Name == promocode.Name))
                 return ResponseUtil.Conflict("The promocode name is already in use");
+            if (promocode.Discount >= 1M || promocode.Discount <= 0)
+                return ResponseUtil.Conflict("The discount promo code must be greater than 0 and less than 1");
+            if (promocode.NumberActivations < 0)
+                return ResponseUtil.Conflict("The number activations promo code cannot negative");
 
             return await EndpointUtil.Create(promocode.Convert(), context);
         }
@@ -95,12 +101,18 @@ namespace InCase.Resources.Api.Controllers
             Promocode? promocode = await context.Promocodes
                 .FirstOrDefaultAsync(f => f.Id == promocodeDto.Id);
 
+            bool IsExist = await context.Promocodes.AnyAsync(a => a.Name == promocodeDto.Name);
+
             if (promocode is null)
                 return ResponseUtil.NotFound(nameof(Promocode));
             if (!await context.PromocodeTypes.AnyAsync(a => a.Id == promocodeDto.TypeId))
                 return ResponseUtil.NotFound(nameof(PromocodeType));
-            if (promocode.Name != promocodeDto.Name && await context.Promocodes.AnyAsync(a => a.Name == promocodeDto.Name))
+            if (promocode.Name != promocodeDto.Name && IsExist)
                 return ResponseUtil.Conflict("The promocode name is already in use");
+            if (promocodeDto.Discount >= 1M)
+                return ResponseUtil.Conflict("The discount promo code cannot exceed and equal 100 percent");
+            if (promocodeDto.NumberActivations < 0)
+                return ResponseUtil.Conflict("The number activations promo code cannot negative");
 
             return await EndpointUtil.Update(promocode, promocodeDto.Convert(false), context);
         }

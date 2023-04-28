@@ -3,7 +3,6 @@ using InCase.Domain.Entities.Resources;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
-using System.Net.Sockets;
 using System.Security.Claims;
 using System.Text;
 
@@ -60,6 +59,10 @@ namespace InCase.Infrastructure.Services
 
         public DataSendTokens CreateTokenPair(in User user)
         {
+            if(string.IsNullOrEmpty(user?.AdditionalInfo?.Role?.Name))
+                throw new ArgumentNullException("Role.Name", 
+                    "The role of the user when creating the token is mandatory");
+
             Claim[] claimsAccess = GenerateAccessTokenClaims(in user);
             Claim[] claimsRefresh = GenerateTokenClaims(in user, "refresh");
 
@@ -97,7 +100,6 @@ namespace InCase.Infrastructure.Services
 
         private static Claim[] GenerateAccessTokenClaims(in User user)
         {
-            //Find future data for claims
             string roleName = user.AdditionalInfo!.Role!.Name!;
 
             return new Claim[] {

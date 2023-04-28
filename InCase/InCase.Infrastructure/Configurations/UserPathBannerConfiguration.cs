@@ -16,6 +16,9 @@ namespace InCase.Infrastructure.Configurations
                 .IsRequired();
             builder.Property(p => p.NumberSteps)
                 .IsRequired();
+            builder.Property(p => p.FixedCost)
+                .HasColumnType("DECIMAL(18,5)")
+                .IsRequired();
 
             builder.HasOne(o => o.User)
                 .WithMany(m => m.Paths)

@@ -47,6 +47,32 @@ namespace InCase.Resources.Api.Controllers
             return await EndpointUtil.GetAll<UserRole>(_context);
         }
 
+        [AuthorizeRoles(Roles.AdminOwnerBot)]
+        [HttpGet("guest-mode")]
+        public async Task<IActionResult> OnOffGuestMode()
+        {
+            await using ApplicationDbContext context = await _context.CreateDbContextAsync();
+
+            UserAdditionalInfo? info = await context.UserAdditionalInfos
+                .Include(i => i.Role)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(f => f.UserId == UserId);
+
+            if (info is null)
+                return ResponseUtil.NotFound(nameof(UserAdditionalInfo));
+
+            info.IsGuestMode = !info.IsGuestMode;
+
+            context.UserAdditionalInfos.Attach(info);
+            context.Entry(info).Property(p => p.IsGuestMode).IsModified = true;
+
+            await context.SaveChangesAsync();
+
+            return info.IsGuestMode ? 
+                ResponseUtil.Ok("On guest mode") : 
+                ResponseUtil.Ok("Off guest mode");
+        }
+
         [AuthorizeRoles(Roles.Owner, Roles.Bot)]
         [HttpPut]
         public async Task<IActionResult> Update(UserAdditionalInfoDto infoDto)

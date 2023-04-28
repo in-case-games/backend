@@ -12,10 +12,17 @@ namespace InCase.Infrastructure.Configurations
 
             builder.ToTable(nameof(UserHistoryPayment));
 
-            builder.HasIndex(x => x.UserId)
+            builder.HasIndex(i => i.UserId)
+                .IsUnique(false);
+            builder.HasIndex(i => i.StatusId)
                 .IsUnique(false);
 
             builder.Property(p => p.Date)
+                .IsRequired();
+            builder.Property(p => p.Currency)
+                .IsRequired();
+            builder.Property(p => p.Rate)
+                .HasColumnType("DECIMAL(6,5)")
                 .IsRequired();
             builder.Property(p => p.Amount)
                 .HasColumnType("DECIMAL(18,5)")
@@ -23,8 +30,11 @@ namespace InCase.Infrastructure.Configurations
 
             builder.HasOne(o => o.User)
                 .WithMany(m => m.HistoryPayments)
-                .HasForeignKey(o => o.UserId)
+                .HasForeignKey(fk => fk.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
+            builder.HasOne(o => o.Status)
+                .WithOne(o => o.HistoryPayment)
+                .OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

@@ -49,13 +49,23 @@ namespace InCase.Email.Api.Controllers
 
             MapDataMailLink(ref data, in user);
 
-            if (user.AdditionalInfo!.IsConfirmed is false)
-            {
-                await _emailService.SendSignUp(data);
-                return ResponseUtil.SendEmail();
-            }
-
-            return await _emailService.SendSignIn(data);
+            return user.AdditionalInfo!.IsConfirmed ? 
+                await _emailService.SendToEmail(user.Email!, "Подтверждение входа в систему", new()
+                {
+                    BodyTitle = $"Дорогой {user.Login!}",
+                    BodyDescription = $"Подтвердите вход в аккаунт с устройства {data.UserPlatforms}." +
+                    $"Если это были не вы, то срочно измените пароль в настройках вашего аккаунта, " +
+                    $"вас автоматически отключит со всех устройств.",
+                    BodyButtonLink = $"/api/email/confirm/account?token={data.EmailToken}"
+                }) :
+                await _emailService.SendToEmail(user.Email!, "Завершение регистрации в системе", new()
+                {
+                    BodyTitle = $"Дорогой {user.Login!}",
+                    BodyDescription = $"Для завершения этапа регистрации," +
+                    $"вам необходимо нажать на кнопку ниже для подтверждения почты." +
+                    $"Если это были не вы, проигнорируйте это сообщение.",
+                    BodyButtonLink = $"/api/email/confirm/account?token={data.EmailToken}"
+                });
         }
 
         [AllowAnonymous]
@@ -91,9 +101,18 @@ namespace InCase.Email.Api.Controllers
                 return Forbid("Invalid email token");
 
             MapDataMailLink(ref data, in user);
+
             data.UserEmail = email;
 
-            return await _emailService.SendConfirmNewEmail(data);
+            return await _emailService.SendToEmail(data.UserEmail, "Подтвердите новую почту аккаунта", new()
+            {
+                BodyTitle = $"Дорогой, {data.UserLogin}",
+                BodyDescription = $"Подтвердите, что это ваш новый email." +
+                $"Отправка с устройства {data.UserPlatforms}." +
+                $"Если это были не вы, то срочно измените пароль в настройках вашего аккаунта," +
+                $"вас автоматически отключит со всех устройств.",
+                BodyButtonLink = $"/api/email/confirm/update/password?token={data.EmailToken}"
+            });
         }
 
         [AllowAnonymous]
@@ -113,7 +132,15 @@ namespace InCase.Email.Api.Controllers
 
             MapDataMailLink(ref data, in user);
 
-            return await _emailService.SendChangePassword(data);
+            return await _emailService.SendToEmail(data.UserEmail, "Забыли пароль?", new()
+            {
+                BodyTitle = $"Дорогой {data.UserLogin}",
+                BodyDescription = $"Подтвердите, " +
+                $"что это вы хотите поменять пароль с устройства {data.UserPlatforms}. " +
+                $"Если это были не вы, то срочно измените пароль в настройках вашего аккаунта, " +
+                $"вас автоматически отключит со всех устройств.",
+                BodyButtonLink = $"/api/email/confirm/update/password?token={data.EmailToken}"
+            });
         }
 
         [AllowAnonymous]
@@ -133,7 +160,20 @@ namespace InCase.Email.Api.Controllers
 
             MapDataMailLink(ref data, in user);
 
-            return await _emailService.SendChangeEmail(data);
+            return await _emailService.SendToEmail(data.UserEmail, "Подтвердите смену почты", new()
+            {
+                HeaderTitle = "Смена",
+                HeaderSubtitle = "Почты",
+                BodyTitle = $"Дорогой {data.UserLogin}",
+                BodyDescription = $"Подтвердите, " +
+                $"что это вы хотите поменять email с устройства {data.UserPlatforms}. " +
+                $"Если это были не вы, то срочно измените пароль в настройках вашего аккаунта, " +
+                $"вас автоматически отключит со всех устройств." +
+                $"<br>" +
+                $"С уважением команда InCase</div>",
+                BodyButtonText = "Подтверждаю",
+                BodyButtonLink = $"/api/email/confirm/update/email?token={data.EmailToken}"
+            });
         }
 
         [AllowAnonymous]
@@ -153,7 +193,17 @@ namespace InCase.Email.Api.Controllers
 
             MapDataMailLink(ref data, in user);
 
-            return await _emailService.SendChangePassword(data);
+            return await _emailService.SendToEmail(data.UserEmail, "Подтвердите смену пароля", new()
+            {
+                HeaderTitle = "Смена",
+                HeaderSubtitle = "пароля",
+                BodyTitle = $"Дорогой {data.UserLogin}",
+                BodyDescription = $"Подтвердите, " +
+                $"что это вы хотите поменять пароль с устройства {data.UserPlatforms}. " +
+                $"Если это были не вы, то срочно измените пароль в настройках вашего аккаунта, " +
+                $"вас автоматически отключит со всех устройств.",
+                BodyButtonLink = $"/api/email/confirm/update/password?token={data.EmailToken}"
+            });
         }
 
         [AllowAnonymous]
@@ -173,7 +223,17 @@ namespace InCase.Email.Api.Controllers
 
             MapDataMailLink(ref data, in user);
 
-            return await _emailService.SendDeleteAccount(data);
+            return await _emailService.SendToEmail(data.UserEmail, "Подтвердите удаление аккаунта", new()
+            {
+                HeaderTitle = "Удаление",
+                HeaderSubtitle = "аккаунта",
+                BodyTitle = $"Дорогой {data.UserLogin}",
+                BodyDescription = $"Подтвердите, что это вы удаляете аккаунт. " +
+                $"Если это были не вы, то срочно измените пароль в настройках вашего аккаунта, " +
+                $"вас автоматически отключит со всех устройств. " +
+                $"Мы удалим ваш аккаунт при достижении 30 дней с момента нажатия на эту кнопку.",
+                BodyButtonLink = $"/api/email/confirm/delete?token={data.EmailToken}"
+            });
         }
 
         private void MapDataMailLink(ref DataMailLink data, in User user)

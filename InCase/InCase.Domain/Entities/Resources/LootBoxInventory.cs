@@ -5,7 +5,6 @@ namespace InCase.Domain.Entities.Resources
 {
     public class LootBoxInventory : BaseEntity
     {
-        public int NumberItems { get; set; }
         public int ChanceWining { get; set; }
         [JsonIgnore]
         public Guid ItemId { get; set; }
@@ -18,7 +17,6 @@ namespace InCase.Domain.Entities.Resources
         public LootBoxInventoryDto Convert(bool IsNewGuid = true) => new()
         {
             Id = IsNewGuid ? Guid.NewGuid() : Id,
-            NumberItems = NumberItems,
             ChanceWining = ChanceWining,
             ItemId = Item?.Id ?? ItemId,
             BoxId = Box?.Id ?? BoxId

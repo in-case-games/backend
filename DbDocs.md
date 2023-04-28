@@ -120,7 +120,7 @@
 | :- | :- | :- | :- | :- |
 |PK|Id|uniqueidentifier|True|NEWID(), UNIQUE|
 ||Name|nvarchar(50)|True|UNIQUE|
-||Discount|int|True|-|
+||Discount|decimal(5,5)|True|-|
 ||NumberActivations|int|True|-|
 ||ExpirationDate|datetime2(7)|True|-|
 |FK|TypeId|uniqueidentifier|True|-|
@@ -240,14 +240,31 @@
 Связи:
 
 - User(Многие к одному)
+- InvoicePaymentStatus:Status(Один к одному)
 
 
 |Key|Name|Type|IsRequired|Constrains|
 | :- | :- | :- | :- | :- |
 |PK|Id|uniqueidentifier|True|NEWID(), UNIQUE|
+||InvoiceId|nvarchar(MAX)|True|-|
 ||Date|datetime2(7)|True|-|
+||Currency|nvarchar(MAX)|True|-|
 ||Amount|decimal(18, 5)|True|-|
+||Rate|decimal(6, 5)|True|-|
+|FK|StatusId|uniqueidentifier|True|-|
 |FK|UserId|uniqueidentifier|True|-|
+
+**InvoicePaymentStatus**
+
+Описание:
+
+- Таблица представляет из себя коллекцию видов статусов оплаты
+
+
+|Key|Name|Type|IsRequired|Constrains|
+| :- | :- | :- | :- | :- |
+|PK|Id|uniqueidentifier|True|NEWID(), UNIQUE|
+||Name|nvarchar(50)|True|UNIQUE|
 
 **NewsImage**
 
@@ -396,11 +413,11 @@
 |PK|Id|uniqueidentifier|True|NEWID(), UNIQUE|
 ||Name|nvarchar(50)|True|UNIQUE|
 
-**GamePlatform**
+**GameMarket**
 
 Описание:
 
-- Таблица представляет из себя коллекцию платформ для игры
+- Таблица представляет из себя коллекцию магазинов для игры
 
 Связи:
 
@@ -411,8 +428,6 @@
 | :- | :- | :- | :- | :- |
 |PK|Id|uniqueidentifier|True|NEWID(), UNIQUE|
 ||Name|nvarchar(50)|True|UNIQUE|
-||ImageUri|nvarchar(MAX)|True|-|
-||DomainUri|nvarchar(MAX)|True|UNIQUE|
 |FK|GameId|uniqueidentifier|True|-|
 
 **LootBoxInventory**
@@ -430,7 +445,6 @@
 |Key|Name|Type|IsRequired|Constrains|
 | :- | :- | :- | :- | :- |
 |PK|Id|uniqueidentifier|True|NEWID(), UNIQUE|
-||NumberItems|int|True|-|
 ||ChanceWining|int|True|-|
 |FK|BoxId|uniqueidentifier|True|-|
 |FK|ItemId|uniqueidentifier|True|-|
@@ -453,9 +467,10 @@
 | :- | :- | :- | :- | :- |
 |PK|Id|uniqueidentifier|True|NEWID(), UNIQUE|
 ||Name|nvarchar(50)|True|-|
+||HashName|nvarchar(MAX)|True|-|
 ||Cost|decimal(18, 5)|True|-|
 ||ImageUri|nvarchar(MAX)|True|-|
-||IdForPlatform|nvarchar(MAX)|False|-|
+||IdForMarket|nvarchar(MAX)|False|-|
 |FK|GameId|uniqueidentifier|True|-|
 |FK|TypeId|uniqueidentifier|False|-|
 |FK|RarityId|uniqueidentifier|False|-|
@@ -497,7 +512,7 @@
 |PK|Id|uniqueidentifier|True|NEWID(), UNIQUE|
 ||Name|nvarchar(50)|True|UNIQUE|
 
-**UserHistoryWithdrawn**
+**UserHistoryWithdraw**
 
 Описание:
 
@@ -507,14 +522,32 @@
 
 - User(Многие к одному)
 - GameItem:Item(Многие к одному)
+- ItemWithdrawStatus:Status(Один к одному)
+- GameMarket:Market(Многие к одному)
 
 
 |Key|Name|Type|IsRequired|Constrains|
 | :- | :- | :- | :- | :- |
 |PK|Id|uniqueidentifier|True|NEWID(), UNIQUE|
+||IdForMarket|int|True|UNIQUE|
 ||Date|datetime2(7)|True|-|
+||FixedCost|decimal(18,5)|True|-|
 |FK|UserId|uniqueidentifier|True|-|
 |FK|ItemId|uniqueidentifier|True|-|
+|FK|StatusId|uniqueidentifier|True|-|
+|FK|MarketId|uniqueidentifier|True|-|
+
+**ItemWithdrawStatus**
+
+Описание:
+
+- Таблица представляет из себя статусы вывода предмета
+
+
+|Key|Name|Type|IsRequired|Constrains|
+| :- | :- | :- | :- | :- |
+|PK|Id|uniqueidentifier|True|NEWID(), UNIQUE|
+||Name|nvarchar(50)|True|UNIQUE|
 
 **UserInventory**
 
@@ -575,6 +608,7 @@
 |PK|Id|uniqueidentifier|True|NEWID(), UNIQUE|
 ||Date|datetime2(7)|True|-|
 ||NumberSteps|int|True|-|
+||FixedCost|decimal(18, 5)|True|-|
 |FK|UserId|uniqueidentifier|True|-|
 |FK|ItemId|uniqueidentifier|True|-|
 |FK|BannerId|uniqueidentifier|True|-|
