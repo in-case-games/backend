@@ -1,4 +1,5 @@
 ﻿using InCase.Domain.Common;
+using InCase.Domain.Entities;
 using InCase.Domain.Entities.Payment;
 using InCase.Domain.Entities.Resources;
 using InCase.Infrastructure.Data;
