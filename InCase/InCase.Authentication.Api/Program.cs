@@ -7,16 +7,17 @@ using Microsoft.OpenApi.Models;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+string _policyName = "CorsPolicy";
 
 builder.Services.AddPooledDbContextFactory<ApplicationDbContext>(
     options => {
         options.UseSnakeCaseNamingConvention();
         options.UseSqlServer(
-        #if DEBUG
+#if DEBUG
         builder.Configuration["ConnectionStrings:DevelopmentConnection"]
-        #else
+#else
         builder.Configuration["ConnectionStrings:ProductionConnection"]
-        #endif
+#endif
         );
     }
 );
@@ -73,6 +74,16 @@ builder.Services.AddSwaggerGen(options =>
 builder.Services.AddSingleton<EmailService>();
 builder.Services.AddSingleton<JwtService>();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: _policyName,
+        builder => {
+            builder.WithOrigins("http://localhost:3000")
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+        });
+});
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddAuthorization();
@@ -86,7 +97,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+app.UseCors(_policyName);
 app.UseAuthentication();
 app.UseAuthorization();
 
