@@ -10,7 +10,6 @@ namespace InCase.Infrastructure.Services
 
         public async Task GetInvoiceStatus(string invoice)
         {
-
         }
 
         public async Task GetBalance(string currency)

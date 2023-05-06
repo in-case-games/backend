@@ -1,4 +1,5 @@
-﻿using InCase.Domain.Entities.Email;
+﻿using InCase.Domain.Dtos;
+using InCase.Domain.Entities.Email;
 using InCase.Domain.Entities.Resources;
 using InCase.Infrastructure.Data;
 using InCase.Infrastructure.Services;
@@ -32,20 +33,22 @@ namespace InCase.Email.Api.Controllers
         #endregion
 
         [AllowAnonymous]
-        [HttpPost("confirm")]
-        public async Task<IActionResult> ConfirmAccount(DataMailLink data)
+        [HttpPost("confirm/{password}")]
+        public async Task<IActionResult> ConfirmAccount(DataMailLink data, string password)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             User? user = await context.Users
-                .Include(x => x.AdditionalInfo)
+                .Include(u => u.AdditionalInfo)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.Login == data.UserLogin);
+                .FirstOrDefaultAsync(u => u.Login == data.UserLogin);
 
             if (user == null) 
-                return ResponseUtil.NotFound("User");
-            if (user.Email != data.UserEmail) 
-                return ResponseUtil.Conflict("E-mail invalid");
+                return ResponseUtil.NotFound("Пользователь не найден");
+            if (!ValidationService.IsValidUserPassword(in user, password))
+                return ResponseUtil.Forbidden("Неверный пароль");
+
+            data.UserEmail = user.Email!;
 
             MapDataMailLink(ref data, in user);
 
@@ -76,29 +79,29 @@ namespace InCase.Email.Api.Controllers
 
             ClaimsPrincipal? principal = _jwtService.GetClaimsToken(data.EmailToken);
 
-            if (principal is null) 
-                return Forbid("Invalid refresh token");
+            if (principal is null)
+                return ResponseUtil.Unauthorized("Не валидный email токен");
 
             string id = principal.Claims
-                .Single(x => x.Type == ClaimTypes.NameIdentifier)
+                .Single(c => c.Type == ClaimTypes.NameIdentifier)
                 .Value;
 
             bool isExistEmail = await context.Users
                 .AsNoTracking()
-                .AnyAsync(x => x.Email == email);
+                .AnyAsync(u => u.Email == email);
 
             if (isExistEmail) 
-                return ResponseUtil.Conflict("E-mail is already busy");
+                return ResponseUtil.Conflict("Email почта занята");
 
             User? user = await context.Users
-                .Include(x => x.AdditionalInfo)
+                .Include(u => u.AdditionalInfo)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.Id == Guid.Parse(id));
+                .FirstOrDefaultAsync(u => u.Id == Guid.Parse(id));
 
             if (user == null) 
-                return ResponseUtil.NotFound("User");
+                return ResponseUtil.NotFound("Пользователь не найден");
             if (!ValidationService.IsValidToken(in user, principal, "email"))
-                return Forbid("Invalid email token");
+                return ResponseUtil.Unauthorized("Не валидный email токен");
 
             MapDataMailLink(ref data, in user);
 
@@ -123,22 +126,20 @@ namespace InCase.Email.Api.Controllers
 
             User? user = await context.Users
                 .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.Login == data.UserLogin);
+                .FirstOrDefaultAsync(u => u.Login == data.UserLogin);
 
             if (user == null)
-                return ResponseUtil.NotFound("User");
-            if (user.Email != data.UserEmail)
-                return ResponseUtil.Conflict("E-mail invalid");
+                return ResponseUtil.NotFound("Пользователь не найден");
 
             MapDataMailLink(ref data, in user);
+
+            data.UserEmail = user.Email!;
 
             return await _emailService.SendToEmail(data.UserEmail, "Забыли пароль?", new()
             {
                 BodyTitle = $"Дорогой {data.UserLogin}",
                 BodyDescription = $"Подтвердите, " +
-                $"что это вы хотите поменять пароль с устройства {data.UserPlatforms}. " +
-                $"Если это были не вы, то срочно измените пароль в настройках вашего аккаунта, " +
-                $"вас автоматически отключит со всех устройств.",
+                $"что это вы хотите поменять пароль с устройства {data.UserPlatforms}. ",
                 BodyButtonLink = $"/api/email/confirm/update/password?token={data.EmailToken}"
             });
         }
@@ -151,12 +152,12 @@ namespace InCase.Email.Api.Controllers
 
             User? user = await context.Users
                 .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.Login == data.UserLogin);
+                .FirstOrDefaultAsync(u => u.Login == data.UserLogin);
 
             if (user == null)
-                return ResponseUtil.NotFound("User");
+                return ResponseUtil.NotFound("Пользователь не найден");
             if (!ValidationService.IsValidUserPassword(in user, password))
-                return Forbid("Invalid data");
+                return ResponseUtil.Forbidden("Неверный пароль");
 
             MapDataMailLink(ref data, in user);
 
@@ -184,12 +185,12 @@ namespace InCase.Email.Api.Controllers
 
             User? user = await context.Users
                 .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.Login == data.UserLogin);
+                .FirstOrDefaultAsync(u => u.Login == data.UserLogin);
 
             if (user == null)
-                return ResponseUtil.NotFound("User");
+                return ResponseUtil.NotFound("Пользователь не найден");
             if (!ValidationService.IsValidUserPassword(in user, password))
-                return Forbid("Invalid data");
+                return ResponseUtil.Forbidden("Неверный пароль");
 
             MapDataMailLink(ref data, in user);
 
@@ -214,12 +215,12 @@ namespace InCase.Email.Api.Controllers
 
             User? user = await context.Users
                 .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.Login == data.UserLogin);
+                .FirstOrDefaultAsync(u => u.Login == data.UserLogin);
 
             if (user == null)
-                return ResponseUtil.NotFound("User");
+                return ResponseUtil.NotFound("Пользователь не найден");
             if (!ValidationService.IsValidUserPassword(in user, password))
-                return Forbid("Invalid data");
+                return ResponseUtil.Forbidden("Неверный пароль");
 
             MapDataMailLink(ref data, in user);
 

@@ -7,7 +7,8 @@ namespace InCase.Infrastructure.Utils
 {
     public class EndpointUtil
     {
-        public static async Task<IActionResult> GetById<T>(Guid id, IDbContextFactory<ApplicationDbContext> contextFactory) 
+        public static async Task<IActionResult> GetById<T>(
+            Guid id, IDbContextFactory<ApplicationDbContext> contextFactory) 
             where T: BaseEntity
         {
             await using ApplicationDbContext context = await contextFactory.CreateDbContextAsync();
@@ -17,7 +18,7 @@ namespace InCase.Infrastructure.Utils
                 .FirstOrDefaultAsync(f => f.Id == id);
 
             return result is null ? 
-                ResponseUtil.NotFound(typeof(T).Name) : 
+                ResponseUtil.NotFound("Запись таблицы" + typeof(T).Name + $"по {id} не найдена") : 
                 ResponseUtil.Ok(result);
         }
 
@@ -30,9 +31,7 @@ namespace InCase.Infrastructure.Utils
                 .AsNoTracking()
                 .ToListAsync();
 
-            return result.Count == 0 ? 
-                ResponseUtil.NotFound(typeof(T).Name) : 
-                ResponseUtil.Ok(result);
+            return ResponseUtil.Ok(result);
         }
 
         public static async Task<IActionResult> Create<T>(T entity, ApplicationDbContext context) 
@@ -47,7 +46,7 @@ namespace InCase.Infrastructure.Utils
             }
             catch (Exception ex)
             {
-                return ResponseUtil.Error(ex);
+                return ResponseUtil.UnknownError(ex);
             }
         }
 
@@ -58,7 +57,7 @@ namespace InCase.Infrastructure.Utils
                 .FirstOrDefaultAsync(f => f.Id == entityNew.Id);
 
             if (entityOld is null)
-                return ResponseUtil.NotFound(typeof(T).Name);
+                return ResponseUtil.NotFound("Запись таблицы" + typeof(T).Name + $"по {entityNew.Id} не найдена");
 
             try
             {
@@ -69,7 +68,7 @@ namespace InCase.Infrastructure.Utils
             }
             catch (Exception ex)
             {
-                return ResponseUtil.Error(ex);
+                return ResponseUtil.UnknownError(ex);
             }
         }
 
@@ -81,7 +80,7 @@ namespace InCase.Infrastructure.Utils
                 .FirstOrDefaultAsync(f => f.Id == id);
 
             if (result is null)
-                return ResponseUtil.NotFound(typeof(T).Name);
+                return ResponseUtil.NotFound("Запись таблицы" + typeof(T).Name + $"по {id} не найдена");
 
             context.Set<T>().Remove(result);
             await context.SaveChangesAsync();
@@ -101,7 +100,7 @@ namespace InCase.Infrastructure.Utils
             }
             catch (Exception ex)
             {
-                return ResponseUtil.Error(ex);
+                return ResponseUtil.UnknownError(ex);
             }
         }
 

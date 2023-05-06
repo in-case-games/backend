@@ -19,30 +19,34 @@ namespace InCase.Infrastructure.Services
 
         public ClaimsPrincipal? GetClaimsToken(string token)
         {
-            byte[] secretBytes = Encoding.ASCII.GetBytes(_configuration["JWT:Secret"]!);
+            byte[] secret = Encoding.ASCII.GetBytes(_configuration["JWT:Secret"]!);
 
-            TokenValidationParameters tokenValidationParameters = new()
+            TokenValidationParameters parameters = new()
             {
                 ValidateAudience = false,
                 ValidateIssuer = false,
                 ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(secretBytes),
+                IssuerSigningKey = new SymmetricSecurityKey(secret),
                 ValidateLifetime = false
             };
 
             JwtSecurityTokenHandler tokenHandler = new();
 
-            ClaimsPrincipal principal = tokenHandler.ValidateToken(
-                token,
-                tokenValidationParameters,
-                out SecurityToken securityToken);
+            try
+            {
+                ClaimsPrincipal principal = tokenHandler.ValidateToken(
+                    token,
+                    parameters,
+                    out SecurityToken securityToken);
 
-            if (securityToken is not JwtSecurityToken jwtSecurityToken ||
-                !jwtSecurityToken.Header.Alg.Equals("HS512",
-                StringComparison.InvariantCultureIgnoreCase))
+                return (securityToken is not JwtSecurityToken jwtSecurityToken || 
+                    !jwtSecurityToken.Header.Alg.Equals("HS512",
+                    StringComparison.InvariantCultureIgnoreCase)) ? null : principal;
+            }
+            catch(Exception)
+            {
                 return null;
-
-            return principal;
+            }
         }
 
         public string CreateEmailToken(in User user)

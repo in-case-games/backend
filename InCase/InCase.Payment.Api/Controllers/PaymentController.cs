@@ -45,42 +45,42 @@ namespace InCase.Payment.Api.Controllers
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             UserInventory? inventory = await context.UserInventories
-                .Include(i => i.Item)
-                .Include(i => i.Item!.Game!)
-                    .ThenInclude(ti => ti.Markets)
+                .Include(ui => ui.Item)
+                .Include(ui => ui.Item!.Game!)
+                    .ThenInclude(g => g.Markets)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(f => f.Id == data.InventoryId && f.UserId == UserId);
+                .FirstOrDefaultAsync(ui => ui.Id == data.InventoryId && ui.UserId == UserId);
 
             if (inventory == null)
-                return ResponseUtil.NotFound(nameof(UserInventory));
+                return ResponseUtil.NotFound("Предмет нет в вашем инвентаре");
 
             GameItem item = inventory.Item!;
 
             ItemInfo? itemInfo = await _withdrawService.GetItemInfo(item);
 
             if (itemInfo is null || itemInfo.Result != "ok")
-                return ResponseUtil.Conflict(nameof(ItemInfo));
+                return ResponseUtil.UnknownError("Неудалось получить инфо предмета у сервиса покупки");
 
             decimal itemPrice = itemInfo.PriceKopecks * 0.01M;
 
             if (itemPrice > item.Cost * UpperLimitCost / CostInCoin)
-                return ResponseUtil.Conflict("Item no stability price, exchange");
+                return ResponseUtil.Conflict("Цена на предмет не стабильна");
 
             BalanceMarket balance = await _withdrawService.GetBalance(itemInfo.Market.Name!);
 
             if (balance.Result != "ok")
-                return ResponseUtil.Conflict(nameof(BalanceMarket));
+                return ResponseUtil.UnknownError("Неудалось получить баланс сервиса покупки");
             if (balance.Balance <= itemPrice) 
-                return ResponseUtil.Conflict("Wait payment");
+                return ResponseUtil.PaymentRequired("Ожидаем пополнения сервиса покупки");
 
             BuyItem buyItem = await _withdrawService.BuyItem(itemInfo, data.TradeUrl!);
 
             if (buyItem.Result != "ok")
-                return ResponseUtil.Conflict(nameof(BuyItem));
+                return ResponseUtil.Conflict("Покупка не удалась сервис покупки не отвечает");
 
             ItemWithdrawStatus status = await context.ItemWithdrawStatuses
                 .AsNoTracking()
-                .FirstAsync(f => f.Name == "purchase");
+                .FirstAsync(iws => iws.Name == "purchase");
 
             UserHistoryWithdraw withdraw = new()
             {
@@ -98,7 +98,7 @@ namespace InCase.Payment.Api.Controllers
 
             await context.SaveChangesAsync();
 
-            return ResponseUtil.Ok(withdraw);
+            return ResponseUtil.Ok(withdraw.Convert(false));
         }
 
         [AuthorizeRoles(Roles.All)]

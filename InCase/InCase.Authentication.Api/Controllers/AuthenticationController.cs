@@ -42,26 +42,28 @@ namespace InCase.Authentication.Api.Controllers
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             User? user = await context.Users
-                .Include(i => i.AdditionalInfo)
+                .Include(u => u.AdditionalInfo)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(x => 
-                x.Id == userDto.Id ||
-                x.Email == userDto.Email ||
-                x.Login == userDto.Login);
+                .FirstOrDefaultAsync(u => 
+                u.Id == userDto.Id ||
+                u.Email == userDto.Email ||
+                u.Login == userDto.Login);
 
             if (user is null) 
-                return ResponseUtil.NotFound("User");
+                return ResponseUtil.NotFound("Пользователь не найден");
             if (!ValidationService.IsValidUserPassword(in user, userDto.Password!))
-                return ResponseUtil.Conflict("Invalid data");
+                return ResponseUtil.Forbidden("Неверный пароль");
 
             List<UserRestriction> bans = await context.UserRestrictions
-                .Include(i => i.Type)
+                .Include(ur => ur.Type)
                 .AsNoTracking()
-                .Where(w => w.UserId == user.Id && w.Type!.Name == "ban")
+                .Where(ur => ur.UserId == user.Id && ur.Type!.Name == "ban")
+                .OrderByDescending(ur => ur.ExpirationDate)
                 .ToListAsync();
 
             if (bans.Count > 0)
-                return ResponseUtil.Conflict(bans);
+                return ResponseUtil.Forbidden($"Вход запрещён до {bans[0].ExpirationDate}. " +
+                    $"Причина - {bans[0].Description}");
 
             return user.AdditionalInfo!.IsConfirmed ? 
                 await _emailService.SendToEmail(user.Email!, "Подтверждение входа", new()
@@ -90,12 +92,10 @@ namespace InCase.Authentication.Api.Controllers
 
             bool isExist = await context.Users
                 .AsNoTracking()
-                .AnyAsync(x =>
-                x.Email == userDto.Email ||
-                x.Login == userDto.Login);
+                .AnyAsync(u => u.Email == userDto.Email || u.Login == userDto.Login);
 
             if (isExist) 
-                return ResponseUtil.Conflict("User already exists!");
+                return ResponseUtil.Conflict("Пользователь уже существует");
 
             User user = userDto.Convert();
 
@@ -106,7 +106,7 @@ namespace InCase.Authentication.Api.Controllers
 
             UserRole? role = await context.UserRoles
                 .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.Name == "user");
+                .FirstOrDefaultAsync(ur => ur.Name == "user");
 
             UserAdditionalInfo info = new() {
                 RoleId = role!.Id,
@@ -127,7 +127,7 @@ namespace InCase.Authentication.Api.Controllers
             }
             catch (SmtpCommandException)
             {
-                return ResponseUtil.Conflict("MailBox is not existed!");
+                return ResponseUtil.Forbidden("Почта не существует или некорректна");
             }
 
             await context.Users.AddAsync(user);
@@ -135,7 +135,7 @@ namespace InCase.Authentication.Api.Controllers
 
             await context.SaveChangesAsync();
 
-            return ResponseUtil.SendEmail();
+            return ResponseUtil.SentEmail();
         }
 
         [AllowAnonymous]
@@ -144,35 +144,37 @@ namespace InCase.Authentication.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            ClaimsPrincipal? principal = _jwtService.GetClaimsToken(refreshToken); 
+            ClaimsPrincipal? principal = _jwtService.GetClaimsToken(refreshToken);
 
-            if(principal is null) 
-                return Forbid("Invalid refresh token");
+            if (principal is null)
+                return ResponseUtil.Unauthorized("Не валидный токен обновления");
 
             string id = principal.Claims
-                .Single(x => x.Type == ClaimTypes.NameIdentifier)
+                .Single(c => c.Type == ClaimTypes.NameIdentifier)
                 .Value;
 
             User? user = await context.Users
-                .Include(i => i.Restrictions)
-                .Include(x => x.AdditionalInfo)
-                .Include(x => x.AdditionalInfo!.Role)
+                .Include(u => u.Restrictions)
+                .Include(u => u.AdditionalInfo)
+                .Include(u => u.AdditionalInfo!.Role)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.Id == Guid.Parse(id));
+                .FirstOrDefaultAsync(u => u.Id == Guid.Parse(id));
 
             if (user is null) 
-                return ResponseUtil.NotFound("User");
+                return ResponseUtil.NotFound("Пользователь не найден");
             if (!ValidationService.IsValidToken(in user, principal, "refresh"))
-                return Forbid("Invalid refresh token");
+                return ResponseUtil.Unauthorized("Не валидный токен обновления");
 
             List<UserRestriction> bans = await context.UserRestrictions
-                .Include(i => i.Type)
+                .Include(ur => ur.Type)
                 .AsNoTracking()
-                .Where(w => w.UserId == user.Id && w.Type!.Name == "ban")
+                .Where(ur => ur.UserId == user.Id && ur.Type!.Name == "ban")
+                .OrderByDescending(ur => ur.ExpirationDate)
                 .ToListAsync();
 
             if (bans.Count > 0)
-                return ResponseUtil.Conflict(bans);
+                return ResponseUtil.Forbidden($"Вход запрещён до {bans[0].ExpirationDate}. " +
+                    $"Причина - {bans[0].Description}");
 
             DataSendTokens tokenModel = _jwtService.CreateTokenPair(in user!);
 

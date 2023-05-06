@@ -44,11 +44,11 @@ namespace InCase.Infrastructure.Services
                 await client.AuthenticateAsync(_smtpEmail, _smtpPassword);
                 await client.SendAsync(emailMessage);
 
-                return ResponseUtil.SendEmail();
+                return ResponseUtil.SentEmail();
             }
             catch (Exception ex)
             {
-                return ResponseUtil.Error(ex);
+                return ResponseUtil.UnknownError(ex);
             }
             finally
             {

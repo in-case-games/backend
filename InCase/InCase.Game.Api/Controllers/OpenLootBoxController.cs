@@ -31,41 +31,41 @@ namespace InCase.Game.Api.Controllers
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             LootBox? box = await context.LootBoxes
-                .Include(i => i.Inventories!)
-                    .ThenInclude(ti => ti!.Item)
-                .Include(i => i.Banner)
+                .Include(lb => lb.Inventories!)
+                    .ThenInclude(lbi => lbi!.Item)
+                .Include(lb => lb.Banner)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(f => f.Id == id);
+                .FirstOrDefaultAsync(lb => lb.Id == id);
 
             UserPathBanner? pathBanner = null;
 
             if (box is null)
-                return ResponseUtil.NotFound(nameof(LootBox));
+                return ResponseUtil.NotFound("Кейс не найден");
 
             User? user = await context.Users
-                .Include(i => i.AdditionalInfo)
-                .Include(i => i.HistoryPromocodes!)
-                    .ThenInclude(ti => ti.Promocode)
-                        .ThenInclude(ti => ti!.Type)
+                .Include(u => u.AdditionalInfo)
+                .Include(u => u.HistoryPromocodes!)
+                    .ThenInclude(uhp => uhp.Promocode)
+                        .ThenInclude(p => p!.Type)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(f => f.Id == UserId);
+                .FirstOrDefaultAsync(u => u.Id == UserId);
 
             if(user is null || user.AdditionalInfo is null)
-                return ResponseUtil.NotFound("User");
+                return ResponseUtil.NotFound("Пользователь не найден");
 
             UserAdditionalInfo userInfo = user.AdditionalInfo;
             UserHistoryPromocode? promocode = user.HistoryPromocodes?
-                .FirstOrDefault(f => f.IsActivated == false && f.Promocode?.Type?.Name == "case");
+                .FirstOrDefault(uhp => uhp.IsActivated == false && uhp.Promocode?.Type?.Name == "case");
 
             if (box.IsLocked)
-                return ResponseUtil.Conflict("Loot box is locked");
+                return ResponseUtil.Forbidden("Кейс заблокирован");
             if (userInfo.Balance < box.Cost) 
-                return ResponseUtil.Conflict("Insufficient funds");
+                return ResponseUtil.PaymentRequired("Недостаточно средств");
             if (box.Banner?.Id is not null)
             {
                 pathBanner = await context.UserPathBanners
                     .AsNoTracking()
-                    .FirstOrDefaultAsync(f => f.BannerId == box.Banner!.Id && f.UserId == UserId);
+                    .FirstOrDefaultAsync(upb => upb.BannerId == box.Banner!.Id && upb.UserId == UserId);
             }
 
             decimal discount = 0;
@@ -164,7 +164,7 @@ namespace InCase.Game.Api.Controllers
 
             await context.SaveChangesAsync();
 
-            return ResponseUtil.Ok(winItem);
+            return ResponseUtil.Ok(winItem.Convert(false));
         }
 
         [AuthorizeRoles(Roles.All)]
@@ -175,18 +175,18 @@ namespace InCase.Game.Api.Controllers
 
             UserAdditionalInfo? userInfo = await context.UserAdditionalInfos
                 .AsNoTracking()
-                .FirstOrDefaultAsync(f => f.UserId == UserId);
+                .FirstOrDefaultAsync(uai => uai.UserId == UserId);
             LootBox? box = await context.LootBoxes
-                .Include(i => i.Inventories!)
-                    .ThenInclude(ti => ti!.Item)
-                .Include(i => i.Banner)
+                .Include(lb => lb.Inventories!)
+                    .ThenInclude(lbi => lbi!.Item)
+                .Include(lb => lb.Banner)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(f => f.Id == id);
+                .FirstOrDefaultAsync(lb => lb.Id == id);
 
             if (userInfo is null || box is null)
-                return ResponseUtil.NotFound(nameof(LootBox));
+                return ResponseUtil.NotFound("Кейс не найден");
             if (!userInfo.IsGuestMode)
-                return Forbid();
+                return ResponseUtil.Forbidden("Не включен режим гостя");
 
             //Update Balance Case and User
             box.VirtualBalance += box.Cost;
@@ -204,7 +204,7 @@ namespace InCase.Game.Api.Controllers
 
             await context.SaveChangesAsync();
 
-            return ResponseUtil.Ok(winItem);
+            return ResponseUtil.Ok(winItem.Convert(false));
         }
 
         #region nonAction
