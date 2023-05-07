@@ -26,7 +26,7 @@
 ## Общее
 
 В api есть самописные возраты кодов:
-![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_400:&color=red)
+1. ![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_400:&color=red)
    * 0 - Bad Request
    * 1 - Unauthorized
    * 2 - Payment Required (Недостаточный баланс)
@@ -35,7 +35,7 @@
    * 5 - Conflict (Конфликт возможно запись уже есть)
    * 6 - Request Timeout (Превышено время ожидания)
    * 7 - Unknown Error (Ошибку поймал try/catch)
-![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_200:&color=green)
+2. ![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_200:&color=green)
    * 0 - OK
    * 1 - Accepted (Принято в обработку)
    * 2 - Sent Email (Отправлено на почту)
