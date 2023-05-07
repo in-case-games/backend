@@ -8,21 +8,6 @@ namespace InCase.Infrastructure.Utils
         private const string SENT_EMAIL = "Сообщение отправлено на email почту";
         private const string PAYMENT_REQUIRED = "Недостаточный баланс";
         private const string FORBIDDEN = "Доступ запрещен";
-        /*
-         STATUS CODE ERROR(400):
-            0 - Bad Request
-            1 - Unauthorized
-            2 - Payment Required (Недостаточный баланс)
-            3 - Forbidden (Доступ запрещен)
-            4 - Not Found (Не найдено запись в бд)
-            5 - Conflict (Конфликт возможно запись уже есть)
-            6 - Request Timeout (Превышено время ожидания)
-            7 - Unknown Error (Ошибку поймал try/catch)
-         STATUS CODE OK(200):
-            0 - OK
-            1 - Accepted (Принято в обработку)
-            2 - Sent Email (Отправлено на почту)
-        */
 
         public static IActionResult Ok<T>(T data) => CreateResultOK("0", data);
 
