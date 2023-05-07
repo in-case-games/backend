@@ -4,7 +4,6 @@
 
 * Общее
   * **<a href="https://github.com/InCase-buy-and-opening-cases/InCase_backend/blob/InCase.dev/ApiResDocs.md#информация-об-играх">Информация об играх</a>**
-  * **<a href="https://github.com/InCase-buy-and-opening-cases/InCase_backend/blob/InCase.dev/ApiResDocs.md#информация-о-новостях">Информация о новостях</a>**
   * **<a href="https://github.com/InCase-buy-and-opening-cases/InCase_backend/blob/InCase.dev/ApiResDocs.md#информация-о-статистике">Информация о статистике сайта</a>**
 
 * Предметы
@@ -26,7 +25,20 @@
   
 ## Общее
 
-_Данный подзаголовок содержит в себе информацио о том, как работать с общими endpoint-ами_
+В api есть самописные возраты кодов:
+1. ![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_400:&color=red)
+   * 0 - Bad Request
+   * 1 - Unauthorized
+   * 2 - Payment Required (Недостаточный баланс)
+   * 3 - Forbidden (Доступ запрещен)
+   * 4 - Not Found (Не найдено запись в бд)
+   * 5 - Conflict (Конфликт возможно запись уже есть)
+   * 6 - Request Timeout (Превышено время ожидания)
+   * 7 - Unknown Error (Ошибку поймал try/catch)
+2. ![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_200:&color=green)
+   * 0 - OK
+   * 1 - Accepted (Принято в обработку)
+   * 2 - Sent Email (Отправлено на почту)
 
 
 ### Информация об играх
@@ -36,44 +48,33 @@ _Данный подзаголовок содержит в себе информ
    * Метод: GET 
    * Запрос: `https://r.api.incase.com/api/game`
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_200:&color=green)
 ```JSON
 {
-  "success": true,
+  "code": "0",
   "data": [
     {
       "name": "csgo",
       "items": [],
       "boxes": [],
-      "platforms": null,
-      "groups": null,
-      "id": "bb3a297c-7d54-49ba-8906-7c8f5903a6ad"
-    },
-    {
-      "name": "dota2",
-      "items": [],
-      "boxes": [],
-      "platforms": null,
-      "groups": null,
-      "id": "4edd89d0-d4cf-4a58-93fb-a7b714510855"
+      "markets": null,
+      "id": "6ebf72d4-fb09-4716-b08e-57cd941da414"
     },
     {
       "name": "genshin",
       "items": [],
       "boxes": [],
-      "platforms": null,
-      "groups": null,
-      "id": "d3de7704-031f-4b12-a7ad-c3bf42dfa0f1"
+      "markets": null,
+      "id": "2a190be9-ceab-4252-a7a7-d305139c8af0"
+    },
+    {
+      "name": "dota2",
+      "items": [],
+      "boxes": [],
+      "markets": null,
+      "id": "2fcd4179-6632-4ed3-9747-fa94656ffc5d"
     }
   ]
-}
-```
-
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
-```JSON
-{
-  "success": false,
-  "data": "Game is not found. "
 }
 ```
 
@@ -82,248 +83,29 @@ _Данный подзаголовок содержит в себе информ
    * Метод: GET 
    * Запрос: `https://r.api.incase.com/api/game/{id}`
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_200:&color=green)
 ```JSON
 {
-  "success": true,
-  "data":
-  {
+  "code": "0",
+  "data": {
     "name": "csgo",
     "items": [],
     "boxes": [],
-    "platforms": null,
-    "groups": null,
-    "id": "bb3a297c-7d54-49ba-8906-7c8f5903a6ad"
+    "markets": null,
+    "id": "6ebf72d4-fb09-4716-b08e-57cd941da414"
   }
 }
 ```
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_400:&color=red)
 ```JSON
 {
-  "success": false,
-  "data": "Game is not found. "
-}
-```
-
-
-### Информация о новостях
-
-1. Получение всех новостей: 
-   * Доступ: Allow Anonymous
-   * Метод: GET 
-   * Запрос: `https://r.api.incase.com/api/news`
-
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
-```JSON
-{
-  "success": true,
-  "data": [
-    {
-      "title": "NEWS2",
-      "date": "2023-04-08T05:01:03.28",
-      "content": "BBBB",
-      "images": [
-        {
-          "imageUri": "ЭТО ПУТЬ НА КАРТИНКУ",
-          "id": "65576f0f-6a2c-4b22-aa5a-01a923707ac1"
-        }
-      ],
-      "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
-    }
-  ]
-}
-```
-
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
-```JSON
-{
-  "success": false,
-  "data": "News is not found. "
-}
-```
-
-2. Получение определенной новости:
-   * Доступ: Allow Anonymous
-   * Метод: GET 
-   * Запрос: `https://r.api.incase.com/api/news/{id}`
-
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
-```JSON
-{
-  "success": true,
-  "data": {
-    "title": "NEWS2",
-    "date": "2023-04-08T05:01:03.28",
-    "content": "BBBB",
-    "images": [
-      {
-        "imageUri": "ЭТО ПУТЬ НА КАРТИНКУ",
-        "id": "65576f0f-6a2c-4b22-aa5a-01a923707ac1"
-      }
-    ],
-    "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+  "error": {
+    "code": "4",
+    "message": "Игра не найдена"
   }
 }
 ```
-
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
-```JSON
-{
-  "success": false,
-  "data": "News is not found. "
-}
-```
-
-3. Создание новости:
-   * Доступ: Admin, Owner
-   * Метод: POST 
-   * Запрос: `https://r.api.incase.com/api/news`
-
-![](https://img.shields.io/static/v1?label=&message=Request_Body:&color=blue)
-```JSON
-{
-  "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-  "title": "NEWS",
-  "date": "2023-04-08T04:26:24.822Z",
-  "content": "AAAAA"
-}
-```
-
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
-```JSON
-{
-  "success": true,
-  "data": {
-    "title": "NEWS",
-    "date": "2023-04-08T04:26:24.822Z",
-    "content": "AAAAA",
-    "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
-  }
-}
-```
-
-4. Обновление новости:
-   * Доступ: Admin, Owner
-   * Метод: PUT 
-   * Запрос: `https://r.api.incase.com/api/news`
-
-![](https://img.shields.io/static/v1?label=&message=Request_Body:&color=blue)
-```JSON
-{
-  "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-  "title": "NEWS2",
-  "date": "2023-04-08T05:01:03.280Z",
-  "content": "BBBB"
-}
-```
-
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
-```JSON
-{
-  "success": true,
-  "data": {
-    "title": "NEWS2",
-    "date": "2023-04-08T05:01:03.28Z",
-    "content": "BBBB",
-    "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
-  }
-}
-```
-
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
-```JSON
-{
-  "success": false,
-  "data": "News is not found. "
-}
-```
-
-5. Удаление новости:
-   * Доступ: Admin, Owner
-   * Метод: Delete 
-   * Запрос: `https://r.api.incase.com/api/news`
-
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
-```JSON
-{
-  "success": true,
-  "data": {
-    "title": "NEWS2",
-    "date": "2023-04-08T05:01:03.28",
-    "content": "BBBB",
-    "images": null,
-    "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
-  }
-}
-```
-
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
-```JSON
-{
-  "success": false,
-  "data": "News is not found. "
-}
-```
-
-6. Создание картинки новости:
-   * Доступ: Admin, Owner
-   * Метод: POST 
-   * Запрос: `https://r.api.incase.com/api/news/image`
-
-![](https://img.shields.io/static/v1?label=&message=Request_Body:&color=blue)
-```JSON
-{
-  "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-  "imageUri": "ЭТО ПУТЬ НА КАРТИНКУ",
-  "newsId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
-}
-```
-
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
-```JSON
-{
-  "success": true,
-  "data": {
-    "imageUri": "ЭТО ПУТЬ НА КАРТИНКУ",
-    "news": null,
-    "id": "24e26de0-adf0-43bb-ad04-5092cb543bda"
-  }
-}
-```
-
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
-```JSON
-{
-  "success": false,
-  "data": "NewsImage is not found. "
-}
-```
-
-7. Удаление картинки новости:
-   * Доступ: Admin, Owner
-   * Метод: Delete 
-   * Запрос: `https://r.api.incase.com/api/news/image/{id}`
-
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
-```JSON
-{
-  "success": true,
-  "data": {
-    "imageUri": "ЭТО ПУТЬ НА КАРТИНКУ",
-    "id": "65576f0f-6a2c-4b22-aa5a-01a923707ac1"
-  }
-}
-```
-
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
-```JSON
-{
-  "success": false,
-  "data": "NewsImage is not found. "
-}
-```
-
 
 ### Информация о статистике
 
@@ -332,26 +114,28 @@ _Данный подзаголовок содержит в себе информ
    * Метод: GET 
    * Запрос: `https://r.api.incase.com/api/site-statistics`
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_200:&color=green)
 ```JSON
 {
-  "success": true,
+  "code": "0",
   "data": {
     "users": 0,
     "reviews": 0,
     "lootBoxes": 0,
     "withdrawnItems": 0,
     "withdrawnFunds": 0,
-    "id": "b7d9b658-7116-46f2-85bf-91c09fbd316d"
+    "id": "49feea03-c827-40d2-856b-46bb8bbe9793"
   }
 }
 ```
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_400:&color=red)
 ```JSON
 {
-  "success": false,
-  "data": "SiteStatitics is not found. "
+  "error": {
+    "code": "4",
+    "message": "Статистика не найдена"
+  }
 }
 ```
 
@@ -360,60 +144,24 @@ _Данный подзаголовок содержит в себе информ
    * Метод: GET 
    * Запрос: `https://r.api.incase.com/api/site-statistics/admin`
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_200:&color=green)
 ```JSON
 {
-  "success": true,
+  "code": "0",
   "data": {
     "balanceWithdrawn": 0,
     "totalReplenished": 0,
     "sentSites": 0,
-    "id": "dcc228c3-6ad8-4021-9677-01b1067b5e23"
+    "id": "6842ae9b-f7d9-452e-b70a-31bbe7387ff4"
   }
 }
 ```
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_400:&color=red)
 ```JSON
 {
   "success": false,
-  "data": "SiteStatiticsAdmin is not found. "
-}
-```
-
-3. Редактирование админской статистике сайта:
-   * Доступ: Owner, Bot
-   * Метод: PUT 
-   * Запрос: `https://r.api.incase.com/api/site-statistics/admin`
-
-![](https://img.shields.io/static/v1?label=&message=Request_Body:&color=blue)
-```JSON
-{
-  "id": "dcc228c3-6ad8-4021-9677-01b1067b5e23",
-  "balanceWithdrawn": 110,
-  "totalReplenished": 0,
-  "sentSites": 0
-}
-```
-
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
-```JSON
-{
-  "success": true,
-  "data": {
-    "balanceWithdrawn": 110,
-    "totalReplenished": 0,
-    "sentSites": 0,
-    "id": "dcc228c3-6ad8-4021-9677-01b1067b5e23"
-  }
-}
-```
-
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
-```JSON
-{
-  "success": false,
-  "data": "SiteStatisticsAdmin is not found. "
+  "data": "Админская сайт статистика не найдена"
 }
 ```
 
