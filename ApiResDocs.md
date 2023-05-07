@@ -1197,54 +1197,60 @@
     * Метод: PUT
     * Запрос: `https://r.api.incase.com/api/loot-box/banner`
 
-![](https://img.shields.io/static/v1?label=&message=Request_Body:&color=blue)
+![](https://img.shields.io/static/v1?label=&message=REQUEST_BODY:&color=blue)
 ```JSON
 {
-  "id": "6441d41f-c2cf-4c6c-91b0-52224cf5b4c3",
-  "isActive": true,
-  "creationDate": "2023-04-08T07:31:43.916Z",
-  "expirationDate": "2023-04-08T07:31:43.916Z",
-  "imageUri": "AAA",
-  "boxId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+  "id": "9b5ad520-5f5e-41f7-bbda-67864b697a1e",
+  "isActive": false,
+  "creationDate": "2023-06-07T14:34:57.585Z",
+  "expirationDate": "2023-06-07T14:34:57.585Z",
+  "imageUri": "string1",
+  "boxId": "91cd8256-575c-4367-ab63-a315364c024d"
 }
 ```
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_200:&color=green)
 ```JSON
 {
-  "success": true,
+  "code": "0",
   "data": {
-    "isActive": true,
-    "creationDate": "2023-04-08T07:29:07.297Z",
-    "expirationDate": "2023-04-08T07:29:07.297Z",
-    "imageUri": "ЭТО ПУТЬ К ФОТКЕ БАННЕРА",
+    "isActive": false,
+    "creationDate": "2023-06-07T14:34:57.585Z",
+    "expirationDate": "2023-06-07T14:34:57.585Z",
+    "imageUri": "string1",
     "box": null,
-    "id": "6441d41f-c2cf-4c6c-91b0-52224cf5b4c3"
+    "id": "9b5ad520-5f5e-41f7-bbda-67864b697a1e"
   }
 }
 ```
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_409:&color=orange)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_400:&color=red)
 ```JSON
 {
-  "success": false,
-  "data": "The banner is already used by this loot box"
+  "error": {
+    "code": "5",
+    "message": "Баннер уже использует кейс"
+  }
 }
 ```
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_400:&color=red)
 ```JSON
 {
-  "success": false,
-  "data": "LootBox is not found. "
+  "error": {
+    "code": "4",
+    "message": "Баннер не найден"
+  }
 }
 ```
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_400:&color=red)
 ```JSON
 {
-  "success": false,
-  "data": "LootBoxBanner is not found. "
+  "error": {
+    "code": "4",
+    "message": "Кейс не найден"
+  }
 }
 ```
 
@@ -1253,28 +1259,30 @@
     * Метод: DELETE
     * Запрос: `https://r.api.incase.com/api/loot-box/{id}`
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_200:&color=green)
 ```JSON
 {
-  "success": true,
+  "code": "0",
   "data": {
-    "name": "Самый классный кейс",
-    "cost": 250,
+    "name": "имя кейса1",
+    "cost": 111,
     "balance": 0,
     "virtualBalance": 0,
-    "imageUri": "string",
+    "imageUri": "string1",
     "isLocked": false,
     "inventories": null,
-    "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    "id": "91cd8256-575c-4367-ab63-a315364c024d"
   }
 }
 ```
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_404:&color=red)
 ```JSON
 {
-  "success": false,
-  "data": "LootBox is not found. "
+  "error": {
+    "code": "4",
+    "message": "Запись таблицы LootBox по 91cd8256-575c-4367-ab63-a315364c024d не найдена"
+  }
 }
 ```
 
@@ -1283,26 +1291,28 @@
     * Метод: DELETE
     * Запрос: `https://r.api.incase.com/api/loot-box/banner/{id}`
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_200:&color=green)
 ```JSON
 {
-  "success": true,
+  "code": "0",
   "data": {
     "isActive": true,
-    "creationDate": "2023-04-08T07:31:43.916",
-    "expirationDate": "2023-04-08T07:31:43.916",
-    "imageUri": "AAA",
+    "creationDate": "2023-05-07T14:11:29.787",
+    "expirationDate": "2023-05-07T14:11:29.787",
+    "imageUri": "string",
     "box": null,
-    "id": "6441d41f-c2cf-4c6c-91b0-52224cf5b4c3"
+    "id": "4e73a802-3a6a-4324-bce5-d9a7148b0ea7"
   }
 }
 ```
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_404:&color=red)
 ```JSON
 {
-  "success": false,
-  "data": "LootBoxBanner is not found. "
+  "error": {
+    "code": "4",
+    "message": "Запись таблицы LootBoxBanner по 4e73a802-3a6a-4324-bce5-d9a7148b0ea7 не найдена"
+  }
 }
 ```
 
@@ -1311,24 +1321,25 @@
     * Метод: DELETE
     * Запрос: `https://r.api.incase.com/api/loot-box/inventory/{id}`
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_200:&color=green)
 ```JSON
 {
-  "success": true,
+  "code": "0",
   "data": {
-    "numberItems": 1,
-    "chanceWining": 120,
+    "chanceWining": 11,
     "item": null,
-    "id": "1174c0df-e11a-426d-a8ae-d8fba5acfe4d"
+    "id": "d0e2358c-a976-4b3f-a81d-a375eaee8671"
   }
 }
 ```
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_400:&color=red)
 ```JSON
 {
-  "success": false,
-  "data": "LootBoxInventory is not found. "
+  "error": {
+    "code": "4",
+    "message": "Запись таблицы LootBoxInventory по d0e2358c-a976-4b3f-a81d-a375eaee8671 не найдена"
+  }
 }
 ```
 
@@ -1337,28 +1348,30 @@
    * Метод: GET
    * Запрос: `https://r.api.incase.com/api/loot-box/admin/{id}`
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_200:&color=green)
 ```JSON
 {
-  "success": true,
+  "code": "0",
   "data": {
-    "name": "Самый классный кейс",
-    "cost": 250,
+    "name": "имя кейса1",
+    "cost": 111,
     "balance": 0,
     "virtualBalance": 0,
-    "imageUri": "string",
+    "imageUri": "string1",
     "isLocked": false,
-    "inventories": [],
-    "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    "inventories": null,
+    "id": "91cd8256-575c-4367-ab63-a315364c024d"
   }
 }
 ```
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_400:&color=red)
 ```JSON
 {
-  "success": false,
-  "data": "LootBox is not found. "
+  "error": {
+    "code": "4",
+    "message": "Кейс не найден"
+  }
 }
 ```
 
