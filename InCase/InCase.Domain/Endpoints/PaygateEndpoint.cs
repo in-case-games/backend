@@ -1,5 +1,8 @@
 ﻿namespace InCase.Domain.Endpoints
 {
+    /// <summary>
+    /// class <c>PaygateEndpoint</c> enum model a paygate.gamemoney.com endpoints
+    /// </summary>
     public static class PaygateEndpoint
     {
         static readonly string url = "https://paygate.gamemoney.com";

@@ -6,6 +6,10 @@ using System.Text.Json.Serialization;
 
 namespace InCase.Infrastructure.Services
 {
+    /// <summary>
+    /// class <c>TradeMarketService</c> is designed to work with the api of the 
+    /// market.cs-go and market.dota2 websites
+    /// </summary>
     public class TradeMarketService : ITradeMarket
     {
         private readonly IConfiguration _configuration;
