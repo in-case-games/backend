@@ -15,7 +15,7 @@ namespace InCase.Infrastructure.Utils
 
             T? result = await context.Set<T>()
                 .AsNoTracking()
-                .FirstOrDefaultAsync(f => f.Id == id);
+                .FirstOrDefaultAsync(t => t.Id == id);
 
             return result is null ? 
                 ResponseUtil.NotFound("Запись таблицы" + typeof(T).Name + $"по {id} не найдена") : 
@@ -54,7 +54,7 @@ namespace InCase.Infrastructure.Utils
             where T : BaseEntity
         {
             T? entityOld = await context.Set<T>()
-                .FirstOrDefaultAsync(f => f.Id == entityNew.Id);
+                .FirstOrDefaultAsync(t => t.Id == entityNew.Id);
 
             if (entityOld is null)
                 return ResponseUtil.NotFound("Запись таблицы" + typeof(T).Name + $"по {entityNew.Id} не найдена");
@@ -77,7 +77,7 @@ namespace InCase.Infrastructure.Utils
         {
             T? result = await context.Set<T>()
                 .AsNoTracking()
-                .FirstOrDefaultAsync(f => f.Id == id);
+                .FirstOrDefaultAsync(t => t.Id == id);
 
             if (result is null)
                 return ResponseUtil.NotFound("Запись таблицы" + typeof(T).Name + $"по {id} не найдена");

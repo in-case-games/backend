@@ -31,12 +31,28 @@ namespace InCase.Resources.Api.Controllers
             await using ApplicationDbContext context = await _context.CreateDbContextAsync();
 
             UserAdditionalInfo? info = await context.UserAdditionalInfos
-                .Include(i => i.Role)
+                .Include(uai => uai.Role)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(f => f.UserId == UserId);
+                .FirstOrDefaultAsync(uai => uai.UserId == UserId);
 
             return info is null ?
-                ResponseUtil.NotFound(nameof(UserAdditionalInfo)) :
+                ResponseUtil.NotFound("Дополнительная информация не найдена") :
+                ResponseUtil.Ok(info);
+        }
+
+        [AllowAnonymous]
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(Guid id)
+        {
+            await using ApplicationDbContext context = await _context.CreateDbContextAsync();
+
+            UserAdditionalInfo? info = await context.UserAdditionalInfos
+                .Include(uai => uai.Role)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(uai => uai.Id == id);
+
+            return info is null ?
+                ResponseUtil.NotFound("Дополнительная информация не найдена") :
                 ResponseUtil.Ok(info);
         }
 
@@ -54,12 +70,12 @@ namespace InCase.Resources.Api.Controllers
             await using ApplicationDbContext context = await _context.CreateDbContextAsync();
 
             UserAdditionalInfo? info = await context.UserAdditionalInfos
-                .Include(i => i.Role)
+                .Include(uai => uai.Role)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(f => f.UserId == UserId);
+                .FirstOrDefaultAsync(uai => uai.UserId == UserId);
 
             if (info is null)
-                return ResponseUtil.NotFound(nameof(UserAdditionalInfo));
+                return ResponseUtil.NotFound("Дополнительная информация не найдена");
 
             info.IsGuestMode = !info.IsGuestMode;
 
@@ -69,8 +85,8 @@ namespace InCase.Resources.Api.Controllers
             await context.SaveChangesAsync();
 
             return info.IsGuestMode ? 
-                ResponseUtil.Ok("On guest mode") : 
-                ResponseUtil.Ok("Off guest mode");
+                ResponseUtil.Ok("Гостевой мод включен") : 
+                ResponseUtil.Ok("Гостевой мод выключен");
         }
 
         [AuthorizeRoles(Roles.Owner, Roles.Bot)]
@@ -79,10 +95,10 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _context.CreateDbContextAsync();
 
-            if (!await context.UserRoles.AnyAsync(a => a.Id == infoDto.RoleId))
-                return ResponseUtil.NotFound(nameof(UserRole));
-            if (!await context.Users.AnyAsync(a => a.Id == infoDto.UserId))
-                return ResponseUtil.NotFound("User");
+            if (!await context.UserRoles.AnyAsync(ur => ur.Id == infoDto.RoleId))
+                return ResponseUtil.NotFound("Роль не найдена");
+            if (!await context.Users.AnyAsync(u => u.Id == infoDto.UserId))
+                return ResponseUtil.NotFound("Пользователь не найден");
 
             return await EndpointUtil.Update(infoDto.Convert(false), context);
         }

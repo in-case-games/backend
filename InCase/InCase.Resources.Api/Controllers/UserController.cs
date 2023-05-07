@@ -36,13 +36,12 @@ namespace InCase.Resources.Api.Controllers
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             User? user = await context.Users
-                .Include(i => i.AdditionalInfo)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(f => f.Id == UserId);
+                .FirstOrDefaultAsync(u => u.Id == UserId);
 
             return user is null ?
-                ResponseUtil.NotFound("User") :
-                ResponseUtil.Ok(user);
+                ResponseUtil.NotFound("Пользователь не найден") :
+                ResponseUtil.Ok(user.Convert(false));
         }
 
         [AllowAnonymous]
@@ -52,17 +51,12 @@ namespace InCase.Resources.Api.Controllers
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             User? user = await context.Users
-                .Include(i => i.AdditionalInfo)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(f => f.Id == id);
+                .FirstOrDefaultAsync(u => u.Id == id);
 
-            if (user is null)
-                return ResponseUtil.NotFound("User");
-
-            user.PasswordHash = null;
-            user.PasswordSalt = null;
-
-            return ResponseUtil.Ok(user);
+            return user is null ? 
+                ResponseUtil.NotFound("Пользователь не найден") : 
+                ResponseUtil.Ok(user);
         }
 
         [AuthorizeRoles(Roles.All)]
@@ -72,14 +66,12 @@ namespace InCase.Resources.Api.Controllers
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             List<UserHistoryPromocode> promocodes = await context.UserHistoryPromocodes
-                .Include(i => i.Promocode)
+                .Include(uhp => uhp.Promocode)
                 .AsNoTracking()
-                .Where(w => w.UserId == UserId)
+                .Where(uhp => uhp.UserId == UserId)
                 .ToListAsync();
 
-            return promocodes.Count == 0 ?
-                ResponseUtil.NotFound(nameof(UserHistoryPromocode)) :
-                ResponseUtil.Ok(promocodes);
+            return ResponseUtil.Ok(promocodes);
         }
 
         [AuthorizeRoles(Roles.All)]
@@ -90,13 +82,11 @@ namespace InCase.Resources.Api.Controllers
 
             List<UserHistoryWithdraw> withdrawns = await context.UserHistoryWithdraws
                 .AsNoTracking()
-                .Include(i => i.Item)
-                .Where(w => w.UserId == UserId)
+                .Include(uhw => uhw.Item)
+                .Where(uhw => uhw.UserId == UserId)
                 .ToListAsync();
 
-            return withdrawns.Count == 0 ?
-                ResponseUtil.NotFound(nameof(UserHistoryWithdraw)) :
-                ResponseUtil.Ok(withdrawns);
+            return ResponseUtil.Ok(withdrawns);
         }
 
         [AllowAnonymous]
@@ -106,16 +96,14 @@ namespace InCase.Resources.Api.Controllers
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             List<UserHistoryWithdraw> withdraws = await context.UserHistoryWithdraws
-                .Include(i => i.Item)
+                .Include(uhw => uhw.Item)
                 .AsNoTracking()
-                .Where(w => w.UserId == id)
-                .OrderByDescending(w => w.Date)
+                .Where(uhw => uhw.UserId == id)
+                .OrderByDescending(uhw => uhw.Date)
                 .Take(100)
                 .ToListAsync();
 
-            return withdraws.Count == 0 ?
-                ResponseUtil.NotFound(nameof(UserHistoryWithdraw)) : 
-                ResponseUtil.Ok(withdraws);
+            return ResponseUtil.Ok(withdraws);
         }
 
         [AuthorizeRoles(Roles.All)]
@@ -125,15 +113,13 @@ namespace InCase.Resources.Api.Controllers
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             List<UserHistoryOpening> openings = await context.UserHistoryOpenings
-                .Include(i => i.Box)
-                .Include(i => i.Item)
+                .Include(uho => uho.Box)
+                .Include(uho => uho.Item)
                 .AsNoTracking()
-                .Where(w => w.UserId == UserId)
+                .Where(uho => uho.UserId == UserId)
                 .ToListAsync();
 
-            return openings.Count == 0 ?
-                ResponseUtil.NotFound(nameof(UserHistoryOpening)) :
-                ResponseUtil.Ok(openings);
+            return ResponseUtil.Ok(openings);
         }
 
         [AuthorizeRoles(Roles.All)]
@@ -143,15 +129,13 @@ namespace InCase.Resources.Api.Controllers
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             List<UserPathBanner> banners = await context.UserPathBanners
-                .Include(i => i.Banner)
-                .Include(i => i.Item)
+                .Include(upb => upb.Banner)
+                .Include(upb => upb.Item)
                 .AsNoTracking()
-                .Where(w => w.UserId == UserId)
+                .Where(upb => upb.UserId == UserId)
                 .ToListAsync();
 
-            return banners.Count == 0 ?
-                ResponseUtil.NotFound(nameof(UserPathBanner)) :
-                ResponseUtil.Ok(banners);
+            return ResponseUtil.Ok(banners);
         }
 
         [AllowAnonymous]
@@ -161,16 +145,14 @@ namespace InCase.Resources.Api.Controllers
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             List<UserInventory> inventories = await context.UserInventories
-                .Include(i => i.Item)
+                .Include(ui => ui.Item)
                 .AsNoTracking()
-                .Where(w => w.UserId == id)
-                .OrderByDescending(w => w.Date)
+                .Where(ui => ui.UserId == id)
+                .OrderByDescending(ui => ui.Date)
                 .Take(100)
                 .ToListAsync();
 
-            return inventories.Count == 0 ?
-                ResponseUtil.NotFound(nameof(UserInventory)) :
-                ResponseUtil.Ok(inventories);
+            return ResponseUtil.Ok(inventories);
         }
 
         [AuthorizeRoles(Roles.All)]
@@ -180,14 +162,12 @@ namespace InCase.Resources.Api.Controllers
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             List<UserInventory> inventories = await context.UserInventories
-                .Include(i => i.Item)
+                .Include(ui => ui.Item)
                 .AsNoTracking()
-                .Where(w => w.UserId == UserId)
+                .Where(ui => ui.UserId == UserId)
                 .ToListAsync();
 
-            return inventories.Count == 0 ?
-                ResponseUtil.NotFound(nameof(UserInventory)) :
-                ResponseUtil.Ok(inventories);
+            return ResponseUtil.Ok(inventories);
         }
 
         [AuthorizeRoles(Roles.All)]
@@ -198,15 +178,12 @@ namespace InCase.Resources.Api.Controllers
 
             List<UserHistoryPayment> payments = await context.UserHistoryPayments
                 .AsNoTracking()
-                .Where(w => w.UserId == UserId)
+                .Where(uhp => uhp.UserId == UserId)
                 .ToListAsync();
 
-            return payments.Count == 0 ?
-                ResponseUtil.NotFound(nameof(UserHistoryPayment)) :
-                ResponseUtil.Ok(payments);
+            return ResponseUtil.Ok(payments);
         }
 
-        //TODO Transfer method
         [AuthorizeRoles(Roles.All)]
         [HttpGet("activate/promocode/{name}")]
         public async Task<IActionResult> ActivatePromocode(string name)
@@ -214,31 +191,29 @@ namespace InCase.Resources.Api.Controllers
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             Promocode? promocode = await context.Promocodes
-                .Include(i => i.Type)
-                .FirstOrDefaultAsync(f => f.Name == name);
+                .Include(p => p.Type)
+                .FirstOrDefaultAsync(p => p.Name == name);
 
             if (promocode is null)
-                return ResponseUtil.NotFound(nameof(Promocode));
+                return ResponseUtil.NotFound("Промокод не найден");
             if (promocode.NumberActivations <= 0 || promocode.ExpirationDate <= DateTime.UtcNow)
-                return ResponseUtil.Conflict("The promo code is exhausted");
+                return ResponseUtil.Forbidden("Промокод истёк");
 
             UserHistoryPromocode? historyPromocode = await context.UserHistoryPromocodes
                 .AsNoTracking()
-                .FirstOrDefaultAsync(f => f.PromocodeId == promocode.Id);
+                .FirstOrDefaultAsync(uhp => uhp.PromocodeId == promocode.Id);
 
             UserHistoryPromocode? historyPromocodeType = await context.UserHistoryPromocodes
-                .Include(i => i.Promocode)
-                .Include(i => i.Promocode!.Type)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(f => 
-                f.Promocode!.Type!.Id == promocode.TypeId && 
-                f.IsActivated == false && 
-                f.UserId == UserId);
+                .FirstOrDefaultAsync(uhp => 
+                uhp.Promocode!.Type!.Id == promocode.TypeId && 
+                uhp.IsActivated == false && 
+                uhp.UserId == UserId);
 
             if (historyPromocode is not null && historyPromocode.IsActivated)
-                return ResponseUtil.Conflict("Promocode has already been used");
+                return ResponseUtil.Conflict("Промокод уже используется");
             if (historyPromocodeType is not null)
-                return ResponseUtil.Conflict("Promocode type is already in use");
+                return ResponseUtil.Conflict("Тип промокода уже используется");
 
             promocode.NumberActivations--;
 
@@ -251,7 +226,6 @@ namespace InCase.Resources.Api.Controllers
             return await EndpointUtil.Create(historyPromocode, context);
         }
 
-        //TODO Transfer method
         [AuthorizeRoles(Roles.All)]
         [HttpGet("exchange/promocode/{name}")]
         public async Task<IActionResult> ExchangePromocode(string name)
@@ -259,29 +233,32 @@ namespace InCase.Resources.Api.Controllers
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             Promocode? promocode = await context.Promocodes
-                .Include(i => i.Type)
-                .FirstOrDefaultAsync(f => f.Name == name);
+                .Include(p => p.Type)
+                .FirstOrDefaultAsync(p => p.Name == name);
 
             if (promocode is null)
-                return ResponseUtil.NotFound(nameof(Promocode));
+                return ResponseUtil.NotFound("Промокод не найден");
             if (promocode.NumberActivations <= 0 || promocode.ExpirationDate <= DateTime.UtcNow)
-                return ResponseUtil.Conflict("The promo code is exhausted");
+                return ResponseUtil.Conflict("Промокод истёк");
 
             bool IsUsed = await context.UserHistoryPromocodes
-                .AnyAsync(a => a.PromocodeId == promocode.Id && a.IsActivated == true);
+                .AnyAsync(uhp => uhp.PromocodeId == promocode.Id && uhp.IsActivated);
 
             if (IsUsed)
-                return ResponseUtil.Conflict("Promocode has already been used");
+                return ResponseUtil.Conflict("Промокод уже использован");
 
             UserHistoryPromocode? promocodeOld = await context.UserHistoryPromocodes
-                .Include(i => i.Promocode)
-                .Include(i => i.Promocode!.Type)
-                .FirstOrDefaultAsync(f => f.Promocode!.Type!.Id == promocode.TypeId && f.IsActivated == false);
+                .Include(uhp => uhp.Promocode)
+                .Include(uhp => uhp.Promocode!.Type)
+                .FirstOrDefaultAsync(uhp => 
+                uhp.Promocode!.Type!.Id == promocode.TypeId && 
+                uhp.IsActivated == false &&
+                uhp.UserId == UserId);
 
             if (promocodeOld is null)
-                return ResponseUtil.Conflict("Promocode no exchange");
+                return ResponseUtil.Conflict("Прошлый промокод не найден");
             if (promocodeOld.Promocode!.Id == promocode.Id)
-                return ResponseUtil.Conflict("This promo code has already been activated");
+                return ResponseUtil.Conflict("Промокод уже использован");
 
             promocodeOld.Promocode.NumberActivations++;
             promocode.NumberActivations--;
@@ -298,7 +275,6 @@ namespace InCase.Resources.Api.Controllers
             return await EndpointUtil.Update(promocodeOld, promocodeNew, context);
         }
 
-        //TODO Transfer method
         [AuthorizeRoles(Roles.All)]
         [HttpGet("inventory/sell/{id}")]
         public async Task<IActionResult> SellLastOpeningGameItem(Guid id)
@@ -306,27 +282,26 @@ namespace InCase.Resources.Api.Controllers
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             UserAdditionalInfo? info = await context.UserAdditionalInfos
-                .FirstOrDefaultAsync(f => f.UserId == UserId);
+                .FirstOrDefaultAsync(uai => uai.UserId == UserId);
 
             if (info is null)
-                return ResponseUtil.NotFound(nameof(UserAdditionalInfo));
+                return ResponseUtil.NotFound("Дополнительная информация не найдена");
 
             List<UserInventory> inventories = await context.UserInventories
                 .AsNoTracking()
-                .Where(w => w.UserId == UserId && w.ItemId == id)
+                .Where(ui => ui.UserId == UserId && ui.ItemId == id)
                 .ToListAsync();
 
             if (inventories.Count == 0)
-                return ResponseUtil.NotFound(nameof(UserInventory));
+                return ResponseUtil.Conflict("Инвентарь пуст");
 
-            UserInventory inventory = inventories.MinBy(m => m.Date)!;
+            UserInventory inventory = inventories.MinBy(ui => ui.Date)!;
 
             info.Balance += inventory.FixedCost;
 
             return await EndpointUtil.Delete(inventory, context);
         }
 
-        //TODO Transfer method
         [AuthorizeRoles(Roles.All)]
         [HttpGet("inventory/{id}/sell")]
         public async Task<IActionResult> SellGameItemByInventory(Guid id)
@@ -334,24 +309,23 @@ namespace InCase.Resources.Api.Controllers
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             UserAdditionalInfo? info = await context.UserAdditionalInfos
-                .FirstOrDefaultAsync(f => f.UserId == UserId);
+                .FirstOrDefaultAsync(uai => uai.UserId == UserId);
 
             if (info is null)
-                return ResponseUtil.NotFound(nameof(UserAdditionalInfo));
+                return ResponseUtil.NotFound("Дополнительная информация не найдена");
 
             UserInventory? inventory = await context.UserInventories
                 .AsNoTracking()
-                .FirstOrDefaultAsync(f => f.Id == id && f.UserId == UserId);
+                .FirstOrDefaultAsync(ui => ui.Id == id && ui.UserId == UserId);
 
             if (inventory is null)
-                return ResponseUtil.NotFound(nameof(UserInventory));
+                return ResponseUtil.NotFound("Предмет не найден в инвентаре");
 
             info.Balance += inventory.FixedCost;
 
             return await EndpointUtil.Delete(inventory, context);
         }
 
-        //TODO Transfer method
         [AuthorizeRoles(Roles.All)]
         [HttpGet("inventory/{id}/exchange/{itemId}")]
         public async Task<IActionResult> ExchangeGameItem(Guid id, Guid itemId)
@@ -359,37 +333,37 @@ namespace InCase.Resources.Api.Controllers
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             UserInventory? inventory = await context.UserInventories
-                .Include(i => i.Item)
-                .Include(i => i.Item!.Game!)
-                    .ThenInclude(ti => ti.Markets)
-                .FirstOrDefaultAsync(f => f.UserId == UserId && f.Id == id);
+                .Include(ui => ui.Item)
+                .Include(ui => ui.Item!.Game!)
+                    .ThenInclude(g => g.Markets)
+                .FirstOrDefaultAsync(ui => ui.UserId == UserId && ui.Id == id);
             GameItem? item = await context.GameItems
                 .AsNoTracking()
-                .FirstOrDefaultAsync(i => i.Id == itemId);
+                .FirstOrDefaultAsync(gi => gi.Id == itemId);
             UserAdditionalInfo? info = await context.UserAdditionalInfos
-                .FirstOrDefaultAsync(f => f.UserId == UserId);
+                .FirstOrDefaultAsync(uai => uai.UserId == UserId);
 
             if (inventory is null)
-                return ResponseUtil.NotFound(nameof(UserInventory));
+                return ResponseUtil.NotFound("Предмет не найден в инвентаре");
             if (item is null)
-                return ResponseUtil.NotFound(nameof(GameItem));
+                return ResponseUtil.NotFound("Предмет не найден");
             if (info is null)
-                return ResponseUtil.NotFound(nameof(UserAdditionalInfo));
+                return ResponseUtil.NotFound("Дополнительная информация не найдена");
 
             decimal differenceCost = inventory.FixedCost - item.Cost;
 
             if (differenceCost < 0)
-                return ResponseUtil.Conflict("The value of the item in the exchange cannot be higher");
+                return ResponseUtil.BadRequest("Стоимость товара при обмене не может быть выше");
 
             ItemInfo? itemInfo = await _withdrawService.GetItemInfo(inventory.Item!);
 
             if (itemInfo is null || itemInfo.Result != "ok")
-                return ResponseUtil.Conflict(nameof(ItemInfo));
+                return ResponseUtil.RequestTimeout("Сервис покупки предмета не отвечает");
 
             decimal itemInfoPrice = itemInfo.PriceKopecks * 0.01M;
 
             if (itemInfoPrice <= inventory.FixedCost * 0.1M / 7)
-                return ResponseUtil.Conflict("The item can be exchanged only in case of price instability");
+                return ResponseUtil.Conflict("Товар может быть обменен только в случае нестабильности цены");
 
             inventory.ItemId = item.Id;
             inventory.FixedCost = item.Cost;
@@ -400,32 +374,35 @@ namespace InCase.Resources.Api.Controllers
             return ResponseUtil.Ok(inventory);
         }
 
-        //TODO Transfer method
         [AuthorizeRoles(Roles.All)]
         [HttpPost("banner")]
         public async Task<IActionResult> CreatePathBanner(UserPathBannerDto pathDto)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            GameItem? item = await context.GameItems
-                .AsNoTracking()
-                .FirstOrDefaultAsync(f => f.Id == pathDto.ItemId);
             LootBoxBanner? banner = await context.LootBoxBanners
-                .Include(i => i.Box)
+                .Include(lbb => lbb.Box)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(f => f.Id == pathDto.BannerId);
+                .FirstOrDefaultAsync(lbb => lbb.Id == pathDto.BannerId);
 
-            if (item is null)
-                return ResponseUtil.NotFound(nameof(GameItem));
             if (banner is null)
-                return ResponseUtil.NotFound(nameof(LootBoxBanner));
-            if (await context.UserPathBanners.AnyAsync(a => a.UserId == UserId && a.BannerId == banner.Id))
-                return ResponseUtil.Conflict("User path banner is exist");
+                return ResponseUtil.NotFound("Баннер не найден");
 
+            LootBoxInventory? inventory = await context.LootBoxInventories
+                .Include(lbi => lbi.Item)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(lbi => lbi.ItemId == pathDto.ItemId && lbi.BoxId == banner.BoxId);
+
+            if (inventory is null)
+                return ResponseUtil.NotFound("Предмет не найден");
+            if (await context.UserPathBanners.AnyAsync(upb => upb.UserId == UserId && upb.BannerId == banner.Id))
+                return ResponseUtil.Conflict("Путь к баннеру уже используется");
+
+            GameItem item = inventory.Item!;
             LootBox box = banner.Box!;
 
             if (item.Cost <= box.Cost)
-                return ResponseUtil.Conflict("The cost of the item cannot be less than the cost of the case");
+                return ResponseUtil.BadRequest("Стоимость товара не может быть меньше стоимости кейса");
 
             pathDto.UserId = UserId;
             pathDto.Date = DateTime.UtcNow;
@@ -434,10 +411,9 @@ namespace InCase.Resources.Api.Controllers
 
             return pathDto.NumberSteps <= 100 ? 
                 await EndpointUtil.Create(pathDto.Convert(), context) :
-                ResponseUtil.Conflict("The cost of the item exceeds the cost of the case by 20 times");
+                ResponseUtil.BadRequest("Стоимость предмета превышает стоимость кейса в 20 раз");
         }
 
-        //TODO Transfer method
         [AuthorizeRoles(Roles.All)]
         [HttpDelete("transfer/withdraw/{id}/inventory")]
         public async Task<IActionResult> TransferWithdrawToInventory(Guid id)
@@ -445,15 +421,14 @@ namespace InCase.Resources.Api.Controllers
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             UserHistoryWithdraw? withdraw = await context.UserHistoryWithdraws
-                .Include(i => i.Status)
+                .Include(uhw => uhw.Status)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(f => f.Id == id && f.UserId == UserId);
+                .FirstOrDefaultAsync(uhw => uhw.Id == id && uhw.UserId == UserId);
 
             if (withdraw is null)
-                return ResponseUtil.NotFound(nameof(UserHistoryWithdraw));
+                return ResponseUtil.NotFound("История вывода не найдена");
             if (withdraw.Status?.Name is null || withdraw.Status.Name != "cancel")
-                return ResponseUtil.Conflict("Your item is withdrawing, " +
-                    "you can return it in case of cancellation");
+                return ResponseUtil.Conflict("Ваш предмет выводится");
 
             UserInventory inventory = new()
             {
@@ -468,7 +443,6 @@ namespace InCase.Resources.Api.Controllers
             return await EndpointUtil.Delete(withdraw, context);
         }
 
-        //TODO Transfer method
         [AuthorizeRoles(Roles.All)]
         [HttpDelete("banner/{id}")]
         public async Task<IActionResult> RemovePathBanner(Guid id)
@@ -476,17 +450,17 @@ namespace InCase.Resources.Api.Controllers
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             UserPathBanner? path = await context.UserPathBanners
-                .Include(i => i.Banner)
-                .Include(i => i.Banner!.Box)
+                .Include(upb => upb.Banner)
+                .Include(upb => upb.Banner!.Box)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(f => f.BannerId == id && f.UserId == UserId);
+                .FirstOrDefaultAsync(upb => upb.BannerId == id && upb.UserId == UserId);
             UserAdditionalInfo? info = await context.UserAdditionalInfos
-                .FirstOrDefaultAsync(f => f.UserId == UserId);
+                .FirstOrDefaultAsync(uai => uai.UserId == UserId);
 
             if (info is null)
-                return ResponseUtil.NotFound(nameof(UserAdditionalInfo));
+                return ResponseUtil.NotFound("Дополнительная информация не найдена");
             if (path is null)
-                return ResponseUtil.NotFound(nameof(UserPathBanner));
+                return ResponseUtil.NotFound("Путь к баннеру не найден");
 
             SiteStatisticsAdmin statistics = await context.SiteStatisticsAdmins
                 .FirstAsync();
@@ -508,15 +482,13 @@ namespace InCase.Resources.Api.Controllers
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             List<UserHistoryWithdraw> withdraws = await context.UserHistoryWithdraws
-                .Include(i => i.Item)
+                .Include(uhw => uhw.Item)
                 .AsNoTracking()
-                .OrderByDescending(w => w.Date)
+                .OrderByDescending(uhw => uhw.Date)
                 .Take(100)
                 .ToListAsync();
 
-            return withdraws.Count == 0 ?
-                ResponseUtil.NotFound(nameof(UserHistoryWithdraw)) :
-                ResponseUtil.Ok(withdraws);
+            return ResponseUtil.Ok(withdraws);
         }
 
         [AuthorizeRoles(Roles.All)]
@@ -526,16 +498,14 @@ namespace InCase.Resources.Api.Controllers
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             List<UserHistoryOpening> openings = await context.UserHistoryOpenings
-                .Include(i => i.Box)
-                .Include(i => i.Item)
+                .Include(uho => uho.Box)
+                .Include(uho => uho.Item)
                 .AsNoTracking()
-                .OrderByDescending(w => w.Date)
+                .OrderByDescending(uho => uho.Date)
                 .Take(100)
                 .ToListAsync();
 
-            return openings.Count == 0 ?
-                ResponseUtil.NotFound(nameof(UserHistoryOpening)) :
-                ResponseUtil.Ok(openings);
+            return ResponseUtil.Ok(openings);
         }
     }
 }

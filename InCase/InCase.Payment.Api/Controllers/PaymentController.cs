@@ -1,5 +1,4 @@
 ﻿using InCase.Domain.Common;
-using InCase.Domain.Entities;
 using InCase.Domain.Entities.Payment;
 using InCase.Domain.Entities.Resources;
 using InCase.Infrastructure.Data;
@@ -52,31 +51,31 @@ namespace InCase.Payment.Api.Controllers
                 .FirstOrDefaultAsync(ui => ui.Id == data.InventoryId && ui.UserId == UserId);
 
             if (inventory == null)
-                return ResponseUtil.NotFound("Предмет нет в вашем инвентаре");
+                return ResponseUtil.NotFound("Предмет не найден в инвенторе");
 
             GameItem item = inventory.Item!;
 
             ItemInfo? itemInfo = await _withdrawService.GetItemInfo(item);
 
             if (itemInfo is null || itemInfo.Result != "ok")
-                return ResponseUtil.UnknownError("Неудалось получить инфо предмета у сервиса покупки");
+                return ResponseUtil.RequestTimeout("Сервис покупки предмета не отвечает");
 
             decimal itemPrice = itemInfo.PriceKopecks * 0.01M;
 
             if (itemPrice > item.Cost * UpperLimitCost / CostInCoin)
-                return ResponseUtil.Conflict("Цена на предмет не стабильна");
+                return ResponseUtil.Conflict("Цена на предмет нестабильна");
 
             BalanceMarket balance = await _withdrawService.GetBalance(itemInfo.Market.Name!);
 
             if (balance.Result != "ok")
-                return ResponseUtil.UnknownError("Неудалось получить баланс сервиса покупки");
+                return ResponseUtil.RequestTimeout("Сервис покупки предмета не отвечает");
             if (balance.Balance <= itemPrice) 
                 return ResponseUtil.PaymentRequired("Ожидаем пополнения сервиса покупки");
 
             BuyItem buyItem = await _withdrawService.BuyItem(itemInfo, data.TradeUrl!);
 
             if (buyItem.Result != "ok")
-                return ResponseUtil.Conflict("Покупка не удалась сервис покупки не отвечает");
+                return ResponseUtil.RequestTimeout("Сервис покупки предмета не отвечает");
 
             ItemWithdrawStatus status = await context.ItemWithdrawStatuses
                 .AsNoTracking()
@@ -110,7 +109,7 @@ namespace InCase.Payment.Api.Controllers
             string hash = _gameMoneyService.CreateHashOfDataForDeposit(UserId);
             string hmac = _rsaService.GenerateHMAC(Encoding.ASCII.GetBytes(hash));
 
-            return ResponseUtil.Ok(hmac);
+            return ResponseUtil.Ok(new { hmac });
         }
 
         [AllowAnonymous]
@@ -118,25 +117,25 @@ namespace InCase.Payment.Api.Controllers
         public async Task<IActionResult> TopUpBalance(ResponsePaymentGM answer)
         {
             if (answer.StatusAnswer != "success")
-                return ResponseUtil.Conflict(answer.ParametersAnswer ?? "Error");
+                return ResponseUtil.Forbidden("Ожидаем оплаты");
 
             byte[] hash = Encoding.ASCII.GetBytes(answer.ToString());
             byte[] signature = Encoding.ASCII.GetBytes(answer.SignatureRSA!);
 
             if (!_rsaService.VerifySignatureRSA(hash, signature))
-                return Forbid("No verify signature rsa");
+                return ResponseUtil.Forbidden("Неверная подпись rsa");
 
             ResponseInvoiceStatusGM? invoice = await _gameMoneyService
                 .GetInvoiceStatusInfo(answer.Invoice!);
 
             if (invoice is null)
-                return ResponseUtil.Ok("Wait some time for replenishment");
+                return ResponseUtil.Ok("Подождите некоторое время для пополнения");
 
             signature = Encoding.ASCII.GetBytes(invoice.SignatureRSA!);
             hash = Encoding.ASCII.GetBytes(invoice.ToString()!);
 
             if (!_rsaService.VerifySignatureRSA(hash, signature))
-                return Forbid("No verify signature rsa");
+                return ResponseUtil.Forbidden("Неверная подпись rsa");
 
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
@@ -144,7 +143,7 @@ namespace InCase.Payment.Api.Controllers
 
             InvoicePaymentStatus status = await context.InvoicePaymentStatuses
                 .AsNoTracking()
-                .FirstAsync(f => f.Name == nameStatus);
+                .FirstAsync(ips => ips.Name == nameStatus);
 
             UserHistoryPayment payment = new()
             {
@@ -159,7 +158,7 @@ namespace InCase.Payment.Api.Controllers
 
             await context.SaveChangesAsync();
 
-            return ResponseUtil.Ok(payment);
+            return ResponseUtil.Ok(payment.Convert(false));
         }
 
         [AuthorizeRoles(Roles.Owner, Roles.Bot)]
@@ -169,7 +168,7 @@ namespace InCase.Payment.Api.Controllers
             ResponseBalanceGM? balance = await _gameMoneyService.GetBalance(currency);
 
             return balance is null ?
-                ResponseUtil.NotFound(nameof(ResponseBalanceGM)) : 
+                ResponseUtil.RequestTimeout("Game Money сервис не отвечает") : 
                 ResponseUtil.Ok(balance);
         }
 
@@ -181,7 +180,7 @@ namespace InCase.Payment.Api.Controllers
 
             return balance.Result == "ok" ?
                 ResponseUtil.Ok(balance.Balance) : 
-                ResponseUtil.Conflict(nameof(BalanceMarket));
+                ResponseUtil.RequestTimeout("Сервис покупки предметов не отвечает");
         }
 
         //TODO Transfer method
@@ -192,21 +191,21 @@ namespace InCase.Payment.Api.Controllers
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             UserHistoryWithdraw? withdraw = await context.UserHistoryWithdraws
-                .Include(i => i.Item)
-                .Include(i => i.Item!.Game)
-                .Include(i => i.Market)
-                .Include(i => i.Status)
+                .Include(uhw => uhw.Item)
+                .Include(uhw => uhw.Item!.Game)
+                .Include(uhw => uhw.Market)
+                .Include(uhw => uhw.Status)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(f => f.Id == id);
+                .FirstOrDefaultAsync(uhw => uhw.Id == id);
 
             if (withdraw is null)
-                return ResponseUtil.NotFound(nameof(UserHistoryWithdraw));
+                return ResponseUtil.NotFound("История вывода не найдена");
 
             TradeInfo info = await _withdrawService.GetTradeInfo(withdraw);
 
             return info.Result == "ok" ? 
                 ResponseUtil.Ok(info) :
-                ResponseUtil.Conflict(nameof(TradeInfo));
+                ResponseUtil.RequestTimeout("Сервис покупки предметов не отвечает");
         }
 
         //TODO Transfer method
@@ -217,19 +216,19 @@ namespace InCase.Payment.Api.Controllers
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             GameItem? item = await context.GameItems
-                .Include(i => i.Game!)
-                    .ThenInclude(ti => ti.Markets)
+                .Include(gi => gi.Game!)
+                    .ThenInclude(g => g.Markets)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(f => f.Id == id);
+                .FirstOrDefaultAsync(gi => gi.Id == id);
 
             if(item is null)
-                return ResponseUtil.NotFound(nameof(item));
+                return ResponseUtil.NotFound("Предмет не найден");
 
             ItemInfo? info = await _withdrawService.GetItemInfo(item);
 
             return info is null ?
-                ResponseUtil.Conflict(nameof(ItemInfo)) : 
-                ResponseUtil.Ok(await _withdrawService.GetItemInfo(item));
+                ResponseUtil.RequestTimeout("Сервис покупки предметов не отвечает") : 
+                ResponseUtil.Ok(info);
         }
     }
 }

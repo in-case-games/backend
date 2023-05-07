@@ -1,5 +1,4 @@
-﻿using InCase.Domain.Dtos;
-using InCase.Domain.Entities.Email;
+﻿using InCase.Domain.Entities.Email;
 using InCase.Domain.Entities.Resources;
 using InCase.Infrastructure.Data;
 using InCase.Infrastructure.Services;

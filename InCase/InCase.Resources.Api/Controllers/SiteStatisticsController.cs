@@ -30,7 +30,7 @@ namespace InCase.Resources.Api.Controllers
                 .FirstOrDefaultAsync();
 
             return statistics is null ? 
-                ResponseUtil.NotFound(nameof(SiteStatistics)) : 
+                ResponseUtil.NotFound("Сайт статистика не найдена") : 
                 ResponseUtil.Ok(statistics);
         }
 
@@ -45,20 +45,8 @@ namespace InCase.Resources.Api.Controllers
                 .FirstOrDefaultAsync();
 
             return statistics is null ? 
-                ResponseUtil.NotFound(nameof(SiteStatisticsAdmin)) : 
+                ResponseUtil.NotFound("Админская сайт статистика не найдена") : 
                 ResponseUtil.Ok(statistics);
-        }
-
-        [AuthorizeRoles(Roles.Bot)]
-        [HttpPut("admin")]
-        public async Task<IActionResult> UpdateAdmin(SiteStatisticsAdmin statistics)
-        {
-            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
-
-            if (!await context.SiteStatisticsAdmins.AnyAsync(a => a.Id == statistics.Id))
-                return ResponseUtil.NotFound(nameof(SiteStatisticsAdmin));
-
-            return await EndpointUtil.Update(statistics, context);
         }
     }
 }

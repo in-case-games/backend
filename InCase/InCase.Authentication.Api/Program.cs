@@ -9,7 +9,7 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 string _policyName = "CorsPolicy";
 
-builder.Services.AddPooledDbContextFactory<ApplicationDbContext>(
+builder.Services.AddDbContextFactory<ApplicationDbContext>(
     options => {
         options.UseSnakeCaseNamingConvention();
         options.UseSqlServer(

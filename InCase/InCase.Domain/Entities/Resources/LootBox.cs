@@ -29,8 +29,6 @@ namespace InCase.Domain.Entities.Resources
             Id = IsNewGuid ? Guid.NewGuid() : Id,
             Name = Name,
             Cost = Cost,
-            Balance = Balance,
-            VirtualBalance = VirtualBalance,
             ImageUri = ImageUri,
             IsLocked = IsLocked,
             GameId = Game?.Id ?? GameId

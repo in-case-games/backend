@@ -27,15 +27,13 @@ namespace InCase.Resources.Api.Controllers
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             List<GameItem> items = await context.GameItems
-                .Include(i => i.Type)
-                .Include(i => i.Quality)
-                .Include(i => i.Rarity)
+                .Include(gi => gi.Type)
+                .Include(gi => gi.Quality)
+                .Include(gi => gi.Rarity)
                 .AsNoTracking()
                 .ToListAsync();
 
-            return items.Count == 0 ? 
-                ResponseUtil.NotFound(nameof(GameItem)) : 
-                ResponseUtil.Ok(items);
+            return ResponseUtil.Ok(items);
         }
 
         [AllowAnonymous]
@@ -45,14 +43,14 @@ namespace InCase.Resources.Api.Controllers
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             GameItem? item = await context.GameItems
-                .Include(i => i.Type)
-                .Include(i => i.Rarity)
-                .Include(i => i.Quality)
+                .Include(gi => gi.Type)
+                .Include(gi => gi.Rarity)
+                .Include(gi => gi.Quality)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(f => f.Id == id);
+                .FirstOrDefaultAsync(gi => gi.Id == id);
 
             return item is null ? 
-                ResponseUtil.NotFound(nameof(GameItem)) : 
+                ResponseUtil.NotFound("Предмет не найден") : 
                 ResponseUtil.Ok(item);
         }
 
@@ -83,14 +81,14 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            if (!await context.Games.AnyAsync(a => a.Id == itemDto.GameId))
-                return ResponseUtil.NotFound(nameof(Game));
-            if (!await context.GameItemTypes.AnyAsync(a => a.Id == itemDto.TypeId))
-                return ResponseUtil.NotFound(nameof(GameItemType));
-            if (!await context.GameItemRarities.AnyAsync(a => a.Id == itemDto.RarityId))
-                return ResponseUtil.NotFound(nameof(GameItemRarity));
-            if (!await context.GameItemQualities.AnyAsync(a => a.Id == itemDto.QualityId))
-                return ResponseUtil.NotFound(nameof(GameItemQuality));
+            if (!await context.Games.AnyAsync(g => g.Id == itemDto.GameId))
+                return ResponseUtil.NotFound("Игра не найдена");
+            if (!await context.GameItemTypes.AnyAsync(git => git.Id == itemDto.TypeId))
+                return ResponseUtil.NotFound("Тип предмета не найден");
+            if (!await context.GameItemRarities.AnyAsync(gir => gir.Id == itemDto.RarityId))
+                return ResponseUtil.NotFound("Редкость предмета не найдена");
+            if (!await context.GameItemQualities.AnyAsync(giq => giq.Id == itemDto.QualityId))
+                return ResponseUtil.NotFound("Качество предмета не найдено");
 
             return await EndpointUtil.Create(itemDto.Convert(), context);
         }
@@ -101,14 +99,14 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            if (!await context.Games.AnyAsync(a => a.Id == itemDto.GameId))
-                return ResponseUtil.NotFound(nameof(Game));
-            if (!await context.GameItemTypes.AnyAsync(a => a.Id == itemDto.TypeId))
-                return ResponseUtil.NotFound(nameof(GameItemType));
-            if (!await context.GameItemRarities.AnyAsync(a => a.Id == itemDto.RarityId))
-                return ResponseUtil.NotFound(nameof(GameItemRarity));
-            if (!await context.GameItemQualities.AnyAsync(a => a.Id == itemDto.QualityId))
-                return ResponseUtil.NotFound(nameof(GameItemQuality));
+            if (!await context.Games.AnyAsync(g => g.Id == itemDto.GameId))
+                return ResponseUtil.NotFound("Игра не найдена");
+            if (!await context.GameItemTypes.AnyAsync(git => git.Id == itemDto.TypeId))
+                return ResponseUtil.NotFound("Тип предмета не найден");
+            if (!await context.GameItemRarities.AnyAsync(gir => gir.Id == itemDto.RarityId))
+                return ResponseUtil.NotFound("Редкость предмета не найдена");
+            if (!await context.GameItemQualities.AnyAsync(giq => giq.Id == itemDto.QualityId))
+                return ResponseUtil.NotFound("Качество предмета не найдено");
 
             return await EndpointUtil.Update(itemDto.Convert(false), context);
         }

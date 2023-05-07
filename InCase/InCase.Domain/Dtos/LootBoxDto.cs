@@ -7,8 +7,6 @@ namespace InCase.Domain.Dtos
     {
         public string? Name { get; set; }
         public decimal Cost { get; set; }
-        public decimal Balance { get; set; } = 0;
-        public decimal VirtualBalance { get; set; } = 0;
         public string? ImageUri { get; set; } = "";
         public bool IsLocked { get; set; } = false;
 
@@ -19,8 +17,6 @@ namespace InCase.Domain.Dtos
             Id = IsNewGuid ? Guid.NewGuid() : Id,
             Name = Name,
             Cost = Cost,
-            Balance = Balance,
-            VirtualBalance = VirtualBalance,
             ImageUri = ImageUri,
             IsLocked = IsLocked,
             GameId = GameId

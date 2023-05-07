@@ -24,37 +24,45 @@ namespace InCase.Infrastructure.Services
             _requestUrl = configuration["EmailConfig:AddressCallback"]!;
         }
 
-        public async Task<IActionResult> SendToEmail(string email, string subject, EmailTemplate template)
+        public async Task<IActionResult> SendToEmail(
+            string email, 
+            string subject, 
+            EmailTemplate template,
+            bool isCheckException = true)
         {
             using var client = new SmtpClient();
-            
+
             string body = CreateBodyLetter(subject, template);
+
+            var emailMessage = new MimeMessage();
+
+            emailMessage.From.Add(new MailboxAddress("Администрация сайта", _smtpEmail));
+            emailMessage.To.Add(new MailboxAddress(email, email));
+            emailMessage.Subject = subject;
+            emailMessage.Body = new TextPart("html") { Text = body };
+
+            await client.ConnectAsync(_host, _port, true);
+            client.AuthenticationMechanisms.Remove("XOAUTH2");
+            await client.AuthenticateAsync(_smtpEmail, _smtpPassword);
 
             try
             {
-                var emailMessage = new MimeMessage();
-                emailMessage.From.Add(new MailboxAddress("Администрация сайта", _smtpEmail));
-                emailMessage.To.Add(new MailboxAddress(email, email));
-                emailMessage.Subject = subject;
-                emailMessage.Body = new TextPart("html") { Text = body };
-
-
-                await client.ConnectAsync(_host, _port, true);
-                client.AuthenticationMechanisms.Remove("XOAUTH2");
-                await client.AuthenticateAsync(_smtpEmail, _smtpPassword);
                 await client.SendAsync(emailMessage);
-
-                return ResponseUtil.SentEmail();
+            }
+            catch(SmtpCommandException ex)
+            {
+                return isCheckException ?
+                    ResponseUtil.UnknownError(ex) :
+                    throw new SmtpCommandException(ex.ErrorCode, ex.StatusCode, ex.Message);
             }
             catch (Exception ex)
             {
-                return ResponseUtil.UnknownError(ex);
+                return isCheckException ? 
+                    ResponseUtil.UnknownError(ex) : 
+                    throw new Exception(ex.Message, ex.InnerException);
             }
-            finally
-            {
-                await client.DisconnectAsync(true);
-                client.Dispose();
-            }
+
+            return ResponseUtil.SentEmail();
         }
 
         public static string ConvertToBodyTemplate(EmailTemplate template)

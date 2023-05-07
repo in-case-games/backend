@@ -1,6 +1,5 @@
 ﻿using InCase.Domain.Dtos;
 using InCase.Domain.Entities.Auth;
-using InCase.Domain.Entities.Email;
 using InCase.Domain.Entities.Resources;
 using InCase.Infrastructure.Data;
 using InCase.Infrastructure.Services;
@@ -10,7 +9,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace InCase.Authentication.Api.Controllers
 {
@@ -123,7 +121,7 @@ namespace InCase.Authentication.Api.Controllers
                     $"вам необходимо нажать на кнопку ниже для подтверждения почты. " +
                     $"Если это были не вы, проигнорируйте это сообщение.",
                     BodyButtonLink = $"/api/email/confirm/account?token={_jwtService.CreateEmailToken(user)}"
-                });
+                }, false);
             }
             catch (SmtpCommandException)
             {

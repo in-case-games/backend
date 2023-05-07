@@ -25,14 +25,12 @@ namespace InCase.Resources.Api.Controllers
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             List<Game> games = await context.Games
-                .Include(i => i.Boxes)
-                .Include(i => i.Items)
+                .Include(g => g.Boxes)
+                .Include(g => g.Items)
                 .AsNoTracking()
                 .ToListAsync();
 
-            return games.Count == 0 ?
-                ResponseUtil.NotFound(nameof(Game)) : 
-                ResponseUtil.Ok(games);
+            return ResponseUtil.Ok(games);
         }
 
         [AllowAnonymous]
@@ -42,13 +40,13 @@ namespace InCase.Resources.Api.Controllers
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             Game? game = await context.Games
-                .Include(i => i.Boxes)
-                .Include(i => i.Items)
+                .Include(g => g.Boxes)
+                .Include(g => g.Items)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(f => f.Id == id);
+                .FirstOrDefaultAsync(g => g.Id == id);
 
             return game is null ? 
-                ResponseUtil.NotFound(nameof(Game)) : 
+                ResponseUtil.NotFound("Игра не найдена") : 
                 ResponseUtil.Ok(game);
         }
     }

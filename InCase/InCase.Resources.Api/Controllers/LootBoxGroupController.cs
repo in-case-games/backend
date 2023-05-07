@@ -27,14 +27,12 @@ namespace InCase.Resources.Api.Controllers
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             List<LootBoxGroup> groups = await context.LootBoxGroups
-                .Include(i => i.Group)
-                .Include(i => i.Box)
+                .Include(lbg => lbg.Group)
+                .Include(lbg => lbg.Box)
                 .AsNoTracking()
                 .ToListAsync();
 
-            return groups.Count == 0 ? 
-                ResponseUtil.NotFound(nameof(LootBoxGroup)) : 
-                ResponseUtil.Ok(groups);
+            return ResponseUtil.Ok(groups);
         }
 
         [AllowAnonymous]
@@ -44,13 +42,13 @@ namespace InCase.Resources.Api.Controllers
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             LootBoxGroup? group = await context.LootBoxGroups
-                .Include(i => i.Group)
-                .Include(i => i.Box)
+                .Include(lbg => lbg.Group)
+                .Include(lbg => lbg.Box)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(f => f.Id == id);
+                .FirstOrDefaultAsync(lbg => lbg.Id == id);
 
             return group is null ? 
-                ResponseUtil.NotFound(nameof(LootBoxGroup)) : 
+                ResponseUtil.NotFound("Кейс группа не найдена") : 
                 ResponseUtil.Ok(group);
         }
 
@@ -60,20 +58,17 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            Game? game = await context.Games
-                .Include(i => i.Groups!)
-                    .ThenInclude(ti => ti.Group)
-                .Include(i => i.Groups!)
-                    .ThenInclude(ti => ti.Box)
+            if (await context.Games.AnyAsync(g => g.Id == id) is false)
+                return ResponseUtil.NotFound("Игра не найдена");
+
+            List<LootBoxGroup> group = await context.LootBoxGroups
+                .Include(lbg => lbg.Group)
+                .Include(lbg => lbg.Box)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(f => f.Id == id);
+                .Where(lbg => lbg.GameId == id)
+                .ToListAsync();
 
-            if (game is null)
-                return ResponseUtil.NotFound(nameof(Game));
-
-            return game.Groups is null || game.Groups.Count == 0 ?
-                ResponseUtil.NotFound(nameof(LootBoxGroup)) : 
-                ResponseUtil.Ok(game.Groups);
+            return ResponseUtil.Ok(group);
         }
 
         [AllowAnonymous]
@@ -86,9 +81,7 @@ namespace InCase.Resources.Api.Controllers
                 .AsNoTracking()
                 .ToListAsync();
 
-            return groups.Count == 0 ?
-                ResponseUtil.NotFound(nameof(GroupLootBox)) :
-                ResponseUtil.Ok(groups);
+            return ResponseUtil.Ok(groups);
         }
 
         [AuthorizeRoles(Roles.Owner)]
@@ -97,12 +90,12 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            if (!await context.Games.AnyAsync(a => a.Id == groupDto.GameId))
-                return ResponseUtil.NotFound(nameof(Game));
-            if (!await context.GroupLootBoxes.AnyAsync(a => a.Id == groupDto.GroupId))
-                return ResponseUtil.NotFound(nameof(Game));
-            if (!await context.LootBoxes.AnyAsync(a => a.Id == groupDto.BoxId))
-                return ResponseUtil.NotFound(nameof(Game));
+            if (!await context.Games.AnyAsync(g => g.Id == groupDto.GameId))
+                return ResponseUtil.NotFound("Игра не найдена");
+            if (!await context.GroupLootBoxes.AnyAsync(glb => glb.Id == groupDto.GroupId))
+                return ResponseUtil.NotFound("Группа кейсов не найдена");
+            if (!await context.LootBoxes.AnyAsync(lb => lb.Id == groupDto.BoxId))
+                return ResponseUtil.NotFound("Кейс не найден");
 
             return await EndpointUtil.Create(groupDto.Convert(), context);
         }
@@ -113,12 +106,12 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            if (await context.GroupLootBoxes.AnyAsync(a => a.Name == group.Name))
-                return ResponseUtil.Conflict("The group name is already in use");
-
             group.Id = Guid.NewGuid();
+            bool IsExistName = await context.GroupLootBoxes.AnyAsync(glb => glb.Name == group.Name);
 
-            return await EndpointUtil.Create(group, context);
+            return IsExistName ? 
+                ResponseUtil.Conflict("Имя группы уже используется") :
+                await EndpointUtil.Create(group, context);
         }
 
         [AuthorizeRoles(Roles.Owner)]
