@@ -77,6 +77,9 @@ namespace InCase.Resources.Api.Controllers
 
             List<LootBoxInventory> inventories = await context.LootBoxInventories
                 .Include(lbi => lbi.Item)
+                .Include(lbi => lbi.Item!.Type)
+                .Include(lbi => lbi.Item!.Rarity)
+                .Include(lbi => lbi.Item!.Quality)
                 .AsNoTracking()
                 .Where(lbi => lbi.BoxId == id)
                 .ToListAsync();
@@ -91,10 +94,15 @@ namespace InCase.Resources.Api.Controllers
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             List<LootBoxBanner> banners = await context.LootBoxBanners
+                .Include(i => i.Box)
                 .AsNoTracking()
                 .ToListAsync();
 
-            return ResponseUtil.Ok(banners);
+            List<LootBoxBannerDto> result = new();
+
+            banners.ForEach(b => result.Add(b.Convert(false)));
+
+            return ResponseUtil.Ok(result);
         }
 
         [AllowAnonymous]
@@ -104,12 +112,13 @@ namespace InCase.Resources.Api.Controllers
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             LootBoxBanner? banner = await context.LootBoxBanners
+                .Include(lbb => lbb.Box)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(lbb => lbb.BoxId == id);
 
             return banner is null ? 
                 ResponseUtil.NotFound("Баннер не найден") : 
-                ResponseUtil.Ok(banner);
+                ResponseUtil.Ok(banner.Convert(false));
         }
 
         [AuthorizeRoles(Roles.Owner)]

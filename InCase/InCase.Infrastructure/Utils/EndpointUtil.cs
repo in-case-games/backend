@@ -18,7 +18,7 @@ namespace InCase.Infrastructure.Utils
                 .FirstOrDefaultAsync(t => t.Id == id);
 
             return result is null ? 
-                ResponseUtil.NotFound("Запись таблицы" + typeof(T).Name + $"по {id} не найдена") : 
+                ResponseUtil.NotFound("Запись таблицы " + typeof(T).Name + $" по {id} не найдена") : 
                 ResponseUtil.Ok(result);
         }
 
@@ -57,7 +57,7 @@ namespace InCase.Infrastructure.Utils
                 .FirstOrDefaultAsync(t => t.Id == entityNew.Id);
 
             if (entityOld is null)
-                return ResponseUtil.NotFound("Запись таблицы" + typeof(T).Name + $"по {entityNew.Id} не найдена");
+                return ResponseUtil.NotFound("Запись таблицы " + typeof(T).Name + $" по {entityNew.Id} не найдена");
 
             try
             {
@@ -80,7 +80,7 @@ namespace InCase.Infrastructure.Utils
                 .FirstOrDefaultAsync(t => t.Id == id);
 
             if (result is null)
-                return ResponseUtil.NotFound("Запись таблицы" + typeof(T).Name + $"по {id} не найдена");
+                return ResponseUtil.NotFound("Запись таблицы " + typeof(T).Name + $" по {id} не найдена");
 
             context.Set<T>().Remove(result);
             await context.SaveChangesAsync();
