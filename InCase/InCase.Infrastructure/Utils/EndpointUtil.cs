@@ -2,46 +2,47 @@
 using InCase.Infrastructure.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Threading;
 
 namespace InCase.Infrastructure.Utils
 {
     public class EndpointUtil
     {
-        public static async Task<IActionResult> GetById<T>(Guid id, IDbContextFactory<ApplicationDbContext> contextFactory) 
+        public static async Task<IActionResult> GetById<T>(Guid id, IDbContextFactory<ApplicationDbContext> contextFactory, CancellationToken cancellationToken = default) 
             where T: BaseEntity
         {
-            await using ApplicationDbContext context = await contextFactory.CreateDbContextAsync();
+            await using ApplicationDbContext context = await contextFactory.CreateDbContextAsync(cancellationToken);
 
             T? result = await context.Set<T>()
                 .AsNoTracking()
-                .FirstOrDefaultAsync(f => f.Id == id);
+                .FirstOrDefaultAsync(f => f.Id == id, cancellationToken);
 
             return result is null ? 
                 ResponseUtil.NotFound(typeof(T).Name) : 
                 ResponseUtil.Ok(result);
         }
 
-        public static async Task<IActionResult> GetAll<T>(IDbContextFactory<ApplicationDbContext> contextFactory) 
+        public static async Task<IActionResult> GetAll<T>(IDbContextFactory<ApplicationDbContext> contextFactory, CancellationToken cancellationToken = default) 
             where T : BaseEntity
         {
-            await using ApplicationDbContext context = await contextFactory.CreateDbContextAsync();
+            await using ApplicationDbContext context = await contextFactory.CreateDbContextAsync(cancellationToken);
 
             List<T> result = await context.Set<T>()
                 .AsNoTracking()
-                .ToListAsync();
+                .ToListAsync(cancellationToken);
 
             return result.Count == 0 ? 
                 ResponseUtil.NotFound(typeof(T).Name) : 
                 ResponseUtil.Ok(result);
         }
 
-        public static async Task<IActionResult> Create<T>(T entity, ApplicationDbContext context) 
+        public static async Task<IActionResult> Create<T>(T entity, ApplicationDbContext context, CancellationToken cancellationToken = default) 
             where T : BaseEntity
         {
             try
             {
-                await context.Set<T>().AddAsync(entity);
-                await context.SaveChangesAsync();
+                await context.Set<T>().AddAsync(entity, cancellationToken);
+                await context.SaveChangesAsync(cancellationToken);
 
                 return ResponseUtil.Ok(entity);
             }
@@ -51,11 +52,11 @@ namespace InCase.Infrastructure.Utils
             }
         }
 
-        public static async Task<IActionResult> Update<T>(T entityNew, ApplicationDbContext context) 
+        public static async Task<IActionResult> Update<T>(T entityNew, ApplicationDbContext context, CancellationToken cancellationToken = default) 
             where T : BaseEntity
         {
             T? entityOld = await context.Set<T>()
-                .FirstOrDefaultAsync(f => f.Id == entityNew.Id);
+                .FirstOrDefaultAsync(f => f.Id == entityNew.Id, cancellationToken);
 
             if (entityOld is null)
                 return ResponseUtil.NotFound(typeof(T).Name);
@@ -63,7 +64,7 @@ namespace InCase.Infrastructure.Utils
             try
             {
                 context.Entry(entityOld).CurrentValues.SetValues(entityNew);
-                await context.SaveChangesAsync();
+                await context.SaveChangesAsync(cancellationToken);
 
                 return ResponseUtil.Ok(entityNew);
             }
@@ -73,29 +74,29 @@ namespace InCase.Infrastructure.Utils
             }
         }
 
-        public static async Task<IActionResult> Delete<T>(Guid id, ApplicationDbContext context) 
+        public static async Task<IActionResult> Delete<T>(Guid id, ApplicationDbContext context, CancellationToken cancellationToken = default) 
             where T : BaseEntity
         {
             T? result = await context.Set<T>()
                 .AsNoTracking()
-                .FirstOrDefaultAsync(f => f.Id == id);
+                .FirstOrDefaultAsync(f => f.Id == id, cancellationToken);
 
             if (result is null)
                 return ResponseUtil.NotFound(typeof(T).Name);
 
             context.Set<T>().Remove(result);
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync(cancellationToken);
 
             return ResponseUtil.Ok(result);
         }
 
-        public static async Task<IActionResult> Update<T>(T entityOld, T entityNew, ApplicationDbContext context)
+        public static async Task<IActionResult> Update<T>(T entityOld, T entityNew, ApplicationDbContext context, CancellationToken cancellationToken = default)
             where T : BaseEntity
         {
             try
             {
                 context.Entry(entityOld).CurrentValues.SetValues(entityNew);
-                await context.SaveChangesAsync();
+                await context.SaveChangesAsync(cancellationToken);
 
                 return ResponseUtil.Ok(entityNew);
             }
@@ -105,11 +106,11 @@ namespace InCase.Infrastructure.Utils
             }
         }
 
-        public static async Task<IActionResult> Delete<T>(T entity, ApplicationDbContext context)
+        public static async Task<IActionResult> Delete<T>(T entity, ApplicationDbContext context, CancellationToken cancellationToken = default)
             where T : BaseEntity
         {
             context.Set<T>().Remove(entity);
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync(cancellationToken);
 
             return ResponseUtil.Ok(entity);
         }

@@ -1,4 +1,5 @@
 using InCase.Infrastructure.Data;
+using InCase.Infrastructure.Middleware;
 using InCase.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -86,6 +87,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseMiddleware<TaskCancellationTokenHandleMiddleware>();
 
 app.UseAuthentication();
 app.UseAuthorization();
