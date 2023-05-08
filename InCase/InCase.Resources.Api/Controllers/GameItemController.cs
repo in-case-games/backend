@@ -6,6 +6,7 @@ using InCase.Infrastructure.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Threading;
 
 namespace InCase.Resources.Api.Controllers
 {
@@ -22,33 +23,34 @@ namespace InCase.Resources.Api.Controllers
 
         [AllowAnonymous]
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> Get(CancellationToken cancellationToken)
         {
-            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
 
             List<GameItem> items = await context.GameItems
-                .Include(gi => gi.Type)
-                .Include(gi => gi.Quality)
-                .Include(gi => gi.Rarity)
+                .Include(i => i.Type)
+                .Include(i => i.Quality)
+                .Include(i => i.Rarity)
+                .AsSplitQuery()
                 .AsNoTracking()
-                .ToListAsync();
+                .ToListAsync(cancellationToken);
 
             return ResponseUtil.Ok(items);
         }
 
         [AllowAnonymous]
         [HttpGet("{id}")]
-        public async Task<IActionResult> Get(Guid id)
+        public async Task<IActionResult> Get(Guid id, CancellationToken cancellationToken)
         {
-            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
 
             GameItem? item = await context.GameItems
-                .Include(gi => gi.Type)
-                .Include(gi => gi.Rarity)
-                .Include(gi => gi.Quality)
+                .Include(i => i.Type)
+                .Include(i => i.Rarity)
+                .Include(i => i.Quality)
+                .AsSplitQuery()
                 .AsNoTracking()
-                .FirstOrDefaultAsync(gi => gi.Id == id);
-
+                .FirstOrDefaultAsync(f => f.Id == id, cancellationToken);
             return item is null ? 
                 ResponseUtil.NotFound("Предмет не найден") : 
                 ResponseUtil.Ok(item);
@@ -56,68 +58,73 @@ namespace InCase.Resources.Api.Controllers
 
         [AllowAnonymous]
         [HttpGet("qualities")]
-        public async Task<IActionResult> GetQualities()
+        public async Task<IActionResult> GetQualities(CancellationToken cancellationToken)
         {
-            return await EndpointUtil.GetAll<GameItemQuality>(_contextFactory);
+            return await EndpointUtil.GetAll<GameItemQuality>(_contextFactory, cancellationToken);
         }
 
         [AllowAnonymous]
         [HttpGet("types")]
-        public async Task<IActionResult> GetTypes()
+        public async Task<IActionResult> GetTypes(CancellationToken cancellationToken)
         {
-            return await EndpointUtil.GetAll<GameItemType>(_contextFactory);
+            return await EndpointUtil.GetAll<GameItemType>(_contextFactory, cancellationToken);
         }
 
         [AllowAnonymous]
         [HttpGet("rarities")]
-        public async Task<IActionResult> GetRarities()
+        public async Task<IActionResult> GetRarities(CancellationToken cancellationToken)
         {
-            return await EndpointUtil.GetAll<GameItemRarity>(_contextFactory);
+            return await EndpointUtil.GetAll<GameItemRarity>(_contextFactory, cancellationToken);
         }
 
         [AuthorizeRoles(Roles.Owner)]
         [HttpPost]
-        public async Task<IActionResult> Create(GameItemDto itemDto)
+        public async Task<IActionResult> Create(GameItemDto itemDto, CancellationToken cancellationToken)
         {
-            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
 
-            if (!await context.Games.AnyAsync(g => g.Id == itemDto.GameId))
-                return ResponseUtil.NotFound("Игра не найдена");
-            if (!await context.GameItemTypes.AnyAsync(git => git.Id == itemDto.TypeId))
-                return ResponseUtil.NotFound("Тип предмета не найден");
-            if (!await context.GameItemRarities.AnyAsync(gir => gir.Id == itemDto.RarityId))
-                return ResponseUtil.NotFound("Редкость предмета не найдена");
-            if (!await context.GameItemQualities.AnyAsync(giq => giq.Id == itemDto.QualityId))
-                return ResponseUtil.NotFound("Качество предмета не найдено");
+            string notFoundItem = await NotFoundGameItem(itemDto, context);
 
-            return await EndpointUtil.Create(itemDto.Convert(), context);
+            if (notFoundItem is not "")
+                return ResponseUtil.NotFound(notFoundItem);
+
+            return await EndpointUtil.Create(itemDto.Convert(), context, cancellationToken);
         }
 
         [AuthorizeRoles(Roles.Owner)]
         [HttpPut]
-        public async Task<IActionResult> Update(GameItemDto itemDto)
+        public async Task<IActionResult> Update(GameItemDto itemDto, CancellationToken cancellationToken)
         {
-            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
 
-            if (!await context.Games.AnyAsync(g => g.Id == itemDto.GameId))
-                return ResponseUtil.NotFound("Игра не найдена");
-            if (!await context.GameItemTypes.AnyAsync(git => git.Id == itemDto.TypeId))
-                return ResponseUtil.NotFound("Тип предмета не найден");
-            if (!await context.GameItemRarities.AnyAsync(gir => gir.Id == itemDto.RarityId))
-                return ResponseUtil.NotFound("Редкость предмета не найдена");
-            if (!await context.GameItemQualities.AnyAsync(giq => giq.Id == itemDto.QualityId))
-                return ResponseUtil.NotFound("Качество предмета не найдено");
+            string notFoundItem = await NotFoundGameItem(itemDto, context);
+
+            if (notFoundItem is not "")
+                return ResponseUtil.NotFound(notFoundItem);
 
             return await EndpointUtil.Update(itemDto.Convert(false), context);
         }
 
         [AuthorizeRoles(Roles.Owner)]
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(Guid id)
+        public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
         {
-            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
 
-            return await EndpointUtil.Delete<GameItem>(id, context);
+            return await EndpointUtil.Delete<GameItem>(id, context, cancellationToken);
+        }
+        private async Task<string> NotFoundGameItem(GameItemDto itemDto, ApplicationDbContext context)
+        {
+            if (!await context.Games.AnyAsync(a => a.Id == itemDto.GameId))
+                return nameof(Game);
+            if (!await context.GameItemTypes.AnyAsync(a => a.Id == itemDto.TypeId))
+                return nameof(GameItemType);
+            if (!await context.GameItemRarities.AnyAsync(a => a.Id == itemDto.RarityId))
+                return nameof(GameItemRarity);
+            if (!await context.GameItemQualities.AnyAsync(a => a.Id == itemDto.QualityId))
+                return nameof(GameItemQuality);
+
+            return "";
         }
     }
 }

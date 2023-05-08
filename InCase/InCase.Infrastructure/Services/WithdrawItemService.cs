@@ -4,6 +4,10 @@ using InCase.Domain.Interfaces;
 
 namespace InCase.Infrastructure.Services
 {
+    /// <summary>
+    /// class <c>WithdrawItemService</c> designed for purchases of items for exchange
+    /// by given market service
+    /// </summary>
     public class WithdrawItemService
     {
         private readonly Dictionary<string, ITradeMarket> _marketServices;

@@ -1,12 +1,13 @@
-﻿using System.Net.Http.Json;
-using System.Text;
-using System.Text.Json;
+﻿using System.Text;
 using Microsoft.Extensions.Configuration;
 using InCase.Domain.Entities.Payment;
 using InCase.Domain.Endpoints;
 
 namespace InCase.Infrastructure.Services
 {
+    /// <summary>
+    /// class <c>GameMoneyService</c> is designed to work with the gamemoney.com
+    /// </summary>
     public class GameMoneyService
     {
         private readonly ResponseService _responseService;

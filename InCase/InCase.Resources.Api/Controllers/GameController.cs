@@ -20,30 +20,32 @@ namespace InCase.Resources.Api.Controllers
 
         [AllowAnonymous]
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> Get(CancellationToken cancellationToken)
         {
-            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
 
             List<Game> games = await context.Games
-                .Include(g => g.Boxes)
-                .Include(g => g.Items)
+                .Include(i => i.Boxes)
+                .Include(i => i.Items)
+                .AsSplitQuery()
                 .AsNoTracking()
-                .ToListAsync();
+                .ToListAsync(cancellationToken);
 
             return ResponseUtil.Ok(games);
         }
 
         [AllowAnonymous]
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(Guid id)
+        public async Task<IActionResult> GetById(Guid id, CancellationToken cancellationToken)
         {
-            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
 
             Game? game = await context.Games
-                .Include(g => g.Boxes)
-                .Include(g => g.Items)
+                .Include(i => i.Boxes)
+                .Include(i => i.Items)
+                .AsSplitQuery()
                 .AsNoTracking()
-                .FirstOrDefaultAsync(g => g.Id == id);
+                .FirstOrDefaultAsync(f => f.Id == id, cancellationToken);
 
             return game is null ? 
                 ResponseUtil.NotFound("Игра не найдена") : 
