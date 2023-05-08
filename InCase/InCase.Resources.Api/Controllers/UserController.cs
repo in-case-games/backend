@@ -56,7 +56,7 @@ namespace InCase.Resources.Api.Controllers
 
             return user is null ? 
                 ResponseUtil.NotFound("Пользователь не найден") : 
-                ResponseUtil.Ok(user);
+                ResponseUtil.Ok(user.Convert(false));
         }
 
         [AuthorizeRoles(Roles.All)]
@@ -94,6 +94,9 @@ namespace InCase.Resources.Api.Controllers
         public async Task<IActionResult> GetWithdrawsById(Guid id)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            if (await context.Users.AnyAsync(u => u.Id == id) is false)
+                return ResponseUtil.NotFound("Пользователь не найден");
 
             List<UserHistoryWithdraw> withdraws = await context.UserHistoryWithdraws
                 .Include(uhw => uhw.Item)
@@ -143,6 +146,9 @@ namespace InCase.Resources.Api.Controllers
         public async Task<IActionResult> GetInventoryByUserId(Guid id)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            if(await context.Users.AnyAsync(u => u.Id == id) is false)
+                return ResponseUtil.NotFound("Пользователь не найден");
 
             List<UserInventory> inventories = await context.UserInventories
                 .Include(ui => ui.Item)

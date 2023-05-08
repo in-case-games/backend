@@ -41,18 +41,18 @@ namespace InCase.Resources.Api.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(Guid id)
+        [HttpGet("{userId}")]
+        public async Task<IActionResult> GetByUserId(Guid userId)
         {
             await using ApplicationDbContext context = await _context.CreateDbContextAsync();
 
             UserAdditionalInfo? info = await context.UserAdditionalInfos
                 .Include(uai => uai.Role)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(uai => uai.Id == id);
+                .FirstOrDefaultAsync(uai => uai.UserId == userId);
 
             return info is null ?
-                ResponseUtil.NotFound("Дополнительная информация не найдена") :
+                ResponseUtil.NotFound("Пользователь не найден") :
                 ResponseUtil.Ok(info);
         }
 
@@ -75,7 +75,7 @@ namespace InCase.Resources.Api.Controllers
                 .FirstOrDefaultAsync(uai => uai.UserId == UserId);
 
             if (info is null)
-                return ResponseUtil.NotFound("Дополнительная информация не найдена");
+                return ResponseUtil.NotFound("Пользователь не найден");
 
             info.IsGuestMode = !info.IsGuestMode;
 

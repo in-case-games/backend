@@ -76,12 +76,13 @@ namespace InCase.Resources.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(PromocodeDto promocode)
         {
-            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
-
             if (promocode.Discount >= 1M || promocode.Discount <= 0)
                 return ResponseUtil.BadRequest("Скидка промокода должна быть больше 0 и меньше 1");
             if (promocode.NumberActivations <= 0)
                 return ResponseUtil.BadRequest("Количество активаций должно быть больше 0");
+
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
             if (!await context.PromocodeTypes.AnyAsync(pt => pt.Id == promocode.TypeId))
                 return ResponseUtil.NotFound("Тип промокода не найден");
             if (await context.Promocodes.AnyAsync(p => p.Name == promocode.Name))
@@ -94,12 +95,12 @@ namespace InCase.Resources.Api.Controllers
         [HttpPut]
         public async Task<IActionResult> Update(PromocodeDto promocodeDto)
         {
-            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
-
             if (promocodeDto.Discount >= 1M || promocodeDto.Discount <= 0)
                 return ResponseUtil.BadRequest("Скидка промокода должна быть больше 0 и меньше 1");
             if (promocodeDto.NumberActivations <= 0)
                 return ResponseUtil.BadRequest("Количество активаций должно быть больше 0");
+
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             Promocode? promocode = await context.Promocodes
                 .FirstOrDefaultAsync(p => p.Id == promocodeDto.Id);
