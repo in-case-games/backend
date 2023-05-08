@@ -174,39 +174,32 @@
    * Метод: GET 
    * Запрос: `https://r.api.incase.com/api/game-item`
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_200:&color=green)
 ```JSON
 {
-  "success": true,
+  "code": "0",
   "data": [
     {
-      "name": "M4A1-S",
-      "cost": 100,
+      "name": "типо имя предмета",
+      "hashName": "хэш имя на официальной тп",
+      "cost": 110,
       "imageUri": "string",
-      "idForPlatform": "string",
+      "idForMarket": "string",
       "quality": {
-        "name": "well worn",
-        "id": "527316fc-5eed-44d2-8b25-2458e0d0b648"
+        "name": "battle scarred",
+        "id": "c752b723-d6d5-4370-8392-b10010e281d5"
       },
       "type": {
-        "name": "weapon",
-        "id": "f8a8acce-5f41-4417-b6c2-09c11039bc22"
+        "name": "gloves",
+        "id": "dacfcecd-68a6-45da-a170-5ffc5f6e5b3b"
       },
       "rarity": {
-        "name": "white",
-        "id": "a94fb5be-e114-4816-84dc-5acd485e2fc9"
+        "name": "blue",
+        "id": "c0503650-1ac9-478a-b5ed-265f94250de4"
       },
-      "id": "47908aed-2372-4965-92f9-0498515aaadb"
+      "id": "82bd82ec-5c01-4fcf-af97-70d04d7768d2"
     }
   ]
-}
-```
-
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
-```JSON
-{
-  "success": false,
-  "data": "GameItem is not found. "
 }
 ```
 
@@ -215,37 +208,40 @@
    * Метод: GET 
    * Запрос: `https://r.api.incase.com/api/game-item/{id}`
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_200:&color=green)
 ```JSON
 {
-  "success": true,
+  "code": "0",
   "data": {
-    "name": "M4A1-S",
-    "cost": 100,
+    "name": "типо имя предмета",
+    "hashName": "хэш имя на официальной тп",
+    "cost": 110,
     "imageUri": "string",
-    "idForPlatform": "string",
+    "idForMarket": "string",
     "quality": {
-      "name": "well worn",
-      "id": "527316fc-5eed-44d2-8b25-2458e0d0b648"
+      "name": "battle scarred",
+      "id": "c752b723-d6d5-4370-8392-b10010e281d5"
     },
     "type": {
-      "name": "weapon",
-      "id": "f8a8acce-5f41-4417-b6c2-09c11039bc22"
+      "name": "gloves",
+      "id": "dacfcecd-68a6-45da-a170-5ffc5f6e5b3b"
     },
     "rarity": {
-      "name": "white",
-      "id": "a94fb5be-e114-4816-84dc-5acd485e2fc9"
+      "name": "blue",
+      "id": "c0503650-1ac9-478a-b5ed-265f94250de4"
     },
-    "id": "47908aed-2372-4965-92f9-0498515aaadb"
+    "id": "82bd82ec-5c01-4fcf-af97-70d04d7768d2"
   }
 }
 ```
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_400:&color=red)
 ```JSON
 {
-  "success": false,
-  "data": "GameItem is not found. "
+  "error": {
+    "code": "4",
+    "message": "Предмет не найден"
+  }
 }
 ```
 
@@ -254,43 +250,36 @@
    * Метод: GET 
    * Запрос: `https://r.api.incase.com/api/game-item/qualities`
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_200:&color=green)
 ```JSON
 {
-  "success": true,
+  "code": "0",
   "data": [
     {
       "name": "battle scarred",
-      "id": "3b2bb9d1-2399-4a5a-bb31-8d0da5996d80"
+      "id": "c752b723-d6d5-4370-8392-b10010e281d5"
     },
     {
       "name": "factory new",
-      "id": "87b871c7-8c3e-44bf-b699-1c75dfab1174"
+      "id": "71925c1c-866c-4217-9666-d1ede06e67d6"
     },
     {
       "name": "field tested",
-      "id": "41f61cdc-2486-472e-8520-02ff4ae6c11d"
+      "id": "e77a70f6-f4ba-4973-9334-fb6decf45112"
     },
     {
       "name": "minimal wear",
-      "id": "adfd38d3-86fc-4dd9-8bfa-20f62a48af83"
+      "id": "25a74cf3-3447-45ae-ba60-61363c75698f"
     },
     {
       "name": "none",
-      "id": "3a54b65d-d585-48a2-a058-de2e271d4bec"
+      "id": "b3f62422-12f9-40b1-a818-ff3d0954e269"
     },
     {
       "name": "well worn",
-      "id": "527316fc-5eed-44d2-8b25-2458e0d0b648"
+      "id": "99efc9b5-058f-4910-b2c8-2f7c2476282e"
     }
   ]
-}
-```
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
-```JSON
-{
-  "success": false,
-  "data": "Qualities is not found. "
 }
 ```
 
@@ -299,40 +288,40 @@
    * Метод: GET 
    * Запрос: `https://r.api.incase.com/api/game-item/types`
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_200:&color=green)
 ```JSON
 {
-  "success": true,
+  "code": "0",
   "data": [
     {
+      "name": "gloves",
+      "id": "dacfcecd-68a6-45da-a170-5ffc5f6e5b3b"
+    },
+    {
       "name": "knife",
-      "id": "feb91174-e508-45c8-b816-29cf9d95c745"
+      "id": "126611fd-db44-4626-b0f1-2a472bd97d1d"
     },
     {
       "name": "none",
-      "id": "076656e8-c989-4cf5-bdf4-f010f617adc6"
+      "id": "82a1579f-66d1-423a-aea0-469920c34bfc"
+    },
+    {
+      "name": "other",
+      "id": "fb9d792b-3a76-425a-8d21-c3abd875e63f"
     },
     {
       "name": "pistol",
-      "id": "afd4d497-9708-4cf4-b40c-bce2d4b286e9"
+      "id": "546e6bcd-ef8f-48ae-abec-8cfc10725206"
     },
     {
       "name": "rifle",
-      "id": "8818b2fe-47d9-43f1-aea4-c6c41bbc7633"
+      "id": "e9a19fb3-e113-4e99-98cd-e1754e6aeec8"
     },
     {
       "name": "weapon",
-      "id": "f8a8acce-5f41-4417-b6c2-09c11039bc22"
+      "id": "c0851265-2702-4b64-ae9a-c4ddab77021e"
     }
   ]
-}
-```
-
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
-```JSON
-{
-  "success": false,
-  "data": "Types is not found. "
 }
 ```
 
@@ -341,44 +330,36 @@
    * Метод: GET 
    * Запрос: `https://r.api.incase.com/api/game-item/rarities`
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_200:&color=green)
 ```JSON
 {
-  "success": true,
+  "code": "0",
   "data": [
     {
       "name": "blue",
-      "id": "21bda5e4-8f36-45cb-a6ed-0cd856eae509"
+      "id": "c0503650-1ac9-478a-b5ed-265f94250de4"
     },
     {
       "name": "gold",
-      "id": "46ef8135-00bd-4e4e-8048-dda1525bb29b"
+      "id": "28806de3-b5f1-430b-af7c-0fbc5fb8d646"
     },
     {
       "name": "pink",
-      "id": "d1030028-0987-4a52-893f-489976a9eb42"
+      "id": "86388a6e-6c7c-4494-8b85-2ee843e6eea0"
     },
     {
       "name": "red",
-      "id": "cc27336a-f435-4af3-a6bf-02ce48db156e"
+      "id": "2c7e92a8-3e12-4107-8035-2f40d77c494c"
     },
     {
       "name": "violet",
-      "id": "011eb185-5575-4bcc-8ce6-a3c2ec63bdef"
+      "id": "ecdf73f2-a2a2-4be0-8bcb-e04ed4aef1e0"
     },
     {
       "name": "white",
-      "id": "a94fb5be-e114-4816-84dc-5acd485e2fc9"
+      "id": "81a7a225-eb56-49cd-942f-5677dd061574"
     }
   ]
-}
-```
-
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
-```JSON
-{
-  "success": false,
-  "data": "Rarity is not found. "
 }
 ```
 
@@ -387,67 +368,77 @@
    * Метод: POST 
    * Запрос: `https://r.api.incase.com/api/game-item`
 
-![](https://img.shields.io/static/v1?label=&message=Request_Body:&color=blue)
+![](https://img.shields.io/static/v1?label=&message=REQUEST_BODY:&color=blue)
 ```JSON
 {
   "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-  "name": "M4A1-S",
-  "cost": 100,
+  "name": "типо имя предмета",
+  "hashName": "хэш имя на официальной тп",
+  "cost": 110,
   "imageUri": "string",
-  "idForPlatform": "string",
-  "gameId": "219c5443-9aba-4603-a595-f2f0ef382a39",
-  "typeId": "f8a8acce-5f41-4417-b6c2-09c11039bc22",
-  "rarityId": "a94fb5be-e114-4816-84dc-5acd485e2fc9",
-  "qualityId": "527316fc-5eed-44d2-8b25-2458e0d0b648"
+  "idForMarket": "string",
+  "gameId": "6ebf72d4-fb09-4716-b08e-57cd941da414",
+  "typeId": "dacfcecd-68a6-45da-a170-5ffc5f6e5b3b",
+  "rarityId": "c0503650-1ac9-478a-b5ed-265f94250de4",
+  "qualityId": "c752b723-d6d5-4370-8392-b10010e281d5"
 }
 ```
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_200:&color=green)
 ```JSON
 {
-  "success": true,
+  "code": "0",
   "data": {
-    "name": "M4A1-S",
-    "cost": 100,
+    "name": "типо имя предмета",
+    "hashName": "хэш имя на официальной тп",
+    "cost": 110,
     "imageUri": "string",
-    "idForPlatform": "string",
+    "idForMarket": "string",
     "quality": null,
     "type": null,
     "rarity": null,
-    "id": "47908aed-2372-4965-92f9-0498515aaadb"
+    "id": "82bd82ec-5c01-4fcf-af97-70d04d7768d2"
   }
 }
 ```
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_400:&color=red)
 ```JSON
 {
-  "success": false,
-  "data": "Game is not found. "
+  "error": {
+    "code": "4",
+    "message": "Игра не найдена"
+  }
 }
 ```
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_400:&color=red)
 ```JSON
 {
-  "success": false,
-  "data": "GameItemType is not found. "
+  "error": {
+    "code": "4",
+    "message": "Тип предмета не найден"
+  }
 }
 ```
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_400:&color=red)
 ```JSON
 {
-  "success": false,
-  "data": "GameItemRarity is not found. "
+  "error": {
+    "code": "4",
+    "message": "Редкость предмета не найдена"
+  }
 }
 ```
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_400:&color=red)
 ```JSON
 {
-  "success": false,
-  "data": "GameItemQuality is not found. "
+  "error": {
+    "code": "4",
+    "message": "Качество предмета не найдено"
+  }
 }
 ```
 
@@ -456,83 +447,87 @@
    * Метод: PUT 
    * Запрос: `https://r.api.incase.com/api/game-item`
 
-![](https://img.shields.io/static/v1?label=&message=Request_Body:&color=blue)
+![](https://img.shields.io/static/v1?label=&message=REQUEST_BODY:&color=blue)
 ```JSON
 {
-  "id": "47908aed-2372-4965-92f9-0498515aaadb",
-  "name": "M4A1-S",
-  "cost": 150,
-  "imageUri": "string",
-  "idForPlatform": "string",
-  "gameId": "219c5443-9aba-4603-a595-f2f0ef382a39",
-  "typeId": "f8a8acce-5f41-4417-b6c2-09c11039bc22",
-  "rarityId": "a94fb5be-e114-4816-84dc-5acd485e2fc9",
-  "qualityId": "527316fc-5eed-44d2-8b25-2458e0d0b648"
+  "id": "82bd82ec-5c01-4fcf-af97-70d04d7768d2",
+  "name": "типо имя предмета1",
+  "hashName": "хэш имя на официальной тп1",
+  "cost": 1101,
+  "imageUri": "string1",
+  "idForMarket": "string1",
+  "gameId": "6ebf72d4-fb09-4716-b08e-57cd941da414",
+  "typeId": "dacfcecd-68a6-45da-a170-5ffc5f6e5b3b",
+  "rarityId": "c0503650-1ac9-478a-b5ed-265f94250de4",
+  "qualityId": "c752b723-d6d5-4370-8392-b10010e281d5"
 }
 ```
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_200:&color=green)
 ```JSON
 {
-  "success": true,
+  "code": "0",
   "data": {
-    "name": "M4A1-S",
-    "cost": 150,
-    "imageUri": "string",
-    "idForPlatform": "string",
+    "name": "типо имя предмета1",
+    "hashName": "хэш имя на официальной тп1",
+    "cost": 1101,
+    "imageUri": "string1",
+    "idForMarket": "string1",
     "quality": null,
     "type": null,
     "rarity": null,
-    "id": "47908aed-2372-4965-92f9-0498515aaadb"
+    "id": "82bd82ec-5c01-4fcf-af97-70d04d7768d2"
   }
 }
 ```
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=green)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_400:&color=red)
 ```JSON
 {
-  "success": false,
-  "data": "GameItem is not found. "
+  "error": {
+    "code": "4",
+    "message": "Запись таблицы GameItem по 81bd82ec-5c01-4fcf-af97-70d04d7768d2 не найдена"
+  }
 }
 ```
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_400:&color=red)
 ```JSON
 {
-  "success": false,
-  "data": "Game is not found. "
+  "error": {
+    "code": "4",
+    "message": "Игра не найдена"
+  }
 }
 ```
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_400:&color=red)
 ```JSON
 {
-  "success": false,
-  "data": "GameItem is not found. "
+  "error": {
+    "code": "4",
+    "message": "Тип предмета не найден"
+  }
 }
 ```
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_400:&color=red)
 ```JSON
 {
-  "success": false,
-  "data": "GameItemType is not found. "
+  "error": {
+    "code": "4",
+    "message": "Редкость предмета не найдена"
+  }
 }
 ```
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_400:&color=red)
 ```JSON
 {
-  "success": false,
-  "data": "GameItemRarity is not found. "
-}
-```
-
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
-```JSON
-{
-  "success": false,
-  "data": "GameItemQuality is not found. "
+  "error": {
+    "code": "4",
+    "message": "Качество предмета не найдено"
+  }
 }
 ```
 
@@ -541,28 +536,31 @@
    * Метод: Delete
    * Запрос: `https://r.api.incase.com/api/game-item/{id}`
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_200:&color=green)
 ```JSON
 {
-  "success": true,
+  "code": "0",
   "data": {
-    "name": "НОЖ",
-    "cost": 150,
-    "imageUri": "string",
-    "idForPlatform": "string",
+    "name": "типо имя предмета1",
+    "hashName": "хэш имя на официальной тп1",
+    "cost": 1101,
+    "imageUri": "string1",
+    "idForMarket": "string1",
     "quality": null,
     "type": null,
     "rarity": null,
-    "id": "becb3051-91aa-4e52-b3f4-f26001afd8ed"
+    "id": "82bd82ec-5c01-4fcf-af97-70d04d7768d2"
   }
 }
 ```
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_400:&color=red)
 ```JSON
 {
-  "success": false,
-  "data": "GameItem is not found. "
+  "error": {
+    "code": "4",
+    "message": "Запись таблицы GameItem по 81bd82ec-5c01-4fcf-af97-70d04d7768d2 не найдена"
+  }
 }
 ```
 
@@ -574,37 +572,29 @@
    * Метод: GET
    * Запрос: `https://r.api.incase.com/api/loot-box-group`
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_200:&color=green)
 ```JSON
 {
-  "success": true,
+  "code": "0",
   "data": [
     {
       "group": {
-        "name": "string",
-        "id": "1a97a421-16ed-4b96-a4b9-8ebfda7ae79c"
+        "name": "имя группы",
+        "id": "637137cf-f67c-448a-9927-9271d4432334"
       },
       "box": {
-        "name": "string",
-        "cost": 0,
+        "name": "имя кейса",
+        "cost": 111,
         "balance": 0,
         "virtualBalance": 0,
         "imageUri": "string",
-        "isLocked": false,
+        "isLocked": true,
         "inventories": null,
-        "id": "38bd74d4-6b26-4725-84a7-b86b5c6703ad"
+        "id": "91cd8256-575c-4367-ab63-a315364c024d"
       },
-      "id": "6966ff94-26af-429f-b4d3-afbdfd679481"
+      "id": "6e86b05f-75a1-4a92-ad5f-6a8dd22d6051"
     }
   ]
-}
-```
-
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
-```JSON
-{
-  "success": false,
-  "data": "LootBoxGroup is not found. "
 }
 ```
 
@@ -613,35 +603,37 @@
    * Метод: GET
    * Запрос: `https://r.api.incase.com/api/loot-box-group/{id}`
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_200:&color=green)
 ```JSON
 {
-  "success": true,
+  "code": "0",
   "data": {
     "group": {
-      "name": "string",
-      "id": "1a97a421-16ed-4b96-a4b9-8ebfda7ae79c"
+      "name": "имя группы",
+      "id": "637137cf-f67c-448a-9927-9271d4432334"
     },
     "box": {
-      "name": "string",
-      "cost": 0,
+      "name": "имя кейса",
+      "cost": 111,
       "balance": 0,
       "virtualBalance": 0,
       "imageUri": "string",
-      "isLocked": false,
+      "isLocked": true,
       "inventories": null,
-      "id": "38bd74d4-6b26-4725-84a7-b86b5c6703ad"
+      "id": "91cd8256-575c-4367-ab63-a315364c024d"
     },
-    "id": "0743b1cf-63b8-4d92-9e50-d726bb0dbb61"
+    "id": "6e86b05f-75a1-4a92-ad5f-6a8dd22d6051"
   }
 }
 ```
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_400:&color=red)
 ```JSON
 {
-  "success": false,
-  "data": "LootBoxGroup is not found. "
+  "error": {
+    "code": "4",
+    "message": "Кейс группа не найдена"
+  }
 }
 ```
 
@@ -650,204 +642,202 @@
    * Метод: GET
    * Запрос: `https://r.api.incase.com/api/loot-box-group/groups`
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_200:&color=green)
 ```JSON
 {
-  "success": true,
+  "code": "0",
   "data": [
     {
-      "name": "string",
-      "id": "1a97a421-16ed-4b96-a4b9-8ebfda7ae79c"
+      "name": "имя группы",
+      "id": "637137cf-f67c-448a-9927-9271d4432334"
     }
   ]
 }
 ```
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
-```JSON
-{
-  "success": false,
-  "data": "GroupLootBox is not found. "
-}
-```
-
-4. Создание группы кейсов:
-   * Доступ: Owner
-   * Метод: POST
-   * Запрос: `https://r.api.incase.com/api/loot-box-group`
-
-![](https://img.shields.io/static/v1?label=&message=Request_Body:&color=blue)
-```JSON
-{
-  "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-  "boxId": "38bd74d4-6b26-4725-84a7-b86b5c6703ad",
-  "groupId": "1a97a421-16ed-4b96-a4b9-8ebfda7ae79c",
-  "gameId": "219c5443-9aba-4603-a595-f2f0ef382a39"
-}
-```
-
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
-```JSON
-{
-  "success": true,
-  "data": {
-    "group": null,
-    "box": null,
-    "id": "df514c21-c046-4abe-b7ed-3ca63299b5aa"
-  }
-}
-```
-
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
-```JSON
-{
-  "success": false,
-  "data": "Game is not found. "
-}
-```
-
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
-```JSON
-{
-  "success": false,
-  "data": "GroupLootBox is not found. "
-}
-```
-
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
-```JSON
-{
-  "success": false,
-  "data": "LootBox is not found. "
-}
-```
-
-5. Создание группы:
-   * Доступ: Owner
-   * Метод: POST
-   * Запрос: `https://r.api.incase.com/api/loot-box-group/group`
-
-![](https://img.shields.io/static/v1?label=&message=Request_Body:&color=blue)
-```JSON
-{
-  "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-  "name": "string"
-}
-```
-
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
-```JSON
-{
-  "success": true,
-  "data": {
-    "name": "string",
-    "id": "01e72c7c-1738-4f81-8632-48203f8f6e67"
-  }
-}
-```
-
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_409:&color=orange)
-```JSON
-{
-  "success": false,
-  "data": "The group name is already in use"
-}
-```
-
-
-6. Удаление группы кейсов:
-   * Доступ: Owner
-   * Метод: DELETE
-   * Запрос: `https://r.api.incase.com/api/loot-box-group/{id}`
-
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
-```JSON
-{
-  "success": true,
-  "data": {
-    "group": null,
-    "box": null,
-    "id": "bf73c90b-8df5-4940-8cb4-fa23da9536f1"
-  }
-}
-```
-
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
-```JSON
-{
-  "success": false,
-  "data": "LootBoxGroup is not found. "
-}
-```
-
-7. Удаление группы:
-   * Доступ: Owner
-   * Метод: DELETE
-   * Запрос: `https://r.api.incase.com/api/loot-box-group/group/{id}`
-
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
-```JSON
-{
-  "success": true,
-  "data": {
-    "name": "string",
-    "id": "1a97a421-16ed-4b96-a4b9-8ebfda7ae79c"
-  }
-}
-```
-
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
-```JSON
-{
-  "success": false,
-  "data": "GroupLootBox is not found. "
-}
-```
-
-7. Получить все группы по id игры:
+4. Получить все группы по id игры:
    * Доступ: Allow Anonymous
    * Метод: GET
    * Запрос: `https://r.api.incase.com/api/loot-box-group/game/{id}`
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_200:&color=green)
 ```JSON
 {
-  "success": true,
+  "code": "0",
   "data": [
     {
       "group": {
-        "name": "string",
-        "id": "1a97a421-16ed-4b96-a4b9-8ebfda7ae79c"
+        "name": "имя группы",
+        "id": "637137cf-f67c-448a-9927-9271d4432334"
       },
       "box": {
-        "name": "string",
-        "cost": 0,
+        "name": "имя кейса",
+        "cost": 111,
         "balance": 0,
         "virtualBalance": 0,
         "imageUri": "string",
-        "isLocked": false,
+        "isLocked": true,
         "inventories": null,
-        "id": "38bd74d4-6b26-4725-84a7-b86b5c6703ad"
+        "id": "91cd8256-575c-4367-ab63-a315364c024d"
       },
-      "id": "6966ff94-26af-429f-b4d3-afbdfd679481"
+      "id": "6e86b05f-75a1-4a92-ad5f-6a8dd22d6051"
     }
   ]
 }
 ```
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_400:&color=red)
 ```JSON
 {
-  "success": false,
-  "data": "LootBoxGroup is not found. "
+  "error": {
+    "code": "4",
+    "message": "Игра не найдена"
+  }
 }
 ```
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+5. Создание группы кейсов:
+   * Доступ: Owner
+   * Метод: POST
+   * Запрос: `https://r.api.incase.com/api/loot-box-group`
+
+![](https://img.shields.io/static/v1?label=&message=REQUEST_BODY:&color=blue)
 ```JSON
 {
-  "success": false,
-  "data": "Game is not found. "
+  "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "boxId": "91cd8256-575c-4367-ab63-a315364c024d",
+  "groupId": "637137cf-f67c-448a-9927-9271d4432334",
+  "gameId": "6ebf72d4-fb09-4716-b08e-57cd941da414"
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_200:&color=green)
+```JSON
+{
+  "code": "0",
+  "data": {
+    "group": null,
+    "box": null,
+    "id": "6e86b05f-75a1-4a92-ad5f-6a8dd22d6051"
+  }
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_404:&color=red)
+```JSON
+{
+  "error": {
+    "code": "4",
+    "message": "Кейс не найден"
+  }
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_404:&color=red)
+```JSON
+{
+  "error": {
+    "code": "4",
+    "message": "Группа кейсов не найдена"
+  }
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_404:&color=red)
+```JSON
+{
+  "error": {
+    "code": "4",
+    "message": "Игра не найдена"
+  }
+}
+```
+
+6. Создание группы:
+   * Доступ: Owner
+   * Метод: POST
+   * Запрос: `https://r.api.incase.com/api/loot-box-group/group`
+
+![](https://img.shields.io/static/v1?label=&message=REQUEST_BODY:&color=blue)
+```JSON
+{
+  "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "name": "имя группы"
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+```JSON
+{
+  "code": "0",
+  "data": {
+    "name": "имя группы",
+    "id": "637137cf-f67c-448a-9927-9271d4432334"
+  }
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_400:&color=red)
+```JSON
+{
+  "error": {
+    "code": "5",
+    "message": "Имя группы уже используется"
+  }
+}
+```
+
+
+7. Удаление группы кейсов:
+   * Доступ: Owner
+   * Метод: DELETE
+   * Запрос: `https://r.api.incase.com/api/loot-box-group/{id}`
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_200:&color=green)
+```JSON
+{
+  "code": "0",
+  "data": {
+    "group": null,
+    "box": null,
+    "id": "6f32dc64-b95c-49f6-ab2e-8fb75d02c84c"
+  }
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_400:&color=red)
+```JSON
+{
+  "error": {
+    "code": "4",
+    "message": "Запись таблицы LootBoxGroup по 6f32dc64-b95c-49f6-ab2e-8fb75d02c84c не найдена"
+  }
+}
+```
+
+8. Удаление группы:
+   * Доступ: Owner
+   * Метод: DELETE
+   * Запрос: `https://r.api.incase.com/api/loot-box-group/group/{id}`
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_200:&color=green)
+```JSON
+{
+  "code": "0",
+  "data": {
+    "name": "имя группы",
+    "id": "637137cf-f67c-448a-9927-9271d4432334"
+  }
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_400:&color=red)
+```JSON
+{
+  "error": {
+    "code": "4",
+    "message": "Запись таблицы GroupLootBox по 637137cf-f67c-448a-9927-9271d4432334 не найдена"
+  }
 }
 ```
 
@@ -858,30 +848,20 @@
    * Метод: GET
    * Запрос: `https://r.api.incase.com/api/loot-box`
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_200:&color=green)
 ```JSON
 {
-  "success": true,
+  "code": "0",
   "data": [
     {
-      "name": "Самый классный кейс",
-      "cost": 250,
-      "balance": 0,
-      "virtualBalance": 0,
+      "name": "имя кейса",
+      "cost": 111,
       "imageUri": "string",
-      "isLocked": false,
-      "inventories": null,
-      "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+      "isLocked": true,
+      "gameId": "6ebf72d4-fb09-4716-b08e-57cd941da414",
+      "id": "91cd8256-575c-4367-ab63-a315364c024d"
     }
   ]
-}
-```
-
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
-```JSON
-{
-  "success": false,
-  "data": "LootBox is not found. "
 }
 ```
 
@@ -890,28 +870,28 @@
    * Метод: GET
    * Запрос: `https://r.api.incase.com/api/loot-box/{id}`
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_200:&color=green)
 ```JSON
 {
-  "success": true,
+  "code": "0",
   "data": {
-    "name": "Самый классный кейс",
-    "cost": 250,
-    "balance": 0,
-    "virtualBalance": 0,
+    "name": "имя кейса",
+    "cost": 111,
     "imageUri": "string",
-    "isLocked": false,
-    "inventories": [],
-    "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    "isLocked": true,
+    "gameId": "6ebf72d4-fb09-4716-b08e-57cd941da414",
+    "id": "91cd8256-575c-4367-ab63-a315364c024d"
   }
 }
 ```
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_400:&color=red)
 ```JSON
 {
-  "success": false,
-  "data": "LootBox is not found. "
+  "error": {
+    "code": "4",
+    "message": "Кейс не найден"
+  }
 }
 ```
 
@@ -920,35 +900,46 @@
    * Метод: GET
    * Запрос: `https://r.api.incase.com/api/loot-box/{id}/inventory`
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_200:&color=green)
 ```JSON
 {
-  "success": true,
+  "code": "0",
   "data": [
     {
-      "numberItems": 1,
-      "chanceWining": 120,
+      "chanceWining": 11,
       "item": {
-        "name": "НОЖ",
-        "cost": 150,
+        "name": "типо имя предмета",
+        "hashName": "имя предмета на официальной тп",
+        "cost": 110,
         "imageUri": "string",
-        "idForPlatform": "string",
-        "quality": null,
-        "type": null,
-        "rarity": null,
-        "id": "becb3051-91aa-4e52-b3f4-f26001afd8ed"
+        "idForMarket": "string",
+        "quality": {
+          "name": "battle scarred",
+          "id": "c752b723-d6d5-4370-8392-b10010e281d5"
+        },
+        "type": {
+          "name": "gloves",
+          "id": "dacfcecd-68a6-45da-a170-5ffc5f6e5b3b"
+        },
+        "rarity": {
+          "name": "blue",
+          "id": "c0503650-1ac9-478a-b5ed-265f94250de4"
+        },
+        "id": "474fe485-4b63-47cb-8bcd-b681cd4530c9"
       },
-      "id": "1174c0df-e11a-426d-a8ae-d8fba5acfe4d"
+      "id": "d0e2358c-a976-4b3f-a81d-a375eaee8671"
     }
   ]
 }
 ```
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_400:&color=red)
 ```JSON
 {
-  "success": false,
-  "data": "LootBox is not found. "
+  "error": {
+    "code": "4",
+    "message": "Кейс не найден"
+  }
 }
 ```
 
@@ -957,37 +948,20 @@
    * Метод: GET
    * Запрос: `https://r.api.incase.com/api/loot-box/banners`
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_200:&color=green)
 ```JSON
 {
-  "success": true,
+  "code": "0",
   "data": [
     {
       "isActive": true,
-      "creationDate": "2023-04-08T07:31:43.916",
-      "expirationDate": "2023-04-08T07:31:43.916",
-      "imageUri": "AAA",
-      "box": {
-        "name": "Самый классный кейс",
-        "cost": 250,
-        "balance": 0,
-        "virtualBalance": 0,
-        "imageUri": "string",
-        "isLocked": false,
-        "inventories": null,
-        "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
-      },
-      "id": "6441d41f-c2cf-4c6c-91b0-52224cf5b4c3"
+      "creationDate": "2023-05-07T14:11:29.787",
+      "expirationDate": "2023-05-07T14:11:29.787",
+      "imageUri": "string",
+      "boxId": "91cd8256-575c-4367-ab63-a315364c024d",
+      "id": "4e73a802-3a6a-4324-bce5-d9a7148b0ea7"
     }
   ]
-}
-```
-
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
-```JSON
-{
-  "success": false,
-  "data": "LootBox is not found. "
 }
 ```
 
@@ -996,35 +970,28 @@
    * Метод: GET
    * Запрос: `https://r.api.incase.com/api/loot-box/{id}/banner`
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_200:&color=green)
 ```JSON
 {
-  "success": true,
+  "code": "0",
   "data": {
     "isActive": true,
-    "creationDate": "2023-04-08T07:31:43.916",
-    "expirationDate": "2023-04-08T07:31:43.916",
-    "imageUri": "AAA",
-    "box": {
-      "name": "Самый классный кейс",
-      "cost": 250,
-      "balance": 0,
-      "virtualBalance": 0,
-      "imageUri": "string",
-      "isLocked": false,
-      "inventories": null,
-      "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
-    },
-    "id": "6441d41f-c2cf-4c6c-91b0-52224cf5b4c3"
+    "creationDate": "2023-05-07T14:11:29.787",
+    "expirationDate": "2023-05-07T14:11:29.787",
+    "imageUri": "string",
+    "boxId": "91cd8256-575c-4367-ab63-a315364c024d",
+    "id": "4e73a802-3a6a-4324-bce5-d9a7148b0ea7"
   }
 }
 ```
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_400:&color=red)
 ```JSON
 {
-  "success": false,
-  "data": "LootBoxBanner is not found. "
+  "error": {
+    "code": "4",
+    "message": "Баннер не найден"
+  }
 }
 ```
 
@@ -1033,42 +1000,42 @@
    * Метод: POST
    * Запрос: `https://r.api.incase.com/api/loot-box`
 
-![](https://img.shields.io/static/v1?label=&message=Request_Body:&color=blue)
+![](https://img.shields.io/static/v1?label=&message=REQUEST_BODY:&color=blue)
 ```JSON
 {
-  "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-  "name": "Самый классный кейс",
-  "cost": 150,
-  "balance": 0,
-  "virtualBalance": 0,
+  "id": "f7f2aa2c-ff68-4f54-961b-b86b6d04e9ba",
+  "name": "имя кейса",
+  "cost": 111,
   "imageUri": "string",
-  "isLocked": false,
-  "gameId": "219c5443-9aba-4603-a595-f2f0ef382a39"
+  "isLocked": true,
+  "gameId": "6ebf72d4-fb09-4716-b08e-57cd941da414"
 }
 ```
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_200:&color=green)
 ```JSON
 {
-  "success": true,
+  "code": "0",
   "data": {
-    "name": "Самый классный кейс",
-    "cost": 150,
+    "name": "имя кейса",
+    "cost": 111,
     "balance": 0,
     "virtualBalance": 0,
     "imageUri": "string",
-    "isLocked": false,
+    "isLocked": true,
     "inventories": null,
-    "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    "id": "91cd8256-575c-4367-ab63-a315364c024d"
   }
 }
 ```
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_400:&color=red)
 ```JSON
 {
-  "success": false,
-  "data": "Game is not found. "
+  "error": {
+    "code": "4",
+    "message": "Игра не найдена"
+  }
 }
 ```
 
@@ -1077,33 +1044,31 @@
    * Метод: PUT
    * Запрос: `https://r.api.incase.com/api/loot-box`
 
-![](https://img.shields.io/static/v1?label=&message=Request_Body:&color=blue)
+![](https://img.shields.io/static/v1?label=&message=REQUEST_BODY:&color=blue)
 ```JSON
 {
-  "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-  "name": "Самый классный кейс",
-  "cost": 250,
-  "balance": 0,
-  "virtualBalance": 0,
-  "imageUri": "string",
+  "name": "имя кейса1",
+  "cost": 111,
+  "imageUri": "string1",
   "isLocked": false,
-  "gameId": "219c5443-9aba-4603-a595-f2f0ef382a39"
+  "gameId": "6ebf72d4-fb09-4716-b08e-57cd941da414",
+  "id": "91cd8256-575c-4367-ab63-a315364c024d"
 }
 ```
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_200:&color=green)
 ```JSON
 {
-  "success": true,
+  "code": "0",
   "data": {
-    "name": "Самый классный кейс",
-    "cost": 250,
+    "name": "имя кейса1",
+    "cost": 111,
     "balance": 0,
     "virtualBalance": 0,
-    "imageUri": "string",
+    "imageUri": "string1",
     "isLocked": false,
     "inventories": null,
-    "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    "id": "91cd8256-575c-4367-ab63-a315364c024d"
   }
 }
 ```
@@ -1111,16 +1076,20 @@
 ![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
 ```JSON
 {
-  "success": false,
-  "data": "LootBox is not found. "
+  "error": {
+    "code": "4",
+    "message": "Кейс не найден"
+  }
 }
 ```
 
 ![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
 ```JSON
 {
-  "success": false,
-  "data": "Game is not found. "
+  "error": {
+    "code": "4",
+    "message": "Игра не найдена"
+  }
 }
 ```
 
@@ -1129,43 +1098,45 @@
    * Метод: POST
    * Запрос: `https://r.api.incase.com/api/loot-box/inventory`
 
-![](https://img.shields.io/static/v1?label=&message=Request_Body:&color=blue)
+![](https://img.shields.io/static/v1?label=&message=REQUEST_BODY:&color=blue)
 ```JSON
 {
   "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-  "numberItems": 1,
-  "chanceWining": 120,
-  "itemId": "becb3051-91aa-4e52-b3f4-f26001afd8ed",
-  "boxId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+  "chanceWining": 11,
+  "itemId": "474fe485-4b63-47cb-8bcd-b681cd4530c9",
+  "boxId": "91cd8256-575c-4367-ab63-a315364c024d"
 }
 ```
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_200:&color=green)
 ```JSON
 {
-  "success": true,
+  "code": "0",
   "data": {
-    "numberItems": 1,
-    "chanceWining": 120,
+    "chanceWining": 11,
     "item": null,
-    "id": "1174c0df-e11a-426d-a8ae-d8fba5acfe4d"
+    "id": "cc8b9c25-0533-4169-890e-b8786715a5f0"
   }
 }
 ```
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_400:&color=red)
 ```JSON
 {
-  "success": false,
-  "data": "GameItem is not found. "
+  "error": {
+    "code": "4",
+    "message": "Предмет не найден"
+  }
 }
 ```
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_400:&color=red)
 ```JSON
 {
-  "success": false,
-  "data": "LootBox is not found. "
+  "error": {
+    "code": "4",
+    "message": "Кейс не найден"
+  }
 }
 ```
 
@@ -1174,46 +1145,50 @@
    * Метод: POST
    * Запрос: `https://r.api.incase.com/api/loot-box/banner`
 
-![](https://img.shields.io/static/v1?label=&message=Request_Body:&color=blue)
+![](https://img.shields.io/static/v1?label=&message=REQUEST_BODY:&color=blue)
 ```JSON
 {
   "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
   "isActive": true,
-  "creationDate": "2023-04-08T07:29:07.297Z",
-  "expirationDate": "2023-04-08T07:29:07.297Z",
-  "imageUri": "ЭТО ПУТЬ К ФОТКЕ БАННЕРА",
-  "boxId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+  "creationDate": "2023-05-07T14:31:34.915Z",
+  "expirationDate": "2023-05-07T14:31:34.915Z",
+  "imageUri": "string",
+  "boxId": "91cd8256-575c-4367-ab63-a315364c024d"
 }
 ```
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_200:&color=green)
 ```JSON
 {
-  "success": true,
+  "code": "0",
   "data": {
     "isActive": true,
-    "creationDate": "2023-04-08T07:29:07.297Z",
-    "expirationDate": "2023-04-08T07:29:07.297Z",
-    "imageUri": "ЭТО ПУТЬ К ФОТКЕ БАННЕРА",
+    "creationDate": "2023-05-07T14:31:34.915Z",
+    "expirationDate": "2023-05-07T14:31:34.915Z",
+    "imageUri": "string",
     "box": null,
-    "id": "6441d41f-c2cf-4c6c-91b0-52224cf5b4c3"
+    "id": "9b5ad520-5f5e-41f7-bbda-67864b697a1e"
   }
 }
 ```
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_409:&color=orange)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_400:&color=orange)
 ```JSON
 {
-  "success": false,
-  "data": "The banner is already used by this loot box"
+  "error": {
+    "code": "5",
+    "message": "Кейс уже использует баннер"
+  }
 }
 ```
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_400:&color=red)
 ```JSON
 {
-  "success": false,
-  "data": "LootBox is not found. "
+  "error": {
+    "code": "4",
+    "message": "Кейс не найден"
+  }
 }
 ```
 
