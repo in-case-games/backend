@@ -1383,31 +1383,23 @@
    * Метод: GET
    * Запрос: `https://r.api.incase.com/api/promocode`
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_200:&color=green)
 ```JSON
 {
-  "success": true,
+  "code": "0",
   "data": [
     {
-      "name": "string",
-      "discount": 0,
-      "numberActivations": 0,
-      "expirationDate": "2023-04-08T08:15:30.484",
+      "name": "название промокода",
+      "discount": 0.5,
+      "numberActivations": 11,
+      "expirationDate": "2023-05-08T06:37:53.462",
       "type": {
         "name": "balance",
-        "id": "afce1b8c-8d16-4429-90d0-ae7959933063"
+        "id": "e72eed46-c949-46f3-bd91-d154a527a1f2"
       },
-      "id": "bbb36e4a-24f8-445f-8c6d-2df7e5d497ff"
+      "id": "7b335ee3-8ba2-4f09-9b21-ee6b133c50ce"
     }
   ]
-}
-```
-
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
-```JSON
-{
-  "success": false,
-  "data": "Promocode is not found. "
 }
 ```
 
@@ -1416,29 +1408,31 @@
    * Метод: GET
    * Запрос: `https://r.api.incase.com/api/promocode/{id}`
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_200:&color=green)
 ```JSON
 {
-  "success": true,
+  "code": "0",
   "data": {
-    "name": "string",
-    "discount": 0,
-    "numberActivations": 0,
-    "expirationDate": "2023-04-08T08:15:30.484",
+    "name": "название промокода",
+    "discount": 0.5,
+    "numberActivations": 11,
+    "expirationDate": "2023-05-08T06:37:53.462",
     "type": {
       "name": "balance",
-      "id": "afce1b8c-8d16-4429-90d0-ae7959933063"
+      "id": "e72eed46-c949-46f3-bd91-d154a527a1f2"
     },
-    "id": "bbb36e4a-24f8-445f-8c6d-2df7e5d497ff"
+    "id": "7b335ee3-8ba2-4f09-9b21-ee6b133c50ce"
   }
 }
 ```
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_400:&color=red)
 ```JSON
 {
-  "success": false,
-  "data": "Promocode is not found. "
+  "error": {
+    "code": "4",
+    "message": "Промокод не найден"
+  }
 }
 ```
 
@@ -1447,29 +1441,31 @@
    * Метод: GET
    * Запрос: `https://r.api.incase.com/api/promocode/name/{name}`
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_200:&color=green)
 ```JSON
 {
-  "success": true,
+  "code": "0",
   "data": {
-    "name": "string",
-    "discount": 0,
-    "numberActivations": 0,
-    "expirationDate": "2023-04-08T08:15:30.484",
+    "name": "название промокода",
+    "discount": 0.5,
+    "numberActivations": 11,
+    "expirationDate": "2023-05-08T06:37:53.462",
     "type": {
       "name": "balance",
-      "id": "afce1b8c-8d16-4429-90d0-ae7959933063"
+      "id": "e72eed46-c949-46f3-bd91-d154a527a1f2"
     },
-    "id": "bbb36e4a-24f8-445f-8c6d-2df7e5d497ff"
+    "id": "7b335ee3-8ba2-4f09-9b21-ee6b133c50ce"
   }
 }
 ```
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_400:&color=red)
 ```JSON
 {
-  "success": false,
-  "data": "Promocode is not found. "
+  "error": {
+    "code": "4",
+    "message": "Промокод не найден"
+  }
 }
 ```
 
@@ -1478,28 +1474,20 @@
    * Метод: GET
    * Запрос: `https://r.api.incase.com/api/promocode/types`
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_200:&color=green)
 ```JSON
 {
-  "success": true,
+  "code": "0",
   "data": [
     {
       "name": "balance",
-      "id": "afce1b8c-8d16-4429-90d0-ae7959933063"
+      "id": "e72eed46-c949-46f3-bd91-d154a527a1f2"
     },
     {
       "name": "case",
-      "id": "de145f9a-522d-4e50-b427-c67fd1456e0e"
+      "id": "39b6ee52-affe-4c6a-9d9d-4f138197e42e"
     }
   ]
-}
-```
-
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
-```JSON
-{
-  "success": false,
-  "data": "Promocode is not found. "
 }
 ```
 
@@ -1508,46 +1496,68 @@
    * Метод: POST
    * Запрос: `https://r.api.incase.com/api/promocode`
 
-![](https://img.shields.io/static/v1?label=&message=Request_Body:&color=blue)
+![](https://img.shields.io/static/v1?label=&message=REQUEST_BODY:&color=blue)
 ```JSON
 {
   "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-  "name": "ЛУЧШИЙ-ПРОМОКОД",
-  "discount": 10,
-  "numberActivations": 1110,
-  "expirationDate": "2023-04-08T08:12:17.749Z",
-  "typeId": "afce1b8c-8d16-4429-90d0-ae7959933063"
+  "name": "название промокода",
+  "discount": 0.5,
+  "numberActivations": 11,
+  "expirationDate": "2023-05-08T06:37:53.462Z",
+  "typeId": "e72eed46-c949-46f3-bd91-d154a527a1f2"
 }
 ```
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_200:&color=green)
 ```JSON
 {
-  "success": true,
+  "code": "0",
   "data": {
-    "name": "ЛУЧШИЙ-ПРОМОКОД",
-    "discount": 10,
-    "numberActivations": 1110,
-    "expirationDate": "2023-04-08T08:12:17.749Z",
+    "name": "название промокода",
+    "discount": 0.5,
+    "numberActivations": 11,
+    "expirationDate": "2023-05-08T06:37:53.462Z",
     "type": null,
-    "id": "bbb36e4a-24f8-445f-8c6d-2df7e5d497ff"
+    "id": "7b335ee3-8ba2-4f09-9b21-ee6b133c50ce"
   }
 }
 ```
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_409:&color=orange)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_400:&color=red)
 ```JSON
 {
-  "success": false,
-  "data": "The promocode name is already in use "
+  "error": {
+    "code": "5",
+    "message": "Имя промокода уже используется"
+  }
 }
 ```
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_400:&color=red)
 ```JSON
 {
-  "success": false,
-  "data": "PromocodeType is not found. "
+  "error": {
+    "code": "4",
+    "message": "Тип промокода не найден"
+  }
+}
+```
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_400:&color=red)
+```JSON
+{
+  "error": {
+    "code": "0",
+    "message": "Скидка промокода должна быть больше 0 и меньше 1"
+  }
+}
+```
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_400:&color=red)
+```JSON
+{
+  "error": {
+    "code": "0",
+    "message": "Количество активаций должно быть больше 0"
+  }
 }
 ```
 
@@ -1556,54 +1566,78 @@
    * Метод: PUT
    * Запрос: `https://r.api.incase.com/api/promocode`
 
-![](https://img.shields.io/static/v1?label=&message=Request_Body:&color=blue)
+![](https://img.shields.io/static/v1?label=&message=REQUEST_BODY:&color=blue)
 ```JSON
 {
-  "id": "bbb36e4a-24f8-445f-8c6d-2df7e5d497ff",
-  "name": "string",
-  "discount": 0,
-  "numberActivations": 0,
-  "expirationDate": "2023-04-08T08:15:30.484Z",
-  "typeId": "afce1b8c-8d16-4429-90d0-ae7959933063"
+  "id": "7b335ee3-8ba2-4f09-9b21-ee6b133c50ce",
+  "name": "название промокода2",
+  "discount": 0.1,
+  "numberActivations": 1,
+  "expirationDate": "2023-05-08T06:37:53.462Z",
+  "typeId": "e72eed46-c949-46f3-bd91-d154a527a1f2"
 }
 ```
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_200:&color=green)
 ```JSON
 {
-  "success": true,
+  "code": "0",
   "data": {
-    "name": "string",
-    "discount": 0,
-    "numberActivations": 0,
-    "expirationDate": "2023-04-08T08:15:30.484Z",
+    "name": "название промокода2",
+    "discount": 0.1,
+    "numberActivations": 1,
+    "expirationDate": "2023-05-08T06:37:53.462Z",
     "type": null,
-    "id": "bbb36e4a-24f8-445f-8c6d-2df7e5d497ff"
+    "id": "7b335ee3-8ba2-4f09-9b21-ee6b133c50ce"
   }
 }
 ```
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_409:&color=orange)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_400:&color=red)
 ```JSON
 {
-  "success": false,
-  "data": "The promocode name is already in use "
+  "error": {
+    "code": "4",
+    "message": "Промокод не найден"
+  }
 }
 ```
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_400:&color=red)
 ```JSON
 {
-  "success": false,
-  "data": "PromocodeType is not found. "
+  "error": {
+    "code": "5",
+    "message": "Имя промокода уже используется"
+  }
 }
 ```
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_400:&color=red)
 ```JSON
 {
-  "success": false,
-  "data": "Promocode is not found. "
+  "error": {
+    "code": "4",
+    "message": "Тип промокода не найден"
+  }
+}
+```
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_400:&color=red)
+```JSON
+{
+  "error": {
+    "code": "0",
+    "message": "Скидка промокода должна быть больше 0 и меньше 1"
+  }
+}
+```
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_400:&color=red)
+```JSON
+{
+  "error": {
+    "code": "0",
+    "message": "Количество активаций должно быть больше 0"
+  }
 }
 ```
 
@@ -1612,26 +1646,28 @@
    * Метод: DELETE
    * Запрос: `https://r.api.incase.com/api/promocode`
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_200:&color=green)
 ```JSON
 {
-  "success": true,
+  "code": "0",
   "data": {
-    "name": "string",
-    "discount": 0,
-    "numberActivations": 0,
-    "expirationDate": "2023-04-08T08:15:30.484",
+    "name": "название промокода2",
+    "discount": 0.1,
+    "numberActivations": 1,
+    "expirationDate": "2023-05-08T06:37:53.462",
     "type": null,
-    "id": "bbb36e4a-24f8-445f-8c6d-2df7e5d497ff"
+    "id": "7b335ee3-8ba2-4f09-9b21-ee6b133c50ce"
   }
 }
 ```
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_400:&color=red)
 ```JSON
 {
-  "success": false,
-  "data": "Promocode is not found. "
+  "error": {
+    "code": "4",
+    "message": "Запись таблицы Promocode по 7b335ee3-8ba2-4f09-9b21-ee6b133c50ce не найдена"
+  }
 }
 ```
 
@@ -1644,32 +1680,34 @@
    * Метод: GET
    * Запрос: `https://r.api.incase.com/api/user-additional-info`
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_200:&color=green)
 ```JSON
 {
-  "success": true,
+  "code": "0",
   "data": {
     "balance": 0,
     "imageUri": "",
     "isNotifyEmail": false,
     "isGuestMode": false,
     "isConfirmed": true,
-    "creationDate": "2023-04-07T05:52:48.4918144",
+    "creationDate": "2023-05-07T10:07:59.3001203",
     "deletionDate": null,
     "role": {
-      "name": "bot",
-      "id": "7788cbe6-1a9e-41b0-91cd-f55fa1e60d5e"
+      "name": "owner",
+      "id": "5ffbb660-ba04-45c2-84f7-3227196b76f0"
     },
-    "id": "7c1353fe-5582-403f-9c21-a32a2ab4f9a5"
+    "id": "ce0f00a7-ad7f-4320-9f8e-72bc7b61abbe"
   }
 }
 ```
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_400:&color=red)
 ```JSON
 {
-  "success": false,
-  "data": "UserAdditionalInfo is not found. "
+  "error": {
+    "code": "4",
+    "message": "Дополнительная информация не найдена"
+  }
 }
 ```
 
@@ -1678,40 +1716,28 @@
    * Метод: GET
    * Запрос: `https://r.api.incase.com/api/user-additional-info/roles`
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_200:&color=green)
 ```JSON
 {
-  "success": true,
+  "code": "0",
   "data": [
     {
       "name": "admin",
-      "id": "2bd9949b-180e-4bed-9da2-3f0569cf157b"
+      "id": "5986a9f7-1062-443e-8445-974e086d7e2f"
     },
     {
       "name": "bot",
-      "id": "7788cbe6-1a9e-41b0-91cd-f55fa1e60d5e"
+      "id": "ea5c1c74-18d8-4888-8245-3071dc4694c6"
     },
     {
       "name": "owner",
-      "id": "c8c2854f-a142-4384-b424-acb7aa2928bf"
-    },
-    {
-      "name": "support",
-      "id": "f65c09b1-5ab4-4d9c-a10e-d41093f04146"
+      "id": "5ffbb660-ba04-45c2-84f7-3227196b76f0"
     },
     {
       "name": "user",
-      "id": "37df21ec-8723-4ed2-957f-283ba1ecbb7c"
+      "id": "b0ad5fd0-1355-4a28-8b30-2f006a82bc64"
     }
   ]
-}
-```
-
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
-```JSON
-{
-  "success": false,
-  "data": "UserRole is not found. "
 }
 ```
 
@@ -1720,61 +1746,67 @@
    * Метод: PUT
    * Запрос: `https://r.api.incase.com/api/user-additional-info`
 
-![](https://img.shields.io/static/v1?label=&message=Request_Body:&color=blue)
+![](https://img.shields.io/static/v1?label=&message=REQUEST_BODY:&color=blue)
 ```JSON
 {
-  "id": "7c1353fe-5582-403f-9c21-a32a2ab4f9a5",
-  "balance": 1110,
-  "imageUri": "",
+  "id": "ce0f00a7-ad7f-4320-9f8e-72bc7b61abbe",
+  "balance": 1111,
+  "imageUri": "string",
   "isNotifyEmail": false,
   "isGuestMode": false,
   "isConfirmed": true,
-  "creationDate": "2023-04-07T05:52:48.4918144",
-  "deletionDate": null,
-  "roleId": "7788cbe6-1a9e-41b0-91cd-f55fa1e60d5e",
-  "userId": "753ed98a-cf5d-4acc-994c-afab92848fab"
+  "creationDate": "2023-05-08T06:54:29.248Z",
+  "deletionDate": "2023-05-08T06:54:29.248Z",
+  "roleId": "5ffbb660-ba04-45c2-84f7-3227196b76f0",
+  "userId": "ba5aaa4c-f00e-49ed-b182-91070c3ce5f0"
 }
 ```
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_200:&color=green)
 ```JSON
 {
-  "success": true,
+  "code": "0",
   "data": {
-    "balance": 1110,
-    "imageUri": "",
+    "balance": 1111,
+    "imageUri": "string",
     "isNotifyEmail": false,
     "isGuestMode": false,
     "isConfirmed": true,
-    "creationDate": "2023-04-07T05:52:48.4918144",
-    "deletionDate": null,
+    "creationDate": "2023-05-08T06:54:29.248Z",
+    "deletionDate": "2023-05-08T06:54:29.248Z",
     "role": null,
-    "id": "7c1353fe-5582-403f-9c21-a32a2ab4f9a5"
+    "id": "ce0f00a7-ad7f-4320-9f8e-72bc7b61abbe"
   }
 }
 ```
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_400:&color=red)
 ```JSON
 {
-  "success": false,
-  "data": "User is not found. "
+  "error": {
+    "code": "4",
+    "message": "Пользователь не найден"
+  }
 }
 ```
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_400:&color=red)
 ```JSON
 {
-  "success": false,
-  "data": "UserRole is not found. "
+  "error": {
+    "code": "4",
+    "message": "Роль не найдена"
+  }
 }
 ```
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_400:&color=red)
 ```JSON
 {
-  "success": false,
-  "data": "UserAdditionalInfo is not found. "
+  "error": {
+    "code": "4",
+    "message": "Запись таблицы UserAdditionalInfo по ae0f00a7-ad7f-4320-9f8e-72bc7b61abbe не найдена"
+  }
 }
 ```
 
@@ -1783,41 +1815,28 @@
    * Метод: GET
    * Запрос: `https://r.api.incase.com/api/user`
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_200:&color=green)
 ```JSON
 {
-  "success": true,
+  "code": "0",
   "data": {
-    "login": "GIS",
-    "email": "yt_ferbray@mail.ru",
-    "passwordHash": "upL6BXvpHm4TGjQ+BTkD1ll4jGgpkcvMMsmR1NpuBqc=",
-    "passwordSalt": "JNpn50AEljepMvgrCLVqQGP+zwfUyCxB2Lzc9tTN1KCoceYRPAtzjMRQ9nGx4PGQ+6J1sL1PJrp6rUpSCo+Whw==",
-    "additionalInfo": {
-      "balance": 1110,
-      "imageUri": "",
-      "isNotifyEmail": false,
-      "isGuestMode": false,
-      "isConfirmed": true,
-      "creationDate": "2023-04-07T05:52:48.4918144",
-      "deletionDate": null,
-      "role": null,
-      "id": "7c1353fe-5582-403f-9c21-a32a2ab4f9a5"
-    },
-    "topics": null,
-    "restrictions": null,
-    "ownerRestrictions": null,
-    "reviews": null,
-    "historyPayments": null,
-    "id": "753ed98a-cf5d-4acc-994c-afab92848fab"
+    "login": "admin",
+    "email": "ferbraytashi@gmail.com",
+    "password": null,
+    "ip": "",
+    "platform": "",
+    "id": "ba5aaa4c-f00e-49ed-b182-91070c3ce5f0"
   }
 }
 ```
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_400:&color=red)
 ```JSON
 {
-  "success": false,
-  "data": "User is not found. "
+  "error": {
+    "code": "4",
+    "message": "Пользователь не найден"
+  }
 }
 ```
 
@@ -1826,41 +1845,28 @@
    * Метод: GET
    * Запрос: `https://r.api.incase.com/api/user/{id}`
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_200:&color=green)
 ```JSON
 {
-  "success": true,
+  "code": "0",
   "data": {
-    "login": "GIS",
-    "email": "yt_ferbray@mail.ru",
-    "passwordHash": null,
-    "passwordSalt": null,
-    "additionalInfo": {
-      "balance": 1110,
-      "imageUri": "",
-      "isNotifyEmail": false,
-      "isGuestMode": false,
-      "isConfirmed": true,
-      "creationDate": "2023-04-07T05:52:48.4918144",
-      "deletionDate": null,
-      "role": null,
-      "id": "7c1353fe-5582-403f-9c21-a32a2ab4f9a5"
-    },
-    "topics": null,
-    "restrictions": null,
-    "ownerRestrictions": null,
-    "reviews": null,
-    "historyPayments": null,
-    "id": "753ed98a-cf5d-4acc-994c-afab92848fab"
+    "login": "admin",
+    "email": "ferbraytashi@gmail.com",
+    "password": null,
+    "ip": "",
+    "platform": "",
+    "id": "ba5aaa4c-f00e-49ed-b182-91070c3ce5f0"
   }
 }
 ```
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_400:&color=red)
 ```JSON
 {
-  "success": false,
-  "data": "User is not found. "
+  "error": {
+    "code": "4",
+    "message": "Пользователь не найден"
+  }
 }
 ```
 
@@ -1869,72 +1875,116 @@
    * Метод: GET
    * Запрос: `https://r.api.incase.com/api/user/inventory`
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_200:&color=green)
 ```JSON
 {
-  "success": true,
+  "code": "0",
   "data": []
-}
-```
-
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
-```JSON
-{
-  "success": false,
-  "data": "UserInventory is not found. "
 }
 ```
 
 7. Получить инвентарь пользователя по id:
    * Доступ: Allow Anonymous
    * Метод: GET
-   * Запрос: `https://r.api.incase.com/api/user/{id}`
+   * Запрос: `https://r.api.incase.com/api/user/{id}/inventory`
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_200:&color=green)
 ```JSON
 {
-  "success": true,
+  "code": "0",
   "data": []
 }
 ```
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_400:&color=red)
 ```JSON
 {
-  "success": false,
-  "data": "UserInventory is not found. "
-}
-```
-
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
-```JSON
-{
-  "success": false,
-  "data": "User is not found. "
+  "error": {
+    "code": "4",
+    "message": "Пользователь не найден"
+  }
 }
 ```
 
 7. Получить путь к баннерам пользователя:
    * Доступ: All
    * Метод: GET
-   * Запрос: `https://r.api.incase.com/api/user/banner`
+   * Запрос: `https://r.api.incase.com/api/user/banners`
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_200:&color=green)
 ```JSON
 {
-  "success": true,
+  "code": "0",
   "data": []
 }
 ```
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+8. Получить дополнительную информацию о пользователе по id:
+   * Доступ: AllowAnonymous
+   * Метод: GET
+   * Запрос: `https://r.api.incase.com/api/user-additional-info/{userId}`
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_200:&color=green)
 ```JSON
 {
-  "success": false,
-  "data": "UserPathBanner is not found. "
+  "code": "0",
+  "data": {
+    "balance": 1111,
+    "imageUri": "string",
+    "isNotifyEmail": false,
+    "isGuestMode": false,
+    "isConfirmed": true,
+    "creationDate": "2023-05-08T06:54:29.248",
+    "deletionDate": "2023-05-08T06:54:29.248",
+    "role": {
+      "name": "owner",
+      "id": "5ffbb660-ba04-45c2-84f7-3227196b76f0"
+    },
+    "id": "ce0f00a7-ad7f-4320-9f8e-72bc7b61abbe"
+  }
 }
 ```
 
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_400:&color=red)
+```JSON
+{
+  "error": {
+    "code": "4",
+    "message": "Пользователь не найден"
+  }
+}
+```
+
+9. Включить или выключить гостевой режим:
+   * Доступ: Admin, Owner, Bot
+   * Метод: GET
+   * Запрос: `https://r.api.incase.com/api/user-additional-info/guest-mode`
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_200:&color=green)
+```JSON
+{
+  "code": "0",
+  "message": "Гостевой мод включен"
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_200:&color=green)
+```JSON
+{
+  "code": "0",
+  "message": "Гостевой мод выключен"
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_400:&color=red)
+```JSON
+{
+  "error": {
+    "code": "4",
+    "message": "Пользователь не найден"
+  }
+}
+```
 
 ### Информация о историях
 
@@ -1943,40 +1993,24 @@
    * Метод: GET
    * Запрос: `https://r.api.incase.com/api/user/history/payments`
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_200:&color=green)
 ```JSON
 {
-  "success": true,
+  "code": "0",
   "data": []
 }
 ```
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
-```JSON
-{
-  "success": false,
-  "data": "UserHistoryPayment is not found. "
-}
-```
-
-2. Получить историю вывода:
+2. Получить историю открытий:
    * Доступ: All
    * Метод: GET
    * Запрос: `https://r.api.incase.com/api/user/history/openings`
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_200:&color=green)
 ```JSON
 {
-  "success": true,
+  "code": "0",
   "data": []
-}
-```
-
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
-```JSON
-{
-  "success": false,
-  "data": "UserHistoryOpening is not found. "
 }
 ```
 
@@ -1985,48 +2019,34 @@
    * Метод: GET
    * Запрос: `https://r.api.incase.com/api/user/{id}/history/withdrawns`
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_200:&color=green)
 ```JSON
 {
-  "success": true,
+  "code": "0",
   "data": []
 }
 ```
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_400:&color=red)
 ```JSON
 {
-  "success": false,
-  "data": "User is not found. "
-}
-```
-
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
-```JSON
-{
-  "success": false,
-  "data": "UserHistoryWithdrawn is not found. "
+  "error": {
+    "code": "4",
+    "message": "Пользователь не найден"
+  }
 }
 ```
 
 4. Получить историю вывода:
    * Доступ: All
    * Метод: GET
-   * Запрос: `https://r.api.incase.com/api/user/history/openings`
+   * Запрос: `https://r.api.incase.com/api/user/history/withdraws`
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_200:&color=green)
 ```JSON
 {
-  "success": true,
+  "code": "0",
   "data": []
-}
-```
-
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
-```JSON
-{
-  "success": false,
-  "data": "UserHistoryOpening is not found. "
 }
 ```
 
@@ -2035,19 +2055,11 @@
    * Метод: GET
    * Запрос: `https://r.api.incase.com/api/user/history/promocodes`
 
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_200:&color=green)
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_200:&color=green)
 ```JSON
 {
-  "success": true,
+  "code": "0",
   "data": []
-}
-```
-
-![](https://img.shields.io/static/v1?label=&message=STATUS_MESSAGE_404:&color=red)
-```JSON
-{
-  "success": false,
-  "data": "UserHistoryPromocodes is not found. "
 }
 ```
 
