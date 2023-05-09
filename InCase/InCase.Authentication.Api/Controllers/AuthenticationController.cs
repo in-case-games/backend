@@ -49,6 +49,7 @@ namespace InCase.Authentication.Api.Controllers
                 u.Email == userDto.Email ||
                 u.Login == userDto.Login) ?? 
                 throw new NotFoundCodeException("Пользователь не найден");
+
             if (!ValidationService.IsValidUserPassword(in user, userDto.Password!))
                 throw new ForbiddenCodeException("Неверный пароль");
 

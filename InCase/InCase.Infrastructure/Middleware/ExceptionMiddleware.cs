@@ -24,19 +24,19 @@ namespace InCase.Infrastructure.Middleware
             {
                 await HandleExceptionAsync(context, ex);
             }
-            catch (Exception exceptionObj)
+            catch (Exception ex)
             {
-                await HandleExceptionAsync(context, exceptionObj);
+                await HandleExceptionAsync(context, ex);
             }
         }
 
-        private static Task HandleExceptionAsync(HttpContext context, StatusCodeException exception)
+        private static Task HandleExceptionAsync(HttpContext context, StatusCodeException ex)
         {
             string result;
             context.Response.ContentType = "application/json";
 
-            int code = exception.StatusCode;
-            string message = exception.Message;
+            int code = ex.StatusCode;
+            string message = ex.Message;
 
             result = JsonSerializer.Serialize(new
             {
@@ -47,13 +47,13 @@ namespace InCase.Infrastructure.Middleware
             return context.Response.WriteAsync(result);
         }
 
-        private static Task HandleExceptionAsync(HttpContext context, Exception exception)
+        private static Task HandleExceptionAsync(HttpContext context, Exception ex)
         {
             string result;
             context.Response.ContentType = "application/json";
 
             int code = (int)HttpStatusCode.InternalServerError;
-            string message = exception.Message;
+            string message = ex.Message;
 
             result = JsonSerializer.Serialize(new
             {
