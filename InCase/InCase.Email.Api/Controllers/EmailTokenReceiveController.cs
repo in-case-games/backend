@@ -126,6 +126,8 @@ namespace InCase.Email.Api.Controllers
                 return ResponseUtil.Conflict("Email почта занята");
 
             User? user = await context.Users
+                .Include(u => u.AdditionalInfo)
+                .Include(u => u.AdditionalInfo!.Role)
                 .FirstOrDefaultAsync(u => u.Id == Guid.Parse(id));
 
             if (user == null) 
@@ -162,6 +164,8 @@ namespace InCase.Email.Api.Controllers
                 .Value;
 
             User? user = await context.Users
+                .Include(u => u.AdditionalInfo)
+                .Include(u => u.AdditionalInfo!.Role)
                 .FirstOrDefaultAsync(u => u.Id == Guid.Parse(id));
 
             if (user == null) 
@@ -204,6 +208,7 @@ namespace InCase.Email.Api.Controllers
 
             User? user = await context.Users
                 .Include(u => u.AdditionalInfo)
+                .Include(u => u.AdditionalInfo!.Role)
                 .FirstOrDefaultAsync(u => u.Id == Guid.Parse(id));
 
             if (user == null) 

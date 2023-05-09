@@ -13,11 +13,7 @@ namespace InCase.Infrastructure.Utils
 
         public static IActionResult Accepted<T>(T data) => CreateResultOK("1", data);
 
-        public static IActionResult SentEmail<T>(T data) => CreateResultOK("2", data);
-
         public static IActionResult Ok(string message) => CreateResultOK("0", message);
-
-        public new static IActionResult Accepted(string message) => CreateResultOK("1", message);
 
         public static IActionResult SentEmail(string message = SENT_EMAIL) => 
             CreateResultOK("2", message);
@@ -42,9 +38,6 @@ namespace InCase.Infrastructure.Utils
 
         public static IActionResult RequestTimeout(string message) =>
             CreateResultError("6", message);
-
-        public static IActionResult UnknownError(string message) => 
-            CreateResultError("7", message);
 
         public static IActionResult UnknownError(Exception ex) =>
             CreateResultError("7", ex.InnerException?.Message ?? ex.Message);

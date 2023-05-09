@@ -94,6 +94,7 @@ namespace InCase.Email.Api.Controllers
 
             User? user = await context.Users
                 .Include(u => u.AdditionalInfo)
+                .Include(u => u.AdditionalInfo!.Role)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(u => u.Id == Guid.Parse(id));
 

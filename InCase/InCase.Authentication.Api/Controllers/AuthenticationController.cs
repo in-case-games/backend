@@ -1,6 +1,8 @@
-﻿using InCase.Domain.Dtos;
+﻿using InCase.Domain.Common;
+using InCase.Domain.Dtos;
 using InCase.Domain.Entities.Auth;
 using InCase.Domain.Entities.Resources;
+using InCase.Infrastructure.CustomException;
 using InCase.Infrastructure.Data;
 using InCase.Infrastructure.Services;
 using InCase.Infrastructure.Utils;
@@ -45,12 +47,10 @@ namespace InCase.Authentication.Api.Controllers
                 .FirstOrDefaultAsync(u => 
                 u.Id == userDto.Id ||
                 u.Email == userDto.Email ||
-                u.Login == userDto.Login);
-
-            if (user is null) 
-                return ResponseUtil.NotFound("Пользователь не найден");
+                u.Login == userDto.Login) ?? 
+                throw new NotFoundCodeException("Пользователь не найден");
             if (!ValidationService.IsValidUserPassword(in user, userDto.Password!))
-                return ResponseUtil.Forbidden("Неверный пароль");
+                throw new ForbiddenCodeException("Неверный пароль");
 
             List<UserRestriction> bans = await context.UserRestrictions
                 .Include(ur => ur.Type)
@@ -60,7 +60,7 @@ namespace InCase.Authentication.Api.Controllers
                 .ToListAsync();
 
             if (bans.Count > 0)
-                return ResponseUtil.Forbidden($"Вход запрещён до {bans[0].ExpirationDate}. " +
+                throw new ForbiddenCodeException($"Вход запрещён до {bans[0].ExpirationDate}. " +
                     $"Причина - {bans[0].Description}");
 
             return user.AdditionalInfo!.IsConfirmed ? 
@@ -92,8 +92,8 @@ namespace InCase.Authentication.Api.Controllers
                 .AsNoTracking()
                 .AnyAsync(u => u.Email == userDto.Email || u.Login == userDto.Login);
 
-            if (isExist) 
-                return ResponseUtil.Conflict("Пользователь уже существует");
+            if (isExist)
+                throw new ConflictCodeException("Пользователь уже существует");
 
             User user = userDto.Convert();
 
@@ -111,22 +111,15 @@ namespace InCase.Authentication.Api.Controllers
                 UserId = user.Id,
                 DeletionDate = DateTime.UtcNow + TimeSpan.FromDays(30),
             };
-
-            try
-            {
-                await _emailService.SendToEmail(user.Email!, "Подтверждение регистрации", new()
+            
+            await _emailService.SendToEmail(user.Email!, "Подтверждение регистрации", new()
                 {
                     BodyTitle = $"Дорогой {user.Login!}",
                     BodyDescription = $"Для завершения этапа регистрации, " +
                     $"вам необходимо нажать на кнопку ниже для подтверждения почты. " +
                     $"Если это были не вы, проигнорируйте это сообщение.",
                     BodyButtonLink = $"/api/email/confirm/account?token={_jwtService.CreateEmailToken(user)}"
-                }, false);
-            }
-            catch (SmtpCommandException)
-            {
-                return ResponseUtil.Forbidden("Почта не существует или некорректна");
-            }
+                });
 
             await context.Users.AddAsync(user);
             await context.UserAdditionalInfos.AddAsync(info);
@@ -142,26 +135,22 @@ namespace InCase.Authentication.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            ClaimsPrincipal? principal = _jwtService.GetClaimsToken(refreshToken);
-
-            if (principal is null)
-                return ResponseUtil.Unauthorized("Не валидный токен обновления");
+            ClaimsPrincipal? principal = _jwtService.GetClaimsToken(refreshToken) ?? 
+                throw new UnauthorizedCodeException("Не валидный токен обновления");
 
             string id = principal.Claims
                 .Single(c => c.Type == ClaimTypes.NameIdentifier)
                 .Value;
 
             User? user = await context.Users
-                .Include(u => u.Restrictions)
                 .Include(u => u.AdditionalInfo)
                 .Include(u => u.AdditionalInfo!.Role)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(u => u.Id == Guid.Parse(id));
+                .FirstOrDefaultAsync(u => u.Id == Guid.Parse(id)) ?? 
+                throw new NotFoundCodeException("Пользователь не найден");
 
-            if (user is null) 
-                return ResponseUtil.NotFound("Пользователь не найден");
             if (!ValidationService.IsValidToken(in user, principal, "refresh"))
-                return ResponseUtil.Unauthorized("Не валидный токен обновления");
+                throw new UnauthorizedCodeException("Не валидный токен обновления");
 
             List<UserRestriction> bans = await context.UserRestrictions
                 .Include(ur => ur.Type)
@@ -171,7 +160,7 @@ namespace InCase.Authentication.Api.Controllers
                 .ToListAsync();
 
             if (bans.Count > 0)
-                return ResponseUtil.Forbidden($"Вход запрещён до {bans[0].ExpirationDate}. " +
+                throw new ForbiddenCodeException($"Вход запрещён до {bans[0].ExpirationDate}. " +
                     $"Причина - {bans[0].Description}");
 
             DataSendTokens tokenModel = _jwtService.CreateTokenPair(in user!);

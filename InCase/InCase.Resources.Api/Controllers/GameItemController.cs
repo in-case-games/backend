@@ -6,7 +6,6 @@ using InCase.Infrastructure.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Threading;
 
 namespace InCase.Resources.Api.Controllers
 {
@@ -51,6 +50,7 @@ namespace InCase.Resources.Api.Controllers
                 .AsSplitQuery()
                 .AsNoTracking()
                 .FirstOrDefaultAsync(f => f.Id == id, cancellationToken);
+
             return item is null ? 
                 ResponseUtil.NotFound("Предмет не найден") : 
                 ResponseUtil.Ok(item);
@@ -116,13 +116,13 @@ namespace InCase.Resources.Api.Controllers
         private async Task<string> NotFoundGameItem(GameItemDto itemDto, ApplicationDbContext context)
         {
             if (!await context.Games.AnyAsync(a => a.Id == itemDto.GameId))
-                return nameof(Game);
+                return "Игра не найдена";
             if (!await context.GameItemTypes.AnyAsync(a => a.Id == itemDto.TypeId))
-                return nameof(GameItemType);
+                return "Тип предмета не найден";
             if (!await context.GameItemRarities.AnyAsync(a => a.Id == itemDto.RarityId))
-                return nameof(GameItemRarity);
+                return "Редкость предмета не найдена";
             if (!await context.GameItemQualities.AnyAsync(a => a.Id == itemDto.QualityId))
-                return nameof(GameItemQuality);
+                return "Качество предмета не найдено";
 
             return "";
         }

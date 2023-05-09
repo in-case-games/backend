@@ -1,4 +1,5 @@
 ﻿using InCase.Domain.Entities.Email;
+using InCase.Infrastructure.CustomException;
 using InCase.Infrastructure.Utils;
 using MailKit.Net.Smtp;
 using Microsoft.AspNetCore.Mvc;
@@ -27,8 +28,7 @@ namespace InCase.Infrastructure.Services
         public async Task<IActionResult> SendToEmail(
             string email, 
             string subject, 
-            EmailTemplate template,
-            bool isCheckException = true)
+            EmailTemplate template)
         {
             using var client = new SmtpClient();
 
@@ -49,17 +49,13 @@ namespace InCase.Infrastructure.Services
             {
                 await client.SendAsync(emailMessage);
             }
-            catch(SmtpCommandException ex)
+            catch(SmtpCommandException)
             {
-                return isCheckException ?
-                    ResponseUtil.UnknownError(ex) :
-                    throw new SmtpCommandException(ex.ErrorCode, ex.StatusCode, ex.Message);
+                throw new ConflictCodeException("Почта не существует или некорректна");
             }
             catch (Exception ex)
             {
-                return isCheckException ? 
-                    ResponseUtil.UnknownError(ex) : 
-                    throw new Exception(ex.Message, ex.InnerException);
+                throw new UnknownErrorCodeException(ex);
             }
 
             return ResponseUtil.SentEmail();

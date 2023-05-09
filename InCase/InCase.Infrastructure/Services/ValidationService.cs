@@ -24,21 +24,7 @@ namespace InCase.Infrastructure.Services
         {
             ClaimsPrincipal? principal = _jwtService.GetClaimsToken(token);
 
-            if (principal is null) return false;
-
-            string? lifetime = principal?.Claims.FirstOrDefault(c => c.Type == "exp")?.Value;
-
-            DateTimeOffset lifetimeOffset = DateTimeOffset.FromUnixTimeSeconds(long.Parse(lifetime ?? "0"));
-            DateTime lifetimeDateTime = lifetimeOffset.UtcDateTime;
-
-            string? hash = principal?.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Hash)?.Value;
-            string? email = principal?.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
-            string? tokenType = principal?.Claims.FirstOrDefault(c => c.Type == "TokenType")?.Value;
-
-            return (DateTime.UtcNow < lifetimeDateTime &&
-                user.PasswordHash == hash &&
-                user.Email == email &&
-                tokenType == type);
+            return principal is not null && IsValidToken(in user, principal, type);
         }
 
         public static bool IsValidToken(in User user, ClaimsPrincipal principal, string type)

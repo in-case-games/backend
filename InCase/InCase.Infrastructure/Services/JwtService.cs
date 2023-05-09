@@ -1,5 +1,7 @@
 ﻿using InCase.Domain.Entities.Auth;
 using InCase.Domain.Entities.Resources;
+using InCase.Infrastructure.Data;
+using InCase.Infrastructure.Utils;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;

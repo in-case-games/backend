@@ -1,4 +1,5 @@
 using InCase.Infrastructure.Data;
+using InCase.Infrastructure.Middleware;
 using InCase.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -97,6 +98,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseMiddleware<ExceptionMiddleware>();
 app.UseCors(_policyName);
 app.UseAuthentication();
 app.UseAuthorization();
