@@ -1,4 +1,5 @@
-﻿using InCase.Domain.Entities.Resources;
+﻿using InCase.Domain.Dtos;
+using InCase.Domain.Entities.Resources;
 using InCase.Infrastructure.CustomException;
 using InCase.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
@@ -62,6 +63,14 @@ namespace InCase.Infrastructure.Services
             if (bans.Count > 0)
                 throw new ForbiddenCodeException($"Вход запрещён до {bans[0].ExpirationDate}. " +
                     $"Причина - {bans[0].Description}");
+        }
+
+        public static void CreateNewPassword(ref User user, string password)
+        {
+            byte[] salt = EncryptorService.GenerationSaltTo64Bytes();
+
+            user.PasswordHash = EncryptorService.GenerationHashSHA512(password, salt);
+            user.PasswordSalt = Convert.ToBase64String(salt);
         }
     }
 }

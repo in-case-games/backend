@@ -1,4 +1,5 @@
-﻿using InCase.Domain.Entities.Auth;
+﻿using InCase.Domain.Dtos;
+using InCase.Domain.Entities.Auth;
 using InCase.Domain.Entities.Resources;
 using InCase.Infrastructure.CustomException;
 using InCase.Infrastructure.Data;
@@ -109,12 +110,7 @@ namespace InCase.Email.Api.Controllers
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             User user = await _authService.GetUserFromToken(token, "email", context);
-
-            byte[] salt = EncryptorService.GenerationSaltTo64Bytes();
-            string hash = EncryptorService.GenerationHashSHA512(password, salt);
-
-            user.PasswordHash = hash;
-            user.PasswordSalt = Convert.ToBase64String(salt);
+            AuthenticationService.CreateNewPassword(ref user, password);
 
             await context.SaveChangesAsync();
             await _emailService.SendToEmail(user.Email!, "Ваш аккаунт сменил пароль", new()

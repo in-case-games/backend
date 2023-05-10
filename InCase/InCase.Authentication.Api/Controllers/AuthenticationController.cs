@@ -84,11 +84,7 @@ namespace InCase.Authentication.Api.Controllers
                 throw new ConflictCodeException("Пользователь уже существует");
 
             User user = userDto.Convert();
-
-            byte[] salt = EncryptorService.GenerationSaltTo64Bytes();
-
-            user.PasswordHash = EncryptorService.GenerationHashSHA512(userDto.Password!, salt);
-            user.PasswordSalt = Convert.ToBase64String(salt);
+            AuthenticationService.CreateNewPassword(ref user, userDto.Password!);
 
             UserRole? role = await context.UserRoles
                 .AsNoTracking()
