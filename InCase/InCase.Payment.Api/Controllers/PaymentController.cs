@@ -50,14 +50,11 @@ namespace InCase.Payment.Api.Controllers
                     .ThenInclude(g => g.Markets)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(ui => ui.Id == data.InventoryId && ui.UserId == UserId) ?? 
-                throw new NotFoundCodeException("Предмет не найден в инвенторе");
+                throw new NotFoundCodeException("Предмет не найден в инвентаре");
 
             GameItem item = inventory.Item!;
 
-            ItemInfo? itemInfo = await _withdrawService.GetItemInfo(item);
-
-            if (itemInfo is null || itemInfo.Result != "ok")
-                throw new RequestTimeoutCodeException("Сервис покупки предмета не отвечает");
+            ItemInfo itemInfo = await _withdrawService.GetItemInfo(item);
 
             decimal itemPrice = itemInfo.PriceKopecks * 0.01M;
 
@@ -66,15 +63,10 @@ namespace InCase.Payment.Api.Controllers
 
             BalanceMarket balance = await _withdrawService.GetBalance(itemInfo.Market.Name!);
 
-            if (balance.Result != "ok")
-                throw new RequestTimeoutCodeException("Сервис покупки предмета не отвечает");
             if (balance.Balance <= itemPrice)
                 throw new PaymentRequiredCodeException("Ожидаем пополнения сервиса покупки");
 
             BuyItem buyItem = await _withdrawService.BuyItem(itemInfo, data.TradeUrl!);
-
-            if (buyItem.Result != "ok")
-                throw new RequestTimeoutCodeException("Сервис покупки предмета не отвечает");
 
             ItemWithdrawStatus status = await context.ItemWithdrawStatuses
                 .AsNoTracking()
@@ -176,9 +168,7 @@ namespace InCase.Payment.Api.Controllers
         {
             BalanceMarket balance = await _withdrawService.GetBalance(name);
 
-            return balance.Result == "ok" ?
-                ResponseUtil.Ok(balance.Balance) :
-                throw new RequestTimeoutCodeException("Сервис покупки предметов не отвечает");
+            return ResponseUtil.Ok(balance.Balance);
         }
 
         //TODO Transfer method
@@ -199,9 +189,7 @@ namespace InCase.Payment.Api.Controllers
 
             TradeInfo info = await _withdrawService.GetTradeInfo(withdraw);
 
-            return info.Result == "ok" ? 
-                ResponseUtil.Ok(info) :
-                throw new RequestTimeoutCodeException("Сервис покупки предметов не отвечает");
+            return ResponseUtil.Ok(info);
         }
 
         //TODO Transfer method
@@ -218,8 +206,7 @@ namespace InCase.Payment.Api.Controllers
                 .FirstOrDefaultAsync(gi => gi.Id == id) ??
                 throw new NotFoundCodeException("Предмет не найден");
 
-            ItemInfo info = await _withdrawService.GetItemInfo(item) ??
-                throw new RequestTimeoutCodeException("Сервис покупки предметов не отвечает");
+            ItemInfo info = await _withdrawService.GetItemInfo(item);
 
             return ResponseUtil.Ok(info);
         }

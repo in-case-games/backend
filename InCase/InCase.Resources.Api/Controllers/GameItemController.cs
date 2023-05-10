@@ -1,6 +1,7 @@
 ﻿using InCase.Domain.Common;
 using InCase.Domain.Dtos;
 using InCase.Domain.Entities.Resources;
+using InCase.Infrastructure.CustomException;
 using InCase.Infrastructure.Data;
 using InCase.Infrastructure.Utils;
 using Microsoft.AspNetCore.Authorization;
@@ -43,17 +44,16 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
 
-            GameItem? item = await context.GameItems
+            GameItem item = await context.GameItems
                 .Include(i => i.Type)
                 .Include(i => i.Rarity)
                 .Include(i => i.Quality)
                 .AsSplitQuery()
                 .AsNoTracking()
-                .FirstOrDefaultAsync(f => f.Id == id, cancellationToken);
+                .FirstOrDefaultAsync(f => f.Id == id, cancellationToken) ??
+                throw new NotFoundCodeException("Предмет не найден");
 
-            return item is null ? 
-                ResponseUtil.NotFound("Предмет не найден") : 
-                ResponseUtil.Ok(item);
+            return ResponseUtil.Ok(item);
         }
 
         [AllowAnonymous]
@@ -83,10 +83,7 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
 
-            string notFoundItem = await NotFoundGameItem(itemDto, context);
-
-            if (notFoundItem is not "")
-                return ResponseUtil.NotFound(notFoundItem);
+            await CheckGameItem(itemDto, context);
 
             return await EndpointUtil.Create(itemDto.Convert(), context, cancellationToken);
         }
@@ -97,12 +94,9 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
 
-            string notFoundItem = await NotFoundGameItem(itemDto, context);
+            await CheckGameItem(itemDto, context);
 
-            if (notFoundItem is not "")
-                return ResponseUtil.NotFound(notFoundItem);
-
-            return await EndpointUtil.Update(itemDto.Convert(false), context);
+            return await EndpointUtil.Update(itemDto.Convert(false), context, cancellationToken);
         }
 
         [AuthorizeRoles(Roles.Owner)]
@@ -113,18 +107,17 @@ namespace InCase.Resources.Api.Controllers
 
             return await EndpointUtil.Delete<GameItem>(id, context, cancellationToken);
         }
-        private async Task<string> NotFoundGameItem(GameItemDto itemDto, ApplicationDbContext context)
+
+        private static async Task CheckGameItem(GameItemDto itemDto, ApplicationDbContext context)
         {
             if (!await context.Games.AnyAsync(a => a.Id == itemDto.GameId))
-                return "Игра не найдена";
+                throw new NotFoundCodeException("Игра не найден");
             if (!await context.GameItemTypes.AnyAsync(a => a.Id == itemDto.TypeId))
-                return "Тип предмета не найден";
+                throw new NotFoundCodeException("Тип предмета не найден");
             if (!await context.GameItemRarities.AnyAsync(a => a.Id == itemDto.RarityId))
-                return "Редкость предмета не найдена";
+                throw new NotFoundCodeException("Редкость предмета не найдена");
             if (!await context.GameItemQualities.AnyAsync(a => a.Id == itemDto.QualityId))
-                return "Качество предмета не найдено";
-
-            return "";
+                throw new NotFoundCodeException("Качество предмета не найдено");
         }
     }
 }

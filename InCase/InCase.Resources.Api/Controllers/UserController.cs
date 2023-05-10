@@ -2,6 +2,7 @@
 using InCase.Domain.Dtos;
 using InCase.Domain.Entities.Payment;
 using InCase.Domain.Entities.Resources;
+using InCase.Infrastructure.CustomException;
 using InCase.Infrastructure.Data;
 using InCase.Infrastructure.Services;
 using InCase.Infrastructure.Utils;
@@ -35,13 +36,12 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            User? user = await context.Users
+            User user = await context.Users
                 .AsNoTracking()
-                .FirstOrDefaultAsync(u => u.Id == UserId);
+                .FirstOrDefaultAsync(u => u.Id == UserId) ??
+                throw new NotFoundCodeException("Пользователь не найден");
 
-            return user is null ?
-                ResponseUtil.NotFound("Пользователь не найден") :
-                ResponseUtil.Ok(user.Convert(false));
+            return ResponseUtil.Ok(user.Convert(false));
         }
 
         [AllowAnonymous]
@@ -50,13 +50,12 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            User? user = await context.Users
+            User user = await context.Users
                 .AsNoTracking()
-                .FirstOrDefaultAsync(u => u.Id == id);
+                .FirstOrDefaultAsync(u => u.Id == id) ??
+                throw new NotFoundCodeException("Пользователь не найден");
 
-            return user is null ? 
-                ResponseUtil.NotFound("Пользователь не найден") : 
-                ResponseUtil.Ok(user.Convert(false));
+            return ResponseUtil.Ok(user.Convert(false));
         }
 
         [AuthorizeRoles(Roles.All)]
@@ -95,8 +94,8 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            if (await context.Users.AnyAsync(u => u.Id == id) is false)
-                return ResponseUtil.NotFound("Пользователь не найден");
+            if (!await context.Users.AnyAsync(u => u.Id == id))
+                throw new NotFoundCodeException("Пользователь не найден");
 
             List<UserHistoryWithdraw> withdraws = await context.UserHistoryWithdraws
                 .Include(uhw => uhw.Item)
@@ -147,8 +146,8 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            if(await context.Users.AnyAsync(u => u.Id == id) is false)
-                return ResponseUtil.NotFound("Пользователь не найден");
+            if(!await context.Users.AnyAsync(u => u.Id == id))
+                throw new NotFoundCodeException("Пользователь не найден");
 
             List<UserInventory> inventories = await context.UserInventories
                 .Include(ui => ui.Item)
@@ -196,14 +195,13 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            Promocode? promocode = await context.Promocodes
+            Promocode promocode = await context.Promocodes
                 .Include(p => p.Type)
-                .FirstOrDefaultAsync(p => p.Name == name);
+                .FirstOrDefaultAsync(p => p.Name == name) ??
+                throw new NotFoundCodeException("Промокод не найден");
 
-            if (promocode is null)
-                return ResponseUtil.NotFound("Промокод не найден");
             if (promocode.NumberActivations <= 0 || promocode.ExpirationDate <= DateTime.UtcNow)
-                return ResponseUtil.Forbidden("Промокод истёк");
+                throw new ForbiddenCodeException("Промокод истёк");
 
             UserHistoryPromocode? historyPromocode = await context.UserHistoryPromocodes
                 .AsNoTracking()
@@ -217,9 +215,9 @@ namespace InCase.Resources.Api.Controllers
                 uhp.UserId == UserId);
 
             if (historyPromocode is not null && historyPromocode.IsActivated)
-                return ResponseUtil.Conflict("Промокод уже используется");
+                throw new ConflictCodeException("Промокод уже используется");
             if (historyPromocodeType is not null)
-                return ResponseUtil.Conflict("Тип промокода уже используется");
+                throw new ConflictCodeException("Тип промокода уже используется");
 
             promocode.NumberActivations--;
 
@@ -238,20 +236,19 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            Promocode? promocode = await context.Promocodes
+            Promocode promocode = await context.Promocodes
                 .Include(p => p.Type)
-                .FirstOrDefaultAsync(p => p.Name == name);
+                .FirstOrDefaultAsync(p => p.Name == name) ??
+                throw new NotFoundCodeException("Промокод не найден");
 
-            if (promocode is null)
-                return ResponseUtil.NotFound("Промокод не найден");
             if (promocode.NumberActivations <= 0 || promocode.ExpirationDate <= DateTime.UtcNow)
-                return ResponseUtil.Conflict("Промокод истёк");
+                throw new ConflictCodeException("Промокод истёк");
 
             bool IsUsed = await context.UserHistoryPromocodes
                 .AnyAsync(uhp => uhp.PromocodeId == promocode.Id && uhp.IsActivated);
 
             if (IsUsed)
-                return ResponseUtil.Conflict("Промокод уже использован");
+                throw new ConflictCodeException("Промокод уже использован");
 
             UserHistoryPromocode? promocodeOld = await context.UserHistoryPromocodes
                 .Include(uhp => uhp.Promocode)
@@ -262,9 +259,9 @@ namespace InCase.Resources.Api.Controllers
                 uhp.UserId == UserId);
 
             if (promocodeOld is null)
-                return ResponseUtil.Conflict("Прошлый промокод не найден");
+                throw new ConflictCodeException("Прошлый промокод не найден");
             if (promocodeOld.Promocode!.Id == promocode.Id)
-                return ResponseUtil.Conflict("Промокод уже использован");
+                throw new ConflictCodeException("Промокод уже использован");
 
             promocodeOld.Promocode.NumberActivations++;
             promocode.NumberActivations--;
@@ -288,10 +285,8 @@ namespace InCase.Resources.Api.Controllers
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             UserAdditionalInfo? info = await context.UserAdditionalInfos
-                .FirstOrDefaultAsync(uai => uai.UserId == UserId);
-
-            if (info is null)
-                return ResponseUtil.NotFound("Дополнительная информация не найдена");
+                .FirstOrDefaultAsync(uai => uai.UserId == UserId) ??
+                throw new NotFoundCodeException("Дополнительная информация не найдена");
 
             List<UserInventory> inventories = await context.UserInventories
                 .AsNoTracking()
@@ -299,7 +294,7 @@ namespace InCase.Resources.Api.Controllers
                 .ToListAsync();
 
             if (inventories.Count == 0)
-                return ResponseUtil.Conflict("Инвентарь пуст");
+                throw new ConflictCodeException("Инвентарь пуст");
 
             UserInventory inventory = inventories.MinBy(ui => ui.Date)!;
 
@@ -314,18 +309,14 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            UserAdditionalInfo? info = await context.UserAdditionalInfos
-                .FirstOrDefaultAsync(uai => uai.UserId == UserId);
+            UserAdditionalInfo info = await context.UserAdditionalInfos
+                .FirstOrDefaultAsync(uai => uai.UserId == UserId) ??
+                throw new NotFoundCodeException("Дополнительная информация не найдена");
 
-            if (info is null)
-                return ResponseUtil.NotFound("Дополнительная информация не найдена");
-
-            UserInventory? inventory = await context.UserInventories
+            UserInventory inventory = await context.UserInventories
                 .AsNoTracking()
-                .FirstOrDefaultAsync(ui => ui.Id == id && ui.UserId == UserId);
-
-            if (inventory is null)
-                return ResponseUtil.NotFound("Предмет не найден в инвентаре");
+                .FirstOrDefaultAsync(ui => ui.Id == id && ui.UserId == UserId) ??
+                throw new NotFoundCodeException("Предмет не найден в инвентаре");
 
             info.Balance += inventory.FixedCost;
 
@@ -338,38 +329,31 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            UserInventory? inventory = await context.UserInventories
+            UserInventory inventory = await context.UserInventories
                 .Include(ui => ui.Item)
                 .Include(ui => ui.Item!.Game!)
                     .ThenInclude(g => g.Markets)
-                .FirstOrDefaultAsync(ui => ui.UserId == UserId && ui.Id == id);
-            GameItem? item = await context.GameItems
+                .FirstOrDefaultAsync(ui => ui.UserId == UserId && ui.Id == id) ??
+                throw new NotFoundCodeException("Предмет не найден в инвентаре");
+            GameItem item = await context.GameItems
                 .AsNoTracking()
-                .FirstOrDefaultAsync(gi => gi.Id == itemId);
-            UserAdditionalInfo? info = await context.UserAdditionalInfos
-                .FirstOrDefaultAsync(uai => uai.UserId == UserId);
-
-            if (inventory is null)
-                return ResponseUtil.NotFound("Предмет не найден в инвентаре");
-            if (item is null)
-                return ResponseUtil.NotFound("Предмет не найден");
-            if (info is null)
-                return ResponseUtil.NotFound("Дополнительная информация не найдена");
+                .FirstOrDefaultAsync(gi => gi.Id == itemId) ??
+                throw new NotFoundCodeException("Предмет не найден");
+            UserAdditionalInfo info = await context.UserAdditionalInfos
+                .FirstOrDefaultAsync(uai => uai.UserId == UserId) ??
+                throw new NotFoundCodeException("Дополнительная информация не найдена");
 
             decimal differenceCost = inventory.FixedCost - item.Cost;
 
             if (differenceCost < 0)
-                return ResponseUtil.BadRequest("Стоимость товара при обмене не может быть выше");
+                throw new BadRequestCodeException("Стоимость товара при обмене не может быть выше");
 
-            ItemInfo? itemInfo = await _withdrawService.GetItemInfo(inventory.Item!);
-
-            if (itemInfo is null || itemInfo.Result != "ok")
-                return ResponseUtil.RequestTimeout("Сервис покупки предмета не отвечает");
+            ItemInfo itemInfo = await _withdrawService.GetItemInfo(inventory.Item!);
 
             decimal itemInfoPrice = itemInfo.PriceKopecks * 0.01M;
 
             if (itemInfoPrice <= inventory.FixedCost * 0.1M / 7)
-                return ResponseUtil.Conflict("Товар может быть обменен только в случае нестабильности цены");
+                throw new ConflictCodeException("Товар может быть обменен только в случае нестабильности цены");
 
             inventory.ItemId = item.Id;
             inventory.FixedCost = item.Cost;
@@ -386,29 +370,26 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            LootBoxBanner? banner = await context.LootBoxBanners
+            LootBoxBanner banner = await context.LootBoxBanners
                 .Include(lbb => lbb.Box)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(lbb => lbb.Id == pathDto.BannerId);
+                .FirstOrDefaultAsync(lbb => lbb.Id == pathDto.BannerId) ?? 
+                throw new NotFoundCodeException("Баннер не найден");
 
-            if (banner is null)
-                return ResponseUtil.NotFound("Баннер не найден");
-
-            LootBoxInventory? inventory = await context.LootBoxInventories
+            LootBoxInventory inventory = await context.LootBoxInventories
                 .Include(lbi => lbi.Item)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(lbi => lbi.ItemId == pathDto.ItemId && lbi.BoxId == banner.BoxId);
+                .FirstOrDefaultAsync(lbi => lbi.ItemId == pathDto.ItemId && lbi.BoxId == banner.BoxId) ??
+                throw new NotFoundCodeException("Предмет не найден в инвентаре");
 
-            if (inventory is null)
-                return ResponseUtil.NotFound("Предмет не найден");
             if (await context.UserPathBanners.AnyAsync(upb => upb.UserId == UserId && upb.BannerId == banner.Id))
-                return ResponseUtil.Conflict("Путь к баннеру уже используется");
+                throw new ConflictCodeException("Путь к баннеру уже используется");
 
             GameItem item = inventory.Item!;
             LootBox box = banner.Box!;
 
             if (item.Cost <= box.Cost)
-                return ResponseUtil.BadRequest("Стоимость товара не может быть меньше стоимости кейса");
+                throw new BadRequestCodeException("Стоимость товара не может быть меньше стоимости кейса");
 
             pathDto.UserId = UserId;
             pathDto.Date = DateTime.UtcNow;
@@ -417,7 +398,7 @@ namespace InCase.Resources.Api.Controllers
 
             return pathDto.NumberSteps <= 100 ? 
                 await EndpointUtil.Create(pathDto.Convert(), context) :
-                ResponseUtil.BadRequest("Стоимость предмета превышает стоимость кейса в 20 раз");
+                throw new BadRequestCodeException("Стоимость предмета превышает стоимость кейса в 20 раз");
         }
 
         [AuthorizeRoles(Roles.All)]
@@ -426,15 +407,14 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            UserHistoryWithdraw? withdraw = await context.UserHistoryWithdraws
+            UserHistoryWithdraw withdraw = await context.UserHistoryWithdraws
                 .Include(uhw => uhw.Status)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(uhw => uhw.Id == id && uhw.UserId == UserId);
+                .FirstOrDefaultAsync(uhw => uhw.Id == id && uhw.UserId == UserId) ??
+                throw new NotFoundCodeException("История вывода не найдена");
 
-            if (withdraw is null)
-                return ResponseUtil.NotFound("История вывода не найдена");
             if (withdraw.Status?.Name is null || withdraw.Status.Name != "cancel")
-                return ResponseUtil.Conflict("Ваш предмет выводится");
+                throw new ConflictCodeException("Ваш предмет выводится");
 
             UserInventory inventory = new()
             {
@@ -455,18 +435,15 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            UserPathBanner? path = await context.UserPathBanners
+            UserPathBanner path = await context.UserPathBanners
                 .Include(upb => upb.Banner)
                 .Include(upb => upb.Banner!.Box)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(upb => upb.BannerId == id && upb.UserId == UserId);
-            UserAdditionalInfo? info = await context.UserAdditionalInfos
-                .FirstOrDefaultAsync(uai => uai.UserId == UserId);
-
-            if (info is null)
-                return ResponseUtil.NotFound("Дополнительная информация не найдена");
-            if (path is null)
-                return ResponseUtil.NotFound("Путь к баннеру не найден");
+                .FirstOrDefaultAsync(upb => upb.BannerId == id && upb.UserId == UserId) ??
+                throw new NotFoundCodeException("Путь к баннеру не найден");
+            UserAdditionalInfo info = await context.UserAdditionalInfos
+                .FirstOrDefaultAsync(uai => uai.UserId == UserId) ??
+                throw new NotFoundCodeException("Дополнительная информация не найдена");
 
             SiteStatisticsAdmin statistics = await context.SiteStatisticsAdmins
                 .FirstAsync();

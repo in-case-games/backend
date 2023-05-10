@@ -1,6 +1,7 @@
 ﻿using InCase.Domain.Common;
 using InCase.Domain.Dtos;
 using InCase.Domain.Entities.Resources;
+using InCase.Infrastructure.CustomException;
 using InCase.Infrastructure.Data;
 using InCase.Infrastructure.Utils;
 using Microsoft.AspNetCore.Authorization;
@@ -30,14 +31,13 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _context.CreateDbContextAsync();
 
-            UserAdditionalInfo? info = await context.UserAdditionalInfos
+            UserAdditionalInfo info = await context.UserAdditionalInfos
                 .Include(uai => uai.Role)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(uai => uai.UserId == UserId);
+                .FirstOrDefaultAsync(uai => uai.UserId == UserId) ??
+                throw new NotFoundCodeException("Дополнительная информация не найдена");
 
-            return info is null ?
-                ResponseUtil.NotFound("Дополнительная информация не найдена") :
-                ResponseUtil.Ok(info);
+            return ResponseUtil.Ok(info);
         }
 
         [AllowAnonymous]
@@ -46,14 +46,13 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _context.CreateDbContextAsync();
 
-            UserAdditionalInfo? info = await context.UserAdditionalInfos
+            UserAdditionalInfo info = await context.UserAdditionalInfos
                 .Include(uai => uai.Role)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(uai => uai.UserId == userId);
+                .FirstOrDefaultAsync(uai => uai.UserId == userId) ??
+                throw new NotFoundCodeException("Пользователь не найден");
 
-            return info is null ?
-                ResponseUtil.NotFound("Пользователь не найден") :
-                ResponseUtil.Ok(info);
+            return ResponseUtil.Ok(info);
         }
 
         [AllowAnonymous]
@@ -69,13 +68,11 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _context.CreateDbContextAsync();
 
-            UserAdditionalInfo? info = await context.UserAdditionalInfos
+            UserAdditionalInfo info = await context.UserAdditionalInfos
                 .Include(uai => uai.Role)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(uai => uai.UserId == UserId);
-
-            if (info is null)
-                return ResponseUtil.NotFound("Пользователь не найден");
+                .FirstOrDefaultAsync(uai => uai.UserId == UserId) ??
+                throw new NotFoundCodeException("Пользователь не найден");
 
             info.IsGuestMode = !info.IsGuestMode;
 
@@ -96,9 +93,9 @@ namespace InCase.Resources.Api.Controllers
             await using ApplicationDbContext context = await _context.CreateDbContextAsync();
 
             if (!await context.UserRoles.AnyAsync(ur => ur.Id == infoDto.RoleId))
-                return ResponseUtil.NotFound("Роль не найдена");
+                throw new NotFoundCodeException("Роль не найдена");
             if (!await context.Users.AnyAsync(u => u.Id == infoDto.UserId))
-                return ResponseUtil.NotFound("Пользователь не найден");
+                throw new NotFoundCodeException("Пользователь не найден");
 
             return await EndpointUtil.Update(infoDto.Convert(false), context);
         }

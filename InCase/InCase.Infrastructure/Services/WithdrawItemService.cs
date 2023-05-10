@@ -1,6 +1,7 @@
 ﻿using InCase.Domain.Entities.Payment;
 using InCase.Domain.Entities.Resources;
 using InCase.Domain.Interfaces;
+using InCase.Infrastructure.CustomException;
 
 namespace InCase.Infrastructure.Services
 {
@@ -39,10 +40,11 @@ namespace InCase.Infrastructure.Services
                 attempts--;
             }
 
-            return balance;
+            return balance.Result == "ok" ? balance :
+                throw new RequestTimeoutCodeException("Сервис покупки предмета не отвечает");
         }
 
-        public async Task<ItemInfo?> GetItemInfo(GameItem item)
+        public async Task<ItemInfo> GetItemInfo(GameItem item)
         {
             Game game = item.Game ?? throw new ArgumentNullException("Game", 
                 "Along with the item, it is necessary to transfer the game");
@@ -80,7 +82,8 @@ namespace InCase.Infrastructure.Services
                 i++;
             }
 
-            return infos.MinBy(m => m.PriceKopecks);
+            return infos.MinBy(m => m.PriceKopecks) ?? 
+                throw new RequestTimeoutCodeException("Сервис покупки предмета не отвечает");
         }
 
         public async Task<BuyItem> BuyItem(ItemInfo info, string tradeUrl)
@@ -104,7 +107,8 @@ namespace InCase.Infrastructure.Services
                 attempts--;
             }
 
-            return item;
+            return item.Result == "ok" ? item :
+                throw new RequestTimeoutCodeException("Сервис покупки предмета не отвечает");
         }
 
         public async Task<TradeInfo> GetTradeInfo(UserHistoryWithdraw withdraw)
@@ -127,7 +131,8 @@ namespace InCase.Infrastructure.Services
                 attempts--;
             }
 
-            return info;
+            return info.Result == "ok" ? info : 
+                throw new RequestTimeoutCodeException("Сервис покупки предмета не отвечает");
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using InCase.Domain.Entities.Auth;
 using InCase.Domain.Entities.Resources;
+using InCase.Infrastructure.CustomException;
 using InCase.Infrastructure.Data;
 using InCase.Infrastructure.Services;
 using InCase.Infrastructure.Utils;
@@ -85,7 +86,7 @@ namespace InCase.Email.Api.Controllers
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             if (await context.Users.AsNoTracking().AnyAsync(u => u.Email == email))
-                return ResponseUtil.Conflict("Email почта занята");
+                throw new ConflictCodeException("Email почта занята");
 
             User user = await _authService.GetUserFromToken(token, "email", context);
 

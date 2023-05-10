@@ -1,6 +1,7 @@
 ﻿using InCase.Domain.Common;
 using InCase.Domain.Dtos;
 using InCase.Domain.Entities.Resources;
+using InCase.Infrastructure.CustomException;
 using InCase.Infrastructure.Data;
 using InCase.Infrastructure.Utils;
 using Microsoft.AspNetCore.Authorization;
@@ -41,15 +42,14 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            LootBoxGroup? group = await context.LootBoxGroups
+            LootBoxGroup group = await context.LootBoxGroups
                 .Include(lbg => lbg.Group)
                 .Include(lbg => lbg.Box)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(lbg => lbg.Id == id);
+                .FirstOrDefaultAsync(lbg => lbg.Id == id) ?? 
+                throw new NotFoundCodeException("Кейс группа не найдена");
 
-            return group is null ? 
-                ResponseUtil.NotFound("Кейс группа не найдена") : 
-                ResponseUtil.Ok(group);
+            return ResponseUtil.Ok(group);
         }
 
         [AllowAnonymous]
@@ -58,8 +58,8 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            if (await context.Games.AnyAsync(g => g.Id == id) is false)
-                return ResponseUtil.NotFound("Игра не найдена");
+            if (!await context.Games.AnyAsync(g => g.Id == id))
+                throw new NotFoundCodeException("Игра не найдена");
 
             List<LootBoxGroup> group = await context.LootBoxGroups
                 .Include(lbg => lbg.Group)
@@ -91,11 +91,11 @@ namespace InCase.Resources.Api.Controllers
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             if (!await context.Games.AnyAsync(g => g.Id == groupDto.GameId))
-                return ResponseUtil.NotFound("Игра не найдена");
+                throw new NotFoundCodeException("Игра не найдена");
             if (!await context.GroupLootBoxes.AnyAsync(glb => glb.Id == groupDto.GroupId))
-                return ResponseUtil.NotFound("Группа кейсов не найдена");
+                throw new NotFoundCodeException("Группа кейсов не найдена");
             if (!await context.LootBoxes.AnyAsync(lb => lb.Id == groupDto.BoxId))
-                return ResponseUtil.NotFound("Кейс не найден");
+                throw new NotFoundCodeException("Кейс не найден");
 
             return await EndpointUtil.Create(groupDto.Convert(), context);
         }
@@ -109,8 +109,8 @@ namespace InCase.Resources.Api.Controllers
             group.Id = Guid.NewGuid();
             bool IsExistName = await context.GroupLootBoxes.AnyAsync(glb => glb.Name == group.Name);
 
-            return IsExistName ? 
-                ResponseUtil.Conflict("Имя группы уже используется") :
+            return IsExistName ?
+                throw new ConflictCodeException("Имя группы уже используется") :
                 await EndpointUtil.Create(group, context);
         }
 

@@ -1,4 +1,5 @@
 ﻿using InCase.Domain.Entities.Resources;
+using InCase.Infrastructure.CustomException;
 using InCase.Infrastructure.Data;
 using InCase.Infrastructure.Utils;
 using Microsoft.AspNetCore.Authorization;
@@ -40,16 +41,15 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
 
-            Game? game = await context.Games
+            Game game = await context.Games
                 .Include(i => i.Boxes)
                 .Include(i => i.Items)
                 .AsSplitQuery()
                 .AsNoTracking()
-                .FirstOrDefaultAsync(f => f.Id == id, cancellationToken);
+                .FirstOrDefaultAsync(f => f.Id == id, cancellationToken) ?? 
+                throw new NotFoundCodeException("Игра не найдена");
 
-            return game is null ? 
-                ResponseUtil.NotFound("Игра не найдена") : 
-                ResponseUtil.Ok(game);
+            return ResponseUtil.Ok(game);
         }
     }
 }

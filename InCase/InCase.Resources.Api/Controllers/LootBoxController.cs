@@ -1,6 +1,7 @@
 ﻿using InCase.Domain.Common;
 using InCase.Domain.Dtos;
 using InCase.Domain.Entities.Resources;
+using InCase.Infrastructure.CustomException;
 using InCase.Infrastructure.Data;
 using InCase.Infrastructure.Utils;
 using Microsoft.AspNetCore.Authorization;
@@ -42,13 +43,12 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            LootBox? box = await context.LootBoxes
+            LootBox box = await context.LootBoxes
                 .AsNoTracking()
-                .FirstOrDefaultAsync(lb => lb.Id == id);
+                .FirstOrDefaultAsync(lb => lb.Id == id) ??
+                throw new NotFoundCodeException("Кейс не найден");
 
-            return box is null? 
-                ResponseUtil.NotFound("Кейс не найден") : 
-                ResponseUtil.Ok(box.Convert(false));
+            return ResponseUtil.Ok(box.Convert(false));
         }
 
         [AuthorizeRoles(Roles.AdminOwnerBot)]
@@ -57,13 +57,12 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            LootBox? box = await context.LootBoxes
+            LootBox box = await context.LootBoxes
                 .AsNoTracking()
-                .FirstOrDefaultAsync(lb => lb.Id == id);
+                .FirstOrDefaultAsync(lb => lb.Id == id) ??
+                throw new NotFoundCodeException("Кейс не найден");
 
-            return box is null ? 
-                ResponseUtil.NotFound("Кейс не найден") : 
-                ResponseUtil.Ok(box);
+            return ResponseUtil.Ok(box);
         }
 
         [AllowAnonymous]
@@ -72,8 +71,8 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            if (await context.LootBoxes.AnyAsync(lb => lb.Id == id) is false)
-                return ResponseUtil.NotFound("Кейс не найден");
+            if (!await context.LootBoxes.AnyAsync(lb => lb.Id == id))
+                throw new NotFoundCodeException("Кейс не найден");
 
             List<LootBoxInventory> inventories = await context.LootBoxInventories
                 .Include(lbi => lbi.Item)
@@ -111,14 +110,13 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            LootBoxBanner? banner = await context.LootBoxBanners
+            LootBoxBanner banner = await context.LootBoxBanners
                 .Include(lbb => lbb.Box)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(lbb => lbb.BoxId == id);
+                .FirstOrDefaultAsync(lbb => lbb.BoxId == id) ??
+                throw new NotFoundCodeException("Баннер не найден");
 
-            return banner is null ? 
-                ResponseUtil.NotFound("Баннер не найден") : 
-                ResponseUtil.Ok(banner.Convert(false));
+            return ResponseUtil.Ok(banner.Convert(false));
         }
 
         [AuthorizeRoles(Roles.Owner)]
@@ -128,7 +126,7 @@ namespace InCase.Resources.Api.Controllers
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             if (!await context.Games.AnyAsync(g => g.Id == boxDto.GameId))
-                return ResponseUtil.NotFound("Игра не найдена");
+                throw new NotFoundCodeException("Игра не найдена");
 
             return await EndpointUtil.Create(boxDto.Convert(), context);
         }
@@ -140,9 +138,9 @@ namespace InCase.Resources.Api.Controllers
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             if (!await context.LootBoxes.AnyAsync(lb => lb.Id == inventoryDto.BoxId))
-                return ResponseUtil.NotFound("Кейс не найден");
+                throw new NotFoundCodeException("Кейс не найден");
             if (!await context.GameItems.AnyAsync(gi => gi.Id == inventoryDto.ItemId))
-                return ResponseUtil.NotFound("Предмет не найден");
+                throw new NotFoundCodeException("Предмет не найден");
 
             return await EndpointUtil.Create(inventoryDto.Convert(), context);
         }
@@ -154,9 +152,9 @@ namespace InCase.Resources.Api.Controllers
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             if (!await context.LootBoxes.AnyAsync(lb => lb.Id == bannerDto.BoxId))
-                return ResponseUtil.NotFound("Кейс не найден");
+                throw new NotFoundCodeException("Кейс не найден");
             if (await context.LootBoxBanners.AnyAsync(a => a.BoxId == bannerDto.BoxId))
-                return ResponseUtil.Conflict("Кейс уже использует баннер");
+                throw new ConflictCodeException("Кейс уже использует баннер");
 
             return await EndpointUtil.Create(bannerDto.Convert(), context);
         }
@@ -167,13 +165,12 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            LootBox? oldBox = await context.LootBoxes
-                .FirstOrDefaultAsync(lb => lb.Id == boxDto.Id);
+            LootBox oldBox = await context.LootBoxes
+                .FirstOrDefaultAsync(lb => lb.Id == boxDto.Id) ?? 
+                throw new NotFoundCodeException("Кейс не найден");
 
-            if (oldBox is null)
-                return ResponseUtil.NotFound("Кейс не найден");
-            if (await context.Games.AnyAsync(g => g.Id == boxDto.GameId) is false)
-                return ResponseUtil.NotFound("Игра не найдена");
+            if (!await context.Games.AnyAsync(g => g.Id == boxDto.GameId))
+                throw new NotFoundCodeException("Игра не найдена");
 
             LootBox? newBox = boxDto.Convert(false);
             newBox.VirtualBalance = oldBox.VirtualBalance;
@@ -188,17 +185,16 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            LootBoxBanner? banner = await context.LootBoxBanners
-                .FirstOrDefaultAsync(lbb => lbb.Id == bannerDto.Id);
+            LootBoxBanner banner = await context.LootBoxBanners
+                .FirstOrDefaultAsync(lbb => lbb.Id == bannerDto.Id) ?? 
+                throw new NotFoundCodeException("Баннер не найден");
 
             bool IsUsedBox = await context.LootBoxBanners.AnyAsync(lbb => lbb.BoxId == bannerDto.BoxId);
 
-            if (banner is null)
-                return ResponseUtil.NotFound("Баннер не найден");
             if (!await context.LootBoxes.AnyAsync(lb => lb.Id == bannerDto.BoxId))
-                return ResponseUtil.NotFound("Кейс не найден");
+                throw new NotFoundCodeException("Кейс не найден");
             if (banner.BoxId != bannerDto.BoxId && IsUsedBox)
-                return ResponseUtil.Conflict("Баннер уже использует кейс");
+                throw new ConflictCodeException("Баннер уже использует кейс");
 
             return await EndpointUtil.Update(banner, bannerDto.Convert(false), context);
         }

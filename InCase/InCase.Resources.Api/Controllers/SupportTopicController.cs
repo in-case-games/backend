@@ -1,6 +1,7 @@
 ﻿using InCase.Domain.Common;
 using InCase.Domain.Dtos;
 using InCase.Domain.Entities.Resources;
+using InCase.Infrastructure.CustomException;
 using InCase.Infrastructure.Data;
 using InCase.Infrastructure.Utils;
 using Microsoft.AspNetCore.Mvc;
@@ -42,13 +43,12 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            SupportTopic? topic = await context.SupportTopics
+            SupportTopic topic = await context.SupportTopics
                 .AsNoTracking()
-                .FirstOrDefaultAsync(st => st.Id == id && st.UserId == UserId);
+                .FirstOrDefaultAsync(st => st.Id == id && st.UserId == UserId) ??
+                throw new NotFoundCodeException("Топик не найден");
 
-            return topic is null ?
-                ResponseUtil.NotFound("Топик не найден") :
-                ResponseUtil.Ok(topic);
+            return ResponseUtil.Ok(topic);
         }
 
         [AuthorizeRoles(Roles.User)]
@@ -57,14 +57,13 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            SupportTopic? topic = await context.SupportTopics
+            SupportTopic topic = await context.SupportTopics
                 .AsNoTracking()
-                .FirstOrDefaultAsync(sp => sp.Id == id);
+                .FirstOrDefaultAsync(sp => sp.Id == id) ??
+                throw new NotFoundCodeException("Топик не найден");
 
-            if (topic is null)
-                return ResponseUtil.NotFound("Топик не найден");
             if (topic.UserId != UserId)
-                return ResponseUtil.Forbidden("Только создатель топика может его просматривать");
+                throw new ForbiddenCodeException("Только создатель топика может его просматривать");
 
             List<SupportTopicAnswer> answers = await context.SupportTopicAnswers
                 .Include(sta => sta.Plaintiff)
@@ -82,24 +81,22 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            SupportTopic? topic = await context.SupportTopics
+            SupportTopic topic = await context.SupportTopics
                 .AsNoTracking()
-                .FirstOrDefaultAsync(sp => sp.Id == id);
+                .FirstOrDefaultAsync(sp => sp.Id == id) ??
+                throw new NotFoundCodeException("Топик не найден");
 
-            if (topic is null)
-                return ResponseUtil.NotFound("Топик не найден");
             if (topic.UserId != UserId)
-                return ResponseUtil.Forbidden("Только создатель топика может его просматривать");
+                throw new ForbiddenCodeException("Только создатель топика может его просматривать");
 
-            SupportTopicAnswer? answer = await context.SupportTopicAnswers
+            SupportTopicAnswer answer = await context.SupportTopicAnswers
                 .Include(sta => sta.Plaintiff)
                 .Include(sta => sta.Images)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(f => f.Id == answerId);
+                .FirstOrDefaultAsync(f => f.Id == answerId) ??
+                throw new NotFoundCodeException("Ответ на топик не найден");
 
-            return answer is null ?
-                ResponseUtil.NotFound(nameof(SupportTopicAnswer)) :
-                ResponseUtil.Ok(answer);
+            return ResponseUtil.Ok(answer);
         }
 
         [AuthorizeRoles(Roles.AdminOwnerBot)]
@@ -123,7 +120,7 @@ namespace InCase.Resources.Api.Controllers
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             if (timeStart > timeEnd)
-                return ResponseUtil.Conflict("Начало промежутка времени больше конечного");
+                throw new ConflictCodeException("Начало промежутка времени больше конечного");
 
             List<SupportTopic> topics = await context.SupportTopics
                 .AsNoTracking()
@@ -152,13 +149,12 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            SupportTopic? topic = await context.SupportTopics
+            SupportTopic topic = await context.SupportTopics
                 .AsNoTracking()
-                .FirstOrDefaultAsync(st => st.Id == id);
+                .FirstOrDefaultAsync(st => st.Id == id) ??
+                throw new NotFoundCodeException("Топик не найден");
 
-            return topic is null ?
-                ResponseUtil.NotFound("Топик не найден") :
-                ResponseUtil.Ok(topic.Convert(false));
+            return ResponseUtil.Ok(topic.Convert(false));
         }
 
         [AuthorizeRoles(Roles.AdminOwnerBot)]
@@ -167,15 +163,14 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            SupportTopicAnswer? answer = await context.SupportTopicAnswers
+            SupportTopicAnswer answer = await context.SupportTopicAnswers
                 .Include(sta => sta.Plaintiff)
                 .Include(sta => sta.Images)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(sta => sta.Id == id);
+                .FirstOrDefaultAsync(sta => sta.Id == id) ?? 
+                throw new NotFoundCodeException("Ответ на топик не найден");
 
-            return answer is null ?
-                ResponseUtil.NotFound("Ответ на топик не найден") :
-                ResponseUtil.Ok(answer);
+            return ResponseUtil.Ok(answer);
         }
 
         [AuthorizeRoles(Roles.AdminOwnerBot)]
@@ -210,7 +205,7 @@ namespace InCase.Resources.Api.Controllers
                 .ToListAsync();
 
             return topics.Count >= 3 ?
-                ResponseUtil.Conflict("Количество открытых топиков не может превышать 3") : 
+                throw new ConflictCodeException("Количество открытых топиков не может превышать 3") : 
                 await EndpointUtil.Create(topicDto.Convert(), context);
         }
 
@@ -220,11 +215,9 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            SupportTopic? topic = await context.SupportTopics
-                .FirstOrDefaultAsync(st => st.Id == answerDto.TopicId && st.UserId == UserId);
-
-            if (topic is null)
-                return ResponseUtil.NotFound("Топик не найден");
+            SupportTopic topic = await context.SupportTopics
+                .FirstOrDefaultAsync(st => st.Id == answerDto.TopicId && st.UserId == UserId) ??
+                throw new NotFoundCodeException("Топик не найден");
 
             answerDto.PlaintiffId = UserId;
             answerDto.Date = DateTime.UtcNow;
@@ -238,12 +231,10 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            SupportTopic? topic = await context.SupportTopics
+            SupportTopic topic = await context.SupportTopics
                 .AsNoTracking()
-                .FirstOrDefaultAsync(st => st.Id == answerDto.TopicId);
-
-            if (topic is null)
-                return ResponseUtil.NotFound("Топик не найден");
+                .FirstOrDefaultAsync(st => st.Id == answerDto.TopicId) ??
+                throw new NotFoundCodeException("Топик не найден");
 
             answerDto.PlaintiffId = UserId;
             answerDto.Date = DateTime.UtcNow;
@@ -257,11 +248,9 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            SupportTopic? topic = await context.SupportTopics
-                .FirstOrDefaultAsync(st => st.Id == topicDto.Id && st.UserId == UserId);
-
-            if (topic is null)
-                return ResponseUtil.NotFound("Топик не найден");
+            SupportTopic topic = await context.SupportTopics
+                .FirstOrDefaultAsync(st => st.Id == topicDto.Id && st.UserId == UserId) ??
+                throw new NotFoundCodeException("Топик не найден");
 
             topicDto.UserId = topic.UserId;
             topicDto.Date = topic.Date;
@@ -275,11 +264,9 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            SupportTopic? topic = await context.SupportTopics
-                .FirstOrDefaultAsync(st => st.Id == id);
-
-            if (topic is null)
-                return ResponseUtil.NotFound("Топик не найден");
+            SupportTopic topic = await context.SupportTopics
+                .FirstOrDefaultAsync(st => st.Id == id) ?? 
+                throw new NotFoundCodeException("Топик не найден");
 
             topic.IsClosed = true;
             topic.Date = DateTime.UtcNow;
@@ -295,14 +282,12 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            SupportTopicAnswer? answer = await context.SupportTopicAnswers
+            SupportTopicAnswer answer = await context.SupportTopicAnswers
                 .FirstOrDefaultAsync(sta => 
                 sta.Id == answerDto.Id && 
                 sta.PlaintiffId == UserId && 
-                sta.TopicId == answerDto.TopicId);
-
-            if (answer is null)
-                return ResponseUtil.NotFound("Ответ на топик не найден");
+                sta.TopicId == answerDto.TopicId) ??
+                throw new NotFoundCodeException("Ответ на топик не найден");
 
             answerDto.PlaintiffId = UserId;
             answerDto.Date = DateTime.UtcNow;
@@ -325,13 +310,12 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            SupportTopicAnswer? answer = await context.SupportTopicAnswers
+            SupportTopicAnswer answer = await context.SupportTopicAnswers
                 .AsNoTracking()
-                .FirstOrDefaultAsync(sta => sta.Id == id && sta.PlaintiffId == UserId);
+                .FirstOrDefaultAsync(sta => sta.Id == id && sta.PlaintiffId == UserId) ??
+                throw new NotFoundCodeException("Ответ на топик не найден");
 
-            return answer is null ?
-                ResponseUtil.NotFound("Ответ на топик не найден") : 
-                await EndpointUtil.Delete(answer, context);
+            return await EndpointUtil.Delete(answer, context);
         }
 
         [AuthorizeRoles(Roles.Admin, Roles.Owner)]

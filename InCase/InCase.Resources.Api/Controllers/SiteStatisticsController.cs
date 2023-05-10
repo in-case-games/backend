@@ -1,5 +1,6 @@
 ﻿using InCase.Domain.Common;
 using InCase.Domain.Entities.Resources;
+using InCase.Infrastructure.CustomException;
 using InCase.Infrastructure.Data;
 using InCase.Infrastructure.Utils;
 using Microsoft.AspNetCore.Authorization;
@@ -25,13 +26,12 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            SiteStatistics? statistics = await context.SiteStatistics
+            SiteStatistics statistics = await context.SiteStatistics
                 .AsNoTracking()
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync() ??
+                throw new NotFoundCodeException("Сайт статистика не найдена");
 
-            return statistics is null ? 
-                ResponseUtil.NotFound("Сайт статистика не найдена") : 
-                ResponseUtil.Ok(statistics);
+            return ResponseUtil.Ok(statistics);
         }
 
         [AuthorizeRoles(Roles.Owner, Roles.Bot)]
@@ -40,13 +40,12 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            SiteStatisticsAdmin? statistics = await context.SiteStatisticsAdmins
+            SiteStatisticsAdmin statistics = await context.SiteStatisticsAdmins
                 .AsNoTracking()
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync() ?? 
+                throw new NotFoundCodeException("Админская сайт статистика не найдена");
 
-            return statistics is null ? 
-                ResponseUtil.NotFound("Админская сайт статистика не найдена") : 
-                ResponseUtil.Ok(statistics);
+            return ResponseUtil.Ok(statistics);
         }
     }
 }

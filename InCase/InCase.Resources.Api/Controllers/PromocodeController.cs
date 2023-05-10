@@ -1,6 +1,7 @@
 ﻿using InCase.Domain.Common;
 using InCase.Domain.Dtos;
 using InCase.Domain.Entities.Resources;
+using InCase.Infrastructure.CustomException;
 using InCase.Infrastructure.Data;
 using InCase.Infrastructure.Utils;
 using Microsoft.AspNetCore.Mvc;
@@ -39,14 +40,13 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            Promocode? promocode = await context.Promocodes
+            Promocode promocode = await context.Promocodes
                 .Include(p => p.Type)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(p => p.Name == name);
+                .FirstOrDefaultAsync(p => p.Name == name) ??
+                throw new NotFoundCodeException("Промокод не найден");
 
-            return promocode is null ?
-                ResponseUtil.NotFound("Промокод не найден") :
-                ResponseUtil.Ok(promocode);
+            return ResponseUtil.Ok(promocode);
         }
 
         [AuthorizeRoles(Roles.All)]
@@ -55,14 +55,13 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            Promocode? promocode = await context.Promocodes
+            Promocode promocode = await context.Promocodes
                 .Include(p => p.Type)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(p => p.Id == id);
+                .FirstOrDefaultAsync(p => p.Id == id) ??
+                throw new NotFoundCodeException("Промокод не найден");
 
-            return promocode is null ? 
-                ResponseUtil.NotFound("Промокод не найден") : 
-                ResponseUtil.Ok(promocode);
+            return ResponseUtil.Ok(promocode);
         }
 
         [AuthorizeRoles(Roles.All)]
@@ -77,16 +76,16 @@ namespace InCase.Resources.Api.Controllers
         public async Task<IActionResult> Create(PromocodeDto promocode)
         {
             if (promocode.Discount >= 1M || promocode.Discount <= 0)
-                return ResponseUtil.BadRequest("Скидка промокода должна быть больше 0 и меньше 1");
+                throw new BadRequestCodeException("Скидка промокода должна быть больше 0 и меньше 1");
             if (promocode.NumberActivations <= 0)
-                return ResponseUtil.BadRequest("Количество активаций должно быть больше 0");
+                throw new BadRequestCodeException("Количество активаций должно быть больше 0");
 
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             if (!await context.PromocodeTypes.AnyAsync(pt => pt.Id == promocode.TypeId))
-                return ResponseUtil.NotFound("Тип промокода не найден");
+                throw new NotFoundCodeException("Тип промокода не найден");
             if (await context.Promocodes.AnyAsync(p => p.Name == promocode.Name))
-                return ResponseUtil.Conflict("Имя промокода уже используется");
+                throw new ConflictCodeException("Имя промокода уже используется");
 
             return await EndpointUtil.Create(promocode.Convert(), context);
         }
@@ -96,9 +95,9 @@ namespace InCase.Resources.Api.Controllers
         public async Task<IActionResult> Update(PromocodeDto promocodeDto)
         {
             if (promocodeDto.Discount >= 1M || promocodeDto.Discount <= 0)
-                return ResponseUtil.BadRequest("Скидка промокода должна быть больше 0 и меньше 1");
+                throw new BadRequestCodeException("Скидка промокода должна быть больше 0 и меньше 1");
             if (promocodeDto.NumberActivations <= 0)
-                return ResponseUtil.BadRequest("Количество активаций должно быть больше 0");
+                throw new BadRequestCodeException("Количество активаций должно быть больше 0");
 
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
@@ -108,11 +107,11 @@ namespace InCase.Resources.Api.Controllers
             bool IsExist = await context.Promocodes.AnyAsync(p => p.Name == promocodeDto.Name);
 
             if (promocode is null)
-                return ResponseUtil.NotFound("Промокод не найден");
+                throw new NotFoundCodeException("Промокод не найден");
             if (!await context.PromocodeTypes.AnyAsync(pt => pt.Id == promocodeDto.TypeId))
-                return ResponseUtil.NotFound("Тип промокода не найден");
+                throw new NotFoundCodeException("Тип промокода не найден");
             if (promocode.Name != promocodeDto.Name && IsExist)
-                return ResponseUtil.Conflict("Имя промокода уже используется");
+                throw new ConflictCodeException("Имя промокода уже используется");
 
             return await EndpointUtil.Update(promocode, promocodeDto.Convert(false), context);
         }
