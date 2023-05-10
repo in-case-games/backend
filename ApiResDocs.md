@@ -1685,20 +1685,17 @@
 {
   "code": "0",
   "data": {
-    "balance": 0,
-    "imageUri": "",
+    "balance": 1991,
+    "imageUri": "string",
     "isNotifyEmail": false,
     "isGuestMode": false,
     "isConfirmed": true,
-    "creationDate": "2023-05-07T10:07:59.3001203",
-    "deletionDate": null,
-    "role": {
-      "name": "owner",
-      "id": "5ffbb660-ba04-45c2-84f7-3227196b76f0"
-    },
+    "creationDate": "2023-05-08T06:54:29.248",
+    "deletionDate": "2023-05-08T06:54:29.248",
+    "roleId": "5ffbb660-ba04-45c2-84f7-3227196b76f0",
+    "userId": "ba5aaa4c-f00e-49ed-b182-91070c3ce5f0",
     "id": "ce0f00a7-ad7f-4320-9f8e-72bc7b61abbe"
   }
-}
 ```
 
 ![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_400:&color=red)
@@ -1879,7 +1876,42 @@
 ```JSON
 {
   "code": "0",
-  "data": []
+  "data": [
+    {
+      "date": "2023-05-10T14:24:43.4605417",
+      "fixedCost": 110,
+      "user": null,
+      "item": {
+        "name": "типо имя предмета",
+        "hashName": "имя предмета на официальной тп",
+        "cost": 110,
+        "imageUri": "string",
+        "idForMarket": "string",
+        "quality": null,
+        "type": null,
+        "rarity": null,
+        "id": "474fe485-4b63-47cb-8bcd-b681cd4530c9"
+      },
+      "id": "1fd744a7-16fd-44c4-4971-08db51624849"
+    },
+    {
+      "date": "2023-05-10T14:24:36.4100078",
+      "fixedCost": 12,
+      "user": null,
+      "item": {
+        "name": "предмет нельзя путь",
+        "hashName": "string",
+        "cost": 12,
+        "imageUri": "string",
+        "idForMarket": "string",
+        "quality": null,
+        "type": null,
+        "rarity": null,
+        "id": "01aeef5b-303c-4ef8-abce-a7c2fc6ea57f"
+      },
+      "id": "bc15f813-6c48-47a8-4970-08db51624849"
+    }
+  ]
 }
 ```
 
@@ -1892,7 +1924,42 @@
 ```JSON
 {
   "code": "0",
-  "data": []
+  "data": [
+    {
+      "date": "2023-05-10T14:24:36.4100078",
+      "fixedCost": 12,
+      "user": null,
+      "item": {
+        "name": "предмет нельзя путь",
+        "hashName": "string",
+        "cost": 12,
+        "imageUri": "string",
+        "idForMarket": "string",
+        "quality": null,
+        "type": null,
+        "rarity": null,
+        "id": "01aeef5b-303c-4ef8-abce-a7c2fc6ea57f"
+      },
+      "id": "bc15f813-6c48-47a8-4970-08db51624849"
+    },
+    {
+      "date": "2023-05-10T14:24:43.4605417",
+      "fixedCost": 110,
+      "user": null,
+      "item": {
+        "name": "типо имя предмета",
+        "hashName": "имя предмета на официальной тп",
+        "cost": 110,
+        "imageUri": "string",
+        "idForMarket": "string",
+        "quality": null,
+        "type": null,
+        "rarity": null,
+        "id": "474fe485-4b63-47cb-8bcd-b681cd4530c9"
+      },
+      "id": "1fd744a7-16fd-44c4-4971-08db51624849"
+    }
+  ]
 }
 ```
 
@@ -1906,7 +1973,7 @@
 }
 ```
 
-7. Получить путь к баннерам пользователя:
+8. Получить путь к баннерам пользователя:
    * Доступ: All
    * Метод: GET
    * Запрос: `https://r.api.incase.com/api/user/banners`
@@ -1915,11 +1982,38 @@
 ```JSON
 {
   "code": "0",
-  "data": []
+  "data": [
+    {
+      "date": "2023-05-10T15:00:30.2175229",
+      "numberSteps": 6,
+      "fixedCost": 110,
+      "user": null,
+      "item": {
+        "name": "типо имя предмета",
+        "hashName": "имя предмета на официальной тп",
+        "cost": 110,
+        "imageUri": "string",
+        "idForMarket": "string",
+        "quality": null,
+        "type": null,
+        "rarity": null,
+        "id": "474fe485-4b63-47cb-8bcd-b681cd4530c9"
+      },
+      "banner": {
+        "isActive": true,
+        "creationDate": "2023-05-10T14:27:02.744",
+        "expirationDate": "2024-05-10T14:27:02.744",
+        "imageUri": "string",
+        "box": null,
+        "id": "4bfe88db-bef9-40ed-9536-639e9ab4d5d8"
+      },
+      "id": "72a5d489-0105-4989-a4ef-c3c2c324eff4"
+    }
+  ]
 }
 ```
 
-8. Получить дополнительную информацию о пользователе по id:
+9. Получить дополнительную информацию о пользователе по id:
    * Доступ: AllowAnonymous
    * Метод: GET
    * Запрос: `https://r.api.incase.com/api/user-additional-info/{userId}`
@@ -1929,17 +2023,15 @@
 {
   "code": "0",
   "data": {
-    "balance": 1111,
+    "balance": 1991,
     "imageUri": "string",
     "isNotifyEmail": false,
     "isGuestMode": false,
     "isConfirmed": true,
     "creationDate": "2023-05-08T06:54:29.248",
     "deletionDate": "2023-05-08T06:54:29.248",
-    "role": {
-      "name": "owner",
-      "id": "5ffbb660-ba04-45c2-84f7-3227196b76f0"
-    },
+    "roleId": "5ffbb660-ba04-45c2-84f7-3227196b76f0",
+    "userId": "ba5aaa4c-f00e-49ed-b182-91070c3ce5f0",
     "id": "ce0f00a7-ad7f-4320-9f8e-72bc7b61abbe"
   }
 }
@@ -1955,7 +2047,7 @@
 }
 ```
 
-9. Включить или выключить гостевой режим:
+10. Включить или выключить гостевой режим:
    * Доступ: Admin, Owner, Bot
    * Метод: GET
    * Запрос: `https://r.api.incase.com/api/user-additional-info/guest-mode`
@@ -1983,6 +2075,223 @@
     "code": "4",
     "message": "Пользователь не найден"
   }
+}
+```
+
+11. Включить путь к баннеру:
+   * Доступ: All
+   * Метод: POST
+   * Запрос: `https://r.api.incase.com/api/user/banner`
+
+![](https://img.shields.io/static/v1?label=&message=REQUEST_BODY:&color=blue)
+```JSON
+{
+  "id": "ce0f00a7-ad7f-4320-9f8e-72bc7b61abbe",
+  "balance": 1111,
+  "imageUri": "string",
+  "isNotifyEmail": false,
+  "isGuestMode": false,
+  "isConfirmed": true,
+  "creationDate": "2023-05-08T06:54:29.248Z",
+  "deletionDate": "2023-05-08T06:54:29.248Z",
+  "roleId": "5ffbb660-ba04-45c2-84f7-3227196b76f0",
+  "userId": "ba5aaa4c-f00e-49ed-b182-91070c3ce5f0"
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_200:&color=green)
+```JSON
+{
+  "code": "0",
+  "message": "Гостевой мод выключен"
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_400:&color=red)
+```JSON
+{
+  "error": {
+    "code": 4,
+    "message": "Баннер не найден"
+  }
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_400:&color=red)
+```JSON
+{
+  "error": {
+    "code": 3,
+    "message": "Баннер не активен"
+  }
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_400:&color=red)
+```JSON
+{
+  "error": {
+    "code": 4,
+    "message": "Предмет не найден в кейсе"
+  }
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_400:&color=red)
+```JSON
+{
+  "error": {
+    "code": 0,
+    "message": "Стоимость товара не может быть меньше стоимости кейса"
+  }
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_400:&color=red)
+```JSON
+{
+  "error": {
+    "code": 0,
+    "message": "Стоимость предмета превышает стоимость кейса в 20 раз"
+  }
+}
+```
+
+12. Удалить путь к баннеру:
+   * Доступ: All
+   * Метод: DELETE
+   * Запрос: `https://r.api.incase.com/api/user/banner/{id}`
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_200:&color=green)
+```JSON
+{
+  "code": "0",
+  "data": {
+    "date": "2023-05-10T14:46:33.9836386",
+    "numberSteps": 6,
+    "fixedCost": 110,
+    "userId": "ba5aaa4c-f00e-49ed-b182-91070c3ce5f0",
+    "itemId": "474fe485-4b63-47cb-8bcd-b681cd4530c9",
+    "bannerId": "4bfe88db-bef9-40ed-9536-639e9ab4d5d8",
+    "id": "e6d488c5-a9df-4668-97ac-dc969a1f3eb8"
+  }
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_400:&color=red)
+```JSON
+{
+  "error": {
+    "code": 4,
+    "message": "Путь к баннеру не найден"
+  }
+}
+```
+
+13. Получить путь к баннеру пользователя:
+   * Доступ: All
+   * Метод: GET
+   * Запрос: `https://r.api.incase.com/api/user/banners/{id}`
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_200:&color=green)
+```JSON
+{
+  "code": "0",
+  "data": {
+    "date": "2023-05-10T15:00:30.2175229",
+    "numberSteps": 6,
+    "fixedCost": 110,
+    "userId": "ba5aaa4c-f00e-49ed-b182-91070c3ce5f0",
+    "itemId": "474fe485-4b63-47cb-8bcd-b681cd4530c9",
+    "bannerId": "4bfe88db-bef9-40ed-9536-639e9ab4d5d8",
+    "id": "72a5d489-0105-4989-a4ef-c3c2c324eff4"
+  }
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_400:&color=red)
+```JSON
+{
+  "error": {
+    "code": 4,
+    "message": "Баннер не найден"
+  }
+}
+```
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_400:&color=red)
+```JSON
+{
+  "error": {
+    "code": 4,
+    "message": "Путь к баннеру не найден"
+  }
+}
+```
+
+14. Получить последние 100 открытий кейсов:
+   * Доступ: All
+   * Метод: GET
+   * Запрос: `https://r.api.incase.com/api/user/history/openings/100`
+
+![](https://img.shields.io/static/v1?label=&message=STATUS_CODE_200:&color=green)
+```JSON
+{
+  "code": "0",
+  "data": [
+    {
+      "date": "2023-05-10T14:24:43.4605417",
+      "user": null,
+      "item": {
+        "name": "типо имя предмета",
+        "hashName": "имя предмета на официальной тп",
+        "cost": 110,
+        "imageUri": "string",
+        "idForMarket": "string",
+        "quality": null,
+        "type": null,
+        "rarity": null,
+        "id": "474fe485-4b63-47cb-8bcd-b681cd4530c9"
+      },
+      "box": {
+        "name": "кейс1",
+        "cost": 100,
+        "balance": 58,
+        "virtualBalance": 0,
+        "imageUri": "string",
+        "isLocked": false,
+        "inventories": null,
+        "id": "d3a28c69-a61a-4a38-b077-010bd3e13c90"
+      },
+      "id": "a7b2a575-846c-44df-e70a-08db51624845"
+    },
+    {
+      "date": "2023-05-10T14:24:36.4100078",
+      "user": null,
+      "item": {
+        "name": "предмет нельзя путь",
+        "hashName": "string",
+        "cost": 12,
+        "imageUri": "string",
+        "idForMarket": "string",
+        "quality": null,
+        "type": null,
+        "rarity": null,
+        "id": "01aeef5b-303c-4ef8-abce-a7c2fc6ea57f"
+      },
+      "box": {
+        "name": "кейс1",
+        "cost": 100,
+        "balance": 58,
+        "virtualBalance": 0,
+        "imageUri": "string",
+        "isLocked": false,
+        "inventories": null,
+        "id": "d3a28c69-a61a-4a38-b077-010bd3e13c90"
+      },
+      "id": "0ebf3ab0-875a-4282-e709-08db51624845"
+    }
+  ]
 }
 ```
 
