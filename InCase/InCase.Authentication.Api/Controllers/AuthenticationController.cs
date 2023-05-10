@@ -1,16 +1,13 @@
-﻿using InCase.Domain.Common;
-using InCase.Domain.Dtos;
+﻿using InCase.Domain.Dtos;
 using InCase.Domain.Entities.Auth;
 using InCase.Domain.Entities.Resources;
 using InCase.Infrastructure.CustomException;
 using InCase.Infrastructure.Data;
 using InCase.Infrastructure.Services;
 using InCase.Infrastructure.Utils;
-using MailKit.Net.Smtp;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
 
 namespace InCase.Authentication.Api.Controllers
 {
