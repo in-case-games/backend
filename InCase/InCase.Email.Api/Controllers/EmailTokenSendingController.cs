@@ -1,12 +1,12 @@
 ﻿using InCase.Domain.Entities.Email;
 using InCase.Domain.Entities.Resources;
+using InCase.Infrastructure.CustomException;
 using InCase.Infrastructure.Data;
 using InCase.Infrastructure.Services;
 using InCase.Infrastructure.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
 
 namespace InCase.Email.Api.Controllers
 {
@@ -18,16 +18,19 @@ namespace InCase.Email.Api.Controllers
         private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
         private readonly EmailService _emailService;
         private readonly JwtService _jwtService;
+        private readonly AuthenticationService _authService;
         #endregion
         #region ctor
         public EmailTokenSendingController(
             IDbContextFactory<ApplicationDbContext> contextFactory,
             EmailService emailService,
-            JwtService jwtService)
+            JwtService jwtService,
+            AuthenticationService authService)
         {
             _contextFactory = contextFactory;
             _emailService = emailService;
             _jwtService = jwtService;
+            _authService = authService;
         }
         #endregion
 
@@ -37,15 +40,14 @@ namespace InCase.Email.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            User? user = await context.Users
+            User user = await context.Users
                 .Include(u => u.AdditionalInfo)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(u => u.Login == data.UserLogin);
+                .FirstOrDefaultAsync(u => u.Login == data.UserLogin) ?? 
+                throw new NotFoundCodeException("Пользователь не найден");
 
-            if (user == null) 
-                return ResponseUtil.NotFound("Пользователь не найден");
             if (!ValidationService.IsValidUserPassword(in user, password))
-                return ResponseUtil.Forbidden("Неверный пароль");
+                throw new ForbiddenCodeException("Неверный пароль");
 
             data.UserEmail = user.Email!;
 
@@ -76,32 +78,10 @@ namespace InCase.Email.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            ClaimsPrincipal? principal = _jwtService.GetClaimsToken(data.EmailToken);
+            if (await context.Users.AnyAsync(u => u.Email == email))
+                throw new ConflictCodeException("Email почта занята");
 
-            if (principal is null)
-                return ResponseUtil.Unauthorized("Не валидный email токен");
-
-            string id = principal.Claims
-                .Single(c => c.Type == ClaimTypes.NameIdentifier)
-                .Value;
-
-            bool isExistEmail = await context.Users
-                .AsNoTracking()
-                .AnyAsync(u => u.Email == email);
-
-            if (isExistEmail) 
-                return ResponseUtil.Conflict("Email почта занята");
-
-            User? user = await context.Users
-                .Include(u => u.AdditionalInfo)
-                .Include(u => u.AdditionalInfo!.Role)
-                .AsNoTracking()
-                .FirstOrDefaultAsync(u => u.Id == Guid.Parse(id));
-
-            if (user == null) 
-                return ResponseUtil.NotFound("Пользователь не найден");
-            if (!ValidationService.IsValidToken(in user, principal, "email"))
-                return ResponseUtil.Unauthorized("Не валидный email токен");
+            User user = await _authService.GetUserFromToken(data.EmailToken, "email", context);
 
             MapDataMailLink(ref data, in user);
 
@@ -124,12 +104,10 @@ namespace InCase.Email.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            User? user = await context.Users
+            User user = await context.Users
                 .AsNoTracking()
-                .FirstOrDefaultAsync(u => u.Login == data.UserLogin);
-
-            if (user == null)
-                return ResponseUtil.NotFound("Пользователь не найден");
+                .FirstOrDefaultAsync(u => u.Login == data.UserLogin) ??
+                throw new NotFoundCodeException("Пользователь не найден");
 
             MapDataMailLink(ref data, in user);
 
@@ -150,14 +128,13 @@ namespace InCase.Email.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            User? user = await context.Users
+            User user = await context.Users
                 .AsNoTracking()
-                .FirstOrDefaultAsync(u => u.Login == data.UserLogin);
+                .FirstOrDefaultAsync(u => u.Login == data.UserLogin) ??
+                throw new NotFoundCodeException("Пользователь не найден");
 
-            if (user == null)
-                return ResponseUtil.NotFound("Пользователь не найден");
             if (!ValidationService.IsValidUserPassword(in user, password))
-                return ResponseUtil.Forbidden("Неверный пароль");
+                throw new ForbiddenCodeException("Неверный пароль");
 
             MapDataMailLink(ref data, in user);
 
@@ -183,14 +160,13 @@ namespace InCase.Email.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            User? user = await context.Users
+            User user = await context.Users
                 .AsNoTracking()
-                .FirstOrDefaultAsync(u => u.Login == data.UserLogin);
+                .FirstOrDefaultAsync(u => u.Login == data.UserLogin) ??
+                throw new NotFoundCodeException("Пользователь не найден");
 
-            if (user == null)
-                return ResponseUtil.NotFound("Пользователь не найден");
             if (!ValidationService.IsValidUserPassword(in user, password))
-                return ResponseUtil.Forbidden("Неверный пароль");
+                throw new ForbiddenCodeException("Неверный пароль");
 
             MapDataMailLink(ref data, in user);
 
@@ -213,14 +189,13 @@ namespace InCase.Email.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            User? user = await context.Users
+            User user = await context.Users
                 .AsNoTracking()
-                .FirstOrDefaultAsync(u => u.Login == data.UserLogin);
+                .FirstOrDefaultAsync(u => u.Login == data.UserLogin) ??
+                throw new NotFoundCodeException("Пользователь не найден");
 
-            if (user == null)
-                return ResponseUtil.NotFound("Пользователь не найден");
             if (!ValidationService.IsValidUserPassword(in user, password))
-                return ResponseUtil.Forbidden("Неверный пароль");
+                throw new ForbiddenCodeException("Неверный пароль");
 
             MapDataMailLink(ref data, in user);
 

@@ -20,13 +20,6 @@ namespace InCase.Infrastructure.Services
             return hash == user.PasswordHash;
         }
 
-        public bool IsValidToken(in User user, string token, string type)
-        {
-            ClaimsPrincipal? principal = _jwtService.GetClaimsToken(token);
-
-            return principal is not null && IsValidToken(in user, principal, type);
-        }
-
         public static bool IsValidToken(in User user, ClaimsPrincipal principal, string type)
         {
             string? lifetime = principal?.Claims.FirstOrDefault(c => c.Type == "exp")?.Value;

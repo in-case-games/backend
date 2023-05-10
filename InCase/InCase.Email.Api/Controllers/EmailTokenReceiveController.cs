@@ -18,54 +18,34 @@ namespace InCase.Email.Api.Controllers
         private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
         private readonly EmailService _emailService;
         private readonly JwtService _jwtService;
+        private readonly AuthenticationService _authService;
         #endregion
         #region ctor
         public EmailTokenReceiveController(
             IDbContextFactory<ApplicationDbContext> contextFactory,
             EmailService emailService,
-            JwtService jwtService)
+            JwtService jwtService,
+            AuthenticationService authService)
         {
             _contextFactory = contextFactory;
             _emailService = emailService;
             _jwtService = jwtService;
+            _authService = authService;
         }
         #endregion
 
         [AllowAnonymous]
         [HttpGet("account")]
-        public async Task<IActionResult> ConfirmAccount(string token = "")
+        public async Task<IActionResult> ConfirmAccount(string token)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            ClaimsPrincipal? principal = _jwtService.GetClaimsToken(token);
-
-            if (principal is null) 
-                return ResponseUtil.Unauthorized("Не валидный email токен");
-
-            string id = principal.Claims
-                .Single(c => c.Type == ClaimTypes.NameIdentifier)
-                .Value;
-
-            User? user = await context.Users
-                .Include(u => u.AdditionalInfo)
-                .Include(u => u.AdditionalInfo!.Role)
-                .FirstOrDefaultAsync(u => u.Id == Guid.Parse(id));
-
-            if (user == null) 
-                return ResponseUtil.NotFound("Пользователь не найден");
-            if (!ValidationService.IsValidToken(in user, principal, "email")) 
-                return ResponseUtil.Unauthorized("Не валидный email токен");
-
+            User user = await _authService.GetUserFromToken(token, "email", context);
             UserAdditionalInfo userInfo = user.AdditionalInfo!;
+            DataSendTokens tokenModel = _jwtService.CreateTokenPair(in user);
 
             if (!userInfo.IsConfirmed)
-            {
-                userInfo.IsConfirmed = true;
-                userInfo.DeletionDate = null;
-
-                await context.SaveChangesAsync();
-
-                return await _emailService.SendToEmail(user.Email!, "Добро пожаловать в InCase!", new()
+                await _emailService.SendToEmail(user.Email!, "Добро пожаловать в InCase!", new()
                 {
                     HeaderTitle = "Конец этапа",
                     HeaderSubtitle = "регистрации",
@@ -74,31 +54,26 @@ namespace InCase.Email.Api.Controllers
                     $"Надеемся, что вам понравится наша реализация открытия кейсов. " +
                     $"Подарит множество эмоций и новых предметов."
                 });
-            }
-
-            if (userInfo.DeletionDate != null)
-            {
+            else if (userInfo.DeletionDate != null) 
                 await _emailService.SendToEmail(user.Email!, "Отмена удаления аккаунта", new()
                 {
                     BodyTitle = $"Дорогой {user.Login!}",
-                    BodyDescription = $"Ваш аккаунт больше не в списках на удаление." +
+                    BodyDescription = $"Ваш аккаунт больше не в списках на удаление." + 
                     $"Спасибо, что остаётесь с нами!"
                 });
+            else
+                await _emailService.SendToEmail(user.Email!, "Успешный вход в аккаунт", new()
+                {
+                    BodyTitle = $"Добро пожаловать {user.Login!}",
+                    BodyDescription = $"В ваш аккаунт вошли." + 
+                    $"Если это были не вы, то срочно измените пароль в настройках вашего аккаунта, " +
+                    $"вас автоматически отключит со всех устройств."
+                });
 
-                userInfo.DeletionDate = null;
+            userInfo.IsConfirmed = true;
+            userInfo.DeletionDate = null;
 
-                await context.SaveChangesAsync();
-            }
-
-            await _emailService.SendToEmail(user.Email!, "Успешный вход в аккаунт", new()
-            {
-                BodyTitle = $"Добро пожаловать {user.Login!}",
-                BodyDescription = $"В ваш аккаунт вошли." +
-                $"Если это были не вы, то срочно измените пароль в настройках вашего аккаунта, " +
-                $"вас автоматически отключит со всех устройств."
-            });
-
-            DataSendTokens tokenModel = _jwtService.CreateTokenPair(in user);
+            await context.SaveChangesAsync();
 
             return ResponseUtil.Ok(tokenModel);
         }
@@ -109,31 +84,10 @@ namespace InCase.Email.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            ClaimsPrincipal? principal = _jwtService.GetClaimsToken(token);
-
-            if (principal is null)
-                return ResponseUtil.Unauthorized("Не валидный email токен");
-
-            string id = principal.Claims
-                .Single(c => c.Type == ClaimTypes.NameIdentifier)
-                .Value;
-
-            bool isExistEmail = await context.Users
-                .AsNoTracking()
-                .AnyAsync(u => u.Email == email);
-
-            if (isExistEmail) 
+            if (await context.Users.AsNoTracking().AnyAsync(u => u.Email == email))
                 return ResponseUtil.Conflict("Email почта занята");
 
-            User? user = await context.Users
-                .Include(u => u.AdditionalInfo)
-                .Include(u => u.AdditionalInfo!.Role)
-                .FirstOrDefaultAsync(u => u.Id == Guid.Parse(id));
-
-            if (user == null) 
-                return ResponseUtil.NotFound("Пользователь не найден");
-            if (!ValidationService.IsValidToken(in user, principal, "email"))
-                return ResponseUtil.Unauthorized("Не валидный email токен");
+            User user = await _authService.GetUserFromToken(token, "email", context);
 
             user.Email = email;
 
@@ -154,24 +108,7 @@ namespace InCase.Email.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            ClaimsPrincipal? principal = _jwtService.GetClaimsToken(token);
-
-            if (principal is null)
-                return ResponseUtil.Unauthorized("Не валидный email токен");
-
-            string id = principal.Claims
-                .Single(c => c.Type == ClaimTypes.NameIdentifier)
-                .Value;
-
-            User? user = await context.Users
-                .Include(u => u.AdditionalInfo)
-                .Include(u => u.AdditionalInfo!.Role)
-                .FirstOrDefaultAsync(u => u.Id == Guid.Parse(id));
-
-            if (user == null) 
-                return ResponseUtil.NotFound("Пользователь не найден");
-            if (!ValidationService.IsValidToken(in user, principal, "email"))
-                return ResponseUtil.Unauthorized("Не валидный email токен");
+            User user = await _authService.GetUserFromToken(token, "email", context);
 
             byte[] salt = EncryptorService.GenerationSaltTo64Bytes();
             string hash = EncryptorService.GenerationHashSHA512(password, salt);
@@ -197,24 +134,7 @@ namespace InCase.Email.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            ClaimsPrincipal? principal = _jwtService.GetClaimsToken(token);
-
-            if (principal is null)
-                return ResponseUtil.Unauthorized("Не валидный email токен");
-
-            string id = principal.Claims
-                .Single(c => c.Type == ClaimTypes.NameIdentifier)
-                .Value;
-
-            User? user = await context.Users
-                .Include(u => u.AdditionalInfo)
-                .Include(u => u.AdditionalInfo!.Role)
-                .FirstOrDefaultAsync(u => u.Id == Guid.Parse(id));
-
-            if (user == null) 
-                return ResponseUtil.NotFound("Пользователь не найден");
-            if (!ValidationService.IsValidToken(in user, principal, "email"))
-                return ResponseUtil.Unauthorized("Не валидный email токен");
+            User user = await _authService.GetUserFromToken(token, "email", context);
 
             user.AdditionalInfo!.DeletionDate = DateTime.UtcNow + TimeSpan.FromDays(30);
 

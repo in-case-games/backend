@@ -1,5 +1,6 @@
 ﻿using InCase.Domain.Entities.Auth;
 using InCase.Domain.Entities.Resources;
+using InCase.Infrastructure.CustomException;
 using InCase.Infrastructure.Data;
 using InCase.Infrastructure.Utils;
 using Microsoft.Extensions.Configuration;
@@ -19,7 +20,13 @@ namespace InCase.Infrastructure.Services
             _configuration = configuration;
         }
 
-        public ClaimsPrincipal? GetClaimsToken(string token)
+        ///<summary>
+        /// Reads and validates a 'JSON Web Token' (JWT) and get claims
+        /// </summary>
+        /// <param name="token">JWT token</param>
+        /// <exception cref="UnauthorizedCodeException"><paramref name="token"/>Is incorrect or invalid</exception>
+        /// <returns>A <see cref="ClaimsPrincipal"/> from the JWT. Does not include claims found in the JWT header.</returns>
+        public ClaimsPrincipal GetClaimsToken(string token)
         {
             byte[] secret = Encoding.ASCII.GetBytes(_configuration["JWT:Secret"]!);
 
@@ -37,17 +44,21 @@ namespace InCase.Infrastructure.Services
             try
             {
                 ClaimsPrincipal principal = tokenHandler.ValidateToken(
-                    token,
-                    parameters,
-                    out SecurityToken securityToken);
+                    token, parameters, out SecurityToken securityToken);
 
-                return (securityToken is not JwtSecurityToken jwtSecurityToken || 
-                    !jwtSecurityToken.Header.Alg.Equals("HS512",
-                    StringComparison.InvariantCultureIgnoreCase)) ? null : principal;
+                if (securityToken is not JwtSecurityToken jwtSecurityToken ||
+                !jwtSecurityToken.Header.Alg.Equals("HS512", StringComparison.InvariantCultureIgnoreCase))
+                    throw new SecurityTokenException();
+
+                return principal;
             }
-            catch(Exception)
+            catch (SecurityTokenException)
             {
-                return null;
+                throw new UnauthorizedCodeException("Не валидный токен");
+            }
+            catch (ArgumentException)
+            {
+                throw new UnauthorizedCodeException("Не валидный токен");
             }
         }
 

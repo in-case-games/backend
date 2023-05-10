@@ -74,6 +74,7 @@ builder.Services.AddSwaggerGen(options =>
 
 builder.Services.AddSingleton<EmailService>();
 builder.Services.AddSingleton<JwtService>();
+builder.Services.AddSingleton<AuthenticationService>();
 
 builder.Services.AddCors(options =>
 {

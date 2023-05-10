@@ -1,5 +1,6 @@
 ﻿using InCase.Domain.Common;
 using InCase.Domain.Entities.Resources;
+using InCase.Infrastructure.CustomException;
 using InCase.Infrastructure.Data;
 using InCase.Infrastructure.Utils;
 using Microsoft.AspNetCore.Mvc;
@@ -30,46 +31,40 @@ namespace InCase.Game.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            LootBox? box = await context.LootBoxes
+            LootBox box = await context.LootBoxes
                 .Include(lb => lb.Inventories!)
                     .ThenInclude(lbi => lbi!.Item)
                 .Include(lb => lb.Banner)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(lb => lb.Id == id);
+                .FirstOrDefaultAsync(lb => lb.Id == id) ??
+                throw new NotFoundCodeException("Кейс не найден");
+            UserAdditionalInfo? userInfo = await context.UserAdditionalInfos
+                .AsNoTracking()
+                .FirstOrDefaultAsync(uai => uai.UserId == UserId) ??
+                throw new NotFoundCodeException("Пользователь не найден");
+
+            UserHistoryPromocode? promocode = await context.UserHistoryPromocodes
+                .Include(uhp => uhp.Promocode)
+                .Include(uhp => uhp.Promocode!.Type)
+                .FirstOrDefaultAsync(uhp => 
+                uhp.UserId == UserId &&
+                uhp.IsActivated == false && 
+                uhp.Promocode!.Type!.Name == "case");
 
             UserPathBanner? pathBanner = null;
-
-            if (box is null)
-                return ResponseUtil.NotFound("Кейс не найден");
-
-            User? user = await context.Users
-                .Include(u => u.AdditionalInfo)
-                .Include(u => u.HistoryPromocodes!)
-                    .ThenInclude(uhp => uhp.Promocode)
-                        .ThenInclude(p => p!.Type)
-                .AsNoTracking()
-                .FirstOrDefaultAsync(u => u.Id == UserId);
-
-            if(user is null || user.AdditionalInfo is null)
-                return ResponseUtil.NotFound("Пользователь не найден");
-
-            UserAdditionalInfo userInfo = user.AdditionalInfo;
-            UserHistoryPromocode? promocode = user.HistoryPromocodes?
-                .FirstOrDefault(uhp => uhp.IsActivated == false && uhp.Promocode?.Type?.Name == "case");
+            decimal discount = 0;
 
             if (box.IsLocked)
-                return ResponseUtil.Forbidden("Кейс заблокирован");
-            if (userInfo.Balance < box.Cost) 
-                return ResponseUtil.PaymentRequired("Недостаточно средств");
+                throw new ForbiddenCodeException("Кейс заблокирован");
+            if (userInfo.Balance < box.Cost)
+                throw new PaymentRequiredCodeException("Недостаточно средств");
+
             if (box.Banner?.Id is not null)
             {
                 pathBanner = await context.UserPathBanners
                     .AsNoTracking()
                     .FirstOrDefaultAsync(upb => upb.BannerId == box.Banner!.Id && upb.UserId == UserId);
             }
-
-            decimal discount = 0;
-
             if (promocode is not null)
             {
                 discount = promocode.Promocode!.Discount;
@@ -175,18 +170,18 @@ namespace InCase.Game.Api.Controllers
 
             UserAdditionalInfo? userInfo = await context.UserAdditionalInfos
                 .AsNoTracking()
-                .FirstOrDefaultAsync(uai => uai.UserId == UserId);
+                .FirstOrDefaultAsync(uai => uai.UserId == UserId) ??
+                throw new NotFoundCodeException("Пользователь не найден");
             LootBox? box = await context.LootBoxes
                 .Include(lb => lb.Inventories!)
                     .ThenInclude(lbi => lbi!.Item)
                 .Include(lb => lb.Banner)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(lb => lb.Id == id);
+                .FirstOrDefaultAsync(lb => lb.Id == id) ??
+                throw new NotFoundCodeException("Кейс не найден");
 
-            if (userInfo is null || box is null)
-                return ResponseUtil.NotFound("Кейс не найден");
             if (!userInfo.IsGuestMode)
-                return ResponseUtil.Forbidden("Не включен режим гостя");
+                throw new ForbiddenCodeException("Не включен режим гостя");
 
             //Update Balance Case and User
             box.VirtualBalance += box.Cost;

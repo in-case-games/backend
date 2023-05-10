@@ -22,16 +22,19 @@ namespace InCase.Authentication.Api.Controllers
         private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
         private readonly JwtService _jwtService;
         private readonly EmailService _emailService;
+        private readonly AuthenticationService _authService;
         #endregion
         #region ctor
         public AuthenticationController(
             IDbContextFactory<ApplicationDbContext> contextFactory,
             JwtService jwtService,
-            EmailService emailService)
+            EmailService emailService,
+            AuthenticationService authService)
         {
             _contextFactory = contextFactory;
             _jwtService = jwtService;
             _emailService = emailService;
+            _authService = authService;
         }
         #endregion
 
@@ -53,16 +56,7 @@ namespace InCase.Authentication.Api.Controllers
             if (!ValidationService.IsValidUserPassword(in user, userDto.Password!))
                 throw new ForbiddenCodeException("Неверный пароль");
 
-            List<UserRestriction> bans = await context.UserRestrictions
-                .Include(ur => ur.Type)
-                .AsNoTracking()
-                .Where(ur => ur.UserId == user.Id && ur.Type!.Name == "ban")
-                .OrderByDescending(ur => ur.ExpirationDate)
-                .ToListAsync();
-
-            if (bans.Count > 0)
-                throw new ForbiddenCodeException($"Вход запрещён до {bans[0].ExpirationDate}. " +
-                    $"Причина - {bans[0].Description}");
+            await AuthenticationService.CheckUserForBan(user.Id, context);
 
             return user.AdditionalInfo!.IsConfirmed ? 
                 await _emailService.SendToEmail(user.Email!, "Подтверждение входа", new()
@@ -89,11 +83,7 @@ namespace InCase.Authentication.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            bool isExist = await context.Users
-                .AsNoTracking()
-                .AnyAsync(u => u.Email == userDto.Email || u.Login == userDto.Login);
-
-            if (isExist)
+            if (await context.Users.AnyAsync(u => u.Email == userDto.Email || u.Login == userDto.Login))
                 throw new ConflictCodeException("Пользователь уже существует");
 
             User user = userDto.Convert();
@@ -136,33 +126,9 @@ namespace InCase.Authentication.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            ClaimsPrincipal? principal = _jwtService.GetClaimsToken(refreshToken) ?? 
-                throw new UnauthorizedCodeException("Не валидный токен обновления");
+            User user = await _authService.GetUserFromToken(refreshToken, "refresh", context);
 
-            string id = principal.Claims
-                .Single(c => c.Type == ClaimTypes.NameIdentifier)
-                .Value;
-
-            User? user = await context.Users
-                .Include(u => u.AdditionalInfo)
-                .Include(u => u.AdditionalInfo!.Role)
-                .AsNoTracking()
-                .FirstOrDefaultAsync(u => u.Id == Guid.Parse(id)) ?? 
-                throw new NotFoundCodeException("Пользователь не найден");
-
-            if (!ValidationService.IsValidToken(in user, principal, "refresh"))
-                throw new UnauthorizedCodeException("Не валидный токен обновления");
-
-            List<UserRestriction> bans = await context.UserRestrictions
-                .Include(ur => ur.Type)
-                .AsNoTracking()
-                .Where(ur => ur.UserId == user.Id && ur.Type!.Name == "ban")
-                .OrderByDescending(ur => ur.ExpirationDate)
-                .ToListAsync();
-
-            if (bans.Count > 0)
-                throw new ForbiddenCodeException($"Вход запрещён до {bans[0].ExpirationDate}. " +
-                    $"Причина - {bans[0].Description}");
+            await AuthenticationService.CheckUserForBan(user.Id, context);
 
             DataSendTokens tokenModel = _jwtService.CreateTokenPair(in user!);
 
