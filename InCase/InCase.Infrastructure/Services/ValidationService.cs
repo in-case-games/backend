@@ -14,6 +14,7 @@ namespace InCase.Infrastructure.Services
 
         public static bool IsActiveBanner(in UserPathBanner path, in LootBox box) => 
             path is not null && box.Banner!.IsActive;
+
         public static bool IsValidUserPassword(in User user, string password)
         {
             string hash = EncryptorService.GenerationHashSHA512(password, Convert

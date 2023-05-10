@@ -140,6 +140,23 @@ namespace InCase.Resources.Api.Controllers
             return ResponseUtil.Ok(banners);
         }
 
+        [AuthorizeRoles(Roles.All)]
+        [HttpGet("banner/{id}")]
+        public async Task<IActionResult> GetPathBanners(Guid id)
+        {
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            if (!await context.LootBoxBanners.AnyAsync(lbb => lbb.Id == id))
+                throw new NotFoundCodeException("Баннер не найден");
+
+            UserPathBanner banner = await context.UserPathBanners
+                .AsNoTracking()
+                .FirstOrDefaultAsync(upb => upb.BannerId == id && upb.UserId == UserId) ??
+                throw new NotFoundCodeException("Путь к баннеру не найден");
+
+            return ResponseUtil.Ok(banner.Convert(false));
+        }
+
         [AllowAnonymous]
         [HttpGet("{id}/inventory")]
         public async Task<IActionResult> GetInventoryByUserId(Guid id)
@@ -380,8 +397,10 @@ namespace InCase.Resources.Api.Controllers
                 .Include(lbi => lbi.Item)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(lbi => lbi.ItemId == pathDto.ItemId && lbi.BoxId == banner.BoxId) ??
-                throw new NotFoundCodeException("Предмет не найден в инвентаре");
+                throw new NotFoundCodeException("Предмет не найден в кейсе");
 
+            if (banner.IsActive is false || banner.ExpirationDate < DateTime.UtcNow)
+                throw new ForbiddenCodeException("Баннер не активен");
             if (await context.UserPathBanners.AnyAsync(upb => upb.UserId == UserId && upb.BannerId == banner.Id))
                 throw new ConflictCodeException("Путь к баннеру уже используется");
 
@@ -453,7 +472,9 @@ namespace InCase.Resources.Api.Controllers
             statistics.BalanceWithdrawn += totalSpent * 0.1M;
             info.Balance += totalSpent * 0.9M;
 
-            return await EndpointUtil.Delete(path, context);
+            await EndpointUtil.Delete(path, context);
+
+            return ResponseUtil.Ok(path.Convert(false));
         }
 
 

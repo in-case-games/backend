@@ -1,7 +1,6 @@
 ﻿using InCase.Domain.Entities.Resources;
 using InCase.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
-using System;
 
 namespace InCase.Infrastructure.Services
 {

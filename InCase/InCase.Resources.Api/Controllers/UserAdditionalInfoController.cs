@@ -32,12 +32,11 @@ namespace InCase.Resources.Api.Controllers
             await using ApplicationDbContext context = await _context.CreateDbContextAsync();
 
             UserAdditionalInfo info = await context.UserAdditionalInfos
-                .Include(uai => uai.Role)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(uai => uai.UserId == UserId) ??
                 throw new NotFoundCodeException("Дополнительная информация не найдена");
 
-            return ResponseUtil.Ok(info);
+            return ResponseUtil.Ok(info.Convert(false));
         }
 
         [AllowAnonymous]
@@ -47,12 +46,11 @@ namespace InCase.Resources.Api.Controllers
             await using ApplicationDbContext context = await _context.CreateDbContextAsync();
 
             UserAdditionalInfo info = await context.UserAdditionalInfos
-                .Include(uai => uai.Role)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(uai => uai.UserId == userId) ??
                 throw new NotFoundCodeException("Пользователь не найден");
 
-            return ResponseUtil.Ok(info);
+            return ResponseUtil.Ok(info.Convert(false));
         }
 
         [AllowAnonymous]
@@ -69,7 +67,6 @@ namespace InCase.Resources.Api.Controllers
             await using ApplicationDbContext context = await _context.CreateDbContextAsync();
 
             UserAdditionalInfo info = await context.UserAdditionalInfos
-                .Include(uai => uai.Role)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(uai => uai.UserId == UserId) ??
                 throw new NotFoundCodeException("Пользователь не найден");
