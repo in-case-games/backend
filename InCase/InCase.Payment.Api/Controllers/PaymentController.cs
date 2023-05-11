@@ -40,16 +40,16 @@ namespace InCase.Payment.Api.Controllers
 
         [AuthorizeRoles(Roles.All)]
         [HttpPost("withdraw")]
-        public async Task<IActionResult> WithdrawItem(DataWithdrawItem data)
+        public async Task<IActionResult> WithdrawItem(DataWithdrawItem data, CancellationToken cancellationToken)
         {
-            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
 
             UserInventory inventory = await context.UserInventories
                 .Include(ui => ui.Item)
                 .Include(ui => ui.Item!.Game!)
                     .ThenInclude(g => g.Markets)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(ui => ui.Id == data.InventoryId && ui.UserId == UserId) ?? 
+                .FirstOrDefaultAsync(ui => ui.Id == data.InventoryId && ui.UserId == UserId, cancellationToken) ?? 
                 throw new NotFoundCodeException("Предмет не найден в инвентаре");
 
             GameItem item = inventory.Item!;
@@ -70,7 +70,7 @@ namespace InCase.Payment.Api.Controllers
 
             ItemWithdrawStatus status = await context.ItemWithdrawStatuses
                 .AsNoTracking()
-                .FirstAsync(iws => iws.Name == "purchase");
+                .FirstAsync(iws => iws.Name == "purchase", cancellationToken);
 
             UserHistoryWithdraw withdraw = new()
             {
@@ -83,19 +83,19 @@ namespace InCase.Payment.Api.Controllers
                 FixedCost = inventory.FixedCost
             };
 
-            await context.UserHistoryWithdraws.AddAsync(withdraw);
+            await context.UserHistoryWithdraws.AddAsync(withdraw, cancellationToken);
             context.UserInventories.Remove(inventory);
 
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync(cancellationToken);
 
             return ResponseUtil.Ok(withdraw.Convert(false));
         }
 
         [AuthorizeRoles(Roles.All)]
         [HttpGet("deposit/signature")]
-        public async Task<IActionResult> GetSignatureForDeposit()
+        public async Task<IActionResult> GetSignatureForDeposit(CancellationToken cancellationToken)
         {
-            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
 
             string hash = _gameMoneyService.CreateHashOfDataForDeposit(UserId);
             string hmac = _rsaService.GenerateHMAC(Encoding.ASCII.GetBytes(hash));
@@ -105,7 +105,7 @@ namespace InCase.Payment.Api.Controllers
 
         [AllowAnonymous]
         [HttpPost("deposit")]
-        public async Task<IActionResult> TopUpBalance(ResponsePaymentGM answer)
+        public async Task<IActionResult> TopUpBalance(ResponsePaymentGM answer, CancellationToken cancellationToken)
         {
             if (answer.StatusAnswer != "success")
                 throw new ForbiddenCodeException("Ожидаем оплаты");
@@ -123,18 +123,18 @@ namespace InCase.Payment.Api.Controllers
                 return ResponseUtil.Ok("Подождите некоторое время для пополнения");
 
             signature = Encoding.ASCII.GetBytes(invoice.SignatureRSA!);
-            hash = Encoding.ASCII.GetBytes(invoice.ToString()!);
+            hash = Encoding.ASCII.GetBytes(invoice.ToString());
 
             if (!_rsaService.VerifySignatureRSA(hash, signature))
                 throw new ForbiddenCodeException("Неверная подпись rsa");
 
-            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
 
             string nameStatus = invoice.Status!.Replace("_", "-").ToLower();
 
             InvoicePaymentStatus status = await context.InvoicePaymentStatuses
                 .AsNoTracking()
-                .FirstAsync(ips => ips.Name == nameStatus);
+                .FirstAsync(ips => ips.Name == nameStatus, cancellationToken);
 
             UserHistoryPayment payment = new()
             {
@@ -147,7 +147,7 @@ namespace InCase.Payment.Api.Controllers
                 UserId = invoice.UserId
             };
 
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync(cancellationToken);
 
             return ResponseUtil.Ok(payment.Convert(false));
         }
@@ -174,9 +174,9 @@ namespace InCase.Payment.Api.Controllers
         //TODO Transfer method
         [AuthorizeRoles(Roles.AdminOwnerBot)]
         [HttpGet("withdraw/{id}/status")]
-        public async Task<IActionResult> GetWithdrawStatus(Guid id)
+        public async Task<IActionResult> GetWithdrawStatus(Guid id, CancellationToken cancellationToken)
         {
-            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
 
             UserHistoryWithdraw withdraw = await context.UserHistoryWithdraws
                 .Include(uhw => uhw.Item)
@@ -184,7 +184,7 @@ namespace InCase.Payment.Api.Controllers
                 .Include(uhw => uhw.Market)
                 .Include(uhw => uhw.Status)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(uhw => uhw.Id == id) ?? 
+                .FirstOrDefaultAsync(uhw => uhw.Id == id, cancellationToken) ?? 
                 throw new NotFoundCodeException("История вывода не найдена");
 
             TradeInfo info = await _withdrawService.GetTradeInfo(withdraw);
@@ -195,15 +195,15 @@ namespace InCase.Payment.Api.Controllers
         //TODO Transfer method
         [AuthorizeRoles(Roles.AdminOwnerBot)]
         [HttpGet("item/{id}")]
-        public async Task<IActionResult> GetItemInfo(Guid id)
+        public async Task<IActionResult> GetItemInfo(Guid id, CancellationToken cancellationToken)
         {
-            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
 
             GameItem item = await context.GameItems
                 .Include(gi => gi.Game!)
                     .ThenInclude(g => g.Markets)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(gi => gi.Id == id) ??
+                .FirstOrDefaultAsync(gi => gi.Id == id, cancellationToken) ??
                 throw new NotFoundCodeException("Предмет не найден");
 
             ItemInfo info = await _withdrawService.GetItemInfo(item);
