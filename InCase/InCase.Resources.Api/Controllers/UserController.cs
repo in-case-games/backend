@@ -477,37 +477,36 @@ namespace InCase.Resources.Api.Controllers
             return ResponseUtil.Ok(path.Convert(false));
         }
 
-
-        //TODO Transfer methods
         [AllowAnonymous]
         [HttpGet("history/withdraws/100")]
         public async Task<IActionResult> GetLast100Withdraws()
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            List<UserHistoryWithdraw> withdraws = await context.UserHistoryWithdraws
-                .Include(uhw => uhw.Item)
+            List<UserHistoryWithdrawDto> withdraws = new();
+
+            await context.UserHistoryWithdraws
                 .AsNoTracking()
                 .OrderByDescending(uhw => uhw.Date)
                 .Take(100)
-                .ToListAsync();
+                .ForEachAsync(uhw => withdraws.Add(uhw.Convert(false)));
 
             return ResponseUtil.Ok(withdraws);
         }
 
-        [AuthorizeRoles(Roles.All)]
+        [AllowAnonymous]
         [HttpGet("history/openings/100")]
         public async Task<IActionResult> GetLast100Openings()
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            List<UserHistoryOpening> openings = await context.UserHistoryOpenings
-                .Include(uho => uho.Box)
-                .Include(uho => uho.Item)
+            List<UserHistoryOpeningDto> openings = new();
+
+            await context.UserHistoryOpenings
                 .AsNoTracking()
                 .OrderByDescending(uho => uho.Date)
                 .Take(100)
-                .ToListAsync();
+                .ForEachAsync(uhp => openings.Add(uhp.Convert(false)));
 
             return ResponseUtil.Ok(openings);
         }

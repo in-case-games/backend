@@ -27,12 +27,11 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            List<LootBox> boxes = await context.LootBoxes
-                .AsNoTracking()
-                .ToListAsync();
-
             List<LootBoxDto> boxesDtos = new();
-            boxes.ForEach(lb => boxesDtos.Add(lb.Convert(false)));
+
+            await context.LootBoxes
+                .AsNoTracking()
+                .ForEachAsync(lb => boxesDtos.Add(lb.Convert(false)));
 
             return ResponseUtil.Ok(boxesDtos);
         }
@@ -92,14 +91,12 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            List<LootBoxBanner> banners = await context.LootBoxBanners
-                .Include(i => i.Box)
-                .AsNoTracking()
-                .ToListAsync();
-
             List<LootBoxBannerDto> result = new();
-
-            banners.ForEach(b => result.Add(b.Convert(false)));
+            
+            await context.LootBoxBanners
+                .Include(lbb => lbb.Box)
+                .AsNoTracking()
+                .ForEachAsync(lbb => result.Add(lbb.Convert(false)));
 
             return ResponseUtil.Ok(result);
         }

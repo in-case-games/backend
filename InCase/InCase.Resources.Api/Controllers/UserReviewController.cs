@@ -108,15 +108,13 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _context.CreateDbContextAsync();
 
-            List<UserReview> reviews = await context.UserReviews
+            List<ReviewImage> images = new();
+
+            await context.UserReviews
                 .Include(ur => ur.Images)
                 .AsNoTracking()
                 .Where(ur => ur.IsApproved)
-                .ToListAsync();
-
-            List<ReviewImage> images = new();
-
-            reviews.ForEach(f => images.AddRange(f.Images!));
+                .ForEachAsync(f => images.AddRange(f.Images!));
 
             return ResponseUtil.Ok(images);
         }
