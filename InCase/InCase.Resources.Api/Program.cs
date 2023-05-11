@@ -8,6 +8,7 @@ using Microsoft.OpenApi.Models;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+string _policyName = "CorsPolicy";
 
 builder.Services.AddPooledDbContextFactory<ApplicationDbContext>(options =>
 {
@@ -74,6 +75,16 @@ builder.Services.AddSwaggerGen(options =>
 builder.Services.AddSingleton<ResponseService>();
 builder.Services.AddSingleton<TradeMarketService>();
 builder.Services.AddSingleton<WithdrawItemService>();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: _policyName,
+        builder => {
+            builder.WithOrigins("http://localhost:3000")
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+        });
+});
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddAuthorization();
@@ -89,7 +100,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseMiddleware<TaskCancellationTokenHandleMiddleware>();
 app.UseMiddleware<ExceptionMiddleware>();
-
+app.UseCors(_policyName);
 app.UseAuthentication();
 app.UseAuthorization();
 

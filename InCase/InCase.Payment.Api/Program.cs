@@ -1,4 +1,5 @@
 using InCase.Infrastructure.Data;
+using InCase.Infrastructure.Middleware;
 using InCase.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -7,7 +8,7 @@ using Microsoft.OpenApi.Models;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
-
+string _policyName = "CorsPolicy";
 builder.Services.AddPooledDbContextFactory<ApplicationDbContext>(
     options => {
         options.UseSnakeCaseNamingConvention();
@@ -75,6 +76,15 @@ builder.Services.AddSingleton<ResponseService>();
 builder.Services.AddSingleton<GameMoneyService>();
 builder.Services.AddSingleton<TradeMarketService>();
 builder.Services.AddSingleton<WithdrawItemService>();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: _policyName,
+        builder => {
+            builder.WithOrigins("http://localhost:3000")
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+        });
+});
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -89,7 +99,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+app.UseMiddleware<ExceptionMiddleware>();
+app.UseCors(_policyName);
 app.UseAuthentication();
 app.UseAuthorization();
 

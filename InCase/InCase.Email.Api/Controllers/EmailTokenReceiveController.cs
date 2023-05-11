@@ -74,6 +74,7 @@ namespace InCase.Email.Api.Controllers
             userInfo.IsConfirmed = true;
             userInfo.DeletionDate = null;
 
+            context.UserAdditionalInfos.Update(userInfo);
             await context.SaveChangesAsync();
 
             return ResponseUtil.Ok(tokenModel);

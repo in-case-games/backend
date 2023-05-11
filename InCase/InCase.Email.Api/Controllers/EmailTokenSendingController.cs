@@ -59,7 +59,7 @@ namespace InCase.Email.Api.Controllers
                     BodyDescription = $"Подтвердите вход в аккаунт с устройства {data.UserPlatforms}." +
                     $"Если это были не вы, то срочно измените пароль в настройках вашего аккаунта, " +
                     $"вас автоматически отключит со всех устройств.",
-                    BodyButtonLink = $"/api/email/confirm/account?token={data.EmailToken}"
+                    BodyButtonLink = $"email/confirm/account?token={data.EmailToken}"
                 }) :
                 await _emailService.SendToEmail(user.Email!, "Завершение регистрации в системе", new()
                 {
@@ -67,7 +67,7 @@ namespace InCase.Email.Api.Controllers
                     BodyDescription = $"Для завершения этапа регистрации," +
                     $"вам необходимо нажать на кнопку ниже для подтверждения почты." +
                     $"Если это были не вы, проигнорируйте это сообщение.",
-                    BodyButtonLink = $"/api/email/confirm/account?token={data.EmailToken}"
+                    BodyButtonLink = $"email/confirm/account?token={data.EmailToken}"
                 });
         }
 
@@ -93,7 +93,7 @@ namespace InCase.Email.Api.Controllers
                 $"Отправка с устройства {data.UserPlatforms}." +
                 $"Если это были не вы, то срочно измените пароль в настройках вашего аккаунта," +
                 $"вас автоматически отключит со всех устройств.",
-                BodyButtonLink = $"/api/email/confirm/update/password?token={data.EmailToken}"
+                BodyButtonLink = $"email/confirm/update/password?token={data.EmailToken}"
             });
         }
 
@@ -117,7 +117,7 @@ namespace InCase.Email.Api.Controllers
                 BodyTitle = $"Дорогой {data.UserLogin}",
                 BodyDescription = $"Подтвердите, " +
                 $"что это вы хотите поменять пароль с устройства {data.UserPlatforms}. ",
-                BodyButtonLink = $"/api/email/confirm/update/password?token={data.EmailToken}"
+                BodyButtonLink = $"email/confirm/update/password?token={data.EmailToken}"
             });
         }
 
@@ -149,7 +149,7 @@ namespace InCase.Email.Api.Controllers
                 $"<br>" +
                 $"С уважением команда InCase</div>",
                 BodyButtonText = "Подтверждаю",
-                BodyButtonLink = $"/api/email/confirm/update/email?token={data.EmailToken}"
+                BodyButtonLink = $"email/confirm/update/email?token={data.EmailToken}"
             });
         }
 
@@ -178,7 +178,7 @@ namespace InCase.Email.Api.Controllers
                 $"что это вы хотите поменять пароль с устройства {data.UserPlatforms}. " +
                 $"Если это были не вы, то срочно измените пароль в настройках вашего аккаунта, " +
                 $"вас автоматически отключит со всех устройств.",
-                BodyButtonLink = $"/api/email/confirm/update/password?token={data.EmailToken}"
+                BodyButtonLink = $"email/confirm/update/password?token={data.EmailToken}"
             });
         }
 
@@ -207,7 +207,7 @@ namespace InCase.Email.Api.Controllers
                 $"Если это были не вы, то срочно измените пароль в настройках вашего аккаунта, " +
                 $"вас автоматически отключит со всех устройств. " +
                 $"Мы удалим ваш аккаунт при достижении 30 дней с момента нажатия на эту кнопку.",
-                BodyButtonLink = $"/api/email/confirm/delete?token={data.EmailToken}"
+                BodyButtonLink = $"email/confirm/delete?token={data.EmailToken}"
             });
         }
 
