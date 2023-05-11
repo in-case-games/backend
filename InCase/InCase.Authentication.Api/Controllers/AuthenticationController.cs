@@ -37,17 +37,17 @@ namespace InCase.Authentication.Api.Controllers
 
         [AllowAnonymous]
         [HttpPost("signin")]
-        public async Task<IActionResult> SignIn(UserDto userDto)
+        public async Task<IActionResult> SignIn(UserDto userDto, CancellationToken cancellationToken)
         {
-            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
 
-            User? user = await context.Users
+            User user = await context.Users
                 .Include(u => u.AdditionalInfo)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(u => 
                 u.Id == userDto.Id ||
                 u.Email == userDto.Email ||
-                u.Login == userDto.Login) ?? 
+                u.Login == userDto.Login, cancellationToken) ?? 
                 throw new NotFoundCodeException("Пользователь не найден");
 
             if (!ValidationService.IsValidUserPassword(in user, userDto.Password!))
@@ -76,11 +76,11 @@ namespace InCase.Authentication.Api.Controllers
 
         [AllowAnonymous]
         [HttpPost("signup")]
-        public async Task<IActionResult> SignUp(UserDto userDto)
+        public async Task<IActionResult> SignUp(UserDto userDto, CancellationToken cancellationToken)
         {
-            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
 
-            if (await context.Users.AnyAsync(u => u.Email == userDto.Email || u.Login == userDto.Login))
+            if (await context.Users.AnyAsync(u => u.Email == userDto.Email || u.Login == userDto.Login, cancellationToken))
                 throw new ConflictCodeException("Пользователь уже существует");
 
             User user = userDto.Convert();
@@ -88,7 +88,7 @@ namespace InCase.Authentication.Api.Controllers
 
             UserRole? role = await context.UserRoles
                 .AsNoTracking()
-                .FirstOrDefaultAsync(ur => ur.Name == "user");
+                .FirstOrDefaultAsync(ur => ur.Name == "user", cancellationToken);
 
             UserAdditionalInfo info = new() {
                 RoleId = role!.Id,
@@ -105,25 +105,25 @@ namespace InCase.Authentication.Api.Controllers
                     BodyButtonLink = $"email/confirm/account?token={_jwtService.CreateEmailToken(user)}"
                 });
 
-            await context.Users.AddAsync(user);
-            await context.UserAdditionalInfos.AddAsync(info);
+            await context.Users.AddAsync(user, cancellationToken);
+            await context.UserAdditionalInfos.AddAsync(info, cancellationToken);
 
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync(cancellationToken);
 
             return ResponseUtil.SentEmail();
         }
 
         [AllowAnonymous]
         [HttpGet("refresh")]
-        public async Task<IActionResult> RefreshTokens(string refreshToken)
+        public async Task<IActionResult> RefreshTokens(string refreshToken, CancellationToken cancellationToken)
         {
-            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
 
             User user = await _authService.GetUserFromToken(refreshToken, "refresh", context);
 
             await AuthenticationService.CheckUserForBan(user.Id, context);
 
-            DataSendTokens tokenModel = _jwtService.CreateTokenPair(in user!);
+            DataSendTokens tokenModel = _jwtService.CreateTokenPair(in user);
 
             return ResponseUtil.Ok(tokenModel);
         }
