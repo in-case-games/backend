@@ -26,27 +26,27 @@ namespace InCase.Resources.Api.Controllers
 
         [AuthorizeRoles(Roles.User)]
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> Get(CancellationToken cancellationToken)
         {
-            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
 
             List<SupportTopic> topics = await context.SupportTopics
                 .AsNoTracking()
                 .Where(st => st.UserId == UserId)
-                .ToListAsync();
+                .ToListAsync(cancellationToken);
 
             return ResponseUtil.Ok(topics);
         }
 
         [AuthorizeRoles(Roles.User)]
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(Guid id)
+        public async Task<IActionResult> GetById(Guid id, CancellationToken cancellationToken)
         {
-            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
 
             SupportTopic topic = await context.SupportTopics
                 .AsNoTracking()
-                .FirstOrDefaultAsync(st => st.Id == id && st.UserId == UserId) ??
+                .FirstOrDefaultAsync(st => st.Id == id && st.UserId == UserId, cancellationToken) ??
                 throw new NotFoundCodeException("Топик не найден");
 
             return ResponseUtil.Ok(topic);
@@ -54,9 +54,9 @@ namespace InCase.Resources.Api.Controllers
 
         [AuthorizeRoles(Roles.User)]
         [HttpGet("{id}/answers")]
-        public async Task<IActionResult> GetAnswers(Guid id)
+        public async Task<IActionResult> GetAnswers(Guid id, CancellationToken cancellationToken)
         {
-            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
 
             await ValidationService.CheckOwnerSupportTopic(id, UserId, context);
 
@@ -65,16 +65,16 @@ namespace InCase.Resources.Api.Controllers
                 .Include(sta => sta.Images)
                 .AsNoTracking()
                 .Where(sta => sta.TopicId == id)
-                .ToListAsync();
+                .ToListAsync(cancellationToken);
 
             return ResponseUtil.Ok(answers);
         }
 
         [AuthorizeRoles(Roles.User)]
         [HttpGet("{id}/answer/{answerId}")]
-        public async Task<IActionResult> GetAnswer(Guid id, Guid answerId)
+        public async Task<IActionResult> GetAnswer(Guid id, Guid answerId, CancellationToken cancellationToken)
         {
-            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
 
             await ValidationService.CheckOwnerSupportTopic(id, UserId, context);
 
@@ -82,7 +82,7 @@ namespace InCase.Resources.Api.Controllers
                 .Include(sta => sta.Plaintiff)
                 .Include(sta => sta.Images)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(f => f.Id == answerId) ??
+                .FirstOrDefaultAsync(f => f.Id == answerId, cancellationToken) ??
                 throw new NotFoundCodeException("Ответ на топик не найден");
 
             return ResponseUtil.Ok(answer);
@@ -90,23 +90,23 @@ namespace InCase.Resources.Api.Controllers
 
         [AuthorizeRoles(Roles.AdminOwnerBot)]
         [HttpGet("support/opened")]
-        public async Task<IActionResult> GetTopicsOpenedBySupport()
+        public async Task<IActionResult> GetTopicsOpenedBySupport(CancellationToken cancellationToken)
         {
-            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
 
             List<SupportTopic> topics = await context.SupportTopics
                 .AsNoTracking()
                 .Where(st => st.IsClosed == false)
-                .ToListAsync();
+                .ToListAsync(cancellationToken);
 
             return ResponseUtil.Ok(topics);
         }
 
         [AuthorizeRoles(Roles.AdminOwnerBot)]
         [HttpGet("support/{timeStart}&{timeEnd}")]
-        public async Task<IActionResult> GetTopicsOpenedBySupport(DateTime timeStart, DateTime timeEnd)
+        public async Task<IActionResult> GetTopicsOpenedBySupport(DateTime timeStart, DateTime timeEnd, CancellationToken cancellationToken)
         {
-            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
 
             if (timeStart > timeEnd)
                 throw new ConflictCodeException("Начало промежутка времени больше конечного");
@@ -114,33 +114,33 @@ namespace InCase.Resources.Api.Controllers
             List<SupportTopic> topics = await context.SupportTopics
                 .AsNoTracking()
                 .Where(st => st.Date >= timeStart && st.Date <= timeEnd)
-                .ToListAsync();
+                .ToListAsync(cancellationToken);
 
             return ResponseUtil.Ok(topics);
         }
 
         [AuthorizeRoles(Roles.AdminOwnerBot)]
         [HttpGet("support")]
-        public async Task<IActionResult> GetTopicsBySupport()
+        public async Task<IActionResult> GetTopicsBySupport(CancellationToken cancellationToken)
         {
-            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
 
             List<SupportTopic> topics = await context.SupportTopics
                 .AsNoTracking()
-                .ToListAsync();
+                .ToListAsync(cancellationToken);
 
             return ResponseUtil.Ok(topics);
         }
 
         [AuthorizeRoles(Roles.AdminOwnerBot)]
         [HttpGet("{id}/support")]
-        public async Task<IActionResult> GetTopicBySupport(Guid id)
+        public async Task<IActionResult> GetTopicBySupport(Guid id, CancellationToken cancellationToken)
         {
-            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
 
             SupportTopic topic = await context.SupportTopics
                 .AsNoTracking()
-                .FirstOrDefaultAsync(st => st.Id == id) ??
+                .FirstOrDefaultAsync(st => st.Id == id, cancellationToken) ??
                 throw new NotFoundCodeException("Топик не найден");
 
             return ResponseUtil.Ok(topic.Convert(false));
@@ -148,15 +148,15 @@ namespace InCase.Resources.Api.Controllers
 
         [AuthorizeRoles(Roles.AdminOwnerBot)]
         [HttpGet("support/answer/{id}")]
-        public async Task<IActionResult> GetAnswerBySupport(Guid id)
+        public async Task<IActionResult> GetAnswerBySupport(Guid id, CancellationToken cancellationToken)
         {
-            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
 
             SupportTopicAnswer answer = await context.SupportTopicAnswers
                 .Include(sta => sta.Plaintiff)
                 .Include(sta => sta.Images)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(sta => sta.Id == id) ?? 
+                .FirstOrDefaultAsync(sta => sta.Id == id, cancellationToken) ?? 
                 throw new NotFoundCodeException("Ответ на топик не найден");
 
             return ResponseUtil.Ok(answer);
@@ -164,25 +164,25 @@ namespace InCase.Resources.Api.Controllers
 
         [AuthorizeRoles(Roles.AdminOwnerBot)]
         [HttpGet("{id}/support/answers")]
-        public async Task<IActionResult> GetAnswersBySupport(Guid id)
+        public async Task<IActionResult> GetAnswersBySupport(Guid id, CancellationToken cancellationToken)
         {
-            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
 
             List<SupportTopicAnswer> answers = await context.SupportTopicAnswers
                 .Include(sta => sta.Plaintiff)
                 .Include(sta => sta.Images)
                 .AsNoTracking()
                 .Where(sta => sta.TopicId == id)
-                .ToListAsync();
+                .ToListAsync(cancellationToken);
 
             return ResponseUtil.Ok(answers);
         }
 
         [AuthorizeRoles(Roles.User)]
         [HttpPost]
-        public async Task<IActionResult> Create(SupportTopicDto topicDto)
+        public async Task<IActionResult> Create(SupportTopicDto topicDto, CancellationToken cancellationToken)
         {
-            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
 
             topicDto.UserId = UserId;
             topicDto.IsClosed = false;
@@ -191,129 +191,129 @@ namespace InCase.Resources.Api.Controllers
             List<SupportTopic> topics = await context.SupportTopics
                 .AsNoTracking()
                 .Where(st => st.UserId == topicDto.UserId && st.IsClosed == false)
-                .ToListAsync();
+                .ToListAsync(cancellationToken);
 
             return topics.Count >= 3 ?
                 throw new ConflictCodeException("Количество открытых топиков не может превышать 3") : 
-                await EndpointUtil.Create(topicDto.Convert(), context);
+                await EndpointUtil.Create(topicDto.Convert(), context, cancellationToken);
         }
 
         [AuthorizeRoles(Roles.User)]
         [HttpPost("answer")]
-        public async Task<IActionResult> CreateAnswer(SupportTopicAnswerDto answerDto)
+        public async Task<IActionResult> CreateAnswer(SupportTopicAnswerDto answerDto, CancellationToken cancellationToken)
         {
-            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
 
             SupportTopic topic = await context.SupportTopics
-                .FirstOrDefaultAsync(st => st.Id == answerDto.TopicId && st.UserId == UserId) ??
+                .FirstOrDefaultAsync(st => st.Id == answerDto.TopicId && st.UserId == UserId, cancellationToken) ??
                 throw new NotFoundCodeException("Топик не найден");
 
             answerDto.PlaintiffId = UserId;
             answerDto.Date = DateTime.UtcNow;
 
-            return await EndpointUtil.Create(answerDto.Convert(), context);
+            return await EndpointUtil.Create(answerDto.Convert(), context, cancellationToken);
         }
 
         [AuthorizeRoles(Roles.Admin, Roles.Owner)]
         [HttpPost("support/answer")]
-        public async Task<IActionResult> CreateAnswerBySupport(SupportTopicAnswerDto answerDto)
+        public async Task<IActionResult> CreateAnswerBySupport(SupportTopicAnswerDto answerDto, CancellationToken cancellationToken)
         {
-            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
 
             SupportTopic topic = await context.SupportTopics
                 .AsNoTracking()
-                .FirstOrDefaultAsync(st => st.Id == answerDto.TopicId) ??
+                .FirstOrDefaultAsync(st => st.Id == answerDto.TopicId, cancellationToken) ??
                 throw new NotFoundCodeException("Топик не найден");
 
             answerDto.PlaintiffId = UserId;
             answerDto.Date = DateTime.UtcNow;
 
-            return await EndpointUtil.Create(answerDto.Convert(), context);
+            return await EndpointUtil.Create(answerDto.Convert(), context, cancellationToken);
         }
 
         [AuthorizeRoles(Roles.User)]
         [HttpPut]
-        public async Task<IActionResult> Update(SupportTopicDto topicDto)
+        public async Task<IActionResult> Update(SupportTopicDto topicDto, CancellationToken cancellationToken)
         {
-            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
 
             SupportTopic topic = await context.SupportTopics
-                .FirstOrDefaultAsync(st => st.Id == topicDto.Id && st.UserId == UserId) ??
+                .FirstOrDefaultAsync(st => st.Id == topicDto.Id && st.UserId == UserId, cancellationToken) ??
                 throw new NotFoundCodeException("Топик не найден");
 
             topicDto.UserId = topic.UserId;
             topicDto.Date = topic.Date;
 
-            return await EndpointUtil.Update(topic, topicDto.Convert(false), context);
+            return await EndpointUtil.Update(topic, topicDto.Convert(false), context, cancellationToken);
         }
 
         [AuthorizeRoles(Roles.Admin, Roles.Owner)]
         [HttpGet("{id}/close")]
-        public async Task<IActionResult> Close(Guid id)
+        public async Task<IActionResult> Close(Guid id, CancellationToken cancellationToken)
         {
-            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
 
             SupportTopic topic = await context.SupportTopics
-                .FirstOrDefaultAsync(st => st.Id == id) ?? 
+                .FirstOrDefaultAsync(st => st.Id == id, cancellationToken) ?? 
                 throw new NotFoundCodeException("Топик не найден");
 
             topic.IsClosed = true;
             topic.Date = DateTime.UtcNow;
 
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync(cancellationToken);
 
             return ResponseUtil.Ok(topic.Convert(false));
         }
 
         [AuthorizeRoles(Roles.UserAdminOwner)]
         [HttpPut("answer")]
-        public async Task<IActionResult> UpdateAnswer(SupportTopicAnswerDto answerDto)
+        public async Task<IActionResult> UpdateAnswer(SupportTopicAnswerDto answerDto, CancellationToken cancellationToken)
         {
-            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
 
             SupportTopicAnswer answer = await context.SupportTopicAnswers
                 .FirstOrDefaultAsync(sta => 
                 sta.Id == answerDto.Id && 
                 sta.PlaintiffId == UserId && 
-                sta.TopicId == answerDto.TopicId) ??
+                sta.TopicId == answerDto.TopicId, cancellationToken) ??
                 throw new NotFoundCodeException("Ответ на топик не найден");
 
             answerDto.PlaintiffId = UserId;
             answerDto.Date = DateTime.UtcNow;
 
-            return await EndpointUtil.Update(answer, answerDto.Convert(false), context);
+            return await EndpointUtil.Update(answer, answerDto.Convert(false), context, cancellationToken);
         }
 
         [AuthorizeRoles(Roles.Owner)]
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(Guid id)
+        public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
         {
-            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
 
-            return await EndpointUtil.Delete<SupportTopic>(id, context);
+            return await EndpointUtil.Delete<SupportTopic>(id, context, cancellationToken);
         }
 
         [AuthorizeRoles(Roles.User)]
         [HttpDelete("answer/{id}")]
-        public async Task<IActionResult> DeleteAnswer(Guid id)
+        public async Task<IActionResult> DeleteAnswer(Guid id, CancellationToken cancellationToken)
         {
-            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
 
             SupportTopicAnswer answer = await context.SupportTopicAnswers
                 .AsNoTracking()
-                .FirstOrDefaultAsync(sta => sta.Id == id && sta.PlaintiffId == UserId) ??
+                .FirstOrDefaultAsync(sta => sta.Id == id && sta.PlaintiffId == UserId, cancellationToken) ??
                 throw new NotFoundCodeException("Ответ на топик не найден");
 
-            return await EndpointUtil.Delete(answer, context);
+            return await EndpointUtil.Delete(answer, context, cancellationToken);
         }
 
         [AuthorizeRoles(Roles.Admin, Roles.Owner)]
         [HttpDelete("support/answer/{id}")]
-        public async Task<IActionResult> DeleteAnswerBySupport(Guid id)
+        public async Task<IActionResult> DeleteAnswerBySupport(Guid id, CancellationToken cancellationToken)
         {
-            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
 
-            return await EndpointUtil.Delete<SupportTopicAnswer>(id, context);
+            return await EndpointUtil.Delete<SupportTopicAnswer>(id, context, cancellationToken);
         }
     }
 }

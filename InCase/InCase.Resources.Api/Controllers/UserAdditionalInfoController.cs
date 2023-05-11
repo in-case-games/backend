@@ -27,13 +27,13 @@ namespace InCase.Resources.Api.Controllers
 
         [AuthorizeRoles(Roles.All)]
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> Get(CancellationToken cancellationToken)
         {
-            await using ApplicationDbContext context = await _context.CreateDbContextAsync();
+            await using ApplicationDbContext context = await _context.CreateDbContextAsync(cancellationToken);
 
             UserAdditionalInfo info = await context.UserAdditionalInfos
                 .AsNoTracking()
-                .FirstOrDefaultAsync(uai => uai.UserId == UserId) ??
+                .FirstOrDefaultAsync(uai => uai.UserId == UserId, cancellationToken) ??
                 throw new NotFoundCodeException("Дополнительная информация не найдена");
 
             return ResponseUtil.Ok(info.Convert(false));
@@ -41,13 +41,13 @@ namespace InCase.Resources.Api.Controllers
 
         [AllowAnonymous]
         [HttpGet("{userId}")]
-        public async Task<IActionResult> GetByUserId(Guid userId)
+        public async Task<IActionResult> GetByUserId(Guid userId, CancellationToken cancellationToken)
         {
-            await using ApplicationDbContext context = await _context.CreateDbContextAsync();
+            await using ApplicationDbContext context = await _context.CreateDbContextAsync(cancellationToken);
 
             UserAdditionalInfo info = await context.UserAdditionalInfos
                 .AsNoTracking()
-                .FirstOrDefaultAsync(uai => uai.UserId == userId) ??
+                .FirstOrDefaultAsync(uai => uai.UserId == userId, cancellationToken) ??
                 throw new NotFoundCodeException("Пользователь не найден");
 
             return ResponseUtil.Ok(info.Convert(false));
@@ -55,20 +55,20 @@ namespace InCase.Resources.Api.Controllers
 
         [AllowAnonymous]
         [HttpGet("roles")]
-        public async Task<IActionResult> GetRoles()
+        public async Task<IActionResult> GetRoles(CancellationToken cancellationToken)
         {
-            return await EndpointUtil.GetAll<UserRole>(_context);
+            return await EndpointUtil.GetAll<UserRole>(_context, cancellationToken);
         }
 
         [AuthorizeRoles(Roles.AdminOwnerBot)]
         [HttpGet("guest-mode")]
-        public async Task<IActionResult> OnOffGuestMode()
+        public async Task<IActionResult> OnOffGuestMode(CancellationToken cancellationToken)
         {
-            await using ApplicationDbContext context = await _context.CreateDbContextAsync();
+            await using ApplicationDbContext context = await _context.CreateDbContextAsync(cancellationToken);
 
             UserAdditionalInfo info = await context.UserAdditionalInfos
                 .AsNoTracking()
-                .FirstOrDefaultAsync(uai => uai.UserId == UserId) ??
+                .FirstOrDefaultAsync(uai => uai.UserId == UserId, cancellationToken) ??
                 throw new NotFoundCodeException("Пользователь не найден");
 
             info.IsGuestMode = !info.IsGuestMode;
@@ -76,7 +76,7 @@ namespace InCase.Resources.Api.Controllers
             context.UserAdditionalInfos.Attach(info);
             context.Entry(info).Property(p => p.IsGuestMode).IsModified = true;
 
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync(cancellationToken);
 
             return info.IsGuestMode ? 
                 ResponseUtil.Ok("Гостевой мод включен") : 
@@ -85,16 +85,16 @@ namespace InCase.Resources.Api.Controllers
 
         [AuthorizeRoles(Roles.Owner, Roles.Bot)]
         [HttpPut]
-        public async Task<IActionResult> Update(UserAdditionalInfoDto infoDto)
+        public async Task<IActionResult> Update(UserAdditionalInfoDto infoDto, CancellationToken cancellationToken)
         {
-            await using ApplicationDbContext context = await _context.CreateDbContextAsync();
+            await using ApplicationDbContext context = await _context.CreateDbContextAsync(cancellationToken);
 
-            if (!await context.UserRoles.AnyAsync(ur => ur.Id == infoDto.RoleId))
+            if (!await context.UserRoles.AnyAsync(ur => ur.Id == infoDto.RoleId, cancellationToken))
                 throw new NotFoundCodeException("Роль не найдена");
-            if (!await context.Users.AnyAsync(u => u.Id == infoDto.UserId))
+            if (!await context.Users.AnyAsync(u => u.Id == infoDto.UserId, cancellationToken))
                 throw new NotFoundCodeException("Пользователь не найден");
 
-            return await EndpointUtil.Update(infoDto.Convert(false), context);
+            return await EndpointUtil.Update(infoDto.Convert(false), context, cancellationToken);
         }
     }
 }

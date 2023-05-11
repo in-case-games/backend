@@ -22,13 +22,13 @@ namespace InCase.Resources.Api.Controllers
 
         [AllowAnonymous]
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> Get(CancellationToken cancellationToken)
         {
-            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
 
             SiteStatistics statistics = await context.SiteStatistics
                 .AsNoTracking()
-                .FirstOrDefaultAsync() ??
+                .FirstOrDefaultAsync(cancellationToken) ??
                 throw new NotFoundCodeException("Сайт статистика не найдена");
 
             return ResponseUtil.Ok(statistics);
@@ -36,13 +36,13 @@ namespace InCase.Resources.Api.Controllers
 
         [AuthorizeRoles(Roles.Owner, Roles.Bot)]
         [HttpGet("admin")]
-        public async Task<IActionResult> GetAdmin()
+        public async Task<IActionResult> GetAdmin(CancellationToken cancellationToken)
         {
-            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
 
             SiteStatisticsAdmin statistics = await context.SiteStatisticsAdmins
                 .AsNoTracking()
-                .FirstOrDefaultAsync() ?? 
+                .FirstOrDefaultAsync(cancellationToken) ?? 
                 throw new NotFoundCodeException("Админская сайт статистика не найдена");
 
             return ResponseUtil.Ok(statistics);

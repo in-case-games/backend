@@ -23,30 +23,30 @@ namespace InCase.Resources.Api.Controllers
 
         [AllowAnonymous]
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> Get(CancellationToken cancellationToken)
         {
-            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
 
             List<LootBoxGroup> groups = await context.LootBoxGroups
                 .Include(lbg => lbg.Group)
                 .Include(lbg => lbg.Box)
                 .AsNoTracking()
-                .ToListAsync();
+                .ToListAsync(cancellationToken);
 
             return ResponseUtil.Ok(groups);
         }
 
         [AllowAnonymous]
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(Guid id)
+        public async Task<IActionResult> GetById(Guid id, CancellationToken cancellationToken)
         {
-            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
 
             LootBoxGroup group = await context.LootBoxGroups
                 .Include(lbg => lbg.Group)
                 .Include(lbg => lbg.Box)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(lbg => lbg.Id == id) ?? 
+                .FirstOrDefaultAsync(lbg => lbg.Id == id, cancellationToken) ?? 
                 throw new NotFoundCodeException("Кейс группа не найдена");
 
             return ResponseUtil.Ok(group);
@@ -54,11 +54,11 @@ namespace InCase.Resources.Api.Controllers
 
         [AllowAnonymous]
         [HttpGet("game/{id}")]
-        public async Task<IActionResult> GetByGameId(Guid id)
+        public async Task<IActionResult> GetByGameId(Guid id, CancellationToken cancellationToken)
         {
-            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
 
-            if (!await context.Games.AnyAsync(g => g.Id == id))
+            if (!await context.Games.AnyAsync(g => g.Id == id, cancellationToken))
                 throw new NotFoundCodeException("Игра не найдена");
 
             List<LootBoxGroup> group = await context.LootBoxGroups
@@ -66,70 +66,70 @@ namespace InCase.Resources.Api.Controllers
                 .Include(lbg => lbg.Box)
                 .AsNoTracking()
                 .Where(lbg => lbg.GameId == id)
-                .ToListAsync();
+                .ToListAsync(cancellationToken);
 
             return ResponseUtil.Ok(group);
         }
 
         [AllowAnonymous]
         [HttpGet("groups")]
-        public async Task<IActionResult> GetGroups()
+        public async Task<IActionResult> GetGroups(CancellationToken cancellationToken)
         {
-            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
 
             List<GroupLootBox> groups = await context.GroupLootBoxes
                 .AsNoTracking()
-                .ToListAsync();
+                .ToListAsync(cancellationToken);
 
             return ResponseUtil.Ok(groups);
         }
 
         [AuthorizeRoles(Roles.Owner)]
         [HttpPost]
-        public async Task<IActionResult> Create(LootBoxGroupDto groupDto)
+        public async Task<IActionResult> Create(LootBoxGroupDto groupDto, CancellationToken cancellationToken)
         {
-            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
 
-            if (!await context.Games.AnyAsync(g => g.Id == groupDto.GameId))
+            if (!await context.Games.AnyAsync(g => g.Id == groupDto.GameId, cancellationToken))
                 throw new NotFoundCodeException("Игра не найдена");
-            if (!await context.GroupLootBoxes.AnyAsync(glb => glb.Id == groupDto.GroupId))
+            if (!await context.GroupLootBoxes.AnyAsync(glb => glb.Id == groupDto.GroupId, cancellationToken))
                 throw new NotFoundCodeException("Группа кейсов не найдена");
-            if (!await context.LootBoxes.AnyAsync(lb => lb.Id == groupDto.BoxId))
+            if (!await context.LootBoxes.AnyAsync(lb => lb.Id == groupDto.BoxId, cancellationToken))
                 throw new NotFoundCodeException("Кейс не найден");
 
-            return await EndpointUtil.Create(groupDto.Convert(), context);
+            return await EndpointUtil.Create(groupDto.Convert(), context, cancellationToken);
         }
 
         [AuthorizeRoles(Roles.Owner)]
         [HttpPost("group")]
-        public async Task<IActionResult> CreateGroup(GroupLootBox group)
+        public async Task<IActionResult> CreateGroup(GroupLootBox group, CancellationToken cancellationToken)
         {
-            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
 
             group.Id = Guid.NewGuid();
-            bool IsExistName = await context.GroupLootBoxes.AnyAsync(glb => glb.Name == group.Name);
+            bool isExistName = await context.GroupLootBoxes.AnyAsync(glb => glb.Name == group.Name, cancellationToken);
 
-            return IsExistName ?
+            return isExistName ?
                 throw new ConflictCodeException("Имя группы уже используется") :
-                await EndpointUtil.Create(group, context);
+                await EndpointUtil.Create(group, context, cancellationToken);
         }
 
         [AuthorizeRoles(Roles.Owner)]
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(Guid id)
+        public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
         {
-            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
 
-            return await EndpointUtil.Delete<LootBoxGroup>(id, context);
+            return await EndpointUtil.Delete<LootBoxGroup>(id, context, cancellationToken);
         }
 
         [AuthorizeRoles(Roles.Owner)]
         [HttpDelete("group/{id}")]
-        public async Task<IActionResult> DeleteGroup(Guid id)
+        public async Task<IActionResult> DeleteGroup(Guid id, CancellationToken cancellationToken)
         {
-            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
 
-            return await EndpointUtil.Delete<GroupLootBox>(id, context);
+            return await EndpointUtil.Delete<GroupLootBox>(id, context, cancellationToken);
         }
     }
 }
