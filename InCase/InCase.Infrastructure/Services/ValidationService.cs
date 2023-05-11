@@ -1,15 +1,43 @@
-﻿using InCase.Domain.Entities.Resources;
+﻿using InCase.Domain.Dtos;
+using InCase.Domain.Entities.Resources;
+using InCase.Infrastructure.CustomException;
+using InCase.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 namespace InCase.Infrastructure.Services
 {
     public class ValidationService
     {
-        private readonly JwtService _jwtService;
-
-        public ValidationService(JwtService jwtService)
+        public async static Task CheckOwnerSupportTopic(Guid id, Guid userId, ApplicationDbContext context)
         {
-            _jwtService = jwtService;
+            SupportTopic topic = await context.SupportTopics
+                .AsNoTracking()
+                .FirstOrDefaultAsync(sp => sp.Id == id) ??
+                throw new NotFoundCodeException("Топик не найден");
+
+            if (topic.UserId != userId)
+                throw new ForbiddenCodeException("Только создатель топика может его просматривать");
+        }
+
+        public static void CheckBadRequestPromocode(PromocodeDto promocodeDto)
+        {
+            if (promocodeDto.Discount >= 1M || promocodeDto.Discount <= 0)
+                throw new BadRequestCodeException("Скидка промокода должна быть больше 0 и меньше 1");
+            if (promocodeDto.NumberActivations <= 0)
+                throw new BadRequestCodeException("Количество активаций должно быть больше 0");
+        }
+
+        public async static Task CheckNotFoundGameItem(GameItemDto itemDto, ApplicationDbContext context)
+        {
+            if (!await context.Games.AnyAsync(a => a.Id == itemDto.GameId))
+                throw new NotFoundCodeException("Игра не найден");
+            if (!await context.GameItemTypes.AnyAsync(a => a.Id == itemDto.TypeId))
+                throw new NotFoundCodeException("Тип предмета не найден");
+            if (!await context.GameItemRarities.AnyAsync(a => a.Id == itemDto.RarityId))
+                throw new NotFoundCodeException("Редкость предмета не найдена");
+            if (!await context.GameItemQualities.AnyAsync(a => a.Id == itemDto.QualityId))
+                throw new NotFoundCodeException("Качество предмета не найдено");
         }
 
         public static bool IsActiveBanner(in UserPathBanner path, in LootBox box) => 

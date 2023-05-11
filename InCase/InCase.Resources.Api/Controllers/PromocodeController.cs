@@ -3,6 +3,7 @@ using InCase.Domain.Dtos;
 using InCase.Domain.Entities.Resources;
 using InCase.Infrastructure.CustomException;
 using InCase.Infrastructure.Data;
+using InCase.Infrastructure.Services;
 using InCase.Infrastructure.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -75,10 +76,7 @@ namespace InCase.Resources.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(PromocodeDto promocode)
         {
-            if (promocode.Discount >= 1M || promocode.Discount <= 0)
-                throw new BadRequestCodeException("Скидка промокода должна быть больше 0 и меньше 1");
-            if (promocode.NumberActivations <= 0)
-                throw new BadRequestCodeException("Количество активаций должно быть больше 0");
+            ValidationService.CheckBadRequestPromocode(promocode);
 
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
@@ -94,10 +92,7 @@ namespace InCase.Resources.Api.Controllers
         [HttpPut]
         public async Task<IActionResult> Update(PromocodeDto promocodeDto)
         {
-            if (promocodeDto.Discount >= 1M || promocodeDto.Discount <= 0)
-                throw new BadRequestCodeException("Скидка промокода должна быть больше 0 и меньше 1");
-            if (promocodeDto.NumberActivations <= 0)
-                throw new BadRequestCodeException("Количество активаций должно быть больше 0");
+            ValidationService.CheckBadRequestPromocode(promocodeDto);
 
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 

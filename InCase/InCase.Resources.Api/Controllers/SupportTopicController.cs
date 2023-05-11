@@ -3,6 +3,7 @@ using InCase.Domain.Dtos;
 using InCase.Domain.Entities.Resources;
 using InCase.Infrastructure.CustomException;
 using InCase.Infrastructure.Data;
+using InCase.Infrastructure.Services;
 using InCase.Infrastructure.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -57,13 +58,7 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            SupportTopic topic = await context.SupportTopics
-                .AsNoTracking()
-                .FirstOrDefaultAsync(sp => sp.Id == id) ??
-                throw new NotFoundCodeException("Топик не найден");
-
-            if (topic.UserId != UserId)
-                throw new ForbiddenCodeException("Только создатель топика может его просматривать");
+            await ValidationService.CheckOwnerSupportTopic(id, UserId, context);
 
             List<SupportTopicAnswer> answers = await context.SupportTopicAnswers
                 .Include(sta => sta.Plaintiff)
@@ -72,7 +67,7 @@ namespace InCase.Resources.Api.Controllers
                 .Where(sta => sta.TopicId == id)
                 .ToListAsync();
 
-            return ResponseUtil.Ok(topic.Answers);
+            return ResponseUtil.Ok(answers);
         }
 
         [AuthorizeRoles(Roles.User)]
@@ -81,13 +76,7 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
-            SupportTopic topic = await context.SupportTopics
-                .AsNoTracking()
-                .FirstOrDefaultAsync(sp => sp.Id == id) ??
-                throw new NotFoundCodeException("Топик не найден");
-
-            if (topic.UserId != UserId)
-                throw new ForbiddenCodeException("Только создатель топика может его просматривать");
+            await ValidationService.CheckOwnerSupportTopic(id, UserId, context);
 
             SupportTopicAnswer answer = await context.SupportTopicAnswers
                 .Include(sta => sta.Plaintiff)

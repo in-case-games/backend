@@ -169,7 +169,7 @@ namespace InCase.Resources.Api.Controllers
             if (!await context.Games.AnyAsync(g => g.Id == boxDto.GameId))
                 throw new NotFoundCodeException("Игра не найдена");
 
-            LootBox? newBox = boxDto.Convert(false);
+            LootBox newBox = boxDto.Convert(false);
             newBox.VirtualBalance = oldBox.VirtualBalance;
             newBox.Balance = oldBox.Balance;
 

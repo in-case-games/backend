@@ -3,6 +3,7 @@ using InCase.Domain.Dtos;
 using InCase.Domain.Entities.Resources;
 using InCase.Infrastructure.CustomException;
 using InCase.Infrastructure.Data;
+using InCase.Infrastructure.Services;
 using InCase.Infrastructure.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -83,7 +84,7 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
 
-            await CheckGameItem(itemDto, context);
+            await ValidationService.CheckNotFoundGameItem(itemDto, context);
 
             return await EndpointUtil.Create(itemDto.Convert(), context, cancellationToken);
         }
@@ -94,7 +95,7 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
 
-            await CheckGameItem(itemDto, context);
+            await ValidationService.CheckNotFoundGameItem(itemDto, context);
 
             return await EndpointUtil.Update(itemDto.Convert(false), context, cancellationToken);
         }
@@ -106,18 +107,6 @@ namespace InCase.Resources.Api.Controllers
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
 
             return await EndpointUtil.Delete<GameItem>(id, context, cancellationToken);
-        }
-
-        private static async Task CheckGameItem(GameItemDto itemDto, ApplicationDbContext context)
-        {
-            if (!await context.Games.AnyAsync(a => a.Id == itemDto.GameId))
-                throw new NotFoundCodeException("Игра не найден");
-            if (!await context.GameItemTypes.AnyAsync(a => a.Id == itemDto.TypeId))
-                throw new NotFoundCodeException("Тип предмета не найден");
-            if (!await context.GameItemRarities.AnyAsync(a => a.Id == itemDto.RarityId))
-                throw new NotFoundCodeException("Редкость предмета не найдена");
-            if (!await context.GameItemQualities.AnyAsync(a => a.Id == itemDto.QualityId))
-                throw new NotFoundCodeException("Качество предмета не найдено");
         }
     }
 }
