@@ -25,20 +25,20 @@ namespace InCase.Game.Api.Controllers
 
         [AuthorizeRoles(Roles.All)]
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetOpeningLootBox(Guid id)
+        public async Task<IActionResult> GetOpeningLootBox(Guid id, CancellationToken cancellationToken)
         {
-            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
 
             LootBox box = await context.LootBoxes
                 .Include(lb => lb.Inventories!)
-                    .ThenInclude(lbi => lbi!.Item)
+                    .ThenInclude(lbi => lbi.Item)
                 .Include(lb => lb.Banner)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(lb => lb.Id == id) ??
+                .FirstOrDefaultAsync(lb => lb.Id == id, cancellationToken) ??
                 throw new NotFoundCodeException("Кейс не найден");
-            UserAdditionalInfo? userInfo = await context.UserAdditionalInfos
+            UserAdditionalInfo userInfo = await context.UserAdditionalInfos
                 .AsNoTracking()
-                .FirstOrDefaultAsync(uai => uai.UserId == UserId) ??
+                .FirstOrDefaultAsync(uai => uai.UserId == UserId, cancellationToken) ??
                 throw new NotFoundCodeException("Пользователь не найден");
 
             UserHistoryPromocode? promocode = await context.UserHistoryPromocodes
@@ -47,7 +47,7 @@ namespace InCase.Game.Api.Controllers
                 .FirstOrDefaultAsync(uhp => 
                 uhp.UserId == UserId &&
                 !uhp.IsActivated && 
-                uhp.Promocode!.Type!.Name == "case");
+                uhp.Promocode!.Type!.Name == "case", cancellationToken);
 
             if (box.IsLocked)
                 throw new ForbiddenCodeException("Кейс заблокирован");
@@ -63,9 +63,9 @@ namespace InCase.Game.Api.Controllers
 
             GameItem winItem = OpenLootBoxService.RandomizeBySmallest(in box);
             SiteStatisticsAdmin statisticsAdmin = await context.SiteStatisticsAdmins
-                .FirstAsync();
+                .FirstAsync(cancellationToken);
             SiteStatistics statistics = await context.SiteStatistics
-                .FirstAsync();
+                .FirstAsync(cancellationToken);
 
             decimal revenue = OpenLootBoxService.GetRevenue(box.Cost);
             decimal expenses = OpenLootBoxService.GetExpenses(winItem.Cost, revenue);
@@ -113,30 +113,30 @@ namespace InCase.Game.Api.Controllers
                 FixedCost = winItem.Cost
             };
 
-            await context.UserHistoryOpenings.AddAsync(history);
-            await context.UserInventories.AddAsync(inventory);
+            await context.UserHistoryOpenings.AddAsync(history, cancellationToken);
+            await context.UserInventories.AddAsync(inventory, cancellationToken);
 
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync(cancellationToken);
 
             return ResponseUtil.Ok(winItem.Convert(false));
         }
 
         [AuthorizeRoles(Roles.All)]
         [HttpGet("virtual/{id}")]
-        public async Task<IActionResult> GetVirtualOpeningLootBox(Guid id)
+        public async Task<IActionResult> GetVirtualOpeningLootBox(Guid id, CancellationToken cancellationToken)
         {
-            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
 
-            UserAdditionalInfo? userInfo = await context.UserAdditionalInfos
+            UserAdditionalInfo userInfo = await context.UserAdditionalInfos
                 .AsNoTracking()
-                .FirstOrDefaultAsync(uai => uai.UserId == UserId) ??
+                .FirstOrDefaultAsync(uai => uai.UserId == UserId, cancellationToken) ??
                 throw new NotFoundCodeException("Пользователь не найден");
-            LootBox? box = await context.LootBoxes
+            LootBox box = await context.LootBoxes
                 .Include(lb => lb.Inventories!)
-                    .ThenInclude(lbi => lbi!.Item)
+                    .ThenInclude(lbi => lbi.Item)
                 .Include(lb => lb.Banner)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(lb => lb.Id == id) ??
+                .FirstOrDefaultAsync(lb => lb.Id == id, cancellationToken) ??
                 throw new NotFoundCodeException("Кейс не найден");
 
             if (!userInfo.IsGuestMode)
@@ -153,7 +153,7 @@ namespace InCase.Game.Api.Controllers
             context.LootBoxes.Attach(box);
             context.Entry(box).Property(p => p.VirtualBalance).IsModified = true;
 
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync(cancellationToken);
 
             return ResponseUtil.Ok(winItem.Convert(false));
         }
