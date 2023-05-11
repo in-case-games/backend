@@ -35,14 +35,14 @@ namespace InCase.Email.Api.Controllers
 
         [AllowAnonymous]
         [HttpPost("confirm/{password}")]
-        public async Task<IActionResult> ConfirmAccount(DataMailLink data, string password)
+        public async Task<IActionResult> ConfirmAccount(DataMailLink data, string password, CancellationToken cancellationToken)
         {
-            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
 
             User user = await context.Users
                 .Include(u => u.AdditionalInfo)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(u => u.Login == data.UserLogin) ?? 
+                .FirstOrDefaultAsync(u => u.Login == data.UserLogin, cancellationToken) ?? 
                 throw new NotFoundCodeException("Пользователь не найден");
 
             if (!ValidationService.IsValidUserPassword(in user, password))
@@ -73,11 +73,11 @@ namespace InCase.Email.Api.Controllers
 
         [AllowAnonymous]
         [HttpPost("confirm/{email}")]
-        public async Task<IActionResult> ConfirmNewEmail(DataMailLink data, string email)
+        public async Task<IActionResult> ConfirmNewEmail(DataMailLink data, string email, CancellationToken cancellationToken)
         {
-            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
 
-            if (await context.Users.AnyAsync(u => u.Email == email))
+            if (await context.Users.AnyAsync(u => u.Email == email, cancellationToken))
                 throw new ConflictCodeException("Email почта занята");
 
             User user = await _authService.GetUserFromToken(data.EmailToken, "email", context);
@@ -99,13 +99,13 @@ namespace InCase.Email.Api.Controllers
 
         [AllowAnonymous]
         [HttpPut("forgot/password")]
-        public async Task<IActionResult> ForgotPassword(DataMailLink data)
+        public async Task<IActionResult> ForgotPassword(DataMailLink data, CancellationToken cancellationToken)
         {
-            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
 
             User user = await context.Users
                 .AsNoTracking()
-                .FirstOrDefaultAsync(u => u.Login == data.UserLogin) ??
+                .FirstOrDefaultAsync(u => u.Login == data.UserLogin, cancellationToken) ??
                 throw new NotFoundCodeException("Пользователь не найден");
 
             MapDataMailLink(ref data, in user);
@@ -123,13 +123,13 @@ namespace InCase.Email.Api.Controllers
 
         [AllowAnonymous]
         [HttpPut("email/{password}")]
-        public async Task<IActionResult> UpdateEmail(DataMailLink data, string password)
+        public async Task<IActionResult> UpdateEmail(DataMailLink data, string password, CancellationToken cancellationToken)
         {
-            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
 
             User user = await context.Users
                 .AsNoTracking()
-                .FirstOrDefaultAsync(u => u.Login == data.UserLogin) ??
+                .FirstOrDefaultAsync(u => u.Login == data.UserLogin, cancellationToken) ??
                 throw new NotFoundCodeException("Пользователь не найден");
 
             if (!ValidationService.IsValidUserPassword(in user, password))
@@ -155,13 +155,13 @@ namespace InCase.Email.Api.Controllers
 
         [AllowAnonymous]
         [HttpPut("password/{password}")]
-        public async Task<IActionResult> UpdatePassword(DataMailLink data, string password)
+        public async Task<IActionResult> UpdatePassword(DataMailLink data, string password, CancellationToken cancellationToken)
         {
-            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
 
             User user = await context.Users
                 .AsNoTracking()
-                .FirstOrDefaultAsync(u => u.Login == data.UserLogin) ??
+                .FirstOrDefaultAsync(u => u.Login == data.UserLogin, cancellationToken) ??
                 throw new NotFoundCodeException("Пользователь не найден");
 
             if (!ValidationService.IsValidUserPassword(in user, password))
@@ -184,13 +184,13 @@ namespace InCase.Email.Api.Controllers
 
         [AllowAnonymous]
         [HttpDelete("confirm/{password}")]
-        public async Task<IActionResult> DeleteAccount(DataMailLink data, string password)
+        public async Task<IActionResult> DeleteAccount(DataMailLink data, string password, CancellationToken cancellationToken)
         {
-            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
 
             User user = await context.Users
                 .AsNoTracking()
-                .FirstOrDefaultAsync(u => u.Login == data.UserLogin) ??
+                .FirstOrDefaultAsync(u => u.Login == data.UserLogin, cancellationToken) ??
                 throw new NotFoundCodeException("Пользователь не найден");
 
             if (!ValidationService.IsValidUserPassword(in user, password))

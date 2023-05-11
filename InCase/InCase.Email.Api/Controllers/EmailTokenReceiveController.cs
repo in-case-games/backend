@@ -1,5 +1,4 @@
-﻿using InCase.Domain.Dtos;
-using InCase.Domain.Entities.Auth;
+﻿using InCase.Domain.Entities.Auth;
 using InCase.Domain.Entities.Resources;
 using InCase.Infrastructure.CustomException;
 using InCase.Infrastructure.Data;
@@ -37,9 +36,9 @@ namespace InCase.Email.Api.Controllers
 
         [AllowAnonymous]
         [HttpGet("account")]
-        public async Task<IActionResult> ConfirmAccount(string token)
+        public async Task<IActionResult> ConfirmAccount(string token, CancellationToken cancellationToken)
         {
-            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
 
             User user = await _authService.GetUserFromToken(token, "email", context);
             UserAdditionalInfo userInfo = user.AdditionalInfo!;
@@ -75,25 +74,25 @@ namespace InCase.Email.Api.Controllers
             userInfo.DeletionDate = null;
 
             context.UserAdditionalInfos.Update(userInfo);
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync(cancellationToken);
 
             return ResponseUtil.Ok(tokenModel);
         }
 
         [AllowAnonymous]
         [HttpGet("email/{email}")]
-        public async Task<IActionResult> UpdateEmail(string email, string token = "")
+        public async Task<IActionResult> UpdateEmail(string email, CancellationToken cancellationToken, string token = "")
         {
-            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
 
-            if (await context.Users.AsNoTracking().AnyAsync(u => u.Email == email))
+            if (await context.Users.AsNoTracking().AnyAsync(u => u.Email == email, cancellationToken))
                 throw new ConflictCodeException("Email почта занята");
 
             User user = await _authService.GetUserFromToken(token, "email", context);
 
             user.Email = email;
 
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync(cancellationToken);
             await _emailService.SendToEmail(email, "Ваш аккаунт сменил почту", new()
             {
                 BodyTitle = $"Дорогой {user.Login!}",
@@ -106,15 +105,15 @@ namespace InCase.Email.Api.Controllers
 
         [AllowAnonymous]
         [HttpGet("password/{password}")]
-        public async Task<IActionResult> UpdatePassword(string password, string token = "")
+        public async Task<IActionResult> UpdatePassword(string password, CancellationToken cancellationToken, string token = "")
         {
-            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
 
             User user = await _authService.GetUserFromToken(token, "email", context);
             AuthenticationService.CreateNewPassword(ref user, password);
 
             context.Users.Update(user);
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync(cancellationToken);
             await _emailService.SendToEmail(user.Email!, "Ваш аккаунт сменил пароль", new()
             {
                 BodyTitle = $"Дорогой {user.Login!}",
@@ -128,16 +127,16 @@ namespace InCase.Email.Api.Controllers
 
         [AllowAnonymous]
         [HttpDelete("account")]
-        public async Task<IActionResult> Delete(string token = "")
+        public async Task<IActionResult> Delete(CancellationToken cancellationToken, string token = "")
         {
-            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
 
             User user = await _authService.GetUserFromToken(token, "email", context);
 
             user.AdditionalInfo!.DeletionDate = DateTime.UtcNow + TimeSpan.FromDays(30);
 
             context.UserAdditionalInfos.Update(user.AdditionalInfo);
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync(cancellationToken);
             await _emailService.SendToEmail(user.Email!, "Ваш аккаунт будет удален", new()
             {
                 BodyTitle = $"Дорогой {user.Login!}.",
