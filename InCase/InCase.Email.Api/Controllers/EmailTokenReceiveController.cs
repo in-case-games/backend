@@ -113,6 +113,7 @@ namespace InCase.Email.Api.Controllers
             User user = await _authService.GetUserFromToken(token, "email", context);
             AuthenticationService.CreateNewPassword(ref user, password);
 
+            context.Users.Update(user);
             await context.SaveChangesAsync();
             await _emailService.SendToEmail(user.Email!, "Ваш аккаунт сменил пароль", new()
             {
@@ -135,6 +136,7 @@ namespace InCase.Email.Api.Controllers
 
             user.AdditionalInfo!.DeletionDate = DateTime.UtcNow + TimeSpan.FromDays(30);
 
+            context.UserAdditionalInfos.Update(user.AdditionalInfo);
             await context.SaveChangesAsync();
             await _emailService.SendToEmail(user.Email!, "Ваш аккаунт будет удален", new()
             {
