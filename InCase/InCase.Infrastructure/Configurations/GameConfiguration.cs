@@ -7,8 +7,7 @@ namespace InCase.Infrastructure.Configurations
     internal class GameConfiguration : BaseEntityConfiguration<Game>
     {
         private readonly List<Game> games = new() {
-            new() { Name = "csgo" }, new() { Name = "dota2" },
-            new() { Name = "genshin" }
+            new() { Name = "csgo" }, new() { Name = "dota2" }
         };
 
         public override void Configure(EntityTypeBuilder<Game> builder)
