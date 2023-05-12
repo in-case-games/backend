@@ -5,6 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>4ec0e211-f6d5-439a-949c-525cb674390e</UserSecretsId>
+    <RootNamespace>InCase.Game.Api</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -14,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\InCase.Infrastructure\InCase.Infrastructure.csproj" />
     <ProjectReference Include="..\InCase.Infrastructure\InCase.Infrastructure.csproj" />
   </ItemGroup>
 

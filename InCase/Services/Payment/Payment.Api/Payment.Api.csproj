@@ -1,10 +1,11 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <UserSecretsId>8025897b-dd85-4211-afdb-e063fc80782f</UserSecretsId>
+    <RootNamespace>InCase.Payment.Api</RootNamespace>
+    <UserSecretsId>b3366b93-5db2-4338-8272-bdcb40675f5a</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -20,6 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\InCase.Infrastructure\InCase.Infrastructure.csproj" />
     <ProjectReference Include="..\InCase.Infrastructure\InCase.Infrastructure.csproj" />
   </ItemGroup>
 
