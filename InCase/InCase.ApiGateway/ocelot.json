@@ -1,15 +1,15 @@
 {
   "Routes": [
     {
-      "DownstreamPathTemplate": "/api/weather-forecast",
+      "DownstreamPathTemplate": "/api/game",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 7298
+          "Port": 7044
         }
       ],
-      "UpstreamPathTemplate": "/api/weather",
+      "UpstreamPathTemplate": "/api/game",
       "UpstreamHttpMethod": [ "Get" ]
     }
   ],
