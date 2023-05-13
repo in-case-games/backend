@@ -1,11 +1,10 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <RootNamespace>InCase.Resources.Api</RootNamespace>
-    <UserSecretsId>d49453be-903a-4662-aa78-3b91c5e8844a</UserSecretsId>
+    <UserSecretsId>2e9e1841-8b7c-4bc6-86b3-f4537cd714aa</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -26,7 +25,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\InCase.Infrastructure\InCase.Infrastructure.csproj" />
     <ProjectReference Include="..\InCase.Infrastructure\InCase.Infrastructure.csproj" />
   </ItemGroup>
 

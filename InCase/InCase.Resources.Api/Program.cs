@@ -20,7 +20,7 @@ builder.Services.AddPooledDbContextFactory<ApplicationDbContext>(options =>
 #else
         builder.Configuration["ConnectionStrings:ProductionConnection"],
 #endif
-    b => b.MigrationsAssembly("Resources.Api"));
+    b => b.MigrationsAssembly("InCase.Resources.Api"));
 });
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -97,6 +97,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseHttpsRedirection();
 app.UseMiddleware<TaskCancellationTokenHandleMiddleware>();
 app.UseMiddleware<ExceptionMiddleware>();
 app.UseCors(_policyName);
