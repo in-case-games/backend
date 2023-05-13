@@ -13,6 +13,7 @@
     <projectFile profileName="https">Services/Game/Game.API/Game.API.csproj</projectFile>
     <projectFile profileName="http">Services/Payment/Payment.API/Payment.API.csproj</projectFile>
     <projectFile profileName="https">Services/Payment/Payment.API/Payment.API.csproj</projectFile>
+    <projectFile>Services/Resources/DAL/EntityFramework/EntityFramework.csproj</projectFile>
     <projectFile profileName="http">Services/Resources/Resources.API/Resources.API.csproj</projectFile>
     <projectFile profileName="https">Services/Resources/Resources.API/Resources.API.csproj</projectFile>
   </component>
@@ -20,7 +21,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0df149cb-0051-466e-a943-7d90a7968f19" name="Changes" comment="" />
+    <list default="true" id="0df149cb-0051-466e-a943-7d90a7968f19" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/InCase.sln" beforeDir="false" afterPath="$PROJECT_DIR$/InCase.sln" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -40,7 +43,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "WebServerToolWindowFactoryState": "false",
     "git-widget-placeholder": "InCase.dev",
-    "last_opened_file_path": "/home/zmqp/Documents/github/InCase_backend/InCase/DAL/EntityFramework/EntityFramework.csproj",
+    "last_opened_file_path": "/home/zmqp/Documents/github/InCase_backend/InCase/Services/Resources/DAL/EntityFramework/EntityFramework.csproj",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -293,7 +296,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1683961968995</updated>
-      <workItem from="1683961971724" duration="1105000" />
+      <workItem from="1683961971724" duration="1420000" />
     </task>
     <servers />
   </component>
