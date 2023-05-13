@@ -500,21 +500,13 @@ namespace InCase.Resources.Api.Controllers
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
 
-            List<UserHistoryOpening> openings = await context.UserHistoryOpenings
-                .Include(uho => uho.User)
-                .Include(uho => uho.Item)
-                .Include(uho => uho.Item!.Rarity)
-                .Include(uho => uho.Box)
+            List<UserHistoryOpeningDto> openings = new();
+
+            await context.UserHistoryOpenings
                 .AsNoTracking()
                 .OrderByDescending(uho => uho.Date)
                 .Take(100)
-                .ToListAsync(cancellationToken);
-
-            foreach(var i in openings)
-            {
-                i.User!.PasswordHash = null;
-                i.User!.PasswordSalt = null;
-            }
+                .ForEachAsync(uhp => openings.Add(uhp.Convert(false)), cancellationToken);
 
             return ResponseUtil.Ok(openings);
         }
