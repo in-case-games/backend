@@ -4,12 +4,11 @@
     <TargetFramework>net7.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <UserSecretsId>eb1f3286-772c-4905-921e-07dfe26a874f</UserSecretsId>
+    <RootNamespace>InCase.ApiGateway</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.5" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+    <PackageReference Include="Ocelot" Version="19.0.2" />
   </ItemGroup>
 
 </Project>

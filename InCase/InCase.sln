@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InCase.Infrastructure", "InCase.Infrastructure\InCase.Infrastructure.csproj", "{E3DC7AAB-0855-4BEC-9C25-69BE7E95DCD0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{E3DC7AAB-0855-4BEC-9C25-69BE7E95DCD0}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InCase.ApiGateway", "InCase.ApiGateway\InCase.ApiGateway.csproj", "{21D9224C-C44E-4FBE-801A-B22945A1A614}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ApiGateway", "ApiGateway\ApiGateway.csproj", "{21D9224C-C44E-4FBE-801A-B22945A1A614}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Authentication.API", "Services\Authentication\Authentication.API\Authentication.API.csproj", "{D57A0FF0-08A8-4C0E-848E-F17E7CE772B2}"
 EndProject
@@ -28,6 +28,10 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Game", "Game", "{8ADCEC8F-EFCC-4B4D-AE6F-6999B2AA2F98}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Game.API", "Services\Game\Game.API\Game.API.csproj", "{3E024392-62A5-4811-8544-43945002ED87}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DAL", "DAL", "{64D45185-D035-42C2-B4CD-4B11477E5CAA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EntityFramework", "DAL\EntityFramework\EntityFramework.csproj", "{4F0B124C-ABF1-4F89-80CF-C7C75EC1C955}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -63,6 +67,10 @@ Global
 		{3E024392-62A5-4811-8544-43945002ED87}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3E024392-62A5-4811-8544-43945002ED87}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3E024392-62A5-4811-8544-43945002ED87}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4F0B124C-ABF1-4F89-80CF-C7C75EC1C955}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4F0B124C-ABF1-4F89-80CF-C7C75EC1C955}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4F0B124C-ABF1-4F89-80CF-C7C75EC1C955}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4F0B124C-ABF1-4F89-80CF-C7C75EC1C955}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -78,6 +86,7 @@ Global
 		{620FCC13-48A2-4914-A4DF-D939DFC9CB64} = {238A932B-95E0-4E9C-A3CE-B3721948E79C}
 		{8ADCEC8F-EFCC-4B4D-AE6F-6999B2AA2F98} = {FCC198D3-4942-432D-A55F-75405EE941D4}
 		{3E024392-62A5-4811-8544-43945002ED87} = {8ADCEC8F-EFCC-4B4D-AE6F-6999B2AA2F98}
+		{4F0B124C-ABF1-4F89-80CF-C7C75EC1C955} = {64D45185-D035-42C2-B4CD-4B11477E5CAA}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {34DAD1C9-55D7-4B95-B997-115C8593125C}
