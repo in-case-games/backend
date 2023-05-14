@@ -9,5 +9,7 @@ namespace Game.DAL.Entities
 
         [JsonIgnore]
         public Guid UserId { get; set; }
+        [JsonIgnore]
+        public User? User { get; set; }
     }
 }

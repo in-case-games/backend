@@ -9,6 +9,7 @@ namespace Authentication.DAL.Entities
         public string? PasswordHash { get; set; }
         public string? PasswordSalt { get; set; }
 
+        public IEnumerable<UserRestriction>? Restrictions { get; set; }
         public UserAdditionalInfo? AdditionalInfo { get; set; }
     }
 }
