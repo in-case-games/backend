@@ -1,7 +1,7 @@
-using InCase.Infrastructure.Data;
 using Microsoft.OpenApi.Models;
 using Microsoft.EntityFrameworkCore;
 using InCase.Infrastructure.Middlewares;
+using Resources.DAL.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,7 +15,7 @@ builder.Services.AddPooledDbContextFactory<ApplicationDbContext>(options =>
 #else
         builder.Configuration["ConnectionStrings:ProductionConnection"],
 #endif
-    b => b.MigrationsAssembly("InCase.Resources.Api"));
+    b => b.MigrationsAssembly("Resources.Api"));
 });
 
 builder.Services.AddSwaggerGen(options =>

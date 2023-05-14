@@ -1,9 +1,9 @@
-﻿using InCase.Infrastructure.Data;
-using InCase.Infrastructure.Exceptions;
+﻿using InCase.Infrastructure.Exceptions;
 using InCase.Infrastructure.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Resources.DAL.Data;
 using Resources.DAL.Entities;
 
 namespace Resources.API.Controllers

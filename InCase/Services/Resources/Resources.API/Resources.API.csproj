@@ -24,8 +24,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\InCase.DAL\InCase.DAL.csproj" />
 	<ProjectReference Include="..\..\..\InCase.Infrastructure\InCase.Infrastructure.csproj" />
+	<ProjectReference Include="..\InCase.DAL\Resources.DAL.csproj" />
   </ItemGroup>
 
 </Project>

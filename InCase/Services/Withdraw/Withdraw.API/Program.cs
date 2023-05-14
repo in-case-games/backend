@@ -14,7 +14,7 @@ builder.Services.AddPooledDbContextFactory<ApplicationDbContext>(options =>
 #else
         builder.Configuration["ConnectionStrings:ProductionConnection"],
 #endif
-    b => b.MigrationsAssembly("Game.Api"));
+    b => b.MigrationsAssembly("Withdraw.Api"));
 });
 
 builder.Services.AddSwaggerGen(options =>

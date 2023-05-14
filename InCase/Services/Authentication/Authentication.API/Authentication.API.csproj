@@ -19,7 +19,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\InCase.DAL\InCase.DAL.csproj" />
 	<ProjectReference Include="..\..\..\InCase.Infrastructure\InCase.Infrastructure.csproj" />
   </ItemGroup>
 	

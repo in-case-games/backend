@@ -1,0 +1,36 @@
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Resources.DAL.Entities;
+
+namespace Resources.DAL.Configurations
+{
+    internal class UserInventoryConfiguration : BaseEntityConfiguration<UserInventory>
+    {
+        public override void Configure(EntityTypeBuilder<UserInventory> builder)
+        {
+            base.Configure(builder);
+
+            builder.ToTable(nameof(UserInventory));
+
+            builder.HasIndex(i => i.UserId)
+                .IsUnique(false);
+            builder.HasIndex(i => i.ItemId)
+                .IsUnique(false);
+
+            builder.Property(p => p.Date)
+                .IsRequired();
+            builder.Property(p => p.FixedCost)
+                .HasColumnType("DECIMAL(18,5)")
+                .IsRequired();
+
+            builder.HasOne(o => o.User)
+                .WithMany(m => m.Inventories)
+                .HasForeignKey(o => o.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+            builder.HasOne(o => o.Item)
+                .WithMany(m => m.UserInventories)
+                .HasForeignKey(o => o.ItemId)
+                .OnDelete(DeleteBehavior.Cascade);
+        }
+    }
+}
