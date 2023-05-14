@@ -1,21 +1,7 @@
 using InCase.Infrastructure.Middlewares;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
-
-builder.Services.AddPooledDbContextFactory<ApplicationDbContext>(options =>
-{
-    options.UseSnakeCaseNamingConvention();
-
-    options.UseSqlServer(
-#if DEBUG
-    builder.Configuration["ConnectionStrings:DevelopmentConnection"],
-#else
-        builder.Configuration["ConnectionStrings:ProductionConnection"],
-#endif
-    b => b.MigrationsAssembly("Game.Api"));
-});
 
 builder.Services.AddSwaggerGen(options =>
 {

@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+﻿using Authentication.DAL.Entities;
+using System.Security.Claims;
 
 namespace Authentication.BLL.Services
 {

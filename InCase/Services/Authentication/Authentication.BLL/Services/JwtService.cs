@@ -1,4 +1,5 @@
-﻿using InCase.Infrastructure.Exceptions;
+﻿using Authentication.DAL.Entities;
+using InCase.Infrastructure.Exceptions;
 using InCase.Infrastructure.Models.Authentication.Response;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -73,8 +74,8 @@ namespace Authentication.BLL.Services
 
         public RefreshTokenResponse CreateTokenPair(in User user)
         {
-            if(string.IsNullOrEmpty(user?.AdditionalInfo?.Role?.Name))
-                throw new ArgumentNullException("Role.Name", 
+            if(string.IsNullOrEmpty(user.AdditionalInfo?.Role?.Name))
+                throw new ArgumentNullException("Role name", 
                     "The role of the user when creating the token is mandatory");
 
             Claim[] claimsAccess = GenerateAccessTokenClaims(in user);

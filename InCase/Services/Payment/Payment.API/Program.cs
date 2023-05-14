@@ -1,21 +1,7 @@
 using Microsoft.OpenApi.Models;
 using InCase.Infrastructure.Middlewares;
-using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
-
-builder.Services.AddPooledDbContextFactory<ApplicationDbContext>(options =>
-{
-    options.UseSnakeCaseNamingConvention();
-
-    options.UseSqlServer(
-#if DEBUG
-    builder.Configuration["ConnectionStrings:DevelopmentConnection"],
-#else
-        builder.Configuration["ConnectionStrings:ProductionConnection"],
-#endif
-    b => b.MigrationsAssembly("Payment.Api"));
-});
 
 builder.Services.AddSwaggerGen(options =>
 {
