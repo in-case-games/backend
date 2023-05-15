@@ -5,7 +5,6 @@ namespace Identity.DAL.Entities
     public class UserRestriction : BaseEntity
     {
         public DateTime CreationDate { get; set; }
-        public DateTime ExpirationDate { get; set; }
         public string? Description { get; set; }
 
         [JsonIgnore]

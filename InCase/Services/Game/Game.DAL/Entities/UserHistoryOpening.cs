@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace History.DAL.Entities
+namespace Game.DAL.Entities
 {
     public class UserHistoryOpening : BaseEntity
     {

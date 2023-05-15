@@ -5,7 +5,7 @@ namespace Resources.DAL.Entities
     public class GameItem : BaseEntity
     {
         public string? Name { get; set; }
-        public decimal Cost { get; set; }
+        public string? HashName { get; set; }
 
         public GameItemQuality? Quality { get; set; }
         public GameItemType? Type { get; set; }
@@ -23,11 +23,5 @@ namespace Resources.DAL.Entities
         public Game? Game { get; set; }
         [JsonIgnore]
         public IEnumerable<LootBoxInventory>? Inventories { get; set; }
-        [JsonIgnore]
-        public IEnumerable<UserInventory>? UserInventories { get; set; }
-        [JsonIgnore]
-        public IEnumerable<UserHistoryOpening>? HistoryOpenings { get; set; }
-        [JsonIgnore]
-        public IEnumerable<UserPathBanner>? PathBanners { get; set; }
     }
 }
