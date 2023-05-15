@@ -1,6 +1,5 @@
 ﻿using InCase.Infrastructure.Models;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Statistics.BLL.Services;
 using Statistics.DAL.Entities;
