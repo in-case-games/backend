@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Payment.DAL.Entities
+namespace History.DAL.Entities
 {
     public class UserHistoryPayment : BaseEntity
     {

@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Game.DAL.Entities
+namespace Resources.DAL.Entities
 {
     public class GroupLootBox : BaseEntity
     {

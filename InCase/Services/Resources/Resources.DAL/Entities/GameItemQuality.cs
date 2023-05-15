@@ -1,8 +1,8 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Game.DAL.Entities
+namespace Resources.DAL.Entities
 {
-    public class GameItemRarity : BaseEntity
+    public class GameItemQuality : BaseEntity
     {
         public string? Name { get; set; }
 

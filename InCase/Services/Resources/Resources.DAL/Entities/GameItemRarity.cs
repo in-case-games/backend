@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Withdraw.DAL.Entities
+namespace Resources.DAL.Entities
 {
     public class GameItemRarity : BaseEntity
     {

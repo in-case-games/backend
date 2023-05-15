@@ -7,11 +7,7 @@ namespace Game.DAL.Entities
         [JsonIgnore]
         public UserAdditionalInfo? AdditionalInfo { get; set; }
         [JsonIgnore]
-        public IEnumerable<UserHistoryPromocode>? HistoryPromocodes { get; set; }
-        [JsonIgnore]
         public IEnumerable<UserPathBanner>? Paths { get; set; }
-        [JsonIgnore]
-        public IEnumerable<UserHistoryOpening>? HistoryOpenings { get; set; }
         [JsonIgnore]
         public IEnumerable<UserInventory>? Inventories { get; set; }
     }

@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Game.DAL.Entities
+namespace Promocode.DAL.Entities
 {
     public class PromocodeType : BaseEntity
     {
