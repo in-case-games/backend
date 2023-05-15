@@ -1,5 +1,6 @@
 using InCase.Infrastructure.Middlewares;
 using Microsoft.OpenApi.Models;
+using Statistics.BLL.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,6 +31,8 @@ builder.Services.AddSwaggerGen(options =>
         }
     });
 });
+
+builder.Services.AddSingleton<SiteStatisticsService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

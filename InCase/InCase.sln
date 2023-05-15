@@ -56,6 +56,9 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Statistics.API", "Services\Statistics\Statistics.API\Statistics.API.csproj", "{6409AE58-C559-435C-AE04-CBB43B178909}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Statistics.BLL", "Services\Statistics\Statistics.BLL\Statistics.BLL.csproj", "{27EE6838-2647-4E72-85B5-1BB5D30B1393}"
+	ProjectSection(ProjectDependencies) = postProject
+		{6D5407AF-7CFF-4AB4-80D8-42DD622C7C71} = {6D5407AF-7CFF-4AB4-80D8-42DD622C7C71}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Statistics.DAL", "Services\Statistics\Statistics.DAL\Statistics.DAL.csproj", "{6D5407AF-7CFF-4AB4-80D8-42DD622C7C71}"
 EndProject

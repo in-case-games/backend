@@ -12,6 +12,7 @@
     <Folder Include="Models\Payment\" />
     <Folder Include="Models\Resources\" />
     <Folder Include="MassTransit\" />
+    <Folder Include="Models\Statistics\Request\" />
   </ItemGroup>
 
   <ItemGroup>

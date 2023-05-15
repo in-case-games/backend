@@ -1,7 +1,9 @@
-﻿namespace Statistics.DAL.Entities
+﻿using MongoDB.Bson;
+
+namespace Statistics.DAL.Entities
 {
     public class BaseEntity
     {
-        public Guid Id { get; set; } = Guid.NewGuid();
+        public ObjectId Id { get; set; } 
     }
 }
