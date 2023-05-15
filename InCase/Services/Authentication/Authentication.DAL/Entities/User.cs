@@ -1,6 +1,4 @@
-﻿using System.Text.Json.Serialization;
-
-namespace Authentication.DAL.Entities
+﻿namespace Authentication.DAL.Entities
 {
     public class User : BaseEntity
     {
