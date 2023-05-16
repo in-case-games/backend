@@ -1,7 +1,34 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using InCase.Infrastructure.Middlewares;
+using MongoDB.Driver;
+using Payment.API.Middlewares;
+using Payment.BLL.Repository;
+using Payment.BLL.Services;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.SaveToken = true;
+
+        options.TokenValidationParameters = new TokenValidationParameters()
+        {
+            ValidateIssuer = true,
+            ValidIssuer = builder.Configuration["JWT:ValidIssuer"]!,
+
+            ValidateAudience = true,
+            ValidAudience = builder.Configuration["JWT:ValidAudience"]!,
+            ValidateLifetime = true,
+
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(builder.Configuration["JWT:Secret"]!)),
+
+            ValidateIssuerSigningKey = true,
+        };
+    });
 
 builder.Services.AddSwaggerGen(options =>
 {
@@ -31,6 +58,11 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
+builder.Services.AddSingleton<IMongoClient, MongoClient>(sp => 
+    new MongoClient(builder.Configuration["ConnectionString"]));
+builder.Services.AddSingleton<IUserPaymentsRepository, UserPaymentsRepository>();
+builder.Services.AddSingleton<IUserPaymentsService, UserPaymentsService>();
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddAuthorization();
@@ -46,6 +78,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseMiddleware<CancellationTokenHandlingMiddleware>();
 app.UseMiddleware<ExceptionHandlingMiddleware>();
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

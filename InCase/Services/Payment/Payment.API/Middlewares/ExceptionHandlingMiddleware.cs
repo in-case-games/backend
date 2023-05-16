@@ -1,9 +1,8 @@
-﻿using InCase.Infrastructure.Exceptions;
-using Microsoft.AspNetCore.Http;
+﻿using Payment.BLL.Exceptions;
 using System.Net;
 using System.Text.Json;
 
-namespace InCase.Infrastructure.Middlewares
+namespace Payment.API.Middlewares
 {
     public class ExceptionHandlingMiddleware
     {

@@ -1,4 +1,4 @@
-﻿namespace InCase.Infrastructure.Models.Statistics.Response
+﻿namespace Statistics.BLL.Models
 {
     public class SiteStatisticsAdminResponse
     {

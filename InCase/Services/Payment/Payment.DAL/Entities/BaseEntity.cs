@@ -1,7 +1,9 @@
-﻿namespace Payment.DAL.Entities
+﻿using MongoDB.Bson;
+
+namespace Payment.DAL.Entities
 {
     public class BaseEntity
     {
-        public Guid Id { get; set; } = Guid.NewGuid();
+        public ObjectId Id { get; set; } 
     }
 }

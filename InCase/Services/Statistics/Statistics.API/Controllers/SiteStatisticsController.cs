@@ -1,39 +1,39 @@
-﻿using InCase.Infrastructure.Models;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Statistics.API.Filters;
+using Statistics.API.Common;
 using Statistics.BLL.Services;
-using Statistics.DAL.Entities;
-using Statistics.DAL.Helpers;
+using Statistics.BLL.Models;
 
 namespace Statistics.API.Controllers
 {
-    [Route("api/statistics/site")]
+    [Route("api/site-statistics")]
     [ApiController]
     public class SiteStatisticsController : ControllerBase
     {
-        private readonly SiteStatisticsService _siteStatiticsService;
+        private readonly ISiteStatisticsService _siteStatisticsService;
 
-        public SiteStatisticsController(SiteStatisticsService siteStatisticsService)
+        public SiteStatisticsController(ISiteStatisticsService siteStatisticsService)
         {
-            _siteStatiticsService = siteStatisticsService;
+            _siteStatisticsService = siteStatisticsService;
         }
 
         [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            SiteStatistics statistics = await _siteStatiticsService.Get();
+            SiteStatisticsResponse response = await _siteStatisticsService.GetAsync();
 
-            return ApiResult.OK(statistics.ToResponse());
+            return Ok(ApiResult<SiteStatisticsResponse>.OK(response));
         }
 
-        [AllowAnonymous]
+        [AuthorizeByRole(Roles.Owner, Roles.Bot)]
         [HttpGet("admin")]
         public async Task<IActionResult> GetAdmin()
         {
-            SiteStatisticsAdmin statisticsAdmin = await _siteStatiticsService.GetAdmin();
+            SiteStatisticsAdminResponse response = await _siteStatisticsService.GetAdminAsync();
 
-            return ApiResult.OK(statisticsAdmin.ToResponse());
+            return Ok(ApiResult<SiteStatisticsAdminResponse>.OK(response));
         }
     }
 }

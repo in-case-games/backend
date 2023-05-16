@@ -1,15 +1,27 @@
 {
   "Routes": [
     {
-      "DownstreamPathTemplate": "/api/game",
+      "DownstreamPathTemplate": "/api/site-statistics",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 7044
+          "Port": 7111
         }
       ],
-      "UpstreamPathTemplate": "/api/game",
+      "UpstreamPathTemplate": "/api/statistics/site",
+      "UpstreamHttpMethod": [ "Get" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/site-statistics/admin",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7111
+        }
+      ],
+      "UpstreamPathTemplate": "/api/statistics/site/admin",
       "UpstreamHttpMethod": [ "Get" ]
     }
   ],

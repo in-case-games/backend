@@ -1,54 +1,31 @@
-﻿using Microsoft.Extensions.Configuration;
-using MongoDB.Driver;
+﻿using Statistics.BLL.Helpers;
+using Statistics.BLL.Models;
+using Statistics.BLL.Repository;
 using Statistics.DAL.Entities;
 
 namespace Statistics.BLL.Services
 {
-    public class SiteStatisticsService
+    public class SiteStatisticsService : ISiteStatisticsService
     {
-        private readonly IMongoCollection<SiteStatistics> _statistics;
-        private readonly IMongoCollection<SiteStatisticsAdmin> _statisticsAdmin;
+        private readonly ISiteStatisticsRepository _siteStatisticsRepository;
 
-        public SiteStatisticsService(IConfiguration configuration)
+        public SiteStatisticsService(ISiteStatisticsRepository siteStatisticsRepository)
         {
-            MongoClient client = new(
-                configuration["SiteStatisticsDB:ConnectionString"]);
-            MongoClient clientAdmin = new(
-                configuration["SiteStatisticsAdminDB:ConnectionString"]);
-
-            IMongoDatabase db = client.GetDatabase(
-                configuration["SiteStatisticsDB:DatabaseName"]);
-            IMongoDatabase dbAdmin = clientAdmin.GetDatabase(
-                configuration["SiteStatisticsAdminDB:DatabaseName"]);
-
-            _statistics = db.GetCollection<SiteStatistics>(
-                configuration["SiteStatisticsDB:CollectionName"]);
-            _statisticsAdmin = dbAdmin.GetCollection<SiteStatisticsAdmin>(
-                configuration["SiteStatisticsAdminDB:CollectionName"]);
+            _siteStatisticsRepository = siteStatisticsRepository;
         }
 
-        public async Task<SiteStatistics> Get()
+        public async Task<SiteStatisticsResponse> GetAsync()
         {
-            SiteStatistics? statistics = await _statistics
-                .Find("{}")
-                .FirstOrDefaultAsync();
+            SiteStatistics statistics = await _siteStatisticsRepository.GetAsync();
 
-            if(statistics is null)
-                await _statistics.InsertOneAsync(new SiteStatistics());
-
-            return statistics ?? new();
+            return statistics.ToResponse();
         }
 
-        public async Task<SiteStatisticsAdmin> GetAdmin()
+        public async Task<SiteStatisticsAdminResponse> GetAdminAsync()
         {
-            SiteStatisticsAdmin? statistics = await _statisticsAdmin
-                .Find("{}")
-                .FirstOrDefaultAsync();
+            SiteStatisticsAdmin statisticsAdmin = await _siteStatisticsRepository.GetAdminAsync();
 
-            if (statistics is null)
-                await _statisticsAdmin.InsertOneAsync(new SiteStatisticsAdmin());
-
-            return statistics ?? new();
+            return statisticsAdmin.ToResponse();
         }
     }
 }

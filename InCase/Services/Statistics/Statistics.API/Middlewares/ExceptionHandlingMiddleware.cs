@@ -1,9 +1,7 @@
-﻿using InCase.Infrastructure.Exceptions;
-using Microsoft.AspNetCore.Http;
-using System.Net;
+﻿using System.Net;
 using System.Text.Json;
 
-namespace InCase.Infrastructure.Middlewares
+namespace Statistics.API.Middlewares
 {
     public class ExceptionHandlingMiddleware
     {
@@ -20,27 +18,10 @@ namespace InCase.Infrastructure.Middlewares
             {
                 await _next(context);
             }
-            catch (StatusCodeException ex)
-            {
-                await HandleExceptionAsync(context, ex);
-            }
             catch (Exception ex)
             {
                 await HandleExceptionAsync(context, ex);
             }
-        }
-
-        private static Task HandleExceptionAsync(HttpContext context, StatusCodeException ex)
-        {
-            context.Response.ContentType = "application/json";
-            context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-
-            string result = JsonSerializer.Serialize(new
-            {
-                error = new { code = ex.StatusCode, message = ex.Message }
-            });
-
-            return context.Response.WriteAsync(result);
         }
 
         private static Task HandleExceptionAsync(HttpContext context, Exception ex)
