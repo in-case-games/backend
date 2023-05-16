@@ -10,12 +10,12 @@ namespace Statistics.BLL.Repository
 
         public SiteStatisticsRepository(IMongoClient client)
         {
-            IMongoDatabase database = client.GetDatabase("Statistics");
+            IMongoDatabase database = client.GetDatabase("InCaseStatistics");
 
             _siteStatistics = database
-                .GetCollection<SiteStatistics>("SiteStatistics");
+                .GetCollection<SiteStatistics>("Site");
             _siteStatisticsAdmin = database
-                .GetCollection<SiteStatisticsAdmin>("SiteStatisticsAdmin");
+                .GetCollection<SiteStatisticsAdmin>("AdminSite");
         }
 
         public async Task<SiteStatistics> GetAsync()

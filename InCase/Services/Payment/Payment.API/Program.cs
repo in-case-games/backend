@@ -1,13 +1,26 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using MongoDB.Driver;
 using Payment.API.Middlewares;
-using Payment.BLL.Repository;
 using Payment.BLL.Services;
+using Payment.DAL.Data;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddPooledDbContextFactory<ApplicationDbContext>(
+    options => {
+        options.UseSnakeCaseNamingConvention();
+        options.UseNpgsql(
+        #if DEBUG
+        builder.Configuration["ConnectionStrings:DevelopmentConnection"],
+        #else
+        builder.Configuration["ConnectionStrings:ProductionConnection"],
+        #endif
+        b => b.MigrationsAssembly("Payment.API"));
+    }
+);
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -58,9 +71,6 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
-builder.Services.AddSingleton<IMongoClient, MongoClient>(sp => 
-    new MongoClient(builder.Configuration["ConnectionString"]));
-builder.Services.AddSingleton<IUserPaymentsRepository, UserPaymentsRepository>();
 builder.Services.AddSingleton<IUserPaymentsService, UserPaymentsService>();
 
 builder.Services.AddControllers();

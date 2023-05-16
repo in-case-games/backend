@@ -9,7 +9,15 @@ namespace Payment.DAL.Entities
         public string? Currency { get; set; }
         public decimal Amount { get; set; }
         public decimal Rate { get; set; }
-        public string? Status { get; set; }
+
+        [JsonIgnore]
+        public Guid StatusId { get; set; }
+        [JsonIgnore]
         public Guid UserId { get; set; }
+
+        [JsonIgnore]
+        public User? User { get; set; }
+        [JsonIgnore]
+        public PaymentInvoiceStatus? Status { get; set; }
     }
 }

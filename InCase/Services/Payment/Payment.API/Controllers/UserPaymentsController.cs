@@ -1,6 +1,6 @@
-﻿using InCase.Infrastructure.Common;
-using InCase.Infrastructure.Filters;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using Payment.API.Common;
+using Payment.API.Filters;
 using Payment.BLL.Models;
 using Payment.BLL.Services;
 using Statistics.API.Common;
@@ -8,7 +8,7 @@ using System.Security.Claims;
 
 namespace Payment.API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/user-payments")]
     [ApiController]
     public class UserPaymentsController : ControllerBase
     {
@@ -31,12 +31,21 @@ namespace Payment.API.Controllers
         }
 
         [AuthorizeByRole(Roles.All)]
-        [HttpGet]
-        public async Task<IActionResult> GetById(string id)
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(Guid id)
         {
-            UserPaymentsResponse response = await _userPaymentsService.GetByIdAsync(id);
+            UserPaymentsResponse response = await _userPaymentsService.GetByIdAsync(id, UserId);
 
             return Ok(ApiResult<UserPaymentsResponse>.OK(response));
+        }
+
+        [AuthorizeByRole(Roles.AdminOwnerBot)]
+        [HttpGet("admin")]
+        public async Task<IActionResult> GetByAdmin()
+        {
+            List<UserPaymentsResponse> response = await _userPaymentsService.GetAsync();
+
+            return Ok(ApiResult<List<UserPaymentsResponse>>.OK(response));
         }
     }
 }

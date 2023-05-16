@@ -8,13 +8,13 @@ namespace Payment.BLL.Helpers
         public static UserPaymentsResponse ToResponse(this UserPayments payment) =>
             new()
             {
-                Id = payment.Id.ToString(),
+                Id = payment.Id,
                 InvoiceId = payment.InvoiceId,
+                Status = payment.Status?.Name,
                 Amount = payment.Amount,
                 Currency = payment.Currency,
                 Date = payment.Date,
                 Rate = payment.Rate,
-                Status = payment.Status,
             };
 
         public static List<UserPaymentsResponse> ToResponse(this List<UserPayments> payments)
