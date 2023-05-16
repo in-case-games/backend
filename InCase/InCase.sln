@@ -16,9 +16,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Payment", "Payment", "{238A932B-95E0-4E9C-A3CE-B3721948E79C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Payment.API", "Services\Payment\Payment.API\Payment.API.csproj", "{620FCC13-48A2-4914-A4DF-D939DFC9CB64}"
-	ProjectSection(ProjectDependencies) = postProject
-		{E3DC7AAB-0855-4BEC-9C25-69BE7E95DCD0} = {E3DC7AAB-0855-4BEC-9C25-69BE7E95DCD0}
-	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Authentication.BLL", "Services\Authentication\Authentication.BLL\Authentication.BLL.csproj", "{A5781DAD-AB30-4D9D-9D36-B686007ADD3E}"
 EndProject
