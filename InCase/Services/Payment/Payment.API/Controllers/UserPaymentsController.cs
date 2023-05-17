@@ -24,7 +24,8 @@ namespace Payment.API.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            List<UserPaymentsResponse> response = await _userPaymentsService.GetAsync(UserId);
+            List<UserPaymentsResponse> response = await _userPaymentsService
+                .GetAsync(UserId, 100);
 
             return Ok(ApiResult<List<UserPaymentsResponse>>.OK(response));
         }
@@ -33,16 +34,28 @@ namespace Payment.API.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(Guid id)
         {
-            UserPaymentsResponse response = await _userPaymentsService.GetByIdAsync(id, UserId);
+            UserPaymentsResponse response = await _userPaymentsService
+                .GetByIdAsync(id, UserId);
 
             return Ok(ApiResult<UserPaymentsResponse>.OK(response));
         }
 
         [AuthorizeByRole(Roles.AdminOwnerBot)]
         [HttpGet("admin")]
-        public async Task<IActionResult> GetByAdmin()
+        public async Task<IActionResult> GetByAdmin(int count = 100)
         {
-            List<UserPaymentsResponse> response = await _userPaymentsService.GetAsync();
+            List<UserPaymentsResponse> response = await _userPaymentsService
+                .GetAsync(count);
+
+            return Ok(ApiResult<List<UserPaymentsResponse>>.OK(response));
+        }
+
+        [AuthorizeByRole(Roles.AdminOwnerBot)]
+        [HttpGet("{userId}/admin")]
+        public async Task<IActionResult> GetByUserIdAdmin(Guid userId, int count = 100)
+        {
+            List<UserPaymentsResponse> response = await _userPaymentsService
+                .GetAsync(userId, count);
 
             return Ok(ApiResult<List<UserPaymentsResponse>>.OK(response));
         }

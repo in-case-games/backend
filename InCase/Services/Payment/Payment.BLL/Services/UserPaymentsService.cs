@@ -33,7 +33,21 @@ namespace Payment.BLL.Services
             return payment.ToResponse();
         }
 
-        public async Task<List<UserPaymentsResponse>> GetAsync(Guid userId)
+        public async Task<List<UserPaymentsResponse>> GetAsync(int count)
+        {
+            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+
+            List<UserPayments> payments = await context.UserPayments
+                .Include(up => up.Status)
+                .AsNoTracking()
+                .OrderByDescending(up => up.Date)
+                .Take(count)
+                .ToListAsync();
+
+            return payments.ToResponse();
+        }
+
+        public async Task<List<UserPaymentsResponse>> GetAsync(Guid userId, int count)
         {
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
@@ -41,18 +55,8 @@ namespace Payment.BLL.Services
                 .Include(up => up.Status)
                 .AsNoTracking()
                 .Where(up => up.UserId == userId)
-                .ToListAsync();
-
-            return payments.ToResponse();
-        }
-
-        public async Task<List<UserPaymentsResponse>> GetAsync()
-        {
-            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
-
-            List<UserPayments> payments = await context.UserPayments
-                .Include(up => up.Status)
-                .AsNoTracking()
+                .OrderByDescending(up => up.Date)
+                .Take(count)
                 .ToListAsync();
 
             return payments.ToResponse();

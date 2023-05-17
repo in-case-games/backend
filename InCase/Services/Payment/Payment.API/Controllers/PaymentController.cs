@@ -21,6 +21,7 @@ namespace Payment.API.Controllers
             _paymentService = paymentService;
         }
 
+        //TODO Delete method, check background service and top up balance
         [AllowAnonymous]
         [HttpPost("top-up")]
         public async Task<IActionResult> TopUpBalance(GameMoneyTopUpResponse request)
