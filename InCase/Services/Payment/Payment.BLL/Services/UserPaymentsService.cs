@@ -22,7 +22,6 @@ namespace Payment.BLL.Services
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             UserPayments payment = await context.UserPayments
-                .Include(up => up.Status)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(up => up.Id == id) ?? 
                 throw new NotFoundException("Счёт оплаты не найден");
@@ -38,7 +37,6 @@ namespace Payment.BLL.Services
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             List<UserPayments> payments = await context.UserPayments
-                .Include(up => up.Status)
                 .AsNoTracking()
                 .OrderByDescending(up => up.Date)
                 .Take(count)
@@ -52,7 +50,6 @@ namespace Payment.BLL.Services
             await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
 
             List<UserPayments> payments = await context.UserPayments
-                .Include(up => up.Status)
                 .AsNoTracking()
                 .Where(up => up.UserId == userId)
                 .OrderByDescending(up => up.Date)

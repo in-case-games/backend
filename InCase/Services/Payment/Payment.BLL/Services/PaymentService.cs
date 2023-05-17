@@ -44,10 +44,6 @@ namespace Payment.BLL.Services
 
             string nameStatus = invoice.Status!.Replace("_", "-").ToLower();
 
-            PaymentInvoiceStatus status = await context.PaymentsStatuses
-                .AsNoTracking()
-                .FirstAsync(ips => ips.Name == nameStatus);
-
             UserPayments payment = new()
             {
                 Amount = invoice.Amount,
@@ -55,7 +51,6 @@ namespace Payment.BLL.Services
                 Date = DateTime.Today.AddSeconds(request.SendTimeAnswer),
                 InvoiceId = invoice.InvoiceId,
                 Rate = invoice.Rate,
-                StatusId = status.Id,
                 UserId = invoice.UserId
             };
 

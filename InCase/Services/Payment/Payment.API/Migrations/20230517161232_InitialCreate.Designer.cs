@@ -12,7 +12,7 @@ using Payment.DAL.Data;
 namespace Payment.API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230516124905_InitialCreate")]
+    [Migration("20230517161232_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -24,32 +24,6 @@ namespace Payment.API.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
-
-            modelBuilder.Entity("Payment.DAL.Entities.PaymentInvoiceStatus", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("name");
-
-                    b.HasKey("Id")
-                        .HasName("pk_payment_invoice_status");
-
-                    b.HasIndex("Id")
-                        .IsUnique()
-                        .HasDatabaseName("ix_payment_invoice_status_id");
-
-                    b.HasIndex("Name")
-                        .IsUnique()
-                        .HasDatabaseName("ix_payment_invoice_status_name");
-
-                    b.ToTable("PaymentInvoiceStatus", (string)null);
-                });
 
             modelBuilder.Entity("Payment.DAL.Entities.User", b =>
                 {
@@ -96,10 +70,6 @@ namespace Payment.API.Migrations
                         .HasColumnType("DECIMAL(6,5)")
                         .HasColumnName("rate");
 
-                    b.Property<Guid>("StatusId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("status_id");
-
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid")
                         .HasColumnName("user_id");
@@ -110,9 +80,6 @@ namespace Payment.API.Migrations
                     b.HasIndex("Id")
                         .IsUnique()
                         .HasDatabaseName("ix_user_payments_id");
-
-                    b.HasIndex("StatusId")
-                        .HasDatabaseName("ix_user_payments_status_id");
 
                     b.HasIndex("UserId")
                         .HasDatabaseName("ix_user_payments_user_id");
@@ -151,21 +118,12 @@ namespace Payment.API.Migrations
 
             modelBuilder.Entity("Payment.DAL.Entities.UserPayments", b =>
                 {
-                    b.HasOne("Payment.DAL.Entities.PaymentInvoiceStatus", "Status")
-                        .WithOne("Payments")
-                        .HasForeignKey("Payment.DAL.Entities.UserPayments", "StatusId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired()
-                        .HasConstraintName("fk_user_payments_payment_invoice_status_status_id");
-
                     b.HasOne("Payment.DAL.Entities.User", "User")
                         .WithMany("Payments")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_user_payments_user_user_id");
-
-                    b.Navigation("Status");
 
                     b.Navigation("User");
                 });
@@ -180,11 +138,6 @@ namespace Payment.API.Migrations
                         .HasConstraintName("fk_user_promocode_user_user_id");
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("Payment.DAL.Entities.PaymentInvoiceStatus", b =>
-                {
-                    b.Navigation("Payments");
                 });
 
             modelBuilder.Entity("Payment.DAL.Entities.User", b =>

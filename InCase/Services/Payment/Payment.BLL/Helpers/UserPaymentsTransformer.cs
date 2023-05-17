@@ -10,7 +10,6 @@ namespace Payment.BLL.Helpers
             {
                 Id = payment.Id,
                 InvoiceId = payment.InvoiceId,
-                Status = payment.Status?.Name,
                 Amount = payment.Amount,
                 Currency = payment.Currency,
                 Date = payment.Date,

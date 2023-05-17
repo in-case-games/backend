@@ -14,8 +14,6 @@ namespace Payment.DAL.Configurations
 
             builder.HasIndex(up => up.UserId)
                 .IsUnique(false);
-            builder.HasIndex(up => up.StatusId)
-                .IsUnique(false);
 
             builder.Property(up => up.Date)
                 .IsRequired();
@@ -32,9 +30,6 @@ namespace Payment.DAL.Configurations
                 .WithMany(u => u.Payments)
                 .HasForeignKey(up => up.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
-            builder.HasOne(up => up.Status)
-                .WithOne(pis => pis.Payments)
-                .OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

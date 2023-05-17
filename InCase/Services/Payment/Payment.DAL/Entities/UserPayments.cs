@@ -11,13 +11,9 @@ namespace Payment.DAL.Entities
         public decimal Rate { get; set; }
 
         [JsonIgnore]
-        public Guid StatusId { get; set; }
-        [JsonIgnore]
         public Guid UserId { get; set; }
 
         [JsonIgnore]
         public User? User { get; set; }
-        [JsonIgnore]
-        public PaymentInvoiceStatus? Status { get; set; }
     }
 }
