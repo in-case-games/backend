@@ -1,6 +1,6 @@
 ﻿using Payment.BLL.Models;
 
-namespace Payment.BLL.Services
+namespace Payment.BLL.Interfaces
 {
     public interface IUserPaymentsService
     {

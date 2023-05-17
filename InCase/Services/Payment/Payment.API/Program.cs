@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Payment.API.Middlewares;
+using Payment.BLL.Interfaces;
 using Payment.BLL.Services;
 using Payment.DAL.Data;
 using System.Text;

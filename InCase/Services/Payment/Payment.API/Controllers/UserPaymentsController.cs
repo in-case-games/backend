@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Payment.API.Common;
 using Payment.API.Filters;
+using Payment.BLL.Interfaces;
 using Payment.BLL.Models;
-using Payment.BLL.Services;
 using Statistics.API.Common;
 using System.Security.Claims;
 

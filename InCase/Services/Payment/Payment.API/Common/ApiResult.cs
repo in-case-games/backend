@@ -1,4 +1,4 @@
-﻿namespace Statistics.API.Common
+﻿namespace Payment.API.Common
 {
     public class ApiResult<T>
     {

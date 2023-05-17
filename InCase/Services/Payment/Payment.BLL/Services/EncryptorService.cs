@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Microsoft.Extensions.Configuration;
+using Org.BouncyCastle.Asn1.Ocsp;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.OpenSsl;
+using Payment.BLL.Models;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -27,28 +29,28 @@ namespace Payment.BLL.Services
             return BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
         }
 
-        public byte[] SignDataRSA(byte[] hashOfDataToSign)
+        public bool VerifySignatureRSA(GameMoneyTopUpResponse response)
         {
-            string pathPrivateKey = Path.Combine(
-                Directory.GetCurrentDirectory(),
-                "RsaKeys",
-                _configuration["GameMoney:RSA:PrivateKey"]!);
-            using TextReader privateKeyTextReader = new StringReader(File.ReadAllText(pathPrivateKey));
-            RsaKeyParameters privateKeyParam = (RsaKeyParameters)new PemReader(privateKeyTextReader).ReadObject();
+            byte[] hash = Encoding.ASCII.GetBytes(response.ToString());
+            byte[] signature = Encoding.ASCII.GetBytes(response!.SignatureRSA);
 
-            RSACryptoServiceProvider rsa = new(2048);
-            RSAParameters parms = new()
-            {
-                Modulus = privateKeyParam.Modulus.ToByteArrayUnsigned(),
-                Exponent = privateKeyParam.Exponent.ToByteArrayUnsigned()
-            };
-            rsa.PersistKeyInCsp = false;
-            rsa.ImportParameters(parms);
+            return VerifySignatureRSA(hash, signature);
+        }
 
-            var rsaFormatter = new RSAPKCS1SignatureFormatter(rsa);
-            rsaFormatter.SetHashAlgorithm("SHA256");
+        public bool VerifySignatureRSA(GameMoneyInvoiceInfoResponse response)
+        {
+            byte[] hash = Encoding.ASCII.GetBytes(response.ToString());
+            byte[] signature = Encoding.ASCII.GetBytes(response!.SignatureRSA);
 
-            return rsaFormatter.CreateSignature(hashOfDataToSign);
+            return VerifySignatureRSA(hash, signature);
+        }
+
+        public bool VerifySignatureRSA(GameMoneyBalanceResponse response)
+        {
+            byte[] hash = Encoding.ASCII.GetBytes(response.ToString());
+            byte[] signature = Encoding.ASCII.GetBytes(response!.SignatureRSA);
+
+            return VerifySignatureRSA(hash, signature);
         }
 
         public bool VerifySignatureRSA(byte[] hashOfDataToSign, byte[] signature)
@@ -72,24 +74,6 @@ namespace Payment.BLL.Services
             rsaDeformatter.SetHashAlgorithm("SHA256");
 
             return rsaDeformatter.VerifySignature(hashOfDataToSign, signature);
-        }
-
-        public static string GenerationHashSHA512(string password, byte[] salt)
-        {
-            string hashed = Convert.ToBase64String(KeyDerivation.Pbkdf2(
-                password: password,
-                salt: salt,
-                prf: KeyDerivationPrf.HMACSHA512,
-                iterationCount: 10000,
-                numBytesRequested: 256 / 8
-                ));
-
-            return hashed;
-        }
-
-        public static byte[] GenerationSaltTo64Bytes()
-        {
-            return RandomNumberGenerator.GetBytes(64);
         }
     }
 }

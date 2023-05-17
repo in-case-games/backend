@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Payment.BLL.Exceptions;
 using Payment.BLL.Helpers;
+using Payment.BLL.Interfaces;
 using Payment.BLL.Models;
 using Payment.DAL.Data;
 using Payment.DAL.Entities;
