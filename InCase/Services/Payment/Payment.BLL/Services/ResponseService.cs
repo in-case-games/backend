@@ -1,21 +1,16 @@
-﻿using System.Net.Http.Json;
+﻿using Payment.BLL.Interfaces;
+using System.Net.Http.Json;
 using System.Text.Json;
 
 namespace InCase.Infrastructure.Services
 {
-    public class ResponseService
+    public class ResponseService : IResponseService
     {
-        private readonly HttpClient _httpClient;
+        private readonly HttpClient _httpClient = new();
 
-        public ResponseService()
+        public async Task<IGameMoneyResponse?> ResponsePost(string uri, IGameMoneyRequest request)
         {
-            _httpClient = new();
-        }
-
-        public async Task<O?> ResponsePost<T, O>(string uri, T entity)
-            where T : new()
-        {
-            JsonContent json = JsonContent.Create(entity);
+            JsonContent json = JsonContent.Create(request);
             HttpResponseMessage response = await _httpClient.PostAsync(uri, json);
 
             if (!response.IsSuccessStatusCode)
@@ -29,7 +24,8 @@ namespace InCase.Infrastructure.Services
             }
 
             return await response.Content
-                .ReadFromJsonAsync<O>(new JsonSerializerOptions(JsonSerializerDefaults.Web));
+                .ReadFromJsonAsync<IGameMoneyResponse>(
+                new JsonSerializerOptions(JsonSerializerDefaults.Web));
         }
     }
 }

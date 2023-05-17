@@ -12,12 +12,12 @@ namespace Payment.BLL.Services
     {
         private readonly IGameMoneyService _gameMoneyService;
         private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
-        private readonly EncryptorService _rsaService;
+        private readonly IEncryptorService _rsaService;
 
         public PaymentService(
             IGameMoneyService gameMoneyService,
             IDbContextFactory<ApplicationDbContext> contextFactory,
-            EncryptorService rsaService)
+            IEncryptorService rsaService)
         {
 
             _gameMoneyService = gameMoneyService;
@@ -33,10 +33,14 @@ namespace Payment.BLL.Services
             if (!_rsaService.VerifySignatureRSA(request))
                 throw new ForbiddenException("Неверная подпись rsa");
 
-            GameMoneyInvoiceInfoResponse? invoice = await _gameMoneyService
-                .GetInvoiceInfo(request.InvoiceId!);
             await using ApplicationDbContext context = await _contextFactory
                 .CreateDbContextAsync();
+
+            if (!await context.UserPayments.AnyAsync(up => up.InvoiceId == request.InvoiceId!))
+                throw new ConflictException("Платеж уже есть в системе, ждем пополнения");
+
+            GameMoneyInvoiceInfoResponse? invoice = await _gameMoneyService
+                .GetInvoiceInfo(request.InvoiceId!);
 
             string nameStatus = invoice.Status!.Replace("_", "-").ToLower();
 

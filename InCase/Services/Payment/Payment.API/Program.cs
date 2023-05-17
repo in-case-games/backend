@@ -1,3 +1,4 @@
+using InCase.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -22,7 +23,6 @@ builder.Services.AddPooledDbContextFactory<ApplicationDbContext>(
         b => b.MigrationsAssembly("Payment.API"));
     }
 );
-
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -43,7 +43,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateIssuerSigningKey = true,
         };
     });
-
 builder.Services.AddSwaggerGen(options =>
 {
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
@@ -72,6 +71,9 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
+builder.Services.AddSingleton<IEncryptorService, EncryptorService>();
+builder.Services.AddSingleton<IResponseService, ResponseService>();
+builder.Services.AddSingleton<IGameMoneyService, GameMoneyService>();
 builder.Services.AddSingleton<IUserPaymentsService, UserPaymentsService>();
 
 builder.Services.AddControllers();

@@ -1,8 +1,9 @@
-﻿using System.Text.Json.Serialization;
+﻿using Payment.BLL.Interfaces;
+using System.Text.Json.Serialization;
 
 namespace Payment.BLL.Models
 {
-    public class GameMoneyBalanceRequest
+    public class GameMoneyBalanceRequest : IGameMoneyRequest
     {
         [JsonPropertyName("project")] public int ProjectId { get; set; }
         [JsonPropertyName("currency")] public string? Currency { get; set; }

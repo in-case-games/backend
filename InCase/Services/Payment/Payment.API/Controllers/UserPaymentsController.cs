@@ -3,7 +3,6 @@ using Payment.API.Common;
 using Payment.API.Filters;
 using Payment.BLL.Interfaces;
 using Payment.BLL.Models;
-using Statistics.API.Common;
 using System.Security.Claims;
 
 namespace Payment.API.Controllers

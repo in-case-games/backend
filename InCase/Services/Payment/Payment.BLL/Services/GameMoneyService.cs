@@ -3,7 +3,6 @@ using Microsoft.Extensions.Configuration;
 using Payment.BLL.Exceptions;
 using Payment.BLL.Interfaces;
 using Payment.BLL.Models;
-using Payment.DAL.Entities;
 using System.Text;
 
 namespace Payment.BLL.Services
@@ -11,13 +10,13 @@ namespace Payment.BLL.Services
     public class GameMoneyService : IGameMoneyService
     {
         private static readonly int NumberAttempts = 5;
-        private readonly ResponseService _responseService;
-        private readonly EncryptorService _rsaService;
+        private readonly IResponseService _responseService;
+        private readonly IEncryptorService _rsaService;
         private readonly IConfiguration _configuration;
 
         public GameMoneyService(
-            ResponseService responseService, 
-            EncryptorService rsaService, 
+            IResponseService responseService, 
+            IEncryptorService rsaService, 
             IConfiguration configuration)
         {
             _responseService = responseService;
@@ -42,14 +41,13 @@ namespace Payment.BLL.Services
             {
                 try
                 {
-                    GameMoneyBalanceResponse? response = await _responseService
-                        .ResponsePost<GameMoneyBalanceRequest, GameMoneyBalanceResponse>(
-                        GameMoneyEndpoint.Balance, request);
+                    IGameMoneyResponse? response = await _responseService
+                        .ResponsePost(GameMoneyEndpoint.Balance, request);
 
                     if (!_rsaService.VerifySignatureRSA(response!))
                         throw new ForbiddenException("Неверная подпись rsa");
 
-                    return response!.ProjectBalance;
+                    return ((GameMoneyBalanceResponse)response!).ProjectBalance;
                 }
                 catch (Exception)
                 {
@@ -77,14 +75,13 @@ namespace Payment.BLL.Services
             {
                 try
                 {
-                    GameMoneyInvoiceInfoResponse? response = await _responseService
-                        .ResponsePost<GameMoneyInvoiceInfoRequest, GameMoneyInvoiceInfoResponse>(
-                        GameMoneyEndpoint.InvoiceInfo, request);
+                    IGameMoneyResponse? response = await _responseService
+                        .ResponsePost(GameMoneyEndpoint.InvoiceInfo, request);
 
                     if (!_rsaService.VerifySignatureRSA(response!))
                         throw new ForbiddenException("Неверная подпись rsa");
 
-                    return response!;
+                    return (GameMoneyInvoiceInfoResponse)response!;
                 }
                 catch(Exception)
                 {

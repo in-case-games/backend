@@ -1,8 +1,9 @@
-﻿using System.Text.Json.Serialization;
+﻿using Payment.BLL.Interfaces;
+using System.Text.Json.Serialization;
 
 namespace Payment.BLL.Models
 {
-    public class GameMoneyTopUpResponse
+    public class GameMoneyTopUpResponse : IGameMoneyResponse
     {
         [JsonPropertyName("state")] public string? StatusAnswer { get; set; }
         [JsonPropertyName("invoice")] public string? InvoiceId { get; set; }
@@ -18,7 +19,7 @@ namespace Payment.BLL.Models
 
             return
                 $"state:{StatusAnswer};" +
-                $"invoice:{Invoice};" +
+                $"invoice:{InvoiceId};" +
                 $"type:{TypeAnswer};" +
                 $"data:{ParametersAnswer};" +
                 $"{rand};" +

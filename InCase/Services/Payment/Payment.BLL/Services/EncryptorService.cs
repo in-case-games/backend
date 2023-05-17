@@ -1,15 +1,13 @@
-﻿using Microsoft.AspNetCore.Cryptography.KeyDerivation;
-using Microsoft.Extensions.Configuration;
-using Org.BouncyCastle.Asn1.Ocsp;
+﻿using Microsoft.Extensions.Configuration;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.OpenSsl;
-using Payment.BLL.Models;
+using Payment.BLL.Interfaces;
 using System.Security.Cryptography;
 using System.Text;
 
 namespace Payment.BLL.Services
 {
-    public class EncryptorService
+    public class EncryptorService : IEncryptorService
     {
         private readonly IConfiguration _configuration;
 
@@ -29,23 +27,7 @@ namespace Payment.BLL.Services
             return BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
         }
 
-        public bool VerifySignatureRSA(GameMoneyTopUpResponse response)
-        {
-            byte[] hash = Encoding.ASCII.GetBytes(response.ToString());
-            byte[] signature = Encoding.ASCII.GetBytes(response!.SignatureRSA);
-
-            return VerifySignatureRSA(hash, signature);
-        }
-
-        public bool VerifySignatureRSA(GameMoneyInvoiceInfoResponse response)
-        {
-            byte[] hash = Encoding.ASCII.GetBytes(response.ToString());
-            byte[] signature = Encoding.ASCII.GetBytes(response!.SignatureRSA);
-
-            return VerifySignatureRSA(hash, signature);
-        }
-
-        public bool VerifySignatureRSA(GameMoneyBalanceResponse response)
+        public bool VerifySignatureRSA(IGameMoneyResponse response)
         {
             byte[] hash = Encoding.ASCII.GetBytes(response.ToString());
             byte[] signature = Encoding.ASCII.GetBytes(response!.SignatureRSA);

@@ -1,8 +1,9 @@
-﻿using System.Text.Json.Serialization;
+﻿using Payment.BLL.Interfaces;
+using System.Text.Json.Serialization;
 
 namespace Payment.BLL.Models
 {
-    public class GameMoneyInvoiceInfoResponse
+    public class GameMoneyInvoiceInfoResponse : IGameMoneyResponse
     {
         [JsonPropertyName("user")] public Guid UserId { get; set; }
         [JsonPropertyName("state")] public string? State { get; set; }
