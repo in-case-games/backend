@@ -24,7 +24,7 @@ namespace Payment.BLL.Services
             _configuration = configuration;
         }
 
-        public async Task<decimal> GetBalance(string currency)
+        public async Task<decimal> GetBalanceAsync(string currency)
         {
             GameMoneyBalanceRequest request = new()
             {
@@ -42,7 +42,7 @@ namespace Payment.BLL.Services
                 try
                 {
                     IGameMoneyResponse? response = await _responseService
-                        .ResponsePost(GameMoneyEndpoint.Balance, request);
+                        .ResponsePostAsync(GameMoneyEndpoint.Balance, request);
 
                     if (!_rsaService.VerifySignatureRSA(response!))
                         throw new ForbiddenException("Неверная подпись rsa");
@@ -58,7 +58,7 @@ namespace Payment.BLL.Services
             throw new RequestTimeoutException("Сервис пополнения не отвечает");
         }
 
-        public async Task<GameMoneyInvoiceInfoResponse> GetInvoiceInfo(string invoiceId)
+        public async Task<GameMoneyInvoiceInfoResponse> GetInvoiceInfoAsync(string invoiceId)
         {
             GameMoneyInvoiceInfoRequest request = new()
             {
@@ -76,7 +76,7 @@ namespace Payment.BLL.Services
                 try
                 {
                     IGameMoneyResponse? response = await _responseService
-                        .ResponsePost(GameMoneyEndpoint.InvoiceInfo, request);
+                        .ResponsePostAsync(GameMoneyEndpoint.InvoiceInfo, request);
 
                     if (!_rsaService.VerifySignatureRSA(response!))
                         throw new ForbiddenException("Неверная подпись rsa");

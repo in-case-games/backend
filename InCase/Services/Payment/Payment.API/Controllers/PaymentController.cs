@@ -25,7 +25,7 @@ namespace Payment.API.Controllers
         [HttpPost("top-up")]
         public async Task<IActionResult> TopUpBalance(GameMoneyTopUpResponse request)
         {
-            UserPaymentsResponse response = await _paymentService.TopUpBalance(request);
+            UserPaymentsResponse response = await _paymentService.TopUpBalanceAsync(request);
 
             return Ok(ApiResult<UserPaymentsResponse>.OK(response));
         }
@@ -34,7 +34,7 @@ namespace Payment.API.Controllers
         [HttpGet("balance/{currency}")]
         public async Task<IActionResult> GetBalance(string currency)
         {
-            decimal balance = await _paymentService.GetPaymentBalance(currency);
+            decimal balance = await _paymentService.GetPaymentBalanceAsync(currency);
 
             return Ok(ApiResult<object>.OK(new { balance }));
         }

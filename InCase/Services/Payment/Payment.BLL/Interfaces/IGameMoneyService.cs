@@ -4,8 +4,8 @@ namespace Payment.BLL.Interfaces
 {
     public interface IGameMoneyService
     {
-        public Task<decimal> GetBalance(string currency);
-        public Task<GameMoneyInvoiceInfoResponse> GetInvoiceInfo(string invoiceId);
+        public Task<decimal> GetBalanceAsync(string currency);
+        public Task<GameMoneyInvoiceInfoResponse> GetInvoiceInfoAsync(string invoiceId);
         public string GetHashOfDataForDeposit(Guid userId);
     }
 }

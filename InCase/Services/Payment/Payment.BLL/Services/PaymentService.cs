@@ -26,7 +26,7 @@ namespace Payment.BLL.Services
 
         }
 
-        public async Task<UserPaymentsResponse> TopUpBalance(GameMoneyTopUpResponse request)
+        public async Task<UserPaymentsResponse> TopUpBalanceAsync(GameMoneyTopUpResponse request)
         {
             if (request.StatusAnswer == "cancel")
                 throw new BadRequestException("Платеж отклонен");
@@ -40,7 +40,7 @@ namespace Payment.BLL.Services
                 throw new ConflictException("Платеж уже есть в системе, ждем пополнения");
 
             GameMoneyInvoiceInfoResponse? invoice = await _gameMoneyService
-                .GetInvoiceInfo(request.InvoiceId!);
+                .GetInvoiceInfoAsync(request.InvoiceId!);
 
             string nameStatus = invoice.Status!.Replace("_", "-").ToLower();
 
@@ -65,14 +65,19 @@ namespace Payment.BLL.Services
             return payment.ToResponse();
         }
 
-        public async Task<decimal> GetPaymentBalance(string currency)
+        public async Task<decimal> GetPaymentBalanceAsync(string currency)
         {
-            return await _gameMoneyService.GetBalance(currency);
+            return await _gameMoneyService.GetBalanceAsync(currency);
         }
 
         public string GetHashOfDataForDeposit(Guid userId)
         {
             return _gameMoneyService.GetHashOfDataForDeposit(userId);
+        }
+
+        public Task DoWorkManagerAsync(CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
         }
     }
 }

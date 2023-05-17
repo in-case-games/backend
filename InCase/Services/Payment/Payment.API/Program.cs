@@ -74,7 +74,9 @@ builder.Services.AddSwaggerGen(options =>
 builder.Services.AddSingleton<IEncryptorService, EncryptorService>();
 builder.Services.AddSingleton<IResponseService, ResponseService>();
 builder.Services.AddSingleton<IGameMoneyService, GameMoneyService>();
+builder.Services.AddSingleton<IPaymentService, PaymentService>();
 builder.Services.AddSingleton<IUserPaymentsService, UserPaymentsService>();
+builder.Services.AddHostedService<PaymentManagerService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

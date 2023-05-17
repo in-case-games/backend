@@ -8,7 +8,7 @@ namespace InCase.Infrastructure.Services
     {
         private readonly HttpClient _httpClient = new();
 
-        public async Task<IGameMoneyResponse?> ResponsePost(string uri, IGameMoneyRequest request)
+        public async Task<IGameMoneyResponse?> ResponsePostAsync(string uri, IGameMoneyRequest request)
         {
             JsonContent json = JsonContent.Create(request);
             HttpResponseMessage response = await _httpClient.PostAsync(uri, json);
