@@ -92,6 +92,18 @@ namespace Promocode.API.Migrations
                         .HasDatabaseName("ix_promocode_type_name");
 
                     b.ToTable("PromocodeType", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("b74b391d-7d8c-4727-b684-59e993457470"),
+                            Name = "balance"
+                        },
+                        new
+                        {
+                            Id = new Guid("0321e3ca-0c9b-4323-92cf-f91047ccd99d"),
+                            Name = "box"
+                        });
                 });
 
             modelBuilder.Entity("Promocode.DAL.Entities.User", b =>

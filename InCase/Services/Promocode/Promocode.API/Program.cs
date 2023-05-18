@@ -71,6 +71,7 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 builder.Services.AddSingleton<IUserPromocodesService, UserPromocodesService>();
+builder.Services.AddSingleton<IPromocodeService, PromocodeService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

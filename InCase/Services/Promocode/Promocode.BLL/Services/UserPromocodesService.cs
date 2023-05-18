@@ -139,7 +139,7 @@ namespace Promocode.BLL.Services
                 throw new ConflictException("Прошлый промокод не найден");
 
             if (history.Promocode!.Id == promocode.Id)
-                throw new ConflictException("Промокод уже использован");
+                throw new ConflictException("Промокод уже используется");
 
             //TODO Notify rabbit mq
 
