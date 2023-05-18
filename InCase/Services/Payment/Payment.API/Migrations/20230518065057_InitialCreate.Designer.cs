@@ -12,7 +12,7 @@ using Payment.DAL.Data;
 namespace Payment.API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230517161232_InitialCreate")]
+    [Migration("20230518065057_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -42,7 +42,7 @@ namespace Payment.API.Migrations
                     b.ToTable("User", (string)null);
                 });
 
-            modelBuilder.Entity("Payment.DAL.Entities.UserPayments", b =>
+            modelBuilder.Entity("Payment.DAL.Entities.UserPayment", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -75,16 +75,16 @@ namespace Payment.API.Migrations
                         .HasColumnName("user_id");
 
                     b.HasKey("Id")
-                        .HasName("pk_user_payments");
+                        .HasName("pk_user_payment");
 
                     b.HasIndex("Id")
                         .IsUnique()
-                        .HasDatabaseName("ix_user_payments_id");
+                        .HasDatabaseName("ix_user_payment_id");
 
                     b.HasIndex("UserId")
-                        .HasDatabaseName("ix_user_payments_user_id");
+                        .HasDatabaseName("ix_user_payment_user_id");
 
-                    b.ToTable("UserPayments", (string)null);
+                    b.ToTable("UserPayment", (string)null);
                 });
 
             modelBuilder.Entity("Payment.DAL.Entities.UserPromocode", b =>
@@ -116,14 +116,14 @@ namespace Payment.API.Migrations
                     b.ToTable("UserPromocode", (string)null);
                 });
 
-            modelBuilder.Entity("Payment.DAL.Entities.UserPayments", b =>
+            modelBuilder.Entity("Payment.DAL.Entities.UserPayment", b =>
                 {
                     b.HasOne("Payment.DAL.Entities.User", "User")
                         .WithMany("Payments")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_user_payments_user_user_id");
+                        .HasConstraintName("fk_user_payment_user_user_id");
 
                     b.Navigation("User");
                 });

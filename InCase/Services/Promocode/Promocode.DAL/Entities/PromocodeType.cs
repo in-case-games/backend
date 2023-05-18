@@ -7,6 +7,6 @@ namespace Promocode.DAL.Entities
         public string? Name { get; set; }
 
         [JsonIgnore]
-        public Promocode? Promocode { get; set; }
+        public PromocodeEntity? Promocode { get; set; }
     }
 }

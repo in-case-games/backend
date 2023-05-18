@@ -23,7 +23,7 @@ namespace Payment.API.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserPayments",
+                name: "UserPayment",
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -36,9 +36,9 @@ namespace Payment.API.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_user_payments", x => x.id);
+                    table.PrimaryKey("pk_user_payment", x => x.id);
                     table.ForeignKey(
-                        name: "fk_user_payments_user_user_id",
+                        name: "fk_user_payment_user_user_id",
                         column: x => x.user_id,
                         principalTable: "User",
                         principalColumn: "id",
@@ -71,14 +71,14 @@ namespace Payment.API.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "ix_user_payments_id",
-                table: "UserPayments",
+                name: "ix_user_payment_id",
+                table: "UserPayment",
                 column: "id",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "ix_user_payments_user_id",
-                table: "UserPayments",
+                name: "ix_user_payment_user_id",
+                table: "UserPayment",
                 column: "user_id");
 
             migrationBuilder.CreateIndex(
@@ -98,7 +98,7 @@ namespace Payment.API.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "UserPayments");
+                name: "UserPayment");
 
             migrationBuilder.DropTable(
                 name: "UserPromocode");

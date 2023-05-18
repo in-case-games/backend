@@ -44,7 +44,7 @@ namespace Payment.BLL.Services
 
             string nameStatus = invoice.Status!.Replace("_", "-").ToLower();
 
-            UserPayments payment = new()
+            UserPayment payment = new()
             {
                 Amount = invoice.Amount,
                 Currency = invoice.CurrencyProject,
@@ -70,8 +70,12 @@ namespace Payment.BLL.Services
             return _gameMoneyService.GetHashOfDataForDeposit(userId);
         }
 
+        //TODO rename in top up balance
         public Task DoWorkManagerAsync(CancellationToken cancellationToken)
         {
+            //TODO Logic activate promo and notify rabbit mq
+            //TODO Logic payment is success status and notyfy rabbit mq
+
             throw new NotImplementedException();
         }
     }

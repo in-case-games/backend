@@ -5,7 +5,7 @@ namespace Payment.BLL.Helpers
 {
     public static class UserPaymentsTransformer
     {
-        public static UserPaymentsResponse ToResponse(this UserPayments payment) =>
+        public static UserPaymentsResponse ToResponse(this UserPayment payment) =>
             new()
             {
                 Id = payment.Id,
@@ -16,11 +16,11 @@ namespace Payment.BLL.Helpers
                 Rate = payment.Rate,
             };
 
-        public static List<UserPaymentsResponse> ToResponse(this List<UserPayments> payments)
+        public static List<UserPaymentsResponse> ToResponse(this List<UserPayment> payments)
         {
             List<UserPaymentsResponse> paymentsResponses = new();
 
-            foreach (UserPayments payment in payments)
+            foreach (UserPayment payment in payments)
                 paymentsResponses.Add(payment.ToResponse());
 
             return paymentsResponses;

@@ -4,13 +4,13 @@ using Payment.DAL.Entities;
 
 namespace Payment.DAL.Configurations
 {
-    internal class UserPaymentsConfiguration : BaseEntityConfiguration<UserPayments>
+    internal class UserPaymentConfiguration : BaseEntityConfiguration<UserPayment>
     {
-        public override void Configure(EntityTypeBuilder<UserPayments> builder)
+        public override void Configure(EntityTypeBuilder<UserPayment> builder)
         {
             base.Configure(builder);
 
-            builder.ToTable(nameof(UserPayments));
+            builder.ToTable(nameof(UserPayment));
 
             builder.HasIndex(up => up.UserId)
                 .IsUnique(false);

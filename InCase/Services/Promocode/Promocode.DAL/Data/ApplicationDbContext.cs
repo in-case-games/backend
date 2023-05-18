@@ -1,14 +1,15 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Payment.DAL.Entities;
+using Promocode.DAL.Entities;
 using System.Reflection;
 
-namespace Payment.DAL.Data
+namespace Promocode.DAL.Data
 {
     public class ApplicationDbContext : DbContext
     {
         public DbSet<User> Users => Set<User>();
-        public DbSet<UserPayment> UserPayments => Set<UserPayment>();
-        public DbSet<UserPromocode> UsersPromocodes => Set<UserPromocode>();
+        public DbSet<PromocodeEntity> Promocodes => Set<PromocodeEntity>();
+        public DbSet<PromocodeType> PromocodesTypes => Set<PromocodeType>();
+        public DbSet<UserHistoryPromocode> UserHistoriesPromocodes => Set<UserHistoryPromocode>();
 
         public ApplicationDbContext(DbContextOptions options) : base(options) { }
 

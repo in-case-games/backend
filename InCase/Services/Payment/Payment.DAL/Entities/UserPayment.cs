@@ -2,7 +2,7 @@
 
 namespace Payment.DAL.Entities
 {
-    public class UserPayments : BaseEntity
+    public class UserPayment : BaseEntity
     {
         public string? InvoiceId { get; set; }
         public DateTime Date { get; set; }
