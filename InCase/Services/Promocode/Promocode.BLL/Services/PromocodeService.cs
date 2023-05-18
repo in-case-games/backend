@@ -82,10 +82,11 @@ namespace Promocode.BLL.Services
                 throw new ConflictException("Имя промокода уже используется");
 
             PromocodeEntity entity = request.ToEntity(true);
-            entity.Type = type;
 
             await context.Promocodes.AddAsync(entity);
             await context.SaveChangesAsync();
+
+            entity.Type = type;
 
             return entity.ToResponse();
         }
@@ -111,10 +112,11 @@ namespace Promocode.BLL.Services
                 throw new NotFoundException("Промокод не найден");
 
             PromocodeEntity promocode = request.ToEntity();
-            promocode.Type = type;
 
             context.Promocodes.Update(promocode);
             await context.SaveChangesAsync();
+
+            promocode.Type = type;
 
             return promocode.ToResponse();
         }
