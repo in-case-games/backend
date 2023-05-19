@@ -30,14 +30,29 @@ namespace Withdraw.BLL.Services
             return inventories.ToResponse();
         }
 
-        public Task<List<UserInventoryResponse>> Get(Guid userId, int count)
+        public async Task<List<UserInventoryResponse>> Get(Guid userId, int count)
         {
-            throw new NotImplementedException();
+            if(!await _context.Users.AnyAsync(u => u.Id == userId))
+                throw new NotFoundException("Пользователь не найден");
+
+            List<UserInventory> inventories = await _context.UserInventories
+                .AsNoTracking()
+                .Where(ui => ui.UserId == userId)
+                .OrderByDescending(ui => ui.Date)
+                .Take(count)
+                .ToListAsync();
+
+            return inventories.ToResponse();
         }
 
-        public Task<UserInventoryResponse> GetById(Guid id)
+        public async Task<UserInventoryResponse> GetById(Guid id)
         {
-            throw new NotImplementedException();
+            UserInventory inventory = await _context.UserInventories
+                .AsNoTracking()
+                .FirstOrDefaultAsync(ui => ui.Id == id) ?? 
+                throw new NotFoundException("Инвентарь не найден");
+
+            return inventory.ToResponse();
         }
 
         public Task<UserInventoryResponse> Exchange(Guid id, Guid itemId, Guid userId)
