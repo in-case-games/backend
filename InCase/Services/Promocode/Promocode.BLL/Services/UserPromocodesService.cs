@@ -10,18 +10,16 @@ namespace Promocode.BLL.Services
 {
     public class UserPromocodesService : IUserPromocodesService
     {
-        private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
+        private readonly ApplicationDbContext _context;
 
-        public UserPromocodesService(IDbContextFactory<ApplicationDbContext> contextFactory)
+        public UserPromocodesService(ApplicationDbContext context)
         {
-            _contextFactory = contextFactory;
+            _context = context;
         }
 
         public async Task<UserHistoryPromocodeResponse> GetAsync(Guid id, Guid userId)
         {
-            await using ApplicationDbContext context = _contextFactory.CreateDbContext();
-
-            UserHistoryPromocode history = await context.UserHistoriesPromocodes
+            UserHistoryPromocode history = await _context.UserHistoriesPromocodes
                 .Include(uhp => uhp.Promocode)
                 .Include(uhp => uhp.Promocode!.Type)
                 .AsNoTracking()
@@ -36,9 +34,10 @@ namespace Promocode.BLL.Services
 
         public async Task<List<UserHistoryPromocodeResponse>> GetAsync(Guid userId, int count)
         {
-            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+            if (count <= 0 || count >= 10000)
+                throw new BadRequestException("Размер выборки должен быть в пределе 1-10000");
 
-            List<UserHistoryPromocode> history = await context.UserHistoriesPromocodes
+            List<UserHistoryPromocode> history = await _context.UserHistoriesPromocodes
                 .Include(uhp => uhp.Promocode)
                 .Include(uhp => uhp.Promocode!.Type)
                 .AsNoTracking()
@@ -52,9 +51,10 @@ namespace Promocode.BLL.Services
 
         public async Task<List<UserHistoryPromocodeResponse>> GetAsync(int count)
         {
-            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
+            if (count <= 0 || count >= 10000)
+                throw new BadRequestException("Размер выборки должен быть в пределе 1-10000");
 
-            List<UserHistoryPromocode> history = await context.UserHistoriesPromocodes
+            List<UserHistoryPromocode> history = await _context.UserHistoriesPromocodes
                 .Include(uhp => uhp.Promocode)
                 .Include(uhp => uhp.Promocode!.Type)
                 .AsNoTracking()
@@ -67,9 +67,7 @@ namespace Promocode.BLL.Services
 
         public async Task<UserHistoryPromocodeResponse> ActivateAsync(Guid userId, string name)
         {
-            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
-
-            PromocodeEntity promocode = await context.Promocodes
+            PromocodeEntity promocode = await _context.Promocodes
                 .Include(p => p.Type)
                 .FirstOrDefaultAsync(p => p.Name == name) ??
                 throw new NotFoundException("Промокод не найден");
@@ -77,11 +75,11 @@ namespace Promocode.BLL.Services
             if (promocode.NumberActivations <= 0 || promocode.ExpirationDate <= DateTime.UtcNow)
                 throw new ForbiddenException("Промокод истёк");
 
-            UserHistoryPromocode? history = await context.UserHistoriesPromocodes
+            UserHistoryPromocode? history = await _context.UserHistoriesPromocodes
                 .AsNoTracking()
                 .FirstOrDefaultAsync(uhp => uhp.PromocodeId == promocode.Id);
 
-            UserHistoryPromocode? historyType = await context.UserHistoriesPromocodes
+            UserHistoryPromocode? historyType = await _context.UserHistoriesPromocodes
                 .AsNoTracking()
                 .FirstOrDefaultAsync(uhp =>
                 uhp.Promocode!.Type!.Id == promocode.TypeId &&
@@ -105,17 +103,15 @@ namespace Promocode.BLL.Services
 
             //TODO Notify rabbit mq
 
-            await context.UserHistoriesPromocodes.AddAsync(history);
-            await context.SaveChangesAsync();
+            await _context.UserHistoriesPromocodes.AddAsync(history);
+            await _context.SaveChangesAsync();
 
             return history.ToResponse();
         }
 
         public async Task<UserHistoryPromocodeResponse> ExchangeAsync(Guid userId, string name)
         {
-            await using ApplicationDbContext context = await _contextFactory.CreateDbContextAsync();
-
-            PromocodeEntity promocode = await context.Promocodes
+            PromocodeEntity promocode = await _context.Promocodes
                 .Include(p => p.Type)
                 .FirstOrDefaultAsync(p => p.Name == name) ??
                 throw new NotFoundException("Промокод не найден");
@@ -123,13 +119,13 @@ namespace Promocode.BLL.Services
             if (promocode.NumberActivations <= 0 || promocode.ExpirationDate <= DateTime.UtcNow)
                 throw new ConflictException("Промокод истёк");
 
-            bool isUsed = await context.UserHistoriesPromocodes
+            bool isUsed = await _context.UserHistoriesPromocodes
                 .AnyAsync(uhp => uhp.PromocodeId == promocode.Id && uhp.IsActivated);
 
             if (isUsed)
                 throw new ConflictException("Промокод уже использован");
 
-            UserHistoryPromocode? history = await context.UserHistoriesPromocodes
+            UserHistoryPromocode? history = await _context.UserHistoriesPromocodes
                 .Include(uhp => uhp.Promocode)
                 .Include(uhp => uhp.Promocode!.Type)
                 .FirstOrDefaultAsync(uhp =>
@@ -148,7 +144,7 @@ namespace Promocode.BLL.Services
             history.PromocodeId = promocode.Id;
             promocode.NumberActivations--;
 
-            await context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
 
             return history.ToResponse();
         }

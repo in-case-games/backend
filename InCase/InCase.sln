@@ -39,6 +39,9 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Authentication.DAL", "Services\Authentication\Authentication.DAL\Authentication.DAL.csproj", "{E5DBF553-BF36-4E66-B772-CB28A88E8865}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Withdraw.BLL", "Services\Withdraw\Withdraw.BLL\Withdraw.BLL.csproj", "{CE69347F-898F-4951-B150-B00A42F5630D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{90187295-1515-45F7-A1BA-8A1675B6193F} = {90187295-1515-45F7-A1BA-8A1675B6193F}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Withdraw.DAL", "Services\Withdraw\Withdraw.DAL\Withdraw.DAL.csproj", "{90187295-1515-45F7-A1BA-8A1675B6193F}"
 EndProject

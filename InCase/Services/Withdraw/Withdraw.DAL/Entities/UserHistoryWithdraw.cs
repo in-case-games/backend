@@ -4,13 +4,13 @@ namespace Withdraw.DAL.Entities
 {
     public class UserHistoryWithdraw : BaseEntity
     {
-        public string? IdForMarket { get; set; }
+        public string? InvoiceId { get; set; }
         public decimal FixedCost { get; set; }
-        public DateTime Date { get; set; } = DateTime.UtcNow;
+        public DateTime Date { get; set; }
 
         public GameItem? Item { get; set; }
         public GameMarket? Market { get; set; }
-        public ItemWithdrawStatus? Status { get; set; }
+        public WithdrawStatus? Status { get; set; }
 
         [JsonIgnore]
         public Guid MarketId { get; set; }

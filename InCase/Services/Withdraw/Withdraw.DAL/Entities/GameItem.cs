@@ -11,7 +11,10 @@ namespace Withdraw.DAL.Entities
         public Guid GameId { get; set; }
         [JsonIgnore]
         public Game? Game { get; set; }
+
         [JsonIgnore]
-        public List<UserHistoryWithdraw>? HistoryWithdraws { get; set; }
+        public IEnumerable<UserHistoryWithdraw>? HistoriesWithdraws { get; set; }
+        [JsonIgnore]
+        public IEnumerable<UserInventory>? Inventories { get; set; }
     }
 }

@@ -6,5 +6,7 @@ namespace Withdraw.DAL.Entities
     {
         [JsonIgnore]
         public IEnumerable<UserInventory>? Inventories { get; set; }
+        [JsonIgnore]
+        public IEnumerable<UserHistoryWithdraw>? HistoriesWithdraws { get; set; }
     }
 }

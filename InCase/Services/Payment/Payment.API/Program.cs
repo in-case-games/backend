@@ -11,7 +11,7 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddPooledDbContextFactory<ApplicationDbContext>(
+builder.Services.AddDbContextPool<ApplicationDbContext>(
     options => {
         options.UseSnakeCaseNamingConvention();
         options.UseNpgsql(
@@ -74,8 +74,8 @@ builder.Services.AddSwaggerGen(options =>
 builder.Services.AddSingleton<IEncryptorService, EncryptorService>();
 builder.Services.AddSingleton<IResponseService, ResponseService>();
 builder.Services.AddSingleton<IGameMoneyService, GameMoneyService>();
-builder.Services.AddSingleton<IPaymentService, PaymentService>();
-builder.Services.AddSingleton<IUserPaymentsService, UserPaymentsService>();
+builder.Services.AddScoped<IPaymentService, PaymentService>();
+builder.Services.AddScoped<IUserPaymentsService, UserPaymentsService>();
 builder.Services.AddHostedService<PaymentManagerService>();
 
 builder.Services.AddControllers();

@@ -2,7 +2,7 @@
 
 namespace Withdraw.DAL.Entities
 {
-    public class ItemWithdrawStatus : BaseEntity
+    public class WithdrawStatus : BaseEntity
     {
         public string? Name { get; set; }
 

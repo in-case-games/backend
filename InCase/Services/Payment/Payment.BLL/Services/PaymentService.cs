@@ -11,17 +11,17 @@ namespace Payment.BLL.Services
     public class PaymentService : IPaymentService
     {
         private readonly IGameMoneyService _gameMoneyService;
-        private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
+        private readonly ApplicationDbContext _context;
         private readonly IEncryptorService _rsaService;
 
         public PaymentService(
             IGameMoneyService gameMoneyService,
-            IDbContextFactory<ApplicationDbContext> contextFactory,
+            ApplicationDbContext context,
             IEncryptorService rsaService)
         {
 
             _gameMoneyService = gameMoneyService;
-            _contextFactory = contextFactory;
+            _context = context;
             _rsaService = rsaService;
 
         }
@@ -33,10 +33,7 @@ namespace Payment.BLL.Services
             if (!_rsaService.VerifySignatureRSA(request))
                 throw new ForbiddenException("Неверная подпись rsa");
 
-            await using ApplicationDbContext context = await _contextFactory
-                .CreateDbContextAsync();
-
-            if (!await context.UserPayments.AnyAsync(up => up.InvoiceId == request.InvoiceId!))
+            if (!await _context.UserPayments.AnyAsync(up => up.InvoiceId == request.InvoiceId!))
                 throw new ConflictException("Платеж уже есть в системе, ждем пополнения");
 
             GameMoneyInvoiceInfoResponse? invoice = await _gameMoneyService
@@ -54,8 +51,8 @@ namespace Payment.BLL.Services
                 UserId = invoice.UserId
             };
 
-            await context.UserPayments.AddAsync(payment);
-            await context.SaveChangesAsync();
+            await _context.UserPayments.AddAsync(payment);
+            await _context.SaveChangesAsync();
 
             return payment.ToResponse();
         }

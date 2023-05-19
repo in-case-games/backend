@@ -10,7 +10,7 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddPooledDbContextFactory<ApplicationDbContext>(
+builder.Services.AddDbContextPool<ApplicationDbContext>(
     options => {
         options.UseSnakeCaseNamingConvention();
         options.UseNpgsql(
@@ -70,8 +70,8 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
-builder.Services.AddSingleton<IUserPromocodesService, UserPromocodesService>();
-builder.Services.AddSingleton<IPromocodeService, PromocodeService>();
+builder.Services.AddScoped<IUserPromocodesService, UserPromocodesService>();
+builder.Services.AddScoped<IPromocodeService, PromocodeService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -88,6 +88,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseMiddleware<CancellationTokenHandlingMiddleware>();
 app.UseMiddleware<ExceptionHandlingMiddleware>();
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
