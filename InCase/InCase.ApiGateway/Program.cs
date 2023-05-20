@@ -22,7 +22,7 @@ builder.Services.AddOcelot(configuration);
 
 var app = builder.Build();
 
-app.UseOcelot();
+await app.UseOcelot();
 app.UseCors(policyName);
 app.UseAuthorization();
 
