@@ -21,8 +21,7 @@ namespace Withdraw.DAL.Configurations
                 .IsRequired();
 
             builder.HasOne(gm => gm.Game)
-                .WithMany(g => g.Markets)
-                .HasForeignKey(gm => gm.GameId)
+                .WithOne(g => g.Market)
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }

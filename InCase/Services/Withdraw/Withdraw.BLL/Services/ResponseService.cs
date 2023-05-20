@@ -1,6 +1,5 @@
 ﻿using System.Net.Http.Json;
 using System.Text.Json;
-
 namespace Withdraw.BLL.Services
 {
     public class ResponseService
@@ -12,8 +11,7 @@ namespace Withdraw.BLL.Services
             _httpClient = new();
         }
 
-        public async Task<T?> ResponseGet<T>(string uri)
-            where T : new()
+        public async Task<T?> GetAsync<T>(string uri)
         {
             HttpResponseMessage response = await _httpClient.GetAsync(uri);
 
@@ -28,7 +26,8 @@ namespace Withdraw.BLL.Services
             }
 
             return await response.Content
-                .ReadFromJsonAsync<T>(new JsonSerializerOptions(JsonSerializerDefaults.Web));
+                .ReadFromJsonAsync<T>(
+                new JsonSerializerOptions(JsonSerializerDefaults.Web));
         }
     }
 }

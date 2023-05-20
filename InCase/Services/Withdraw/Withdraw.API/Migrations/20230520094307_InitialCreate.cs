@@ -161,8 +161,8 @@ namespace Withdraw.API.Migrations
                 columns: new[] { "id", "name" },
                 values: new object[,]
                 {
-                    { new Guid("09ef8b31-c407-4920-b8d7-a8bb33d4a563"), "dota2" },
-                    { new Guid("40edf87c-6794-4bf4-b736-7d526578b14a"), "csgo" }
+                    { new Guid("3dbf29fe-f7f3-4ec3-bbec-b3797f643eb1"), "csgo" },
+                    { new Guid("5a798dcc-cae0-4113-a261-633c9745f385"), "dota2" }
                 });
 
             migrationBuilder.InsertData(
@@ -170,10 +170,10 @@ namespace Withdraw.API.Migrations
                 columns: new[] { "id", "name" },
                 values: new object[,]
                 {
-                    { new Guid("53abf93f-4fb8-43bb-b028-1050384581d6"), "cancel" },
-                    { new Guid("69a78523-8dc5-4254-a947-df7bff051678"), "given" },
-                    { new Guid("bdbd2a11-0405-44a0-9f26-1a47b7cfd9af"), "purchase" },
-                    { new Guid("d4ee32cb-cea8-427b-865d-61fa8b0cb401"), "transfer" }
+                    { new Guid("1783e4e1-0299-47eb-85fd-8dfe6ff26044"), "transfer" },
+                    { new Guid("a6310daf-4ef9-4b11-9f38-392d568075d6"), "given" },
+                    { new Guid("c6722a2e-81ef-49b5-918d-6bb9a6302842"), "purchase" },
+                    { new Guid("cae646a3-7483-456b-af64-df6b0130251d"), "cancel" }
                 });
 
             migrationBuilder.CreateIndex(

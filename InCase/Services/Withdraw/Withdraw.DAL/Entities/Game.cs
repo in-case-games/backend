@@ -9,6 +9,6 @@ namespace Withdraw.DAL.Entities
         [JsonIgnore]
         public IEnumerable<GameItem>? Items { get; set; }
         [JsonIgnore]
-        public IEnumerable<GameMarket>? Markets { get; set; }
+        public GameMarket? Market { get; set; }
     }
 }

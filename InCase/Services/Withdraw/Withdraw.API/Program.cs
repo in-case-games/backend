@@ -70,6 +70,10 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
+builder.Services.AddSingleton<ResponseService>();
+builder.Services.AddSingleton<MarketTMService>();
+builder.Services.AddSingleton<IWithdrawItemService, WithdrawItemService>();
+builder.Services.AddScoped<IUserInventoryService, UserInventoryService>();
 builder.Services.AddScoped<IUserWithdrawsService, UserWithdrawsService>();
 
 builder.Services.AddControllers();

@@ -12,7 +12,7 @@ using Withdraw.DAL.Data;
 namespace Withdraw.API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230519084121_InitialCreate")]
+    [Migration("20230520094307_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -54,12 +54,12 @@ namespace Withdraw.API.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("40edf87c-6794-4bf4-b736-7d526578b14a"),
+                            Id = new Guid("3dbf29fe-f7f3-4ec3-bbec-b3797f643eb1"),
                             Name = "csgo"
                         },
                         new
                         {
-                            Id = new Guid("09ef8b31-c407-4920-b8d7-a8bb33d4a563"),
+                            Id = new Guid("5a798dcc-cae0-4113-a261-633c9745f385"),
                             Name = "dota2"
                         });
                 });
@@ -274,22 +274,22 @@ namespace Withdraw.API.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("bdbd2a11-0405-44a0-9f26-1a47b7cfd9af"),
+                            Id = new Guid("c6722a2e-81ef-49b5-918d-6bb9a6302842"),
                             Name = "purchase"
                         },
                         new
                         {
-                            Id = new Guid("d4ee32cb-cea8-427b-865d-61fa8b0cb401"),
+                            Id = new Guid("1783e4e1-0299-47eb-85fd-8dfe6ff26044"),
                             Name = "transfer"
                         },
                         new
                         {
-                            Id = new Guid("69a78523-8dc5-4254-a947-df7bff051678"),
+                            Id = new Guid("a6310daf-4ef9-4b11-9f38-392d568075d6"),
                             Name = "given"
                         },
                         new
                         {
-                            Id = new Guid("53abf93f-4fb8-43bb-b028-1050384581d6"),
+                            Id = new Guid("cae646a3-7483-456b-af64-df6b0130251d"),
                             Name = "cancel"
                         });
                 });
@@ -309,8 +309,8 @@ namespace Withdraw.API.Migrations
             modelBuilder.Entity("Withdraw.DAL.Entities.GameMarket", b =>
                 {
                     b.HasOne("Withdraw.DAL.Entities.Game", "Game")
-                        .WithMany("Markets")
-                        .HasForeignKey("GameId")
+                        .WithOne("Market")
+                        .HasForeignKey("Withdraw.DAL.Entities.GameMarket", "GameId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_game_market_game_game_id");
@@ -382,7 +382,7 @@ namespace Withdraw.API.Migrations
                 {
                     b.Navigation("Items");
 
-                    b.Navigation("Markets");
+                    b.Navigation("Market");
                 });
 
             modelBuilder.Entity("Withdraw.DAL.Entities.GameItem", b =>

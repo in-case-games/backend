@@ -35,26 +35,26 @@ namespace Withdraw.BLL.Services
             _responseService = responseService;
         }
 
-        public async Task<decimal> GetBalance()
+        public async Task<decimal> GetBalanceAsync()
         {
             string uri = DomainUri["csgo"];
             string url = $"/api/GetMoney/?key={_configuration["MarketTM:Secret"]}";
             
-            ResponseBalanceTM? response = await _responseService
-                .ResponseGet<ResponseBalanceTM>(uri + url);
+            BalanceTMResponse? response = await _responseService
+                .GetAsync<BalanceTMResponse>(uri + url);
 
             return response!.MoneyKopecks * 0.01M;
         }
 
-        public async Task<ItemInfoResponse> GetItemInfo(string idForMarket, string game)
+        public async Task<ItemInfoResponse> GetItemInfoAsync(string idForMarket, string game)
         {
             string uri = DomainUri[game];
             string id = idForMarket.Replace("-", "_");
 
             string url = $"{uri}/api/ItemInfo/{id}/ru/?key={_configuration["MarketTM:Secret"]}";
-            
-            ItemInfoTM? info = await _responseService
-                .ResponseGet<ItemInfoTM>(url);
+
+            ItemInfoTMResponse? info = await _responseService
+                .GetAsync<ItemInfoTMResponse>(url);
 
             return new()
             {
@@ -63,7 +63,7 @@ namespace Withdraw.BLL.Services
             };
         }
 
-        public async Task<TradeInfoResponse> GetTradeInfo(UserHistoryWithdraw history)
+        public async Task<TradeInfoResponse> GetTradeInfoAsync(UserHistoryWithdraw history)
         {
             string name = history.Item!.Game!.Name!;
             string uri = DomainUri[name];
@@ -79,13 +79,13 @@ namespace Withdraw.BLL.Services
             {
                 string tradeUrl = $"{uri}/api/Trades/?key={_configuration["MarketTM:Secret"]}";
 
-                List<ResponseTradeTM>? trades = await _responseService
-                    .ResponseGet<List<ResponseTradeTM>>(tradeUrl);
+                List<TradeInfoTMResponse>? trades = await _responseService
+                    .GetAsync<List<TradeInfoTMResponse>>(tradeUrl);
 
-                ResponseTradeTM trade = trades!
-                    .First(f => f.Id == id);
+                string status = trades!
+                    .First(f => f.Id == id).Status!;
 
-                info.Status = TradeStatuses[trade.Status!];
+                info.Status = TradeStatuses[status];
             }
             catch(Exception)
             {
@@ -95,21 +95,19 @@ namespace Withdraw.BLL.Services
                 string historyUrl = $"{uri}/api/OperationHistory/{start}/{end}" +
                     $"/?key={_configuration["MarketTM:Secret"]}";
 
-                ResponseAnswerOperationHistoryTM? answer = await _responseService
-                    .ResponseGet<ResponseAnswerOperationHistoryTM>(historyUrl);
+                AnswerOperationHistoryTMResponse? answer = await _responseService
+                    .GetAsync<AnswerOperationHistoryTMResponse>(historyUrl);
 
-                List<ResponseOperationHistoryTM> histories = answer!.Histories!;
+                string status = answer!.Histories!
+                    .First(f => f.Id == id).Status!;
 
-                ResponseOperationHistoryTM historyTM = histories!
-                    .First(f => f.Id == id);
-
-                info.Status = TradeStatuses[historyTM.Status!];
+                info.Status = TradeStatuses[status];
             }
 
             return info;
         }
 
-        public async Task<BuyItemResponse> BuyItem(ItemInfoResponse info, string trade)
+        public async Task<BuyItemResponse> BuyItemAsync(ItemInfoResponse info, string trade)
         {
             int price = info.PriceKopecks;
             string name = info.Item.Game!.Name!;
@@ -121,9 +119,9 @@ namespace Withdraw.BLL.Services
 
             string url = $"{uri}/api/Buy/{id}/{price}//?key={_configuration["MarketTM:Secret"]}" +
                 $"&partner={partner}&token={token}";
-            
-            ResponseBuyItemTM? response = await _responseService
-                .ResponseGet<ResponseBuyItemTM>(url);
+
+            BuyItemTMResponse? response = await _responseService
+                .GetAsync<BuyItemTMResponse>(url);
             
             return new()
             {
@@ -131,12 +129,12 @@ namespace Withdraw.BLL.Services
             };
         }
 
-        private class ResponseAnswerOperationHistoryTM
+        private class AnswerOperationHistoryTMResponse
         {
             [JsonPropertyName("success")] public bool Success { get; set; }
-            [JsonPropertyName("history")] public List<ResponseOperationHistoryTM>? Histories { get; set; }
+            [JsonPropertyName("history")] public List<OperationHistoryTMResponse>? Histories { get; set; }
         }
-        private class ResponseOperationHistoryTM
+        private class OperationHistoryTMResponse
         {
             private string? _status;
 
@@ -154,7 +152,7 @@ namespace Withdraw.BLL.Services
             }
 
         }
-        private class ResponseTradeTM
+        private class TradeInfoTMResponse
         {
             private string? _status;
 
@@ -173,28 +171,16 @@ namespace Withdraw.BLL.Services
             [JsonPropertyName("left")] public string? Left { get; set; }
 
         }
-        private class ResponseBuyItemTM
+        private class BuyItemTMResponse
         {
             [JsonPropertyName("result")] public string? Result { get; set; }
             [JsonPropertyName("id")] public string? Id { get; set; }
         }
-        private class ResponseBalanceTM
+        private class BalanceTMResponse
         {
             [JsonPropertyName("money")] public int MoneyKopecks { get; set; }
         }
-        private class BuyOfferTM
-        {
-            [JsonPropertyName("c")] public string? Count { get; set; }
-            [JsonPropertyName("my_count")] public string? MyCount { get; set; }
-            [JsonPropertyName("o_price")] public string? Price { get; set; }
-        }
-        private class OfferTM
-        {
-            [JsonPropertyName("price")] public string? Price { get; set; }
-            [JsonPropertyName("count")] public string? Count { get; set; }
-            [JsonPropertyName("my_count")] public string? MyCount { get; set; }
-        }
-        private class ItemInfoTM
+        private class ItemInfoTMResponse
         {
             [JsonPropertyName("classid")] public string? ClassId { get; set; }
             [JsonPropertyName("instanceid")] public string? InstanceId { get; set; }
@@ -211,6 +197,18 @@ namespace Withdraw.BLL.Services
             [JsonPropertyName("min_price")] public string? MinPrice { get; set; }
             [JsonPropertyName("offers")] public ICollection<OfferTM>? Offers { get; set; }
             [JsonPropertyName("buy_offers")] public ICollection<BuyOfferTM>? BuyOffers { get; set; }
+        }
+        private class BuyOfferTM
+        {
+            [JsonPropertyName("c")] public string? Count { get; set; }
+            [JsonPropertyName("my_count")] public string? MyCount { get; set; }
+            [JsonPropertyName("o_price")] public string? Price { get; set; }
+        }
+        private class OfferTM
+        {
+            [JsonPropertyName("price")] public string? Price { get; set; }
+            [JsonPropertyName("count")] public string? Count { get; set; }
+            [JsonPropertyName("my_count")] public string? MyCount { get; set; }
         }
     }
 }

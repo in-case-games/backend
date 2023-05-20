@@ -17,7 +17,7 @@ namespace Withdraw.BLL.Services
             _context = context;
         }
 
-        public async Task<UserHistoryWithdrawResponse> Get(Guid id)
+        public async Task<UserHistoryWithdrawResponse> GetAsync(Guid id)
         {
             UserHistoryWithdraw withdraw = await _context.HistoryWithdraws
                 .AsNoTracking()
@@ -27,7 +27,7 @@ namespace Withdraw.BLL.Services
             return withdraw.ToResponse();
         }
 
-        public async Task<List<UserHistoryWithdrawResponse>> Get(Guid userId, int count)
+        public async Task<List<UserHistoryWithdrawResponse>> GetAsync(Guid userId, int count)
         {
             if (count <= 0 || count >= 10000)
                 throw new BadRequestException("Размер выборки должен быть в пределе 1-10000");
@@ -44,7 +44,7 @@ namespace Withdraw.BLL.Services
             return withdraws.ToResponse();
         }
 
-        public async Task<List<UserHistoryWithdrawResponse>> Get(int count)
+        public async Task<List<UserHistoryWithdrawResponse>> GetAsync(int count)
         {
             if (count <= 0 || count >= 10000)
                 throw new BadRequestException("Размер выборки должен быть в пределе 1-10000");
@@ -57,7 +57,7 @@ namespace Withdraw.BLL.Services
             return withdraws.ToResponse();
         }
 
-        public async Task<UserInventoryResponse> Transfer(Guid id, Guid userId)
+        public async Task<UserInventoryResponse> TransferAsync(Guid id, Guid userId)
         {
             UserHistoryWithdraw withdraw = await _context.HistoryWithdraws
                 .Include(uhw => uhw.Status)

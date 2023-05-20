@@ -25,7 +25,7 @@ namespace Withdraw.API.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(Guid id)
         {
-            UserHistoryWithdrawResponse response = await _userWithdrawsService.Get(id);
+            UserHistoryWithdrawResponse response = await _userWithdrawsService.GetAsync(id);
 
             return Ok(ApiResult<UserHistoryWithdrawResponse>.OK(response));
         }
@@ -35,7 +35,7 @@ namespace Withdraw.API.Controllers
         public async Task<IActionResult> GetByUserId(Guid userId)
         {
             List<UserHistoryWithdrawResponse> response = await _userWithdrawsService
-                .Get(userId, 100);
+                .GetAsync(userId, 100);
 
             return Ok(ApiResult<List<UserHistoryWithdrawResponse>>.OK(response));
         }
@@ -45,7 +45,7 @@ namespace Withdraw.API.Controllers
         public async Task<IActionResult> GetLast100Withdraw()
         {
             List<UserHistoryWithdrawResponse> response = await _userWithdrawsService
-                .Get(100);
+                .GetAsync(100);
 
             return Ok(ApiResult<List<UserHistoryWithdrawResponse>>.OK(response));
         }
@@ -55,7 +55,7 @@ namespace Withdraw.API.Controllers
         public async Task<IActionResult> Get()
         {
             List<UserHistoryWithdrawResponse> response = await _userWithdrawsService
-                .Get(UserId, 100);
+                .GetAsync(UserId, 100);
 
             return Ok(ApiResult<List<UserHistoryWithdrawResponse>>.OK(response));
         }
@@ -65,7 +65,7 @@ namespace Withdraw.API.Controllers
         public async Task<IActionResult> Get(int count)
         {
             List<UserHistoryWithdrawResponse> response = await _userWithdrawsService
-                .Get(count);
+                .GetAsync(count);
 
             return Ok(ApiResult<List<UserHistoryWithdrawResponse>>.OK(response));
         }
@@ -75,7 +75,7 @@ namespace Withdraw.API.Controllers
         public async Task<IActionResult> Get(Guid userId, int count)
         {
             List<UserHistoryWithdrawResponse> response = await _userWithdrawsService
-                .Get(userId, count);
+                .GetAsync(userId, count);
 
             return Ok(ApiResult<List<UserHistoryWithdrawResponse>>.OK(response));
         }
@@ -85,7 +85,7 @@ namespace Withdraw.API.Controllers
         public async Task<IActionResult> TransferToInventory(Guid id)
         {
             UserInventoryResponse response = await _userWithdrawsService
-                .Transfer(id, UserId);
+                .TransferAsync(id, UserId);
 
             return Ok(ApiResult<UserInventoryResponse>.OK(response));
         }
