@@ -43,6 +43,7 @@ namespace Withdraw.BLL.Services
                 .Include(uhw => uhw.Item!.Game)
                 .Include(uhw => uhw.Market)
                 .Include(uhw => uhw.Status)
+                .Where(uhw => uhw.Status!.Name != "success")
                 .Take(count)
                 .ToListAsync(cancellationToken);
 
