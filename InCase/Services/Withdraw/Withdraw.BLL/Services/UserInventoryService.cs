@@ -85,7 +85,7 @@ namespace Withdraw.BLL.Services
 
             decimal itemInfoPrice = itemInfo.PriceKopecks * 0.01M;
 
-            if (itemInfoPrice <= inventory.FixedCost / 7)
+            if (itemInfoPrice <= inventory.FixedCost * 1.1M / 7)
                 throw new ConflictException("Товар может быть обменен только в случае нестабильности цены");
 
             //TODO Write logs

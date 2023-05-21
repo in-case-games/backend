@@ -20,6 +20,7 @@ namespace Withdraw.BLL.Services
         public async Task<UserHistoryWithdrawResponse> GetAsync(Guid id)
         {
             UserHistoryWithdraw withdraw = await _context.HistoryWithdraws
+                .Include(uhw => uhw.Status)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(uhw => uhw.Id == id) ?? 
                 throw new NotFoundException("История вывода не найдена");
@@ -35,6 +36,7 @@ namespace Withdraw.BLL.Services
                 throw new NotFoundException("Пользователь не найден");
 
             List<UserHistoryWithdraw> withdraws = await _context.HistoryWithdraws
+                .Include(uhw => uhw.Status)
                 .AsNoTracking()
                 .Where(uhw => uhw.UserId == userId)
                 .OrderByDescending(uhw => uhw.Date)
@@ -48,7 +50,9 @@ namespace Withdraw.BLL.Services
         {
             if (count <= 0 || count >= 10000)
                 throw new BadRequestException("Размер выборки должен быть в пределе 1-10000");
+
             List<UserHistoryWithdraw> withdraws = await _context.HistoryWithdraws
+                .Include(uhw => uhw.Status)
                 .AsNoTracking()
                 .OrderByDescending(uhw => uhw.Date)
                 .Take(count)

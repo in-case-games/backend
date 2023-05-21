@@ -73,8 +73,10 @@ builder.Services.AddSwaggerGen(options =>
 builder.Services.AddSingleton<ResponseService>();
 builder.Services.AddSingleton<MarketTMService>();
 builder.Services.AddSingleton<IWithdrawItemService, WithdrawItemService>();
+builder.Services.AddScoped<IWithdrawService, WithdrawService>();
 builder.Services.AddScoped<IUserInventoryService, UserInventoryService>();
 builder.Services.AddScoped<IUserWithdrawsService, UserWithdrawsService>();
+builder.Services.AddHostedService<WithdrawManagerService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

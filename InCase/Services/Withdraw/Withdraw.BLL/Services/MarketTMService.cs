@@ -58,6 +58,7 @@ namespace Withdraw.BLL.Services
 
             return new()
             {
+                Id = id,
                 Count = info!.Offers!.Count,
                 PriceKopecks = int.Parse(info.MinPrice!),
             };
