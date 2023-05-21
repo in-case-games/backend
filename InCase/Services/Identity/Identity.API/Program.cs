@@ -1,7 +1,48 @@
-using InCase.Infrastructure.Middlewares;
 using Microsoft.OpenApi.Models;
+using Identity.DAL.Data;
+using Microsoft.EntityFrameworkCore;
+using Identity.API.Middlewares;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Identity.BLL.Interfaces;
+using Identity.BLL.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddDbContextPool<IdentityDbContext>(
+    options => {
+        options.UseSnakeCaseNamingConvention();
+        options.UseNpgsql(
+        #if DEBUG
+        builder.Configuration["ConnectionStrings:DevelopmentConnection"],
+        #else
+        builder.Configuration["ConnectionStrings:ProductionConnection"],
+        #endif
+        b => b.MigrationsAssembly("Payment.API"));
+    }
+);
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.SaveToken = true;
+
+        options.TokenValidationParameters = new TokenValidationParameters()
+        {
+            ValidateIssuer = true,
+            ValidIssuer = builder.Configuration["JWT:ValidIssuer"]!,
+
+            ValidateAudience = true,
+            ValidAudience = builder.Configuration["JWT:ValidAudience"]!,
+            ValidateLifetime = true,
+
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(builder.Configuration["JWT:Secret"]!)),
+
+            ValidateIssuerSigningKey = true,
+        };
+    });
 
 builder.Services.AddSwaggerGen(options =>
 {
@@ -30,6 +71,9 @@ builder.Services.AddSwaggerGen(options =>
         }
     });
 });
+
+builder.Services.AddTransient<IUserService, UserService>();
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddAuthorization();
