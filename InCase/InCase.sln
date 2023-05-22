@@ -89,6 +89,9 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Resources.API", "Services\Resources\Resources.API\Resources.API.csproj", "{071D3248-9573-47B5-8E79-35358F029337}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Resources.BLL", "Services\Resources\Resources.BLL\Resources.BLL.csproj", "{75DD2F8F-CF65-4BB4-80A6-1DFCC824E2A5}"
+	ProjectSection(ProjectDependencies) = postProject
+		{6E00CD82-A893-4412-B903-05B71120EBF9} = {6E00CD82-A893-4412-B903-05B71120EBF9}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Resources.DAL", "Services\Resources\Resources.DAL\Resources.DAL.csproj", "{6E00CD82-A893-4412-B903-05B71120EBF9}"
 EndProject
