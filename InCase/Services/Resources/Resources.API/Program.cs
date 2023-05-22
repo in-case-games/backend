@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Resources.API.Middlewares;
+using Resources.BLL.Interfaces;
+using Resources.BLL.Services;
 using Resources.DAL.Data;
 using System.Text;
 
@@ -66,6 +68,8 @@ builder.Services.AddSwaggerGen(options =>
         }
     });
 });
+
+builder.Services.AddScoped<IGameService, GameService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
