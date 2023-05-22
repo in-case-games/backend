@@ -6,6 +6,7 @@ namespace Resources.DAL.Entities
     {
         public string? Name { get; set; }
         public string? HashName { get; set; }
+        public string? Cost { get; set; }
 
         public GameItemQuality? Quality { get; set; }
         public GameItemType? Type { get; set; }

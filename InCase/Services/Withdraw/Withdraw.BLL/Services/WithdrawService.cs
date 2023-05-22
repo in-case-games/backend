@@ -36,14 +36,14 @@ namespace Withdraw.BLL.Services
         public async Task<decimal> GetMarketBalanceAsync(string marketName) =>
             await _withdrawItemService.GetBalanceAsync(marketName);
 
-        public async Task UpdateWithdrawsStatusAsync(int count, CancellationToken cancellationToken)
+        public async Task WithdrawStatusManagerAsync(int count, CancellationToken cancellationToken)
         {
             List<UserHistoryWithdraw> withdraws = await _context.HistoryWithdraws
                 .Include(uhw => uhw.Item)
                 .Include(uhw => uhw.Item!.Game)
                 .Include(uhw => uhw.Market)
                 .Include(uhw => uhw.Status)
-                .Where(uhw => uhw.Status!.Name != "success")
+                .Where(uhw => uhw.Status!.Name != "given" && uhw.Status!.Name != "cancel")
                 .Take(count)
                 .ToListAsync(cancellationToken);
 

@@ -33,7 +33,7 @@ namespace Withdraw.BLL.Services
                 try
                 {
                     _logger.LogInformation("Start work manager");
-                    await _withdrawService.UpdateWithdrawsStatusAsync(10, stoppingToken);
+                    await _withdrawService.WithdrawStatusManagerAsync(10, stoppingToken);
                 }
                 catch (Exception)
                 {
