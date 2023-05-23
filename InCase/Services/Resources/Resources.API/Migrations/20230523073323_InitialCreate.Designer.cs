@@ -12,7 +12,7 @@ using Resources.DAL.Data;
 namespace Resources.API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230522134839_InitialCreate")]
+    [Migration("20230523073323_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -53,12 +53,12 @@ namespace Resources.API.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("cbd9f117-1cd1-47ad-a1e2-d1af22899d86"),
+                            Id = new Guid("eb68828c-58d0-4ec8-8105-2aeab85282f3"),
                             Name = "csgo"
                         },
                         new
                         {
-                            Id = new Guid("aa4ba3c3-f6ac-42eb-b0ed-ec50cd65a792"),
+                            Id = new Guid("cd9b91b7-d625-4268-a0e1-82ff77a55046"),
                             Name = "dota2"
                         });
                 });
@@ -241,6 +241,11 @@ namespace Resources.API.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("game_id");
 
+                    b.Property<string>("HashName")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("hash_name");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text")
@@ -251,6 +256,10 @@ namespace Resources.API.Migrations
 
                     b.HasIndex("GameId")
                         .HasDatabaseName("ix_loot_box_game_id");
+
+                    b.HasIndex("HashName")
+                        .IsUnique()
+                        .HasDatabaseName("ix_loot_box_hash_name");
 
                     b.HasIndex("Id")
                         .IsUnique()

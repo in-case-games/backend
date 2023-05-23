@@ -70,6 +70,7 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 builder.Services.AddScoped<IGameService, GameService>();
+builder.Services.AddScoped<ILootBoxService, LootBoxService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

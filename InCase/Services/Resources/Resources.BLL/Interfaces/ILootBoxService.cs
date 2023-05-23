@@ -4,11 +4,12 @@ namespace Resources.BLL.Interfaces
 {
     public interface ILootBoxService
     {
-        public Task<LootBoxResponse> Get(Guid id);
-        public Task<List<LootBoxResponse>> Get();
-        public Task<List<LootBoxResponse>> GetByGameId(Guid id);
-        public Task<LootBoxResponse> Create(LootBoxRequest request);
-        public Task<LootBoxResponse> Update(LootBoxRequest request);
-        public Task<LootBoxResponse> Delete(Guid id);
+        public Task<LootBoxResponse> GetAsync(Guid id);
+        public Task<LootBoxResponse> GetAsync(string name);
+        public Task<List<LootBoxResponse>> GetAsync();
+        public Task<List<LootBoxResponse>> GetByGameIdAsync(Guid id);
+        public Task<LootBoxResponse> CreateAsync(LootBoxRequest request);
+        public Task<LootBoxResponse> UpdateAsync(LootBoxRequest request);
+        public Task<LootBoxResponse> DeleteAsync(Guid id);
     }
 }

@@ -11,6 +11,7 @@ namespace Resources.BLL.Helpers
                 Id = box.Id,
                 Cost = box.Cost,
                 Name = box.Name,
+                HashName = box.HashName,
                 Inventories = box.Inventories?.ToResponse(),
             };
 
@@ -23,5 +24,14 @@ namespace Resources.BLL.Helpers
 
             return response;
         }
+
+        public static LootBox ToEntity(this LootBoxRequest request, bool isNewGuid = false) =>
+            new()
+            {
+                Id = isNewGuid ? Guid.NewGuid() : request.Id,
+                GameId = request.GameId,
+                Name = request.Name,
+                HashName = request.HashName,
+            };
     }
 }

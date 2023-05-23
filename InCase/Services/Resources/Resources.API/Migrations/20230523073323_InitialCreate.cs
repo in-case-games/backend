@@ -79,6 +79,7 @@ namespace Resources.API.Migrations
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
                     name = table.Column<string>(type: "text", nullable: false),
+                    hash_name = table.Column<string>(type: "text", nullable: false),
                     cost = table.Column<decimal>(type: "numeric(18,5)", nullable: false),
                     game_id = table.Column<Guid>(type: "uuid", nullable: false)
                 },
@@ -217,8 +218,8 @@ namespace Resources.API.Migrations
                 columns: new[] { "id", "name" },
                 values: new object[,]
                 {
-                    { new Guid("aa4ba3c3-f6ac-42eb-b0ed-ec50cd65a792"), "dota2" },
-                    { new Guid("cbd9f117-1cd1-47ad-a1e2-d1af22899d86"), "csgo" }
+                    { new Guid("cd9b91b7-d625-4268-a0e1-82ff77a55046"), "dota2" },
+                    { new Guid("eb68828c-58d0-4ec8-8105-2aeab85282f3"), "csgo" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -311,6 +312,12 @@ namespace Resources.API.Migrations
                 name: "ix_loot_box_game_id",
                 table: "LootBox",
                 column: "game_id");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_loot_box_hash_name",
+                table: "LootBox",
+                column: "hash_name",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "ix_loot_box_id",

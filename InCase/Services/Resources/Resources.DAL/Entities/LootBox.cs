@@ -5,6 +5,7 @@ namespace Resources.DAL.Entities
     public class LootBox : BaseEntity
     {
         public string? Name { get; set; }
+        public string? HashName { get; set; }
         public decimal Cost { get; set; }
 
         public IEnumerable<LootBoxInventory>? Inventories { get; set; }
