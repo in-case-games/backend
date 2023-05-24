@@ -8,6 +8,6 @@ namespace Resources.BLL.Models
         public string? HashName { get; set; }
         public decimal Cost { get; set; }
 
-        public IEnumerable<GameItemResponse>? Inventories { get; set; }
+        public IEnumerable<LootBoxInventoryResponse>? Inventories { get; set; }
     }
 }

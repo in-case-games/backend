@@ -14,6 +14,7 @@ namespace Resources.BLL.Helpers
                 Rarity = item.Rarity?.Name,
                 Type = item.Type?.Name,
             };
+
         public static List<GameItemResponse> ToResponse(this IEnumerable<GameItem> items)
         {
             List<GameItemResponse> result = new();
@@ -23,17 +24,17 @@ namespace Resources.BLL.Helpers
 
             return result;
         }
-        public static List<GameItemResponse> ToResponse(this IEnumerable<LootBoxInventory> inventories)
-        {
-            List<GameItemResponse> result = new();
 
-            foreach (var inventory in inventories)
-            {
-                if(inventory.Item is not null)
-                    result.Add(ToResponse(inventory.Item));
-            }
-
-            return result;
-        }
+        public static GameItem ToEntity(this GameItemRequest request, bool isNewGuid = false) =>
+            new() { 
+                Id = isNewGuid ? Guid.NewGuid() : request.Id,
+                Cost = request.Cost,
+                GameId = request.GameId,
+                HashName = request.HashName,
+                QualityId = request.QualityId,
+                RarityId = request.RarityId,
+                Name = request.Name,
+                TypeId = request.TypeId
+            };
     }
 }
