@@ -12,7 +12,6 @@ namespace Resources.BLL.Helpers
                 Cost = box.Cost,
                 Name = box.Name,
                 HashName = box.HashName,
-                Inventories = box.Inventories?.ToResponse(),
             };
 
         public static List<LootBoxResponse> ToResponse(this IEnumerable<LootBox> boxes)

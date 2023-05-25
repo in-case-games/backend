@@ -103,9 +103,9 @@ namespace Resources.API.Migrations
                     hash_name = table.Column<string>(type: "text", nullable: true),
                     cost = table.Column<decimal>(type: "numeric(18,5)", nullable: false),
                     game_id = table.Column<Guid>(type: "uuid", nullable: false),
-                    type_id = table.Column<Guid>(type: "uuid", nullable: true),
-                    rarity_id = table.Column<Guid>(type: "uuid", nullable: true),
-                    quality_id = table.Column<Guid>(type: "uuid", nullable: true)
+                    type_id = table.Column<Guid>(type: "uuid", nullable: false),
+                    rarity_id = table.Column<Guid>(type: "uuid", nullable: false),
+                    quality_id = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -218,8 +218,8 @@ namespace Resources.API.Migrations
                 columns: new[] { "id", "name" },
                 values: new object[,]
                 {
-                    { new Guid("cd9b91b7-d625-4268-a0e1-82ff77a55046"), "dota2" },
-                    { new Guid("eb68828c-58d0-4ec8-8105-2aeab85282f3"), "csgo" }
+                    { new Guid("118c6735-1d09-4c3a-8dcf-b67dfe822e2b"), "csgo" },
+                    { new Guid("714194a7-5b4d-4790-b3a9-c9c71db0a8ad"), "dota2" }
                 });
 
             migrationBuilder.CreateIndex(

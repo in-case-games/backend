@@ -7,7 +7,5 @@ namespace Resources.BLL.Models
         public string? Name { get; set; }
         public string? HashName { get; set; }
         public decimal Cost { get; set; }
-
-        public IEnumerable<LootBoxInventoryResponse>? Inventories { get; set; }
     }
 }

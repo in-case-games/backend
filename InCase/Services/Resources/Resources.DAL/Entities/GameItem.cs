@@ -15,11 +15,11 @@ namespace Resources.DAL.Entities
         [JsonIgnore]
         public Guid GameId { get; set; }
         [JsonIgnore]
-        public Guid? TypeId { get; set; }
+        public Guid TypeId { get; set; }
         [JsonIgnore]
-        public Guid? RarityId { get; set; }
+        public Guid RarityId { get; set; }
         [JsonIgnore]
-        public Guid? QualityId { get; set; }
+        public Guid QualityId { get; set; }
         [JsonIgnore]
         public Game? Game { get; set; }
         [JsonIgnore]

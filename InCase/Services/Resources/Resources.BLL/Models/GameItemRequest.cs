@@ -1,5 +1,4 @@
 ﻿using Resources.DAL.Entities;
-using System.Text.Json.Serialization;
 
 namespace Resources.BLL.Models
 {
@@ -11,8 +10,8 @@ namespace Resources.BLL.Models
         public decimal Cost { get; set; }
 
         public Guid GameId { get; set; }
-        public Guid? TypeId { get; set; }
-        public Guid? RarityId { get; set; }
-        public Guid? QualityId { get; set; }
+        public Guid TypeId { get; set; }
+        public Guid RarityId { get; set; }
+        public Guid QualityId { get; set; }
     }
 }

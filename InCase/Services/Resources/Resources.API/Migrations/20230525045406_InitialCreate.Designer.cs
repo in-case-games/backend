@@ -12,7 +12,7 @@ using Resources.DAL.Data;
 namespace Resources.API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230523073323_InitialCreate")]
+    [Migration("20230525045406_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -53,12 +53,12 @@ namespace Resources.API.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("eb68828c-58d0-4ec8-8105-2aeab85282f3"),
+                            Id = new Guid("118c6735-1d09-4c3a-8dcf-b67dfe822e2b"),
                             Name = "csgo"
                         },
                         new
                         {
-                            Id = new Guid("cd9b91b7-d625-4268-a0e1-82ff77a55046"),
+                            Id = new Guid("714194a7-5b4d-4790-b3a9-c9c71db0a8ad"),
                             Name = "dota2"
                         });
                 });
@@ -88,15 +88,15 @@ namespace Resources.API.Migrations
                         .HasColumnType("character varying(50)")
                         .HasColumnName("name");
 
-                    b.Property<Guid?>("QualityId")
+                    b.Property<Guid>("QualityId")
                         .HasColumnType("uuid")
                         .HasColumnName("quality_id");
 
-                    b.Property<Guid?>("RarityId")
+                    b.Property<Guid>("RarityId")
                         .HasColumnType("uuid")
                         .HasColumnName("rarity_id");
 
-                    b.Property<Guid?>("TypeId")
+                    b.Property<Guid>("TypeId")
                         .HasColumnType("uuid")
                         .HasColumnName("type_id");
 
@@ -387,18 +387,21 @@ namespace Resources.API.Migrations
                         .WithOne("Item")
                         .HasForeignKey("Resources.DAL.Entities.GameItem", "QualityId")
                         .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
                         .HasConstraintName("fk_game_item_item_qualities_quality_id");
 
                     b.HasOne("Resources.DAL.Entities.GameItemRarity", "Rarity")
                         .WithOne("Item")
                         .HasForeignKey("Resources.DAL.Entities.GameItem", "RarityId")
                         .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
                         .HasConstraintName("fk_game_item_item_rarities_rarity_id");
 
                     b.HasOne("Resources.DAL.Entities.GameItemType", "Type")
                         .WithOne("Item")
                         .HasForeignKey("Resources.DAL.Entities.GameItem", "TypeId")
                         .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
                         .HasConstraintName("fk_game_item_item_types_type_id");
 
                     b.Navigation("Game");

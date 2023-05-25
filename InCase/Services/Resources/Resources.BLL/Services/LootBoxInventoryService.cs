@@ -31,9 +31,11 @@ namespace Resources.BLL.Services
 
         public async Task<List<LootBoxInventoryResponse>> GetByBoxIdAsync(Guid id)
         {
+            if (!await _context.LootBoxes.AnyAsync(lbi => lbi.Id == id))
+                throw new NotFoundException("Кейс не найден");
+
             List<LootBoxInventory> inventories = await _context.BoxInventories
                 .Include(lbi => lbi.Item)
-                .Include(lbi => lbi.Box)
                 .AsNoTracking()
                 .Where(lbi => lbi.BoxId == id)
                 .ToListAsync();
@@ -43,8 +45,10 @@ namespace Resources.BLL.Services
 
         public async Task<List<LootBoxInventoryResponse>> GetByItemIdAsync(Guid id)
         {
+            if (!await _context.GameItems.AnyAsync(lbi => lbi.Id == id))
+                throw new NotFoundException("Предмет не найден");
+
             List<LootBoxInventory> inventories = await _context.BoxInventories
-                .Include(lbi => lbi.Item)
                 .Include(lbi => lbi.Box)
                 .AsNoTracking()
                 .Where(lbi => lbi.ItemId == id)
