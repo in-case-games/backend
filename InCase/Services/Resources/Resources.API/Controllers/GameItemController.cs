@@ -2,9 +2,11 @@
 using Microsoft.AspNetCore.Mvc;
 using Resources.API.Common;
 using Resources.API.Filters;
+using Resources.BLL.Entities;
 using Resources.BLL.Interfaces;
 using Resources.BLL.Models;
 using Resources.DAL.Entities;
+using System.Net;
 
 namespace Resources.API.Controllers
 {
@@ -19,6 +21,7 @@ namespace Resources.API.Controllers
             _itemService = itemService;
         }
 
+        [ProducesResponseType(typeof(List<GameItemResponse>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> Get()
@@ -28,6 +31,7 @@ namespace Resources.API.Controllers
             return Ok(ApiResult<List<GameItemResponse>>.OK(response));
         }
 
+        [ProducesResponseType(typeof(GameItemResponse), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(Guid id)
@@ -37,6 +41,7 @@ namespace Resources.API.Controllers
             return Ok(ApiResult<GameItemResponse>.OK(response));
         }
 
+        [ProducesResponseType(typeof(List<GameItemResponse>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("name/{name}")]
         public async Task<IActionResult> Get(string name)
@@ -46,6 +51,7 @@ namespace Resources.API.Controllers
             return Ok(ApiResult<List<GameItemResponse>>.OK(response));
         }
 
+        [ProducesResponseType(typeof(List<GameItemResponse>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("hash/{name}")]
         public async Task<IActionResult> GetByHashName(string name)
@@ -55,6 +61,7 @@ namespace Resources.API.Controllers
             return Ok(ApiResult<List<GameItemResponse>>.OK(response));
         }
 
+        [ProducesResponseType(typeof(List<GameItemResponse>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("game/{id}")]
         public async Task<IActionResult> GetByGameId(Guid id)
@@ -64,6 +71,7 @@ namespace Resources.API.Controllers
             return Ok(ApiResult<List<GameItemResponse>>.OK(response));
         }
 
+        [ProducesResponseType(typeof(List<GameItemQuality>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("qualities")]
         public async Task<IActionResult> GetQualities()
@@ -73,6 +81,7 @@ namespace Resources.API.Controllers
             return Ok(ApiResult<List<GameItemQuality>>.OK(response));
         }
 
+        [ProducesResponseType(typeof(List<GameItemRarity>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("rarities")]
         public async Task<IActionResult> GetRarities()
@@ -82,6 +91,7 @@ namespace Resources.API.Controllers
             return Ok(ApiResult<List<GameItemRarity>>.OK(response));
         }
 
+        [ProducesResponseType(typeof(List<GameItemType>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("types")]
         public async Task<IActionResult> GetTypes()
@@ -91,6 +101,7 @@ namespace Resources.API.Controllers
             return Ok(ApiResult<List<GameItemType>>.OK(response));
         }
 
+        [ProducesResponseType(typeof(List<GameItemResponse>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("quality/{name}")]
         public async Task<IActionResult> GetByQuality(string name)
@@ -100,6 +111,7 @@ namespace Resources.API.Controllers
             return Ok(ApiResult<List<GameItemResponse>>.OK(response));
         }
 
+        [ProducesResponseType(typeof(List<GameItemResponse>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("rarity/{name}")]
         public async Task<IActionResult> GetByRarity(string name)
@@ -109,6 +121,7 @@ namespace Resources.API.Controllers
             return Ok(ApiResult<List<GameItemResponse>>.OK(response));
         }
 
+        [ProducesResponseType(typeof(List<GameItemResponse>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("type/{name}")]
         public async Task<IActionResult> GetByType(string name)
@@ -118,6 +131,7 @@ namespace Resources.API.Controllers
             return Ok(ApiResult<List<GameItemResponse>>.OK(response));
         }
 
+        [ProducesResponseType(typeof(GameItemResponse), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Owner)]
         [HttpPost]
         public async Task<IActionResult> Post(GameItemRequest request)
@@ -127,6 +141,7 @@ namespace Resources.API.Controllers
             return Ok(ApiResult<GameItemResponse>.OK(response));
         }
 
+        [ProducesResponseType(typeof(GameItemResponse), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Owner)]
         [HttpPut]
         public async Task<IActionResult> Put(GameItemRequest request)
@@ -136,6 +151,7 @@ namespace Resources.API.Controllers
             return Ok(ApiResult<GameItemResponse>.OK(response));
         }
 
+        [ProducesResponseType(typeof(GameItemResponse), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Owner)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)

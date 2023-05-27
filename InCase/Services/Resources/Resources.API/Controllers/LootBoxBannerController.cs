@@ -5,6 +5,7 @@ using Resources.API.Filters;
 using Resources.BLL.Entities;
 using Resources.BLL.Interfaces;
 using Resources.BLL.Models;
+using System.Net;
 
 namespace Resources.API.Controllers
 {
@@ -19,6 +20,7 @@ namespace Resources.API.Controllers
             _boxBannerService = boxBannerService;
         }
 
+        [ProducesResponseType(typeof(List<LootBoxBannerResponse>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> Get()
@@ -28,6 +30,7 @@ namespace Resources.API.Controllers
             return Ok(ApiResult<List<LootBoxBannerResponse>>.OK(response));
         }
 
+        [ProducesResponseType(typeof(LootBoxBannerResponse), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(Guid id)
@@ -37,6 +40,7 @@ namespace Resources.API.Controllers
             return Ok(ApiResult<LootBoxBannerResponse>.OK(response));
         }
 
+        [ProducesResponseType(typeof(LootBoxBannerResponse), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("box/{id}")]
         public async Task<IActionResult> GetByBoxId(Guid id)
@@ -46,6 +50,7 @@ namespace Resources.API.Controllers
             return Ok(ApiResult<LootBoxBannerResponse>.OK(response));
         }
 
+        [ProducesResponseType(typeof(LootBoxBannerResponse), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Owner)]
         [HttpPost]
         public async Task<IActionResult> Post(LootBoxBannerRequest request)
@@ -55,6 +60,7 @@ namespace Resources.API.Controllers
             return Ok(ApiResult<LootBoxBannerResponse>.OK(response));
         }
 
+        [ProducesResponseType(typeof(LootBoxBannerResponse), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Owner)]
         [HttpPut]
         public async Task<IActionResult> Put(LootBoxBannerRequest request)
@@ -64,6 +70,7 @@ namespace Resources.API.Controllers
             return Ok(ApiResult<LootBoxBannerResponse>.OK(response));
         }
 
+        [ProducesResponseType(typeof(LootBoxBannerResponse), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Owner)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
