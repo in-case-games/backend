@@ -5,7 +5,7 @@ namespace Resources.BLL.Models
     public class LootBoxResponse : BaseEntity
     {
         public string? Name { get; set; }
-        public string? HashName { get; set; }
         public decimal Cost { get; set; }
+        public bool IsLocked { get; set; }
     }
 }

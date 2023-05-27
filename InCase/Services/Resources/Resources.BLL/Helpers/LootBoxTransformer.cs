@@ -11,7 +11,7 @@ namespace Resources.BLL.Helpers
                 Id = box.Id,
                 Cost = box.Cost,
                 Name = box.Name,
-                HashName = box.HashName,
+                IsLocked = box.IsLocked,
             };
 
         public static List<LootBoxResponse> ToResponse(this IEnumerable<LootBox> boxes)
@@ -30,7 +30,7 @@ namespace Resources.BLL.Helpers
                 Id = isNewGuid ? Guid.NewGuid() : request.Id,
                 GameId = request.GameId,
                 Name = request.Name,
-                HashName = request.HashName,
+                IsLocked = true
             };
     }
 }

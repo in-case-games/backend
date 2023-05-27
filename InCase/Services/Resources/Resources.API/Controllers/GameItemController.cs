@@ -48,9 +48,18 @@ namespace Resources.API.Controllers
 
         [AllowAnonymous]
         [HttpGet("hash/{name}")]
-        public async Task<IActionResult> GetByHashName(string hash)
+        public async Task<IActionResult> GetByHashName(string name)
         {
-            List<GameItemResponse> response = await _itemService.GetByHashNameAsync(hash);
+            List<GameItemResponse> response = await _itemService.GetByHashNameAsync(name);
+
+            return Ok(ApiResult<List<GameItemResponse>>.OK(response));
+        }
+
+        [AllowAnonymous]
+        [HttpGet("game/{id}")]
+        public async Task<IActionResult> GetByGameId(Guid id)
+        {
+            List<GameItemResponse> response = await _itemService.GetByGameIdAsync(id);
 
             return Ok(ApiResult<List<GameItemResponse>>.OK(response));
         }
@@ -83,33 +92,33 @@ namespace Resources.API.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("quality/{id}")]
-        public async Task<IActionResult> GetByQualityId(Guid id)
+        [HttpGet("quality/{name}")]
+        public async Task<IActionResult> GetByQuality(string name)
         {
-            List<GameItemResponse> response = await _itemService.GetByQualityIdAsync(id);
+            List<GameItemResponse> response = await _itemService.GetByQualityAsync(name);
 
             return Ok(ApiResult<List<GameItemResponse>>.OK(response));
         }
 
         [AllowAnonymous]
-        [HttpGet("rarity/{id}")]
-        public async Task<IActionResult> GetByRarityId(Guid id)
+        [HttpGet("rarity/{name}")]
+        public async Task<IActionResult> GetByRarity(string name)
         {
-            List<GameItemResponse> response = await _itemService.GetByRarityIdAsync(id);
+            List<GameItemResponse> response = await _itemService.GetByRarityAsync(name);
 
             return Ok(ApiResult<List<GameItemResponse>>.OK(response));
         }
 
         [AllowAnonymous]
-        [HttpGet("type/{id}")]
-        public async Task<IActionResult> GetByTypeId(Guid id)
+        [HttpGet("type/{name}")]
+        public async Task<IActionResult> GetByType(string name)
         {
-            List<GameItemResponse> response = await _itemService.GetByTypeIdAsync(id);
+            List<GameItemResponse> response = await _itemService.GetByTypeAsync(name);
 
             return Ok(ApiResult<List<GameItemResponse>>.OK(response));
         }
 
-        [AuthorizeByRole(Roles.AdminOwnerBot)]
+        [AuthorizeByRole(Roles.Owner)]
         [HttpPost]
         public async Task<IActionResult> Post(GameItemRequest request)
         {
@@ -118,7 +127,7 @@ namespace Resources.API.Controllers
             return Ok(ApiResult<GameItemResponse>.OK(response));
         }
 
-        [AuthorizeByRole(Roles.AdminOwnerBot)]
+        [AuthorizeByRole(Roles.Owner)]
         [HttpPut]
         public async Task<IActionResult> Put(GameItemRequest request)
         {
@@ -127,7 +136,7 @@ namespace Resources.API.Controllers
             return Ok(ApiResult<GameItemResponse>.OK(response));
         }
 
-        [AuthorizeByRole(Roles.AdminOwnerBot)]
+        [AuthorizeByRole(Roles.Owner)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {

@@ -30,7 +30,7 @@ namespace Resources.API.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
-                    name = table.Column<string>(type: "text", nullable: false)
+                    name = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -42,7 +42,7 @@ namespace Resources.API.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
-                    name = table.Column<string>(type: "text", nullable: false)
+                    name = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -54,7 +54,7 @@ namespace Resources.API.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
-                    name = table.Column<string>(type: "text", nullable: false)
+                    name = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -79,8 +79,8 @@ namespace Resources.API.Migrations
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
                     name = table.Column<string>(type: "text", nullable: false),
-                    hash_name = table.Column<string>(type: "text", nullable: false),
                     cost = table.Column<decimal>(type: "numeric(18,5)", nullable: false),
+                    is_locked = table.Column<bool>(type: "boolean", nullable: false),
                     game_id = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
@@ -218,8 +218,48 @@ namespace Resources.API.Migrations
                 columns: new[] { "id", "name" },
                 values: new object[,]
                 {
-                    { new Guid("118c6735-1d09-4c3a-8dcf-b67dfe822e2b"), "csgo" },
-                    { new Guid("714194a7-5b4d-4790-b3a9-c9c71db0a8ad"), "dota2" }
+                    { new Guid("0f19ad4d-b81f-4b54-a7fe-280ad6f718ae"), "csgo" },
+                    { new Guid("815821f5-4298-4f19-ac08-de104dbbfbc3"), "dota2" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "GameItemQuality",
+                columns: new[] { "id", "name" },
+                values: new object[,]
+                {
+                    { new Guid("3b907aab-909d-4474-8a25-f416dbcc46fc"), "well worn" },
+                    { new Guid("54e6de3f-1011-4158-8c97-7ab75611ff7b"), "factory new" },
+                    { new Guid("88fef02d-1c27-4a94-a5e8-1770aa5c008d"), "field tested" },
+                    { new Guid("89ef7b69-b1aa-42f6-ae88-a693ba204d79"), "none" },
+                    { new Guid("9cbf7a68-45aa-43ee-9a22-5062c1fa7160"), "battle scarred" },
+                    { new Guid("e6c4db8b-5c39-4278-946a-de774224dd3d"), "minimal wear" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "GameItemRarity",
+                columns: new[] { "id", "name" },
+                values: new object[,]
+                {
+                    { new Guid("41655e50-8e9e-4f00-b9e7-07a9a28d101d"), "violet" },
+                    { new Guid("5e692aac-b7be-45dc-8995-9c6e350aa24a"), "red" },
+                    { new Guid("73bdd863-14f6-4ee6-9b3a-a22a60f4544e"), "gold" },
+                    { new Guid("cd697f6d-6296-46d8-a7c7-a8ea9100097a"), "blue" },
+                    { new Guid("e468368b-c946-4af1-8c2c-25232e646e4f"), "pink" },
+                    { new Guid("e7a4d888-5d76-4570-b8ae-557acdca77eb"), "white" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "GameItemType",
+                columns: new[] { "id", "name" },
+                values: new object[,]
+                {
+                    { new Guid("2c8223d1-9ad3-43e4-b5f9-f91b5088e524"), "gloves" },
+                    { new Guid("2cd08728-ce4c-4d5e-832b-a29b582e68ab"), "knife" },
+                    { new Guid("98739567-205c-4198-a08a-d860ffff208b"), "rifle" },
+                    { new Guid("aa621834-6051-4c76-b6df-46bb40e47e64"), "none" },
+                    { new Guid("afbaadbb-6683-436d-985d-fec33f65b6f0"), "weapon" },
+                    { new Guid("c90556fe-e827-4a14-9421-e6bdd1cab749"), "pistol" },
+                    { new Guid("d6788b0d-b927-4c2c-b460-167d4d22317e"), "other" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -312,12 +352,6 @@ namespace Resources.API.Migrations
                 name: "ix_loot_box_game_id",
                 table: "LootBox",
                 column: "game_id");
-
-            migrationBuilder.CreateIndex(
-                name: "ix_loot_box_hash_name",
-                table: "LootBox",
-                column: "hash_name",
-                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "ix_loot_box_id",

@@ -55,7 +55,7 @@ namespace Resources.API.Controllers
             return Ok(ApiResult<LootBoxResponse>.OK(response));
         }
 
-        [AllowAnonymous]
+        [AuthorizeByRole(Roles.Owner)]
         [HttpPost]
         public async Task<IActionResult> Post(LootBoxRequest request)
         {
@@ -64,7 +64,7 @@ namespace Resources.API.Controllers
             return Ok(ApiResult<LootBoxResponse>.OK(response));
         }
 
-        [AllowAnonymous]
+        [AuthorizeByRole(Roles.Owner)]
         [HttpPut]
         public async Task<IActionResult> Put(LootBoxRequest request)
         {
@@ -73,7 +73,7 @@ namespace Resources.API.Controllers
             return Ok(ApiResult<LootBoxResponse>.OK(response));
         }
 
-        [AllowAnonymous]
+        [AuthorizeByRole(Roles.Owner)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {

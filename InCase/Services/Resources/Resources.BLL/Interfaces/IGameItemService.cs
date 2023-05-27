@@ -8,10 +8,11 @@ namespace Resources.BLL.Interfaces
         public Task<GameItemResponse> GetAsync(Guid id);
         public Task<List<GameItemResponse>> GetAsync();
         public Task<List<GameItemResponse>> GetAsync(string name);
+        public Task<List<GameItemResponse>> GetByGameIdAsync(Guid id);
         public Task<List<GameItemResponse>> GetByHashNameAsync(string hash);
-        public Task<List<GameItemResponse>> GetByTypeIdAsync(Guid id);
-        public Task<List<GameItemResponse>> GetByRarityIdAsync(Guid id);
-        public Task<List<GameItemResponse>> GetByQualityIdAsync(Guid id);
+        public Task<List<GameItemResponse>> GetByTypeAsync(string name);
+        public Task<List<GameItemResponse>> GetByRarityAsync(string name);
+        public Task<List<GameItemResponse>> GetByQualityAsync(string name);
         public Task<List<GameItemQuality>> GetQualitiesAsync();
         public Task<List<GameItemRarity>> GetRaritiesAsync();
         public Task<List<GameItemType>> GetTypesAsync();

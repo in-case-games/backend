@@ -6,6 +6,7 @@ namespace Resources.BLL.Models
     {
         public string? Name { get; set; }
         public decimal Cost { get; set; }
+        public string? Game { get; set; }
         public string? Quality { get; set; }
         public string? Type { get; set; }
         public string? Rarity { get; set; }

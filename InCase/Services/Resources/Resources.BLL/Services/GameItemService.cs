@@ -45,6 +45,23 @@ namespace Resources.BLL.Services
             return items.ToResponse();
         }
 
+        public async Task<List<GameItemResponse>> GetByGameIdAsync(Guid id)
+        {
+            if (!await _context.Games.AnyAsync(g => g.Id == id))
+                throw new NotFoundException("Игра не найдена");
+
+            List<GameItem> items = await _context.GameItems
+                .Include(gi => gi.Rarity)
+                .Include(gi => gi.Quality)
+                .Include(gi => gi.Type)
+                .Include(gi => gi.Game)
+                .AsNoTracking()
+                .Where(gi => gi.GameId == id)
+                .ToListAsync();
+
+            return items.ToResponse();
+        }
+
         public async Task<List<GameItemResponse>> GetByHashNameAsync(string hash)
         {
             List<GameItem> items = await _context.GameItems
@@ -72,49 +89,52 @@ namespace Resources.BLL.Services
             return items.ToResponse();
         }
 
-        public async Task<List<GameItemResponse>> GetByQualityIdAsync(Guid id)
+        public async Task<List<GameItemResponse>> GetByQualityAsync(string name)
         {
-            if (!await _context.ItemQualities.AnyAsync(giq => giq.Id == id))
+            if (!await _context.ItemQualities.AnyAsync(giq => giq.Name == name))
                 throw new NotFoundException("Качество не найдено");
 
             List<GameItem> items = await _context.GameItems
+                .Include(gi => gi.Quality)
                 .Include(gi => gi.Rarity)
                 .Include(gi => gi.Type)
                 .Include(gi => gi.Game)
                 .AsNoTracking()
-                .Where(gi => gi.QualityId == id)
+                .Where(gi => gi.Quality!.Name == name)
                 .ToListAsync();
 
             return items.ToResponse();
         }
 
-        public async Task<List<GameItemResponse>> GetByRarityIdAsync(Guid id)
+        public async Task<List<GameItemResponse>> GetByRarityAsync(string name)
         {
-            if (!await _context.ItemRarities.AnyAsync(giq => giq.Id == id))
+            if (!await _context.ItemRarities.AnyAsync(giq => giq.Name == name))
                 throw new NotFoundException("Редкость не найдено");
 
             List<GameItem> items = await _context.GameItems
+                .Include(gi => gi.Rarity)
                 .Include(gi => gi.Quality)
                 .Include(gi => gi.Type)
                 .Include(gi => gi.Game)
                 .AsNoTracking()
-                .Where(gi => gi.RarityId == id)
+                .Where(gi => gi.Rarity!.Name == name)
                 .ToListAsync();
 
             return items.ToResponse();
         }
 
-        public async Task<List<GameItemResponse>> GetByTypeIdAsync(Guid id)
+        public async Task<List<GameItemResponse>> GetByTypeAsync(string name)
         {
-            if (!await _context.ItemTypes.AnyAsync(giq => giq.Id == id))
+            if (!await _context.ItemTypes.AnyAsync(giq => giq.Name == name))
                 throw new NotFoundException("Тип не найден");
 
             List<GameItem> items = await _context.GameItems
+                .Include(gi => gi.Type)
                 .Include(gi => gi.Quality)
                 .Include(gi => gi.Rarity)
                 .Include(gi => gi.Game)
                 .AsNoTracking()
-                .Where(gi => gi.TypeId == id)
+                .Where(gi => gi.Type!.Name == name)
                 .ToListAsync();
 
             return items.ToResponse();
@@ -137,6 +157,8 @@ namespace Resources.BLL.Services
 
         public async Task<GameItemResponse> CreateAsync(GameItemRequest request)
         {
+            if (request.Cost <= 0) throw new BadRequestException("Предмет должен стоить больше 0");
+
             GameItemQuality quality = await _context.ItemQualities
                 .AsNoTracking()
                 .FirstOrDefaultAsync(giq => giq.Id == request.QualityId) ?? 
@@ -151,7 +173,7 @@ namespace Resources.BLL.Services
                 throw new NotFoundException("Тип предмета не найден");
             Game game = await _context.Games
                 .AsNoTracking()
-                .FirstOrDefaultAsync(g => g.Id == request.Id) ??
+                .FirstOrDefaultAsync(g => g.Id == request.GameId) ??
                 throw new NotFoundException("Игра не найдена");
 
             GameItem item = request.ToEntity(true);
@@ -171,6 +193,8 @@ namespace Resources.BLL.Services
 
         public async Task<GameItemResponse> UpdateAsync(GameItemRequest request)
         {
+            if (request.Cost <= 0) throw new BadRequestException("Предмет должен стоить больше 0");
+
             if (!await _context.GameItems.AnyAsync(gi => gi.Id == request.Id))
                 throw new NotFoundException("Предмет не найден");
 
@@ -188,7 +212,7 @@ namespace Resources.BLL.Services
                 throw new NotFoundException("Тип предмета не найден");
             Game game = await _context.Games
                 .AsNoTracking()
-                .FirstOrDefaultAsync(g => g.Id == request.Id) ??
+                .FirstOrDefaultAsync(g => g.Id == request.GameId) ??
                 throw new NotFoundException("Игра не найдена");
 
             GameItem item = request.ToEntity();

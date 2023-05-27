@@ -61,13 +61,12 @@ namespace Resources.BLL.Services
 
         public async Task<LootBoxResponse> CreateAsync(LootBoxRequest request)
         {
+            if (request.Cost <= 0) throw new BadRequestException("Кейс должен стоить больше 0");
+
             if (!await _context.Games.AnyAsync(g => g.Id == request.GameId))
                 throw new NotFoundException("Игра не найдена");
-
-            bool IsNameBusy = await _context.LootBoxes
-                .AnyAsync(lb => lb.Name == request.Name || lb.HashName == request.HashName);
-
-            if (IsNameBusy) throw new ConflictException("Имя или хэш уже занят");
+            if (await _context.LootBoxes.AnyAsync(lb => lb.Name == request.Name)) 
+                throw new ConflictException("Название кейса уже занято");
 
             LootBox box = request.ToEntity(isNewGuid: true);
 
@@ -81,10 +80,15 @@ namespace Resources.BLL.Services
 
         public async Task<LootBoxResponse> UpdateAsync(LootBoxRequest request)
         {
+            if (request.Cost <= 0) throw new BadRequestException("Кейс должен стоить больше 0");
+
             if (!await _context.LootBoxes.AnyAsync(lb => lb.Id == request.Id))
                 throw new NotFoundException("Кейс не найден");
             if (!await _context.Games.AnyAsync(g => g.Id == request.GameId))
                 throw new NotFoundException("Игра не найдена");
+            if (await _context.LootBoxes
+                .AnyAsync(lb => lb.Name == request.Name && lb.Id != request.Id))
+                throw new ConflictException("Название кейса уже занято");
 
             LootBox newBox = request.ToEntity(isNewGuid: false);
 

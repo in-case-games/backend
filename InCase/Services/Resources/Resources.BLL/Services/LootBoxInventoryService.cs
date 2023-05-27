@@ -21,6 +21,10 @@ namespace Resources.BLL.Services
         {
             LootBoxInventory inventory = await _context.BoxInventories
                 .Include(lbi => lbi.Item)
+                .Include(lbi => lbi!.Item!.Rarity)
+                .Include(lbi => lbi!.Item!.Quality)
+                .Include(lbi => lbi!.Item!.Type)
+                .Include(lbi => lbi!.Item!.Game)
                 .Include(lbi => lbi.Box)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(lbi => lbi.Id == id) ?? 
@@ -36,6 +40,10 @@ namespace Resources.BLL.Services
 
             List<LootBoxInventory> inventories = await _context.BoxInventories
                 .Include(lbi => lbi.Item)
+                .Include(lbi => lbi!.Item!.Rarity)
+                .Include(lbi => lbi!.Item!.Quality)
+                .Include(lbi => lbi!.Item!.Type)
+                .Include(lbi => lbi!.Item!.Game)
                 .AsNoTracking()
                 .Where(lbi => lbi.BoxId == id)
                 .ToListAsync();
@@ -65,6 +73,10 @@ namespace Resources.BLL.Services
                 throw new NotFoundException("Кейс не найден");
 
             GameItem item = await _context.GameItems
+                .Include(gi => gi.Rarity)
+                .Include(gi => gi.Quality)
+                .Include(gi => gi.Type)
+                .Include(gi => gi.Game)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(gi => gi.Id == request.ItemId) ??
                 throw new NotFoundException("Предмет не найден");
@@ -96,6 +108,10 @@ namespace Resources.BLL.Services
                 throw new NotFoundException("Кейс не найден");
 
             GameItem item = await _context.GameItems
+                .Include(gi => gi.Rarity)
+                .Include(gi => gi.Quality)
+                .Include(gi => gi.Type)
+                .Include(gi => gi.Game)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(gi => gi.Id == request.ItemId) ??
                 throw new NotFoundException("Предмет не найден");
@@ -120,6 +136,10 @@ namespace Resources.BLL.Services
         {
             LootBoxInventory inventory = await _context.BoxInventories
                 .Include(lbi => lbi.Item)
+                .Include(lbi => lbi!.Item!.Rarity)
+                .Include(lbi => lbi!.Item!.Quality)
+                .Include(lbi => lbi!.Item!.Type)
+                .Include(lbi => lbi!.Item!.Game)
                 .Include(lbi => lbi.Box)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(lbi => lbi.Id == id)

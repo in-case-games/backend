@@ -13,6 +13,7 @@ namespace Resources.BLL.Helpers
                 Quality = item.Quality?.Name,
                 Rarity = item.Rarity?.Name,
                 Type = item.Type?.Name,
+                Game = item.Game?.Name,
             };
 
         public static List<GameItemResponse> ToResponse(this IEnumerable<GameItem> items)

@@ -16,12 +16,10 @@ namespace Resources.DAL.Configurations
                 .IsUnique(false);
             builder.HasIndex(lb => lb.Name)
                 .IsUnique();
-            builder.HasIndex(lb => lb.HashName)
-                .IsUnique();
 
             builder.Property(lb => lb.Name)
                 .IsRequired();
-            builder.Property(lb => lb.HashName)
+            builder.Property(lb => lb.IsLocked)
                 .IsRequired();
             builder.Property(lb => lb.Cost)
                 .HasColumnType("DECIMAL(18,5)")

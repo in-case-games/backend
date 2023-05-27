@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Resources.API.Common;
+using Resources.API.Filters;
 using Resources.BLL.Interfaces;
 using Resources.BLL.Models;
 
@@ -47,7 +48,7 @@ namespace Resources.API.Controllers
             return Ok(ApiResult<List<LootBoxInventoryResponse>>.OK(response));
         }
 
-        [AllowAnonymous]
+        [AuthorizeByRole(Roles.Owner)]
         [HttpPost]
         public async Task<IActionResult> Post(LootBoxInventoryRequest request)
         {
@@ -56,7 +57,7 @@ namespace Resources.API.Controllers
             return Ok(ApiResult<LootBoxInventoryResponse>.OK(response));
         }
 
-        [AllowAnonymous]
+        [AuthorizeByRole(Roles.Owner)]
         [HttpPut]
         public async Task<IActionResult> Put(LootBoxInventoryRequest request)
         {
@@ -65,7 +66,7 @@ namespace Resources.API.Controllers
             return Ok(ApiResult<LootBoxInventoryResponse>.OK(response));
         }
 
-        [AllowAnonymous]
+        [AuthorizeByRole(Roles.Owner)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
