@@ -47,7 +47,7 @@ namespace Withdraw.BLL.Services
             throw new RequestTimeoutException("Сервис покупки предметов не отвечает");
         }
 
-        public async Task<decimal> GetBalanceAsync(string marketName)
+        public async Task<BalanceMarketResponse> GetBalanceAsync(string marketName)
         {
             if (!_marketServices.ContainsKey(marketName))
                 throw new NotFoundException("Маркет не найден");

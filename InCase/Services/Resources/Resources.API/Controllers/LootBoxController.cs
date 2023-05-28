@@ -21,7 +21,7 @@ namespace Resources.API.Controllers
             _lootBoxService = lootBoxService;
         }
 
-        [ProducesResponseType(typeof(List<LootBoxResponse>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<List<LootBoxResponse>>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> Get()
@@ -31,7 +31,7 @@ namespace Resources.API.Controllers
             return Ok(ApiResult<List<LootBoxResponse>>.OK(response));
         }
 
-        [ProducesResponseType(typeof(List<LootBoxResponse>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<List<LootBoxResponse>>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("game/{id}")]
         public async Task<IActionResult> GetByGameId(Guid id)
@@ -41,7 +41,7 @@ namespace Resources.API.Controllers
             return Ok(ApiResult<List<LootBoxResponse>>.OK(response));
         }
 
-        [ProducesResponseType(typeof(LootBoxResponse), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<LootBoxResponse>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(Guid id)
@@ -51,7 +51,7 @@ namespace Resources.API.Controllers
             return Ok(ApiResult<LootBoxResponse>.OK(response));
         }
 
-        [ProducesResponseType(typeof(LootBoxResponse), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<LootBoxResponse>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("name/{name}")]
         public async Task<IActionResult> Get(string name)
@@ -61,7 +61,7 @@ namespace Resources.API.Controllers
             return Ok(ApiResult<LootBoxResponse>.OK(response));
         }
 
-        [ProducesResponseType(typeof(LootBoxResponse), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<LootBoxResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Owner)]
         [HttpPost]
         public async Task<IActionResult> Post(LootBoxRequest request)
@@ -71,7 +71,7 @@ namespace Resources.API.Controllers
             return Ok(ApiResult<LootBoxResponse>.OK(response));
         }
 
-        [ProducesResponseType(typeof(LootBoxResponse), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<LootBoxResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Owner)]
         [HttpPut]
         public async Task<IActionResult> Put(LootBoxRequest request)
@@ -81,7 +81,7 @@ namespace Resources.API.Controllers
             return Ok(ApiResult<LootBoxResponse>.OK(response));
         }
 
-        [ProducesResponseType(typeof(LootBoxResponse), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<LootBoxResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Owner)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)

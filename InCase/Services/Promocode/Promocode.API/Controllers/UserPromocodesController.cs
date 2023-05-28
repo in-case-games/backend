@@ -4,6 +4,7 @@ using Promocode.API.Common;
 using Promocode.API.Filters;
 using Promocode.BLL.Interfaces;
 using Promocode.BLL.Models;
+using System.Net;
 using System.Security.Claims;
 
 namespace Promocode.API.Controllers
@@ -21,6 +22,8 @@ namespace Promocode.API.Controllers
             _userPromocodesService = userPromocodesService;
         }
 
+        [ProducesResponseType(typeof(ApiResult<List<UserHistoryPromocodeResponse>>), 
+            (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet]
         public async Task<IActionResult> Get()
@@ -31,6 +34,8 @@ namespace Promocode.API.Controllers
             return Ok(ApiResult<List<UserHistoryPromocodeResponse>>.OK(response));
         }
 
+        [ProducesResponseType(typeof(ApiResult<UserHistoryPromocodeResponse>), 
+            (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(Guid id)
@@ -41,6 +46,8 @@ namespace Promocode.API.Controllers
             return Ok(ApiResult<UserHistoryPromocodeResponse>.OK(response));
         }
 
+        [ProducesResponseType(typeof(ApiResult<List<UserHistoryPromocodeResponse>>),
+            (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("admin")]
         public async Task<IActionResult> Get(int count = 100)
@@ -51,6 +58,8 @@ namespace Promocode.API.Controllers
             return Ok(ApiResult<List<UserHistoryPromocodeResponse>>.OK(response));
         }
 
+        [ProducesResponseType(typeof(ApiResult<List<UserHistoryPromocodeResponse>>), 
+            (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
         [HttpGet("{userId}/admin")]
         public async Task<IActionResult> GetByAdmin(Guid userId, int count = 100)
@@ -61,6 +70,8 @@ namespace Promocode.API.Controllers
             return Ok(ApiResult<List<UserHistoryPromocodeResponse>>.OK(response));
         }
 
+        [ProducesResponseType(typeof(ApiResult<UserHistoryPromocodeResponse>),
+            (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
         [HttpGet("{userId}/admin/{id}")]
         public async Task<IActionResult> GetByIdAdmin(Guid userId, Guid id)
@@ -71,6 +82,8 @@ namespace Promocode.API.Controllers
             return Ok(ApiResult<UserHistoryPromocodeResponse>.OK(response));
         }
 
+        [ProducesResponseType(typeof(ApiResult<UserHistoryPromocodeResponse>),
+            (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet("activate/promocode/{name}")]
         public async Task<IActionResult> ActivatePromocode(string name)
@@ -81,6 +94,8 @@ namespace Promocode.API.Controllers
             return Ok(ApiResult<UserHistoryPromocodeResponse>.OK(response));
         }
 
+        [ProducesResponseType(typeof(ApiResult<UserHistoryPromocodeResponse>),
+            (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet("exchange/promocode/{name}")]
         public async Task<IActionResult> ExchangePromocode(string name)

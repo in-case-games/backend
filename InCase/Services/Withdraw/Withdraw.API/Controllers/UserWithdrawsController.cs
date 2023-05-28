@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 using System.Security.Claims;
 using Withdraw.API.Common;
 using Withdraw.API.Filters;
@@ -21,6 +22,8 @@ namespace Withdraw.API.Controllers
             _userWithdrawsService = userWithdrawsService;
         }
 
+        [ProducesResponseType(typeof(ApiResult<UserHistoryWithdrawResponse>), 
+            (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(Guid id)
@@ -30,6 +33,8 @@ namespace Withdraw.API.Controllers
             return Ok(ApiResult<UserHistoryWithdrawResponse>.OK(response));
         }
 
+        [ProducesResponseType(typeof(ApiResult<List<UserHistoryWithdrawResponse>>), 
+            (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("user/{userId}")]
         public async Task<IActionResult> GetByUserId(Guid userId)
@@ -40,6 +45,8 @@ namespace Withdraw.API.Controllers
             return Ok(ApiResult<List<UserHistoryWithdrawResponse>>.OK(response));
         }
 
+        [ProducesResponseType(typeof(ApiResult<List<UserHistoryWithdrawResponse>>), 
+            (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("100/last")]
         public async Task<IActionResult> GetLast100Withdraw()
@@ -50,6 +57,8 @@ namespace Withdraw.API.Controllers
             return Ok(ApiResult<List<UserHistoryWithdrawResponse>>.OK(response));
         }
 
+        [ProducesResponseType(typeof(ApiResult<List<UserHistoryWithdrawResponse>>),
+            (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet]
         public async Task<IActionResult> Get()
@@ -60,6 +69,8 @@ namespace Withdraw.API.Controllers
             return Ok(ApiResult<List<UserHistoryWithdrawResponse>>.OK(response));
         }
 
+        [ProducesResponseType(typeof(ApiResult<List<UserHistoryWithdrawResponse>>),
+            (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
         [HttpGet("admin/{count}")]
         public async Task<IActionResult> Get(int count)
@@ -70,6 +81,9 @@ namespace Withdraw.API.Controllers
             return Ok(ApiResult<List<UserHistoryWithdrawResponse>>.OK(response));
         }
 
+
+        [ProducesResponseType(typeof(ApiResult<List<UserHistoryWithdrawResponse>>),
+            (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
         [HttpGet("{userId}/admin/{count}")]
         public async Task<IActionResult> Get(Guid userId, int count)
@@ -80,6 +94,7 @@ namespace Withdraw.API.Controllers
             return Ok(ApiResult<List<UserHistoryWithdrawResponse>>.OK(response));
         }
 
+        [ProducesResponseType(typeof(ApiResult<UserInventoryResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet("{id}/transfer")]
         public async Task<IActionResult> TransferToInventory(Guid id)

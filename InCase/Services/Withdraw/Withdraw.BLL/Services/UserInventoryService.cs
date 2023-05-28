@@ -100,7 +100,7 @@ namespace Withdraw.BLL.Services
             return inventory.ToResponse();
 
         }
-        public async Task<decimal> SellAsync(Guid id, Guid userId)
+        public async Task<SellItemResponse> SellAsync(Guid id, Guid userId)
         {
             User user = await _context.Users
                 .AsNoTracking()
@@ -119,10 +119,10 @@ namespace Withdraw.BLL.Services
             
             //TODO Notify microservice game about sell
 
-            return inventory.FixedCost;
+            return new() { Cost = inventory.FixedCost };
         }
 
-        public async Task<decimal> SellLastAsync(Guid itemId, Guid userId)
+        public async Task<SellItemResponse> SellLastAsync(Guid itemId, Guid userId)
         {
             User user = await _context.Users
                 .FirstOrDefaultAsync(uai => uai.Id == userId) ??
@@ -145,7 +145,7 @@ namespace Withdraw.BLL.Services
 
             //TODO Notify microservice game about sell
 
-            return inventory.FixedCost;
+            return new() { Cost = inventory.FixedCost };
         }
     }
 }

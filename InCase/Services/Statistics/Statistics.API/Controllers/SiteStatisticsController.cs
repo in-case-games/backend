@@ -4,6 +4,7 @@ using Statistics.API.Filters;
 using Statistics.API.Common;
 using Statistics.BLL.Services;
 using Statistics.BLL.Models;
+using System.Net;
 
 namespace Statistics.API.Controllers
 {
@@ -18,6 +19,7 @@ namespace Statistics.API.Controllers
             _siteStatisticsService = siteStatisticsService;
         }
 
+        [ProducesResponseType(typeof(ApiResult<SiteStatisticsResponse>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> Get()
@@ -27,6 +29,8 @@ namespace Statistics.API.Controllers
             return Ok(ApiResult<SiteStatisticsResponse>.OK(response));
         }
 
+        [ProducesResponseType(typeof(ApiResult<SiteStatisticsAdminResponse>), 
+            (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Owner, Roles.Bot)]
         [HttpGet("admin")]
         public async Task<IActionResult> GetAdmin()

@@ -18,7 +18,7 @@ namespace Resources.API.Controllers
             _gameService = gameService;
         }
 
-        [ProducesResponseType(typeof(List<GameResponse>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<List<GameResponse>>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> Get()
@@ -28,7 +28,7 @@ namespace Resources.API.Controllers
             return Ok(ApiResult<List<GameResponse>>.OK(response));
         }
 
-        [ProducesResponseType(typeof(GameResponse), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<GameResponse>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(Guid id)
@@ -38,7 +38,7 @@ namespace Resources.API.Controllers
             return Ok(ApiResult<GameResponse>.OK(response));
         }
 
-        [ProducesResponseType(typeof(GameResponse), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<GameResponse>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("name/{name}")]
         public async Task<IActionResult> Get(string name)

@@ -4,6 +4,7 @@ using Payment.API.Common;
 using Payment.API.Filters;
 using Payment.BLL.Interfaces;
 using Payment.BLL.Models;
+using System.Net;
 using System.Security.Claims;
 
 namespace Payment.API.Controllers
@@ -31,22 +32,26 @@ namespace Payment.API.Controllers
             return Ok(ApiResult<UserPaymentsResponse>.OK(response));
         }
 
+        [ProducesResponseType(typeof(ApiResult<PaymentBalanceResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Owner, Roles.Bot)]
         [HttpGet("balance/{currency}")]
         public async Task<IActionResult> GetBalance(string currency)
         {
-            decimal balance = await _paymentService.GetPaymentBalanceAsync(currency);
+            PaymentBalanceResponse response = await _paymentService.GetPaymentBalanceAsync(currency);
 
-            return Ok(ApiResult<object>.OK(new { balance }));
+            return Ok(ApiResult<PaymentBalanceResponse>.OK(response));
         }
 
+        [ProducesResponseType(typeof(ApiResult<HashOfDataForDepositResponse>), 
+            (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet("top-up/signature")]
         public IActionResult GetSignatureForDeposit()
         {
-            string hmac = _paymentService.GetHashOfDataForDeposit(UserId);
+            HashOfDataForDepositResponse response = _paymentService
+                .GetHashOfDataForDeposit(UserId);
 
-            return Ok(ApiResult<object>.OK(new{ hmac }));
+            return Ok(ApiResult<HashOfDataForDepositResponse>.OK(response));
         }
     }
 }

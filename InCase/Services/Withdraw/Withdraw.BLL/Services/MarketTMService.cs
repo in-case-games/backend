@@ -35,7 +35,7 @@ namespace Withdraw.BLL.Services
             _responseService = responseService;
         }
 
-        public async Task<decimal> GetBalanceAsync()
+        public async Task<BalanceMarketResponse> GetBalanceAsync()
         {
             string uri = DomainUri["csgo"];
             string url = $"/api/GetMoney/?key={_configuration["MarketTM:Secret"]}";
@@ -43,7 +43,7 @@ namespace Withdraw.BLL.Services
             BalanceTMResponse? response = await _responseService
                 .GetAsync<BalanceTMResponse>(uri + url);
 
-            return response!.MoneyKopecks * 0.01M;
+            return new() { Balance = response!.MoneyKopecks * 0.01M };
         }
 
         public async Task<ItemInfoResponse> GetItemInfoAsync(string idForMarket, string game)

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 using System.Security.Claims;
 using Withdraw.API.Common;
 using Withdraw.API.Filters;
@@ -21,6 +22,7 @@ namespace Withdraw.API.Controllers
             _userInventoryService = userInventoryService;
         }
 
+        [ProducesResponseType(typeof(ApiResult<UserInventoryResponse>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(Guid id)
@@ -30,6 +32,8 @@ namespace Withdraw.API.Controllers
             return Ok(ApiResult<UserInventoryResponse>.OK(response));
         }
 
+        [ProducesResponseType(typeof(ApiResult<List<UserInventoryResponse>>), 
+            (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("user/{userId}")]
         public async Task<IActionResult> GetByUserId(Guid userId)
@@ -40,6 +44,8 @@ namespace Withdraw.API.Controllers
             return Ok(ApiResult<List<UserInventoryResponse>>.OK(response));
         }
 
+        [ProducesResponseType(typeof(ApiResult<List<UserInventoryResponse>>), 
+            (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet]
         public async Task<IActionResult> Get()
@@ -50,6 +56,8 @@ namespace Withdraw.API.Controllers
             return Ok(ApiResult<List<UserInventoryResponse>>.OK(response));
         }
 
+        [ProducesResponseType(typeof(ApiResult<List<UserInventoryResponse>>), 
+            (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
         [HttpGet("{userId}/admin/{count}")]
         public async Task<IActionResult> Get(Guid userId, int count)
@@ -60,6 +68,7 @@ namespace Withdraw.API.Controllers
             return Ok(ApiResult<List<UserInventoryResponse>>.OK(response));
         }
 
+        [ProducesResponseType(typeof(ApiResult<UserInventoryResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet("{id}/exchange/{itemId}")]
         public async Task<IActionResult> Exchange(Guid id, Guid itemId)
@@ -70,30 +79,26 @@ namespace Withdraw.API.Controllers
             return Ok(ApiResult<UserInventoryResponse>.OK(response));
         }
 
+        [ProducesResponseType(typeof(ApiResult<SellItemResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet("{id}/sell")]
         public async Task<IActionResult> Sell(Guid id)
         {
-            decimal response = await _userInventoryService
+            SellItemResponse response = await _userInventoryService
                 .SellAsync(id, UserId);
 
-            return Ok(ApiResult<object>.OK(new
-            {
-                cost = response
-            }));
+            return Ok(ApiResult<SellItemResponse>.OK(response));
         }
 
+        [ProducesResponseType(typeof(ApiResult<SellItemResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet("last/sell/{itemId}")]
         public async Task<IActionResult> SellLastItem(Guid itemId)
         {
-            decimal response = await _userInventoryService
+            SellItemResponse response = await _userInventoryService
                 .SellLastAsync(itemId, UserId);
 
-            return Ok(ApiResult<object>.OK(new
-            {
-                cost = response
-            }));
+            return Ok(ApiResult<SellItemResponse>.OK(response));
         }
     }
 }

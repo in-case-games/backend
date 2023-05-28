@@ -33,7 +33,7 @@ namespace Withdraw.BLL.Services
             return await _withdrawItemService.GetItemInfoAsync(item);
         }
 
-        public async Task<decimal> GetMarketBalanceAsync(string marketName) =>
+        public async Task<BalanceMarketResponse> GetMarketBalanceAsync(string marketName) =>
             await _withdrawItemService.GetBalanceAsync(marketName);
 
         public async Task WithdrawStatusManagerAsync(int count, CancellationToken cancellationToken)
@@ -84,19 +84,22 @@ namespace Withdraw.BLL.Services
 
             GameItem item = inventory.Item!;
 
-            ItemInfoResponse info = await _withdrawItemService.GetItemInfoAsync(item);
+            ItemInfoResponse info = await _withdrawItemService
+                .GetItemInfoAsync(item);
 
             decimal price = info.PriceKopecks * 0.01M;
 
             if (price > item.Cost * 1.1M / 7)
                 throw new ConflictException("Цена на предмет нестабильна");
 
-            decimal balance = await _withdrawItemService.GetBalanceAsync(info.Market.Name!);
+            BalanceMarketResponse balance = await _withdrawItemService
+                .GetBalanceAsync(info.Market.Name!);
 
-            if (balance <= price)
+            if (balance.Balance <= price)
                 throw new PaymentRequiredException("Ожидаем пополнения сервиса покупки");
 
-            BuyItemResponse buyItem = await _withdrawItemService.BuyItemAsync(info, request.TradeUrl!);
+            BuyItemResponse buyItem = await _withdrawItemService
+                .BuyItemAsync(info, request.TradeUrl!);
 
             WithdrawStatus status = await _context.WithdrawStatuses
                 .AsNoTracking()

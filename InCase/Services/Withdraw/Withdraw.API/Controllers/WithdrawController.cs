@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 using System.Security.Claims;
 using Withdraw.API.Common;
 using Withdraw.API.Filters;
@@ -21,6 +22,8 @@ namespace Withdraw.API.Controllers
             _withdrawService = withdrawService;
         }
 
+        [ProducesResponseType(typeof(ApiResult<UserHistoryWithdrawResponse>),
+            (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpPost]
         public async Task<IActionResult> Withdraw(WithdrawItemRequest request)
@@ -31,18 +34,17 @@ namespace Withdraw.API.Controllers
             return Ok(ApiResult<UserHistoryWithdrawResponse>.OK(response));
         }
 
+        [ProducesResponseType(typeof(ApiResult<BalanceMarketResponse>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("market/{name}/balance")]
         public async Task<IActionResult> GetMarketBalance(string name)
         {
-            decimal balance = await _withdrawService.GetMarketBalanceAsync(name);
+            BalanceMarketResponse response = await _withdrawService.GetMarketBalanceAsync(name);
 
-            return Ok(ApiResult<object>.OK(new
-            {
-                balance
-            }));
+            return Ok(ApiResult<BalanceMarketResponse>.OK(response));
         }
 
+        [ProducesResponseType(typeof(ApiResult<ItemInfoResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
         [HttpGet("item/{id}")]
         public async Task<IActionResult> GetItemInfo(Guid id)

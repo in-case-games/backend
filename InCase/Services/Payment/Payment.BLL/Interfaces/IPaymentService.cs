@@ -6,7 +6,7 @@ namespace Payment.BLL.Interfaces
     {
         public Task<UserPaymentsResponse> TopUpBalanceAsync(GameMoneyTopUpResponse request);
         public Task DoWorkManagerAsync(CancellationToken cancellationToken);
-        public Task<decimal> GetPaymentBalanceAsync(string currency);
-        public string GetHashOfDataForDeposit(Guid userId);
+        public Task<PaymentBalanceResponse> GetPaymentBalanceAsync(string currency);
+        public HashOfDataForDepositResponse GetHashOfDataForDeposit(Guid userId);
     }
 }

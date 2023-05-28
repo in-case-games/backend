@@ -57,15 +57,11 @@ namespace Payment.BLL.Services
             return payment.ToResponse();
         }
 
-        public async Task<decimal> GetPaymentBalanceAsync(string currency)
-        {
-            return await _gameMoneyService.GetBalanceAsync(currency);
-        }
+        public async Task<PaymentBalanceResponse> GetPaymentBalanceAsync(string currency) => 
+            await _gameMoneyService.GetBalanceAsync(currency);
 
-        public string GetHashOfDataForDeposit(Guid userId)
-        {
-            return _gameMoneyService.GetHashOfDataForDeposit(userId);
-        }
+        public HashOfDataForDepositResponse GetHashOfDataForDeposit(Guid userId) =>
+            _gameMoneyService.GetHashOfDataForDeposit(userId);
 
         //TODO rename in top up balance
         public Task DoWorkManagerAsync(CancellationToken cancellationToken)

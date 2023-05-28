@@ -3,6 +3,7 @@ using Payment.API.Common;
 using Payment.API.Filters;
 using Payment.BLL.Interfaces;
 using Payment.BLL.Models;
+using System.Net;
 using System.Security.Claims;
 
 namespace Payment.API.Controllers
@@ -20,6 +21,7 @@ namespace Payment.API.Controllers
             _userPaymentsService = userPaymentsService;
         }
 
+        [ProducesResponseType(typeof(ApiResult<List<UserPaymentsResponse>>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet]
         public async Task<IActionResult> Get()
@@ -30,6 +32,7 @@ namespace Payment.API.Controllers
             return Ok(ApiResult<List<UserPaymentsResponse>>.OK(response));
         }
 
+        [ProducesResponseType(typeof(ApiResult<UserPaymentsResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(Guid id)
@@ -40,6 +43,7 @@ namespace Payment.API.Controllers
             return Ok(ApiResult<UserPaymentsResponse>.OK(response));
         }
 
+        [ProducesResponseType(typeof(ApiResult<List<UserPaymentsResponse>>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
         [HttpGet("admin")]
         public async Task<IActionResult> GetByAdmin(int count = 100)
@@ -50,6 +54,7 @@ namespace Payment.API.Controllers
             return Ok(ApiResult<List<UserPaymentsResponse>>.OK(response));
         }
 
+        [ProducesResponseType(typeof(ApiResult<List<UserPaymentsResponse>>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
         [HttpGet("{userId}/admin")]
         public async Task<IActionResult> GetByUserIdAdmin(Guid userId, int count = 100)

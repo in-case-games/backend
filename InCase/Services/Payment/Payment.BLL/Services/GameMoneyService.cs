@@ -24,7 +24,7 @@ namespace Payment.BLL.Services
             _configuration = configuration;
         }
 
-        public async Task<decimal> GetBalanceAsync(string currency)
+        public async Task<PaymentBalanceResponse> GetBalanceAsync(string currency)
         {
             GameMoneyBalanceRequest request = new()
             {
@@ -47,7 +47,9 @@ namespace Payment.BLL.Services
                     if (!_rsaService.VerifySignatureRSA(response!))
                         throw new ForbiddenException("Неверная подпись rsa");
 
-                    return ((GameMoneyBalanceResponse)response!).ProjectBalance;
+                    return new() { 
+                        Balance = ((GameMoneyBalanceResponse)response!).ProjectBalance 
+                    };
                 }
                 catch (Exception)
                 {
@@ -92,11 +94,13 @@ namespace Payment.BLL.Services
             throw new RequestTimeoutException("Сервис пополнения не отвечает");
         }
 
-        public string GetHashOfDataForDeposit(Guid userId) => 
-            $"project:{_configuration["GameMoney:projectId"]};" +
+        public HashOfDataForDepositResponse GetHashOfDataForDeposit(Guid userId) => new()
+        {
+            HMAC = $"project:{_configuration["GameMoney:projectId"]};" +
             $"user:{userId};" +
             $"currency:{_configuration["GameMoney:currency"]};" +
             $"success_url:{_configuration["GameMoney:url:success"]};" +
-            $"fail_url:{_configuration["GameMoney:url:fail"]};";
+            $"fail_url:{_configuration["GameMoney:url:fail"]};"
+        };
     }
 }
