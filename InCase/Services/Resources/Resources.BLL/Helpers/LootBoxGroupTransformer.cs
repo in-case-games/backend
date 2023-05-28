@@ -9,8 +9,8 @@ namespace Resources.BLL.Helpers
             new()
             {
                 Id = group.Id,
-                Box = group.Box,
-                Game = group.Game,
+                Box = group.Box?.ToResponse(),
+                Game = group.Game?.ToResponse(),
                 Group = group.Group,
             };
 

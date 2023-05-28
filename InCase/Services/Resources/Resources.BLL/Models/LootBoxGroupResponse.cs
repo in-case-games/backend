@@ -5,7 +5,7 @@ namespace Resources.BLL.Models
     public class LootBoxGroupResponse : BaseEntity
     {
         public GroupLootBox? Group { get; set; }
-        public LootBox? Box { get; set; }
-        public Game? Game { get; set; }
+        public LootBoxResponse? Box { get; set; }
+        public GameResponse? Game { get; set; }
     }
 }
