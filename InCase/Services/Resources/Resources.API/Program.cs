@@ -75,6 +75,7 @@ builder.Services.AddScoped<ILootBoxInventoryService, LootBoxInventoryService>();
 builder.Services.AddScoped<IGameItemService, GameItemService>();
 builder.Services.AddScoped<ILootBoxBannerService, LootBoxBannerService>();
 builder.Services.AddScoped<IGroupLootBoxService, GroupLootBoxService>();
+builder.Services.AddScoped<ILootBoxGroupService, LootBoxGroupService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
