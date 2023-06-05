@@ -1,21 +1,21 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Payment.BLL.Interfaces;
+using Resources.BLL.Interfaces;
 
-namespace Payment.BLL.Services
+namespace Resources.BLL.Services
 {
-    public class PaymentManagerService : IHostedService
+    public class GameItemManagerService : IHostedService
     {
-        private readonly IPaymentService _paymentService;
-        private readonly ILogger<PaymentManagerService> _logger;
+        private readonly IGameItemService _gameItemService;
+        private readonly ILogger<GameItemManagerService> _logger;
 
-        public PaymentManagerService(
-            IServiceProvider serviceProvider,
-            ILogger<PaymentManagerService> logger)
+        public GameItemManagerService(
+            IServiceProvider serviceProvider, 
+            ILogger<GameItemManagerService> logger)
         {
-            _paymentService = serviceProvider.CreateScope().ServiceProvider
-                .GetRequiredService<IPaymentService>();
+            _gameItemService = serviceProvider.CreateScope().ServiceProvider
+                .GetRequiredService<IGameItemService>();
             _logger = logger;
         }
 
@@ -26,6 +26,8 @@ namespace Payment.BLL.Services
             return Task.CompletedTask;
         }
 
+        public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
+
         private async Task DoWork(CancellationToken stoppingToken)
         {
             while (!stoppingToken.IsCancellationRequested)
@@ -33,20 +35,15 @@ namespace Payment.BLL.Services
                 try
                 {
                     _logger.LogInformation("Start work manager");
-                    await _paymentService.DoWorkManagerAsync(stoppingToken);
+                    await _gameItemService.UpdateCostManagerAsync(10, stoppingToken);
                 }
                 catch (Exception)
                 {
                     _logger.LogInformation("BB work manager");
                 }
 
-                await Task.Delay(5000, stoppingToken);
+                await Task.Delay(10000, stoppingToken);
             }
-        }
-
-        public Task StopAsync(CancellationToken cancellationToken)
-        {
-            return Task.CompletedTask;
         }
     }
 }

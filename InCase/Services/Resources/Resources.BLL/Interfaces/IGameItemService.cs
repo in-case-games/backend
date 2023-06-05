@@ -19,5 +19,7 @@ namespace Resources.BLL.Interfaces
         public Task<GameItemResponse> CreateAsync(GameItemRequest request);
         public Task<GameItemResponse> UpdateAsync(GameItemRequest request);
         public Task<GameItemResponse> DeleteAsync(Guid id);
+
+        public Task UpdateCostManagerAsync(int count, CancellationToken cancellationToken);
     }
 }

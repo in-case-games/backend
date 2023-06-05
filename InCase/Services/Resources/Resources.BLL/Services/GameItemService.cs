@@ -246,5 +246,10 @@ namespace Resources.BLL.Services
 
             return item.ToResponse();
         }
+
+        public Task UpdateCostManagerAsync(int count, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
