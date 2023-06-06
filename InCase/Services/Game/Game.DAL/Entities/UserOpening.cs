@@ -2,7 +2,7 @@
 
 namespace Game.DAL.Entities
 {
-    public class UserHistoryOpening : BaseEntity
+    public class UserOpening : BaseEntity
     {
         public DateTime Date { get; set; } = DateTime.UtcNow;
 

@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Game.DAL.Configurations
 {
-    internal class UserHistoryOpeningConfiguration : BaseEntityConfiguration<UserOpening>
+    internal class UserOpeningConfiguration : BaseEntityConfiguration<UserOpening>
     {
         public override void Configure(EntityTypeBuilder<UserOpening> builder)
         {
