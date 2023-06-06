@@ -12,8 +12,8 @@ namespace Game.DAL.Data
         public DbSet<Promocode> Promocodes => Set<Promocode>();
         public DbSet<User> Users => Set<User>();
         public DbSet<UserAdditionalInfo> AdditionalInfos => Set<UserAdditionalInfo>();
-        public DbSet<UserHistoryOpening> HistoryOpenings => Set<UserHistoryOpening>();
-        public DbSet<UserHistoryPromocode> HistoryPromocodes => Set<UserHistoryPromocode>();
+        public DbSet<UserOpening> HistoryOpenings => Set<UserOpening>();
+        public DbSet<UserPromocode> HistoryPromocodes => Set<UserPromocode>();
         public DbSet<UserPathBanner> PathBanners => Set<UserPathBanner>();
 
         public ApplicationDbContext(DbContextOptions options) : base(options) {}

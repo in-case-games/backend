@@ -4,13 +4,13 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Game.DAL.Configurations
 {
-    internal class UserHistoryOpeningConfiguration : BaseEntityConfiguration<UserHistoryOpening>
+    internal class UserHistoryOpeningConfiguration : BaseEntityConfiguration<UserOpening>
     {
-        public override void Configure(EntityTypeBuilder<UserHistoryOpening> builder)
+        public override void Configure(EntityTypeBuilder<UserOpening> builder)
         {
             base.Configure(builder);
 
-            builder.ToTable(nameof(UserHistoryOpening));
+            builder.ToTable(nameof(UserOpening));
 
             builder.Property(uho => uho.Date)
                 .IsRequired();

@@ -7,10 +7,10 @@ namespace Game.DAL.Entities
         public decimal Cost { get; set; }
 
         [JsonIgnore]
-        public IEnumerable<UserHistoryOpening>? Openings { get; set; }
+        public IEnumerable<UserOpening>? Openings { get; set; }
         [JsonIgnore]
         public IEnumerable<LootBoxInventory>? Inventories { get; set; }
         [JsonIgnore]
-        public IEnumerable<UserPathBanner>? PathBanners { get; set; }
+        public IEnumerable<UserPathBanner>? Paths { get; set; }
     }
 }

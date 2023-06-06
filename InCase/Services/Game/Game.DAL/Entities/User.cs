@@ -9,8 +9,8 @@ namespace Game.DAL.Entities
         [JsonIgnore]
         public IEnumerable<UserPathBanner>? Paths { get; set; }
         [JsonIgnore]
-        public IEnumerable<UserHistoryOpening>? Openings { get; set; }
+        public IEnumerable<UserOpening>? Openings { get; set; }
         [JsonIgnore]
-        public IEnumerable<UserHistoryPromocode>? Promocodes { get; set; }
+        public UserPromocode? Promocode { get; set; }
     }
 }

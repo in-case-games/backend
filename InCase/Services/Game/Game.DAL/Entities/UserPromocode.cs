@@ -2,11 +2,13 @@
 
 namespace Game.DAL.Entities
 {
-    public class Promocode : BaseEntity
+    public class UserPromocode : BaseEntity
     {
         public decimal Discount { get; set; }
 
+        public User? User { get; set; }
+
         [JsonIgnore]
-        public IEnumerable<UserHistoryPromocode>? HistoryPromocodes { get; set; }
+        public Guid UserId { get; set; }
     }
 }
