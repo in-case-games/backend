@@ -10,6 +10,6 @@ namespace Game.BLL.Interfaces
         public Task<List<UserPathBannerResponse>> GetByItemIdAsync(Guid itemId);
         public Task<UserPathBannerResponse> CreateAsync(UserPathBannerRequest request);
         public Task<UserPathBannerResponse> UpdateAsync(UserPathBannerRequest request);
-        public Task<UserPathBannerResponse> DeleteAsync(Guid id);
+        public Task<UserPathBannerResponse> DeleteAsync(Guid id, Guid userId);
     }
 }

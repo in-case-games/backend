@@ -5,6 +5,7 @@ using Game.BLL.Models;
 using Game.DAL.Data;
 using Game.DAL.Entities;
 using Microsoft.EntityFrameworkCore;
+using System.IO;
 using System.Reflection;
 using System.Threading;
 
@@ -119,14 +120,67 @@ namespace Game.BLL.Services
             return banner.ToResponse();
         }
 
-        public Task<UserPathBannerResponse> UpdateAsync(UserPathBannerRequest request)
+        public async Task<UserPathBannerResponse> UpdateAsync(UserPathBannerRequest request)
         {
-            throw new NotImplementedException();
+            UserAdditionalInfo info = await _context.AdditionalInfos
+                .FirstOrDefaultAsync(uai => uai.UserId == request.UserId) ??
+                throw new NotFoundException("Пользователь не найден");
+            UserPathBanner banner = await _context.PathBanners
+                .Include(usp => usp.Box)
+                .Include(usp => usp.Item)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(usp => usp.Id == request.Id) ??
+                throw new NotFoundException("Путь к баннеру не найден");
+
+            if (banner.UserId != request.UserId)
+                throw new ForbiddenException("Нельзя поменять пользователя");
+            if (banner.BoxId != request.BoxId)
+                throw new ForbiddenException("Нельзя поменять кейс");
+            
+            GameItem item = await _context.GameItems
+                .AsNoTracking()
+                .FirstOrDefaultAsync(gi => gi.Id == request.ItemId) ?? 
+                throw new NotFoundException("Предмет не найден");
+            
+            decimal totalSpent = banner.NumberSteps * banner.Box!.Cost * 0.2M;
+
+            // TODO Notify rabbit mq
+            // statistics.BalanceWithdrawn += totalSpent * 0.1M;
+
+            info.Balance += totalSpent * 0.9M;
+
+            _context.PathBanners.Update(banner);
+            await _context.SaveChangesAsync();
+
+            banner.Item = item;
+
+            return banner.ToResponse();
         }
 
-        public Task<UserPathBannerResponse> DeleteAsync(Guid id)
+        public async Task<UserPathBannerResponse> DeleteAsync(Guid id, Guid userId)
         {
-            throw new NotImplementedException();
+            UserAdditionalInfo info = await _context.AdditionalInfos
+                .FirstOrDefaultAsync(uai => uai.UserId == userId) ??
+                throw new NotFoundException("Пользователь не найден");
+            
+            UserPathBanner banner = await _context.PathBanners
+                .Include(usp => usp.Box)
+                .Include(usp => usp.Item)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(usp => usp.Id == id) ??
+                throw new NotFoundException("Путь к баннеру не найден");
+
+            decimal totalSpent = banner.NumberSteps * banner.Box!.Cost * 0.2M;
+
+            // TODO Notify rabbit mq
+            // statistics.BalanceWithdrawn += totalSpent * 0.1M;
+
+            info.Balance += totalSpent * 0.9M;
+
+            _context.PathBanners.Remove(banner);
+            await _context.SaveChangesAsync();
+
+            return banner.ToResponse();
         }
     }
 }
