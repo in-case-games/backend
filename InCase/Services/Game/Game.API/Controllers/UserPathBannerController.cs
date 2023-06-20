@@ -2,8 +2,6 @@
 using Game.API.Filters;
 using Game.BLL.Interfaces;
 using Game.BLL.Models;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
