@@ -1,8 +1,47 @@
-using InCase.Infrastructure.Middlewares;
+using Game.API.Middlewares;
+using Game.BLL.Interfaces;
+using Game.BLL.Services;
+using Game.DAL.Data;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddDbContextPool<ApplicationDbContext>(
+    options => {
+        options.UseSnakeCaseNamingConvention();
+        options.UseNpgsql(
+#if DEBUG
+        builder.Configuration["ConnectionStrings:DevelopmentConnection"],
+#else
+        builder.Configuration["ConnectionStrings:ProductionConnection"],
+#endif
+        b => b.MigrationsAssembly("Game.API"));
+    }
+);
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.SaveToken = true;
+
+        options.TokenValidationParameters = new TokenValidationParameters()
+        {
+            ValidateIssuer = true,
+            ValidIssuer = builder.Configuration["JWT:ValidIssuer"]!,
+
+            ValidateAudience = true,
+            ValidAudience = builder.Configuration["JWT:ValidAudience"]!,
+            ValidateLifetime = true,
+
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(builder.Configuration["JWT:Secret"]!)),
+
+            ValidateIssuerSigningKey = true,
+        };
+    });
 builder.Services.AddSwaggerGen(options =>
 {
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
@@ -35,6 +74,8 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddAuthorization();
 
+builder.Services.AddScoped<IUserPathBannerService, UserPathBannerService>();
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -46,6 +87,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseMiddleware<CancellationTokenHandlingMiddleware>();
 app.UseMiddleware<ExceptionHandlingMiddleware>();
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
