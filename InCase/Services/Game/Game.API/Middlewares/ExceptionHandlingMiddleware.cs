@@ -1,4 +1,4 @@
-﻿using Payment.BLL.Exceptions;
+﻿using Game.BLL.Exceptions;
 using System.Net;
 using System.Text.Json;
 
