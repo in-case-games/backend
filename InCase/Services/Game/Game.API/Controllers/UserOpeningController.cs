@@ -5,6 +5,7 @@ using Game.BLL.Models;
 using Game.BLL.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 using System.Security.Claims;
 
 namespace Game.API.Controllers
@@ -22,6 +23,8 @@ namespace Game.API.Controllers
             _userOpeningService = userOpeningService;
         }
 
+        [ProducesResponseType(typeof(ApiResult<UserOpeningResponse>),
+            (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(Guid id)
@@ -32,6 +35,8 @@ namespace Game.API.Controllers
             return Ok(ApiResult<UserOpeningResponse>.OK(response));
         }
 
+        [ProducesResponseType(typeof(ApiResult<List<UserOpeningResponse>>),
+            (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("roulete")]
         public async Task<IActionResult> GetRoulete()
@@ -42,6 +47,8 @@ namespace Game.API.Controllers
             return Ok(ApiResult<List<UserOpeningResponse>>.OK(response));
         }
 
+        [ProducesResponseType(typeof(ApiResult<List<UserOpeningResponse>>),
+            (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
         [HttpGet]
         public async Task<IActionResult> Get(int count = 100)
@@ -52,6 +59,8 @@ namespace Game.API.Controllers
             return Ok(ApiResult<List<UserOpeningResponse>>.OK(response));
         }
 
+        [ProducesResponseType(typeof(ApiResult<List<UserOpeningResponse>>),
+            (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet("ten/last")]
         public async Task<IActionResult> GetByUserId()
@@ -62,6 +71,8 @@ namespace Game.API.Controllers
             return Ok(ApiResult<List<UserOpeningResponse>>.OK(response));
         }
 
+        [ProducesResponseType(typeof(ApiResult<List<UserOpeningResponse>>),
+            (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
         [HttpGet("user/{id}")]
         public async Task<IActionResult> GetByUserId(Guid id, int count = 100)
@@ -72,6 +83,8 @@ namespace Game.API.Controllers
             return Ok(ApiResult<List<UserOpeningResponse>>.OK(response));
         }
 
+        [ProducesResponseType(typeof(ApiResult<List<UserOpeningResponse>>),
+            (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet("box/{id}")]
         public async Task<IActionResult> GetByBoxId(Guid id)
@@ -82,6 +95,8 @@ namespace Game.API.Controllers
             return Ok(ApiResult<List<UserOpeningResponse>>.OK(response));
         }
 
+        [ProducesResponseType(typeof(ApiResult<List<UserOpeningResponse>>),
+            (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet("item/{id}")]
         public async Task<IActionResult> GetByItemId(Guid id)
@@ -92,6 +107,8 @@ namespace Game.API.Controllers
             return Ok(ApiResult<List<UserOpeningResponse>>.OK(response));
         }
 
+        [ProducesResponseType(typeof(ApiResult<List<UserOpeningResponse>>),
+            (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("box/{id}/roulete")]
         public async Task<IActionResult> GetRouleteByBoxId(Guid id)
@@ -102,6 +119,8 @@ namespace Game.API.Controllers
             return Ok(ApiResult<List<UserOpeningResponse>>.OK(response));
         }
 
+        [ProducesResponseType(typeof(ApiResult<List<UserOpeningResponse>>),
+            (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("item/{id}/roulete")]
         public async Task<IActionResult> GetRouleteByItemId(Guid id)

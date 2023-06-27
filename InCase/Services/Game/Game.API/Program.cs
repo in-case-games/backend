@@ -73,6 +73,7 @@ builder.Services.AddSwaggerGen(options =>
 builder.Services.AddScoped<IUserPathBannerService, UserPathBannerService>();
 builder.Services.AddScoped<IUserAdditionalInfoService, UserAdditionalInfoService>();
 builder.Services.AddScoped<IUserOpeningService, UserOpeningService>();
+builder.Services.AddScoped<ILootBoxOpeningService, LootBoxOpeningService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
