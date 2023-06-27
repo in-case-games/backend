@@ -70,11 +70,13 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
+builder.Services.AddScoped<IUserPathBannerService, UserPathBannerService>();
+builder.Services.AddScoped<IUserAdditionalInfoService, UserAdditionalInfoService>();
+builder.Services.AddScoped<IUserOpeningService, UserOpeningService>();
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddAuthorization();
-
-builder.Services.AddScoped<IUserPathBannerService, UserPathBannerService>();
 
 var app = builder.Build();
 

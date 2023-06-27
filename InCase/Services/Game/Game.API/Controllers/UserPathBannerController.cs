@@ -3,6 +3,7 @@ using Game.API.Filters;
 using Game.BLL.Interfaces;
 using Game.BLL.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 using System.Security.Claims;
 
 namespace Game.API.Controllers
@@ -20,33 +21,44 @@ namespace Game.API.Controllers
             _pathBannerService = pathBannerService;
         }
 
+        [ProducesResponseType(typeof(ApiResult<List<UserPathBannerResponse>>), 
+            (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            List<UserPathBannerResponse> response = await _pathBannerService.GetByUserIdAsync(UserId);
+            List<UserPathBannerResponse> response = await _pathBannerService
+                .GetByUserIdAsync(UserId);
 
             return Ok(ApiResult<List<UserPathBannerResponse>>.OK(response));
         }
 
+        [ProducesResponseType(typeof(ApiResult<UserPathBannerResponse>),
+            (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(Guid id)
         {
-            UserPathBannerResponse response = await _pathBannerService.GetByIdAsync(id, UserId);
+            UserPathBannerResponse response = await _pathBannerService
+                .GetByIdAsync(id, UserId);
 
             return Ok(ApiResult<UserPathBannerResponse>.OK(response));
         }
 
+        [ProducesResponseType(typeof(ApiResult<UserPathBannerResponse>),
+            (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet("box/{id}")]
         public async Task<IActionResult> GetByBoxId(Guid id)
         {
-            UserPathBannerResponse response = await _pathBannerService.GetByBoxIdAsync(id, UserId);
+            UserPathBannerResponse response = await _pathBannerService
+                .GetByBoxIdAsync(id, UserId);
 
             return Ok(ApiResult<UserPathBannerResponse>.OK(response));
         }
 
+        [ProducesResponseType(typeof(ApiResult<List<UserPathBannerResponse>>),
+            (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet("item/{id}")]
         public async Task<IActionResult> GetByItemId(Guid id)
@@ -57,33 +69,42 @@ namespace Game.API.Controllers
             return Ok(ApiResult<List<UserPathBannerResponse>>.OK(response));
         }
 
+        [ProducesResponseType(typeof(ApiResult<UserPathBannerResponse>),
+            (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpPost]
         public async Task<IActionResult> Post(UserPathBannerRequest request)
         {
             request.UserId = UserId;
             
-            UserPathBannerResponse response = await _pathBannerService.CreateAsync(request);
+            UserPathBannerResponse response = await _pathBannerService
+                .CreateAsync(request);
 
             return Ok(ApiResult<UserPathBannerResponse>.OK(response));
         }
 
+        [ProducesResponseType(typeof(ApiResult<UserPathBannerResponse>),
+            (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpPut]
         public async Task<IActionResult> Put(UserPathBannerRequest request)
         {
             request.UserId = UserId;
 
-            UserPathBannerResponse response = await _pathBannerService.UpdateAsync(request);
+            UserPathBannerResponse response = await _pathBannerService
+                .UpdateAsync(request);
 
             return Ok(ApiResult<UserPathBannerResponse>.OK(response));
         }
 
+        [ProducesResponseType(typeof(ApiResult<UserPathBannerResponse>),
+            (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            UserPathBannerResponse response = await _pathBannerService.DeleteAsync(id, UserId);
+            UserPathBannerResponse response = await _pathBannerService
+                .DeleteAsync(id, UserId);
 
             return Ok(ApiResult<UserPathBannerResponse>.OK(response));
         }
