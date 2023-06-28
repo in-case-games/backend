@@ -5,8 +5,10 @@ namespace Authentication.BLL.Services
 {
     public class ValidationService
     {
-        public static bool IsValidUserPassword(in User user, string password)
+        public static bool IsValidUserPassword(in User user, string? password)
         {
+            password ??= string.Empty;
+
             string hash = EncryptorService.GenerationHashSHA512(password, Convert
                 .FromBase64String(user.PasswordSalt!));
 
