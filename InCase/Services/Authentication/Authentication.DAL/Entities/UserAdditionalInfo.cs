@@ -4,7 +4,6 @@ namespace Authentication.DAL.Entities
 {
     public class UserAdditionalInfo : BaseEntity
     {
-        public bool IsNotifyEmail { get; set; } = true;
         public bool IsConfirmed { get; set; } = false;
         public DateTime? DeletionDate { get; set; }
 

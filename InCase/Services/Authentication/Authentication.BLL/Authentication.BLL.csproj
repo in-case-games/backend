@@ -16,4 +16,8 @@
 	<ProjectReference Include="..\..\..\InCase.Infrastructure\InCase.Infrastructure.csproj" />
 	<ProjectReference Include="..\Authentication.DAL\Authentication.DAL.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Interfaces\" />
+    <Folder Include="Helpers\" />
+  </ItemGroup>
 </Project>
