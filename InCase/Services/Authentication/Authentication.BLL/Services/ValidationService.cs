@@ -3,7 +3,7 @@ using System.Security.Claims;
 
 namespace Authentication.BLL.Services
 {
-    public class ValidationService
+    public static class ValidationService
     {
         public static bool IsValidUserPassword(in User user, string? password)
         {

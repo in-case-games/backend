@@ -1,4 +1,5 @@
 ﻿using Authentication.BLL.Models;
+using Authentication.DAL.Entities;
 
 namespace Authentication.BLL.Interfaces
 {

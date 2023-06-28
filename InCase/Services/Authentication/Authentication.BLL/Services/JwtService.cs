@@ -1,6 +1,6 @@
-﻿using Authentication.DAL.Entities;
-using InCase.Infrastructure.Exceptions;
-using InCase.Infrastructure.Models.Authentication.Response;
+﻿using Authentication.BLL.Exceptions;
+using Authentication.BLL.Interfaces;
+using Authentication.DAL.Entities;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -9,7 +9,7 @@ using System.Text;
 
 namespace Authentication.BLL.Services
 {
-    public class JwtService
+    public class JwtService : IJwtService
     {
         private readonly IConfiguration _configuration;
 
@@ -72,7 +72,7 @@ namespace Authentication.BLL.Services
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        public RefreshTokenResponse CreateTokenPair(in User user)
+        public TokensResponse CreateTokenPair(in User user)
         {
             if(string.IsNullOrEmpty(user.AdditionalInfo?.Role?.Name))
                 throw new ArgumentNullException("Role name", 
@@ -89,7 +89,7 @@ namespace Authentication.BLL.Services
             JwtSecurityToken accessToken = GenerateToken(claimsAccess, expirationAccess);
             JwtSecurityToken refreshToken = GenerateToken(claimsRefresh, expirationRefresh);
 
-            return new RefreshTokenResponse
+            return new TokensResponse
             {
                 AccessToken = new JwtSecurityTokenHandler().WriteToken(accessToken),
                 RefreshToken = new JwtSecurityTokenHandler().WriteToken(refreshToken),

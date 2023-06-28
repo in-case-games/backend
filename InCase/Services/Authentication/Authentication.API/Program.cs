@@ -1,4 +1,7 @@
 using Authentication.API.Middlewares;
+using Authentication.BLL.Interfaces;
+using Authentication.BLL.Services;
+using Authentication.DAL.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -66,6 +69,10 @@ builder.Services.AddSwaggerGen(options =>
         }
     });
 });
+
+builder.Services.AddSingleton<IJwtService, JwtService>();
+builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddAuthorization();
