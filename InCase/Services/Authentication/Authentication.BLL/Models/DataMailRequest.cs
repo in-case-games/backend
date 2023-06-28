@@ -2,10 +2,10 @@
 {
     public class DataMailRequest
     {
-        public string UserLogin { get; set; } = null!;
-        public string UserEmail { get; set; } = null!;
-        public string EmailToken { get; set; } = null!;
-        public string UserIp { get; set; } = string.Empty;
-        public string UserPlatforms { get; set; } = string.Empty;
+        public string Login { get; set; } = null!;
+        public string Email { get; set; } = null!;
+        public string Token { get; set; } = null!;
+        public string Ip { get; set; } = string.Empty;
+        public string Platforms { get; set; } = string.Empty;
     }
 }
