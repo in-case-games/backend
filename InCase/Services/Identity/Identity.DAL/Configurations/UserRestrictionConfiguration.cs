@@ -28,7 +28,7 @@ namespace Identity.DAL.Configurations
             builder.HasOne(x => x.User)
                 .WithMany(t => t.Restrictions)
                 .HasForeignKey(m => m.UserId)
-                .OnDelete(DeleteBehavior.ClientCascade);
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

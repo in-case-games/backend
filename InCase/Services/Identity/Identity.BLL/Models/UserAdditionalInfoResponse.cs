@@ -1,14 +1,14 @@
-using Identity.DAL.Entities;
+﻿using Identity.DAL.Entities;
 
 namespace Identity.BLL.Models
 {
-    public class UserAdditionalInfoRequest : BaseEntity
+    public class UserAdditionalInfoResponse : BaseEntity
     {
         public string? ImageUri { get; set; } = "";
         public DateTime CreationDate { get; set; }
         public DateTime? DeletionDate { get; set; }
+        public UserRole? Role { get; set; }
 
-        public Guid RoleId { get; set; }
         public Guid UserId { get; set; }
     }
 }

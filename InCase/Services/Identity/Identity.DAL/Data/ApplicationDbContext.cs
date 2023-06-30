@@ -4,14 +4,16 @@ using System.Reflection;
 
 namespace Identity.DAL.Data
 {
-    public class IdentityDbContext: DbContext
+    public class ApplicationDbContext: DbContext
     {
         public DbSet<RestrictionType> RestrictionTypes => Set<RestrictionType>();
         public DbSet<User> Users => Set<User>();
-        public DbSet<UserAdditionalInfo> UserAdditionalInfos => Set<UserAdditionalInfo>();
-        public DbSet<UserRestriction> UserRestrictions => Set<UserRestriction>();
-        public DbSet<UserRole> UserRoles => Set<UserRole>();
-        public IdentityDbContext(DbContextOptions options): base(options) {}
+        public DbSet<UserAdditionalInfo> AdditionalInfos => Set<UserAdditionalInfo>();
+        public DbSet<UserRestriction> Restrictions => Set<UserRestriction>();
+        public DbSet<UserRole> Roles => Set<UserRole>();
+
+        public ApplicationDbContext(DbContextOptions options): base(options) {}
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

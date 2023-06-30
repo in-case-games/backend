@@ -4,9 +4,9 @@ namespace Identity.DAL.Entities
 {
     public class UserAdditionalInfo : BaseEntity
     {
-        public decimal Balance { get; set; } = 0;
         public string? ImageUri { get; set; } = "";
         public DateTime CreationDate { get; set; }
+        public DateTime? DeletionDate { get; set; }
         public UserRole? Role { get; set; }
 
         [JsonIgnore]

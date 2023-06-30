@@ -15,9 +15,6 @@ namespace Identity.DAL.Configurations
             builder.HasIndex(i => i.RoleId)
                 .IsUnique(false);
 
-            builder.Property(p => p.Balance)
-                .HasColumnType("DECIMAL(18,5)")
-                .IsRequired();
             builder.Property(p => p.ImageUri)
                 .IsRequired();
 

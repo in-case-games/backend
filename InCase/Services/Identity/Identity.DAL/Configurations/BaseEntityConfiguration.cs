@@ -4,7 +4,8 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Identity.DAL.Configurations
 {
-    internal class BaseEntityConfiguration<TEntity> : IEntityTypeConfiguration<TEntity> where TEntity : BaseEntity
+    internal class BaseEntityConfiguration<TEntity> : 
+        IEntityTypeConfiguration<TEntity> where TEntity : BaseEntity
     {
         public virtual void Configure(EntityTypeBuilder<TEntity> builder)
         {

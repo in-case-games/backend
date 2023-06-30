@@ -1,9 +1,10 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>9d65dffb-e69b-4363-84ec-085f636e989e</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,14 +18,9 @@
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.4" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Controllers\" />
-  </ItemGroup>
 	
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.8" />
+	  <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.8" />
 	  <ProjectReference Include="..\Identity.BLL\Identity.BLL.csproj" />
   </ItemGroup>
-	
 </Project>

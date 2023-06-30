@@ -9,9 +9,8 @@
   <ItemGroup>
   </ItemGroup>
   <ItemGroup>
-
 	  <ProjectReference Include="..\Identity.DAL\Identity.DAL.csproj" />
-    <Folder Include="Services\" />
+	  <Folder Include="Services\" />
   </ItemGroup>
 
 </Project>

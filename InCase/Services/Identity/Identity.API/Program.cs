@@ -10,7 +10,7 @@ using Identity.BLL.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddDbContextPool<IdentityDbContext>(
+builder.Services.AddDbContextPool<ApplicationDbContext>(
     options => {
         options.UseSnakeCaseNamingConvention();
         options.UseNpgsql(
@@ -19,7 +19,7 @@ builder.Services.AddDbContextPool<IdentityDbContext>(
         #else
         builder.Configuration["ConnectionStrings:ProductionConnection"],
         #endif
-        b => b.MigrationsAssembly("Payment.API"));
+        b => b.MigrationsAssembly("Identity.API"));
     }
 );
 
@@ -72,7 +72,7 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
-builder.Services.AddTransient<IUserService, UserService>();
+builder.Services.AddTransient<IUserAdditionalInfoService, UserAdditionalInfoService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
