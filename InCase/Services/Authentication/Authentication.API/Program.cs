@@ -72,6 +72,8 @@ builder.Services.AddSwaggerGen(options =>
 
 builder.Services.AddSingleton<IJwtService, JwtService>();
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+builder.Services.AddScoped<IAuthenticationConfirmService, AuthenticationConfirmService>();
+builder.Services.AddScoped<IAuthenticationSendingService, AuthenticationSendingService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

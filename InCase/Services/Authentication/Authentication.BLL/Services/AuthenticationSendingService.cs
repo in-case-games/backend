@@ -1,8 +1,6 @@
 ﻿using Authentication.BLL.Interfaces;
 using Authentication.BLL.Models;
 using Authentication.DAL.Data;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using System.Threading;
 using Authentication.DAL.Entities;
 using Microsoft.EntityFrameworkCore;
 using Authentication.BLL.Exceptions;
@@ -30,7 +28,7 @@ namespace Authentication.BLL.Services
             User user = await _context.Users
                 .Include(u => u.AdditionalInfo)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(u => u.Login == request.Login) ??
+                .FirstOrDefaultAsync(u => u.Login == request.Login || request.Email == request.Email) ??
                 throw new NotFoundException("Пользователь не найден");
 
             if (!ValidationService.IsValidUserPassword(in user, password))
@@ -64,24 +62,63 @@ namespace Authentication.BLL.Services
             //TODO Notify rabbit mq email sender
         }
 
-        public Task DeleteAccount(DataMailRequest request, string password)
+        public async Task DeleteAccount(DataMailRequest request, string password)
         {
-            throw new NotImplementedException();
+            User user = await _context.Users
+                .AsNoTracking()
+                .FirstOrDefaultAsync(u => u.Login == request.Login || u.Email == request.Email) ??
+                throw new NotFoundException("Пользователь не найден");
+
+            if (!ValidationService.IsValidUserPassword(in user, password))
+                throw new ForbiddenException("Неверный пароль");
+
+            MapDataMailRequest(ref request, in user);
+
+            //TODO Notify rabbit mq email sender
         }
 
-        public Task ForgotPassword(DataMailRequest request)
+        public async Task ForgotPassword(DataMailRequest request)
         {
-            throw new NotImplementedException();
+            User user = await _context.Users
+                .AsNoTracking()
+                .FirstOrDefaultAsync(u => u.Login == request.Login || u.Email == request.Email) ??
+                throw new NotFoundException("Пользователь не найден");
+
+            MapDataMailRequest(ref request, in user);
+
+            request.Email = user.Email!;
+
+            //TODO Notify rabbit mq email sender
         }
 
-        public Task UpdateEmail(DataMailRequest request, string password)
+        public async Task UpdateEmail(DataMailRequest request, string password)
         {
-            throw new NotImplementedException();
+            User user = await _context.Users
+                .AsNoTracking()
+                .FirstOrDefaultAsync(u => u.Login == request.Login || u.Email == request.Email) ??
+                throw new NotFoundException("Пользователь не найден");
+
+            if (!ValidationService.IsValidUserPassword(in user, password))
+                throw new ForbiddenException("Неверный пароль");
+
+            MapDataMailRequest(ref request, in user);
+
+            //TODO Notify rabbit mq email sender
         }
 
-        public Task UpdatePassword(DataMailRequest request, string password)
+        public async Task UpdatePassword(DataMailRequest request, string password)
         {
-            throw new NotImplementedException();
+            User user = await _context.Users
+                .AsNoTracking()
+                .FirstOrDefaultAsync(u => u.Login == request.Login || u.Email == request.Email) ??
+                throw new NotFoundException("Пользователь не найден");
+
+            if (!ValidationService.IsValidUserPassword(in user, password))
+                throw new ForbiddenException("Неверный пароль");
+
+            MapDataMailRequest(ref request, in user);
+
+            //TODO Notify rabbit mq email sender
         }
 
         private void MapDataMailRequest(ref DataMailRequest request, in User user)

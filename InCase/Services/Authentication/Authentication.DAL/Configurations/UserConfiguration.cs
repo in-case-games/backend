@@ -25,10 +25,8 @@ namespace Authentication.DAL.Configurations
                 .IsRequired();
 
             builder.Property(p => p.PasswordSalt)
-                .HasColumnType("nvarchar(MAX)")
                 .IsRequired();
             builder.Property(p => p.PasswordHash)
-                .HasColumnType("nvarchar(MAX)")
                 .IsRequired();
         }
     }

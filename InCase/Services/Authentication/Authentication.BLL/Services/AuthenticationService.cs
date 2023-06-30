@@ -12,9 +12,9 @@ namespace Authentication.BLL.Services
     public class AuthenticationService : IAuthenticationService
     {
         private readonly ApplicationDbContext _context;
-        private readonly JwtService _jwtService;
+        private readonly IJwtService _jwtService;
 
-        public AuthenticationService(ApplicationDbContext context, JwtService jwtService)
+        public AuthenticationService(ApplicationDbContext context, IJwtService jwtService)
         {
             _context = context;
             _jwtService = jwtService;

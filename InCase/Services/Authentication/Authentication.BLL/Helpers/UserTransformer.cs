@@ -11,5 +11,12 @@ namespace Authentication.BLL.Helpers
             Email = request.Email,
             Login = request.Login
         };
+
+        public static UserResponse ToResponse(this User user, bool IsNewGuid = false) => new() 
+        { 
+            Id = IsNewGuid ? Guid.NewGuid() : user.Id,
+            Email = user.Email,
+            Login = user.Login,
+        };
     }
 }
