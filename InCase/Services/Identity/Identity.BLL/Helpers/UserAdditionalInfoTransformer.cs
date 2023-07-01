@@ -23,7 +23,7 @@ namespace Identity.BLL.Helpers
             DeletionDate = entity.DeletionDate,
             ImageUri = entity.ImageUri,
             UserId = entity.UserId,
-            Role = entity.Role,
+            Role = entity.Role?.ToResponse(),
         };
     }
 }

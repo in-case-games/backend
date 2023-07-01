@@ -11,6 +11,12 @@ namespace Identity.DAL.Configurations
             base.Configure(builder);
 
             builder.ToTable(nameof(User));
+
+            builder.HasIndex(i => i.Login)
+                .IsUnique();
+            builder.Property(p => p.Login)
+                .HasMaxLength(50)
+                .IsRequired();
         }
     }
 }

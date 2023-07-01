@@ -29,7 +29,8 @@ namespace Identity.API.Migrations
                 name: "User",
                 columns: table => new
                 {
-                    id = table.Column<Guid>(type: "uuid", nullable: false)
+                    id = table.Column<Guid>(type: "uuid", nullable: false),
+                    login = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -114,9 +115,9 @@ namespace Identity.API.Migrations
                 columns: new[] { "id", "name" },
                 values: new object[,]
                 {
-                    { new Guid("189499f0-7d52-4c05-bc39-c0236817604e"), "mute" },
-                    { new Guid("32df2852-9514-407b-aca9-3b8e6027d335"), "warn" },
-                    { new Guid("4131b02a-f6da-43ab-83d5-039cdd745081"), "ban" }
+                    { new Guid("30c10b8e-06d5-404e-ac48-bdf7259eee0d"), "ban" },
+                    { new Guid("8d713420-a401-4a69-afde-957b89d9798b"), "mute" },
+                    { new Guid("ac0e4746-af26-4209-abe9-6648ce45b59b"), "warn" }
                 });
 
             migrationBuilder.InsertData(
@@ -124,10 +125,10 @@ namespace Identity.API.Migrations
                 columns: new[] { "id", "name" },
                 values: new object[,]
                 {
-                    { new Guid("184e93a1-d5d6-4dbe-b2a4-ff41c6e88130"), "admin" },
-                    { new Guid("89c19ed0-cedc-490c-8645-841bab276fea"), "user" },
-                    { new Guid("bde5ad6c-09aa-4c69-88ef-cdb80d5f5586"), "bot" },
-                    { new Guid("e8e89931-df39-4af4-8a29-c33ed27e8b4c"), "owner" }
+                    { new Guid("1798c17f-0b31-41b9-8067-7213983b4b93"), "user" },
+                    { new Guid("5a945425-077a-442e-8b54-90694b553384"), "admin" },
+                    { new Guid("62f46100-886f-4919-9513-f1d480f36825"), "owner" },
+                    { new Guid("ec71178e-e08d-45f3-adcb-1e3ab316e6ac"), "bot" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -146,6 +147,12 @@ namespace Identity.API.Migrations
                 name: "ix_user_id",
                 table: "User",
                 column: "id",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "ix_user_login",
+                table: "User",
+                column: "login",
                 unique: true);
 
             migrationBuilder.CreateIndex(

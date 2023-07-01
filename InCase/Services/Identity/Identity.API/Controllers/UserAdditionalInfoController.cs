@@ -20,23 +20,59 @@ namespace Identity.API.Controllers
         {
             _userInfoService = userInfoService;
         }
-        
+
         [AllowAnonymous]
         [HttpGet("{id}")]
-        public async Task<IActionResult> Get(Guid id, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> Get(Guid id)
         {
-            UserAdditionalInfoResponse response = await _userInfoService.GetAsync(id, cancellationToken);
+            UserAdditionalInfoResponse response = await _userInfoService.GetAsync(id);
 
             return Ok(ApiResult<UserAdditionalInfoResponse>.OK(response));
         }
 
-        [AuthorizeByRole(Roles.Owner, Roles.Bot)]
-        [HttpPut]
-        public async Task<IActionResult> Update(UserAdditionalInfoRequest info, CancellationToken cancellationToken = default)
+        [AllowAnonymous]
+        [HttpGet("user/{id}")]
+        public async Task<IActionResult> GetByUserId(Guid userId)
         {
-            await _userInfoService.UpdateAsync(info, cancellationToken);
+            UserAdditionalInfoResponse response = await _userInfoService.GetByUserIdAsync(userId);
 
-            return Ok(ApiResult<UserAdditionalInfoRequest>.OK(info));
+            return Ok(ApiResult<UserAdditionalInfoResponse>.OK(response));
+        }
+
+        [AuthorizeByRole(Roles.All)]
+        [HttpGet]
+        public async Task<IActionResult> Get()
+        {
+            UserAdditionalInfoResponse response = await _userInfoService.GetByUserIdAsync(UserId);
+
+            return Ok(ApiResult<UserAdditionalInfoResponse>.OK(response));
+        }
+
+        [AuthorizeByRole(Roles.Owner)]
+        [HttpPut("role")]
+        public async Task<IActionResult> UpdateRole(UserAdditionalInfoRequest request)
+        {
+            UserAdditionalInfoResponse response = await _userInfoService.UpdateRole(request);
+
+            return Ok(ApiResult<UserAdditionalInfoResponse>.OK(response));
+        }
+
+        [AuthorizeByRole(Roles.Admin, Roles.Owner)]
+        [HttpPut("deletion/date")]
+        public async Task<IActionResult> UpdateDeletionDate(UserAdditionalInfoRequest request)
+        {
+            UserAdditionalInfoResponse response = await _userInfoService.UpdateDeletionDate(request);
+
+            return Ok(ApiResult<UserAdditionalInfoResponse>.OK(response));
+        }
+
+        [AuthorizeByRole(Roles.All)]
+        [HttpPut("image")]
+        public async Task<IActionResult> UpdateImage(UserAdditionalInfoRequest request)
+        {
+            UserAdditionalInfoResponse response = await _userInfoService.UpdateImage(request);
+
+            return Ok(ApiResult<UserAdditionalInfoResponse>.OK(response));
         }
     }
 }
