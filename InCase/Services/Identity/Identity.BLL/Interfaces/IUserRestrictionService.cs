@@ -6,6 +6,7 @@ namespace Identity.BLL.Interfaces
     {
         public Task<UserRestrictionResponse> Get(Guid id);
         public Task<List<UserRestrictionResponse>> GetByUserId(Guid userId);
+        public Task<List<UserRestrictionResponse>> GetByOwnerId(Guid ownerId);
         public Task<List<UserRestrictionResponse>> Get(Guid userId, Guid ownerId);
         public Task<List<UserRestrictionResponse>> GetByLogin(string login);
         public Task<List<RestrictionTypeResponse>> GetTypes();
