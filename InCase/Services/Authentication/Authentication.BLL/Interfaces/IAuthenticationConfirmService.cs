@@ -4,9 +4,9 @@ namespace Authentication.BLL.Interfaces
 {
     public interface IAuthenticationConfirmService
     {
-        public Task<TokensResponse> ConfirmAccount(string token);
-        public Task<UserResponse> UpdateEmail(string email, string token);
-        public Task<UserResponse> UpdatePassword(string password, string token);
-        public Task<UserResponse> Delete(string token);
+        public Task<TokensResponse> ConfirmAccountAsync(string token);
+        public Task<UserResponse> UpdateEmailAsync(string email, string token);
+        public Task<UserResponse> UpdatePasswordAsync(string password, string token);
+        public Task<UserResponse> DeleteAsync(string token);
     }
 }

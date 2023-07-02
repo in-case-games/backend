@@ -28,7 +28,7 @@ namespace Identity.API.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(Guid id)
         {
-            UserResponse response = await _userService.Get(id);
+            UserResponse response = await _userService.GetAsync(id);
 
             return Ok(ApiResult<UserResponse>.OK(response));
         }
@@ -39,7 +39,7 @@ namespace Identity.API.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            UserResponse response = await _userService.Get(UserId);
+            UserResponse response = await _userService.GetAsync(UserId);
 
             return Ok(ApiResult<UserResponse>.OK(response));
         }
@@ -50,7 +50,7 @@ namespace Identity.API.Controllers
         [HttpGet("login/{login}")]
         public async Task<IActionResult> Get(string login)
         {
-            UserResponse response = await _userService.Get(login);
+            UserResponse response = await _userService.GetAsync(login);
 
             return Ok(ApiResult<UserResponse>.OK(response));
         }
@@ -63,7 +63,7 @@ namespace Identity.API.Controllers
         {
             request.Id = UserId;
 
-            UserResponse response = await _userService.UpdateLogin(request);
+            UserResponse response = await _userService.UpdateLoginAsync(request);
 
             return Ok(ApiResult<UserResponse>.OK(response));
         }

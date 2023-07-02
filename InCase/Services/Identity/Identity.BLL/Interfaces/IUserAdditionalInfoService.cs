@@ -6,8 +6,8 @@ namespace Identity.BLL.Interfaces
     {
         public Task<UserAdditionalInfoResponse> GetAsync(Guid id);
         public Task<UserAdditionalInfoResponse> GetByUserIdAsync(Guid userId);
-        public Task<UserAdditionalInfoResponse> UpdateRole(UserAdditionalInfoRequest request);
-        public Task<UserAdditionalInfoResponse> UpdateDeletionDate(UserAdditionalInfoRequest request);
-        public Task<UserAdditionalInfoResponse> UpdateImage(UserAdditionalInfoRequest request);
+        public Task<UserAdditionalInfoResponse> UpdateRoleAsync(UserAdditionalInfoRequest request);
+        public Task<UserAdditionalInfoResponse> UpdateDeletionDateAsync(UserAdditionalInfoRequest request);
+        public Task<UserAdditionalInfoResponse> UpdateImageAsync(UserAdditionalInfoRequest request);
     }
 }

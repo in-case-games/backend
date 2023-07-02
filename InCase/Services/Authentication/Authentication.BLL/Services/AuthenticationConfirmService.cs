@@ -24,9 +24,9 @@ namespace Authentication.BLL.Services
             _jwtService = jwtService;
         }
 
-        public async Task<TokensResponse> ConfirmAccount(string token)
+        public async Task<TokensResponse> ConfirmAccountAsync(string token)
         {
-            User user = await _authenticationService.GetUserFromToken(token, "email");
+            User user = await _authenticationService.GetUserFromTokenAsync(token, "email");
             UserAdditionalInfo info = user.AdditionalInfo!;
             TokensResponse response = _jwtService.CreateTokenPair(in user);
 
@@ -51,9 +51,9 @@ namespace Authentication.BLL.Services
             return response;
         }
 
-        public async Task<UserResponse> Delete(string token)
+        public async Task<UserResponse> DeleteAsync(string token)
         {
-            User user = await _authenticationService.GetUserFromToken(token, "email");
+            User user = await _authenticationService.GetUserFromTokenAsync(token, "email");
 
             user.AdditionalInfo!.DeletionDate = DateTime.UtcNow + TimeSpan.FromDays(30);
 
@@ -65,12 +65,12 @@ namespace Authentication.BLL.Services
             return user.ToResponse();
         }
 
-        public async Task<UserResponse> UpdateEmail(string email, string token)
+        public async Task<UserResponse> UpdateEmailAsync(string email, string token)
         {
             if (await _context.Users.AsNoTracking().AnyAsync(u => u.Email == email))
                 throw new ConflictException("Email почта занята");
 
-            User user = await _authenticationService.GetUserFromToken(token, "email");
+            User user = await _authenticationService.GetUserFromTokenAsync(token, "email");
 
             user.Email = email;
 
@@ -80,9 +80,9 @@ namespace Authentication.BLL.Services
             return user.ToResponse();
         }
 
-        public async Task<UserResponse> UpdatePassword(string password, string token)
+        public async Task<UserResponse> UpdatePasswordAsync(string password, string token)
         {
-            User user = await _authenticationService.GetUserFromToken(token, "email");
+            User user = await _authenticationService.GetUserFromTokenAsync(token, "email");
             AuthenticationService.CreateNewPassword(ref user, password);
 
             _context.Users.Update(user);

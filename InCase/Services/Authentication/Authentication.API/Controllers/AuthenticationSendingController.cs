@@ -22,7 +22,7 @@ namespace Authentication.API.Controllers
         [HttpPost("confirm/{password}")]
         public async Task<IActionResult> ConfirmAccount(DataMailRequest request, string password)
         {
-            await _authSendingService.ConfirmAccount(request, password);
+            await _authSendingService.ConfirmAccountAsync(request, password);
 
             return Ok(ApiResult<string>.SentEmail());
         }
@@ -31,7 +31,7 @@ namespace Authentication.API.Controllers
         [HttpPost("confirm/{email}")]
         public async Task<IActionResult> ConfirmNewEmail(DataMailRequest request, string email)
         {
-            await _authSendingService.ConfirmNewEmail(request, email);
+            await _authSendingService.ConfirmNewEmailAsync(request, email);
 
             return Ok(ApiResult<string>.SentEmail());
         }
@@ -40,7 +40,7 @@ namespace Authentication.API.Controllers
         [HttpPut("forgot/password")]
         public async Task<IActionResult> ForgotPassword(DataMailRequest request)
         {
-            await _authSendingService.ForgotPassword(request);
+            await _authSendingService.ForgotPasswordAsync(request);
 
             return Ok(ApiResult<string>.SentEmail());
         }
@@ -49,7 +49,7 @@ namespace Authentication.API.Controllers
         [HttpPut("email/{password}")]
         public async Task<IActionResult> UpdateEmail(DataMailRequest request, string password)
         {
-            await _authSendingService.UpdateEmail(request, password);
+            await _authSendingService.UpdateEmailAsync(request, password);
 
             return Ok(ApiResult<string>.SentEmail());
         }
@@ -58,7 +58,7 @@ namespace Authentication.API.Controllers
         [HttpPut("password/{password}")]
         public async Task<IActionResult> UpdatePassword(DataMailRequest request, string password)
         {
-            await _authSendingService.UpdatePassword(request, password);
+            await _authSendingService.UpdatePasswordAsync(request, password);
 
             return Ok(ApiResult<string>.SentEmail());
         }
@@ -67,7 +67,7 @@ namespace Authentication.API.Controllers
         [HttpDelete("confirm/{password}")]
         public async Task<IActionResult> DeleteAccount(DataMailRequest request, string password)
         {
-            await _authSendingService.DeleteAccount(request, password);
+            await _authSendingService.DeleteAccountAsync(request, password);
 
             return Ok(ApiResult<string>.SentEmail());
         }

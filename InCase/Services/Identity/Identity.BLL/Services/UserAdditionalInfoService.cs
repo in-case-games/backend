@@ -39,7 +39,7 @@ namespace Identity.BLL.Services
             return info.ToResponse();
         }
 
-        public async Task<UserAdditionalInfoResponse> UpdateDeletionDate(UserAdditionalInfoRequest request)
+        public async Task<UserAdditionalInfoResponse> UpdateDeletionDateAsync(UserAdditionalInfoRequest request)
         {
             if (request.DeletionDate is not null && request.DeletionDate <= DateTime.UtcNow)
                 throw new BadRequestException("Дата не корректна");
@@ -56,7 +56,7 @@ namespace Identity.BLL.Services
             return info.ToResponse();
         }
 
-        public async Task<UserAdditionalInfoResponse> UpdateImage(UserAdditionalInfoRequest request)
+        public async Task<UserAdditionalInfoResponse> UpdateImageAsync(UserAdditionalInfoRequest request)
         {
             UserAdditionalInfo info = await _context.AdditionalInfos
                 .Include(uai => uai.Role)
@@ -70,7 +70,7 @@ namespace Identity.BLL.Services
             return info.ToResponse();
         }
 
-        public async Task<UserAdditionalInfoResponse> UpdateRole(UserAdditionalInfoRequest request)
+        public async Task<UserAdditionalInfoResponse> UpdateRoleAsync(UserAdditionalInfoRequest request)
         {
             UserRole role = await _context.Roles
                 .AsNoTracking()

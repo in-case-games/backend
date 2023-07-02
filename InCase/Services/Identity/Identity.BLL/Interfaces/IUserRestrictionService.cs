@@ -4,14 +4,16 @@ namespace Identity.BLL.Interfaces
 {
     public interface IUserRestrictionService
     {
-        public Task<UserRestrictionResponse> Get(Guid id);
-        public Task<List<UserRestrictionResponse>> GetByUserId(Guid userId);
-        public Task<List<UserRestrictionResponse>> GetByOwnerId(Guid ownerId);
-        public Task<List<UserRestrictionResponse>> Get(Guid userId, Guid ownerId);
-        public Task<List<UserRestrictionResponse>> GetByLogin(string login);
-        public Task<List<RestrictionTypeResponse>> GetTypes();
-        public Task<UserRestrictionResponse> Create(UserRestrictionRequest request);
-        public Task<UserRestrictionResponse> Update(UserRestrictionRequest request);
-        public Task<UserRestrictionResponse> Delete(Guid id);
+        public Task<UserRestrictionResponse> GetAsync(Guid id);
+        public Task<List<UserRestrictionResponse>> GetByUserIdAsync(Guid userId);
+        public Task<List<UserRestrictionResponse>> GetByOwnerIdAsync(Guid ownerId);
+        public Task<List<UserRestrictionResponse>> GetAsync(Guid userId, Guid ownerId);
+        public Task<List<UserRestrictionResponse>> GetByLoginAsync(string login);
+        public Task<List<RestrictionTypeResponse>> GetTypesAsync();
+        public Task<UserRestrictionResponse> CreateAsync(UserRestrictionRequest request);
+        public Task<UserRestrictionResponse> UpdateAsync(UserRestrictionRequest request);
+        public Task<UserRestrictionResponse> DeleteAsync(Guid id);
+
+        public Task DoWorkManagerAsync(CancellationToken cancellationToken);
     }
 }

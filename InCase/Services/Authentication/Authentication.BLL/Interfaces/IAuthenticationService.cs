@@ -5,10 +5,10 @@ namespace Authentication.BLL.Interfaces
 {
     public interface IAuthenticationService
     {
-        public Task SignIn(UserRequest request);
-        public Task SignUp(UserRequest request);
-        public Task<TokensResponse> RefreshTokens(string token);
-        public Task<User> GetUserFromToken(string token, string type);
-        public Task CheckUserForBan(Guid id);
+        public Task SignInAsync(UserRequest request);
+        public Task SignUpAsync(UserRequest request);
+        public Task<TokensResponse> RefreshTokensAsync(string token);
+        public Task<User> GetUserFromTokenAsync(string token, string type);
+        public Task CheckUserForBanAsync(Guid id);
     }
 }

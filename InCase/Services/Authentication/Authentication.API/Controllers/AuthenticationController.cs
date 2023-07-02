@@ -25,7 +25,7 @@ namespace Authentication.API.Controllers
         [HttpGet("sign-in")]
         public async Task<IActionResult> SignIn(UserRequest request)
         {
-            await _authenticationService.SignIn(request);
+            await _authenticationService.SignInAsync(request);
 
             return Ok(ApiResult<string>.SentEmail());
         }
@@ -36,7 +36,7 @@ namespace Authentication.API.Controllers
         [HttpGet("sign-up")]
         public async Task<IActionResult> SignUp(UserRequest request)
         {
-            await _authenticationService.SignUp(request);
+            await _authenticationService.SignUpAsync(request);
 
             return Ok(ApiResult<string>.SentEmail());
         }
@@ -47,7 +47,7 @@ namespace Authentication.API.Controllers
         [HttpGet("refresh")]
         public async Task<IActionResult> RefreshTokens(string token)
         {
-            TokensResponse response = await _authenticationService.RefreshTokens(token);
+            TokensResponse response = await _authenticationService.RefreshTokensAsync(token);
 
             return Ok(ApiResult<TokensResponse>.OK(response));
         }

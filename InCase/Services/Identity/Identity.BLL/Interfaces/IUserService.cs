@@ -4,8 +4,8 @@ namespace Identity.BLL.Interfaces
 {
     public interface IUserService
     {
-        public Task<UserResponse> Get(Guid id);
-        public Task<UserResponse> Get(string login);
-        public Task<UserResponse> UpdateLogin(UserRequest request);
+        public Task<UserResponse> GetAsync(Guid id);
+        public Task<UserResponse> GetAsync(string login);
+        public Task<UserResponse> UpdateLoginAsync(UserRequest request);
     }
 }

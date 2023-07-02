@@ -75,6 +75,8 @@ builder.Services.AddSwaggerGen(options =>
 builder.Services.AddScoped<IUserAdditionalInfoService, UserAdditionalInfoService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserRestrictionService, UserRestrictionService>();
+builder.Services.AddScoped<IUserRoleService, UserRoleService>();
+builder.Services.AddHostedService<RestrictionManagerService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

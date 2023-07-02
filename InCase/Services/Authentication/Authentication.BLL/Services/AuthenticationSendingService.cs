@@ -23,7 +23,7 @@ namespace Authentication.BLL.Services
             _context = context;
         }
 
-        public async Task ConfirmAccount(DataMailRequest request, string password)
+        public async Task ConfirmAccountAsync(DataMailRequest request, string password)
         {
             User user = await _context.Users
                 .Include(u => u.AdditionalInfo)
@@ -48,12 +48,12 @@ namespace Authentication.BLL.Services
             }
         }
 
-        public async Task ConfirmNewEmail(DataMailRequest request, string email)
+        public async Task ConfirmNewEmailAsync(DataMailRequest request, string email)
         {
             if (await _context.Users.AnyAsync(u => u.Email == email))
                 throw new ConflictException("Email почта занята");
 
-            User user = await _authenticationService.GetUserFromToken(request.Token, "email");
+            User user = await _authenticationService.GetUserFromTokenAsync(request.Token, "email");
 
             MapDataMailRequest(ref request, in user);
 
@@ -62,7 +62,7 @@ namespace Authentication.BLL.Services
             //TODO Notify rabbit mq email sender
         }
 
-        public async Task DeleteAccount(DataMailRequest request, string password)
+        public async Task DeleteAccountAsync(DataMailRequest request, string password)
         {
             User user = await _context.Users
                 .AsNoTracking()
@@ -77,7 +77,7 @@ namespace Authentication.BLL.Services
             //TODO Notify rabbit mq email sender
         }
 
-        public async Task ForgotPassword(DataMailRequest request)
+        public async Task ForgotPasswordAsync(DataMailRequest request)
         {
             User user = await _context.Users
                 .AsNoTracking()
@@ -91,7 +91,7 @@ namespace Authentication.BLL.Services
             //TODO Notify rabbit mq email sender
         }
 
-        public async Task UpdateEmail(DataMailRequest request, string password)
+        public async Task UpdateEmailAsync(DataMailRequest request, string password)
         {
             User user = await _context.Users
                 .AsNoTracking()
@@ -106,7 +106,7 @@ namespace Authentication.BLL.Services
             //TODO Notify rabbit mq email sender
         }
 
-        public async Task UpdatePassword(DataMailRequest request, string password)
+        public async Task UpdatePasswordAsync(DataMailRequest request, string password)
         {
             User user = await _context.Users
                 .AsNoTracking()

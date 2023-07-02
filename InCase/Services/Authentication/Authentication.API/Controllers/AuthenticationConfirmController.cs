@@ -25,7 +25,7 @@ namespace Authentication.API.Controllers
         [HttpGet("account")]
         public async Task<IActionResult> ConfirmAccount(string token)
         {
-            TokensResponse response = await _authConfirmService.ConfirmAccount(token);
+            TokensResponse response = await _authConfirmService.ConfirmAccountAsync(token);
 
             return Ok(ApiResult<TokensResponse>.OK(response));
         }
@@ -36,7 +36,7 @@ namespace Authentication.API.Controllers
         [HttpGet("email/{email}")]
         public async Task<IActionResult> UpdateEmail(string email, string token)
         {
-            UserResponse response = await _authConfirmService.UpdateEmail(email, token);
+            UserResponse response = await _authConfirmService.UpdateEmailAsync(email, token);
 
             return Ok(ApiResult<UserResponse>.OK(response));
         }
@@ -47,7 +47,7 @@ namespace Authentication.API.Controllers
         [HttpGet("password/{password}")]
         public async Task<IActionResult> UpdatePassword(string password, string token)
         {
-            UserResponse response = await _authConfirmService.UpdatePassword(password, token);
+            UserResponse response = await _authConfirmService.UpdatePasswordAsync(password, token);
 
             return Ok(ApiResult<UserResponse>.OK(response));
         }
@@ -58,7 +58,7 @@ namespace Authentication.API.Controllers
         [HttpDelete("account")]
         public async Task<IActionResult> Delete(string token)
         {
-            UserResponse response = await _authConfirmService.Delete(token);
+            UserResponse response = await _authConfirmService.DeleteAsync(token);
 
             return Ok(ApiResult<UserResponse>.OK(response));
         }

@@ -17,7 +17,7 @@ namespace Identity.BLL.Services
             _context = context;
         }
 
-        public async Task<UserResponse> Get(Guid id)
+        public async Task<UserResponse> GetAsync(Guid id)
         {
             User user = await _context.Users
                 .Include(u => u.AdditionalInfo)
@@ -30,7 +30,7 @@ namespace Identity.BLL.Services
             return user.ToResponse();
         }
 
-        public async Task<UserResponse> Get(string login)
+        public async Task<UserResponse> GetAsync(string login)
         {
             User user = await _context.Users
                 .Include(u => u.AdditionalInfo)
@@ -43,7 +43,7 @@ namespace Identity.BLL.Services
             return user.ToResponse();
         }
 
-        public async Task<UserResponse> UpdateLogin(UserRequest request)
+        public async Task<UserResponse> UpdateLoginAsync(UserRequest request)
         {
             User user = await _context.Users
                 .Include(u => u.AdditionalInfo)

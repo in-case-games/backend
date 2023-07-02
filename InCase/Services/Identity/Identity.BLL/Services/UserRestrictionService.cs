@@ -18,7 +18,7 @@ namespace Identity.BLL.Services
             _context = context;
         }
 
-        public async Task<UserRestrictionResponse> Get(Guid id)
+        public async Task<UserRestrictionResponse> GetAsync(Guid id)
         {
             UserRestriction restriction = await _context.Restrictions
                 .AsNoTracking()
@@ -28,7 +28,7 @@ namespace Identity.BLL.Services
             return restriction.ToResponse();
         }
 
-        public async Task<List<UserRestrictionResponse>> Get(Guid userId, Guid ownerId)
+        public async Task<List<UserRestrictionResponse>> GetAsync(Guid userId, Guid ownerId)
         {
             if (!await _context.Users.AnyAsync(u => u.Id == userId))
                 throw new NotFoundException("Обвиняемый не найден");
@@ -44,7 +44,7 @@ namespace Identity.BLL.Services
             return restrictions.ToResponse();
         }
 
-        public async Task<List<UserRestrictionResponse>> GetByLogin(string login)
+        public async Task<List<UserRestrictionResponse>> GetByLoginAsync(string login)
         {
             User user = await _context.Users
                 .Include(u => u.Restrictions)
@@ -55,7 +55,7 @@ namespace Identity.BLL.Services
             return user.Restrictions?.ToResponse() ?? new();
         }
 
-        public async Task<List<UserRestrictionResponse>> GetByUserId(Guid userId)
+        public async Task<List<UserRestrictionResponse>> GetByUserIdAsync(Guid userId)
         {
             User user = await _context.Users
                 .Include(u => u.Restrictions)
@@ -66,7 +66,7 @@ namespace Identity.BLL.Services
             return user.Restrictions?.ToResponse() ?? new();
         }
 
-        public async Task<List<UserRestrictionResponse>> GetByOwnerId(Guid ownerId)
+        public async Task<List<UserRestrictionResponse>> GetByOwnerIdAsync(Guid ownerId)
         {
             User user = await _context.Users
                 .Include(u => u.OwnerRestrictions)
@@ -77,7 +77,7 @@ namespace Identity.BLL.Services
             return user.OwnerRestrictions?.ToResponse() ?? new();
         }
 
-        public async Task<List<RestrictionTypeResponse>> GetTypes()
+        public async Task<List<RestrictionTypeResponse>> GetTypesAsync()
         {
             List<RestrictionType> types = await _context.RestrictionTypes
                 .AsNoTracking()
@@ -86,7 +86,7 @@ namespace Identity.BLL.Services
             return types.ToResponse();
         }
 
-        public async Task<UserRestrictionResponse> Create(UserRestrictionRequest request)
+        public async Task<UserRestrictionResponse> CreateAsync(UserRestrictionRequest request)
         {
             RestrictionType type = await _context.RestrictionTypes
                 .AsNoTracking()
@@ -125,7 +125,7 @@ namespace Identity.BLL.Services
             return restriction.ToResponse();
         }
 
-        public async Task<UserRestrictionResponse> Update(UserRestrictionRequest request)
+        public async Task<UserRestrictionResponse> UpdateAsync(UserRestrictionRequest request)
         {
             RestrictionType type = await _context.RestrictionTypes
                 .AsNoTracking()
@@ -169,7 +169,7 @@ namespace Identity.BLL.Services
             return restriction.ToResponse();
         }
 
-        public async Task<UserRestrictionResponse> Delete(Guid id)
+        public async Task<UserRestrictionResponse> DeleteAsync(Guid id)
         {
             UserRestriction restriction = await _context.Restrictions
                 .Include(ur => ur.Type)
@@ -214,6 +214,12 @@ namespace Identity.BLL.Services
             }
 
             return request;
+        }
+
+        public Task DoWorkManagerAsync(CancellationToken cancellationToken)
+        {
+            //TODO Manager check restriction time
+            throw new NotImplementedException();
         }
     }
 }

@@ -20,7 +20,7 @@ namespace Authentication.BLL.Services
             _jwtService = jwtService;
         }
 
-        public async Task SignIn(UserRequest request)
+        public async Task SignInAsync(UserRequest request)
         {
             User user = await _context.Users
                 .Include(u => u.AdditionalInfo)
@@ -32,7 +32,7 @@ namespace Authentication.BLL.Services
             if(!ValidationService.IsValidUserPassword(in user, request.Password))
                 throw new ForbiddenException("Неверный пароль");
 
-            await CheckUserForBan(user.Id);
+            await CheckUserForBanAsync(user.Id);
 
             if(user.AdditionalInfo!.IsConfirmed)
             {
@@ -44,7 +44,7 @@ namespace Authentication.BLL.Services
             }
         }
 
-        public async Task SignUp(UserRequest request)
+        public async Task SignUpAsync(UserRequest request)
         {
             if (await _context.Users.AnyAsync(u => u.Email == request.Email || u.Login == request.Login))
                 throw new ConflictException("Пользователь уже существует");
@@ -73,16 +73,16 @@ namespace Authentication.BLL.Services
             await _context.SaveChangesAsync();
         }
 
-        public async Task<TokensResponse> RefreshTokens(string token)
+        public async Task<TokensResponse> RefreshTokensAsync(string token)
         {
-            User user = await GetUserFromToken(token, "refresh");
+            User user = await GetUserFromTokenAsync(token, "refresh");
 
-            await CheckUserForBan(user.Id);
+            await CheckUserForBanAsync(user.Id);
 
             return _jwtService.CreateTokenPair(in user);
         }
 
-        public async Task<User> GetUserFromToken(string token, string type)
+        public async Task<User> GetUserFromTokenAsync(string token, string type)
         {
             ClaimsPrincipal principal = _jwtService.GetClaimsToken(token);
 
@@ -103,7 +103,7 @@ namespace Authentication.BLL.Services
             return user;
         }
 
-        public async Task CheckUserForBan(Guid id)
+        public async Task CheckUserForBanAsync(Guid id)
         {
             UserRestriction? ban = await _context.Restrictions
                 .AsNoTracking()
