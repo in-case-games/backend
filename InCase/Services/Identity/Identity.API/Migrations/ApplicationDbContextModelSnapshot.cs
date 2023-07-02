@@ -51,17 +51,17 @@ namespace Identity.API.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("8d713420-a401-4a69-afde-957b89d9798b"),
+                            Id = new Guid("5e5ce500-238c-4ef1-9d14-ca49362a7192"),
                             Name = "mute"
                         },
                         new
                         {
-                            Id = new Guid("30c10b8e-06d5-404e-ac48-bdf7259eee0d"),
+                            Id = new Guid("902a10b7-767d-4709-b4aa-8d40ff71104a"),
                             Name = "ban"
                         },
                         new
                         {
-                            Id = new Guid("ac0e4746-af26-4209-abe9-6648ce45b59b"),
+                            Id = new Guid("d72b8ed8-eafa-44b5-9804-b3d3ad5b44b0"),
                             Name = "warn"
                         });
                 });
@@ -218,22 +218,22 @@ namespace Identity.API.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("1798c17f-0b31-41b9-8067-7213983b4b93"),
+                            Id = new Guid("a4c7537d-fd82-43b7-9ebe-a9c13fad8347"),
                             Name = "user"
                         },
                         new
                         {
-                            Id = new Guid("5a945425-077a-442e-8b54-90694b553384"),
+                            Id = new Guid("1683f486-6f43-4956-bdcf-5d71339ef054"),
                             Name = "admin"
                         },
                         new
                         {
-                            Id = new Guid("62f46100-886f-4919-9513-f1d480f36825"),
+                            Id = new Guid("900a3e0c-7c61-4042-8dff-3085dad06e9f"),
                             Name = "owner"
                         },
                         new
                         {
-                            Id = new Guid("ec71178e-e08d-45f3-adcb-1e3ab316e6ac"),
+                            Id = new Guid("6d524965-fc21-4784-a0e1-f211b20740c5"),
                             Name = "bot"
                         });
                 });
@@ -262,8 +262,9 @@ namespace Identity.API.Migrations
             modelBuilder.Entity("Identity.DAL.Entities.UserRestriction", b =>
                 {
                     b.HasOne("Identity.DAL.Entities.User", "Owner")
-                        .WithMany()
+                        .WithMany("OwnerRestrictions")
                         .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .HasConstraintName("fk_user_restriction_user_owner_id");
 
                     b.HasOne("Identity.DAL.Entities.RestrictionType", "Type")
@@ -295,6 +296,8 @@ namespace Identity.API.Migrations
             modelBuilder.Entity("Identity.DAL.Entities.User", b =>
                 {
                     b.Navigation("AdditionalInfo");
+
+                    b.Navigation("OwnerRestrictions");
 
                     b.Navigation("Restrictions");
                 });

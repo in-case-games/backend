@@ -72,7 +72,8 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
-builder.Services.AddTransient<IUserAdditionalInfoService, UserAdditionalInfoService>();
+builder.Services.AddScoped<IUserAdditionalInfoService, UserAdditionalInfoService>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

@@ -9,6 +9,8 @@ namespace Identity.DAL.Entities
         [JsonIgnore]
         public IEnumerable<UserRestriction>? Restrictions { get; set; }
         [JsonIgnore]
+        public IEnumerable<UserRestriction>? OwnerRestrictions { get; set; }
+        [JsonIgnore]
         public UserAdditionalInfo? AdditionalInfo { get; set; }
     }
 }

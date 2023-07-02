@@ -5,6 +5,7 @@ using Identity.API.Common;
 using Identity.API.Filters;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
+using System.Net;
 
 namespace Identity.API.Controllers
 {
@@ -21,6 +22,8 @@ namespace Identity.API.Controllers
             _userInfoService = userInfoService;
         }
 
+        [ProducesResponseType(typeof(ApiResult<UserAdditionalInfoResponse>),
+            (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(Guid id)
@@ -30,6 +33,8 @@ namespace Identity.API.Controllers
             return Ok(ApiResult<UserAdditionalInfoResponse>.OK(response));
         }
 
+        [ProducesResponseType(typeof(ApiResult<UserAdditionalInfoResponse>),
+            (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("user/{id}")]
         public async Task<IActionResult> GetByUserId(Guid userId)
@@ -39,6 +44,8 @@ namespace Identity.API.Controllers
             return Ok(ApiResult<UserAdditionalInfoResponse>.OK(response));
         }
 
+        [ProducesResponseType(typeof(ApiResult<UserAdditionalInfoResponse>),
+            (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet]
         public async Task<IActionResult> Get()
@@ -48,6 +55,8 @@ namespace Identity.API.Controllers
             return Ok(ApiResult<UserAdditionalInfoResponse>.OK(response));
         }
 
+        [ProducesResponseType(typeof(ApiResult<UserAdditionalInfoResponse>),
+            (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Owner)]
         [HttpPut("role")]
         public async Task<IActionResult> UpdateRole(UserAdditionalInfoRequest request)
@@ -57,6 +66,8 @@ namespace Identity.API.Controllers
             return Ok(ApiResult<UserAdditionalInfoResponse>.OK(response));
         }
 
+        [ProducesResponseType(typeof(ApiResult<UserAdditionalInfoResponse>),
+            (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Admin, Roles.Owner)]
         [HttpPut("deletion/date")]
         public async Task<IActionResult> UpdateDeletionDate(UserAdditionalInfoRequest request)
@@ -66,6 +77,8 @@ namespace Identity.API.Controllers
             return Ok(ApiResult<UserAdditionalInfoResponse>.OK(response));
         }
 
+        [ProducesResponseType(typeof(ApiResult<UserAdditionalInfoResponse>),
+            (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpPut("image")]
         public async Task<IActionResult> UpdateImage(UserAdditionalInfoRequest request)
