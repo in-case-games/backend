@@ -215,11 +215,5 @@ namespace Identity.BLL.Services
 
             return request;
         }
-
-        public Task DoWorkManagerAsync(CancellationToken cancellationToken)
-        {
-            //TODO Manager check restriction time
-            throw new NotImplementedException();
-        }
     }
 }

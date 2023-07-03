@@ -13,7 +13,5 @@ namespace Identity.BLL.Interfaces
         public Task<UserRestrictionResponse> CreateAsync(UserRestrictionRequest request);
         public Task<UserRestrictionResponse> UpdateAsync(UserRestrictionRequest request);
         public Task<UserRestrictionResponse> DeleteAsync(Guid id);
-
-        public Task DoWorkManagerAsync(CancellationToken cancellationToken);
     }
 }

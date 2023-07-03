@@ -15,9 +15,6 @@ namespace Identity.DAL.Configurations
             builder.HasIndex(i => i.RoleId)
                 .IsUnique(false);
 
-            builder.Property(p => p.ImageUri)
-                .IsRequired();
-
             builder.HasOne(o => o.User)
                 .WithOne(o => o.AdditionalInfo)
                 .OnDelete(DeleteBehavior.Cascade);

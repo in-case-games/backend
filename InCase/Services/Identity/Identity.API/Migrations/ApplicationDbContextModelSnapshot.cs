@@ -51,17 +51,17 @@ namespace Identity.API.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("5e5ce500-238c-4ef1-9d14-ca49362a7192"),
+                            Id = new Guid("a44a72f7-8846-4fec-b841-d9c38fb9fd8c"),
                             Name = "mute"
                         },
                         new
                         {
-                            Id = new Guid("902a10b7-767d-4709-b4aa-8d40ff71104a"),
+                            Id = new Guid("83152563-d337-45ff-8e2b-b2426a6f430d"),
                             Name = "ban"
                         },
                         new
                         {
-                            Id = new Guid("d72b8ed8-eafa-44b5-9804-b3d3ad5b44b0"),
+                            Id = new Guid("57ce30a8-b79e-4244-b152-74071af54df6"),
                             Name = "warn"
                         });
                 });
@@ -107,11 +107,6 @@ namespace Identity.API.Migrations
                     b.Property<DateTime?>("DeletionDate")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("deletion_date");
-
-                    b.Property<string>("ImageUri")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("image_uri");
 
                     b.Property<Guid>("RoleId")
                         .HasColumnType("uuid")
@@ -218,22 +213,22 @@ namespace Identity.API.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("a4c7537d-fd82-43b7-9ebe-a9c13fad8347"),
+                            Id = new Guid("ddec1425-8250-4aeb-bd66-2fa51950381c"),
                             Name = "user"
                         },
                         new
                         {
-                            Id = new Guid("1683f486-6f43-4956-bdcf-5d71339ef054"),
+                            Id = new Guid("de9e5842-12a3-49d0-ae2a-b6454aa9353c"),
                             Name = "admin"
                         },
                         new
                         {
-                            Id = new Guid("900a3e0c-7c61-4042-8dff-3085dad06e9f"),
+                            Id = new Guid("796ffdcf-a63f-4b34-9c17-4756fd0d9ce7"),
                             Name = "owner"
                         },
                         new
                         {
-                            Id = new Guid("6d524965-fc21-4784-a0e1-f211b20740c5"),
+                            Id = new Guid("9238ea12-1465-455b-bf6a-669f4228d3f2"),
                             Name = "bot"
                         });
                 });

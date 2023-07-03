@@ -109,8 +109,14 @@ namespace Authentication.BLL.Services
                 .AsNoTracking()
                 .FirstOrDefaultAsync(ur => ur.UserId == id);
 
-            if (ban is not null && ban.ExpirationDate > DateTime.UtcNow)
-                throw new ForbiddenException($"Вход запрещён до {ban.ExpirationDate}.");
+            if (ban is not null)
+            {
+                if(ban.ExpirationDate > DateTime.UtcNow)
+                    throw new ForbiddenException($"Вход запрещён до {ban.ExpirationDate}.");
+
+                _context.Restrictions.Remove(ban);
+                await _context.SaveChangesAsync();
+            }
         }
 
         public static void CreateNewPassword(ref User user, string? password)

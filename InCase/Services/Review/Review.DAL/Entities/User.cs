@@ -1,7 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Review.DAL.Entity
-{
+namespace Review.DAL.Entities 
+{ 
     public class User : BaseEntity
     {
         [JsonIgnore]

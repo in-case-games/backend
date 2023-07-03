@@ -63,7 +63,7 @@ namespace Identity.BLL.Services
                 .FirstOrDefaultAsync(uai => uai.Id == request.UserId) ??
                 throw new NotFoundException("Пользователь не найден");
 
-            info.ImageUri = request.ImageUri;
+            //TODO Upload image
 
             await _context.SaveChangesAsync();
 

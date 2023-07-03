@@ -1,4 +1,4 @@
-﻿namespace Review.DAL.Entity
+﻿namespace Review.DAL.Entities
 {
     public class BaseEntity
     {

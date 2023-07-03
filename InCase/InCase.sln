@@ -71,6 +71,9 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Review.API", "Services\Review\Review.API\Review.API.csproj", "{F566669D-A0E2-464D-AB0F-00EDD5FEF15E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Review.BLL", "Services\Review\Review.BLL\Review.BLL.csproj", "{6039062A-CA77-4A9E-B0F3-4787CFA44532}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D8373243-D5AE-4C0D-935D-93F413B444D4} = {D8373243-D5AE-4C0D-935D-93F413B444D4}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Review.DAL", "Services\Review\Review.DAL\Review.DAL.csproj", "{D8373243-D5AE-4C0D-935D-93F413B444D4}"
 EndProject

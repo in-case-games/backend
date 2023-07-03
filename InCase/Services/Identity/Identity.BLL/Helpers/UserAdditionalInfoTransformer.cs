@@ -11,7 +11,6 @@ namespace Identity.BLL.Helpers
             Id = request.Id,
             CreationDate = request.CreationDate,
             DeletionDate = request.DeletionDate,
-            ImageUri = request.ImageUri,
             RoleId = request.RoleId,
             UserId = request.UserId,
         };
@@ -21,7 +20,6 @@ namespace Identity.BLL.Helpers
             Id = entity.Id,
             CreationDate = entity.CreationDate,
             DeletionDate = entity.DeletionDate,
-            ImageUri = entity.ImageUri,
             UserId = entity.UserId,
             Role = entity.Role?.ToResponse(),
         };
