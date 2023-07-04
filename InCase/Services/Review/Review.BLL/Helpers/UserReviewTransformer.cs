@@ -5,9 +5,9 @@ namespace Review.BLL.Helpers
 {
     public static class UserReviewTransformer
     {
-        public static UserReview ToEntity(this UserReviewRequest request, bool IsNewGuid = false) => new()
+        public static UserReview ToEntity(this UserReviewRequest request, bool isNewGuid = false) => new()
         {
-            Id = IsNewGuid ? Guid.NewGuid() : request.Id,
+            Id = isNewGuid ? Guid.NewGuid() : request.Id,
             Content = request.Content,
             CreationDate = request.CreationDate,
             IsApproved = request.IsApproved,
