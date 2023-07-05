@@ -5,6 +5,7 @@ using Review.API.Common;
 using Review.API.Filters;
 using Review.BLL.Interfaces;
 using Review.BLL.Models;
+using System.Net;
 using System.Security.Claims;
 
 namespace Review.API.Controllers
@@ -22,6 +23,8 @@ namespace Review.API.Controllers
             _reviewImageService = reviewImageService;
         }
 
+        [ProducesResponseType(typeof(ApiResult<List<ReviewImageResponse>>),
+            (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> Get()
@@ -31,6 +34,8 @@ namespace Review.API.Controllers
             return Ok(ApiResult<List<ReviewImageResponse>>.OK(response));
         }
 
+        [ProducesResponseType(typeof(ApiResult<List<ReviewImageResponse>>),
+            (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
         [HttpGet("admin")]
         public async Task<IActionResult> GetByAdmin()
@@ -40,6 +45,8 @@ namespace Review.API.Controllers
             return Ok(ApiResult<List<ReviewImageResponse>>.OK(response));
         }
 
+        [ProducesResponseType(typeof(ApiResult<ReviewImageResponse>),
+            (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(Guid id)
@@ -49,6 +56,8 @@ namespace Review.API.Controllers
             return Ok(ApiResult<ReviewImageResponse>.OK(response));
         }
 
+        [ProducesResponseType(typeof(ApiResult<ReviewImageResponse>),
+            (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
         [HttpGet("{id}/admin")]
         public async Task<IActionResult> GetByAdmin(Guid id)
@@ -58,6 +67,8 @@ namespace Review.API.Controllers
             return Ok(ApiResult<ReviewImageResponse>.OK(response));
         }
 
+        [ProducesResponseType(typeof(ApiResult<List<ReviewImageResponse>>),
+            (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("user/{id}")]
         public async Task<IActionResult> GetByUserId(Guid userId)
@@ -68,6 +79,8 @@ namespace Review.API.Controllers
             return Ok(ApiResult<List<ReviewImageResponse>>.OK(response));
         }
 
+        [ProducesResponseType(typeof(ApiResult<List<ReviewImageResponse>>),
+            (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet("user")]
         public async Task<IActionResult> GetByUserId()
@@ -78,6 +91,8 @@ namespace Review.API.Controllers
             return Ok(ApiResult<List<ReviewImageResponse>>.OK(response));
         }
 
+        [ProducesResponseType(typeof(ApiResult<List<ReviewImageResponse>>),
+            (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
         [HttpGet("admin/user/{id}")]
         public async Task<IActionResult> GetByAdminUserId(Guid id)
@@ -88,6 +103,8 @@ namespace Review.API.Controllers
             return Ok(ApiResult<List<ReviewImageResponse>>.OK(response));
         }
 
+        [ProducesResponseType(typeof(ApiResult<List<ReviewImageResponse>>),
+            (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("review/{id}")]
         public async Task<IActionResult> GetByReviewId(Guid id)
@@ -98,8 +115,10 @@ namespace Review.API.Controllers
             return Ok(ApiResult<List<ReviewImageResponse>>.OK(response));
         }
 
+        [ProducesResponseType(typeof(ApiResult<List<ReviewImageResponse>>),
+            (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
-        [HttpGet("review/{id}")]
+        [HttpGet("review/{id}/admin")]
         public async Task<IActionResult> GetByAdminReviewId(Guid id)
         {
             List<ReviewImageResponse> response = await _reviewImageService
@@ -108,6 +127,8 @@ namespace Review.API.Controllers
             return Ok(ApiResult<List<ReviewImageResponse>>.OK(response));
         }
 
+        [ProducesResponseType(typeof(ApiResult<ReviewImageResponse>),
+            (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpPost]
         public async Task<IActionResult> Post(ReviewImageRequest request)
@@ -117,6 +138,8 @@ namespace Review.API.Controllers
             return Ok(ApiResult<ReviewImageResponse>.OK(response));
         }
 
+        [ProducesResponseType(typeof(ApiResult<ReviewImageResponse>),
+            (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
@@ -126,11 +149,13 @@ namespace Review.API.Controllers
             return Ok(ApiResult<ReviewImageResponse>.OK(response));
         }
 
+        [ProducesResponseType(typeof(ApiResult<ReviewImageResponse>),
+            (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Admin, Roles.Owner)]
-        [HttpDelete("{id}&{userId}")]
-        public async Task<IActionResult> Delete(Guid id, Guid userId)
+        [HttpDelete("{id}/admin")]
+        public async Task<IActionResult> DeleteAdmin(Guid id)
         {
-            ReviewImageResponse response = await _reviewImageService.DeleteAsync(userId, id);
+            ReviewImageResponse response = await _reviewImageService.DeleteAsync(id);
 
             return Ok(ApiResult<ReviewImageResponse>.OK(response));
         }

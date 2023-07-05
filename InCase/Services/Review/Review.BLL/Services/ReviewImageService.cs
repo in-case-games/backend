@@ -110,5 +110,21 @@ namespace Review.BLL.Services
 
             return image.ToResponse();
         }
+
+        public async Task<ReviewImageResponse> DeleteAsync(Guid id)
+        {
+            ReviewImage image = await _context.ReviewImages
+                .Include(ri => ri.Review)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(ri => ri.Id == id) ??
+                throw new NotFoundException("Изображение не найдено");
+
+            //TODO Remove image local folder 
+
+            _context.ReviewImages.Remove(image);
+            await _context.SaveChangesAsync();
+
+            return image.ToResponse();
+        }
     }
 }

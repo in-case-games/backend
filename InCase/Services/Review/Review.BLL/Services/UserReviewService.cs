@@ -74,7 +74,7 @@ namespace Review.BLL.Services
             return review.ToResponse();
         }
 
-        public async Task<UserReviewResponse> DeniedReview(Guid id)
+        public async Task<UserReviewResponse> DeniedReviewAsync(Guid id)
         {
             UserReview review = await _context.Reviews
                 .Include(review => review.Images)
@@ -89,7 +89,7 @@ namespace Review.BLL.Services
             return review.ToResponse();
         }
 
-        public async Task<UserReviewResponse> ApproveReview(Guid id)
+        public async Task<UserReviewResponse> ApproveReviewAsync(Guid id)
         {
             UserReview review = await _context.Reviews
                 .Include(review => review.Images)
@@ -104,7 +104,7 @@ namespace Review.BLL.Services
             return review.ToResponse();
         }
 
-        public async Task<UserReviewResponse> UpdateAsync(Guid userId, UserReviewRequest request)
+        public async Task<UserReviewResponse> UpdateAsync(UserReviewRequest request)
         {
             if (!await _context.User.AnyAsync(u => u.Id == request.UserId))
                 throw new NotFoundException("Пользователь не найден");
@@ -137,6 +137,22 @@ namespace Review.BLL.Services
 
             if(review.UserId != userId)
                 throw new ForbiddenException("Доступ к отзыву только у создателя");
+
+            //TODO Remove image local folder 
+
+            _context.Reviews.Remove(review);
+            await _context.SaveChangesAsync();
+
+            return review.ToResponse();
+        }
+
+        public async Task<UserReviewResponse> DeleteAsync(Guid id)
+        {
+            UserReview review = await _context.Reviews
+                .Include(ur => ur.Images)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(ur => ur.Id == id) ??
+                throw new NotFoundException("Отзыв не найден");
 
             //TODO Remove image local folder 
 
