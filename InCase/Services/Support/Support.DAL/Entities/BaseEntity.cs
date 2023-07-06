@@ -1,4 +1,4 @@
-﻿namespace SupportTopic.DAL.Entities
+﻿namespace Support.DAL.Entities
 {
     public class BaseEntity
     {

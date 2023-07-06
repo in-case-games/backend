@@ -8,6 +8,9 @@
 
   <ItemGroup>
     <Folder Include="Services\" />
+    <Folder Include="Helpers\" />
   </ItemGroup>
-
+	<ItemGroup>
+		<ProjectReference Include="..\Support.DAL\Support.DAL.csproj" />
+	</ItemGroup>
 </Project>

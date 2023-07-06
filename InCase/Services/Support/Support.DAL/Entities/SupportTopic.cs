@@ -1,13 +1,13 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace SupportTopic.DAL.Entities
+namespace Support.DAL.Entities
 {
     public class SupportTopic : BaseEntity
     {
         public string? Title { get; set; }
         public string? Content { get; set; }
-        public DateTime Date { get; set; } = DateTime.UtcNow;
-        public bool IsClosed { get; set; } = false;
+        public DateTime Date { get; set; }
+        public bool IsClosed { get; set; }
 
         public IEnumerable<SupportTopicAnswer>? Answers { get; set; }
 

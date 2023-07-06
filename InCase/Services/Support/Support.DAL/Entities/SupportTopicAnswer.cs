@@ -1,11 +1,11 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace SupportTopic.DAL.Entities
+namespace Support.DAL.Entities
 {
     public class SupportTopicAnswer : BaseEntity
     {
         public string? Content { get; set; }
-        public DateTime Date { get; set; } = DateTime.UtcNow;
+        public DateTime Date { get; set; }
 
         public IEnumerable<AnswerImage>? Images { get; set; }
 

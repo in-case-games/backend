@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace SupportTopic.DAL.Entities
+namespace Support.DAL.Entities
 {
     public class AnswerImage : BaseEntity
     {
