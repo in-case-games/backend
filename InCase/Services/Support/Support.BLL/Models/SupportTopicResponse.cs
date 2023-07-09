@@ -10,7 +10,7 @@ namespace Support.BLL.Models
         public DateTime Date { get; set; }
         public bool IsClosed { get; set; }
 
-        public IEnumerable<SupportTopicAnswer>? Answers { get; set; }
+        public IEnumerable<SupportTopicAnswerResponse>? Answers { get; set; }
 
         public Guid UserId { get; set; }
     }

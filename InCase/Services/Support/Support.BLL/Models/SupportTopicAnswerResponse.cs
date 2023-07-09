@@ -7,7 +7,7 @@ namespace Support.BLL.Models
         public string? Content { get; set; }
         public DateTime Date { get; set; }
 
-        public IEnumerable<AnswerImage>? Images { get; set; }
+        public IEnumerable<AnswerImageResponse>? Images { get; set; }
 
         public Guid? PlaintiffId { get; set; }
         public Guid TopicId { get; set; }
