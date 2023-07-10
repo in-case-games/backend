@@ -19,6 +19,9 @@ namespace Support.BLL.Services
 
         public async Task<AnswerImageResponse> GetAsync(Guid userId, Guid id)
         {
+            if (!await _context.Users.AnyAsync(u => u.Id == userId))
+                throw new NotFoundException("Пользователь не найден");
+
             AnswerImage image = await _context.AnswerImages
                 .AsNoTracking()
                 .FirstOrDefaultAsync(ai => ai.Id == id) ??
@@ -29,10 +32,15 @@ namespace Support.BLL.Services
                 .FirstOrDefaultAsync(sta => sta.Id == image.AnswerId) ??
                 throw new NotFoundException("Сообщение не найдено");
 
-            if (!await _context.Topics.AnyAsync(st => st.UserId == userId && st.Id == answer.TopicId))
-                throw new ForbiddenException("Только создатель топика может видеть сообщения");
+            SupportTopic topic = await _context.Topics
+                .AsNoTracking()
+                .FirstOrDefaultAsync(st => st.Id == answer.TopicId) ??
+                throw new NotFoundException("Топик не найден");
 
-            return image.ToResponse();
+            if (topic.UserId != userId)
+                throw new ForbiddenException("Вы не создатель топика");
+
+            return image.ToResponse(); 
         }
 
         public async Task<AnswerImageResponse> GetAsync(Guid id)
@@ -47,14 +55,22 @@ namespace Support.BLL.Services
 
         public async Task<List<AnswerImageResponse>> GetByAnswerIdAsync(Guid userId, Guid id)
         {
+            if (!await _context.Users.AnyAsync(u => u.Id == userId))
+                throw new NotFoundException("Пользователь не найден");
+
             SupportTopicAnswer answer = await _context.Answers
                 .Include(sta => sta.Images)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(sta => sta.Id == id) ??
                 throw new NotFoundException("Сообщение не найдено");
 
-            if (!await _context.Topics.AnyAsync(st => st.UserId == userId && st.Id == answer.TopicId))
-                throw new ForbiddenException("Только создатель топика может видеть сообщения");
+            SupportTopic topic = await _context.Topics
+                .AsNoTracking()
+                .FirstOrDefaultAsync(st => st.Id == answer.TopicId) ??
+                throw new NotFoundException("Топик не найден");
+
+            if (topic.UserId != userId)
+                throw new ForbiddenException("Вы не создатель топика");
 
             return answer.Images!.ToResponse();
         }
@@ -72,12 +88,18 @@ namespace Support.BLL.Services
 
         public async Task<List<AnswerImageResponse>> GetByTopicIdAsync(Guid userId, Guid id)
         {
+            if (!await _context.Users.AnyAsync(u => u.Id == userId))
+                throw new NotFoundException("Пользователь не найден");
+
             SupportTopic topic = await _context.Topics
                 .Include(st => st.Answers!)
                     .ThenInclude(sta => sta.Images)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(st => st.UserId == userId && st.Id == id) ??
-                throw new ForbiddenException("Только создатель топика может видеть сообщения");
+                .FirstOrDefaultAsync(st => st.Id == id) ??
+                throw new NotFoundException("Топик не найден");
+
+            if (topic.UserId != userId)
+                throw new ForbiddenException("Вы не создатель топика");
 
             List<AnswerImageResponse> response = new();
 
@@ -89,6 +111,9 @@ namespace Support.BLL.Services
 
         public async Task<List<AnswerImageResponse>> GetByUserIdAsync(Guid userId)
         {
+            if (!await _context.Users.AnyAsync(u => u.Id == userId))
+                throw new NotFoundException("Пользователь не найден");
+
             List<SupportTopic> topics = await _context.Topics
                 .Include(st => st.Answers!)
                     .ThenInclude(sta => sta.Images)
@@ -114,7 +139,7 @@ namespace Support.BLL.Services
                     .ThenInclude(sta => sta.Images)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(st => st.Id == id) ??
-                throw new ForbiddenException("Топик не найден");
+                throw new NotFoundException("Топик не найден");
 
             List<AnswerImageResponse> response = new();
 
@@ -126,6 +151,9 @@ namespace Support.BLL.Services
 
         public async Task<AnswerImageResponse> CreateAsync(Guid userId, AnswerImageRequest request)
         {
+            if (!await _context.Users.AnyAsync(u => u.Id == userId))
+                throw new NotFoundException("Пользователь не найден");
+
             SupportTopicAnswer answer = await _context.Answers
                 .AsNoTracking()
                 .FirstOrDefaultAsync(sta => sta.Id == request.AnswerId) ??
@@ -144,6 +172,9 @@ namespace Support.BLL.Services
 
         public async Task<AnswerImageResponse> DeleteAsync(Guid userId, Guid id)
         {
+            if (!await _context.Users.AnyAsync(u => u.Id == userId))
+                throw new NotFoundException("Пользователь не найден");
+
             AnswerImage image = await _context.AnswerImages
                 .AsNoTracking()
                 .FirstOrDefaultAsync(ai => ai.Id == id) ??
@@ -154,8 +185,13 @@ namespace Support.BLL.Services
                 .FirstOrDefaultAsync(sta => sta.Id == image.AnswerId) ??
                 throw new NotFoundException("Сообщение не найдено");
 
-            if (!await _context.Topics.AnyAsync(st => st.UserId == userId && st.Id == answer.TopicId))
-                throw new ForbiddenException("Только создатель топика может видеть сообщения");
+            SupportTopic topic = await _context.Topics
+                .AsNoTracking()
+                .FirstOrDefaultAsync(st => st.Id == answer.TopicId) ??
+                throw new NotFoundException("Топик не найден");
+
+            if (topic.UserId != userId)
+                throw new ForbiddenException("Вы не создатель топика");
 
             _context.AnswerImages.Remove(image);
             await _context.SaveChangesAsync();

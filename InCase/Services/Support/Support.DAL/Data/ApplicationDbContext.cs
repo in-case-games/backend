@@ -6,6 +6,7 @@ namespace Support.DAL.Data
 {
     public class ApplicationDbContext : DbContext
     {
+        public DbSet<User> Users => Set<User>();
         public DbSet<SupportTopicAnswer> Answers => Set<SupportTopicAnswer>();
         public DbSet<AnswerImage> AnswerImages => Set<AnswerImage>();
         public DbSet<SupportTopic> Topics => Set<SupportTopic>();

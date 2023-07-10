@@ -1,6 +1,11 @@
-﻿using Support.BLL.Interfaces;
+﻿using Microsoft.EntityFrameworkCore;
+using Support.BLL.Exceptions;
+using Support.BLL.Helpers;
+using Support.BLL.Interfaces;
 using Support.BLL.Models;
 using Support.DAL.Data;
+using Support.DAL.Entities;
+using System.Threading;
 
 namespace Support.BLL.Services
 {
@@ -13,44 +18,182 @@ namespace Support.BLL.Services
             _context = context;
         }
 
-        public Task<SupportTopicAnswerResponse> GetAsync(Guid userId, Guid id)
+        public async Task<SupportTopicResponse> GetAsync(Guid userId, Guid id)
         {
-            throw new NotImplementedException();
+            if (!await _context.Users.AnyAsync(u => u.Id == userId))
+                throw new NotFoundException("Пользователь не найден");
+
+            SupportTopic topic = await _context.Topics
+                .Include(st => st.Answers!)
+                    .ThenInclude(sta => sta.Images)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(st => st.Id == id) ??
+                throw new NotFoundException("Топик не найден");
+
+            if (topic.UserId != userId)
+                throw new ForbiddenException("Вы не создатель топика");
+
+            return topic.ToResponse();
         }
 
-        public Task<SupportTopicAnswerResponse> GetAsync(Guid id)
+        public async Task<SupportTopicResponse> GetAsync(Guid id)
         {
-            throw new NotImplementedException();
+            SupportTopic topic = await _context.Topics
+                .Include(st => st.Answers!)
+                    .ThenInclude(sta => sta.Images)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(st => st.Id == id) ??
+                throw new NotFoundException("Топик не найден");
+
+            return topic.ToResponse();
         }
 
-        public Task<List<SupportTopicAnswerResponse>> GetByUserIdAsync(Guid userId)
+        public async Task<List<SupportTopicResponse>> GetByUserIdAsync(Guid userId)
         {
-            throw new NotImplementedException();
+            if (!await _context.Users.AnyAsync(u => u.Id == userId))
+                throw new NotFoundException("Пользователь не найден");
+
+            List<SupportTopic> topics = await _context.Topics
+                .Include(st => st.Answers!)
+                    .ThenInclude(sta => sta.Images)
+                .AsNoTracking()
+                .Where(st => st.UserId == userId)
+                .ToListAsync();
+
+            return topics.ToResponse();
         }
 
-        public Task<List<SupportTopicAnswerResponse>> GetOpenedTopicsAsync()
+        public async Task<List<SupportTopicResponse>> GetOpenedTopicsAsync()
         {
-            throw new NotImplementedException();
+            List<SupportTopic> topics = await _context.Topics
+                .Include(st => st.Answers!)
+                    .ThenInclude(sta => sta.Images)
+                .AsNoTracking()
+                .Where(st => st.IsClosed == false)
+                .ToListAsync();
+
+            return topics.ToResponse();
         }
 
-        public Task<SupportTopicAnswerResponse> CreateAsync(SupportTopicAnswerRequest request)
+        public async Task<SupportTopicResponse> CloseTopic(Guid id)
         {
-            throw new NotImplementedException();
+            SupportTopic topic = await _context.Topics
+                .Include(st => st.Answers!)
+                    .ThenInclude(sta => sta.Images)
+                .FirstOrDefaultAsync(st => st.Id == id) ??
+                throw new NotFoundException("Топик не найден");
+
+            topic.IsClosed = true;
+            await _context.SaveChangesAsync();
+
+            return topic.ToResponse();
         }
 
-        public Task<SupportTopicAnswerResponse> UpdateAsync(SupportTopicAnswerRequest request)
+        public async Task<SupportTopicResponse> CloseTopic(Guid userId, Guid id)
         {
-            throw new NotImplementedException();
+            if (!await _context.Users.AnyAsync(u => u.Id == userId))
+                throw new NotFoundException("Пользователь не найден");
+
+            SupportTopic topic = await _context.Topics
+                .Include(st => st.Answers!)
+                    .ThenInclude(sta => sta.Images)
+                .FirstOrDefaultAsync(st => st.Id == id) ??
+                throw new NotFoundException("Топик не найден");
+
+            if (topic.UserId != userId)
+                throw new ForbiddenException("Вы не создатель топика");
+
+            topic.IsClosed = true;
+            await _context.SaveChangesAsync();
+
+            return topic.ToResponse();
         }
 
-        public Task<SupportTopicAnswerResponse> DeleteAsync(Guid userId, Guid id)
+        public async Task<SupportTopicResponse> CreateAsync(SupportTopicRequest request)
         {
-            throw new NotImplementedException();
+            if (!await _context.Users.AnyAsync(u => u.Id == request.UserId))
+                throw new NotFoundException("Пользователь не найден");
+
+            request.IsClosed = false;
+            request.Date = DateTime.UtcNow;
+
+            List<SupportTopic> topics = await _context.Topics
+                .AsNoTracking()
+                .Where(st => st.UserId == request.UserId && st.IsClosed == false)
+                .ToListAsync();
+
+            if (topics.Count >= 3)
+                throw new ConflictException("Количество открытых топиков не может превышать 3");
+
+            SupportTopic topic = request.ToEntity(isNewGuid: true);
+
+            await _context.Topics.AddAsync(topic);
+            await _context.SaveChangesAsync();
+
+            return topic.ToResponse();
         }
 
-        public Task<SupportTopicAnswerResponse> DeleteAsync(Guid id)
+        public async Task<SupportTopicResponse> UpdateAsync(SupportTopicRequest request)
         {
-            throw new NotImplementedException();
+            if (!await _context.Users.AnyAsync(u => u.Id == request.UserId))
+                throw new NotFoundException("Пользователь не найден");
+
+            SupportTopic topicOld = await _context.Topics
+                .Include(st => st.Answers!)
+                    .ThenInclude(sta => sta.Images)
+                .FirstOrDefaultAsync(st => st.Id == request.Id) ??
+                throw new NotFoundException("Топик не найден");
+
+            if (topicOld.UserId != request.UserId)
+                throw new ForbiddenException("Вы не создатель топика");
+
+            SupportTopic topic = request.ToEntity(isNewGuid: false);
+
+            request.Date = topic.Date;
+            request.IsClosed = topic.IsClosed;
+
+            _context.Entry(topicOld).CurrentValues.SetValues(topic);
+            await _context.SaveChangesAsync();
+
+            topic.Answers = topicOld.Answers;
+
+            return topic.ToResponse();
+        }
+
+        public async Task<SupportTopicResponse> DeleteAsync(Guid userId, Guid id)
+        {
+            if (!await _context.Users.AnyAsync(u => u.Id == userId))
+                throw new NotFoundException("Пользователь не найден");
+
+            SupportTopic topic = await _context.Topics
+                .Include(st => st.Answers!)
+                    .ThenInclude(sta => sta.Images)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(st => st.Id == id) ??
+                throw new NotFoundException("Топик не найден");
+
+            if (topic.UserId != userId)
+                throw new ForbiddenException("Вы не создатель топика");
+
+            _context.Topics.Remove(topic);
+            await _context.SaveChangesAsync();
+
+            return topic.ToResponse();
+        }
+
+        public async Task<SupportTopicResponse> DeleteAsync(Guid id)
+        {
+            SupportTopic topic = await _context.Topics
+                .Include(st => st.Answers!)
+                    .ThenInclude(sta => sta.Images)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(st => st.Id == id) ??
+                throw new NotFoundException("Топик не найден");
+
+            _context.Topics.Remove(topic);
+            await _context.SaveChangesAsync();
+
+            return topic.ToResponse();
         }
     }
 }

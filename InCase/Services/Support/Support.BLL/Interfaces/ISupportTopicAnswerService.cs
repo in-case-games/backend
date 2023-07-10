@@ -12,8 +12,6 @@ namespace Support.BLL.Interfaces
         public Task<SupportTopicAnswerResponse> CreateAsync(SupportTopicAnswerRequest request);
         public Task<SupportTopicAnswerResponse> CreateByAdminAsync(SupportTopicAnswerRequest request);
         public Task<SupportTopicAnswerResponse> UpdateAsync(SupportTopicAnswerRequest request);
-        public Task<SupportTopicAnswerResponse> UpdateByAdminAsync(SupportTopicAnswerRequest request);
-        public Task<SupportTopicAnswerResponse> DeleteAsync(Guid id);
         public Task<SupportTopicAnswerResponse> DeleteAsync(Guid userId, Guid id);
     }
 }
