@@ -107,7 +107,6 @@ namespace Support.BLL.Services
                 throw new NotFoundException("Пользователь не найден");
 
             SupportTopic topic = await _context.Topics
-                .AsNoTracking()
                 .FirstOrDefaultAsync(st => st.Id == request.TopicId) ??
                 throw new NotFoundException("Топик не найден");
 
@@ -119,6 +118,9 @@ namespace Support.BLL.Services
             SupportTopicAnswer answer = request.ToEntity(isNewGuid: true);
 
             await _context.Answers.AddAsync(answer);
+
+            topic.IsClosed = false;
+
             await _context.SaveChangesAsync();
 
             return answer.ToResponse();
