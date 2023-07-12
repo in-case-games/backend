@@ -23,7 +23,7 @@ namespace EmailSender.BLL.Services
             _requestUrl = configuration["EmailConfig:AddressCallback"]!;
         }
 
-        public async Task SendToEmail(
+        public async Task SendToEmailAsync(
             string email,
             string subject,
             EmailTemplate template)

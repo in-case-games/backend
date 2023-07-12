@@ -1,6 +1,11 @@
-﻿namespace EmailSender.BLL.Interfaces
+﻿using EmailSender.BLL.Models;
+
+namespace EmailSender.BLL.Interfaces
 {
     public interface IUserService
     {
+        public Task<UserAdditionalInfoResponse> GetAsync(Guid id);
+        public Task<UserAdditionalInfoResponse> GetByUserIdAsync(Guid id);
+        public Task<UserAdditionalInfoResponse> UpdateNotifyEmailAsync(Guid userId, bool isNotifyEmail);
     }
 }
