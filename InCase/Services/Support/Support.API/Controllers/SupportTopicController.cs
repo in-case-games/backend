@@ -4,6 +4,7 @@ using Support.API.Common;
 using Support.API.Filters;
 using Support.BLL.Interfaces;
 using Support.BLL.Models;
+using System.Net;
 using System.Security.Claims;
 
 namespace Support.API.Controllers
@@ -21,6 +22,8 @@ namespace Support.API.Controllers
             _topicService = topicService;
         }
 
+        [ProducesResponseType(typeof(ApiResult<SupportTopicResponse>),
+            (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(Guid id)
@@ -30,6 +33,8 @@ namespace Support.API.Controllers
             return Ok(ApiResult<SupportTopicResponse>.OK(response));
         }
 
+        [ProducesResponseType(typeof(ApiResult<SupportTopicResponse>),
+            (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
         [HttpGet("{id}/admin")]
         public async Task<IActionResult> GetByAdmin(Guid id)
@@ -39,15 +44,19 @@ namespace Support.API.Controllers
             return Ok(ApiResult<SupportTopicResponse>.OK(response));
         }
 
+        [ProducesResponseType(typeof(ApiResult<List<SupportTopicResponse>>),
+            (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet("user/{id}")]
         public async Task<IActionResult> GetByUserId(Guid id)
         {
             List<SupportTopicResponse> response = await _topicService.GetByUserIdAsync(UserId);
 
-            return Ok(ApiResult< List<SupportTopicResponse>>.OK(response));
+            return Ok(ApiResult<List<SupportTopicResponse>>.OK(response));
         }
 
+        [ProducesResponseType(typeof(ApiResult<List<SupportTopicResponse>>),
+            (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
         [HttpGet("user/{id}/admin")]
         public async Task<IActionResult> GetByAdminUserId(Guid id)
@@ -57,6 +66,8 @@ namespace Support.API.Controllers
             return Ok(ApiResult<List<SupportTopicResponse>>.OK(response));
         }
 
+        [ProducesResponseType(typeof(ApiResult<List<SupportTopicResponse>>),
+            (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
         [HttpGet("opened")]
         public async Task<IActionResult> GetOpenedTopics()
@@ -66,6 +77,8 @@ namespace Support.API.Controllers
             return Ok(ApiResult<List<SupportTopicResponse>>.OK(response));
         }
 
+        [ProducesResponseType(typeof(ApiResult<SupportTopicResponse>),
+            (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet("{id}/close")]
         public async Task<IActionResult> Close(Guid id)
@@ -75,6 +88,8 @@ namespace Support.API.Controllers
             return Ok(ApiResult<SupportTopicResponse>.OK(response));
         }
 
+        [ProducesResponseType(typeof(ApiResult<SupportTopicResponse>),
+            (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
         [HttpGet("{id}/close/admin")]
         public async Task<IActionResult> CloseByAdmin(Guid id)
@@ -84,6 +99,8 @@ namespace Support.API.Controllers
             return Ok(ApiResult<SupportTopicResponse>.OK(response));
         }
 
+        [ProducesResponseType(typeof(ApiResult<SupportTopicResponse>),
+            (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpPost]
         public async Task<IActionResult> Post(SupportTopicRequest request)
@@ -95,6 +112,8 @@ namespace Support.API.Controllers
             return Ok(ApiResult<SupportTopicResponse>.OK(response));
         }
 
+        [ProducesResponseType(typeof(ApiResult<SupportTopicResponse>),
+            (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpPut]
         public async Task<IActionResult> Put(SupportTopicRequest request)
@@ -106,6 +125,8 @@ namespace Support.API.Controllers
             return Ok(ApiResult<SupportTopicResponse>.OK(response));
         }
 
+        [ProducesResponseType(typeof(ApiResult<SupportTopicResponse>),
+            (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
@@ -115,6 +136,8 @@ namespace Support.API.Controllers
             return Ok(ApiResult<SupportTopicResponse>.OK(response));
         }
 
+        [ProducesResponseType(typeof(ApiResult<SupportTopicResponse>),
+            (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Admin, Roles.Owner)]
         [HttpDelete("{id}/admin")]
         public async Task<IActionResult> DeleteByAdmin(Guid id)

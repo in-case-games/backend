@@ -29,6 +29,11 @@ namespace EmailSender.API.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("email");
+
                     b.HasKey("Id")
                         .HasName("pk_user");
 

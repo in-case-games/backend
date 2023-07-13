@@ -2,12 +2,11 @@
 {
     public class EmailTemplate
     {
-        public string HeaderTitle { get; set; } = string.Empty;
-        public string HeaderSubtitle { get; set; } = string.Empty;
-        public string BodyTitle { get; set; } = string.Empty;
-        public string BodyDescription { get; set; } = string.Empty;
-        public string? BodyButtonText { get; set; }
-        public string? BodyButtonLink { get; set; }
+        public string Email { get; set; } = null!;
+        public string Subject { get; set; } = null!;
+        public bool IsRequiredMessage { get; set; } = false;
+        public EmailHeaderTemplate Header { get; set; } = new EmailHeaderTemplate();
+        public EmailBodyTemplate Body { get; set; } = new EmailBodyTemplate();
 
         public List<BannerTemplate> BannerTemplates { get; set; } = new();
     }

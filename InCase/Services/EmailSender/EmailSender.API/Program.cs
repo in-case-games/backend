@@ -1,7 +1,9 @@
 using EmailSender.API.Middlewares;
 using EmailSender.BLL.Interfaces;
+using EmailSender.BLL.MassTransit.Consumers;
 using EmailSender.BLL.Services;
 using EmailSender.DAL.Data;
+using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -72,7 +74,34 @@ builder.Services.AddSwaggerGen(options =>
 
 builder.Services.AddSingleton<IEmailService, EmailService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddMassTransit(x =>
+{
+    x.AddConsumer<EmailConsumer>();
+    x.AddConsumer<UserConsumer>();
 
+    x.AddBus(provider => Bus.Factory.CreateUsingRabbitMq(cfg =>
+    {
+        cfg.Host(new Uri(builder.Configuration["MassTransit:Uri"]!), h =>
+        {
+            h.Username(builder.Configuration["MassTransit:Username"]!);
+            h.Password(builder.Configuration["MassTransit:Password"]!);
+        });
+        cfg.ReceiveEndpoint("email", ep =>
+        {
+            ep.PrefetchCount = 16;
+            ep.UseMessageRetry(r => r.Interval(2, 100));
+            ep.ConfigureConsumer<EmailConsumer>(provider);
+        });
+        cfg.ReceiveEndpoint("user", ep =>
+        {
+            ep.PrefetchCount = 16;
+            ep.UseMessageRetry(r => r.Interval(2, 100));
+            ep.ConfigureConsumer<UserConsumer>(provider);
+        });
+    }));
+});
+
+builder.Services.AddMassTransitHostedService();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddAuthorization();

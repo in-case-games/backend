@@ -59,7 +59,7 @@ namespace Identity.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpPut]
-        public async Task<IActionResult> Get(UserRequest request)
+        public async Task<IActionResult> Put(UserRequest request)
         {
             request.Id = UserId;
 

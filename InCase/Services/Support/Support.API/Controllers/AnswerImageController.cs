@@ -4,6 +4,7 @@ using Support.API.Common;
 using Support.API.Filters;
 using Support.BLL.Interfaces;
 using Support.BLL.Models;
+using System.Net;
 using System.Security.Claims;
 
 namespace Support.API.Controllers
@@ -21,6 +22,8 @@ namespace Support.API.Controllers
             _answerImageService = answerImageService;
         }
 
+        [ProducesResponseType(typeof(ApiResult<AnswerImageResponse>),
+            (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(Guid id)
@@ -30,6 +33,8 @@ namespace Support.API.Controllers
             return Ok(ApiResult<AnswerImageResponse>.OK(response));
         }
 
+        [ProducesResponseType(typeof(ApiResult<AnswerImageResponse>),
+            (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
         [HttpGet("{id}/admin")]
         public async Task<IActionResult> GetByAdmin(Guid id)
@@ -39,6 +44,8 @@ namespace Support.API.Controllers
             return Ok(ApiResult<AnswerImageResponse>.OK(response));
         }
 
+        [ProducesResponseType(typeof(ApiResult<List<AnswerImageResponse>>),
+            (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet("answer/{id}")]
         public async Task<IActionResult> GetByAnswerId(Guid id)
@@ -48,6 +55,8 @@ namespace Support.API.Controllers
             return Ok(ApiResult<List<AnswerImageResponse>>.OK(response));
         }
 
+        [ProducesResponseType(typeof(ApiResult<List<AnswerImageResponse>>),
+            (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
         [HttpGet("answer/{id}/admin")]
         public async Task<IActionResult> GetByAdminAnswerId(Guid id)
@@ -57,6 +66,8 @@ namespace Support.API.Controllers
             return Ok(ApiResult<List<AnswerImageResponse>>.OK(response));
         }
 
+        [ProducesResponseType(typeof(ApiResult<List<AnswerImageResponse>>),
+            (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet("topic/{id}")]
         public async Task<IActionResult> GetByTopicId(Guid id)
@@ -66,6 +77,8 @@ namespace Support.API.Controllers
             return Ok(ApiResult<List<AnswerImageResponse>>.OK(response));
         }
 
+        [ProducesResponseType(typeof(ApiResult<List<AnswerImageResponse>>),
+            (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
         [HttpGet("topic/{id}/admin")]
         public async Task<IActionResult> GetByAdminTopicId(Guid id)
@@ -75,6 +88,8 @@ namespace Support.API.Controllers
             return Ok(ApiResult<List<AnswerImageResponse>>.OK(response));
         }
 
+        [ProducesResponseType(typeof(ApiResult<List<AnswerImageResponse>>),
+            (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet]
         public async Task<IActionResult> Get()
@@ -84,6 +99,8 @@ namespace Support.API.Controllers
             return Ok(ApiResult<List<AnswerImageResponse>>.OK(response));
         }
 
+        [ProducesResponseType(typeof(ApiResult<List<AnswerImageResponse>>),
+            (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet("user/{id}/admin")]
         public async Task<IActionResult> GetByAdminUserId(Guid id)
@@ -93,6 +110,8 @@ namespace Support.API.Controllers
             return Ok(ApiResult<List<AnswerImageResponse>>.OK(response));
         }
 
+        [ProducesResponseType(typeof(ApiResult<AnswerImageResponse>),
+            (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpPost]
         public async Task<IActionResult> Post(AnswerImageRequest request)
@@ -102,6 +121,8 @@ namespace Support.API.Controllers
             return Ok(ApiResult<AnswerImageResponse>.OK(response));
         }
 
+        [ProducesResponseType(typeof(ApiResult<AnswerImageResponse>),
+            (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
@@ -111,6 +132,8 @@ namespace Support.API.Controllers
             return Ok(ApiResult<AnswerImageResponse>.OK(response));
         }
 
+        [ProducesResponseType(typeof(ApiResult<AnswerImageResponse>),
+            (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Admin, Roles.Owner)]
         [HttpDelete("{id}/admin")]
         public async Task<IActionResult> DeleteByAdmin(Guid id)

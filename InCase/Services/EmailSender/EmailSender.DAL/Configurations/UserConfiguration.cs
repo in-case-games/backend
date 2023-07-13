@@ -11,6 +11,9 @@ namespace EmailSender.DAL.Configurations
             base.Configure(builder);
 
             builder.ToTable(nameof(User));
+
+            builder.Property(u => u.Email)
+                .IsRequired();
         }
     }
 }

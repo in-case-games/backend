@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EmailSender.API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230712100011_InitialCreate")]
+    [Migration("20230713115257_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -31,6 +31,11 @@ namespace EmailSender.API.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
                         .HasColumnName("id");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("email");
 
                     b.HasKey("Id")
                         .HasName("pk_user");

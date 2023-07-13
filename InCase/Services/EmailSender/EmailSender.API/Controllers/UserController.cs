@@ -5,6 +5,7 @@ using EmailSender.BLL.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 using System.Security.Claims;
 
 namespace EmailSender.API.Controllers
@@ -22,6 +23,8 @@ namespace EmailSender.API.Controllers
             _userService = userService;
         }
 
+        [ProducesResponseType(typeof(ApiResult<UserAdditionalInfoResponse>),
+            (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("info/{id}")]
         public async Task<IActionResult> Get(Guid id)
@@ -31,6 +34,8 @@ namespace EmailSender.API.Controllers
             return Ok(ApiResult<UserAdditionalInfoResponse>.OK(response));
         }
 
+        [ProducesResponseType(typeof(ApiResult<UserAdditionalInfoResponse>),
+            (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("{id}/info")]
         public async Task<IActionResult> GetByUserId(Guid id)
@@ -40,6 +45,8 @@ namespace EmailSender.API.Controllers
             return Ok(ApiResult<UserAdditionalInfoResponse>.OK(response));
         }
 
+        [ProducesResponseType(typeof(ApiResult<UserAdditionalInfoResponse>),
+            (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet("info")]
         public async Task<IActionResult> Get()
@@ -49,6 +56,8 @@ namespace EmailSender.API.Controllers
             return Ok(ApiResult<UserAdditionalInfoResponse>.OK(response));
         }
 
+        [ProducesResponseType(typeof(ApiResult<UserAdditionalInfoResponse>),
+            (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet("{isNotify}/email")]
         public async Task<IActionResult> ChangeNotifyEmail(bool isNotify)
@@ -58,6 +67,8 @@ namespace EmailSender.API.Controllers
             return Ok(ApiResult<UserAdditionalInfoResponse>.OK(response));
         }
 
+        [ProducesResponseType(typeof(ApiResult<UserAdditionalInfoResponse>),
+            (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Admin, Roles.Owner)]
         [HttpGet("{id}&{isNotify}/email/admin")]
         public async Task<IActionResult> ChangeNotifyEmailByAdmin(Guid id, bool isNotify)
