@@ -1,4 +1,4 @@
-﻿using EmailSender.BLL.Models;
+﻿using EmailSender.BLL.MassTransit.Models;
 
 namespace EmailSender.BLL.Interfaces
 {

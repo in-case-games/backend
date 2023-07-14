@@ -17,37 +17,52 @@ namespace EmailSender.BLL.Services
             _context = context;
         }
 
-        public async Task<UserAdditionalInfoResponse> GetAsync(Guid id)
+        public async Task<UserResponse> GetAsync(Guid id)
         {
-            UserAdditionalInfo info = await _context.AdditionalInfos
+            User user = await _context.Users
                 .AsNoTracking()
-                .FirstOrDefaultAsync(uai => uai.Id == id) ??
-                throw new NotFoundException("Информация не найдена");
+                .FirstOrDefaultAsync(u => u.Id == id) ??
+                throw new NotFoundException("Пользователь не найден");
 
-            return info.ToResponse();
+            return user.ToResponse();
         }
 
-        public async Task<UserAdditionalInfoResponse> GetByUserIdAsync(Guid id)
+        public async Task<UserResponse> CreateAsync(UserRequest request, bool IsNewGuid = false)
         {
-            UserAdditionalInfo info = await _context.AdditionalInfos
-                .AsNoTracking()
-                .FirstOrDefaultAsync(uai => uai.UserId == id) ??
-                throw new NotFoundException("Информация не найдена");
+            if (await _context.Users.AnyAsync(u => u.Id == request.Id || u.Email == request.Email))
+                throw new ForbiddenException("Пользователь существует");
 
-            return info.ToResponse();
+            User user = request.ToEntity(IsNewGuid: IsNewGuid);
+
+            await _context.Users.AddAsync(user);
+            await _context.SaveChangesAsync();
+
+            return user.ToResponse();
         }
 
-        public async Task<UserAdditionalInfoResponse> UpdateNotifyEmailAsync(Guid userId, bool isNotifyEmail)
+        public async Task<UserResponse> UpdateAsync(UserRequest request)
         {
-            UserAdditionalInfo info = await _context.AdditionalInfos
-                .FirstOrDefaultAsync(uai => uai.UserId == userId) ??
-                throw new NotFoundException("Информация не найдена");
+            User user = await _context.Users
+                .FirstOrDefaultAsync(u => u.Id == request.Id) ??
+                throw new NotFoundException("Пользователь не найден");
 
-            info.IsNotifyEmail = isNotifyEmail;
+            user.Email = request.Email;
 
             await _context.SaveChangesAsync();
 
-            return info.ToResponse();
+            return user.ToResponse();
+        }
+
+        public async Task<UserResponse> DeleteAsync(Guid id)
+        {
+            User user = await _context.Users
+                .FirstOrDefaultAsync(u => u.Id == id) ??
+                throw new NotFoundException("Пользователь не найден");
+
+            _context.Users.Remove(user);
+            await _context.SaveChangesAsync();
+
+            return user.ToResponse();
         }
     }
 }

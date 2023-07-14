@@ -1,5 +1,6 @@
-﻿using EmailSender.BLL.Interfaces;
-using EmailSender.BLL.Models;
+﻿using EmailSender.BLL.Exceptions;
+using EmailSender.BLL.Interfaces;
+using EmailSender.BLL.MassTransit.Models;
 using EmailSender.DAL.Data;
 using EmailSender.DAL.Entities;
 using MassTransit;
@@ -20,15 +21,16 @@ namespace EmailSender.BLL.MassTransit.Consumers
 
         public async Task Consume(ConsumeContext<EmailTemplate> context)
         {
-            var data = context.Message;
+            EmailTemplate template = context.Message;
 
             User user = await _context.Users
                 .Include(u => u.AdditionalInfo)
                 .AsNoTracking()
-                .FirstAsync(u => u.Email == data.Email);
+                .FirstOrDefaultAsync(u => u.Email == template.Email) ??
+                throw new NotFoundException("Пользователь не найден");
 
-            if(user.AdditionalInfo!.IsNotifyEmail || data.IsRequiredMessage)
-                await _emailService.SendToEmailAsync(data);
+            if(user.AdditionalInfo!.IsNotifyEmail || template.IsRequiredMessage)
+                await _emailService.SendToEmailAsync(template);
         }
     }
 }

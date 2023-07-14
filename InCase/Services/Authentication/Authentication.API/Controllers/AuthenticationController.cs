@@ -22,7 +22,7 @@ namespace Authentication.API.Controllers
         [ProducesResponseType(typeof(ApiResult<string>),
             (int)HttpStatusCode.OK)]
         [AllowAnonymous]
-        [HttpGet("sign-in")]
+        [HttpPost("sign-in")]
         public async Task<IActionResult> SignIn(UserRequest request)
         {
             await _authenticationService.SignInAsync(request);
@@ -33,7 +33,7 @@ namespace Authentication.API.Controllers
         [ProducesResponseType(typeof(ApiResult<string>),
             (int)HttpStatusCode.OK)]
         [AllowAnonymous]
-        [HttpGet("sign-up")]
+        [HttpPost("sign-up")]
         public async Task<IActionResult> SignUp(UserRequest request)
         {
             await _authenticationService.SignUpAsync(request);

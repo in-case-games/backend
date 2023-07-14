@@ -1,4 +1,4 @@
-﻿namespace EmailSender.BLL.Models
+﻿namespace EmailSender.BLL.MassTransit.Models
 {
     public class EmailTemplate
     {
@@ -8,6 +8,6 @@
         public EmailHeaderTemplate Header { get; set; } = new EmailHeaderTemplate();
         public EmailBodyTemplate Body { get; set; } = new EmailBodyTemplate();
 
-        public List<BannerTemplate> BannerTemplates { get; set; } = new();
+        public List<EmailBannerTemplate> BannerTemplates { get; set; } = new();
     }
 }

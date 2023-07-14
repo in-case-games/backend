@@ -73,7 +73,9 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 builder.Services.AddSingleton<IEmailService, EmailService>();
+builder.Services.AddScoped<IUserAdditionalInfoService, UserAdditionalInfoService>();
 builder.Services.AddScoped<IUserService, UserService>();
+
 builder.Services.AddMassTransit(x =>
 {
     x.AddConsumer<EmailConsumer>();
@@ -86,22 +88,21 @@ builder.Services.AddMassTransit(x =>
             h.Username(builder.Configuration["MassTransit:Username"]!);
             h.Password(builder.Configuration["MassTransit:Password"]!);
         });
-        cfg.ReceiveEndpoint("email", ep =>
-        {
-            ep.PrefetchCount = 16;
-            ep.UseMessageRetry(r => r.Interval(2, 100));
-            ep.ConfigureConsumer<EmailConsumer>(provider);
-        });
         cfg.ReceiveEndpoint("user", ep =>
         {
             ep.PrefetchCount = 16;
-            ep.UseMessageRetry(r => r.Interval(2, 100));
+            ep.UseMessageRetry(r => r.Interval(2, 50));
             ep.ConfigureConsumer<UserConsumer>(provider);
+        });
+        cfg.ReceiveEndpoint("email", ep =>
+        {
+            ep.PrefetchCount = 16;
+            ep.UseMessageRetry(r => r.Interval(100, 150));
+            ep.ConfigureConsumer<EmailConsumer>(provider);
         });
     }));
 });
 
-builder.Services.AddMassTransitHostedService();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddAuthorization();

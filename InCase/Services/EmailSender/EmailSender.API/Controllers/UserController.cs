@@ -14,11 +14,11 @@ namespace EmailSender.API.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        private readonly IUserService _userService;
+        private readonly IUserAdditionalInfoService _userService;
         private Guid UserId => Guid
             .Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
 
-        public UserController(IUserService userService)
+        public UserController(IUserAdditionalInfoService userService)
         {
             _userService = userService;
         }

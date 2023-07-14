@@ -1,4 +1,4 @@
-﻿namespace EmailSender.BLL.Models
+﻿namespace EmailSender.BLL.MassTransit.Models
 {
     public class EmailHeaderTemplate
     {

@@ -1,6 +1,6 @@
-﻿namespace EmailSender.BLL.Models
+﻿namespace Authentication.BLL.MassTransit.Models
 {
-    public class BannerTemplate
+    public class EmailBannerTemplate
     {
         public string? ImageUri { get; set; }
         public string? Href { get; set; }

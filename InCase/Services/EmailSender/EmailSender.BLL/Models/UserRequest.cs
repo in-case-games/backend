@@ -2,9 +2,8 @@
 
 namespace EmailSender.BLL.Models
 {
-    public class UserConsumerTemplate : BaseEntity
+    public class UserRequest : BaseEntity
     {
         public string? Email { get; set; }
-        public string? Login { get; set; }
     }
 }

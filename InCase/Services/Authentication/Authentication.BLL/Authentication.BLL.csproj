@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="MassTransit" Version="8.0.16" />
     <PackageReference Include="Microsoft.AspNetCore.Cryptography.KeyDerivation" Version="7.0.9" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="7.0.0" />
     <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.31.0" />
@@ -14,5 +15,8 @@
   </ItemGroup>
   <ItemGroup>
 	<ProjectReference Include="..\Authentication.DAL\Authentication.DAL.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="MassTransit\Consumers\" />
   </ItemGroup>
 </Project>
