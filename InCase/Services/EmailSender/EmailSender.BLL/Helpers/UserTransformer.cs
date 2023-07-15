@@ -1,6 +1,6 @@
-﻿using EmailSender.BLL.MassTransit.Models;
-using EmailSender.BLL.Models;
+﻿using EmailSender.BLL.Models;
 using EmailSender.DAL.Entities;
+using Infrastructure.MassTransit.User;
 
 namespace EmailSender.BLL.Helpers
 {

@@ -107,6 +107,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Support.DAL", "Services\Sup
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmailSender.API", "Services\EmailSender\EmailSender.API\EmailSender.API.csproj", "{F0F9FE84-8410-46B2-B58E-63B6BE722B80}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{252C39BB-681F-496B-A37A-E5E4313937F6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -249,6 +251,10 @@ Global
 		{F0F9FE84-8410-46B2-B58E-63B6BE722B80}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F0F9FE84-8410-46B2-B58E-63B6BE722B80}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F0F9FE84-8410-46B2-B58E-63B6BE722B80}.Release|Any CPU.Build.0 = Release|Any CPU
+		{252C39BB-681F-496B-A37A-E5E4313937F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{252C39BB-681F-496B-A37A-E5E4313937F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{252C39BB-681F-496B-A37A-E5E4313937F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{252C39BB-681F-496B-A37A-E5E4313937F6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

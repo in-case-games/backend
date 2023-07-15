@@ -1,4 +1,4 @@
-﻿namespace EmailSender.BLL.MassTransit.Models
+﻿namespace Infrastructure.MassTransit.Email
 {
     public class EmailTemplate
     {

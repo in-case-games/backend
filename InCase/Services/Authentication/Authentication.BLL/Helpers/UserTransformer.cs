@@ -1,5 +1,6 @@
 ﻿using Authentication.BLL.Models;
 using Authentication.DAL.Entities;
+using Infrastructure.MassTransit.User;
 
 namespace Authentication.BLL.Helpers
 {
@@ -12,11 +13,19 @@ namespace Authentication.BLL.Helpers
             Login = request.Login
         };
 
-        public static UserResponse ToResponse(this User user, bool IsNewGuid = false) => new() 
+        public static UserResponse ToResponse(this User entity, bool IsNewGuid = false) => new() 
         { 
-            Id = IsNewGuid ? Guid.NewGuid() : user.Id,
-            Email = user.Email,
-            Login = user.Login,
+            Id = IsNewGuid ? Guid.NewGuid() : entity.Id,
+            Email = entity.Email,
+            Login = entity.Login,
+        };
+
+        public static UserTemplate ToTemplate(this User entity, bool isDeleted) => new()
+        {
+            Id = entity.Id,
+            Email = entity.Email,
+            Login = entity.Login,
+            IsDeleted = isDeleted
         };
     }
 }

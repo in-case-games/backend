@@ -1,16 +1,17 @@
 ﻿using Authentication.BLL.Exceptions;
 using Authentication.BLL.Helpers;
 using Authentication.BLL.Interfaces;
-using Authentication.BLL.MassTransit.Models;
 using Authentication.BLL.Models;
 using Authentication.DAL.Data;
 using Authentication.DAL.Entities;
+using Infrastructure.MassTransit.Email;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
 namespace Authentication.BLL.Services
 {
+    //TODO ButtonLink edit
     public class AuthenticationConfirmService : IAuthenticationConfirmService
     {
         private readonly ApplicationDbContext _context;
@@ -153,8 +154,12 @@ namespace Authentication.BLL.Services
                 }
             };
 
-            Uri uri = new(_configuration["MassTransit:Uri"] + "/email");
+            Uri uri = new(_configuration["MassTransit:Uri"] + "/user");
             var endPoint = await _bus.GetSendEndpoint(uri);
+            await endPoint.Send(user.ToTemplate(false));
+
+            uri = new(_configuration["MassTransit:Uri"] + "/email");
+            endPoint = await _bus.GetSendEndpoint(uri);
             await endPoint.Send(template);
 
             await _context.SaveChangesAsync();

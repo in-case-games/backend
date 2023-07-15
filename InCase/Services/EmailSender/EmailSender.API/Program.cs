@@ -78,8 +78,8 @@ builder.Services.AddScoped<IUserService, UserService>();
 
 builder.Services.AddMassTransit(x =>
 {
-    x.AddConsumer<EmailConsumer>();
     x.AddConsumer<UserConsumer>();
+    x.AddConsumer<EmailConsumer>();
 
     x.AddBus(provider => Bus.Factory.CreateUsingRabbitMq(cfg =>
     {
@@ -91,13 +91,13 @@ builder.Services.AddMassTransit(x =>
         cfg.ReceiveEndpoint("user", ep =>
         {
             ep.PrefetchCount = 16;
-            ep.UseMessageRetry(r => r.Interval(2, 50));
+            ep.UseMessageRetry(r => r.Interval(4, 100));
             ep.ConfigureConsumer<UserConsumer>(provider);
         });
         cfg.ReceiveEndpoint("email", ep =>
         {
             ep.PrefetchCount = 16;
-            ep.UseMessageRetry(r => r.Interval(100, 150));
+            ep.UseMessageRetry(r => r.Interval(4, 100));
             ep.ConfigureConsumer<EmailConsumer>(provider);
         });
     }));

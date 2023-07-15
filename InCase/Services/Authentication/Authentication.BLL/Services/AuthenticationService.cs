@@ -1,10 +1,11 @@
 ﻿using Authentication.BLL.Exceptions;
 using Authentication.BLL.Helpers;
 using Authentication.BLL.Interfaces;
-using Authentication.BLL.MassTransit.Models;
 using Authentication.BLL.Models;
 using Authentication.DAL.Data;
 using Authentication.DAL.Entities;
+using Infrastructure.MassTransit.Email;
+using Infrastructure.MassTransit.User;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -12,6 +13,7 @@ using System.Security.Claims;
 
 namespace Authentication.BLL.Services
 {
+    //TODO ButtonLink edit
     public class AuthenticationService : IAuthenticationService
     {
         private readonly ApplicationDbContext _context;
@@ -131,7 +133,7 @@ namespace Authentication.BLL.Services
 
             Uri uri = new(_configuration["MassTransit:Uri"] + "/user");
             var endPoint = await _bus.GetSendEndpoint(uri);
-            await endPoint.Send(user);
+            await endPoint.Send(user.ToTemplate(false));
 
             uri = new(_configuration["MassTransit:Uri"] + "/email");
             endPoint = await _bus.GetSendEndpoint(uri);

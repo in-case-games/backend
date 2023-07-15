@@ -4,23 +4,33 @@ using Authentication.DAL.Data;
 using Authentication.DAL.Entities;
 using Microsoft.EntityFrameworkCore;
 using Authentication.BLL.Exceptions;
+using MassTransit;
+using Infrastructure.MassTransit.Email;
+using Microsoft.Extensions.Configuration;
 
 namespace Authentication.BLL.Services
 {
+    //TODO ButtonLink edit
     public class AuthenticationSendingService : IAuthenticationSendingService
     {
         private readonly IAuthenticationService _authenticationService;
         private readonly IJwtService _jwtService;
         private readonly ApplicationDbContext _context;
+        private readonly IBus _bus;
+        private readonly IConfiguration _configuration;
 
         public AuthenticationSendingService(
             IAuthenticationService authenticationService, 
             IJwtService jwtService,
-            ApplicationDbContext context)
+            ApplicationDbContext context,
+            IBus bus,
+            IConfiguration configuration)
         {
             _authenticationService = authenticationService;
             _jwtService = jwtService;
             _context = context;
+            _bus = bus;
+            _configuration = configuration;
         }
 
         public async Task ConfirmAccountAsync(DataMailRequest request, string password)
@@ -38,14 +48,40 @@ namespace Authentication.BLL.Services
 
             MapDataMailRequest(ref request, in user);
 
-            if(user.AdditionalInfo!.IsConfirmed)
+            EmailTemplate template = new()
             {
-                //TODO Notify rabbit mq email sender
+                Email = user.Email!,
+                IsRequiredMessage = true,
+            };
+
+            if (user.AdditionalInfo!.IsConfirmed)
+            {
+                template.Subject = "Подтверждение входа в систему";
+                template.Body = new()
+                {
+                    Title = $"Дорогой {user.Login!}",
+                    Description = $"Подтвердите вход в аккаунт." +
+                    $"Если это были не вы, то срочно измените пароль в настройках вашего аккаунта, " +
+                    $"вас автоматически отключит со всех устройств.",
+                    ButtonLink = $"email/confirm/account?token={request.Token}"
+                };
             }
             else
             {
-                //TODO Notify rabbit mq email sender
+                template.Subject = "Завершение регистрации в системе";
+                template.Body = new()
+                {
+                    Title = $"Дорогой {user.Login!}",
+                    Description = $"Для завершения этапа регистрации," +
+                    $"вам необходимо нажать на кнопку ниже для подтверждения почты." +
+                    $"Если это были не вы, проигнорируйте это сообщение.",
+                    ButtonLink = $"email/confirm/account?token={request.Token}"
+                };
             }
+
+            Uri uri = new(_configuration["MassTransit:Uri"] + "/email");
+            var endPoint = await _bus.GetSendEndpoint(uri);
+            await endPoint.Send(template);
         }
 
         public async Task ConfirmNewEmailAsync(DataMailRequest request, string email)
@@ -56,10 +92,26 @@ namespace Authentication.BLL.Services
             User user = await _authenticationService.GetUserFromTokenAsync(request.Token, "email");
 
             MapDataMailRequest(ref request, in user);
-
             request.Email = email;
 
-            //TODO Notify rabbit mq email sender
+            EmailTemplate template = new()
+            {
+                Email = email,
+                IsRequiredMessage = true,
+                Subject = "Подтвердите новую почту аккаунта",
+                Body = new()
+                {
+                    Title = $"Дорогой {user.Login!}.",
+                    Description = $"Подтвердите, что это ваш новый email." +
+                    $"Если это были не вы, то срочно измените пароль в настройках вашего аккаунта," +
+                    $"вас автоматически отключит со всех устройств.",
+                    ButtonLink = $"email/confirm/update/password?token={request.Token}"
+                }
+            };
+
+            Uri uri = new(_configuration["MassTransit:Uri"] + "/email");
+            var endPoint = await _bus.GetSendEndpoint(uri);
+            await endPoint.Send(template);
         }
 
         public async Task DeleteAccountAsync(DataMailRequest request, string password)
@@ -74,7 +126,30 @@ namespace Authentication.BLL.Services
 
             MapDataMailRequest(ref request, in user);
 
-            //TODO Notify rabbit mq email sender
+            EmailTemplate template = new()
+            {
+                Email = request.Email,
+                IsRequiredMessage = true,
+                Subject = "Подтвердите удаление аккаунта",
+                Header = new()
+                {
+                    Title = "Удаление",
+                    Subtitle = "аккаунта"
+                },
+                Body = new()
+                {
+                    Title = $"Дорогой {user.Login!}.",
+                    Description = $"Подтвердите, что это вы удаляете аккаунт. " +
+                    $"Если это были не вы, то срочно измените пароль в настройках вашего аккаунта, " +
+                    $"вас автоматически отключит со всех устройств. " +
+                    $"Мы удалим ваш аккаунт при достижении 30 дней с момента нажатия на эту кнопку.",
+                    ButtonLink = $"email/confirm/delete?token={request.Token}"
+                }
+            };
+
+            Uri uri = new(_configuration["MassTransit:Uri"] + "/email");
+            var endPoint = await _bus.GetSendEndpoint(uri);
+            await endPoint.Send(template);
         }
 
         public async Task ForgotPasswordAsync(DataMailRequest request)
@@ -88,7 +163,23 @@ namespace Authentication.BLL.Services
 
             request.Email = user.Email!;
 
-            //TODO Notify rabbit mq email sender
+            EmailTemplate template = new()
+            {
+                Email = user.Email!,
+                IsRequiredMessage = true,
+                Subject = "Забыли пароль?",
+                Body = new()
+                {
+                    Title = $"Дорогой {user.Login!}.",
+                    Description = $"Подтвердите, " +
+                    $"что это вы хотите поменять пароль.",
+                    ButtonLink = $"email/confirm/update/password?token={request.Token}"
+                }
+            };
+
+            Uri uri = new(_configuration["MassTransit:Uri"] + "/email");
+            var endPoint = await _bus.GetSendEndpoint(uri);
+            await endPoint.Send(template);
         }
 
         public async Task UpdateEmailAsync(DataMailRequest request, string password)
@@ -103,7 +194,31 @@ namespace Authentication.BLL.Services
 
             MapDataMailRequest(ref request, in user);
 
-            //TODO Notify rabbit mq email sender
+            EmailTemplate template = new()
+            {
+                Email = request.Email!,
+                IsRequiredMessage = true,
+                Subject = "Подтвердите смену почты",
+                Header = new()
+                {
+                    Title = "Смена",
+                    Subtitle = "Почты",
+                },
+                Body = new()
+                {
+                    Title = $"Дорогой {user.Login!}.",
+                    Description = $"Подтвердите, что это вы хотите поменять email." +
+                    $"Если это были не вы, то срочно измените пароль в настройках вашего аккаунта, " +
+                    $"вас автоматически отключит со всех устройств.<br>" +
+                    $"С уважением команда InCase</div>",
+                    ButtonText = "Подтверждаю",
+                    ButtonLink = $"email/confirm/update/email?token={request.Token}"
+                }
+            };
+
+            Uri uri = new(_configuration["MassTransit:Uri"] + "/email");
+            var endPoint = await _bus.GetSendEndpoint(uri);
+            await endPoint.Send(template);
         }
 
         public async Task UpdatePasswordAsync(DataMailRequest request, string password)
@@ -118,7 +233,30 @@ namespace Authentication.BLL.Services
 
             MapDataMailRequest(ref request, in user);
 
-            //TODO Notify rabbit mq email sender
+            EmailTemplate template = new()
+            {
+                Email = request.Email!,
+                IsRequiredMessage = true,
+                Subject = "Подтвердите смену пароля",
+                Header = new()
+                {
+                    Title = "Смена",
+                    Subtitle = "пароля",
+                },
+                Body = new()
+                {
+                    Title = $"Дорогой {user.Login!}.",
+                    Description = $"Подтвердите, что это вы хотите поменять пароль." +
+                    $"Если это были не вы, то срочно измените пароль в настройках вашего аккаунта, " +
+                    $"вас автоматически отключит со всех устройств.",
+                    ButtonText = "Подтверждаю",
+                    ButtonLink = $"email/confirm/update/password?token={request.Token}"
+                }
+            };
+
+            Uri uri = new(_configuration["MassTransit:Uri"] + "/email");
+            var endPoint = await _bus.GetSendEndpoint(uri);
+            await endPoint.Send(template);
         }
 
         private void MapDataMailRequest(ref DataMailRequest request, in User user)

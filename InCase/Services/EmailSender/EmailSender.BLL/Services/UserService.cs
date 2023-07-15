@@ -34,7 +34,14 @@ namespace EmailSender.BLL.Services
 
             User user = request.ToEntity(IsNewGuid: IsNewGuid);
 
+            UserAdditionalInfo info = new()
+            {
+                IsNotifyEmail = true,
+                UserId = request.Id,
+            };
+
             await _context.Users.AddAsync(user);
+            await _context.AdditionalInfos.AddAsync(info);
             await _context.SaveChangesAsync();
 
             return user.ToResponse();

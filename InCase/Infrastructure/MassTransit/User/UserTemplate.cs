@@ -1,8 +1,6 @@
-﻿using Authentication.DAL.Entities;
-
-namespace Authentication.BLL.MassTransit.Models
+﻿namespace Infrastructure.MassTransit.User
 {
-    public class UserTemplate : BaseEntity
+    public class UserTemplate : BaseTemplate
     {
         public string? Email { get; set; }
         public string? Login { get; set; }

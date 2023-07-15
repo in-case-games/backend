@@ -1,6 +1,5 @@
 ﻿using EmailSender.BLL.Interfaces;
-using EmailSender.BLL.MassTransit.Models;
-using EmailSender.DAL.Data;
+using Infrastructure.MassTransit.Email;
 using MailKit.Net.Smtp;
 using Microsoft.Extensions.Configuration;
 using MimeKit;

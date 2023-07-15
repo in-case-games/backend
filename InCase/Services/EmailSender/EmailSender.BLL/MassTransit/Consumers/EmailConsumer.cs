@@ -1,20 +1,26 @@
 ﻿using EmailSender.BLL.Exceptions;
 using EmailSender.BLL.Interfaces;
-using EmailSender.BLL.MassTransit.Models;
 using EmailSender.DAL.Data;
 using EmailSender.DAL.Entities;
+using Infrastructure.MassTransit.Email;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace EmailSender.BLL.MassTransit.Consumers
 {
-    public class EmailConsumer : IConsumer
+    public class EmailConsumer : IConsumer<EmailTemplate>
     {
+        private readonly ILogger<EmailConsumer> _logger;
         private readonly ApplicationDbContext _context;
         private readonly IEmailService _emailService;
 
-        public EmailConsumer(ApplicationDbContext context, IEmailService emailService)
+        public EmailConsumer(
+            ILogger<EmailConsumer> logger,
+            ApplicationDbContext context, 
+            IEmailService emailService)
         {
+            _logger = logger;
             _context = context;
             _emailService = emailService;
         }
@@ -22,6 +28,8 @@ namespace EmailSender.BLL.MassTransit.Consumers
         public async Task Consume(ConsumeContext<EmailTemplate> context)
         {
             EmailTemplate template = context.Message;
+
+            _logger.LogInformation($"email: {template.Email} subject: {template.Subject}");
 
             User user = await _context.Users
                 .Include(u => u.AdditionalInfo)

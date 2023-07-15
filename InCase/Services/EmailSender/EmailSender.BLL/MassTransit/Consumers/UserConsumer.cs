@@ -1,23 +1,26 @@
 ﻿using EmailSender.BLL.Helpers;
 using EmailSender.BLL.Interfaces;
-using EmailSender.BLL.MassTransit.Models;
-using EmailSender.BLL.Models;
 using EmailSender.DAL.Data;
 using EmailSender.DAL.Entities;
+using Infrastructure.MassTransit.User;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace EmailSender.BLL.MassTransit.Consumers
 {
     public class UserConsumer : IConsumer<UserTemplate>
     {
+        private readonly ILogger<UserConsumer> _logger;
         private readonly IUserService _userService;
         private readonly ApplicationDbContext _context;
 
         public UserConsumer(
+            ILogger<UserConsumer> logger,
             IUserService userService, 
             ApplicationDbContext context)
         {
+            _logger = logger;
             _userService = userService;
             _context = context;
         }
@@ -25,6 +28,8 @@ namespace EmailSender.BLL.MassTransit.Consumers
         public async Task Consume(ConsumeContext<UserTemplate> context)
         {
             UserTemplate template = context.Message;
+
+            _logger.LogInformation($"id: {template.Id} email: {template.Email} login: {template.Login}");
 
             User? user = await _context.Users
                 .AsNoTracking()
