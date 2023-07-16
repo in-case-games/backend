@@ -11,16 +11,13 @@ namespace EmailSender.BLL.MassTransit.Consumers
 {
     public class EmailConsumer : IConsumer<EmailTemplate>
     {
-        private readonly ILogger<EmailConsumer> _logger;
         private readonly ApplicationDbContext _context;
         private readonly IEmailService _emailService;
 
         public EmailConsumer(
-            ILogger<EmailConsumer> logger,
             ApplicationDbContext context, 
             IEmailService emailService)
         {
-            _logger = logger;
             _context = context;
             _emailService = emailService;
         }
@@ -28,8 +25,6 @@ namespace EmailSender.BLL.MassTransit.Consumers
         public async Task Consume(ConsumeContext<EmailTemplate> context)
         {
             EmailTemplate template = context.Message;
-
-            _logger.LogInformation($"email: {template.Email} subject: {template.Subject}");
 
             User user = await _context.Users
                 .Include(u => u.AdditionalInfo)

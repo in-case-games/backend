@@ -7,6 +7,8 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Identity.BLL.Interfaces;
 using Identity.BLL.Services;
+using MassTransit;
+using Identity.BLL.MassTransit.Consumers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -76,6 +78,26 @@ builder.Services.AddScoped<IUserAdditionalInfoService, UserAdditionalInfoService
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserRestrictionService, UserRestrictionService>();
 builder.Services.AddScoped<IUserRoleService, UserRoleService>();
+
+builder.Services.AddMassTransit(x =>
+{
+    x.AddConsumer<UserConsumer>();
+
+    x.AddBus(provider => Bus.Factory.CreateUsingRabbitMq(cfg =>
+    {
+        cfg.Host(new Uri(builder.Configuration["MassTransit:Uri"]!), h =>
+        {
+            h.Username(builder.Configuration["MassTransit:Username"]!);
+            h.Password(builder.Configuration["MassTransit:Password"]!);
+        });
+        cfg.ReceiveEndpoint("user", ep =>
+        {
+            ep.PrefetchCount = 16;
+            ep.UseMessageRetry(r => r.Interval(4, 100));
+            ep.ConfigureConsumer<UserConsumer>(provider);
+        });
+    }));
+});
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

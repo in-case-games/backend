@@ -1,8 +1,10 @@
+using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MongoDB.Driver;
 using Statistics.API.Middlewares;
+using Statistics.BLL.MassTransit.Consumers;
 using Statistics.BLL.Repository;
 using Statistics.BLL.Services;
 using System.Text;
@@ -62,6 +64,33 @@ builder.Services.AddSingleton<IMongoClient, MongoClient>(sp =>
     new MongoClient(builder.Configuration["ConnectionString"]));
 builder.Services.AddSingleton<ISiteStatisticsRepository, SiteStatisticsRepository>();
 builder.Services.AddSingleton<ISiteStatisticsService, SiteStatisticsService>();
+
+builder.Services.AddMassTransit(x =>
+{
+    x.AddConsumer<StatisticsConsumer>();
+    x.AddConsumer<StatisticsAdminConsumer>();
+
+    x.AddBus(provider => Bus.Factory.CreateUsingRabbitMq(cfg =>
+    {
+        cfg.Host(new Uri(builder.Configuration["MassTransit:Uri"]!), h =>
+        {
+            h.Username(builder.Configuration["MassTransit:Username"]!);
+            h.Password(builder.Configuration["MassTransit:Password"]!);
+        });
+        cfg.ReceiveEndpoint("statistics", ep =>
+        {
+            ep.PrefetchCount = 16;
+            ep.UseMessageRetry(r => r.Interval(4, 100));
+            ep.ConfigureConsumer<StatisticsConsumer>(provider);
+        });
+        cfg.ReceiveEndpoint("statistics_admin", ep =>
+        {
+            ep.PrefetchCount = 16;
+            ep.UseMessageRetry(r => r.Interval(4, 100));
+            ep.ConfigureConsumer<StatisticsAdminConsumer>(provider);
+        });
+    }));
+});
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

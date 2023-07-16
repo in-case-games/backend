@@ -4,18 +4,26 @@ using Identity.BLL.Interfaces;
 using Identity.BLL.Models;
 using Identity.DAL.Data;
 using Identity.DAL.Entities;
+using MassTransit;
 using Microsoft.EntityFrameworkCore;
-using System.Threading;
+using Microsoft.Extensions.Configuration;
 
 namespace Identity.BLL.Services
 {
     public class UserRestrictionService : IUserRestrictionService
     {
         private readonly ApplicationDbContext _context;
+        private readonly IConfiguration _configuration;
+        private readonly IBus _bus;
 
-        public UserRestrictionService(ApplicationDbContext context)
+        public UserRestrictionService(
+            ApplicationDbContext context,
+            IConfiguration configuration,
+            IBus bus)
         {
             _context = context;
+            _configuration = configuration;
+            _bus = bus;
         }
 
         public async Task<UserRestrictionResponse> GetAsync(Guid id)
@@ -115,10 +123,12 @@ namespace Identity.BLL.Services
 
             UserRestriction restriction = request.ToEntity(IsNewGuid: true);
 
+            Uri uri = new(_configuration["MassTransit:Uri"] + "/user-restriction");
+            var endPoint = await _bus.GetSendEndpoint(uri);
+            await endPoint.Send(restriction.ToTemplate());
+
             await _context.Restrictions.AddAsync(restriction);
             await _context.SaveChangesAsync();
-
-            //TODO Notify rabbit mq auth service
 
             restriction.Type = type;
 
@@ -159,10 +169,12 @@ namespace Identity.BLL.Services
 
             UserRestriction restriction = request.ToEntity(IsNewGuid: false);
 
+            Uri uri = new(_configuration["MassTransit:Uri"] + "/user-restriction");
+            var endPoint = await _bus.GetSendEndpoint(uri);
+            await endPoint.Send(restriction.ToTemplate());
+
             _context.Entry(restrictionOld).CurrentValues.SetValues(restriction);
             await _context.SaveChangesAsync();
-
-            //TODO Notify rabbit mq auth service
 
             restriction.Type = type;
 
@@ -177,10 +189,12 @@ namespace Identity.BLL.Services
                 .FirstOrDefaultAsync(ur => ur.Id == id) ??
                 throw new NotFoundException("Эффект не найден");
 
+            Uri uri = new(_configuration["MassTransit:Uri"] + "/user-restriction");
+            var endPoint = await _bus.GetSendEndpoint(uri);
+            await endPoint.Send(restriction.ToTemplate(isDeleted: true));
+
             _context.Restrictions.Remove(restriction);
             await _context.SaveChangesAsync();
-
-            //TODO Notify rabbit mq auth service
 
             return restriction.ToResponse();
         }

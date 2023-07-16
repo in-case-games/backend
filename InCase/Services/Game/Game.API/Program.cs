@@ -1,7 +1,9 @@
 using Game.API.Middlewares;
 using Game.BLL.Interfaces;
+using Game.BLL.MassTransit.Consumers;
 using Game.BLL.Services;
 using Game.DAL.Data;
+using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -74,6 +76,27 @@ builder.Services.AddScoped<IUserPathBannerService, UserPathBannerService>();
 builder.Services.AddScoped<IUserAdditionalInfoService, UserAdditionalInfoService>();
 builder.Services.AddScoped<IUserOpeningService, UserOpeningService>();
 builder.Services.AddScoped<ILootBoxOpeningService, LootBoxOpeningService>();
+builder.Services.AddScoped<IUserService, UserService>();
+
+builder.Services.AddMassTransit(x =>
+{
+    x.AddConsumer<UserConsumer>();
+
+    x.AddBus(provider => Bus.Factory.CreateUsingRabbitMq(cfg =>
+    {
+        cfg.Host(new Uri(builder.Configuration["MassTransit:Uri"]!), h =>
+        {
+            h.Username(builder.Configuration["MassTransit:Username"]!);
+            h.Password(builder.Configuration["MassTransit:Password"]!);
+        });
+        cfg.ReceiveEndpoint("user", ep =>
+        {
+            ep.PrefetchCount = 16;
+            ep.UseMessageRetry(r => r.Interval(4, 100));
+            ep.ConfigureConsumer<UserConsumer>(provider);
+        });
+    }));
+});
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

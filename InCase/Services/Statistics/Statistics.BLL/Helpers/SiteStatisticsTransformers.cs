@@ -1,4 +1,5 @@
-﻿using Statistics.BLL.Models;
+﻿using Infrastructure.MassTransit.Statistics;
+using Statistics.BLL.Models;
 using Statistics.DAL.Entities;
 
 namespace Statistics.BLL.Helpers
@@ -19,6 +20,28 @@ namespace Statistics.BLL.Helpers
                 BalanceWithdrawn = stats.BalanceWithdrawn,
                 SentSites = stats.SentSites,
                 TotalReplenished = stats.TotalReplenished,
+            };
+
+        public static SiteStatistics ToJoin(
+            this SiteStatistics entity, 
+            SiteStatisticsTemplate template) => new()
+        {
+            Id = entity.Id,
+            LootBoxes = entity.LootBoxes + template.LootBoxes,
+            Reviews = entity.Reviews + template.Reviews,
+            Users = entity.Users + template.Users,
+            WithdrawnFunds = entity.WithdrawnFunds + template.WithdrawnFunds,
+            WithdrawnItems = entity.WithdrawnItems + template.WithdrawnItems
+        };
+
+        public static SiteStatisticsAdmin ToJoin(
+            this SiteStatisticsAdmin entity,
+            SiteStatisticsAdminTemplate template) => new()
+            {
+                Id = entity.Id,
+                BalanceWithdrawn = entity.BalanceWithdrawn + template.BalanceWithdrawn,
+                SentSites = entity.SentSites + template.SentSites,
+                TotalReplenished = entity.TotalReplenished + template.TotalReplenished,
             };
     }
 }

@@ -4,17 +4,29 @@ using Game.BLL.Interfaces;
 using Game.BLL.Models;
 using Game.DAL.Data;
 using Game.DAL.Entities;
+using Infrastructure.MassTransit.Statistics;
 using Microsoft.EntityFrameworkCore;
+using System.Net;
+using System;
+using Microsoft.Extensions.Configuration;
+using MassTransit;
 
 namespace Game.BLL.Services
 {
     public class UserPathBannerService : IUserPathBannerService
     {
         private readonly ApplicationDbContext _context;
+        private readonly IConfiguration _configuration;
+        private readonly IBus _bus;
 
-        public UserPathBannerService(ApplicationDbContext context)
+        public UserPathBannerService(
+            ApplicationDbContext context,
+            IConfiguration configuration,
+            IBus bus)
         {
             _context = context;
+            _configuration = configuration;
+            _bus = bus;
         }
 
         public async Task<List<UserPathBannerResponse>> GetByUserIdAsync(Guid userId)
@@ -154,8 +166,11 @@ namespace Game.BLL.Services
             
             decimal totalSpent = banner.NumberSteps * banner.Box!.Cost * 0.2M;
 
-            // TODO Notify rabbit mq
-            // statistics.BalanceWithdrawn += totalSpent * 0.1M;
+            SiteStatisticsAdminTemplate statisticsAdminTemplate = new() { BalanceWithdrawn = totalSpent * 0.1M };
+
+            Uri uri = new(_configuration["MassTransit:Uri"] + "/statistics_admin");
+            var endPoint = await _bus.GetSendEndpoint(uri);
+            await endPoint.Send(statisticsAdminTemplate);
 
             info.Balance += totalSpent * 0.9M;
 
@@ -182,8 +197,11 @@ namespace Game.BLL.Services
 
             decimal totalSpent = banner.NumberSteps * banner.Box!.Cost * 0.2M;
 
-            // TODO Notify rabbit mq
-            // statistics.BalanceWithdrawn += totalSpent * 0.1M;
+            SiteStatisticsAdminTemplate statisticsAdminTemplate = new() { BalanceWithdrawn = totalSpent * 0.1M };
+
+            Uri uri = new(_configuration["MassTransit:Uri"] + "/statistics_admin");
+            var endPoint = await _bus.GetSendEndpoint(uri);
+            await endPoint.Send(statisticsAdminTemplate);
 
             info.Balance += totalSpent * 0.9M;
 

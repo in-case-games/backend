@@ -5,6 +5,7 @@ using Authentication.BLL.Models;
 using Authentication.DAL.Data;
 using Authentication.DAL.Entities;
 using Infrastructure.MassTransit.Email;
+using Infrastructure.MassTransit.Statistics;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -61,6 +62,12 @@ namespace Authentication.BLL.Services
                     $"Надеемся, что вам понравится наша реализация открытия кейсов. " +
                     $"Подарит множество эмоций и новых предметов."
                 };
+
+                SiteStatisticsTemplate statisticsTemplate = new() { Users = 1 };
+
+                Uri uriStatistics = new(_configuration["MassTransit:Uri"] + "/statistics");
+                var endPointStatistics = await _bus.GetSendEndpoint(uriStatistics);
+                await endPointStatistics.Send(statisticsTemplate);
             }
             else if (info.DeletionDate != null)
             {

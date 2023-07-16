@@ -1,5 +1,6 @@
 using Authentication.API.Middlewares;
 using Authentication.BLL.Interfaces;
+using Authentication.BLL.MassTransit.Consumers;
 using Authentication.BLL.Services;
 using Authentication.DAL.Data;
 using MassTransit;
@@ -75,15 +76,26 @@ builder.Services.AddSingleton<IJwtService, JwtService>();
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddScoped<IAuthenticationConfirmService, AuthenticationConfirmService>();
 builder.Services.AddScoped<IAuthenticationSendingService, AuthenticationSendingService>();
+builder.Services.AddScoped<IUserRestrictionService, UserRestrictionService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddHostedService<UserManagerService>();
 
 builder.Services.AddMassTransit(x =>
 {
+    x.AddConsumer<UserRestrictionConsumer>();
+
     x.AddBus(provider => Bus.Factory.CreateUsingRabbitMq(cfg =>
     {
         cfg.Host(new Uri(builder.Configuration["MassTransit:Uri"]!), h =>
         {
             h.Username(builder.Configuration["MassTransit:Username"]!);
             h.Password(builder.Configuration["MassTransit:Password"]!);
+        });
+        cfg.ReceiveEndpoint("user-restriction", ep =>
+        {
+            ep.PrefetchCount = 16;
+            ep.UseMessageRetry(r => r.Interval(4, 100));
+            ep.ConfigureConsumer<UserRestrictionConsumer>(provider);
         });
     }));
 });

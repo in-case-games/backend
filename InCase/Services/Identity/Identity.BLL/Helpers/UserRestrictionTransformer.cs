@@ -1,5 +1,6 @@
 ﻿using Identity.BLL.Models;
 using Identity.DAL.Entities;
+using Infrastructure.MassTransit.User;
 
 namespace Identity.BLL.Helpers
 {
@@ -51,6 +52,18 @@ namespace Identity.BLL.Helpers
 
             return response;
         }
+
+        public static UserRestrictionTemplate ToTemplate(this UserRestriction entity, bool isDeleted = false) => new()
+        {
+            Id = entity.Id,
+            CreationDate = entity.CreationDate,
+            Description = entity.Description,
+            ExpirationDate = entity.ExpirationDate,
+            OwnerId = entity.OwnerId,
+            TypeId = entity.TypeId,
+            UserId = entity.UserId,
+            IsDeleted = isDeleted
+        };
 
         public static UserRestriction ToEntity(this UserRestrictionRequest request, bool IsNewGuid = false) => new()
         {

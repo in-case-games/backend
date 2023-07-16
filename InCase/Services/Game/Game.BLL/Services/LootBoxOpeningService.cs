@@ -4,17 +4,28 @@ using Game.BLL.Interfaces;
 using Game.BLL.Models;
 using Game.DAL.Data;
 using Game.DAL.Entities;
+using Infrastructure.MassTransit.Statistics;
+using Infrastructure.MassTransit.Withdraw;
+using MassTransit;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace Game.BLL.Services
 {
     public class LootBoxOpeningService : ILootBoxOpeningService
     {
         private readonly ApplicationDbContext _context;
+        private readonly IConfiguration _configuration;
+        private readonly IBus _bus;
 
-        public LootBoxOpeningService(ApplicationDbContext context)
+        public LootBoxOpeningService(
+            ApplicationDbContext context,
+            IConfiguration configuration,
+            IBus bus)
         {
             _context = context;
+            _configuration = configuration;
+            _bus = bus;
         }
 
         public async Task<GameItemResponse> OpenBox(Guid userId, Guid id)
@@ -67,7 +78,17 @@ namespace Game.BLL.Services
                     cashBack, _context);
             }
 
-            //Notify by rabbit mq statistics
+            SiteStatisticsTemplate statisticsTemplate = new() { LootBoxes = 1 };
+            SiteStatisticsAdminTemplate statisticsAdminTemplate = new() { BalanceWithdrawn = revenue };
+
+            Uri uri = new(_configuration["MassTransit:Uri"] + "/statistics");
+            var endPoint = await _bus.GetSendEndpoint(uri);
+            await endPoint.Send(statisticsTemplate);
+
+            uri = new(_configuration["MassTransit:Uri"] + "/statistics_admin");
+            endPoint = await _bus.GetSendEndpoint(uri);
+            await endPoint.Send(statisticsAdminTemplate);
+
             box.Balance -= expenses;
 
             _context.Boxes.Attach(box);
@@ -86,7 +107,17 @@ namespace Game.BLL.Services
                 Date = date
             };
 
-            //Notify by rabbit mq user inventory add new item
+            UserInventoryTemplate templateUser = new()
+            {
+                Date = DateTime.UtcNow,
+                FixedCost = winItem.Cost,
+                ItemId = winItem.Id,
+                UserId = userId,
+            };
+
+            uri = new(_configuration["MassTransit:Uri"] + "/withdraw");
+            endPoint = await _bus.GetSendEndpoint(uri);
+            await endPoint.Send(templateUser);
 
             await _context.HistoryOpenings.AddAsync(opening);
 
