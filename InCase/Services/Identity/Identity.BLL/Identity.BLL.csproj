@@ -7,9 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="MassTransit" Version="8.0.16" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="7.0.0" />
   </ItemGroup>
   <ItemGroup>
+	  <ProjectReference Include="..\..\..\Infrastructure\Infrastructure.csproj" />
 	  <ProjectReference Include="..\Identity.DAL\Identity.DAL.csproj" />
   </ItemGroup>
 
