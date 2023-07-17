@@ -1,4 +1,5 @@
-﻿using Infrastructure.MassTransit.User;
+﻿using Infrastructure.MassTransit.Statistics;
+using Infrastructure.MassTransit.User;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -54,6 +55,12 @@ namespace Payment.BLL.Services
 
             decimal pay = invoice.Amount;
 
+            SiteStatisticsAdminTemplate statisticsAdminTemplate = new() { TotalReplenished = pay };
+
+            Uri uri = new(_configuration["MassTransit:Uri"] + "/statistics_admin");
+            var endPoint = await _bus.GetSendEndpoint(uri);
+            await endPoint.Send(statisticsAdminTemplate);
+
             if (promocode is not null)
             {
                 UserPromocodeTemplate templatePromo = promocode.ToTemplate();
@@ -71,7 +78,7 @@ namespace Payment.BLL.Services
 
             UserPayment payment = new()
             {
-                Amount = invoice.Amount,
+                Amount = pay,
                 Currency = invoice.CurrencyProject,
                 Date = DateTime.Today.AddSeconds(invoice.Time),
                 InvoiceId = invoice.InvoiceId,
