@@ -1,10 +1,12 @@
 using InCase.Infrastructure.Services;
+using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Payment.API.Middlewares;
 using Payment.BLL.Interfaces;
+using Payment.BLL.MassTransit.Consumers;
 using Payment.BLL.Services;
 using Payment.DAL.Data;
 using System.Text;
@@ -76,7 +78,33 @@ builder.Services.AddSingleton<IResponseService, ResponseService>();
 builder.Services.AddSingleton<IGameMoneyService, GameMoneyService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<IUserPaymentsService, UserPaymentsService>();
-builder.Services.AddHostedService<PaymentManagerService>();
+
+builder.Services.AddMassTransit(x =>
+{
+    x.AddConsumer<UserConsumer>();
+    x.AddConsumer<UserPromocodeConsumer>();
+
+    x.AddBus(provider => Bus.Factory.CreateUsingRabbitMq(cfg =>
+    {
+        cfg.Host(new Uri(builder.Configuration["MassTransit:Uri"]!), h =>
+        {
+            h.Username(builder.Configuration["MassTransit:Username"]!);
+            h.Password(builder.Configuration["MassTransit:Password"]!);
+        });
+        cfg.ReceiveEndpoint("user", ep =>
+        {
+            ep.PrefetchCount = 16;
+            ep.UseMessageRetry(r => r.Interval(4, 100));
+            ep.ConfigureConsumer<UserConsumer>(provider);
+        });
+        cfg.ReceiveEndpoint("user-promocode", ep =>
+        {
+            ep.PrefetchCount = 16;
+            ep.UseMessageRetry(r => r.Interval(4, 100));
+            ep.ConfigureConsumer<UserPromocodeConsumer>(provider);
+        });
+    }));
+});
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

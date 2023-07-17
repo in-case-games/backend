@@ -5,6 +5,6 @@ namespace Promocode.DAL.Entities
     public class User : BaseEntity
     {
         [JsonIgnore]
-        public IEnumerable<UserHistoryPromocode>? HistoriesPromocodes { get; set; }
+        public IEnumerable<UserPromocode>? HistoriesPromocodes { get; set; }
     }
 }

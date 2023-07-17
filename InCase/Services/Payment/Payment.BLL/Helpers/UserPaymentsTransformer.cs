@@ -1,4 +1,5 @@
-﻿using Payment.BLL.Models;
+﻿using Infrastructure.MassTransit.User;
+using Payment.BLL.Models;
 using Payment.DAL.Entities;
 
 namespace Payment.BLL.Helpers
@@ -15,6 +16,16 @@ namespace Payment.BLL.Helpers
                 Date = payment.Date,
                 Rate = payment.Rate,
             };
+
+        public static UserPaymentTemplate ToTemplate(this UserPayment entity, bool isNewGuid = false) => new()
+        {
+            Id = isNewGuid ? Guid.NewGuid() : entity.Id,
+            Amount = entity.Amount,
+            Currency = entity.Currency,
+            Date = entity.Date,
+            Rate = entity.Rate,
+            UserId = entity.UserId
+        };
 
         public static List<UserPaymentsResponse> ToResponse(this List<UserPayment> payments)
         {

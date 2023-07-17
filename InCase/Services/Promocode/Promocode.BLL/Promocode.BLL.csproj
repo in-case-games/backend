@@ -8,4 +8,7 @@
   <ItemGroup>
 	<ProjectReference Include="..\Promocode.DAL\Promocode.DAL.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="MassTransit\Consumers\" />
+  </ItemGroup>
 </Project>

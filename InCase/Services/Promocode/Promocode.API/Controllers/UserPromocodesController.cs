@@ -22,88 +22,88 @@ namespace Promocode.API.Controllers
             _userPromocodesService = userPromocodesService;
         }
 
-        [ProducesResponseType(typeof(ApiResult<List<UserHistoryPromocodeResponse>>), 
+        [ProducesResponseType(typeof(ApiResult<List<UserPromocodeResponse>>), 
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            List<UserHistoryPromocodeResponse> response = await _userPromocodesService
+            List<UserPromocodeResponse> response = await _userPromocodesService
                 .GetAsync(UserId, 100);
 
-            return Ok(ApiResult<List<UserHistoryPromocodeResponse>>.OK(response));
+            return Ok(ApiResult<List<UserPromocodeResponse>>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<UserHistoryPromocodeResponse>), 
+        [ProducesResponseType(typeof(ApiResult<UserPromocodeResponse>), 
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(Guid id)
         {
-            UserHistoryPromocodeResponse response = await _userPromocodesService
+            UserPromocodeResponse response = await _userPromocodesService
                 .GetAsync(id, UserId);
 
-            return Ok(ApiResult<UserHistoryPromocodeResponse>.OK(response));
+            return Ok(ApiResult<UserPromocodeResponse>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<List<UserHistoryPromocodeResponse>>),
+        [ProducesResponseType(typeof(ApiResult<List<UserPromocodeResponse>>),
             (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("admin")]
         public async Task<IActionResult> Get(int count = 100)
         {
-            List<UserHistoryPromocodeResponse> response = await _userPromocodesService
+            List<UserPromocodeResponse> response = await _userPromocodesService
                 .GetAsync(count);
 
-            return Ok(ApiResult<List<UserHistoryPromocodeResponse>>.OK(response));
+            return Ok(ApiResult<List<UserPromocodeResponse>>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<List<UserHistoryPromocodeResponse>>), 
+        [ProducesResponseType(typeof(ApiResult<List<UserPromocodeResponse>>), 
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
         [HttpGet("{userId}/admin")]
         public async Task<IActionResult> GetByAdmin(Guid userId, int count = 100)
         {
-            List<UserHistoryPromocodeResponse> response = await _userPromocodesService
+            List<UserPromocodeResponse> response = await _userPromocodesService
                 .GetAsync(userId, count);
 
-            return Ok(ApiResult<List<UserHistoryPromocodeResponse>>.OK(response));
+            return Ok(ApiResult<List<UserPromocodeResponse>>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<UserHistoryPromocodeResponse>),
+        [ProducesResponseType(typeof(ApiResult<UserPromocodeResponse>),
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
         [HttpGet("{userId}/admin/{id}")]
         public async Task<IActionResult> GetByIdAdmin(Guid userId, Guid id)
         {
-            UserHistoryPromocodeResponse response = await _userPromocodesService
+            UserPromocodeResponse response = await _userPromocodesService
                 .GetAsync(id, userId);
 
-            return Ok(ApiResult<UserHistoryPromocodeResponse>.OK(response));
+            return Ok(ApiResult<UserPromocodeResponse>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<UserHistoryPromocodeResponse>),
+        [ProducesResponseType(typeof(ApiResult<UserPromocodeResponse>),
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet("activate/promocode/{name}")]
         public async Task<IActionResult> ActivatePromocode(string name)
         {
-            UserHistoryPromocodeResponse response = await _userPromocodesService
+            UserPromocodeResponse response = await _userPromocodesService
                 .ActivateAsync(UserId, name);
 
-            return Ok(ApiResult<UserHistoryPromocodeResponse>.OK(response));
+            return Ok(ApiResult<UserPromocodeResponse>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<UserHistoryPromocodeResponse>),
+        [ProducesResponseType(typeof(ApiResult<UserPromocodeResponse>),
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet("exchange/promocode/{name}")]
         public async Task<IActionResult> ExchangePromocode(string name)
         {
-            UserHistoryPromocodeResponse response = await _userPromocodesService
+            UserPromocodeResponse response = await _userPromocodesService
                 .ExchangeAsync(UserId, name);
 
-            return Ok(ApiResult<UserHistoryPromocodeResponse>.OK(response));
+            return Ok(ApiResult<UserPromocodeResponse>.OK(response));
         }
     }
 }

@@ -1,9 +1,11 @@
+using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Promocode.API.Middlewares;
 using Promocode.BLL.Interfaces;
+using Promocode.BLL.MassTransit.Consumers;
 using Promocode.BLL.Services;
 using Promocode.DAL.Data;
 using System.Text;
@@ -72,6 +74,33 @@ builder.Services.AddSwaggerGen(options =>
 
 builder.Services.AddScoped<IUserPromocodesService, UserPromocodesService>();
 builder.Services.AddScoped<IPromocodeService, PromocodeService>();
+
+builder.Services.AddMassTransit(x =>
+{
+    x.AddConsumer<UserConsumer>();
+    x.AddConsumer<UserPromocodeConsumer>();
+
+    x.AddBus(provider => Bus.Factory.CreateUsingRabbitMq(cfg =>
+    {
+        cfg.Host(new Uri(builder.Configuration["MassTransit:Uri"]!), h =>
+        {
+            h.Username(builder.Configuration["MassTransit:Username"]!);
+            h.Password(builder.Configuration["MassTransit:Password"]!);
+        });
+        cfg.ReceiveEndpoint("user", ep =>
+        {
+            ep.PrefetchCount = 16;
+            ep.UseMessageRetry(r => r.Interval(4, 100));
+            ep.ConfigureConsumer<UserConsumer>(provider);
+        });
+        cfg.ReceiveEndpoint("user-promocode_activated", ep =>
+        {
+            ep.PrefetchCount = 16;
+            ep.UseMessageRetry(r => r.Interval(4, 100));
+            ep.ConfigureConsumer<UserPromocodeConsumer>(provider);
+        });
+    }));
+});
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

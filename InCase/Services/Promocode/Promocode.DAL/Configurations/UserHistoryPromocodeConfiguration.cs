@@ -4,13 +4,13 @@ using Promocode.DAL.Entities;
 
 namespace Promocode.DAL.Configurations
 {
-    internal class UserHistoryPromocodeConfiguration : BaseEntityConfiguration<UserHistoryPromocode>
+    internal class UserHistoryPromocodeConfiguration : BaseEntityConfiguration<UserPromocode>
     {
-        public override void Configure(EntityTypeBuilder<UserHistoryPromocode> builder)
+        public override void Configure(EntityTypeBuilder<UserPromocode> builder)
         {
             base.Configure(builder);
 
-            builder.ToTable(nameof(UserHistoryPromocode));
+            builder.ToTable(nameof(UserPromocode));
 
             builder.HasIndex(uhp => uhp.UserId)
                 .IsUnique(false);

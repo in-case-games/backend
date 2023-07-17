@@ -17,9 +17,9 @@ namespace Promocode.BLL.Services
             _context = context;
         }
 
-        public async Task<UserHistoryPromocodeResponse> GetAsync(Guid id, Guid userId)
+        public async Task<UserPromocodeResponse> GetAsync(Guid id, Guid userId)
         {
-            UserHistoryPromocode history = await _context.UserHistoriesPromocodes
+            UserPromocode history = await _context.UserHistoriesPromocodes
                 .Include(uhp => uhp.Promocode)
                 .Include(uhp => uhp.Promocode!.Type)
                 .AsNoTracking()
@@ -32,12 +32,12 @@ namespace Promocode.BLL.Services
             return history.ToResponse();
         }
 
-        public async Task<List<UserHistoryPromocodeResponse>> GetAsync(Guid userId, int count)
+        public async Task<List<UserPromocodeResponse>> GetAsync(Guid userId, int count)
         {
             if (count <= 0 || count >= 10000)
                 throw new BadRequestException("Размер выборки должен быть в пределе 1-10000");
 
-            List<UserHistoryPromocode> history = await _context.UserHistoriesPromocodes
+            List<UserPromocode> history = await _context.UserHistoriesPromocodes
                 .Include(uhp => uhp.Promocode)
                 .Include(uhp => uhp.Promocode!.Type)
                 .AsNoTracking()
@@ -49,12 +49,12 @@ namespace Promocode.BLL.Services
             return history.ToResponse();
         }
 
-        public async Task<List<UserHistoryPromocodeResponse>> GetAsync(int count)
+        public async Task<List<UserPromocodeResponse>> GetAsync(int count)
         {
             if (count <= 0 || count >= 10000)
                 throw new BadRequestException("Размер выборки должен быть в пределе 1-10000");
 
-            List<UserHistoryPromocode> history = await _context.UserHistoriesPromocodes
+            List<UserPromocode> history = await _context.UserHistoriesPromocodes
                 .Include(uhp => uhp.Promocode)
                 .Include(uhp => uhp.Promocode!.Type)
                 .AsNoTracking()
@@ -65,7 +65,7 @@ namespace Promocode.BLL.Services
             return history.ToResponse();
         }
 
-        public async Task<UserHistoryPromocodeResponse> ActivateAsync(Guid userId, string name)
+        public async Task<UserPromocodeResponse> ActivateAsync(Guid userId, string name)
         {
             PromocodeEntity promocode = await _context.Promocodes
                 .Include(p => p.Type)
@@ -75,11 +75,11 @@ namespace Promocode.BLL.Services
             if (promocode.NumberActivations <= 0 || promocode.ExpirationDate <= DateTime.UtcNow)
                 throw new ForbiddenException("Промокод истёк");
 
-            UserHistoryPromocode? history = await _context.UserHistoriesPromocodes
+            UserPromocode? history = await _context.UserHistoriesPromocodes
                 .AsNoTracking()
                 .FirstOrDefaultAsync(uhp => uhp.PromocodeId == promocode.Id);
 
-            UserHistoryPromocode? historyType = await _context.UserHistoriesPromocodes
+            UserPromocode? historyType = await _context.UserHistoriesPromocodes
                 .AsNoTracking()
                 .FirstOrDefaultAsync(uhp =>
                 uhp.Promocode!.Type!.Id == promocode.TypeId &&
@@ -109,7 +109,7 @@ namespace Promocode.BLL.Services
             return history.ToResponse();
         }
 
-        public async Task<UserHistoryPromocodeResponse> ExchangeAsync(Guid userId, string name)
+        public async Task<UserPromocodeResponse> ExchangeAsync(Guid userId, string name)
         {
             PromocodeEntity promocode = await _context.Promocodes
                 .Include(p => p.Type)
@@ -125,7 +125,7 @@ namespace Promocode.BLL.Services
             if (isUsed)
                 throw new ConflictException("Промокод уже использован");
 
-            UserHistoryPromocode? history = await _context.UserHistoriesPromocodes
+            UserPromocode? history = await _context.UserHistoriesPromocodes
                 .Include(uhp => uhp.Promocode)
                 .Include(uhp => uhp.Promocode!.Type)
                 .FirstOrDefaultAsync(uhp =>

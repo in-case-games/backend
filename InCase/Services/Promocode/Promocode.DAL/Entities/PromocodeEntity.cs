@@ -14,6 +14,6 @@ namespace Promocode.DAL.Entities
         [JsonIgnore]
         public Guid TypeId { get; set; }
         [JsonIgnore]
-        public IEnumerable<UserHistoryPromocode>? HistoriesPromocodes { get; set; }
+        public IEnumerable<UserPromocode>? HistoriesPromocodes { get; set; }
     }
 }

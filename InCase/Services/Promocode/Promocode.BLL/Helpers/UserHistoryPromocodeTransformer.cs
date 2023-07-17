@@ -5,7 +5,7 @@ namespace Promocode.BLL.Helpers
 {
     public static class UserHistoryPromocodeTransformer
     {
-        public static UserHistoryPromocodeResponse ToResponse(this UserHistoryPromocode history) =>
+        public static UserPromocodeResponse ToResponse(this UserPromocode history) =>
             new() { 
                 Id = history.Id,
                 Date = history.Date,
@@ -15,10 +15,10 @@ namespace Promocode.BLL.Helpers
                 Type = history.Promocode?.Type?.Name
             };
 
-        public static List<UserHistoryPromocodeResponse> ToResponse(
-            this List<UserHistoryPromocode> histories)
+        public static List<UserPromocodeResponse> ToResponse(
+            this List<UserPromocode> histories)
         {
-            List<UserHistoryPromocodeResponse> response = new();
+            List<UserPromocodeResponse> response = new();
 
             foreach (var history in histories)
                 response.Add(ToResponse(history));
@@ -26,7 +26,7 @@ namespace Promocode.BLL.Helpers
             return response;
         }
 
-        private static int? TransformDiscount(UserHistoryPromocode history) =>
+        private static int? TransformDiscount(UserPromocode history) =>
             history.Promocode is null ? null : (int)(history.Promocode.Discount * 100);
     }
 }

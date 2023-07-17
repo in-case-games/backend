@@ -77,10 +77,13 @@ builder.Services.AddScoped<IUserAdditionalInfoService, UserAdditionalInfoService
 builder.Services.AddScoped<IUserOpeningService, UserOpeningService>();
 builder.Services.AddScoped<ILootBoxOpeningService, LootBoxOpeningService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IUserPromocodeService, UserPromocodeService>();
 
 builder.Services.AddMassTransit(x =>
 {
     x.AddConsumer<UserConsumer>();
+    x.AddConsumer<UserPromocodeConsumer>();
+    x.AddConsumer<UserPaymentConsumer>();
 
     x.AddBus(provider => Bus.Factory.CreateUsingRabbitMq(cfg =>
     {
@@ -94,6 +97,18 @@ builder.Services.AddMassTransit(x =>
             ep.PrefetchCount = 16;
             ep.UseMessageRetry(r => r.Interval(4, 100));
             ep.ConfigureConsumer<UserConsumer>(provider);
+        });
+        cfg.ReceiveEndpoint("user-promocode", ep =>
+        {
+            ep.PrefetchCount = 16;
+            ep.UseMessageRetry(r => r.Interval(4, 100));
+            ep.ConfigureConsumer<UserPromocodeConsumer>(provider);
+        });
+        cfg.ReceiveEndpoint("user-payment", ep =>
+        {
+            ep.PrefetchCount = 16;
+            ep.UseMessageRetry(r => r.Interval(4, 100));
+            ep.ConfigureConsumer<UserPaymentConsumer>(provider);
         });
     }));
 });

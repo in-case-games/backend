@@ -2,7 +2,7 @@
 
 namespace Promocode.DAL.Entities
 {
-    public class UserHistoryPromocode : BaseEntity
+    public class UserPromocode : BaseEntity
     {
         public DateTime Date { get; set; }
         public bool IsActivated { get; set; } = false;

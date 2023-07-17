@@ -5,6 +5,7 @@ using Game.BLL.Models;
 using Game.DAL.Data;
 using Game.DAL.Entities;
 using Infrastructure.MassTransit.Statistics;
+using Infrastructure.MassTransit.User;
 using Infrastructure.MassTransit.Withdraw;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
@@ -49,6 +50,16 @@ namespace Game.BLL.Services
                 throw new ForbiddenException("Кейс заблокирован");
             if (userInfo.Balance < box.Cost)
                 throw new PaymentRequiredException("Недостаточно средств");
+            if (promocode is not null)
+            {
+                UserPromocodeTemplate templatePromo = promocode.ToTemplate();
+
+                Uri uriPromo = new(_configuration["MassTransit:Uri"] + "/user-promocode_activated");
+                var endPointPromo = await _bus.GetSendEndpoint(uriPromo);
+                await endPointPromo.Send(templatePromo);
+
+                _context.HistoryPromocodes.Remove(promocode);
+            }
 
             UserPathBanner? pathBanner = await _context.PathBanners
                 .AsNoTracking()

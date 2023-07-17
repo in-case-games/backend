@@ -2,7 +2,7 @@
 
 namespace Promocode.BLL.Models
 {
-    public class UserHistoryPromocodeResponse : BaseEntity
+    public class UserPromocodeResponse : BaseEntity
     {
         public DateTime Date { get; set; }
         public bool IsActivated { get; set; }
