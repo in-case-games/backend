@@ -32,9 +32,9 @@ namespace Payment.BLL.MassTransit.Consumers
                     .FirstOrDefaultAsync(ur => ur.Id == template.Id && ur.UserId == template.UserId);
 
                 if (userPromocode is null)
-                    await _promocodeService.CreateAsync(template.ToRequest());
+                    await _promocodeService.CreateAsync(template);
                 else
-                    await _promocodeService.UpdateAsync(template.ToRequest());
+                    await _promocodeService.UpdateAsync(template);
             }
         }
     }

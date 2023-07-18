@@ -1,11 +1,10 @@
-﻿using Payment.BLL.Models;
+﻿using Infrastructure.MassTransit.User;
 
 namespace Payment.BLL.Interfaces
 {
     public interface IUserService
     {
-        public Task<UserResponse> GetAsync(Guid id);
-        public Task<UserResponse> CreateAsync(UserRequest request, bool IsNewGuid = false);
-        public Task<UserResponse> DeleteAsync(Guid id);
+        public Task CreateAsync(UserTemplate template);
+        public Task DeleteAsync(Guid id);
     }
 }

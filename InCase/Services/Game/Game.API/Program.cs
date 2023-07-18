@@ -3,6 +3,7 @@ using Game.BLL.Interfaces;
 using Game.BLL.MassTransit.Consumers;
 using Game.BLL.Services;
 using Game.DAL.Data;
+using Game.DAL.Entities;
 using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -78,12 +79,19 @@ builder.Services.AddScoped<IUserOpeningService, UserOpeningService>();
 builder.Services.AddScoped<ILootBoxOpeningService, LootBoxOpeningService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserPromocodeService, UserPromocodeService>();
+builder.Services.AddScoped<IGameItemService, GameItemService>();
+builder.Services.AddScoped<ILootBoxService, LootBoxService>();
+builder.Services.AddScoped<ILootBoxInventoryService, LootBoxInventoryService>();
 
 builder.Services.AddMassTransit(x =>
 {
     x.AddConsumer<UserConsumer>();
     x.AddConsumer<UserPromocodeConsumer>();
     x.AddConsumer<UserPaymentConsumer>();
+    x.AddConsumer<GameItemConsumer>();
+    x.AddConsumer<LootBoxBannerConsumer>();
+    x.AddConsumer<LootBoxConsumer>();
+    x.AddConsumer<LootBoxInventoryConsumer>();
 
     x.AddBus(provider => Bus.Factory.CreateUsingRabbitMq(cfg =>
     {
@@ -109,6 +117,30 @@ builder.Services.AddMassTransit(x =>
             ep.PrefetchCount = 16;
             ep.UseMessageRetry(r => r.Interval(4, 100));
             ep.ConfigureConsumer<UserPaymentConsumer>(provider);
+        });
+        cfg.ReceiveEndpoint("game-item", ep =>
+        {
+            ep.PrefetchCount = 16;
+            ep.UseMessageRetry(r => r.Interval(4, 100));
+            ep.ConfigureConsumer<GameItemConsumer>(provider);
+        });
+        cfg.ReceiveEndpoint("box-banner", ep =>
+        {
+            ep.PrefetchCount = 16;
+            ep.UseMessageRetry(r => r.Interval(4, 100));
+            ep.ConfigureConsumer<LootBoxBannerConsumer>(provider);
+        });
+        cfg.ReceiveEndpoint("loot-box", ep =>
+        {
+            ep.PrefetchCount = 16;
+            ep.UseMessageRetry(r => r.Interval(4, 100));
+            ep.ConfigureConsumer<LootBoxConsumer>(provider);
+        });
+        cfg.ReceiveEndpoint("box-inventory", ep =>
+        {
+            ep.PrefetchCount = 16;
+            ep.UseMessageRetry(r => r.Interval(4, 100));
+            ep.ConfigureConsumer<LootBoxInventoryConsumer>(provider);
         });
     }));
 });

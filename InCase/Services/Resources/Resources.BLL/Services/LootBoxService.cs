@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using MassTransit;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Resources.BLL.Exceptions;
 using Resources.BLL.Helpers;
 using Resources.BLL.Interfaces;
@@ -11,10 +13,17 @@ namespace Resources.BLL.Services
     public class LootBoxService : ILootBoxService
     {
         private readonly ApplicationDbContext _context;
+        private readonly IConfiguration _configuration;
+        private readonly IBus _bus;
 
-        public LootBoxService(ApplicationDbContext context)
+        public LootBoxService(
+            ApplicationDbContext context,
+            IConfiguration configuration,
+            IBus bus)
         {
             _context = context;
+            _configuration = configuration;
+            _bus = bus;
         }
 
         public async Task<LootBoxResponse> GetAsync(Guid id)
@@ -73,7 +82,9 @@ namespace Resources.BLL.Services
             await _context.LootBoxes.AddAsync(box);
             await _context.SaveChangesAsync();
 
-            //Notify rabbit mq
+            Uri uri = new(_configuration["MassTransit:Uri"] + "/loot-box");
+            var endPoint = await _bus.GetSendEndpoint(uri);
+            await endPoint.Send(box.ToTemplate(isDeleted: false));
 
             return box.ToResponse();
         }
@@ -95,7 +106,9 @@ namespace Resources.BLL.Services
             _context.LootBoxes.Update(newBox);
             await _context.SaveChangesAsync();
 
-            //Notify rabbit mq
+            Uri uri = new(_configuration["MassTransit:Uri"] + "/loot-box");
+            var endPoint = await _bus.GetSendEndpoint(uri);
+            await endPoint.Send(newBox.ToTemplate(isDeleted: false));
 
             return newBox.ToResponse();
         }
@@ -110,7 +123,9 @@ namespace Resources.BLL.Services
             _context.LootBoxes.Remove(box);
             await _context.SaveChangesAsync();
 
-            //Notify rabbit mq
+            Uri uri = new(_configuration["MassTransit:Uri"] + "/loot-box");
+            var endPoint = await _bus.GetSendEndpoint(uri);
+            await endPoint.Send(box.ToTemplate(isDeleted: true));
 
             return box.ToResponse();
         }

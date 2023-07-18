@@ -1,5 +1,6 @@
 ﻿using Game.BLL.Models;
 using Game.DAL.Entities;
+using Infrastructure.MassTransit.Resources;
 
 namespace Game.BLL.Helpers
 {
@@ -20,5 +21,17 @@ namespace Game.BLL.Helpers
 
             return response;
         }
+
+        public static GameItem ToEntity(this GameItemRequest request, bool isNewGuid = false) => new()
+        {
+            Id = isNewGuid ? Guid.NewGuid() : request.Id,
+            Cost = request.Cost
+        };
+
+        public static GameItemRequest ToRequest(this GameItemTemplate template) => new()
+        {
+            Id = template.Id,
+            Cost = template.Cost,
+        };
     }
 }

@@ -1,13 +1,12 @@
 ﻿using Infrastructure.MassTransit.User;
 using Microsoft.EntityFrameworkCore;
-using Promocode.BLL.Exceptions;
-using Promocode.BLL.Helpers;
-using Promocode.BLL.Interfaces;
-using Promocode.BLL.Models;
-using Promocode.DAL.Data;
-using Promocode.DAL.Entities;
+using Review.BLL.Exceptions;
+using Review.BLL.Helpers;
+using Review.BLL.Models;
+using Review.DAL.Data;
+using Review.DAL.Entities;
 
-namespace Promocode.BLL.Services
+namespace Review.BLL.Services
 {
     public class UserService : IUserService
     {
@@ -20,22 +19,22 @@ namespace Promocode.BLL.Services
 
         public async Task CreateAsync(UserTemplate template)
         {
-            if (await _context.Users.AnyAsync(u => u.Id == template.Id))
-                throw new ForbiddenException("Пользователь существует");
+            if (await _context.User.AnyAsync(u => u.Id == template.Id))
+                throw new NotFoundException("Пользователь существует");
 
             User user = template.ToEntity();
 
-            await _context.Users.AddAsync(user);
+            await _context.User.AddAsync(user);
             await _context.SaveChangesAsync();
         }
 
         public async Task DeleteAsync(Guid id)
         {
-            User user = await _context.Users
+            User user = await _context.User
                 .FirstOrDefaultAsync(u => u.Id == id) ??
                 throw new NotFoundException("Пользователь не найден");
 
-            _context.Users.Remove(user);
+            _context.User.Remove(user);
             await _context.SaveChangesAsync();
         }
     }

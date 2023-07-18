@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using MassTransit;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Resources.BLL.Entities;
 using Resources.BLL.Exceptions;
 using Resources.BLL.Helpers;
@@ -12,10 +14,17 @@ namespace Resources.BLL.Services
     public class LootBoxBannerService : ILootBoxBannerService
     {
         private readonly ApplicationDbContext _context;
+        private readonly IConfiguration _configuration;
+        private readonly IBus _bus;
 
-        public LootBoxBannerService(ApplicationDbContext context)
+        public LootBoxBannerService(
+            ApplicationDbContext context,
+            IConfiguration configuration,
+            IBus bus)
         {
             _context = context;
+            _configuration = configuration;
+            _bus = bus;
         }
 
         public async Task<LootBoxBannerResponse> GetAsync(Guid id)
@@ -68,9 +77,11 @@ namespace Resources.BLL.Services
             await _context.BoxBanners.AddAsync(banner);
             await _context.SaveChangesAsync();
 
-            banner.Box = box;
+            Uri uri = new(_configuration["MassTransit:Uri"] + "/box-banner");
+            var endPoint = await _bus.GetSendEndpoint(uri);
+            await endPoint.Send(banner.ToTemplate(isDeleted: false));
 
-            //TODO Notify by rabbit mq
+            banner.Box = box;
 
             return banner.ToResponse();
         }
@@ -97,9 +108,11 @@ namespace Resources.BLL.Services
             _context.BoxBanners.Update(banner);
             await _context.SaveChangesAsync();
 
-            banner.Box = box;
+            Uri uri = new(_configuration["MassTransit:Uri"] + "/box-banner");
+            var endPoint = await _bus.GetSendEndpoint(uri);
+            await endPoint.Send(banner.ToTemplate(isDeleted: false));
 
-            //TODO Notify by rabbit mq
+            banner.Box = box;
 
             return banner.ToResponse();
         }
@@ -115,7 +128,9 @@ namespace Resources.BLL.Services
             _context.BoxBanners.Remove(banner);
             await _context.SaveChangesAsync();
 
-            //TODO Notify by rabbit mq
+            Uri uri = new(_configuration["MassTransit:Uri"] + "/box-banner");
+            var endPoint = await _bus.GetSendEndpoint(uri);
+            await endPoint.Send(banner.ToTemplate(isDeleted: true));
 
             return banner.ToResponse();
         }

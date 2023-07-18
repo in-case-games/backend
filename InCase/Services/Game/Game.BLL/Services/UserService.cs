@@ -30,7 +30,7 @@ namespace Game.BLL.Services
         public async Task<UserResponse> CreateAsync(UserRequest request, bool IsNewGuid = false)
         {
             if (await _context.Users.AnyAsync(u => u.Id == request.Id))
-                throw new ForbiddenException("Пользователь существует");
+                throw new NotFoundException("Пользователь существует");
 
             User user = request.ToEntity(IsNewGuid: IsNewGuid);
 

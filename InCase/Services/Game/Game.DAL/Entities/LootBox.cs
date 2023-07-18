@@ -8,7 +8,7 @@ namespace Game.DAL.Entities
         public decimal Balance { get; set; } = 0;
         public decimal VirtualBalance { get; set; } = 0;
         public bool IsLocked { get; set; } = false;
-        public bool IsActiveBanner { get; set; } = false;
+        public DateTime? ExpirationBannerDate { get; set; }
 
         public IEnumerable<LootBoxInventory>? Inventories { get; set; }
         [JsonIgnore]

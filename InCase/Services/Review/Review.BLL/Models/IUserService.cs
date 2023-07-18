@@ -1,6 +1,6 @@
 ﻿using Infrastructure.MassTransit.User;
 
-namespace Promocode.BLL.Interfaces
+namespace Review.BLL.Models
 {
     public interface IUserService
     {

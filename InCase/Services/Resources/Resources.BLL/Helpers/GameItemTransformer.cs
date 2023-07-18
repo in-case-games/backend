@@ -1,4 +1,5 @@
-﻿using Resources.BLL.Models;
+﻿using Infrastructure.MassTransit.Resources;
+using Resources.BLL.Models;
 using Resources.DAL.Entities;
 
 namespace Resources.BLL.Helpers
@@ -37,5 +38,18 @@ namespace Resources.BLL.Helpers
                 Name = request.Name,
                 TypeId = request.TypeId
             };
+
+        public static GameItemTemplate ToTemplate(this GameItem entity, bool isDeleted = false) => new()
+        {
+            Id = entity.Id,
+            Cost = entity.Cost,
+            GameId = entity.GameId,
+            HashName = entity.HashName,
+            IsDeleted = isDeleted,
+            Name = entity.Name,
+            QualityId = entity.QualityId,
+            RarityId = entity.RarityId,
+            TypeId = entity.TypeId
+        };
     }
 }

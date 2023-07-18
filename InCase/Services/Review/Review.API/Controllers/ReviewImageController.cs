@@ -110,7 +110,7 @@ namespace Review.API.Controllers
         public async Task<IActionResult> GetByReviewId(Guid id)
         {
             List<ReviewImageResponse> response = await _reviewImageService
-                .GetByUserIdAsync(id, isOnlyApproved: true);
+                .GetByReviewIdAsync(id, isOnlyApproved: true);
 
             return Ok(ApiResult<List<ReviewImageResponse>>.OK(response));
         }
@@ -122,7 +122,7 @@ namespace Review.API.Controllers
         public async Task<IActionResult> GetByAdminReviewId(Guid id)
         {
             List<ReviewImageResponse> response = await _reviewImageService
-                .GetByUserIdAsync(id, isOnlyApproved: false);
+                .GetByReviewIdAsync(id, isOnlyApproved: false);
 
             return Ok(ApiResult<List<ReviewImageResponse>>.OK(response));
         }

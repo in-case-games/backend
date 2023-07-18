@@ -74,6 +74,7 @@ builder.Services.AddSwaggerGen(options =>
 
 builder.Services.AddScoped<IUserPromocodesService, UserPromocodesService>();
 builder.Services.AddScoped<IPromocodeService, PromocodeService>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 builder.Services.AddMassTransit(x =>
 {

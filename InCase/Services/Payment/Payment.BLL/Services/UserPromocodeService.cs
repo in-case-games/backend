@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Infrastructure.MassTransit.User;
+using Microsoft.EntityFrameworkCore;
 using Payment.BLL.Exceptions;
 using Payment.BLL.Helpers;
 using Payment.BLL.Interfaces;
@@ -17,42 +18,28 @@ namespace Payment.BLL.Services
             _context = context;
         }
 
-        public async Task<UserPromocodeResponse> GetAsync(Guid id)
+        public async Task CreateAsync(UserPromocodeTemplate template)
         {
-            UserPromocode userPromocode = await _context.UsersPromocodes
-                .AsNoTracking()
-                .FirstOrDefaultAsync(ur => ur.Id == id) ??
-                throw new NotFoundException("Промокод пользователя не найден");
-
-            return userPromocode.ToResponse();
-        }
-
-        public async Task<UserPromocodeResponse> CreateAsync(UserPromocodeRequest request, bool isNewGuid = false)
-        {
-            if (!await _context.UsersPromocodes.AnyAsync(up => up.UserId == request.UserId))
+            if (!await _context.UsersPromocodes.AnyAsync(up => up.UserId == template.UserId))
                 throw new BadRequestException("Уже используется промокод");
 
-            UserPromocode entity = request.ToEntity(isNewGuid: isNewGuid);
+            UserPromocode entity = template.ToEntity();
 
             await _context.UsersPromocodes.AddAsync(entity);
             await _context.SaveChangesAsync();
-
-            return entity.ToResponse();
         }
 
-        public async Task<UserPromocodeResponse> UpdateAsync(UserPromocodeRequest request)
+        public async Task UpdateAsync(UserPromocodeTemplate template)
         {
             UserPromocode entityOld = await _context.UsersPromocodes
                 .AsNoTracking()
-                .FirstOrDefaultAsync(ur => ur.Id == request.Id && ur.UserId == request.UserId) ??
+                .FirstOrDefaultAsync(ur => ur.Id == template.Id && ur.UserId == template.UserId) ??
                 throw new NotFoundException("Промокод пользователя не найден");
 
-            UserPromocode entity = request.ToEntity();
+            UserPromocode entity = template.ToEntity();
 
             _context.Entry(entityOld).CurrentValues.SetValues(entity);
             await _context.SaveChangesAsync();
-
-            return entity.ToResponse();
         }
     }
 }

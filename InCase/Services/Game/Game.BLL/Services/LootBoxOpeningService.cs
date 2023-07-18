@@ -76,7 +76,9 @@ namespace Game.BLL.Services
             decimal revenue = OpenLootBoxService.GetRevenue(box.Cost);
             decimal expenses = OpenLootBoxService.GetExpenses(winItem.Cost, revenue);
 
-            if (pathBanner is not null && box.IsActiveBanner)
+            if (pathBanner is not null && 
+                box.ExpirationBannerDate is not null && 
+                box.ExpirationBannerDate >= DateTime.UtcNow)
             {
                 --pathBanner!.NumberSteps;
 

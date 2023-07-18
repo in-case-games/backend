@@ -14,8 +14,8 @@ namespace Game.DAL.Configurations
 
             builder.Property(lb => lb.IsLocked)
                 .IsRequired();
-            builder.Property(lb => lb.IsActiveBanner)
-                .IsRequired();
+            builder.Property(lb => lb.ExpirationBannerDate)
+                .IsRequired(false);
 
             builder.Property(lb => lb.Cost)
                 .HasColumnType("DECIMAL(18,5)")

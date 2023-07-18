@@ -1,4 +1,5 @@
-﻿using Resources.BLL.Models;
+﻿using Infrastructure.MassTransit.Resources;
+using Resources.BLL.Models;
 using Resources.DAL.Entities;
 
 namespace Resources.BLL.Helpers
@@ -43,5 +44,27 @@ namespace Resources.BLL.Helpers
                 BoxId = request.BoxId,
                 ItemId = request.ItemId,
             };
+
+        public static LootBoxInventoryTemplate ToTemplate(
+            this LootBoxInventoryRequest request, 
+            bool isDeleted = false) => new()
+        {
+            Id = request.Id,
+            BoxId = request.BoxId,
+            ChanceWining = request.ChanceWining,
+            ItemId = request.ItemId,
+            IsDeleted = isDeleted
+        };
+
+        public static LootBoxInventoryTemplate ToTemplate(
+            this LootBoxInventory entity,
+            bool isDeleted = false) => new()
+        {
+            Id = entity.Id,
+            BoxId = entity.BoxId,
+            ChanceWining = 0,
+            ItemId = entity.ItemId,
+            IsDeleted = isDeleted
+        };
     }
 }

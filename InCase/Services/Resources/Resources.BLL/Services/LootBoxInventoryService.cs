@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using MassTransit;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Resources.BLL.Exceptions;
 using Resources.BLL.Helpers;
 using Resources.BLL.Interfaces;
@@ -11,10 +13,17 @@ namespace Resources.BLL.Services
     public class LootBoxInventoryService : ILootBoxInventoryService
     {
         private readonly ApplicationDbContext _context;
+        private readonly IConfiguration _configuration;
+        private readonly IBus _bus;
 
-        public LootBoxInventoryService(ApplicationDbContext context)
+        public LootBoxInventoryService(
+            ApplicationDbContext context,
+            IConfiguration configuration,
+            IBus bus)
         {
             _context = context;
+            _configuration = configuration;
+            _bus = bus;
         }
 
         public async Task<LootBoxInventoryResponse> GetAsync(Guid id)
@@ -67,6 +76,8 @@ namespace Resources.BLL.Services
 
         public async Task<LootBoxInventoryResponse> CreateAsync(LootBoxInventoryRequest request)
         {
+            request.Id = Guid.NewGuid();
+
             LootBox box = await _context.LootBoxes
                 .AsNoTracking()
                 .FirstOrDefaultAsync(lb => lb.Id == request.BoxId) ??
@@ -89,7 +100,9 @@ namespace Resources.BLL.Services
             await _context.BoxInventories.AddAsync(inventory);
             await _context.SaveChangesAsync();
 
-            //Notify rabbit mq
+            Uri uri = new(_configuration["MassTransit:Uri"] + "/box-inventory");
+            var endPoint = await _bus.GetSendEndpoint(uri);
+            await endPoint.Send(request.ToTemplate(isDeleted: false));
 
             inventory.Item = item;
             inventory.Box = box;
@@ -124,7 +137,9 @@ namespace Resources.BLL.Services
             _context.BoxInventories.Update(inventory);
             await _context.SaveChangesAsync();
 
-            //Notify rabbit mq
+            Uri uri = new(_configuration["MassTransit:Uri"] + "/box-inventory");
+            var endPoint = await _bus.GetSendEndpoint(uri);
+            await endPoint.Send(request.ToTemplate(isDeleted: false));
 
             inventory.Item = item;
             inventory.Box = box;
@@ -148,7 +163,9 @@ namespace Resources.BLL.Services
             _context.BoxInventories.Remove(inventory);
             await _context.SaveChangesAsync();
 
-            //Notify rabbit mq
+            Uri uri = new(_configuration["MassTransit:Uri"] + "/box-inventory");
+            var endPoint = await _bus.GetSendEndpoint(uri);
+            await endPoint.Send(inventory.ToTemplate(isDeleted: true));
 
             return inventory.ToResponse();
         }

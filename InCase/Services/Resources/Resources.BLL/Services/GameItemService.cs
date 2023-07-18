@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using MassTransit;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Resources.BLL.Exceptions;
 using Resources.BLL.Helpers;
 using Resources.BLL.Interfaces;
@@ -11,10 +13,17 @@ namespace Resources.BLL.Services
     public class GameItemService : IGameItemService
     {
         private readonly ApplicationDbContext _context;
+        private readonly IConfiguration _configuration;
+        private readonly IBus _bus;
 
-        public GameItemService(ApplicationDbContext context)
+        public GameItemService(
+            ApplicationDbContext context,
+            IConfiguration configuration,
+            IBus bus)
         {
             _context = context;
+            _configuration = configuration;
+            _bus = bus;
         }
 
         public async Task<GameItemResponse> GetAsync(Guid id)
@@ -181,7 +190,9 @@ namespace Resources.BLL.Services
             await _context.GameItems.AddAsync(item);
             await _context.SaveChangesAsync();
 
-            //TODO Rabbit mq
+            Uri uri = new(_configuration["MassTransit:Uri"] + "/game-item");
+            var endPoint = await _bus.GetSendEndpoint(uri);
+            await endPoint.Send(item.ToTemplate(isDeleted: false));
 
             item.Game = game;
             item.Quality = quality;
@@ -220,7 +231,9 @@ namespace Resources.BLL.Services
             _context.GameItems.Update(item);
             await _context.SaveChangesAsync();
 
-            //TODO Rabbit mq
+            Uri uri = new(_configuration["MassTransit:Uri"] + "/game-item");
+            var endPoint = await _bus.GetSendEndpoint(uri);
+            await endPoint.Send(item.ToTemplate(isDeleted: false));
 
             item.Game = game;
             item.Quality = quality;
@@ -244,11 +257,16 @@ namespace Resources.BLL.Services
             _context.GameItems.Remove(item);
             await _context.SaveChangesAsync();
 
+            Uri uri = new(_configuration["MassTransit:Uri"] + "/game-item");
+            var endPoint = await _bus.GetSendEndpoint(uri);
+            await endPoint.Send(item.ToTemplate(isDeleted: true));
+
             return item.ToResponse();
         }
 
         public Task UpdateCostManagerAsync(int count, CancellationToken cancellationToken)
         {
+            //TODO 
             throw new NotImplementedException();
         }
     }

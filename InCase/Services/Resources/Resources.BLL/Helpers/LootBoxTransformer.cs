@@ -1,4 +1,5 @@
-﻿using Resources.BLL.Models;
+﻿using Infrastructure.MassTransit.Resources;
+using Resources.BLL.Models;
 using Resources.DAL.Entities;
 
 namespace Resources.BLL.Helpers
@@ -30,7 +31,27 @@ namespace Resources.BLL.Helpers
                 Id = isNewGuid ? Guid.NewGuid() : request.Id,
                 GameId = request.GameId,
                 Name = request.Name,
-                IsLocked = true
+                IsLocked = request.IsLocked
             };
+
+        public static LootBoxTemplate ToTemplate(this LootBoxRequest request, bool isDeleted = false) => new()
+        {
+            Id = request.Id,
+            Cost = request.Cost,
+            GameId = request.GameId,
+            IsDeleted = isDeleted,
+            IsLocked = request.IsLocked,
+            Name = request.Name
+        };
+
+        public static LootBoxTemplate ToTemplate(this LootBox entity, bool isDeleted = false) => new()
+        {
+            Id = entity.Id,
+            Cost = entity.Cost,
+            GameId = entity.GameId,
+            IsDeleted = isDeleted,
+            IsLocked = entity.IsLocked,
+            Name = entity.Name
+        };
     }
 }

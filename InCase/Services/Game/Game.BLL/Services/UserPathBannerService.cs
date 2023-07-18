@@ -119,7 +119,7 @@ namespace Game.BLL.Services
 
             if (box.IsLocked)
                 throw new ForbiddenException("Кейс не активен");
-            if (!box.IsActiveBanner)
+            if (box.ExpirationBannerDate is null || box.ExpirationBannerDate < DateTime.UtcNow)
                 throw new ForbiddenException("Баннер не активен");
             if (item.Cost <= box.Cost)
                 throw new BadRequestException("Стоимость товара не может быть меньше стоимости кейса");

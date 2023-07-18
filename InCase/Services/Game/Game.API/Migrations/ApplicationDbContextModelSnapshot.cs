@@ -17,7 +17,7 @@ namespace Game.API.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.7")
+                .HasAnnotation("ProductVersion", "7.0.9")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -58,9 +58,9 @@ namespace Game.API.Migrations
                         .HasColumnType("DECIMAL(18,5)")
                         .HasColumnName("cost");
 
-                    b.Property<bool>("IsActiveBanner")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_active_banner");
+                    b.Property<DateTime?>("ExpirationBannerDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("expiration_banner_date");
 
                     b.Property<bool>("IsLocked")
                         .HasColumnType("boolean")

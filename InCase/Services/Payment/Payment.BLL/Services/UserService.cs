@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Infrastructure.MassTransit.User;
+using Microsoft.EntityFrameworkCore;
 using Payment.BLL.Exceptions;
 using Payment.BLL.Helpers;
 using Payment.BLL.Interfaces;
@@ -17,30 +18,18 @@ namespace Payment.BLL.Services
             _context = context;
         }
 
-        public async Task<UserResponse> GetAsync(Guid id)
+        public async Task CreateAsync(UserTemplate template)
         {
-            User user = await _context.Users
-                .AsNoTracking()
-                .FirstOrDefaultAsync(u => u.Id == id) ??
-                throw new NotFoundException("Пользователь не найден");
-
-            return user.ToResponse();
-        }
-
-        public async Task<UserResponse> CreateAsync(UserRequest request, bool IsNewGuid = false)
-        {
-            if (await _context.Users.AnyAsync(u => u.Id == request.Id))
+            if (await _context.Users.AnyAsync(u => u.Id == template.Id))
                 throw new ForbiddenException("Пользователь существует");
 
-            User user = request.ToEntity(IsNewGuid: IsNewGuid);
+            User user = template.ToEntity();
 
             await _context.Users.AddAsync(user);
             await _context.SaveChangesAsync();
-
-            return user.ToResponse();
         }
 
-        public async Task<UserResponse> DeleteAsync(Guid id)
+        public async Task DeleteAsync(Guid id)
         {
             User user = await _context.Users
                 .FirstOrDefaultAsync(u => u.Id == id) ??
@@ -48,8 +37,6 @@ namespace Payment.BLL.Services
 
             _context.Users.Remove(user);
             await _context.SaveChangesAsync();
-
-            return user.ToResponse();
         }
     }
 }

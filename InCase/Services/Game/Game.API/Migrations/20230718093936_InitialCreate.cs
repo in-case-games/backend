@@ -32,7 +32,7 @@ namespace Game.API.Migrations
                     balance = table.Column<decimal>(type: "numeric(18,5)", nullable: false),
                     virtual_balance = table.Column<decimal>(type: "numeric(18,5)", nullable: false),
                     is_locked = table.Column<bool>(type: "boolean", nullable: false),
-                    is_active_banner = table.Column<bool>(type: "boolean", nullable: false)
+                    expiration_banner_date = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {

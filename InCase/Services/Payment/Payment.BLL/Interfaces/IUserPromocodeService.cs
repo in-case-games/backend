@@ -1,11 +1,10 @@
-﻿using Payment.BLL.Models;
+﻿using Infrastructure.MassTransit.User;
 
 namespace Payment.BLL.Interfaces
 {
     public interface IUserPromocodeService
     {
-        public Task<UserPromocodeResponse> GetAsync(Guid id);
-        public Task<UserPromocodeResponse> CreateAsync(UserPromocodeRequest request, bool isNewGuid = false);
-        public Task<UserPromocodeResponse> UpdateAsync(UserPromocodeRequest request);
+        public Task CreateAsync(UserPromocodeTemplate template);
+        public Task UpdateAsync(UserPromocodeTemplate template);
     }
 }
