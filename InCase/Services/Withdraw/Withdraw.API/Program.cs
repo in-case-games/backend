@@ -1,3 +1,4 @@
+using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -5,6 +6,7 @@ using Microsoft.OpenApi.Models;
 using System.Text;
 using Withdraw.API.Middlewares;
 using Withdraw.BLL.Interfaces;
+using Withdraw.BLL.MassTransit.Consumers;
 using Withdraw.BLL.Services;
 using Withdraw.DAL.Data;
 
@@ -76,8 +78,43 @@ builder.Services.AddSingleton<IWithdrawItemService, WithdrawItemService>();
 builder.Services.AddScoped<IWithdrawService, WithdrawService>();
 builder.Services.AddScoped<IUserInventoryService, UserInventoryService>();
 builder.Services.AddScoped<IUserWithdrawsService, UserWithdrawsService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IGameItemService, GameItemService>();
 builder.Services.AddHostedService<WithdrawManagerService>();
 
+builder.Services.AddMassTransit(x =>
+{
+    x.AddConsumer<UserConsumer>();
+    x.AddConsumer<GameItemConsumer>();
+    x.AddConsumer<UserInventoryConsumer>();
+
+    x.AddBus(provider => Bus.Factory.CreateUsingRabbitMq(cfg =>
+    {
+        cfg.Host(new Uri(builder.Configuration["MassTransit:Uri"]!), h =>
+        {
+            h.Username(builder.Configuration["MassTransit:Username"]!);
+            h.Password(builder.Configuration["MassTransit:Password"]!);
+        });
+        cfg.ReceiveEndpoint("user", ep =>
+        {
+            ep.PrefetchCount = 16;
+            ep.UseMessageRetry(r => r.Interval(4, 100));
+            ep.ConfigureConsumer<UserConsumer>(provider);
+        });
+        cfg.ReceiveEndpoint("game-item", ep =>
+        {
+            ep.PrefetchCount = 16;
+            ep.UseMessageRetry(r => r.Interval(4, 100));
+            ep.ConfigureConsumer<GameItemConsumer>(provider);
+        });
+        cfg.ReceiveEndpoint("user-inventory", ep =>
+        {
+            ep.PrefetchCount = 16;
+            ep.UseMessageRetry(r => r.Interval(4, 100));
+            ep.ConfigureConsumer<UserInventoryConsumer>(provider);
+        });
+    }));
+});
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddAuthorization();

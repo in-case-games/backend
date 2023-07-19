@@ -1,4 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Infrastructure.MassTransit.User;
+using MassTransit;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Withdraw.BLL.Exceptions;
 using Withdraw.BLL.Helpers;
 using Withdraw.BLL.Interfaces;
@@ -12,13 +15,19 @@ namespace Withdraw.BLL.Services
     {
         private readonly ApplicationDbContext _context;
         private readonly IWithdrawItemService _withdrawItemService;
+        private readonly IConfiguration _configuration;
+        private readonly IBus _bus;
 
         public UserInventoryService(
             ApplicationDbContext context, 
-            IWithdrawItemService withdrawItemService)
+            IWithdrawItemService withdrawItemService,
+            IConfiguration configuration,
+            IBus bus)
         {
             _context = context;
             _withdrawItemService = withdrawItemService;
+            _configuration = configuration;
+            _bus = bus;
         }
 
         public async Task<List<UserInventoryResponse>> GetAsync(Guid userId)
@@ -59,6 +68,14 @@ namespace Withdraw.BLL.Services
                 throw new NotFoundException("Инвентарь не найден");
 
             return inventory.ToResponse();
+        }
+
+        public async Task CreateAsync(UserInventoryTemplate template)
+        {
+            UserInventory inventory = template.ToEntity();
+
+            await _context.UserInventories.AddAsync(inventory);
+            await _context.SaveChangesAsync();
         }
 
         public async Task<UserInventoryResponse> ExchangeAsync(Guid id, Guid itemId, Guid userId)
@@ -116,8 +133,10 @@ namespace Withdraw.BLL.Services
 
             _context.UserInventories.Remove(inventory);
             await _context.SaveChangesAsync();
-            
-            //TODO Notify microservice game about sell
+
+            Uri uri = new(_configuration["MassTransit:Uri"] + "/user-inventory_sell");
+            var endPoint = await _bus.GetSendEndpoint(uri);
+            await endPoint.Send(inventory.ToTemplate());
 
             return new() { Cost = inventory.FixedCost };
         }
@@ -143,7 +162,9 @@ namespace Withdraw.BLL.Services
             _context.UserInventories.Remove(inventory);
             await _context.SaveChangesAsync();
 
-            //TODO Notify microservice game about sell
+            Uri uri = new(_configuration["MassTransit:Uri"] + "/user-inventory_sell");
+            var endPoint = await _bus.GetSendEndpoint(uri);
+            await endPoint.Send(inventory.ToTemplate());
 
             return new() { Cost = inventory.FixedCost };
         }

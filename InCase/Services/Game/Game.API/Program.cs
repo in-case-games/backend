@@ -3,7 +3,6 @@ using Game.BLL.Interfaces;
 using Game.BLL.MassTransit.Consumers;
 using Game.BLL.Services;
 using Game.DAL.Data;
-using Game.DAL.Entities;
 using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -92,6 +91,7 @@ builder.Services.AddMassTransit(x =>
     x.AddConsumer<LootBoxBannerConsumer>();
     x.AddConsumer<LootBoxConsumer>();
     x.AddConsumer<LootBoxInventoryConsumer>();
+    x.AddConsumer<UserInventoryConsumer>();
 
     x.AddBus(provider => Bus.Factory.CreateUsingRabbitMq(cfg =>
     {
@@ -141,6 +141,12 @@ builder.Services.AddMassTransit(x =>
             ep.PrefetchCount = 16;
             ep.UseMessageRetry(r => r.Interval(4, 100));
             ep.ConfigureConsumer<LootBoxInventoryConsumer>(provider);
+        });
+        cfg.ReceiveEndpoint("user-inventory_sell", ep =>
+        {
+            ep.PrefetchCount = 16;
+            ep.UseMessageRetry(r => r.Interval(4, 100));
+            ep.ConfigureConsumer<UserInventoryConsumer>(provider);
         });
     }));
 });

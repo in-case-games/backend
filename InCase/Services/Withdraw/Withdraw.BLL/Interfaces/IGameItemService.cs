@@ -1,6 +1,6 @@
 ﻿using Infrastructure.MassTransit.Resources;
 
-namespace Game.BLL.Interfaces
+namespace Withdraw.BLL.Interfaces
 {
     public interface IGameItemService
     {

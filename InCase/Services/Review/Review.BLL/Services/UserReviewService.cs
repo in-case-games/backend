@@ -1,4 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Infrastructure.MassTransit.Statistics;
+using MassTransit;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Review.BLL.Exceptions;
 using Review.BLL.Helpers;
 using Review.BLL.Interfaces;
@@ -12,10 +15,17 @@ namespace Review.BLL.Services
     public class UserReviewService : IUserReviewService
     {
         private readonly ApplicationDbContext _context;
+        private readonly IConfiguration _configuration;
+        private readonly IBus _bus;
 
-        public UserReviewService(ApplicationDbContext context)
+        public UserReviewService(
+            ApplicationDbContext context,
+            IConfiguration configuration,
+            IBus bus)
         {
             _context = context;
+            _configuration = configuration;
+            _bus = bus;
         }
 
         public async Task<UserReviewResponse> GetAsync(Guid id, bool isOnlyApproved)
@@ -70,6 +80,12 @@ namespace Review.BLL.Services
 
             await _context.Reviews.AddAsync(review);
             await _context.SaveChangesAsync();
+
+            SiteStatisticsTemplate template = new() { Reviews = 1 };
+
+            Uri uri = new(_configuration["MassTransit:Uri"] + "/statistics");
+            var endPoint = await _bus.GetSendEndpoint(uri);
+            await endPoint.Send(template);
 
             return review.ToResponse();
         }
@@ -143,6 +159,12 @@ namespace Review.BLL.Services
             _context.Reviews.Remove(review);
             await _context.SaveChangesAsync();
 
+            SiteStatisticsTemplate template = new() { Reviews = -1 };
+
+            Uri uri = new(_configuration["MassTransit:Uri"] + "/statistics");
+            var endPoint = await _bus.GetSendEndpoint(uri);
+            await endPoint.Send(template);
+
             return review.ToResponse();
         }
 
@@ -158,6 +180,12 @@ namespace Review.BLL.Services
 
             _context.Reviews.Remove(review);
             await _context.SaveChangesAsync();
+
+            SiteStatisticsTemplate template = new() { Reviews = -1 };
+
+            Uri uri = new(_configuration["MassTransit:Uri"] + "/statistics");
+            var endPoint = await _bus.GetSendEndpoint(uri);
+            await endPoint.Send(template);
 
             return review.ToResponse();
         }

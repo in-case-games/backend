@@ -30,7 +30,7 @@ namespace Payment.BLL.MassTransit.Consumers
                 .FirstOrDefaultAsync(u => u.Id == template.Id);
 
             if (user is null)
-                await _userService.CreateAsync(template.ToRequest());
+                await _userService.CreateAsync(template);
             else if (template.IsDeleted)
                 await _userService.DeleteAsync(user.Id);
         }

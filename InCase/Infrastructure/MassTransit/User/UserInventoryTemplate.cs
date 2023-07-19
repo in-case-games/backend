@@ -1,4 +1,4 @@
-﻿namespace Infrastructure.MassTransit.Withdraw
+﻿namespace Infrastructure.MassTransit.User
 {
     public class UserInventoryTemplate : BaseTemplate
     {

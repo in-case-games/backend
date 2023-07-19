@@ -1,9 +1,11 @@
+using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Support.API.Middlewares;
 using Support.BLL.Interfaces;
+using Support.BLL.MassTransit.Consumers;
 using Support.BLL.Services;
 using Support.DAL.Data;
 using System.Text;
@@ -74,6 +76,27 @@ builder.Services.AddSwaggerGen(options =>
 builder.Services.AddScoped<IAnswerImageService, AnswerImageService>();
 builder.Services.AddScoped<ISupportTopicAnswerService, SupportTopicAnswerService>();
 builder.Services.AddScoped<ISupportTopicService, SupportTopicService>();
+builder.Services.AddScoped<IUserService, UserService>();
+
+builder.Services.AddMassTransit(x =>
+{
+    x.AddConsumer<UserConsumer>();
+
+    x.AddBus(provider => Bus.Factory.CreateUsingRabbitMq(cfg =>
+    {
+        cfg.Host(new Uri(builder.Configuration["MassTransit:Uri"]!), h =>
+        {
+            h.Username(builder.Configuration["MassTransit:Username"]!);
+            h.Password(builder.Configuration["MassTransit:Password"]!);
+        });
+        cfg.ReceiveEndpoint("user", ep =>
+        {
+            ep.PrefetchCount = 16;
+            ep.UseMessageRetry(r => r.Interval(4, 100));
+            ep.ConfigureConsumer<UserConsumer>(provider);
+        });
+    }));
+});
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

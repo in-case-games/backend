@@ -5,6 +5,9 @@ using Withdraw.DAL.Data;
 using Withdraw.DAL.Entities;
 using Withdraw.BLL.Exceptions;
 using Withdraw.BLL.Helpers;
+using Infrastructure.MassTransit.Statistics;
+using Microsoft.Extensions.Configuration;
+using MassTransit;
 
 namespace Withdraw.BLL.Services
 {
@@ -12,13 +15,19 @@ namespace Withdraw.BLL.Services
     {
         private readonly ApplicationDbContext _context;
         private readonly IWithdrawItemService _withdrawItemService;
+        private readonly IConfiguration _configuration;
+        private readonly IBus _bus;
 
         public WithdrawService(
             ApplicationDbContext context, 
-            IWithdrawItemService withdrawItemService)
+            IWithdrawItemService withdrawItemService,
+            IConfiguration configuration,
+            IBus bus)
         {
             _context = context;
             _withdrawItemService = withdrawItemService;
+            _configuration = configuration;
+            _bus = bus;
         }
 
         public async Task<ItemInfoResponse> GetItemInfoAsync(Guid id)
@@ -59,11 +68,20 @@ namespace Withdraw.BLL.Services
                         .GetTradeInfoAsync(withdraw);
 
                     withdraw.Status = statuses.First(ws => ws.Name == response.Status);
-                }
-                catch(Exception)
-                {
 
+                    if(response.Status == "given")
+                    {
+                        SiteStatisticsTemplate template = new() {
+                            WithdrawnItems = 1,
+                            WithdrawnFunds = Convert.ToInt32(withdraw.FixedCost)
+                        };
+
+                        Uri uri = new(_configuration["MassTransit:Uri"] + "/statistics");
+                        var endPoint = await _bus.GetSendEndpoint(uri);
+                        await endPoint.Send(template, cancellationToken);
+                    }
                 }
+                catch(Exception) { }
             }
 
             await _context.SaveChangesAsync(cancellationToken);

@@ -1,12 +1,11 @@
 ﻿using Infrastructure.MassTransit.User;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
-using Promocode.BLL.Helpers;
-using Promocode.BLL.Interfaces;
-using Promocode.DAL.Data;
-using Promocode.DAL.Entities;
+using Support.BLL.Interfaces;
+using Support.DAL.Data;
+using Support.DAL.Entities;
 
-namespace Promocode.BLL.MassTransit.Consumers
+namespace Support.BLL.MassTransit.Consumers
 {
     public class UserConsumer : IConsumer<UserTemplate>
     {

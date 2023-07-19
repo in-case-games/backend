@@ -1,12 +1,11 @@
-﻿using Game.BLL.Helpers;
-using Game.BLL.Interfaces;
-using Game.DAL.Data;
-using Game.DAL.Entities;
-using Infrastructure.MassTransit.Resources;
+﻿using Infrastructure.MassTransit.Resources;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
+using Withdraw.BLL.Interfaces;
+using Withdraw.DAL.Data;
+using Withdraw.DAL.Entities;
 
-namespace Game.BLL.MassTransit.Consumers
+namespace Withdraw.BLL.MassTransit.Consumers
 {
     public class GameItemConsumer : IConsumer<GameItemTemplate>
     {

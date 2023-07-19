@@ -11,5 +11,12 @@ namespace Payment.BLL.Helpers
             Discount = template.Discount,
             UserId = template.UserId,
         };
+
+        public static UserPromocodeTemplate ToTemplate(this UserPromocode entity) => new()
+        {
+            Id = entity.Id,
+            Discount = entity.Discount,
+            UserId = entity.UserId,
+        };
     }
 }

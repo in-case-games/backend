@@ -6,7 +6,6 @@ using Game.DAL.Data;
 using Game.DAL.Entities;
 using Infrastructure.MassTransit.Statistics;
 using Infrastructure.MassTransit.User;
-using Infrastructure.MassTransit.Withdraw;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -128,7 +127,7 @@ namespace Game.BLL.Services
                 UserId = userId,
             };
 
-            uri = new(_configuration["MassTransit:Uri"] + "/withdraw");
+            uri = new(_configuration["MassTransit:Uri"] + "/user-inventory");
             endPoint = await _bus.GetSendEndpoint(uri);
             await endPoint.Send(templateUser);
 

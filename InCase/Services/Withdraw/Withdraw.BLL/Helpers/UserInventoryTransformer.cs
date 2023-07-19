@@ -1,4 +1,5 @@
-﻿using Withdraw.BLL.Models;
+﻿using Infrastructure.MassTransit.User;
+using Withdraw.BLL.Models;
 using Withdraw.DAL.Entities;
 
 namespace Withdraw.BLL.Helpers
@@ -23,5 +24,23 @@ namespace Withdraw.BLL.Helpers
 
             return response;
         }
+
+        public static UserInventory ToEntity(this UserInventoryTemplate template) => new()
+        {
+            Id = template.Id,
+            Date = template.Date,
+            FixedCost = template.FixedCost,
+            ItemId = template.ItemId,
+            UserId = template.UserId
+        };
+
+        public static UserInventoryTemplate ToTemplate(this UserInventory inventory) => new()
+        {
+            Id = inventory.Id,
+            Date = inventory.Date,
+            FixedCost = inventory.FixedCost,
+            ItemId = inventory.ItemId,
+            UserId = inventory.UserId
+        };
     }
 }
