@@ -1,8 +1,10 @@
 ﻿using System.Net.Http.Json;
 using System.Text.Json;
+using Withdraw.BLL.Interfaces;
+
 namespace Withdraw.BLL.Services
 {
-    public class ResponseService
+    public class ResponseService : IResponseService
     {
         private readonly HttpClient _httpClient;
 

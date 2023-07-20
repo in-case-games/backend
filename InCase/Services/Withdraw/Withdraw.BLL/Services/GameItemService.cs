@@ -17,9 +17,12 @@ namespace Withdraw.BLL.Services
             _context = context;
         }
 
+        public async Task<GameItem?> GetAsync(Guid id) => await _context.GameItems
+            .AsNoTracking()
+            .FirstOrDefaultAsync(gi => gi.Id == id);
+
         public async Task CreateAsync(GameItemTemplate template)
         {
-            //Todo search item by hash name market, need id for platform
             GameItem item = template.ToEntity();
 
             await _context.GameItems.AddAsync(item);
@@ -28,8 +31,6 @@ namespace Withdraw.BLL.Services
 
         public async Task UpdateAsync(GameItemTemplate template)
         {
-            //Todo search item by hash name market, need id for platform
-
             GameItem item = await _context.GameItems
                 .FirstOrDefaultAsync(gi => gi.Id == template.Id) ??
                 throw new NotFoundException("Предмет не найден");

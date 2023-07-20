@@ -38,9 +38,9 @@ namespace Withdraw.BLL.Services
 
                     return item;
                 }
-                catch (Exception)
-                {
-                    i++;
+                catch (Exception) 
+                { 
+                    i++; 
                 }
             }
 

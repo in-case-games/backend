@@ -8,7 +8,9 @@ namespace Withdraw.BLL.Helpers
         public static GameItem ToEntity(this GameItemTemplate template) => new()
         {
             Id = template.Id,
-            Cost = template.Cost
+            Cost = template.Cost,
+            GameId = template.GameId,
+            IdForMarket = template.IdForMarket
         };
     }
 }

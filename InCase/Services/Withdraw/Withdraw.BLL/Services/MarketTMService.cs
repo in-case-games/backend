@@ -8,8 +8,8 @@ namespace Withdraw.BLL.Services
 {
     public class MarketTMService : ITradeMarketService
     {
-        private readonly IConfiguration _configuration;
-        private readonly ResponseService _responseService;
+        private readonly IConfiguration _cfg;
+        private readonly IResponseService _responseService;
         private readonly Dictionary<string, string> DomainUri = new()
         {
             ["csgo"] = "https://market.csgo.com",
@@ -28,33 +28,31 @@ namespace Withdraw.BLL.Services
         };
 
         public MarketTMService(
-            IConfiguration configuration, 
-            ResponseService responseService)
+            IConfiguration cfg, 
+            IResponseService responseService)
         {
-            _configuration = configuration;
+            _cfg = cfg;
             _responseService = responseService;
         }
 
         public async Task<BalanceMarketResponse> GetBalanceAsync()
         {
-            string uri = DomainUri["csgo"];
-            string url = $"/api/GetMoney/?key={_configuration["MarketTM:Secret"]}";
+            string uri = $"{DomainUri["csgo"]}/api/GetMoney/?key={_cfg["MarketTM:Secret"]}";
             
             BalanceTMResponse? response = await _responseService
-                .GetAsync<BalanceTMResponse>(uri + url);
+                .GetAsync<BalanceTMResponse>(uri);
 
             return new() { Balance = response!.MoneyKopecks * 0.01M };
         }
 
         public async Task<ItemInfoResponse> GetItemInfoAsync(string idForMarket, string game)
         {
-            string uri = DomainUri[game];
             string id = idForMarket.Replace("-", "_");
 
-            string url = $"{uri}/api/ItemInfo/{id}/ru/?key={_configuration["MarketTM:Secret"]}";
+            string uri = $"{DomainUri[game]}/api/ItemInfo/{id}/ru/?key={_cfg["MarketTM:Secret"]}";
 
             ItemInfoTMResponse? info = await _responseService
-                .GetAsync<ItemInfoTMResponse>(url);
+                .GetAsync<ItemInfoTMResponse>(uri);
 
             return new()
             {
@@ -67,7 +65,6 @@ namespace Withdraw.BLL.Services
         public async Task<TradeInfoResponse> GetTradeInfoAsync(UserHistoryWithdraw history)
         {
             string name = history.Item!.Game!.Name!;
-            string uri = DomainUri[name];
             string id = history.InvoiceId!;
 
             TradeInfoResponse info = new()
@@ -78,7 +75,7 @@ namespace Withdraw.BLL.Services
 
             try
             {
-                string tradeUrl = $"{uri}/api/Trades/?key={_configuration["MarketTM:Secret"]}";
+                string tradeUrl = $"{DomainUri[name]}/api/Trades/?key={_cfg["MarketTM:Secret"]}";
 
                 List<TradeInfoTMResponse>? trades = await _responseService
                     .GetAsync<List<TradeInfoTMResponse>>(tradeUrl);
@@ -93,8 +90,8 @@ namespace Withdraw.BLL.Services
                 long start = ((DateTimeOffset)history.Date).ToUnixTimeSeconds();
                 long end = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
 
-                string historyUrl = $"{uri}/api/OperationHistory/{start}/{end}" +
-                    $"/?key={_configuration["MarketTM:Secret"]}";
+                string historyUrl = $"{DomainUri[name]}/api/OperationHistory/{start}/{end}" +
+                    $"/?key={_cfg["MarketTM:Secret"]}";
 
                 AnswerOperationHistoryTMResponse? answer = await _responseService
                     .GetAsync<AnswerOperationHistoryTMResponse>(historyUrl);
@@ -112,22 +109,18 @@ namespace Withdraw.BLL.Services
         {
             int price = info.PriceKopecks;
             string name = info.Item.Game!.Name!;
-            string uri = DomainUri[name];
             string id = info.Item.IdForMarket!.Replace("-", "_");
             string[] split = trade.Split("&");
             string partner = split[0].Split("=")[1];
             string token = split[1].Split("=")[1];
 
-            string url = $"{uri}/api/Buy/{id}/{price}//?key={_configuration["MarketTM:Secret"]}" +
+            string url = $"{DomainUri[name]}/api/Buy/{id}/{price}//?key={_cfg["MarketTM:Secret"]}" +
                 $"&partner={partner}&token={token}";
 
             BuyItemTMResponse? response = await _responseService
                 .GetAsync<BuyItemTMResponse>(url);
             
-            return new()
-            {
-                Id = response!.Id!
-            };
+            return new() { Id = response!.Id! };
         }
 
         private class AnswerOperationHistoryTMResponse

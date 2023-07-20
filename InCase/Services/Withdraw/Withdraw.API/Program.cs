@@ -72,7 +72,7 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
-builder.Services.AddSingleton<ResponseService>();
+builder.Services.AddSingleton<IResponseService, ResponseService>();
 builder.Services.AddSingleton<MarketTMService>();
 builder.Services.AddSingleton<IWithdrawItemService, WithdrawItemService>();
 builder.Services.AddScoped<IWithdrawService, WithdrawService>();

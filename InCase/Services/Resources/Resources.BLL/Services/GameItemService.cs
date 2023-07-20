@@ -1,4 +1,5 @@
-﻿using MassTransit;
+﻿using Infrastructure.MassTransit.Resources;
+using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Resources.BLL.Exceptions;
@@ -192,7 +193,7 @@ namespace Resources.BLL.Services
 
             Uri uri = new(_configuration["MassTransit:Uri"] + "/game-item");
             var endPoint = await _bus.GetSendEndpoint(uri);
-            await endPoint.Send(item.ToTemplate(isDeleted: false));
+            await endPoint.Send(item.ToTemplate(request.IdForMarket));
 
             item.Game = game;
             item.Quality = quality;
@@ -233,7 +234,7 @@ namespace Resources.BLL.Services
 
             Uri uri = new(_configuration["MassTransit:Uri"] + "/game-item");
             var endPoint = await _bus.GetSendEndpoint(uri);
-            await endPoint.Send(item.ToTemplate(isDeleted: false));
+            await endPoint.Send(item.ToTemplate(request.IdForMarket));
 
             item.Game = game;
             item.Quality = quality;
@@ -259,7 +260,7 @@ namespace Resources.BLL.Services
 
             Uri uri = new(_configuration["MassTransit:Uri"] + "/game-item");
             var endPoint = await _bus.GetSendEndpoint(uri);
-            await endPoint.Send(item.ToTemplate(isDeleted: true));
+            await endPoint.Send(item.ToTemplate(idForMarket: null, isDeleted: true));
 
             return item.ToResponse();
         }

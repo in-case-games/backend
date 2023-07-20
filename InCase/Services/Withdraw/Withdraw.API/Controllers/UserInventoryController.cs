@@ -22,7 +22,8 @@ namespace Withdraw.API.Controllers
             _userInventoryService = userInventoryService;
         }
 
-        [ProducesResponseType(typeof(ApiResult<UserInventoryResponse>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<UserInventoryResponse>), 
+            (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(Guid id)

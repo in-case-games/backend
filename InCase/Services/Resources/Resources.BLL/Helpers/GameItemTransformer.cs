@@ -39,7 +39,7 @@ namespace Resources.BLL.Helpers
                 TypeId = request.TypeId
             };
 
-        public static GameItemTemplate ToTemplate(this GameItem entity, bool isDeleted = false) => new()
+        public static GameItemTemplate ToTemplate(this GameItem entity, string? idForMarket, bool isDeleted = false) => new()
         {
             Id = entity.Id,
             Cost = entity.Cost,
@@ -49,7 +49,8 @@ namespace Resources.BLL.Helpers
             Name = entity.Name,
             QualityId = entity.QualityId,
             RarityId = entity.RarityId,
-            TypeId = entity.TypeId
+            TypeId = entity.TypeId,
+            IdForMarket = idForMarket
         };
     }
 }

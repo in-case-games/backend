@@ -14,19 +14,19 @@ namespace Withdraw.BLL.Services
     public class UserInventoryService : IUserInventoryService
     {
         private readonly ApplicationDbContext _context;
-        private readonly IWithdrawItemService _withdrawItemService;
-        private readonly IConfiguration _configuration;
+        private readonly IWithdrawItemService _withdrawService;
+        private readonly IConfiguration _cfg;
         private readonly IBus _bus;
 
         public UserInventoryService(
             ApplicationDbContext context, 
-            IWithdrawItemService withdrawItemService,
-            IConfiguration configuration,
+            IWithdrawItemService withdrawService,
+            IConfiguration cfg,
             IBus bus)
         {
             _context = context;
-            _withdrawItemService = withdrawItemService;
-            _configuration = configuration;
+            _withdrawService = withdrawService;
+            _cfg = cfg;
             _bus = bus;
         }
 
@@ -59,6 +59,10 @@ namespace Withdraw.BLL.Services
 
             return inventories.ToResponse();
         }
+
+        public async Task<UserInventory?> GetByConsumerAsync(Guid id) => await _context.UserInventories
+            .AsNoTracking()
+            .FirstOrDefaultAsync(ui => ui.Id == id);
 
         public async Task<UserInventoryResponse> GetByIdAsync(Guid id)
         {
@@ -97,12 +101,12 @@ namespace Withdraw.BLL.Services
             if (differenceCost < 0)
                 throw new BadRequestException("Стоимость товара при обмене не может быть выше");
 
-            ItemInfoResponse itemInfo = await _withdrawItemService
+            ItemInfoResponse itemInfo = await _withdrawService
                 .GetItemInfoAsync(inventory.Item!);
 
-            decimal itemInfoPrice = itemInfo.PriceKopecks * 0.01M;
+            decimal itemPrice = itemInfo.PriceKopecks * 0.01M;
 
-            if (itemInfoPrice <= inventory.FixedCost * 1.1M / 7)
+            if (itemPrice <= inventory.FixedCost * 1.1M / 7)
                 throw new ConflictException("Товар может быть обменен только в случае нестабильности цены");
 
             //TODO Write logs
@@ -112,7 +116,12 @@ namespace Withdraw.BLL.Services
 
             await _context.SaveChangesAsync();
 
-            //TODO Notify game microservice rabbit mq top up balance
+            UserInventoryTemplate template = inventory.ToTemplate();
+            template.FixedCost = differenceCost;
+
+            Uri uri = new(_cfg["MassTransit:Uri"] + "/user-inventory_sell");
+            var endPoint = await _bus.GetSendEndpoint(uri);
+            await endPoint.Send(template);
 
             return inventory.ToResponse();
 
@@ -134,7 +143,7 @@ namespace Withdraw.BLL.Services
             _context.UserInventories.Remove(inventory);
             await _context.SaveChangesAsync();
 
-            Uri uri = new(_configuration["MassTransit:Uri"] + "/user-inventory_sell");
+            Uri uri = new(_cfg["MassTransit:Uri"] + "/user-inventory_sell");
             var endPoint = await _bus.GetSendEndpoint(uri);
             await endPoint.Send(inventory.ToTemplate());
 
@@ -162,7 +171,7 @@ namespace Withdraw.BLL.Services
             _context.UserInventories.Remove(inventory);
             await _context.SaveChangesAsync();
 
-            Uri uri = new(_configuration["MassTransit:Uri"] + "/user-inventory_sell");
+            Uri uri = new(_cfg["MassTransit:Uri"] + "/user-inventory_sell");
             var endPoint = await _bus.GetSendEndpoint(uri);
             await endPoint.Send(inventory.ToTemplate());
 

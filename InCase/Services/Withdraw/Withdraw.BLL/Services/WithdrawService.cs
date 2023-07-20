@@ -14,19 +14,19 @@ namespace Withdraw.BLL.Services
     public class WithdrawService : IWithdrawService
     {
         private readonly ApplicationDbContext _context;
-        private readonly IWithdrawItemService _withdrawItemService;
-        private readonly IConfiguration _configuration;
+        private readonly IWithdrawItemService _withdrawService;
+        private readonly IConfiguration _cfg;
         private readonly IBus _bus;
 
         public WithdrawService(
             ApplicationDbContext context, 
-            IWithdrawItemService withdrawItemService,
-            IConfiguration configuration,
+            IWithdrawItemService withdrawService,
+            IConfiguration cfg,
             IBus bus)
         {
             _context = context;
-            _withdrawItemService = withdrawItemService;
-            _configuration = configuration;
+            _withdrawService = withdrawService;
+            _cfg = cfg;
             _bus = bus;
         }
 
@@ -39,11 +39,11 @@ namespace Withdraw.BLL.Services
                 .FirstOrDefaultAsync(gi => gi.Id == id) ??
                 throw new NotFoundException("Предмет не найден");
 
-            return await _withdrawItemService.GetItemInfoAsync(item);
+            return await _withdrawService.GetItemInfoAsync(item);
         }
 
         public async Task<BalanceMarketResponse> GetMarketBalanceAsync(string marketName) =>
-            await _withdrawItemService.GetBalanceAsync(marketName);
+            await _withdrawService.GetBalanceAsync(marketName);
 
         public async Task WithdrawStatusManagerAsync(int count, CancellationToken cancellationToken)
         {
@@ -64,7 +64,7 @@ namespace Withdraw.BLL.Services
             {
                 try
                 {
-                    TradeInfoResponse response = await _withdrawItemService
+                    TradeInfoResponse response = await _withdrawService
                         .GetTradeInfoAsync(withdraw);
 
                     withdraw.Status = statuses.First(ws => ws.Name == response.Status);
@@ -76,7 +76,7 @@ namespace Withdraw.BLL.Services
                             WithdrawnFunds = Convert.ToInt32(withdraw.FixedCost)
                         };
 
-                        Uri uri = new(_configuration["MassTransit:Uri"] + "/statistics");
+                        Uri uri = new(_cfg["MassTransit:Uri"] + "/statistics");
                         var endPoint = await _bus.GetSendEndpoint(uri);
                         await endPoint.Send(template, cancellationToken);
                     }
@@ -102,7 +102,7 @@ namespace Withdraw.BLL.Services
 
             GameItem item = inventory.Item!;
 
-            ItemInfoResponse info = await _withdrawItemService
+            ItemInfoResponse info = await _withdrawService
                 .GetItemInfoAsync(item);
 
             decimal price = info.PriceKopecks * 0.01M;
@@ -110,13 +110,13 @@ namespace Withdraw.BLL.Services
             if (price > item.Cost * 1.1M / 7)
                 throw new ConflictException("Цена на предмет нестабильна");
 
-            BalanceMarketResponse balance = await _withdrawItemService
+            BalanceMarketResponse balance = await _withdrawService
                 .GetBalanceAsync(info.Market.Name!);
 
             if (balance.Balance <= price)
                 throw new PaymentRequiredException("Ожидаем пополнения сервиса покупки");
 
-            BuyItemResponse buyItem = await _withdrawItemService
+            BuyItemResponse buyItem = await _withdrawService
                 .BuyItemAsync(info, request.TradeUrl!);
 
             WithdrawStatus status = await _context.WithdrawStatuses
