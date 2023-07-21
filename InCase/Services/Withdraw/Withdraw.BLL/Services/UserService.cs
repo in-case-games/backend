@@ -24,7 +24,7 @@ namespace Withdraw.BLL.Services
         public async Task CreateAsync(UserTemplate template)
         {
             if (await _context.Users.AnyAsync(u => u.Id == template.Id))
-                throw new ForbiddenException("Пользователь существует");
+                throw new BadRequestException("Пользователь существует");
 
             User user = template.ToEntity();
 

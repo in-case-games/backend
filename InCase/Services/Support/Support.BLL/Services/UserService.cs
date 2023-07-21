@@ -17,6 +17,10 @@ namespace Support.BLL.Services
             _context = context;
         }
 
+        public async Task<User?> GetAsync(Guid id) => await _context.Users
+            .AsNoTracking()
+            .FirstOrDefaultAsync(u => u.Id == id);
+
         public async Task CreateAsync(UserTemplate template)
         {
             if (await _context.Users.AnyAsync(u => u.Id == template.Id))

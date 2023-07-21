@@ -37,10 +37,9 @@ namespace Support.BLL.Services
                 .FirstOrDefaultAsync(st => st.Id == answer.TopicId) ??
                 throw new NotFoundException("Топик не найден");
 
-            if (topic.UserId != userId)
-                throw new ForbiddenException("Вы не создатель топика");
-
-            return image.ToResponse(); 
+            return topic.UserId == userId ? 
+                image.ToResponse() : 
+                throw new ForbiddenException("Вы не создатель топика"); 
         }
 
         public async Task<AnswerImageResponse> GetAsync(Guid id)
@@ -69,10 +68,9 @@ namespace Support.BLL.Services
                 .FirstOrDefaultAsync(st => st.Id == answer.TopicId) ??
                 throw new NotFoundException("Топик не найден");
 
-            if (topic.UserId != userId)
+            return topic.UserId == userId ? 
+                answer.Images!.ToResponse() : 
                 throw new ForbiddenException("Вы не создатель топика");
-
-            return answer.Images!.ToResponse();
         }
 
         public async Task<List<AnswerImageResponse>> GetByAnswerIdAsync(Guid id)

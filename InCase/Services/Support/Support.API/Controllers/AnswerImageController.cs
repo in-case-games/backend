@@ -13,13 +13,13 @@ namespace Support.API.Controllers
     [ApiController]
     public class AnswerImageController : ControllerBase
     {
-        private readonly IAnswerImageService _answerImageService;
+        private readonly IAnswerImageService _imageService;
         private Guid UserId => Guid
             .Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
 
-        public AnswerImageController(IAnswerImageService answerImageService)
+        public AnswerImageController(IAnswerImageService imageService)
         {
-            _answerImageService = answerImageService;
+            _imageService = imageService;
         }
 
         [ProducesResponseType(typeof(ApiResult<AnswerImageResponse>),
@@ -28,7 +28,7 @@ namespace Support.API.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(Guid id)
         {
-            AnswerImageResponse response = await _answerImageService.GetAsync(UserId, id);
+            AnswerImageResponse response = await _imageService.GetAsync(UserId, id);
 
             return Ok(ApiResult<AnswerImageResponse>.OK(response));
         }
@@ -39,7 +39,7 @@ namespace Support.API.Controllers
         [HttpGet("{id}/admin")]
         public async Task<IActionResult> GetByAdmin(Guid id)
         {
-            AnswerImageResponse response = await _answerImageService.GetAsync(id);
+            AnswerImageResponse response = await _imageService.GetAsync(id);
 
             return Ok(ApiResult<AnswerImageResponse>.OK(response));
         }
@@ -50,7 +50,7 @@ namespace Support.API.Controllers
         [HttpGet("answer/{id}")]
         public async Task<IActionResult> GetByAnswerId(Guid id)
         {
-            List<AnswerImageResponse> response = await _answerImageService.GetByAnswerIdAsync(UserId, id);
+            List<AnswerImageResponse> response = await _imageService.GetByAnswerIdAsync(UserId, id);
 
             return Ok(ApiResult<List<AnswerImageResponse>>.OK(response));
         }
@@ -61,7 +61,7 @@ namespace Support.API.Controllers
         [HttpGet("answer/{id}/admin")]
         public async Task<IActionResult> GetByAdminAnswerId(Guid id)
         {
-            List<AnswerImageResponse> response = await _answerImageService.GetByAnswerIdAsync(id);
+            List<AnswerImageResponse> response = await _imageService.GetByAnswerIdAsync(id);
 
             return Ok(ApiResult<List<AnswerImageResponse>>.OK(response));
         }
@@ -72,7 +72,7 @@ namespace Support.API.Controllers
         [HttpGet("topic/{id}")]
         public async Task<IActionResult> GetByTopicId(Guid id)
         {
-            List<AnswerImageResponse> response = await _answerImageService.GetByTopicIdAsync(UserId, id);
+            List<AnswerImageResponse> response = await _imageService.GetByTopicIdAsync(UserId, id);
 
             return Ok(ApiResult<List<AnswerImageResponse>>.OK(response));
         }
@@ -83,7 +83,7 @@ namespace Support.API.Controllers
         [HttpGet("topic/{id}/admin")]
         public async Task<IActionResult> GetByAdminTopicId(Guid id)
         {
-            List<AnswerImageResponse> response = await _answerImageService.GetByTopicIdAsync(id);
+            List<AnswerImageResponse> response = await _imageService.GetByTopicIdAsync(id);
 
             return Ok(ApiResult<List<AnswerImageResponse>>.OK(response));
         }
@@ -94,7 +94,7 @@ namespace Support.API.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            List<AnswerImageResponse> response = await _answerImageService.GetByUserIdAsync(UserId);
+            List<AnswerImageResponse> response = await _imageService.GetByUserIdAsync(UserId);
 
             return Ok(ApiResult<List<AnswerImageResponse>>.OK(response));
         }
@@ -105,7 +105,7 @@ namespace Support.API.Controllers
         [HttpGet("user/{id}/admin")]
         public async Task<IActionResult> GetByAdminUserId(Guid id)
         {
-            List<AnswerImageResponse> response = await _answerImageService.GetByUserIdAsync(id);
+            List<AnswerImageResponse> response = await _imageService.GetByUserIdAsync(id);
 
             return Ok(ApiResult<List<AnswerImageResponse>>.OK(response));
         }
@@ -116,7 +116,7 @@ namespace Support.API.Controllers
         [HttpPost]
         public async Task<IActionResult> Post(AnswerImageRequest request)
         {
-            AnswerImageResponse response = await _answerImageService.CreateAsync(UserId, request);
+            AnswerImageResponse response = await _imageService.CreateAsync(UserId, request);
 
             return Ok(ApiResult<AnswerImageResponse>.OK(response));
         }
@@ -127,7 +127,7 @@ namespace Support.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            AnswerImageResponse response = await _answerImageService.DeleteAsync(UserId, id);
+            AnswerImageResponse response = await _imageService.DeleteAsync(UserId, id);
 
             return Ok(ApiResult<AnswerImageResponse>.OK(response));
         }
@@ -138,7 +138,7 @@ namespace Support.API.Controllers
         [HttpDelete("{id}/admin")]
         public async Task<IActionResult> DeleteByAdmin(Guid id)
         {
-            AnswerImageResponse response = await _answerImageService.DeleteAsync(id);
+            AnswerImageResponse response = await _imageService.DeleteAsync(id);
 
             return Ok(ApiResult<AnswerImageResponse>.OK(response));
         }

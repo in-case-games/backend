@@ -5,7 +5,6 @@ using Support.BLL.Interfaces;
 using Support.BLL.Models;
 using Support.DAL.Data;
 using Support.DAL.Entities;
-using System.Threading;
 
 namespace Support.BLL.Services
 {
@@ -30,10 +29,9 @@ namespace Support.BLL.Services
                 .FirstOrDefaultAsync(st => st.Id == id) ??
                 throw new NotFoundException("Топик не найден");
 
-            if (topic.UserId != userId)
+            return topic.UserId == userId ? 
+                topic.ToResponse() :
                 throw new ForbiddenException("Вы не создатель топика");
-
-            return topic.ToResponse();
         }
 
         public async Task<SupportTopicResponse> GetAsync(Guid id)
@@ -84,6 +82,7 @@ namespace Support.BLL.Services
                 throw new NotFoundException("Топик не найден");
 
             topic.IsClosed = true;
+
             await _context.SaveChangesAsync();
 
             return topic.ToResponse();
@@ -91,19 +90,19 @@ namespace Support.BLL.Services
 
         public async Task<SupportTopicResponse> CloseTopic(Guid userId, Guid id)
         {
-            if (!await _context.Users.AnyAsync(u => u.Id == userId))
-                throw new NotFoundException("Пользователь не найден");
-
             SupportTopic topic = await _context.Topics
                 .Include(st => st.Answers!)
                     .ThenInclude(sta => sta.Images)
                 .FirstOrDefaultAsync(st => st.Id == id) ??
                 throw new NotFoundException("Топик не найден");
 
+            if (!await _context.Users.AnyAsync(u => u.Id == userId))
+                throw new NotFoundException("Пользователь не найден");
             if (topic.UserId != userId)
                 throw new ForbiddenException("Вы не создатель топика");
 
             topic.IsClosed = true;
+
             await _context.SaveChangesAsync();
 
             return topic.ToResponse();
@@ -111,21 +110,19 @@ namespace Support.BLL.Services
 
         public async Task<SupportTopicResponse> CreateAsync(SupportTopicRequest request)
         {
-            if (!await _context.Users.AnyAsync(u => u.Id == request.UserId))
-                throw new NotFoundException("Пользователь не найден");
-
-            request.IsClosed = false;
-            request.Date = DateTime.UtcNow;
-
             List<SupportTopic> topics = await _context.Topics
                 .AsNoTracking()
                 .Where(st => st.UserId == request.UserId && st.IsClosed == false)
                 .ToListAsync();
+            SupportTopic topic = request.ToEntity(isNewGuid: true);
 
+            if (!await _context.Users.AnyAsync(u => u.Id == request.UserId))
+                throw new NotFoundException("Пользователь не найден");
             if (topics.Count >= 3)
                 throw new ConflictException("Количество открытых топиков не может превышать 3");
 
-            SupportTopic topic = request.ToEntity(isNewGuid: true);
+            topic.IsClosed = false;
+            topic.Date = DateTime.UtcNow;
 
             await _context.Topics.AddAsync(topic);
             await _context.SaveChangesAsync();
@@ -135,22 +132,20 @@ namespace Support.BLL.Services
 
         public async Task<SupportTopicResponse> UpdateAsync(SupportTopicRequest request)
         {
-            if (!await _context.Users.AnyAsync(u => u.Id == request.UserId))
-                throw new NotFoundException("Пользователь не найден");
-
             SupportTopic topicOld = await _context.Topics
                 .Include(st => st.Answers!)
                     .ThenInclude(sta => sta.Images)
                 .FirstOrDefaultAsync(st => st.Id == request.Id) ??
                 throw new NotFoundException("Топик не найден");
+            SupportTopic topic = request.ToEntity(isNewGuid: false);
 
+            if (!await _context.Users.AnyAsync(u => u.Id == request.UserId))
+                throw new NotFoundException("Пользователь не найден");
             if (topicOld.UserId != request.UserId)
                 throw new ForbiddenException("Вы не создатель топика");
 
-            SupportTopic topic = request.ToEntity(isNewGuid: false);
-
-            request.Date = topic.Date;
-            request.IsClosed = topic.IsClosed;
+            topic.Date = topicOld.Date;
+            topic.IsClosed = topicOld.IsClosed;
 
             _context.Entry(topicOld).CurrentValues.SetValues(topic);
             await _context.SaveChangesAsync();
@@ -162,9 +157,6 @@ namespace Support.BLL.Services
 
         public async Task<SupportTopicResponse> DeleteAsync(Guid userId, Guid id)
         {
-            if (!await _context.Users.AnyAsync(u => u.Id == userId))
-                throw new NotFoundException("Пользователь не найден");
-
             SupportTopic topic = await _context.Topics
                 .Include(st => st.Answers!)
                     .ThenInclude(sta => sta.Images)
@@ -172,6 +164,8 @@ namespace Support.BLL.Services
                 .FirstOrDefaultAsync(st => st.Id == id) ??
                 throw new NotFoundException("Топик не найден");
 
+            if (!await _context.Users.AnyAsync(u => u.Id == userId))
+                throw new NotFoundException("Пользователь не найден");
             if (topic.UserId != userId)
                 throw new ForbiddenException("Вы не создатель топика");
 

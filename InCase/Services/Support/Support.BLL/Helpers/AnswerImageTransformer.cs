@@ -17,16 +17,6 @@ namespace Support.BLL.Helpers
             AnswerId = entity.AnswerId
         };
 
-        public static List<AnswerImageResponse> ToResponse(this List<AnswerImage> entities)
-        {
-            List<AnswerImageResponse> response = new();
-
-            foreach(var entity in entities)
-                response.Add(ToResponse(entity));
-
-            return response;
-        }
-
         public static List<AnswerImageResponse> ToResponse(this IEnumerable<AnswerImage> entities)
         {
             List<AnswerImageResponse> response = new();

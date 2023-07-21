@@ -12,19 +12,20 @@ namespace Statistics.API.Controllers
     [ApiController]
     public class SiteStatisticsController : ControllerBase
     {
-        private readonly ISiteStatisticsService _siteStatisticsService;
+        private readonly ISiteStatisticsService _statisticsService;
 
-        public SiteStatisticsController(ISiteStatisticsService siteStatisticsService)
+        public SiteStatisticsController(ISiteStatisticsService statisticsService)
         {
-            _siteStatisticsService = siteStatisticsService;
+            _statisticsService = statisticsService;
         }
 
-        [ProducesResponseType(typeof(ApiResult<SiteStatisticsResponse>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<SiteStatisticsResponse>), 
+            (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            SiteStatisticsResponse response = await _siteStatisticsService.GetAsync();
+            SiteStatisticsResponse response = await _statisticsService.GetAsync();
 
             return Ok(ApiResult<SiteStatisticsResponse>.OK(response));
         }
@@ -35,7 +36,7 @@ namespace Statistics.API.Controllers
         [HttpGet("admin")]
         public async Task<IActionResult> GetAdmin()
         {
-            SiteStatisticsAdminResponse response = await _siteStatisticsService.GetAdminAsync();
+            SiteStatisticsAdminResponse response = await _statisticsService.GetAdminAsync();
 
             return Ok(ApiResult<SiteStatisticsAdminResponse>.OK(response));
         }

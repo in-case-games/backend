@@ -5,7 +5,6 @@ using Support.BLL.Interfaces;
 using Support.BLL.Models;
 using Support.DAL.Data;
 using Support.DAL.Entities;
-using System.Threading;
 
 namespace Support.BLL.Services
 {
@@ -34,10 +33,9 @@ namespace Support.BLL.Services
                 .FirstOrDefaultAsync(st => st.Id == answer.TopicId) ??
                 throw new NotFoundException("Топик не найден");
 
-            if (topic.UserId != userId)
+            return topic.UserId == userId ? 
+                answer.ToResponse() :
                 throw new ForbiddenException("Вы не создатель топика");
-
-            return answer.ToResponse();
         }
 
         public async Task<SupportTopicAnswerResponse> GetAsync(Guid id)
@@ -74,8 +72,8 @@ namespace Support.BLL.Services
         public async Task<List<SupportTopicAnswerResponse>> GetByTopicIdAsync(Guid userId, Guid id)
         {
             if (!await _context.Users.AnyAsync(u => u.Id == userId))
-
                 throw new NotFoundException("Пользователь не найден");
+
             SupportTopic topic = await _context.Topics
                 .Include(st => st.Answers!)
                     .ThenInclude(sta => sta.Images)
@@ -83,10 +81,9 @@ namespace Support.BLL.Services
                 .FirstOrDefaultAsync(st => st.Id == id) ??
                 throw new NotFoundException("Топик не найден");
 
-            if (topic.UserId != userId)
+            return topic.UserId == userId ? 
+                topic.Answers!.ToResponse() : 
                 throw new ForbiddenException("Вы не создатель топика");
-
-            return topic.Answers!.ToResponse();
         }
 
         public async Task<List<SupportTopicAnswerResponse>> GetByTopicIdAsync(Guid id)
@@ -103,24 +100,20 @@ namespace Support.BLL.Services
 
         public async Task<SupportTopicAnswerResponse> CreateAsync(SupportTopicAnswerRequest request)
         {
-            if (!await _context.Users.AnyAsync(u => u.Id == request.PlaintiffId))
-                throw new NotFoundException("Пользователь не найден");
-
             SupportTopic topic = await _context.Topics
                 .FirstOrDefaultAsync(st => st.Id == request.TopicId) ??
                 throw new NotFoundException("Топик не найден");
+            SupportTopicAnswer answer = request.ToEntity(isNewGuid: true);
 
+            answer.Date = DateTime.UtcNow;
+            topic.IsClosed = false;
+
+            if (!await _context.Users.AnyAsync(u => u.Id == request.PlaintiffId))
+                throw new NotFoundException("Пользователь не найден");
             if (topic.UserId != request.PlaintiffId)
                 throw new ForbiddenException("Вы не создатель топика");
 
-            request.Date = DateTime.UtcNow;
-
-            SupportTopicAnswer answer = request.ToEntity(isNewGuid: true);
-
             await _context.Answers.AddAsync(answer);
-
-            topic.IsClosed = false;
-
             await _context.SaveChangesAsync();
 
             return answer.ToResponse();
@@ -143,21 +136,19 @@ namespace Support.BLL.Services
 
         public async Task<SupportTopicAnswerResponse> UpdateAsync(SupportTopicAnswerRequest request)
         {
+            SupportTopicAnswer answerOld = await _context.Answers
+                .FirstOrDefaultAsync(sta => sta.Id == request.Id) ??
+                throw new NotFoundException("Ответ не найден");
+            SupportTopicAnswer answer = request.ToEntity();
+
+            answer.Date = DateTime.UtcNow;
+
+            if (answerOld.PlaintiffId != request.PlaintiffId)
+                throw new ForbiddenException("Вы не создатель сообщения");
             if (!await _context.Users.AnyAsync(u => u.Id == request.PlaintiffId))
                 throw new NotFoundException("Пользователь не найден");
             if (!await _context.Topics.AnyAsync(st => st.Id == request.TopicId))
                 throw new NotFoundException("Топик не найден");
-
-            SupportTopicAnswer answerOld = await _context.Answers
-                .FirstOrDefaultAsync(sta => sta.Id == request.Id) ??
-                throw new NotFoundException("Ответ не найден");
-
-            if (answerOld.PlaintiffId != request.PlaintiffId)
-                throw new ForbiddenException("Вы не создатель сообщения");
-
-            request.Date = DateTime.UtcNow;
-
-            SupportTopicAnswer answer = request.ToEntity();
 
             _context.Entry(answerOld).CurrentValues.SetValues(answer);
             await _context.SaveChangesAsync();
@@ -167,14 +158,13 @@ namespace Support.BLL.Services
 
         public async Task<SupportTopicAnswerResponse> DeleteAsync(Guid userId, Guid id)
         {
-            if (!await _context.Users.AnyAsync(u => u.Id == userId))
-                throw new NotFoundException("Пользователь не найден");
-
             SupportTopicAnswer answer = await _context.Answers
                 .AsNoTracking()
                 .FirstOrDefaultAsync(sta => sta.Id == id) ??
                 throw new NotFoundException("Ответ не найден");
 
+            if (!await _context.Users.AnyAsync(u => u.Id == userId))
+                throw new NotFoundException("Пользователь не найден");
             if (answer.PlaintiffId != userId)
                 throw new ForbiddenException("Вы не создатель сообщения");
 

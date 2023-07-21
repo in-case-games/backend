@@ -26,16 +26,6 @@ namespace Support.BLL.Helpers
             TopicId = entity.TopicId,
         };
 
-        public static List<SupportTopicAnswerResponse> ToResponse(this List<SupportTopicAnswer> entities)
-        {
-            List<SupportTopicAnswerResponse> response = new();
-
-            foreach (var entity in entities)
-                response.Add(ToResponse(entity));
-
-            return response;
-        }
-
         public static List<SupportTopicAnswerResponse> ToResponse(this IEnumerable<SupportTopicAnswer> entities)
         {
             List<SupportTopicAnswerResponse> response = new();

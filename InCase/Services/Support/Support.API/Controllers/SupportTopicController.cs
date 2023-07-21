@@ -47,8 +47,8 @@ namespace Support.API.Controllers
         [ProducesResponseType(typeof(ApiResult<List<SupportTopicResponse>>),
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
-        [HttpGet("user/{id}")]
-        public async Task<IActionResult> GetByUserId(Guid id)
+        [HttpGet("user")]
+        public async Task<IActionResult> GetByUserId()
         {
             List<SupportTopicResponse> response = await _topicService.GetByUserIdAsync(UserId);
 

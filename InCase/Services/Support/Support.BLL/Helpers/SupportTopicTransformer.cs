@@ -35,15 +35,5 @@ namespace Support.BLL.Helpers
 
             return response;
         }
-
-        public static List<SupportTopicResponse> ToResponse(this IEnumerable<SupportTopic> entities)
-        {
-            List<SupportTopicResponse> response = new();
-
-            foreach (var entity in entities)
-                response.Add(entity.ToResponse());
-
-            return response;
-        }
     }
 }

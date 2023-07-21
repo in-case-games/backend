@@ -1,6 +1,5 @@
 ﻿using Infrastructure.MassTransit.Statistics;
 using MassTransit;
-using MongoDB.Bson;
 using MongoDB.Driver;
 using Statistics.BLL.Helpers;
 using Statistics.BLL.Repository;
