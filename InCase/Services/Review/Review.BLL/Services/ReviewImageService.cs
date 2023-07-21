@@ -19,21 +19,20 @@ namespace Review.BLL.Services
 
         public async Task<ReviewImageResponse> GetAsync(Guid id, bool isOnlyApproved)
         {
-            ReviewImage image = await _context.ReviewImages
+            ReviewImage image = await _context.Images
                 .Include(ri => ri.Review)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(ri => ri.Id == id) ??
                 throw new NotFoundException("Изображение не найдено");
 
-            if (isOnlyApproved && image.Review!.IsApproved is false)
+            return isOnlyApproved is false || image.Review!.IsApproved ? 
+                image.ToResponse() : 
                 throw new ForbiddenException("Изображение не одобренно администрацией");
-
-            return image.ToResponse();
         }
 
         public async Task<List<ReviewImageResponse>> GetAsync(bool isOnlyApproved)
         {
-            List<ReviewImage> images = await _context.ReviewImages
+            List<ReviewImage> images = await _context.Images
                 .Include(ri => ri.Review)
                 .AsNoTracking()
                 .ToListAsync();
@@ -46,7 +45,7 @@ namespace Review.BLL.Services
 
         public async Task<List<ReviewImageResponse>> GetByUserIdAsync(Guid userId, bool isOnlyApproved)
         {
-            List<ReviewImage> images = await _context.ReviewImages
+            List<ReviewImage> images = await _context.Images
                 .Include(ri => ri.Review)
                 .AsNoTracking()
                 .Where(ri => ri.Review!.UserId == userId)
@@ -60,7 +59,7 @@ namespace Review.BLL.Services
 
         public async Task<List<ReviewImageResponse>> GetByReviewIdAsync(Guid reviewId, bool isOnlyApproved)
         {
-            List<ReviewImage> images = await _context.ReviewImages
+            List<ReviewImage> images = await _context.Images
                 .Include(ri => ri.Review)
                 .AsNoTracking()
                 .Where(ri => ri.ReviewId == reviewId)
@@ -79,14 +78,14 @@ namespace Review.BLL.Services
                 .FirstOrDefaultAsync(ur => ur.Id == request.ReviewId) ??
                 throw new NotFoundException("Отзыв не найден");
 
+            ReviewImage image = request.ToEntity(IsNewGuid: true);
+
             if (review.UserId != userId)
                 throw new ForbiddenException("Доступ к отзыву только у создателя");
 
-            ReviewImage image = request.ToEntity(IsNewGuid: true);
-
             //TODO Save image local folder 
 
-            await _context.ReviewImages.AddAsync(image);
+            await _context.Images.AddAsync(image);
             await _context.SaveChangesAsync();
 
             return image.ToResponse();
@@ -94,7 +93,7 @@ namespace Review.BLL.Services
 
         public async Task<ReviewImageResponse> DeleteAsync(Guid userId, Guid id)
         {
-            ReviewImage image = await _context.ReviewImages
+            ReviewImage image = await _context.Images
                 .Include(ri => ri.Review)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(ri => ri.Id == id) ??
@@ -105,7 +104,7 @@ namespace Review.BLL.Services
 
             //TODO Remove image local folder 
 
-            _context.ReviewImages.Remove(image);
+            _context.Images.Remove(image);
             await _context.SaveChangesAsync();
 
             return image.ToResponse();
@@ -113,7 +112,7 @@ namespace Review.BLL.Services
 
         public async Task<ReviewImageResponse> DeleteAsync(Guid id)
         {
-            ReviewImage image = await _context.ReviewImages
+            ReviewImage image = await _context.Images
                 .Include(ri => ri.Review)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(ri => ri.Id == id) ??
@@ -121,7 +120,7 @@ namespace Review.BLL.Services
 
             //TODO Remove image local folder 
 
-            _context.ReviewImages.Remove(image);
+            _context.Images.Remove(image);
             await _context.SaveChangesAsync();
 
             return image.ToResponse();

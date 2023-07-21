@@ -7,8 +7,8 @@ namespace Payment.DAL.Data
     public class ApplicationDbContext : DbContext
     {
         public DbSet<User> Users => Set<User>();
-        public DbSet<UserPayment> UserPayments => Set<UserPayment>();
-        public DbSet<UserPromocode> UsersPromocodes => Set<UserPromocode>();
+        public DbSet<UserPayment> Payments => Set<UserPayment>();
+        public DbSet<UserPromocode> UserPromocodes => Set<UserPromocode>();
 
         public ApplicationDbContext(DbContextOptions options) : base(options) { }
 

@@ -27,7 +27,7 @@ namespace Game.BLL.MassTransit.Consumers
 
             if (template.Type?.Name == "box")
             {
-                UserPromocode? userPromocode = await _context.HistoryPromocodes
+                UserPromocode? userPromocode = await _context.UserPromocodes
                     .AsNoTracking()
                     .FirstOrDefaultAsync(ur => ur.Id == template.Id && ur.UserId == template.UserId);
 

@@ -9,7 +9,7 @@ namespace Promocode.DAL.Data
         public DbSet<User> Users => Set<User>();
         public DbSet<PromocodeEntity> Promocodes => Set<PromocodeEntity>();
         public DbSet<PromocodeType> PromocodesTypes => Set<PromocodeType>();
-        public DbSet<UserPromocode> UserHistoriesPromocodes => Set<UserPromocode>();
+        public DbSet<UserPromocode> UserPromocodes => Set<UserPromocode>();
 
         public ApplicationDbContext(DbContextOptions options) : base(options) { }
 

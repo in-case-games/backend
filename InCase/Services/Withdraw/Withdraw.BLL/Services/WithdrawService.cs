@@ -6,8 +6,7 @@ using Withdraw.DAL.Entities;
 using Withdraw.BLL.Exceptions;
 using Withdraw.BLL.Helpers;
 using Infrastructure.MassTransit.Statistics;
-using Microsoft.Extensions.Configuration;
-using MassTransit;
+using Withdraw.BLL.MassTransit;
 
 namespace Withdraw.BLL.Services
 {
@@ -15,24 +14,21 @@ namespace Withdraw.BLL.Services
     {
         private readonly ApplicationDbContext _context;
         private readonly IWithdrawItemService _withdrawService;
-        private readonly IConfiguration _cfg;
-        private readonly IBus _bus;
+        private readonly BasePublisher _publisher;
 
         public WithdrawService(
             ApplicationDbContext context, 
             IWithdrawItemService withdrawService,
-            IConfiguration cfg,
-            IBus bus)
+            BasePublisher publisher)
         {
             _context = context;
             _withdrawService = withdrawService;
-            _cfg = cfg;
-            _bus = bus;
+            _publisher = publisher;
         }
 
         public async Task<ItemInfoResponse> GetItemInfoAsync(Guid id)
         {
-            GameItem item = await _context.GameItems
+            GameItem item = await _context.Items
                 .Include(gi => gi.Game)
                 .Include(gi => gi.Game!.Market)
                 .AsNoTracking()
@@ -47,7 +43,7 @@ namespace Withdraw.BLL.Services
 
         public async Task WithdrawStatusManagerAsync(int count, CancellationToken cancellationToken)
         {
-            List<UserHistoryWithdraw> withdraws = await _context.HistoryWithdraws
+            List<UserHistoryWithdraw> withdraws = await _context.Withdraws
                 .Include(uhw => uhw.Item)
                 .Include(uhw => uhw.Item!.Game)
                 .Include(uhw => uhw.Market)
@@ -56,7 +52,7 @@ namespace Withdraw.BLL.Services
                 .Take(count)
                 .ToListAsync(cancellationToken);
 
-            List<WithdrawStatus> statuses = await _context.WithdrawStatuses
+            List<WithdrawStatus> statuses = await _context.Statuses
                 .AsNoTracking()
                 .ToListAsync(cancellationToken);
 
@@ -76,9 +72,7 @@ namespace Withdraw.BLL.Services
                             WithdrawnFunds = Convert.ToInt32(withdraw.FixedCost)
                         };
 
-                        Uri uri = new(_cfg["MassTransit:Uri"] + "/statistics");
-                        var endPoint = await _bus.GetSendEndpoint(uri);
-                        await endPoint.Send(template, cancellationToken);
+                        await _publisher.Send(template, "/statistics", cancellationToken);
                     }
                 }
                 catch(Exception) { }
@@ -91,7 +85,7 @@ namespace Withdraw.BLL.Services
             WithdrawItemRequest request, 
             Guid userId)
         {
-            UserInventory inventory = await _context.UserInventories
+            UserInventory inventory = await _context.Inventories
                 .Include(ui => ui.Item)
                 .Include(ui => ui.Item!.Game)
                 .Include(ui => ui.Item!.Game!.Market)
@@ -119,7 +113,7 @@ namespace Withdraw.BLL.Services
             BuyItemResponse buyItem = await _withdrawService
                 .BuyItemAsync(info, request.TradeUrl!);
 
-            WithdrawStatus status = await _context.WithdrawStatuses
+            WithdrawStatus status = await _context.Statuses
                 .AsNoTracking()
                 .FirstAsync(iws => iws.Name == "purchase");
 
@@ -134,8 +128,8 @@ namespace Withdraw.BLL.Services
                 FixedCost = inventory.FixedCost
             };
 
-            _context.UserInventories.Remove(inventory);
-            await _context.HistoryWithdraws.AddAsync(withdraw);
+            _context.Inventories.Remove(inventory);
+            await _context.Withdraws.AddAsync(withdraw);
 
             await _context.SaveChangesAsync();
 

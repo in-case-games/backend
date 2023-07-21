@@ -15,17 +15,6 @@ namespace Resources.BLL.Helpers
             };
 
         public static List<LootBoxInventoryResponse> ToResponse(
-            this IEnumerable<LootBoxInventory> inventories)
-        {
-            List<LootBoxInventoryResponse> response = new();
-
-            foreach (var inventory in inventories)
-                response.Add(ToResponse(inventory));
-
-            return response;
-        }
-
-        public static List<LootBoxInventoryResponse> ToResponse(
             this List<LootBoxInventory> inventories)
         {
             List<LootBoxInventoryResponse> response = new();

@@ -5,8 +5,8 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Review.API.Middlewares;
 using Review.BLL.Interfaces;
+using Review.BLL.MassTransit;
 using Review.BLL.MassTransit.Consumers;
-using Review.BLL.Models;
 using Review.BLL.Services;
 using Review.DAL.Data;
 using System.Text;
@@ -72,6 +72,7 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
+builder.Services.AddSingleton<BasePublisher>();
 builder.Services.AddScoped<IReviewImageService, ReviewImageService>();
 builder.Services.AddScoped<IUserReviewService, UserReviewService>();
 builder.Services.AddScoped<IUserService, UserService>();

@@ -22,7 +22,7 @@ namespace Support.BLL.Services
             if (!await _context.Users.AnyAsync(u => u.Id == userId))
                 throw new NotFoundException("Пользователь не найден");
 
-            AnswerImage image = await _context.AnswerImages
+            AnswerImage image = await _context.Images
                 .AsNoTracking()
                 .FirstOrDefaultAsync(ai => ai.Id == id) ??
                 throw new NotFoundException("Картинка не найдена");
@@ -44,7 +44,7 @@ namespace Support.BLL.Services
 
         public async Task<AnswerImageResponse> GetAsync(Guid id)
         {
-            AnswerImage image = await _context.AnswerImages
+            AnswerImage image = await _context.Images
                 .AsNoTracking()
                 .FirstOrDefaultAsync(ai => ai.Id == id) ??
                 throw new NotFoundException("Картинка не найдена");
@@ -162,7 +162,7 @@ namespace Support.BLL.Services
 
             AnswerImage image = request.ToEntity(isNewGuid: true);
 
-            await _context.AnswerImages.AddAsync(image);
+            await _context.Images.AddAsync(image);
             await _context.SaveChangesAsync();
 
             return image.ToResponse();
@@ -173,7 +173,7 @@ namespace Support.BLL.Services
             if (!await _context.Users.AnyAsync(u => u.Id == userId))
                 throw new NotFoundException("Пользователь не найден");
 
-            AnswerImage image = await _context.AnswerImages
+            AnswerImage image = await _context.Images
                 .AsNoTracking()
                 .FirstOrDefaultAsync(ai => ai.Id == id) ??
                 throw new NotFoundException("Картинка не найдена");
@@ -191,7 +191,7 @@ namespace Support.BLL.Services
             if (topic.UserId != userId)
                 throw new ForbiddenException("Вы не создатель топика");
 
-            _context.AnswerImages.Remove(image);
+            _context.Images.Remove(image);
             await _context.SaveChangesAsync();
 
             return image.ToResponse();
@@ -199,12 +199,12 @@ namespace Support.BLL.Services
 
         public async Task<AnswerImageResponse> DeleteAsync(Guid id)
         {
-            AnswerImage image = await _context.AnswerImages
+            AnswerImage image = await _context.Images
                 .AsNoTracking()
                 .FirstOrDefaultAsync(ai => ai.Id == id) ??
                 throw new NotFoundException("Картинка не найдена");
 
-            _context.AnswerImages.Remove(image);
+            _context.Images.Remove(image);
             await _context.SaveChangesAsync();
 
             return image.ToResponse();

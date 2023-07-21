@@ -8,7 +8,7 @@ namespace Support.DAL.Data
     {
         public DbSet<User> Users => Set<User>();
         public DbSet<SupportTopicAnswer> Answers => Set<SupportTopicAnswer>();
-        public DbSet<AnswerImage> AnswerImages => Set<AnswerImage>();
+        public DbSet<AnswerImage> Images => Set<AnswerImage>();
         public DbSet<SupportTopic> Topics => Set<SupportTopic>();
 
         public ApplicationDbContext(DbContextOptions options) : base(options) { }

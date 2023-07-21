@@ -6,6 +6,7 @@ using Microsoft.OpenApi.Models;
 using System.Text;
 using Withdraw.API.Middlewares;
 using Withdraw.BLL.Interfaces;
+using Withdraw.BLL.MassTransit;
 using Withdraw.BLL.MassTransit.Consumers;
 using Withdraw.BLL.Services;
 using Withdraw.DAL.Data;
@@ -72,6 +73,7 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
+builder.Services.AddSingleton<BasePublisher>();
 builder.Services.AddSingleton<IResponseService, ResponseService>();
 builder.Services.AddSingleton<MarketTMService>();
 builder.Services.AddSingleton<IWithdrawItemService, WithdrawItemService>();

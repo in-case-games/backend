@@ -21,13 +21,13 @@ namespace Game.BLL.Services
         {
             GameItem item = template.ToEntity();
 
-            await _context.GameItems.AddAsync(item);
+            await _context.Items.AddAsync(item);
             await _context.SaveChangesAsync();
         }
 
         public async Task UpdateAsync(GameItemTemplate template)
         {
-            GameItem item = await _context.GameItems
+            GameItem item = await _context.Items
                 .FirstOrDefaultAsync(gi => gi.Id == template.Id) ??
                 throw new NotFoundException("Предмет не найден");
 
@@ -38,12 +38,12 @@ namespace Game.BLL.Services
 
         public async Task DeleteAsync(Guid id)
         {
-            GameItem item = await _context.GameItems
+            GameItem item = await _context.Items
                 .AsNoTracking()
                 .FirstOrDefaultAsync(gi => gi.Id == id) ??
                 throw new NotFoundException("Предмет не найден");
 
-            _context.GameItems.Remove(item);
+            _context.Items.Remove(item);
             await _context.SaveChangesAsync();
         }
     }

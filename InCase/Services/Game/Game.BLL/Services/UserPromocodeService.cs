@@ -19,7 +19,7 @@ namespace Game.BLL.Services
 
         public async Task<UserPromocodeResponse> GetAsync(Guid id)
         {
-            UserPromocode userPromocode = await _context.HistoryPromocodes
+            UserPromocode userPromocode = await _context.UserPromocodes
                 .AsNoTracking()
                 .FirstOrDefaultAsync(ur => ur.Id == id) ??
                 throw new NotFoundException("Промокод пользователя не найден");
@@ -29,12 +29,12 @@ namespace Game.BLL.Services
 
         public async Task<UserPromocodeResponse> CreateAsync(UserPromocodeRequest request, bool isNewGuid = false)
         {
-            if (!await _context.HistoryPromocodes.AnyAsync(up => up.UserId == request.UserId))
+            if (!await _context.UserPromocodes.AnyAsync(up => up.UserId == request.UserId))
                 throw new BadRequestException("Уже используется промокод");
 
             UserPromocode entity = request.ToEntity(isNewGuid: isNewGuid);
 
-            await _context.HistoryPromocodes.AddAsync(entity);
+            await _context.UserPromocodes.AddAsync(entity);
             await _context.SaveChangesAsync();
 
             return entity.ToResponse();
@@ -42,7 +42,7 @@ namespace Game.BLL.Services
 
         public async Task<UserPromocodeResponse> UpdateAsync(UserPromocodeRequest request)
         {
-            UserPromocode entityOld = await _context.HistoryPromocodes
+            UserPromocode entityOld = await _context.UserPromocodes
                 .AsNoTracking()
                 .FirstOrDefaultAsync(ur => ur.Id == request.Id && ur.UserId == request.UserId) ??
                 throw new NotFoundException("Промокод пользователя не найден");

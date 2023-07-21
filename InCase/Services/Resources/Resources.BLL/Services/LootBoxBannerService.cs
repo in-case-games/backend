@@ -1,10 +1,9 @@
-﻿using MassTransit;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.EntityFrameworkCore;
 using Resources.BLL.Entities;
 using Resources.BLL.Exceptions;
 using Resources.BLL.Helpers;
 using Resources.BLL.Interfaces;
+using Resources.BLL.MassTransit;
 using Resources.BLL.Models;
 using Resources.DAL.Data;
 using Resources.DAL.Entities;
@@ -14,22 +13,17 @@ namespace Resources.BLL.Services
     public class LootBoxBannerService : ILootBoxBannerService
     {
         private readonly ApplicationDbContext _context;
-        private readonly IConfiguration _configuration;
-        private readonly IBus _bus;
+        private readonly BasePublisher _publisher;
 
-        public LootBoxBannerService(
-            ApplicationDbContext context,
-            IConfiguration configuration,
-            IBus bus)
+        public LootBoxBannerService(ApplicationDbContext context, BasePublisher publisher)
         {
             _context = context;
-            _configuration = configuration;
-            _bus = bus;
+            _publisher = publisher;
         }
 
         public async Task<LootBoxBannerResponse> GetAsync(Guid id)
         {
-            LootBoxBanner banner = await _context.BoxBanners
+            LootBoxBanner banner = await _context.Banners
                 .Include(lbb => lbb.Box)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(lbb => lbb.Id == id) ??
@@ -40,7 +34,7 @@ namespace Resources.BLL.Services
 
         public async Task<List<LootBoxBannerResponse>> GetAsync()
         {
-            List<LootBoxBanner> banners = await _context.BoxBanners
+            List<LootBoxBanner> banners = await _context.Banners
                 .Include(lbb => lbb.Box)
                 .AsNoTracking()
                 .ToListAsync();
@@ -53,7 +47,7 @@ namespace Resources.BLL.Services
             if (!await _context.LootBoxes.AnyAsync(lb => lb.Id == id))
                 throw new NotFoundException("Кейс не найден");
 
-            LootBoxBanner banner = await _context.BoxBanners
+            LootBoxBanner banner = await _context.Banners
                 .Include(lbb => lbb.Box)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(lbb => lbb.BoxId == id) ??
@@ -70,16 +64,15 @@ namespace Resources.BLL.Services
                 .FirstOrDefaultAsync(lb => lb.Id == request.BoxId) ??
                 throw new NotFoundException("Кейс не найден");
 
-            if (box.Banner != null) throw new ConflictException("Кейс уже использует баннер");
-
             LootBoxBanner banner = request.ToEntity(isNewGuid: true);
 
-            await _context.BoxBanners.AddAsync(banner);
+            if (box.Banner != null) 
+                throw new ConflictException("Кейс уже использует баннер");
+
+            await _context.Banners.AddAsync(banner);
             await _context.SaveChangesAsync();
 
-            Uri uri = new(_configuration["MassTransit:Uri"] + "/box-banner");
-            var endPoint = await _bus.GetSendEndpoint(uri);
-            await endPoint.Send(banner.ToTemplate(isDeleted: false));
+            await _publisher.SendAsync(banner.ToTemplate(isDeleted: false), "/box-banner");
 
             banner.Box = box;
 
@@ -88,7 +81,7 @@ namespace Resources.BLL.Services
 
         public async Task<LootBoxBannerResponse> UpdateAsync(LootBoxBannerRequest request)
         {
-            LootBoxBanner oldBanner = await _context.BoxBanners
+            LootBoxBanner bannerOld = await _context.Banners
                 .AsNoTracking()
                 .FirstOrDefaultAsync(lbb => lbb.Id == request.Id) ?? 
                 throw new NotFoundException("Баннер не найден");
@@ -99,18 +92,16 @@ namespace Resources.BLL.Services
                 .FirstOrDefaultAsync(lb => lb.Id == request.BoxId) ??
                 throw new NotFoundException("Кейс не найден");
 
+            LootBoxBanner banner = request
+                .ToEntity(isNewGuid: false, creationDate: bannerOld.CreationDate);
+
             if (box.Banner != null && box.Banner.Id != request.Id) 
                 throw new ConflictException("Кейс уже использует баннер");
 
-            LootBoxBanner banner = request
-                .ToEntity(isNewGuid: false, creationDate: oldBanner.CreationDate);
-
-            _context.BoxBanners.Update(banner);
+            _context.Banners.Update(banner);
             await _context.SaveChangesAsync();
 
-            Uri uri = new(_configuration["MassTransit:Uri"] + "/box-banner");
-            var endPoint = await _bus.GetSendEndpoint(uri);
-            await endPoint.Send(banner.ToTemplate(isDeleted: false));
+            await _publisher.SendAsync(banner.ToTemplate(isDeleted: false), "/box-banner");
 
             banner.Box = box;
 
@@ -119,18 +110,16 @@ namespace Resources.BLL.Services
 
         public async Task<LootBoxBannerResponse> DeleteAsync(Guid id)
         {
-            LootBoxBanner banner = await _context.BoxBanners
+            LootBoxBanner banner = await _context.Banners
                 .Include(lbb => lbb.Box)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(lbb => lbb.Id == id) ??
                 throw new NotFoundException("Баннер не найден");
 
-            _context.BoxBanners.Remove(banner);
+            _context.Banners.Remove(banner);
             await _context.SaveChangesAsync();
 
-            Uri uri = new(_configuration["MassTransit:Uri"] + "/box-banner");
-            var endPoint = await _bus.GetSendEndpoint(uri);
-            await endPoint.Send(banner.ToTemplate(isDeleted: true));
+            await _publisher.SendAsync(banner.ToTemplate(isDeleted: true), "/box-banner");
 
             return banner.ToResponse();
         }

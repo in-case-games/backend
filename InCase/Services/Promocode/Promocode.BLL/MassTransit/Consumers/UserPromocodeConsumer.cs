@@ -20,7 +20,7 @@ namespace Promocode.BLL.MassTransit.Consumers
         {
             var data = context.Message;
 
-            UserPromocode userPromocode = await _context.UserHistoriesPromocodes
+            UserPromocode userPromocode = await _context.UserPromocodes
                 .AsNoTracking()
                 .FirstOrDefaultAsync(ur => ur.Id == data.Id) ??
                 throw new NotFoundException("Промокод пользователя не найден");

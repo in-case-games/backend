@@ -42,14 +42,14 @@ namespace Payment.BLL.Services
             if (!_rsaService.VerifySignatureRSA(request))
                 throw new ForbiddenException("Неверная подпись rsa");
 
-            if (!await _context.UserPayments.AnyAsync(up => up.InvoiceId == request.InvoiceId!))
+            if (!await _context.Payments.AnyAsync(up => up.InvoiceId == request.InvoiceId!))
                 throw new ConflictException("Платеж уже есть в системе, ждем пополнения");
 
             GameMoneyInvoiceInfoResponse? invoice = await _gameMoneyService
                 .GetInvoiceInfoAsync(request.InvoiceId!) ?? 
                 throw new Exceptions.RequestTimeoutException("Платеж не найден");
 
-            UserPromocode? promocode = await _context.UsersPromocodes
+            UserPromocode? promocode = await _context.UserPromocodes
                 .AsNoTracking()
                 .FirstOrDefaultAsync(ur => ur.UserId == invoice.UserId);
 
@@ -69,7 +69,7 @@ namespace Payment.BLL.Services
                 var endPointPromo = await _bus.GetSendEndpoint(uriPromo);
                 await endPointPromo.Send(templatePromo);
 
-                _context.UsersPromocodes.Remove(promocode);
+                _context.UserPromocodes.Remove(promocode);
 
                 pay += pay * promocode.Discount;
             }
@@ -90,7 +90,7 @@ namespace Payment.BLL.Services
             var endPointPayment = await _bus.GetSendEndpoint(uriPayment);
             await endPointPayment.Send(payment.ToTemplate());
 
-            await _context.UserPayments.AddAsync(payment);
+            await _context.Payments.AddAsync(payment);
             await _context.SaveChangesAsync();
 
             return payment.ToResponse();

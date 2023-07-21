@@ -1,9 +1,8 @@
-﻿using MassTransit;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.EntityFrameworkCore;
 using Resources.BLL.Exceptions;
 using Resources.BLL.Helpers;
 using Resources.BLL.Interfaces;
+using Resources.BLL.MassTransit;
 using Resources.BLL.Models;
 using Resources.DAL.Data;
 using Resources.DAL.Entities;
@@ -13,17 +12,12 @@ namespace Resources.BLL.Services
     public class LootBoxInventoryService : ILootBoxInventoryService
     {
         private readonly ApplicationDbContext _context;
-        private readonly IConfiguration _configuration;
-        private readonly IBus _bus;
+        private readonly BasePublisher _publisher;
 
-        public LootBoxInventoryService(
-            ApplicationDbContext context,
-            IConfiguration configuration,
-            IBus bus)
+        public LootBoxInventoryService(ApplicationDbContext context,BasePublisher publisher)
         {
             _context = context;
-            _configuration = configuration;
-            _bus = bus;
+            _publisher = publisher;
         }
 
         public async Task<LootBoxInventoryResponse> GetAsync(Guid id)
@@ -62,7 +56,7 @@ namespace Resources.BLL.Services
 
         public async Task<List<LootBoxInventoryResponse>> GetByItemIdAsync(Guid id)
         {
-            if (!await _context.GameItems.AnyAsync(lbi => lbi.Id == id))
+            if (!await _context.Items.AnyAsync(lbi => lbi.Id == id))
                 throw new NotFoundException("Предмет не найден");
 
             List<LootBoxInventory> inventories = await _context.BoxInventories
@@ -83,7 +77,7 @@ namespace Resources.BLL.Services
                 .FirstOrDefaultAsync(lb => lb.Id == request.BoxId) ??
                 throw new NotFoundException("Кейс не найден");
 
-            GameItem item = await _context.GameItems
+            GameItem item = await _context.Items
                 .Include(gi => gi.Rarity)
                 .Include(gi => gi.Quality)
                 .Include(gi => gi.Type)
@@ -92,17 +86,15 @@ namespace Resources.BLL.Services
                 .FirstOrDefaultAsync(gi => gi.Id == request.ItemId) ??
                 throw new NotFoundException("Предмет не найден");
 
+            LootBoxInventory inventory = request.ToEntity(true);
+
             if (box.GameId != item.GameId) 
                 throw new ConflictException("Кейс и предмет должны быть с одной игры");
-
-            LootBoxInventory inventory = request.ToEntity(true);
 
             await _context.BoxInventories.AddAsync(inventory);
             await _context.SaveChangesAsync();
 
-            Uri uri = new(_configuration["MassTransit:Uri"] + "/box-inventory");
-            var endPoint = await _bus.GetSendEndpoint(uri);
-            await endPoint.Send(request.ToTemplate(isDeleted: false));
+            await _publisher.SendAsync(request.ToTemplate(isDeleted: false), "/box-inventory");
 
             inventory.Item = item;
             inventory.Box = box;
@@ -112,15 +104,12 @@ namespace Resources.BLL.Services
 
         public async Task<LootBoxInventoryResponse> UpdateAsync(LootBoxInventoryRequest request)
         {
-            if (!await _context.BoxInventories.AnyAsync(lbi => lbi.Id == request.Id))
-                throw new NotFoundException("Содержимое кейса не найдено");
-
             LootBox box = await _context.LootBoxes
                 .AsNoTracking()
                 .FirstOrDefaultAsync(lb => lb.Id == request.BoxId) ??
                 throw new NotFoundException("Кейс не найден");
 
-            GameItem item = await _context.GameItems
+            GameItem item = await _context.Items
                 .Include(gi => gi.Rarity)
                 .Include(gi => gi.Quality)
                 .Include(gi => gi.Type)
@@ -129,6 +118,8 @@ namespace Resources.BLL.Services
                 .FirstOrDefaultAsync(gi => gi.Id == request.ItemId) ??
                 throw new NotFoundException("Предмет не найден");
 
+            if (!await _context.BoxInventories.AnyAsync(lbi => lbi.Id == request.Id))
+                throw new NotFoundException("Содержимое кейса не найдено");
             if (box.GameId != item.GameId)
                 throw new ConflictException("Кейс и предмет должны быть с одной игры");
 
@@ -137,9 +128,7 @@ namespace Resources.BLL.Services
             _context.BoxInventories.Update(inventory);
             await _context.SaveChangesAsync();
 
-            Uri uri = new(_configuration["MassTransit:Uri"] + "/box-inventory");
-            var endPoint = await _bus.GetSendEndpoint(uri);
-            await endPoint.Send(request.ToTemplate(isDeleted: false));
+            await _publisher.SendAsync(request.ToTemplate(isDeleted: false), "/box-inventory");
 
             inventory.Item = item;
             inventory.Box = box;
@@ -157,15 +146,13 @@ namespace Resources.BLL.Services
                 .Include(lbi => lbi!.Item!.Game)
                 .Include(lbi => lbi.Box)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(lbi => lbi.Id == id)
-                ?? throw new NotFoundException("Содержимое кейса не найдено");
+                .FirstOrDefaultAsync(lbi => lbi.Id == id) ?? 
+                throw new NotFoundException("Содержимое кейса не найдено");
 
             _context.BoxInventories.Remove(inventory);
             await _context.SaveChangesAsync();
 
-            Uri uri = new(_configuration["MassTransit:Uri"] + "/box-inventory");
-            var endPoint = await _bus.GetSendEndpoint(uri);
-            await endPoint.Send(inventory.ToTemplate(isDeleted: true));
+            await _publisher.SendAsync(inventory.ToTemplate(isDeleted: true), "/box-inventory");
 
             return inventory.ToResponse();
         }

@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Resources.API.Middlewares;
 using Resources.BLL.Interfaces;
+using Resources.BLL.MassTransit;
 using Resources.BLL.Services;
 using Resources.DAL.Data;
 using System.Text;
@@ -70,6 +71,7 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
+builder.Services.AddSingleton<BasePublisher>();
 builder.Services.AddScoped<IGameService, GameService>();
 builder.Services.AddScoped<ILootBoxService, LootBoxService>();
 builder.Services.AddScoped<ILootBoxInventoryService, LootBoxInventoryService>();

@@ -1,9 +1,8 @@
-﻿using MassTransit;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.EntityFrameworkCore;
 using Resources.BLL.Exceptions;
 using Resources.BLL.Helpers;
 using Resources.BLL.Interfaces;
+using Resources.BLL.MassTransit;
 using Resources.BLL.Models;
 using Resources.DAL.Data;
 using Resources.DAL.Entities;
@@ -13,17 +12,12 @@ namespace Resources.BLL.Services
     public class LootBoxService : ILootBoxService
     {
         private readonly ApplicationDbContext _context;
-        private readonly IConfiguration _configuration;
-        private readonly IBus _bus;
+        private readonly BasePublisher _publisher;
 
-        public LootBoxService(
-            ApplicationDbContext context,
-            IConfiguration configuration,
-            IBus bus)
+        public LootBoxService(ApplicationDbContext context, BasePublisher publisher)
         {
             _context = context;
-            _configuration = configuration;
-            _bus = bus;
+            _publisher = publisher;
         }
 
         public async Task<LootBoxResponse> GetAsync(Guid id)
@@ -70,8 +64,8 @@ namespace Resources.BLL.Services
 
         public async Task<LootBoxResponse> CreateAsync(LootBoxRequest request)
         {
-            if (request.Cost <= 0) throw new BadRequestException("Кейс должен стоить больше 0");
-
+            if (request.Cost <= 0) 
+                throw new BadRequestException("Кейс должен стоить больше 0");
             if (!await _context.Games.AnyAsync(g => g.Id == request.GameId))
                 throw new NotFoundException("Игра не найдена");
             if (await _context.LootBoxes.AnyAsync(lb => lb.Name == request.Name)) 
@@ -82,23 +76,20 @@ namespace Resources.BLL.Services
             await _context.LootBoxes.AddAsync(box);
             await _context.SaveChangesAsync();
 
-            Uri uri = new(_configuration["MassTransit:Uri"] + "/loot-box");
-            var endPoint = await _bus.GetSendEndpoint(uri);
-            await endPoint.Send(box.ToTemplate(isDeleted: false));
+            await _publisher.SendAsync(box.ToTemplate(isDeleted: false), "/loot-box");
 
             return box.ToResponse();
         }
 
         public async Task<LootBoxResponse> UpdateAsync(LootBoxRequest request)
         {
-            if (request.Cost <= 0) throw new BadRequestException("Кейс должен стоить больше 0");
-
+            if (request.Cost <= 0) 
+                throw new BadRequestException("Кейс должен стоить больше 0");
             if (!await _context.LootBoxes.AnyAsync(lb => lb.Id == request.Id))
                 throw new NotFoundException("Кейс не найден");
             if (!await _context.Games.AnyAsync(g => g.Id == request.GameId))
                 throw new NotFoundException("Игра не найдена");
-            if (await _context.LootBoxes
-                .AnyAsync(lb => lb.Name == request.Name && lb.Id != request.Id))
+            if (await _context.LootBoxes.AnyAsync(lb => lb.Name == request.Name && lb.Id != request.Id))
                 throw new ConflictException("Название кейса уже занято");
 
             LootBox newBox = request.ToEntity(isNewGuid: false);
@@ -106,9 +97,7 @@ namespace Resources.BLL.Services
             _context.LootBoxes.Update(newBox);
             await _context.SaveChangesAsync();
 
-            Uri uri = new(_configuration["MassTransit:Uri"] + "/loot-box");
-            var endPoint = await _bus.GetSendEndpoint(uri);
-            await endPoint.Send(newBox.ToTemplate(isDeleted: false));
+            await _publisher.SendAsync(newBox.ToTemplate(isDeleted: false), "/loot-box");
 
             return newBox.ToResponse();
         }
@@ -123,9 +112,7 @@ namespace Resources.BLL.Services
             _context.LootBoxes.Remove(box);
             await _context.SaveChangesAsync();
 
-            Uri uri = new(_configuration["MassTransit:Uri"] + "/loot-box");
-            var endPoint = await _bus.GetSendEndpoint(uri);
-            await endPoint.Send(box.ToTemplate(isDeleted: true));
+            await _publisher.SendAsync(box.ToTemplate(isDeleted: true), "/loot-box");
 
             return box.ToResponse();
         }

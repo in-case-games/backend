@@ -48,7 +48,7 @@ namespace Game.BLL.Services
         {
             if (!await _context.Users.AnyAsync(u => u.Id == userId))
                 throw new NotFoundException("Пользователь не найден");
-            if (!await _context.GameItems.AnyAsync(gi => gi.Id == itemId))
+            if (!await _context.Items.AnyAsync(gi => gi.Id == itemId))
                 throw new NotFoundException("Предмет не найден");
 
             List<UserPathBanner> banners = await _context.PathBanners
@@ -159,7 +159,7 @@ namespace Game.BLL.Services
             if (banner.BoxId != request.BoxId)
                 throw new ForbiddenException("Нельзя поменять кейс");
             
-            GameItem item = await _context.GameItems
+            GameItem item = await _context.Items
                 .AsNoTracking()
                 .FirstOrDefaultAsync(gi => gi.Id == request.ItemId) ?? 
                 throw new NotFoundException("Предмет не найден");

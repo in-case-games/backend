@@ -8,15 +8,11 @@ namespace Resources.BLL.Services
     public class GameItemManagerService : IHostedService
     {
         private readonly IGameItemService _gameItemService;
-        private readonly ILogger<GameItemManagerService> _logger;
 
-        public GameItemManagerService(
-            IServiceProvider serviceProvider, 
-            ILogger<GameItemManagerService> logger)
+        public GameItemManagerService(IServiceProvider serviceProvider)
         {
             _gameItemService = serviceProvider.CreateScope().ServiceProvider
                 .GetRequiredService<IGameItemService>();
-            _logger = logger;
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
@@ -34,12 +30,10 @@ namespace Resources.BLL.Services
             {
                 try
                 {
-                    _logger.LogInformation("Start work manager");
                     await _gameItemService.UpdateCostManagerAsync(10, stoppingToken);
                 }
                 catch (Exception)
                 {
-                    _logger.LogInformation("BB work manager");
                 }
 
                 await Task.Delay(10000, stoppingToken);

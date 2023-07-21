@@ -42,7 +42,7 @@ namespace Game.BLL.Services
                 .FirstOrDefaultAsync(uai => uai.UserId == userId) ??
                 throw new NotFoundException("Пользователь не найден");
 
-            UserPromocode? promocode = await _context.HistoryPromocodes
+            UserPromocode? promocode = await _context.UserPromocodes
                 .FirstOrDefaultAsync(uhp => uhp.UserId == userId);
 
             if (box.IsLocked)
@@ -57,7 +57,7 @@ namespace Game.BLL.Services
                 var endPointPromo = await _bus.GetSendEndpoint(uriPromo);
                 await endPointPromo.Send(templatePromo);
 
-                _context.HistoryPromocodes.Remove(promocode);
+                _context.UserPromocodes.Remove(promocode);
             }
 
             UserPathBanner? pathBanner = await _context.PathBanners
@@ -131,7 +131,7 @@ namespace Game.BLL.Services
             endPoint = await _bus.GetSendEndpoint(uri);
             await endPoint.Send(templateUser);
 
-            await _context.HistoryOpenings.AddAsync(opening);
+            await _context.Openings.AddAsync(opening);
 
             await _context.SaveChangesAsync();
 

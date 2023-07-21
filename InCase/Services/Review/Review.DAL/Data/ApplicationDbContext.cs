@@ -6,7 +6,7 @@ namespace Review.DAL.Data
 {
     public class ApplicationDbContext : DbContext
     {
-        public DbSet<ReviewImage> ReviewImages { get; set; }
+        public DbSet<ReviewImage> Images { get; set; }
         public DbSet<User> User { get; set; }
         public DbSet<UserReview> Reviews { get; set; }
 

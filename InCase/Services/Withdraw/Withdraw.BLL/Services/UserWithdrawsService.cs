@@ -19,7 +19,7 @@ namespace Withdraw.BLL.Services
 
         public async Task<UserHistoryWithdrawResponse> GetAsync(Guid id)
         {
-            UserHistoryWithdraw withdraw = await _context.HistoryWithdraws
+            UserHistoryWithdraw withdraw = await _context.Withdraws
                 .Include(uhw => uhw.Status)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(uhw => uhw.Id == id) ?? 
@@ -35,7 +35,7 @@ namespace Withdraw.BLL.Services
             if (!await _context.Users.AnyAsync(u => u.Id == userId))
                 throw new NotFoundException("Пользователь не найден");
 
-            List<UserHistoryWithdraw> withdraws = await _context.HistoryWithdraws
+            List<UserHistoryWithdraw> withdraws = await _context.Withdraws
                 .Include(uhw => uhw.Status)
                 .AsNoTracking()
                 .Where(uhw => uhw.UserId == userId)
@@ -51,7 +51,7 @@ namespace Withdraw.BLL.Services
             if (count <= 0 || count >= 10000)
                 throw new BadRequestException("Размер выборки должен быть в пределе 1-10000");
 
-            List<UserHistoryWithdraw> withdraws = await _context.HistoryWithdraws
+            List<UserHistoryWithdraw> withdraws = await _context.Withdraws
                 .Include(uhw => uhw.Status)
                 .AsNoTracking()
                 .OrderByDescending(uhw => uhw.Date)
@@ -63,7 +63,7 @@ namespace Withdraw.BLL.Services
 
         public async Task<UserInventoryResponse> TransferAsync(Guid id, Guid userId)
         {
-            UserHistoryWithdraw withdraw = await _context.HistoryWithdraws
+            UserHistoryWithdraw withdraw = await _context.Withdraws
                 .Include(uhw => uhw.Status)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(uhw => uhw.Id == id && uhw.UserId == userId) ??
@@ -80,8 +80,8 @@ namespace Withdraw.BLL.Services
                 UserId = userId
             };
 
-            _context.HistoryWithdraws.Remove(withdraw);
-            await _context.UserInventories.AddAsync(inventory);
+            _context.Withdraws.Remove(withdraw);
+            await _context.Inventories.AddAsync(inventory);
             await _context.SaveChangesAsync();
 
             return inventory.ToResponse();

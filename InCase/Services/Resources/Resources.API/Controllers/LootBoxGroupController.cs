@@ -12,11 +12,11 @@ namespace Resources.API.Controllers
     [ApiController]
     public class LootBoxGroupController : ControllerBase
     {
-        private readonly ILootBoxGroupService _boxGroupService;
+        private readonly ILootBoxGroupService _groupService;
 
-        public LootBoxGroupController(ILootBoxGroupService boxGroupService)
+        public LootBoxGroupController(ILootBoxGroupService groupService)
         {
-            _boxGroupService = boxGroupService;
+            _groupService = groupService;
         }
 
         [ProducesResponseType(typeof(ApiResult<List<LootBoxGroupResponse>>), 
@@ -25,7 +25,7 @@ namespace Resources.API.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            List<LootBoxGroupResponse> response = await _boxGroupService.GetAsync();
+            List<LootBoxGroupResponse> response = await _groupService.GetAsync();
 
             return Ok(ApiResult<List<LootBoxGroupResponse>>.OK(response));
         }
@@ -36,7 +36,7 @@ namespace Resources.API.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(Guid id)
         {
-            LootBoxGroupResponse response = await _boxGroupService.GetAsync(id);
+            LootBoxGroupResponse response = await _groupService.GetAsync(id);
 
             return Ok(ApiResult<LootBoxGroupResponse>.OK(response));
         }
@@ -47,7 +47,7 @@ namespace Resources.API.Controllers
         [HttpGet("game/{id}")]
         public async Task<IActionResult> GetByGameId(Guid id)
         {
-            List<LootBoxGroupResponse> response = await _boxGroupService.GetByGameIdAsync(id);
+            List<LootBoxGroupResponse> response = await _groupService.GetByGameIdAsync(id);
 
             return Ok(ApiResult<List<LootBoxGroupResponse>>.OK(response));
         }
@@ -58,7 +58,7 @@ namespace Resources.API.Controllers
         [HttpGet("box/{id}")]
         public async Task<IActionResult> GetByBoxId(Guid id)
         {
-            List<LootBoxGroupResponse> response = await _boxGroupService.GetByBoxIdAsync(id);
+            List<LootBoxGroupResponse> response = await _groupService.GetByBoxIdAsync(id);
 
             return Ok(ApiResult<List<LootBoxGroupResponse>>.OK(response));
         }
@@ -69,7 +69,7 @@ namespace Resources.API.Controllers
         [HttpGet("group/{id}")]
         public async Task<IActionResult> GetByGroupId(Guid id)
         {
-            List<LootBoxGroupResponse> response = await _boxGroupService.GetByGroupIdAsync(id);
+            List<LootBoxGroupResponse> response = await _groupService.GetByGroupIdAsync(id);
 
             return Ok(ApiResult<List<LootBoxGroupResponse>>.OK(response));
         }
@@ -80,7 +80,7 @@ namespace Resources.API.Controllers
         [HttpPost]
         public async Task<IActionResult> Post(LootBoxGroupRequest request)
         {
-            LootBoxGroupResponse response = await _boxGroupService.CreateAsync(request);
+            LootBoxGroupResponse response = await _groupService.CreateAsync(request);
 
             return Ok(ApiResult<LootBoxGroupResponse>.OK(response));
         }
@@ -91,7 +91,7 @@ namespace Resources.API.Controllers
         [HttpPut]
         public async Task<IActionResult> Put(LootBoxGroupRequest request)
         {
-            LootBoxGroupResponse response = await _boxGroupService.UpdateAsync(request);
+            LootBoxGroupResponse response = await _groupService.UpdateAsync(request);
 
             return Ok(ApiResult<LootBoxGroupResponse>.OK(response));
         }
@@ -102,7 +102,7 @@ namespace Resources.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            LootBoxGroupResponse response = await _boxGroupService.DeleteAsync(id);
+            LootBoxGroupResponse response = await _groupService.DeleteAsync(id);
 
             return Ok(ApiResult<LootBoxGroupResponse>.OK(response));
         }

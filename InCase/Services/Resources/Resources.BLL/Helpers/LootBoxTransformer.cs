@@ -34,16 +34,6 @@ namespace Resources.BLL.Helpers
                 IsLocked = request.IsLocked
             };
 
-        public static LootBoxTemplate ToTemplate(this LootBoxRequest request, bool isDeleted = false) => new()
-        {
-            Id = request.Id,
-            Cost = request.Cost,
-            GameId = request.GameId,
-            IsDeleted = isDeleted,
-            IsLocked = request.IsLocked,
-            Name = request.Name
-        };
-
         public static LootBoxTemplate ToTemplate(this LootBox entity, bool isDeleted = false) => new()
         {
             Id = entity.Id,

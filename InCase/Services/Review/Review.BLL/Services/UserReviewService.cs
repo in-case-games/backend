@@ -1,31 +1,24 @@
 ﻿using Infrastructure.MassTransit.Statistics;
-using MassTransit;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Review.BLL.Exceptions;
 using Review.BLL.Helpers;
 using Review.BLL.Interfaces;
+using Review.BLL.MassTransit;
 using Review.BLL.Models;
 using Review.DAL.Data;
 using Review.DAL.Entities;
-using System.Runtime.CompilerServices;
 
 namespace Review.BLL.Services
 {
     public class UserReviewService : IUserReviewService
     {
         private readonly ApplicationDbContext _context;
-        private readonly IConfiguration _configuration;
-        private readonly IBus _bus;
+        private readonly BasePublisher _publisher;
 
-        public UserReviewService(
-            ApplicationDbContext context,
-            IConfiguration configuration,
-            IBus bus)
+        public UserReviewService(ApplicationDbContext context, BasePublisher publisher)
         {
             _context = context;
-            _configuration = configuration;
-            _bus = bus;
+            _publisher = publisher;
         }
 
         public async Task<UserReviewResponse> GetAsync(Guid id, bool isOnlyApproved)
@@ -36,10 +29,9 @@ namespace Review.BLL.Services
                 .FirstOrDefaultAsync(ur => ur.Id == id) ??
                 throw new NotFoundException("Отзыв не найден");
 
-            if (isOnlyApproved && review.IsApproved is false)
+            return isOnlyApproved is false || review.IsApproved ?
+                review.ToResponse() :
                 throw new ForbiddenException("Отзыв не одобрен администрацией");
-
-            return review.ToResponse();
         }
 
         public async Task<List<UserReviewResponse>> GetAsync(bool isOnlyApproved)
@@ -75,17 +67,14 @@ namespace Review.BLL.Services
                 throw new NotFoundException("Пользователь не найден");
 
             UserReview review = request.ToEntity(isNewGuid: true);
+            SiteStatisticsTemplate template = new() { Reviews = 1 };
 
             review.IsApproved = false;
 
             await _context.Reviews.AddAsync(review);
             await _context.SaveChangesAsync();
 
-            SiteStatisticsTemplate template = new() { Reviews = 1 };
-
-            Uri uri = new(_configuration["MassTransit:Uri"] + "/statistics");
-            var endPoint = await _bus.GetSendEndpoint(uri);
-            await endPoint.Send(template);
+            await _publisher.Send(template, "/statistics");
 
             return review.ToResponse();
         }
@@ -151,7 +140,9 @@ namespace Review.BLL.Services
                 .FirstOrDefaultAsync(ur => ur.Id == id) ??
                 throw new NotFoundException("Отзыв не найден");
 
-            if(review.UserId != userId)
+            SiteStatisticsTemplate template = new() { Reviews = -1 };
+
+            if (review.UserId != userId)
                 throw new ForbiddenException("Доступ к отзыву только у создателя");
 
             //TODO Remove image local folder 
@@ -159,11 +150,7 @@ namespace Review.BLL.Services
             _context.Reviews.Remove(review);
             await _context.SaveChangesAsync();
 
-            SiteStatisticsTemplate template = new() { Reviews = -1 };
-
-            Uri uri = new(_configuration["MassTransit:Uri"] + "/statistics");
-            var endPoint = await _bus.GetSendEndpoint(uri);
-            await endPoint.Send(template);
+            await _publisher.Send(template, "/statistics");
 
             return review.ToResponse();
         }
@@ -176,16 +163,14 @@ namespace Review.BLL.Services
                 .FirstOrDefaultAsync(ur => ur.Id == id) ??
                 throw new NotFoundException("Отзыв не найден");
 
+            SiteStatisticsTemplate template = new() { Reviews = -1 };
+
             //TODO Remove image local folder 
 
             _context.Reviews.Remove(review);
             await _context.SaveChangesAsync();
 
-            SiteStatisticsTemplate template = new() { Reviews = -1 };
-
-            Uri uri = new(_configuration["MassTransit:Uri"] + "/statistics");
-            var endPoint = await _bus.GetSendEndpoint(uri);
-            await endPoint.Send(template);
+            await _publisher.Send(template, "/statistics");
 
             return review.ToResponse();
         }

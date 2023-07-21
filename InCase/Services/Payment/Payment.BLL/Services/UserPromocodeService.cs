@@ -20,18 +20,18 @@ namespace Payment.BLL.Services
 
         public async Task CreateAsync(UserPromocodeTemplate template)
         {
-            if (!await _context.UsersPromocodes.AnyAsync(up => up.UserId == template.UserId))
+            if (!await _context.UserPromocodes.AnyAsync(up => up.UserId == template.UserId))
                 throw new BadRequestException("Уже используется промокод");
 
             UserPromocode entity = template.ToEntity();
 
-            await _context.UsersPromocodes.AddAsync(entity);
+            await _context.UserPromocodes.AddAsync(entity);
             await _context.SaveChangesAsync();
         }
 
         public async Task UpdateAsync(UserPromocodeTemplate template)
         {
-            UserPromocode entityOld = await _context.UsersPromocodes
+            UserPromocode entityOld = await _context.UserPromocodes
                 .AsNoTracking()
                 .FirstOrDefaultAsync(ur => ur.Id == template.Id && ur.UserId == template.UserId) ??
                 throw new NotFoundException("Промокод пользователя не найден");

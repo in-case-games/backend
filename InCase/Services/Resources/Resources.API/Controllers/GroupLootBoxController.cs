@@ -21,7 +21,8 @@ namespace Resources.API.Controllers
             _groupBoxService = groupBoxService;
         }
 
-        [ProducesResponseType(typeof(ApiResult<List<GroupLootBox>>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<List<GroupLootBox>>), 
+            (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> Get()
@@ -31,7 +32,8 @@ namespace Resources.API.Controllers
             return Ok(ApiResult<List<GroupLootBox>>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<GroupLootBox>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<GroupLootBox>), 
+            (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(Guid id)
@@ -41,7 +43,8 @@ namespace Resources.API.Controllers
             return Ok(ApiResult<GroupLootBox>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<GroupLootBox>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<GroupLootBox>), 
+            (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("name/{name}")]
         public async Task<IActionResult> Get(string name)
@@ -51,7 +54,8 @@ namespace Resources.API.Controllers
             return Ok(ApiResult<GroupLootBox>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<GroupLootBox>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<GroupLootBox>), 
+            (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Owner)]
         [HttpPost]
         public async Task<IActionResult> Post(GroupLootBox request)
@@ -61,7 +65,8 @@ namespace Resources.API.Controllers
             return Ok(ApiResult<GroupLootBox>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<GroupLootBox>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<GroupLootBox>), 
+            (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Owner)]
         [HttpPut]
         public async Task<IActionResult> Put(GroupLootBox request)
@@ -71,7 +76,8 @@ namespace Resources.API.Controllers
             return Ok(ApiResult<GroupLootBox>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<GroupLootBox>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<GroupLootBox>), 
+            (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Owner)]
         [HttpDelete]
         public async Task<IActionResult> Delete(Guid id)

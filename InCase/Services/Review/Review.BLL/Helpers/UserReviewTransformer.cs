@@ -37,15 +37,5 @@ namespace Review.BLL.Helpers
 
             return response;
         }
-
-        public static List<UserReviewResponse> ToResponse(this IEnumerable<UserReview> entities)
-        {
-            List<UserReviewResponse> response = new();
-
-            foreach (var entity in entities)
-                response.Add(ToResponse(entity));
-
-            return response;
-        }
     }
 }

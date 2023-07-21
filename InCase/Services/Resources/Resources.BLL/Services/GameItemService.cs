@@ -1,10 +1,10 @@
-﻿using Infrastructure.MassTransit.Resources;
-using MassTransit;
+﻿using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Resources.BLL.Exceptions;
 using Resources.BLL.Helpers;
 using Resources.BLL.Interfaces;
+using Resources.BLL.MassTransit;
 using Resources.BLL.Models;
 using Resources.DAL.Data;
 using Resources.DAL.Entities;
@@ -14,22 +14,17 @@ namespace Resources.BLL.Services
     public class GameItemService : IGameItemService
     {
         private readonly ApplicationDbContext _context;
-        private readonly IConfiguration _configuration;
-        private readonly IBus _bus;
+        private readonly BasePublisher _publisher;
 
-        public GameItemService(
-            ApplicationDbContext context,
-            IConfiguration configuration,
-            IBus bus)
+        public GameItemService(ApplicationDbContext context, BasePublisher publisher)
         {
             _context = context;
-            _configuration = configuration;
-            _bus = bus;
+            _publisher = publisher;
         }
 
         public async Task<GameItemResponse> GetAsync(Guid id)
         {
-            GameItem item = await _context.GameItems
+            GameItem item = await _context.Items
                 .Include(gi => gi.Rarity)
                 .Include(gi => gi.Quality)
                 .Include(gi => gi.Type)
@@ -43,7 +38,7 @@ namespace Resources.BLL.Services
 
         public async Task<List<GameItemResponse>> GetAsync(string name)
         {
-            List<GameItem> items = await _context.GameItems
+            List<GameItem> items = await _context.Items
                 .Include(gi => gi.Rarity)
                 .Include(gi => gi.Quality)
                 .Include(gi => gi.Type)
@@ -60,7 +55,7 @@ namespace Resources.BLL.Services
             if (!await _context.Games.AnyAsync(g => g.Id == id))
                 throw new NotFoundException("Игра не найдена");
 
-            List<GameItem> items = await _context.GameItems
+            List<GameItem> items = await _context.Items
                 .Include(gi => gi.Rarity)
                 .Include(gi => gi.Quality)
                 .Include(gi => gi.Type)
@@ -74,7 +69,7 @@ namespace Resources.BLL.Services
 
         public async Task<List<GameItemResponse>> GetByHashNameAsync(string hash)
         {
-            List<GameItem> items = await _context.GameItems
+            List<GameItem> items = await _context.Items
                 .Include(gi => gi.Rarity)
                 .Include(gi => gi.Quality)
                 .Include(gi => gi.Type)
@@ -88,7 +83,7 @@ namespace Resources.BLL.Services
 
         public async Task<List<GameItemResponse>> GetAsync()
         {
-            List<GameItem> items = await _context.GameItems
+            List<GameItem> items = await _context.Items
                 .Include(gi => gi.Rarity)
                 .Include(gi => gi.Quality)
                 .Include(gi => gi.Type)
@@ -101,10 +96,10 @@ namespace Resources.BLL.Services
 
         public async Task<List<GameItemResponse>> GetByQualityAsync(string name)
         {
-            if (!await _context.ItemQualities.AnyAsync(giq => giq.Name == name))
+            if (!await _context.Qualities.AnyAsync(giq => giq.Name == name))
                 throw new NotFoundException("Качество не найдено");
 
-            List<GameItem> items = await _context.GameItems
+            List<GameItem> items = await _context.Items
                 .Include(gi => gi.Quality)
                 .Include(gi => gi.Rarity)
                 .Include(gi => gi.Type)
@@ -118,10 +113,10 @@ namespace Resources.BLL.Services
 
         public async Task<List<GameItemResponse>> GetByRarityAsync(string name)
         {
-            if (!await _context.ItemRarities.AnyAsync(giq => giq.Name == name))
+            if (!await _context.Rarities.AnyAsync(giq => giq.Name == name))
                 throw new NotFoundException("Редкость не найдено");
 
-            List<GameItem> items = await _context.GameItems
+            List<GameItem> items = await _context.Items
                 .Include(gi => gi.Rarity)
                 .Include(gi => gi.Quality)
                 .Include(gi => gi.Type)
@@ -138,7 +133,7 @@ namespace Resources.BLL.Services
             if (!await _context.ItemTypes.AnyAsync(giq => giq.Name == name))
                 throw new NotFoundException("Тип не найден");
 
-            List<GameItem> items = await _context.GameItems
+            List<GameItem> items = await _context.Items
                 .Include(gi => gi.Type)
                 .Include(gi => gi.Quality)
                 .Include(gi => gi.Rarity)
@@ -151,12 +146,12 @@ namespace Resources.BLL.Services
         }
 
         public async Task<List<GameItemQuality>> GetQualitiesAsync() => 
-            await _context.ItemQualities
+            await _context.Qualities
             .AsNoTracking()
             .ToListAsync();
 
         public async Task<List<GameItemRarity>> GetRaritiesAsync() =>
-            await _context.ItemRarities
+            await _context.Rarities
             .AsNoTracking()
             .ToListAsync();
 
@@ -169,11 +164,11 @@ namespace Resources.BLL.Services
         {
             if (request.Cost <= 0) throw new BadRequestException("Предмет должен стоить больше 0");
 
-            GameItemQuality quality = await _context.ItemQualities
+            GameItemQuality quality = await _context.Qualities
                 .AsNoTracking()
                 .FirstOrDefaultAsync(giq => giq.Id == request.QualityId) ?? 
                 throw new NotFoundException("Качество предмета не найдено");
-            GameItemRarity rarity = await _context.ItemRarities
+            GameItemRarity rarity = await _context.Rarities
                 .AsNoTracking()
                 .FirstOrDefaultAsync(gir => gir.Id == request.RarityId) ??
                 throw new NotFoundException("Редкость предмета не найдена");
@@ -188,12 +183,10 @@ namespace Resources.BLL.Services
 
             GameItem item = request.ToEntity(true);
 
-            await _context.GameItems.AddAsync(item);
+            await _context.Items.AddAsync(item);
             await _context.SaveChangesAsync();
 
-            Uri uri = new(_configuration["MassTransit:Uri"] + "/game-item");
-            var endPoint = await _bus.GetSendEndpoint(uri);
-            await endPoint.Send(item.ToTemplate(request.IdForMarket));
+            await _publisher.SendAsync(item.ToTemplate(request.IdForMarket), "/game-item");
 
             item.Game = game;
             item.Quality = quality;
@@ -205,16 +198,16 @@ namespace Resources.BLL.Services
 
         public async Task<GameItemResponse> UpdateAsync(GameItemRequest request)
         {
-            if (request.Cost <= 0) throw new BadRequestException("Предмет должен стоить больше 0");
-
-            if (!await _context.GameItems.AnyAsync(gi => gi.Id == request.Id))
+            if (request.Cost <= 0) 
+                throw new BadRequestException("Предмет должен стоить больше 0");
+            if (!await _context.Items.AnyAsync(gi => gi.Id == request.Id))
                 throw new NotFoundException("Предмет не найден");
 
-            GameItemQuality quality = await _context.ItemQualities
+            GameItemQuality quality = await _context.Qualities
                 .AsNoTracking()
                 .FirstOrDefaultAsync(giq => giq.Id == request.QualityId) ??
                 throw new NotFoundException("Качество предмета не найдено");
-            GameItemRarity rarity = await _context.ItemRarities
+            GameItemRarity rarity = await _context.Rarities
                 .AsNoTracking()
                 .FirstOrDefaultAsync(gir => gir.Id == request.RarityId) ??
                 throw new NotFoundException("Редкость предмета не найдена");
@@ -229,12 +222,10 @@ namespace Resources.BLL.Services
 
             GameItem item = request.ToEntity();
 
-            _context.GameItems.Update(item);
+            _context.Items.Update(item);
             await _context.SaveChangesAsync();
 
-            Uri uri = new(_configuration["MassTransit:Uri"] + "/game-item");
-            var endPoint = await _bus.GetSendEndpoint(uri);
-            await endPoint.Send(item.ToTemplate(request.IdForMarket));
+            await _publisher.SendAsync(item.ToTemplate(request.IdForMarket), "/game-item");
 
             item.Game = game;
             item.Quality = quality;
@@ -246,7 +237,7 @@ namespace Resources.BLL.Services
 
         public async Task<GameItemResponse> DeleteAsync(Guid id)
         {
-            GameItem item = await _context.GameItems
+            GameItem item = await _context.Items
                 .Include(gi => gi.Rarity)
                 .Include(gi => gi.Quality)
                 .Include(gi => gi.Type)
@@ -255,12 +246,10 @@ namespace Resources.BLL.Services
                 .FirstOrDefaultAsync(gi => gi.Id == id) ??
                 throw new NotFoundException("Предмет не найден");
 
-            _context.GameItems.Remove(item);
+            _context.Items.Remove(item);
             await _context.SaveChangesAsync();
 
-            Uri uri = new(_configuration["MassTransit:Uri"] + "/game-item");
-            var endPoint = await _bus.GetSendEndpoint(uri);
-            await endPoint.Send(item.ToTemplate(idForMarket: null, isDeleted: true));
+            await _publisher.SendAsync(item.ToTemplate(idForMarket: null, isDeleted: true), "/game-item");
 
             return item.ToResponse();
         }

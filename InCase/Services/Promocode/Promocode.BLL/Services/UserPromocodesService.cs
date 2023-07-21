@@ -19,7 +19,7 @@ namespace Promocode.BLL.Services
 
         public async Task<UserPromocodeResponse> GetAsync(Guid id, Guid userId)
         {
-            UserPromocode history = await _context.UserHistoriesPromocodes
+            UserPromocode history = await _context.UserPromocodes
                 .Include(uhp => uhp.Promocode)
                 .Include(uhp => uhp.Promocode!.Type)
                 .AsNoTracking()
@@ -37,7 +37,7 @@ namespace Promocode.BLL.Services
             if (count <= 0 || count >= 10000)
                 throw new BadRequestException("Размер выборки должен быть в пределе 1-10000");
 
-            List<UserPromocode> history = await _context.UserHistoriesPromocodes
+            List<UserPromocode> history = await _context.UserPromocodes
                 .Include(uhp => uhp.Promocode)
                 .Include(uhp => uhp.Promocode!.Type)
                 .AsNoTracking()
@@ -54,7 +54,7 @@ namespace Promocode.BLL.Services
             if (count <= 0 || count >= 10000)
                 throw new BadRequestException("Размер выборки должен быть в пределе 1-10000");
 
-            List<UserPromocode> history = await _context.UserHistoriesPromocodes
+            List<UserPromocode> history = await _context.UserPromocodes
                 .Include(uhp => uhp.Promocode)
                 .Include(uhp => uhp.Promocode!.Type)
                 .AsNoTracking()
@@ -75,11 +75,11 @@ namespace Promocode.BLL.Services
             if (promocode.NumberActivations <= 0 || promocode.ExpirationDate <= DateTime.UtcNow)
                 throw new ForbiddenException("Промокод истёк");
 
-            UserPromocode? history = await _context.UserHistoriesPromocodes
+            UserPromocode? history = await _context.UserPromocodes
                 .AsNoTracking()
                 .FirstOrDefaultAsync(uhp => uhp.PromocodeId == promocode.Id);
 
-            UserPromocode? historyType = await _context.UserHistoriesPromocodes
+            UserPromocode? historyType = await _context.UserPromocodes
                 .AsNoTracking()
                 .FirstOrDefaultAsync(uhp =>
                 uhp.Promocode!.Type!.Id == promocode.TypeId &&
@@ -103,7 +103,7 @@ namespace Promocode.BLL.Services
 
             //TODO Notify rabbit mq
 
-            await _context.UserHistoriesPromocodes.AddAsync(history);
+            await _context.UserPromocodes.AddAsync(history);
             await _context.SaveChangesAsync();
 
             return history.ToResponse();
@@ -119,13 +119,13 @@ namespace Promocode.BLL.Services
             if (promocode.NumberActivations <= 0 || promocode.ExpirationDate <= DateTime.UtcNow)
                 throw new ConflictException("Промокод истёк");
 
-            bool isUsed = await _context.UserHistoriesPromocodes
+            bool isUsed = await _context.UserPromocodes
                 .AnyAsync(uhp => uhp.PromocodeId == promocode.Id && uhp.IsActivated);
 
             if (isUsed)
                 throw new ConflictException("Промокод уже использован");
 
-            UserPromocode? history = await _context.UserHistoriesPromocodes
+            UserPromocode? history = await _context.UserPromocodes
                 .Include(uhp => uhp.Promocode)
                 .Include(uhp => uhp.Promocode!.Type)
                 .FirstOrDefaultAsync(uhp =>

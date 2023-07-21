@@ -7,12 +7,12 @@ namespace Withdraw.DAL.Data
     public class ApplicationDbContext : DbContext
     {
         public DbSet<Game> Games => Set<Game>();
-        public DbSet<GameItem> GameItems => Set<GameItem>();
-        public DbSet<GameMarket> GameMarkets => Set<GameMarket>();
-        public DbSet<WithdrawStatus> WithdrawStatuses => Set<WithdrawStatus>();
+        public DbSet<GameItem> Items => Set<GameItem>();
+        public DbSet<GameMarket> Markets => Set<GameMarket>();
+        public DbSet<WithdrawStatus> Statuses => Set<WithdrawStatus>();
         public DbSet<User> Users => Set<User>();
-        public DbSet<UserHistoryWithdraw> HistoryWithdraws => Set<UserHistoryWithdraw>();
-        public DbSet<UserInventory> UserInventories => Set<UserInventory>();
+        public DbSet<UserHistoryWithdraw> Withdraws => Set<UserHistoryWithdraw>();
+        public DbSet<UserInventory> Inventories => Set<UserInventory>();
 
         public ApplicationDbContext(DbContextOptions options) : base(options) { }
 

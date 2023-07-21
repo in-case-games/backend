@@ -27,7 +27,7 @@ namespace Payment.BLL.MassTransit.Consumers
 
             if (template.Type?.Name == "balance")
             {
-                UserPromocode? userPromocode = await _context.UsersPromocodes
+                UserPromocode? userPromocode = await _context.UserPromocodes
                     .AsNoTracking()
                     .FirstOrDefaultAsync(ur => ur.Id == template.Id && ur.UserId == template.UserId);
 

@@ -25,7 +25,7 @@ namespace Game.BLL.MassTransit.Consumers
         {
             GameItemTemplate template = context.Message;
 
-            GameItem? item = await _context.GameItems
+            GameItem? item = await _context.Items
                 .AsNoTracking()
                 .FirstOrDefaultAsync(gi => gi.Id == template.Id);
 

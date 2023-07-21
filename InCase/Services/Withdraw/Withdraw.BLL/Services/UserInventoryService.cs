@@ -2,9 +2,11 @@
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using System.Threading;
 using Withdraw.BLL.Exceptions;
 using Withdraw.BLL.Helpers;
 using Withdraw.BLL.Interfaces;
+using Withdraw.BLL.MassTransit;
 using Withdraw.BLL.Models;
 using Withdraw.DAL.Data;
 using Withdraw.DAL.Entities;
@@ -15,19 +17,16 @@ namespace Withdraw.BLL.Services
     {
         private readonly ApplicationDbContext _context;
         private readonly IWithdrawItemService _withdrawService;
-        private readonly IConfiguration _cfg;
-        private readonly IBus _bus;
+        private readonly BasePublisher _publisher;
 
         public UserInventoryService(
             ApplicationDbContext context, 
             IWithdrawItemService withdrawService,
-            IConfiguration cfg,
-            IBus bus)
+            BasePublisher publisher)
         {
             _context = context;
             _withdrawService = withdrawService;
-            _cfg = cfg;
-            _bus = bus;
+            _publisher = publisher;
         }
 
         public async Task<List<UserInventoryResponse>> GetAsync(Guid userId)
@@ -35,7 +34,7 @@ namespace Withdraw.BLL.Services
             if (!await _context.Users.AnyAsync(u => u.Id == userId))
                 throw new NotFoundException("Пользователь не найден");
 
-            List<UserInventory> inventories = await _context.UserInventories
+            List<UserInventory> inventories = await _context.Inventories
                 .AsNoTracking()
                 .Where(ui => ui.UserId == userId)
                 .ToListAsync();
@@ -50,7 +49,7 @@ namespace Withdraw.BLL.Services
             if (!await _context.Users.AnyAsync(u => u.Id == userId))
                 throw new NotFoundException("Пользователь не найден");
 
-            List<UserInventory> inventories = await _context.UserInventories
+            List<UserInventory> inventories = await _context.Inventories
                 .AsNoTracking()
                 .Where(ui => ui.UserId == userId)
                 .OrderByDescending(ui => ui.Date)
@@ -60,13 +59,13 @@ namespace Withdraw.BLL.Services
             return inventories.ToResponse();
         }
 
-        public async Task<UserInventory?> GetByConsumerAsync(Guid id) => await _context.UserInventories
+        public async Task<UserInventory?> GetByConsumerAsync(Guid id) => await _context.Inventories
             .AsNoTracking()
             .FirstOrDefaultAsync(ui => ui.Id == id);
 
         public async Task<UserInventoryResponse> GetByIdAsync(Guid id)
         {
-            UserInventory inventory = await _context.UserInventories
+            UserInventory inventory = await _context.Inventories
                 .AsNoTracking()
                 .FirstOrDefaultAsync(ui => ui.Id == id) ?? 
                 throw new NotFoundException("Инвентарь не найден");
@@ -78,20 +77,20 @@ namespace Withdraw.BLL.Services
         {
             UserInventory inventory = template.ToEntity();
 
-            await _context.UserInventories.AddAsync(inventory);
+            await _context.Inventories.AddAsync(inventory);
             await _context.SaveChangesAsync();
         }
 
         public async Task<UserInventoryResponse> ExchangeAsync(Guid id, Guid itemId, Guid userId)
         {
-            UserInventory inventory = await _context.UserInventories
+            UserInventory inventory = await _context.Inventories
                 .Include(ui => ui.Item)
                 .Include(ui => ui.Item!.Game!)
                     .ThenInclude(g => g.Market)
                 .FirstOrDefaultAsync(ui => ui.Id == id && ui.UserId == userId) ??
                 throw new NotFoundException("Предмет не найден в инвентаре");
 
-            GameItem item = await _context.GameItems
+            GameItem item = await _context.Items
                 .AsNoTracking()
                 .FirstOrDefaultAsync(gi => gi.Id == itemId) ??
                 throw new NotFoundException("Предмет не найден");
@@ -119,9 +118,7 @@ namespace Withdraw.BLL.Services
             UserInventoryTemplate template = inventory.ToTemplate();
             template.FixedCost = differenceCost;
 
-            Uri uri = new(_cfg["MassTransit:Uri"] + "/user-inventory_sell");
-            var endPoint = await _bus.GetSendEndpoint(uri);
-            await endPoint.Send(template);
+            await _publisher.Send(template, "/user-inventory_sell");
 
             return inventory.ToResponse();
 
@@ -133,19 +130,17 @@ namespace Withdraw.BLL.Services
                 .FirstOrDefaultAsync(uai => uai.Id == userId) ??
                 throw new NotFoundException("Пользователь не найден");
 
-            UserInventory inventory = await _context.UserInventories
+            UserInventory inventory = await _context.Inventories
                 .AsNoTracking()
                 .FirstOrDefaultAsync(ui => ui.Id == id && ui.UserId == userId) ??
                 throw new NotFoundException("Предмет не найден в инвентаре");
 
             //TODO Write logs
 
-            _context.UserInventories.Remove(inventory);
+            _context.Inventories.Remove(inventory);
             await _context.SaveChangesAsync();
 
-            Uri uri = new(_cfg["MassTransit:Uri"] + "/user-inventory_sell");
-            var endPoint = await _bus.GetSendEndpoint(uri);
-            await endPoint.Send(inventory.ToTemplate());
+            await _publisher.Send(inventory.ToTemplate(), "/user-inventory_sell");
 
             return new() { Cost = inventory.FixedCost };
         }
@@ -156,7 +151,7 @@ namespace Withdraw.BLL.Services
                 .FirstOrDefaultAsync(uai => uai.Id == userId) ??
                 throw new NotFoundException("Пользователь не найден");
 
-            List<UserInventory> inventories = await _context.UserInventories
+            List<UserInventory> inventories = await _context.Inventories
                 .AsNoTracking()
                 .Where(ui => ui.UserId == userId && ui.ItemId == itemId)
                 .ToListAsync();
@@ -168,12 +163,10 @@ namespace Withdraw.BLL.Services
 
             //TODO Write logs
 
-            _context.UserInventories.Remove(inventory);
+            _context.Inventories.Remove(inventory);
             await _context.SaveChangesAsync();
 
-            Uri uri = new(_cfg["MassTransit:Uri"] + "/user-inventory_sell");
-            var endPoint = await _bus.GetSendEndpoint(uri);
-            await endPoint.Send(inventory.ToTemplate());
+            await _publisher.Send(inventory.ToTemplate(), "/user-inventory_sell");
 
             return new() { Cost = inventory.FixedCost };
         }

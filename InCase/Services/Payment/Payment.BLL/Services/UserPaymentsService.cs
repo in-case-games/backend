@@ -19,7 +19,7 @@ namespace Payment.BLL.Services
 
         public async Task<UserPaymentsResponse> GetByIdAsync(Guid id, Guid userId)
         {
-            UserPayment payment = await _context.UserPayments
+            UserPayment payment = await _context.Payments
                 .AsNoTracking()
                 .FirstOrDefaultAsync(up => up.Id == id) ?? 
                 throw new NotFoundException("Счёт оплаты не найден");
@@ -35,7 +35,7 @@ namespace Payment.BLL.Services
             if (count <= 0 || count >= 10000)
                 throw new BadRequestException("Размер выборки должен быть в пределе 1-10000");
 
-            List<UserPayment> payments = await _context.UserPayments
+            List<UserPayment> payments = await _context.Payments
                 .AsNoTracking()
                 .OrderByDescending(up => up.Date)
                 .Take(count)
@@ -49,7 +49,7 @@ namespace Payment.BLL.Services
             if (count <= 0 || count >= 10000)
                 throw new BadRequestException("Размер выборки должен быть в пределе 1-10000");
 
-            List<UserPayment> payments = await _context.UserPayments
+            List<UserPayment> payments = await _context.Payments
                 .AsNoTracking()
                 .Where(up => up.UserId == userId)
                 .OrderByDescending(up => up.Date)
