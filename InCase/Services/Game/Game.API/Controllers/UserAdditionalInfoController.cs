@@ -12,13 +12,13 @@ namespace Game.API.Controllers
     [ApiController]
     public class UserAdditionalInfoController : ControllerBase
     {
-        private readonly IUserAdditionalInfoService _userInfoService;
+        private readonly IUserAdditionalInfoService _infoService;
         private Guid UserId => Guid
             .Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
 
-        public UserAdditionalInfoController(IUserAdditionalInfoService userInfoService)
+        public UserAdditionalInfoController(IUserAdditionalInfoService infoService)
         {
-            _userInfoService = userInfoService;
+            _infoService = infoService;
         }
 
         [ProducesResponseType(typeof(ApiResult<GuestModeResponse>),
@@ -27,7 +27,7 @@ namespace Game.API.Controllers
         [HttpGet("guest-mode")]
         public async Task<IActionResult> GetGuestMode()
         {
-            GuestModeResponse response = await _userInfoService.GetGuestModeAsync(UserId);
+            GuestModeResponse response = await _infoService.GetGuestModeAsync(UserId);
 
             return Ok(ApiResult<GuestModeResponse>.OK(response));
         }
@@ -38,7 +38,7 @@ namespace Game.API.Controllers
         [HttpGet("balance")]
         public async Task<IActionResult> GetBalance()
         {
-            BalanceResponse response = await _userInfoService.GetBalanceAsync(UserId);
+            BalanceResponse response = await _infoService.GetBalanceAsync(UserId);
 
             return Ok(ApiResult<BalanceResponse>.OK(response));
         }
@@ -49,7 +49,7 @@ namespace Game.API.Controllers
         [HttpGet("{id}/balance")]
         public async Task<IActionResult> GetBalanceByAdmin(Guid userId)
         {
-            BalanceResponse response = await _userInfoService.GetBalanceAsync(userId);
+            BalanceResponse response = await _infoService.GetBalanceAsync(userId);
 
             return Ok(ApiResult<BalanceResponse>.OK(response));
         }
@@ -60,7 +60,7 @@ namespace Game.API.Controllers
         [HttpPut("guest-mode")]
         public async Task<IActionResult> SwitchGuestMode()
         {
-            GuestModeResponse response = await _userInfoService.ChangeGuestModeAsync(UserId);
+            GuestModeResponse response = await _infoService.ChangeGuestModeAsync(UserId);
 
             return Ok(ApiResult<GuestModeResponse>.OK(response));
         }

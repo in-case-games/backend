@@ -62,13 +62,13 @@ namespace Promocode.BLL.Services
         {
             ValidationService.IsPromocode(request);
 
+            if (await _context.Promocodes.AnyAsync(pe => pe.Name == request.Name))
+                throw new ConflictException("Имя промокода уже используется");
+
             PromocodeType type = await _context.PromocodesTypes
                 .AsNoTracking()
                 .FirstOrDefaultAsync(pt => pt.Id == request.TypeId) ?? 
                 throw new NotFoundException("Тип промокода не найден");
-
-            if (await _context.Promocodes.AnyAsync(pe => pe.Name == request.Name))
-                throw new ConflictException("Имя промокода уже используется");
 
             PromocodeEntity entity = request.ToEntity(true);
 
@@ -84,11 +84,6 @@ namespace Promocode.BLL.Services
         {
             ValidationService.IsPromocode(request);
 
-            PromocodeType type = await _context.PromocodesTypes
-                .AsNoTracking()
-                .FirstOrDefaultAsync(pt => pt.Id == request.TypeId) ??
-                throw new NotFoundException("Тип промокода не найден");
-
             bool isExist = await _context.Promocodes
                 .AsNoTracking()
                 .AnyAsync(pe => pe.Name == request.Name && pe.Id != request.Id);
@@ -97,6 +92,11 @@ namespace Promocode.BLL.Services
                 throw new ConflictException("Имя промокода уже занято");
             if (!await _context.Promocodes.AnyAsync(pe => pe.Id == request.Id))
                 throw new NotFoundException("Промокод не найден");
+
+            PromocodeType type = await _context.PromocodesTypes
+                .AsNoTracking()
+                .FirstOrDefaultAsync(pt => pt.Id == request.TypeId) ??
+                throw new NotFoundException("Тип промокода не найден");
 
             PromocodeEntity promocode = request.ToEntity();
 

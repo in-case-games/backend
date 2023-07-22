@@ -3,7 +3,6 @@ using Identity.API.Filters;
 using Identity.BLL.Interfaces;
 using Identity.BLL.Models;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using System.Security.Claims;
@@ -14,13 +13,13 @@ namespace Identity.API.Controllers
     [ApiController]
     public class UserRestrictionController : ControllerBase
     {
-        private readonly IUserRestrictionService _userRestrictionService;
+        private readonly IUserRestrictionService _restrictionService;
         private Guid UserId => Guid
             .Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
 
-        public UserRestrictionController(IUserRestrictionService userRestrictionService)
+        public UserRestrictionController(IUserRestrictionService restrictionService)
         {
-            _userRestrictionService = userRestrictionService;
+            _restrictionService = restrictionService;
         }
 
         [ProducesResponseType(typeof(ApiResult<UserRestrictionResponse>),
@@ -29,7 +28,7 @@ namespace Identity.API.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(Guid id)
         {
-            UserRestrictionResponse response = await _userRestrictionService.GetAsync(id);
+            UserRestrictionResponse response = await _restrictionService.GetAsync(id);
 
             return Ok(ApiResult<UserRestrictionResponse>.OK(response));
         }
@@ -40,7 +39,7 @@ namespace Identity.API.Controllers
         [HttpGet("user/{id}")]
         public async Task<IActionResult> GetByUserId(Guid id)
         {
-            List<UserRestrictionResponse> response = await _userRestrictionService.GetByUserIdAsync(id);
+            List<UserRestrictionResponse> response = await _restrictionService.GetByUserIdAsync(id);
 
             return Ok(ApiResult<List<UserRestrictionResponse>>.OK(response));
         }
@@ -51,7 +50,7 @@ namespace Identity.API.Controllers
         [HttpGet("login/{login}")]
         public async Task<IActionResult> GetByLogin(string login)
         {
-            List<UserRestrictionResponse> response = await _userRestrictionService.GetByLoginAsync(login);
+            List<UserRestrictionResponse> response = await _restrictionService.GetByLoginAsync(login);
 
             return Ok(ApiResult<List<UserRestrictionResponse>>.OK(response));
         }
@@ -62,7 +61,7 @@ namespace Identity.API.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            List<UserRestrictionResponse> response = await _userRestrictionService.GetByUserIdAsync(UserId);
+            List<UserRestrictionResponse> response = await _restrictionService.GetByUserIdAsync(UserId);
 
             return Ok(ApiResult<List<UserRestrictionResponse>>.OK(response));
         }
@@ -73,7 +72,7 @@ namespace Identity.API.Controllers
         [HttpGet("{userId}&{ownerId}")]
         public async Task<IActionResult> GetByIds(Guid userId, Guid ownerId)
         {
-            List<UserRestrictionResponse> response = await _userRestrictionService.GetAsync(userId, ownerId);
+            List<UserRestrictionResponse> response = await _restrictionService.GetAsync(userId, ownerId);
 
             return Ok(ApiResult<List<UserRestrictionResponse>>.OK(response));
         }
@@ -84,7 +83,7 @@ namespace Identity.API.Controllers
         [HttpGet("owner/{id}")]
         public async Task<IActionResult> GetByOwnerId(Guid id)
         {
-            List<UserRestrictionResponse> response = await _userRestrictionService.GetByOwnerIdAsync(id);
+            List<UserRestrictionResponse> response = await _restrictionService.GetByOwnerIdAsync(id);
 
             return Ok(ApiResult<List<UserRestrictionResponse>>.OK(response));
         }
@@ -95,7 +94,7 @@ namespace Identity.API.Controllers
         [HttpGet("owner")]
         public async Task<IActionResult> GetByAdmin()
         {
-            List<UserRestrictionResponse> response = await _userRestrictionService.GetByOwnerIdAsync(UserId);
+            List<UserRestrictionResponse> response = await _restrictionService.GetByOwnerIdAsync(UserId);
 
             return Ok(ApiResult<List<UserRestrictionResponse>>.OK(response));
         }
@@ -106,7 +105,7 @@ namespace Identity.API.Controllers
         [HttpGet("{userId}/owner")]
         public async Task<IActionResult> GetByAdminAndUserId(Guid userId)
         {
-            List<UserRestrictionResponse> response = await _userRestrictionService.GetAsync(userId, UserId);
+            List<UserRestrictionResponse> response = await _restrictionService.GetAsync(userId, UserId);
 
             return Ok(ApiResult<List<UserRestrictionResponse>>.OK(response));
         }
@@ -117,7 +116,7 @@ namespace Identity.API.Controllers
         [HttpGet("types")]
         public async Task<IActionResult> GetRestrictionType()
         {
-            List<RestrictionTypeResponse> response = await _userRestrictionService.GetTypesAsync();
+            List<RestrictionTypeResponse> response = await _restrictionService.GetTypesAsync();
 
             return Ok(ApiResult<List<RestrictionTypeResponse>>.OK(response));
         }
@@ -128,7 +127,7 @@ namespace Identity.API.Controllers
         [HttpPost]
         public async Task<IActionResult> Post(UserRestrictionRequest request)
         {
-            UserRestrictionResponse response = await _userRestrictionService.CreateAsync(request);
+            UserRestrictionResponse response = await _restrictionService.CreateAsync(request);
 
             return Ok(ApiResult<UserRestrictionResponse>.OK(response));
         }
@@ -139,7 +138,7 @@ namespace Identity.API.Controllers
         [HttpPut]
         public async Task<IActionResult> Put(UserRestrictionRequest request)
         {
-            UserRestrictionResponse response = await _userRestrictionService.UpdateAsync(request);
+            UserRestrictionResponse response = await _restrictionService.UpdateAsync(request);
 
             return Ok(ApiResult<UserRestrictionResponse>.OK(response));
         }
@@ -150,7 +149,7 @@ namespace Identity.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            UserRestrictionResponse response = await _userRestrictionService.DeleteAsync(id);
+            UserRestrictionResponse response = await _restrictionService.DeleteAsync(id);
 
             return Ok(ApiResult<UserRestrictionResponse>.OK(response));
         }

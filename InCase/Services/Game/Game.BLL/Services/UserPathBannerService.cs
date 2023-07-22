@@ -6,27 +6,19 @@ using Game.DAL.Data;
 using Game.DAL.Entities;
 using Infrastructure.MassTransit.Statistics;
 using Microsoft.EntityFrameworkCore;
-using System.Net;
-using System;
-using Microsoft.Extensions.Configuration;
-using MassTransit;
+using Game.BLL.MassTransit;
 
 namespace Game.BLL.Services
 {
     public class UserPathBannerService : IUserPathBannerService
     {
         private readonly ApplicationDbContext _context;
-        private readonly IConfiguration _configuration;
-        private readonly IBus _bus;
+        private readonly BasePublisher _publisher;
 
-        public UserPathBannerService(
-            ApplicationDbContext context,
-            IConfiguration configuration,
-            IBus bus)
+        public UserPathBannerService(ApplicationDbContext context, BasePublisher publisher)
         {
             _context = context;
-            _configuration = configuration;
-            _bus = bus;
+            _publisher = publisher;
         }
 
         public async Task<List<UserPathBannerResponse>> GetByUserIdAsync(Guid userId)
@@ -168,9 +160,7 @@ namespace Game.BLL.Services
 
             SiteStatisticsAdminTemplate statisticsAdminTemplate = new() { BalanceWithdrawn = totalSpent * 0.1M };
 
-            Uri uri = new(_configuration["MassTransit:Uri"] + "/statistics_admin");
-            var endPoint = await _bus.GetSendEndpoint(uri);
-            await endPoint.Send(statisticsAdminTemplate);
+            await _publisher.SendAsync(statisticsAdminTemplate, "/statistics_admin");
 
             info.Balance += totalSpent * 0.9M;
 
@@ -199,9 +189,7 @@ namespace Game.BLL.Services
 
             SiteStatisticsAdminTemplate statisticsAdminTemplate = new() { BalanceWithdrawn = totalSpent * 0.1M };
 
-            Uri uri = new(_configuration["MassTransit:Uri"] + "/statistics_admin");
-            var endPoint = await _bus.GetSendEndpoint(uri);
-            await endPoint.Send(statisticsAdminTemplate);
+            await _publisher.SendAsync(statisticsAdminTemplate, "/statistics_admin");
 
             info.Balance += totalSpent * 0.9M;
 

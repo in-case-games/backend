@@ -1,29 +1,21 @@
 ﻿using Authentication.BLL.Helpers;
 using Authentication.BLL.Interfaces;
-using Authentication.BLL.Models;
+using Authentication.BLL.MassTransit;
 using Authentication.DAL.Data;
 using Authentication.DAL.Entities;
-using Infrastructure.MassTransit.User;
-using MassTransit;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 
 namespace Authentication.BLL.Services
 {
     public class UserService : IUserService
     {
         private readonly ApplicationDbContext _context;
-        private readonly IConfiguration _configuration;
-        private readonly IBus _bus;
+        private readonly BasePublisher _publisher;
 
-        public UserService(
-            ApplicationDbContext context,
-            IConfiguration configuration,
-            IBus bus)
+        public UserService(ApplicationDbContext context, BasePublisher publisher)
         {
             _context = context;
-            _configuration = configuration;
-            _bus = bus;
+            _publisher = publisher;
         }
 
         public async Task DoWorkManagerAsync(CancellationToken stoppingToken)
@@ -37,10 +29,7 @@ namespace Authentication.BLL.Services
             foreach (var user in users)
             {
                 _context.Users.Remove(user);
-
-                Uri uri = new(_configuration["MassTransit:Uri"] + "/user");
-                var endPoint = await _bus.GetSendEndpoint(uri);
-                await endPoint.Send(user.ToTemplate(true), stoppingToken);
+                await _publisher.SendAsync(user.ToTemplate(true), "/user");
             }
 
             await _context.SaveChangesAsync(stoppingToken);

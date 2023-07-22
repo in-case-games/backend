@@ -1,9 +1,9 @@
 ﻿using Game.BLL.Exceptions;
 using Game.BLL.Helpers;
 using Game.BLL.Interfaces;
-using Game.BLL.Models;
 using Game.DAL.Data;
 using Game.DAL.Entities;
+using Infrastructure.MassTransit.User;
 using Microsoft.EntityFrameworkCore;
 
 namespace Game.BLL.Services
@@ -17,26 +17,20 @@ namespace Game.BLL.Services
             _context = context;
         }
 
-        public async Task<UserResponse> GetAsync(Guid id)
-        {
-            User user = await _context.Users
-                .AsNoTracking()
-                .FirstOrDefaultAsync(u => u.Id == id) ??
-                throw new NotFoundException("Пользователь не найден");
+        public async Task<User?> GetAsync(Guid id) => await _context.Users
+            .AsNoTracking()
+            .FirstOrDefaultAsync(u => u.Id == id);
 
-            return user.ToResponse();
-        }
-
-        public async Task<UserResponse> CreateAsync(UserRequest request, bool IsNewGuid = false)
+        public async Task CreateAsync(UserTemplate template)
         {
-            if (await _context.Users.AnyAsync(u => u.Id == request.Id))
+            if (await _context.Users.AnyAsync(u => u.Id == template.Id))
                 throw new NotFoundException("Пользователь существует");
 
-            User user = request.ToEntity(IsNewGuid: IsNewGuid);
+            User user = template.ToEntity();
 
             UserAdditionalInfo info = new()
             {
-                UserId = request.Id,
+                UserId = template.Id,
                 Balance = 0,
                 IsGuestMode = false,
             };
@@ -44,11 +38,9 @@ namespace Game.BLL.Services
             await _context.Users.AddAsync(user);
             await _context.AdditionalInfos.AddAsync(info);
             await _context.SaveChangesAsync();
-
-            return user.ToResponse();
         }
 
-        public async Task<UserResponse> DeleteAsync(Guid id)
+        public async Task DeleteAsync(Guid id)
         {
             User user = await _context.Users
                 .FirstOrDefaultAsync(u => u.Id == id) ??
@@ -56,8 +48,6 @@ namespace Game.BLL.Services
 
             _context.Users.Remove(user);
             await _context.SaveChangesAsync();
-
-            return user.ToResponse();
         }
     }
 }

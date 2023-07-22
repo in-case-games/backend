@@ -1,5 +1,4 @@
 ﻿using Game.DAL.Entities;
-using System.Text.Json.Serialization;
 
 namespace Game.BLL.Models
 {

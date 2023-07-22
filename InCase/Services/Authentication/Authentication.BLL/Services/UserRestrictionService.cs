@@ -1,9 +1,9 @@
 ﻿using Authentication.BLL.Exceptions;
 using Authentication.BLL.Helpers;
 using Authentication.BLL.Interfaces;
-using Authentication.BLL.Models;
 using Authentication.DAL.Data;
 using Authentication.DAL.Entities;
+using Infrastructure.MassTransit.User;
 using Microsoft.EntityFrameworkCore;
 
 namespace Authentication.BLL.Services
@@ -16,47 +16,37 @@ namespace Authentication.BLL.Services
         {
             _context = context;            
         }
-        public async Task<UserRestrictionResponse> GetAsync(Guid id)
-        {
-            UserRestriction restriction = await _context.Restrictions
-                .AsNoTracking()
-                .FirstOrDefaultAsync(ur => ur.Id == id) ??
-                throw new NotFoundException("Эффект не найден");
+        public async Task<UserRestriction?> GetAsync(Guid id) => await _context.Restrictions
+            .AsNoTracking()
+            .FirstOrDefaultAsync(ur => ur.Id == id);
 
-            return restriction.ToResponse();
-        }
-
-        public async Task<UserRestrictionResponse> CreateAsync(UserRestrictionRequest request, bool isNewGuid = false)
+        public async Task CreateAsync(UserRestrictionTemplate template)
         {
-            if (!await _context.Users.AnyAsync(u => u.Id == request.UserId))
+            if (!await _context.Users.AnyAsync(u => u.Id == template.UserId))
                 throw new NotFoundException("Пользователь не найден");
 
-            UserRestriction restriction = request.ToEntity(isNewGuid: isNewGuid);
+            UserRestriction restriction = template.ToEntity();
 
             await _context.Restrictions.AddAsync(restriction);
             await _context.SaveChangesAsync();
-
-            return restriction.ToResponse();
         }
 
-        public async Task<UserRestrictionResponse> UpdateAsync(UserRestrictionRequest request)
+        public async Task UpdateAsync(UserRestrictionTemplate template)
         {
-            if (!await _context.Users.AnyAsync(u => u.Id == request.UserId))
+            if (!await _context.Users.AnyAsync(u => u.Id == template.UserId))
                 throw new NotFoundException("Пользователь не найден");
 
             UserRestriction restriction = await _context.Restrictions
-                .FirstOrDefaultAsync(ur => ur.Id == request.Id) ??
+                .FirstOrDefaultAsync(ur => ur.Id == template.Id) ??
                 throw new NotFoundException("Эффект не найден");
 
-            UserRestriction restrictionNew = request.ToEntity(isNewGuid: false);
+            UserRestriction restrictionNew = template.ToEntity();
 
             _context.Entry(restriction).CurrentValues.SetValues(restrictionNew);
             await _context.SaveChangesAsync();
-
-            return restriction.ToResponse();
         }
 
-        public async Task<UserRestrictionResponse> DeleteAsync(Guid id)
+        public async Task DeleteAsync(Guid id)
         {
             UserRestriction restriction = await _context.Restrictions
                 .AsNoTracking()
@@ -65,8 +55,6 @@ namespace Authentication.BLL.Services
 
             _context.Restrictions.Remove(restriction);
             await _context.SaveChangesAsync();
-
-            return restriction.ToResponse();
         }
     }
 }

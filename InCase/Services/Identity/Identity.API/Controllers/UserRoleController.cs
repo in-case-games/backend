@@ -2,7 +2,6 @@
 using Identity.BLL.Interfaces;
 using Identity.BLL.Models;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
@@ -12,11 +11,11 @@ namespace Identity.API.Controllers
     [ApiController]
     public class UserRoleController : ControllerBase
     {
-        private readonly IUserRoleService _userRoleService;
+        private readonly IUserRoleService _roleService;
 
-        public UserRoleController(IUserRoleService userRoleService)
+        public UserRoleController(IUserRoleService roleService)
         {
-            _userRoleService = userRoleService;
+            _roleService = roleService;
         }
 
         [ProducesResponseType(typeof(ApiResult<UserRoleResponse>),
@@ -25,7 +24,7 @@ namespace Identity.API.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(Guid id)
         {
-            UserRoleResponse response = await _userRoleService.GetAsync(id);
+            UserRoleResponse response = await _roleService.GetAsync(id);
 
             return Ok(ApiResult<UserRoleResponse>.OK(response));
         }
@@ -36,7 +35,7 @@ namespace Identity.API.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            List<UserRoleResponse> response = await _userRoleService.GetAsync();
+            List<UserRoleResponse> response = await _roleService.GetAsync();
 
             return Ok(ApiResult<List<UserRoleResponse>>.OK(response));
         }

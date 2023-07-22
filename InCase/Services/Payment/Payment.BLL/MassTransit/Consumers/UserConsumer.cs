@@ -1,7 +1,6 @@
 ﻿using Infrastructure.MassTransit.User;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
-using Payment.BLL.Helpers;
 using Payment.BLL.Interfaces;
 using Payment.DAL.Data;
 using Payment.DAL.Entities;

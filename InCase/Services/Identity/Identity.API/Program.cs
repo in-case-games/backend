@@ -9,6 +9,7 @@ using Identity.BLL.Interfaces;
 using Identity.BLL.Services;
 using MassTransit;
 using Identity.BLL.MassTransit.Consumers;
+using Identity.BLL.MassTransit;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -74,6 +75,7 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
+builder.Services.AddSingleton<BasePublisher>();
 builder.Services.AddScoped<IUserAdditionalInfoService, UserAdditionalInfoService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserRestrictionService, UserRestrictionService>();

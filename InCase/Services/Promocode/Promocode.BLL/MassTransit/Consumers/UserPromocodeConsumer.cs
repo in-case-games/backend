@@ -18,16 +18,17 @@ namespace Promocode.BLL.MassTransit.Consumers
 
         public async Task Consume(ConsumeContext<UserPromocodeTemplate> context)
         {
-            var data = context.Message;
+            var template = context.Message;
 
-            UserPromocode userPromocode = await _context.UserPromocodes
-                .AsNoTracking()
-                .FirstOrDefaultAsync(ur => ur.Id == data.Id) ??
-                throw new NotFoundException("Промокод пользователя не найден");
+            UserPromocode? promocode = await _context.UserPromocodes
+                .FirstOrDefaultAsync(ur => ur.Id == template.Id);
 
-            userPromocode.IsActivated = true;
+            if(promocode is not null)
+            {
+                promocode.IsActivated = true;
 
-            await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync();
+            }
         }
     }
 }

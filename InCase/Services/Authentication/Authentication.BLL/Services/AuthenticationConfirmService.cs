@@ -1,14 +1,13 @@
 ﻿using Authentication.BLL.Exceptions;
 using Authentication.BLL.Helpers;
 using Authentication.BLL.Interfaces;
+using Authentication.BLL.MassTransit;
 using Authentication.BLL.Models;
 using Authentication.DAL.Data;
 using Authentication.DAL.Entities;
 using Infrastructure.MassTransit.Email;
 using Infrastructure.MassTransit.Statistics;
-using MassTransit;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 
 namespace Authentication.BLL.Services
 {
@@ -18,21 +17,18 @@ namespace Authentication.BLL.Services
         private readonly ApplicationDbContext _context;
         private readonly IAuthenticationService _authenticationService;
         private readonly IJwtService _jwtService;
-        private readonly IBus _bus;
-        private readonly IConfiguration _configuration;
+        private readonly BasePublisher _publisher;
 
         public AuthenticationConfirmService(
             ApplicationDbContext context, 
             IAuthenticationService authenticationService, 
             IJwtService jwtService,
-            IBus bus,
-            IConfiguration configuration)
+            BasePublisher publisher)
         {
             _context = context;
             _authenticationService = authenticationService;
             _jwtService = jwtService;
-            _bus = bus;
-            _configuration = configuration;
+            _publisher = publisher;
         }
 
         public async Task<TokensResponse> ConfirmAccountAsync(string token)
@@ -65,9 +61,7 @@ namespace Authentication.BLL.Services
 
                 SiteStatisticsTemplate statisticsTemplate = new() { Users = 1 };
 
-                Uri uriStatistics = new(_configuration["MassTransit:Uri"] + "/statistics");
-                var endPointStatistics = await _bus.GetSendEndpoint(uriStatistics);
-                await endPointStatistics.Send(statisticsTemplate);
+                await _publisher.SendAsync(statisticsTemplate, "/statistics");
             }
             else if (info.DeletionDate != null)
             {
@@ -95,9 +89,7 @@ namespace Authentication.BLL.Services
                 };
             }
 
-            Uri uri = new(_configuration["MassTransit:Uri"] + "/email");
-            var endPoint = await _bus.GetSendEndpoint(uri);
-            await endPoint.Send(template);
+            await _publisher.SendAsync(template, "/email");
 
             info.IsConfirmed = true;
             info.DeletionDate = null;
@@ -129,9 +121,7 @@ namespace Authentication.BLL.Services
                 }
             };
 
-            Uri uri = new(_configuration["MassTransit:Uri"] + "/email");
-            var endPoint = await _bus.GetSendEndpoint(uri);
-            await endPoint.Send(template);
+            await _publisher.SendAsync(template, "/email");
 
             _context.AdditionalInfos.Update(user.AdditionalInfo);
             await _context.SaveChangesAsync();
@@ -161,13 +151,8 @@ namespace Authentication.BLL.Services
                 }
             };
 
-            Uri uri = new(_configuration["MassTransit:Uri"] + "/user");
-            var endPoint = await _bus.GetSendEndpoint(uri);
-            await endPoint.Send(user.ToTemplate(false));
-
-            uri = new(_configuration["MassTransit:Uri"] + "/email");
-            endPoint = await _bus.GetSendEndpoint(uri);
-            await endPoint.Send(template);
+            await _publisher.SendAsync(user.ToTemplate(false), "/user");
+            await _publisher.SendAsync(template, "/email");
 
             await _context.SaveChangesAsync();
 
@@ -193,9 +178,7 @@ namespace Authentication.BLL.Services
                 }
             };
 
-            Uri uri = new(_configuration["MassTransit:Uri"] + "/email");
-            var endPoint = await _bus.GetSendEndpoint(uri);
-            await endPoint.Send(template);
+            await _publisher.SendAsync(template, "/email");
 
             _context.Users.Update(user);
             await _context.SaveChangesAsync();

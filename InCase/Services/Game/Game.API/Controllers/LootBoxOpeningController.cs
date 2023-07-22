@@ -12,13 +12,13 @@ namespace Game.API.Controllers
     [ApiController]
     public class LootBoxOpeningController : ControllerBase
     {
-        private readonly ILootBoxOpeningService _boxOpeningService;
+        private readonly ILootBoxOpeningService _openingService;
         private Guid UserId => Guid
             .Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
 
-        public LootBoxOpeningController(ILootBoxOpeningService boxOpeningService)
+        public LootBoxOpeningController(ILootBoxOpeningService openingService)
         {
-            _boxOpeningService = boxOpeningService;
+            _openingService = openingService;
         }
 
         [ProducesResponseType(typeof(ApiResult<GameItemResponse>),
@@ -27,7 +27,7 @@ namespace Game.API.Controllers
         [HttpGet]
         public async Task<IActionResult> Get(Guid id)
         {
-            GameItemResponse response = await _boxOpeningService.OpenBox(UserId, id);
+            GameItemResponse response = await _openingService.OpenBox(UserId, id);
 
             return Ok(ApiResult<GameItemResponse>.OK(response));
         }
@@ -38,7 +38,7 @@ namespace Game.API.Controllers
         [HttpGet("virtual")]
         public async Task<IActionResult> GetVirtual(Guid id)
         {
-            GameItemResponse response = await _boxOpeningService.OpenVirtualBox(UserId, id);
+            GameItemResponse response = await _openingService.OpenVirtualBox(UserId, id);
 
             return Ok(ApiResult<GameItemResponse>.OK(response));
         }

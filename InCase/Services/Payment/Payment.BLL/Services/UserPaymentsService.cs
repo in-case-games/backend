@@ -24,10 +24,9 @@ namespace Payment.BLL.Services
                 .FirstOrDefaultAsync(up => up.Id == id) ?? 
                 throw new NotFoundException("Счёт оплаты не найден");
 
-            if (payment.UserId != userId)
+            return payment.UserId == userId ? 
+                payment.ToResponse() : 
                 throw new ForbiddenException("Счёт оплаты числится на другого пользователя");
-
-            return payment.ToResponse();
         }
 
         public async Task<List<UserPaymentsResponse>> GetAsync(int count)

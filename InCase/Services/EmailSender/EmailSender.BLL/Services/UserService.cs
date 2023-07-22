@@ -1,9 +1,9 @@
 ﻿using EmailSender.BLL.Exceptions;
 using EmailSender.BLL.Helpers;
 using EmailSender.BLL.Interfaces;
-using EmailSender.BLL.Models;
 using EmailSender.DAL.Data;
 using EmailSender.DAL.Entities;
+using Infrastructure.MassTransit.User;
 using Microsoft.EntityFrameworkCore;
 
 namespace EmailSender.BLL.Services
@@ -17,50 +17,46 @@ namespace EmailSender.BLL.Services
             _context = context;
         }
 
-        public async Task<UserResponse> GetAsync(Guid id)
-        {
-            User user = await _context.Users
-                .AsNoTracking()
-                .FirstOrDefaultAsync(u => u.Id == id) ??
-                throw new NotFoundException("Пользователь не найден");
+        public async Task<User?> GetAsync(Guid id) => await _context.Users
+            .Include(u => u.AdditionalInfo)
+            .AsNoTracking()
+            .FirstOrDefaultAsync(u => u.Id == id);
 
-            return user.ToResponse();
-        }
+        public async Task<User?> GetAsync(string email) => await _context.Users
+            .Include(u => u.AdditionalInfo)
+            .AsNoTracking()
+            .FirstOrDefaultAsync(u => u.Email == email);
 
-        public async Task<UserResponse> CreateAsync(UserRequest request, bool IsNewGuid = false)
+        public async Task CreateAsync(UserTemplate template)
         {
-            if (await _context.Users.AnyAsync(u => u.Id == request.Id || u.Email == request.Email))
+            if (await _context.Users.AnyAsync(u => u.Id == template.Id || u.Email == template.Email))
                 throw new ForbiddenException("Пользователь существует");
 
-            User user = request.ToEntity(IsNewGuid: IsNewGuid);
+            User user = template.ToEntity();
 
             UserAdditionalInfo info = new()
             {
                 IsNotifyEmail = true,
-                UserId = request.Id,
+                UserId = template.Id,
             };
 
             await _context.Users.AddAsync(user);
             await _context.AdditionalInfos.AddAsync(info);
             await _context.SaveChangesAsync();
-
-            return user.ToResponse();
         }
 
-        public async Task<UserResponse> UpdateAsync(UserRequest request)
+        public async Task UpdateAsync(UserTemplate template)
         {
             User user = await _context.Users
-                .FirstOrDefaultAsync(u => u.Id == request.Id) ??
+                .FirstOrDefaultAsync(u => u.Id == template.Id) ??
                 throw new NotFoundException("Пользователь не найден");
 
-            user.Email = request.Email;
+            user.Email = template.Email;
 
             await _context.SaveChangesAsync();
-
-            return user.ToResponse();
         }
 
-        public async Task<UserResponse> DeleteAsync(Guid id)
+        public async Task DeleteAsync(Guid id)
         {
             User user = await _context.Users
                 .FirstOrDefaultAsync(u => u.Id == id) ??
@@ -68,8 +64,6 @@ namespace EmailSender.BLL.Services
 
             _context.Users.Remove(user);
             await _context.SaveChangesAsync();
-
-            return user.ToResponse();
         }
     }
 }

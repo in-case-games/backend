@@ -1,29 +1,23 @@
 ﻿using Identity.BLL.Exceptions;
 using Identity.BLL.Helpers;
 using Identity.BLL.Interfaces;
+using Identity.BLL.MassTransit;
 using Identity.BLL.Models;
 using Identity.DAL.Data;
 using Identity.DAL.Entities;
-using MassTransit;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 
 namespace Identity.BLL.Services
 {
     public class UserRestrictionService : IUserRestrictionService
     {
         private readonly ApplicationDbContext _context;
-        private readonly IConfiguration _configuration;
-        private readonly IBus _bus;
+        private readonly BasePublisher _publisher;
 
-        public UserRestrictionService(
-            ApplicationDbContext context,
-            IConfiguration configuration,
-            IBus bus)
+        public UserRestrictionService(ApplicationDbContext context, BasePublisher publisher)
         {
             _context = context;
-            _configuration = configuration;
-            _bus = bus;
+            _publisher = publisher;
         }
 
         public async Task<UserRestrictionResponse> GetAsync(Guid id)
@@ -100,7 +94,6 @@ namespace Identity.BLL.Services
                 .AsNoTracking()
                 .FirstOrDefaultAsync(rt => rt.Id == request.TypeId) ??
                 throw new NotFoundException("Тип эффекта не найден");
-
             User user = await _context.Users
                 .Include(u => u.AdditionalInfo)
                 .Include(u => u.AdditionalInfo!.Role)
@@ -114,23 +107,20 @@ namespace Identity.BLL.Services
                 .FirstOrDefaultAsync(u => u.Id == request.OwnerId) ??
                 throw new NotFoundException("Обвинитель не найден");
 
+            request = await CheckUserRestriction(request, type);
+
+            UserRestriction restriction = request.ToEntity(IsNewGuid: true);
             string userRole = user.AdditionalInfo!.Role!.Name!;
 
             if (userRole != "user")
                 throw new ForbiddenException("Эффект можно наложить только на пользователя");
 
-            request = await CheckUserRestriction(request, type);
-
-            UserRestriction restriction = request.ToEntity(IsNewGuid: true);
-
-            Uri uri = new(_configuration["MassTransit:Uri"] + "/user-restriction");
-            var endPoint = await _bus.GetSendEndpoint(uri);
-            await endPoint.Send(restriction.ToTemplate());
-
             await _context.Restrictions.AddAsync(restriction);
             await _context.SaveChangesAsync();
 
             restriction.Type = type;
+
+            await _publisher.SendAsync(restriction.ToTemplate(), "/user-restriction");
 
             return restriction.ToResponse();
         }
@@ -141,7 +131,6 @@ namespace Identity.BLL.Services
                 .AsNoTracking()
                 .FirstOrDefaultAsync(rt => rt.Id == request.TypeId) ??
                 throw new NotFoundException("Тип эффекта не найден");
-
             User user = await _context.Users
                 .Include(u => u.AdditionalInfo)
                 .Include(u => u.AdditionalInfo!.Role)
@@ -154,29 +143,25 @@ namespace Identity.BLL.Services
                 .AsNoTracking()
                 .FirstOrDefaultAsync(u => u.Id == request.OwnerId) ??
                 throw new NotFoundException("Обвинитель не найден");
-
             UserRestriction restrictionOld = await _context.Restrictions
                 .Include(ur => ur.Type)
                 .FirstOrDefaultAsync(ur => ur.Id == request.Id) ??
                 throw new NotFoundException("Эффект не найден");
 
+            request = await CheckUserRestriction(request, type);
+
+            UserRestriction restriction = request.ToEntity(IsNewGuid: false);
             string userRole = user.AdditionalInfo!.Role!.Name!;
 
             if (userRole != "user")
                 throw new ForbiddenException("Эффект можно наложить только на пользователя");
 
-            request = await CheckUserRestriction(request, type);
-
-            UserRestriction restriction = request.ToEntity(IsNewGuid: false);
-
-            Uri uri = new(_configuration["MassTransit:Uri"] + "/user-restriction");
-            var endPoint = await _bus.GetSendEndpoint(uri);
-            await endPoint.Send(restriction.ToTemplate());
-
             _context.Entry(restrictionOld).CurrentValues.SetValues(restriction);
             await _context.SaveChangesAsync();
 
             restriction.Type = type;
+
+            await _publisher.SendAsync(restriction.ToTemplate(), "/user-restriction");
 
             return restriction.ToResponse();
         }
@@ -189,9 +174,7 @@ namespace Identity.BLL.Services
                 .FirstOrDefaultAsync(ur => ur.Id == id) ??
                 throw new NotFoundException("Эффект не найден");
 
-            Uri uri = new(_configuration["MassTransit:Uri"] + "/user-restriction");
-            var endPoint = await _bus.GetSendEndpoint(uri);
-            await endPoint.Send(restriction.ToTemplate(isDeleted: true));
+            await _publisher.SendAsync(restriction.ToTemplate(isDeleted: true), "/user-restriction");
 
             _context.Restrictions.Remove(restriction);
             await _context.SaveChangesAsync();

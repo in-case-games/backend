@@ -1,4 +1,5 @@
-﻿using Promocode.BLL.Models;
+﻿using Infrastructure.MassTransit.User;
+using Promocode.BLL.Models;
 using Promocode.DAL.Entities;
 
 namespace Promocode.BLL.Helpers
@@ -21,5 +22,11 @@ namespace Promocode.BLL.Helpers
 
             return response;
         }
+
+        public static PromocodeTypeTemplate ToTemplate(this PromocodeType entity) => new()
+        {
+            Id = entity.Id,
+            Name = entity.Name,
+        };
     }
 }

@@ -15,26 +15,16 @@ namespace Identity.BLL.Helpers
             OwnerRestrictions = entity.OwnerRestrictions?.ToResponse(),
         };
 
-        public static List<UserResponse> ToResponse(this List<User> entities)
+        public static User ToEntity(this UserTemplate template) => new()
         {
-            List<UserResponse> response = new();
-            
-            foreach (var entity in entities)
-                response.Add(ToResponse(entity));
-
-            return response;
-        }
-
-        public static User ToEntity(this UserRequest request, bool IsNewGuid = false) => new()
-        {
-            Id = IsNewGuid ? Guid.NewGuid() : request.Id,
-            Login = request.Login,
+            Id = template.Id,
+            Login = template.Login
         };
 
-        public static UserRequest ToRequest(this UserTemplate template, bool IsNewGuid = false) => new()
+        public static UserRequest ToRequest(this UserTemplate template) => new()
         {
-            Id = IsNewGuid ? Guid.NewGuid() : template.Id,
-            Login = template.Login,
+            Id = template.Id,
+            Login = template.Login
         };
     }
 }

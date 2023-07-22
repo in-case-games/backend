@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using Payment.BLL.Exceptions;
 using Payment.BLL.Helpers;
 using Payment.BLL.Interfaces;
-using Payment.BLL.Models;
 using Payment.DAL.Data;
 using Payment.DAL.Entities;
 
@@ -17,6 +16,10 @@ namespace Payment.BLL.Services
         {
             _context = context;
         }
+
+        public async Task<UserPromocode?> GetAsync(Guid id, Guid userId) => await _context.UserPromocodes
+            .AsNoTracking()
+            .FirstOrDefaultAsync(ur => ur.Id == id && ur.UserId == userId);
 
         public async Task CreateAsync(UserPromocodeTemplate template)
         {

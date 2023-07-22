@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Promocode.API.Middlewares;
 using Promocode.BLL.Interfaces;
+using Promocode.BLL.MassTransit;
 using Promocode.BLL.MassTransit.Consumers;
 using Promocode.BLL.Services;
 using Promocode.DAL.Data;
@@ -72,6 +73,7 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
+builder.Services.AddSingleton<BasePublisher>();
 builder.Services.AddScoped<IUserPromocodesService, UserPromocodesService>();
 builder.Services.AddScoped<IPromocodeService, PromocodeService>();
 builder.Services.AddScoped<IUserService, UserService>();

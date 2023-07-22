@@ -1,5 +1,6 @@
 using Authentication.API.Middlewares;
 using Authentication.BLL.Interfaces;
+using Authentication.BLL.MassTransit;
 using Authentication.BLL.MassTransit.Consumers;
 using Authentication.BLL.Services;
 using Authentication.DAL.Data;
@@ -72,6 +73,7 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
+builder.Services.AddSingleton<BasePublisher>();
 builder.Services.AddSingleton<IJwtService, JwtService>();
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddScoped<IAuthenticationConfirmService, AuthenticationConfirmService>();

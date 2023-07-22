@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using Promocode.BLL.Exceptions;
 using Promocode.BLL.Helpers;
 using Promocode.BLL.Interfaces;
-using Promocode.BLL.Models;
 using Promocode.DAL.Data;
 using Promocode.DAL.Entities;
 
@@ -17,6 +16,10 @@ namespace Promocode.BLL.Services
         {
             _context = context;
         }
+
+        public async Task<User?> GetAsync(Guid id) => await _context.Users
+            .AsNoTracking()
+            .FirstOrDefaultAsync(u => u.Id == id);
 
         public async Task CreateAsync(UserTemplate template)
         {

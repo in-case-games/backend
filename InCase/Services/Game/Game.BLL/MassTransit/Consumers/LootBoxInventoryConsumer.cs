@@ -1,22 +1,16 @@
 ﻿using Game.BLL.Interfaces;
-using Game.DAL.Data;
 using Game.DAL.Entities;
 using Infrastructure.MassTransit.Resources;
 using MassTransit;
-using Microsoft.EntityFrameworkCore;
 
 namespace Game.BLL.MassTransit.Consumers
 {
     public class LootBoxInventoryConsumer : IConsumer<LootBoxInventoryTemplate>
     {
-        private readonly ApplicationDbContext _context;
         private readonly ILootBoxInventoryService _inventoryService;
 
-        public LootBoxInventoryConsumer(
-            ApplicationDbContext context,
-            ILootBoxInventoryService inventoryService)
+        public LootBoxInventoryConsumer(ILootBoxInventoryService inventoryService)
         {
-            _context = context;
             _inventoryService = inventoryService;
         }
 
@@ -24,9 +18,7 @@ namespace Game.BLL.MassTransit.Consumers
         {
             var template = context.Message;
 
-            LootBoxInventory? inventory = await _context.BoxInventories
-                .AsNoTracking()
-                .FirstOrDefaultAsync(lbi => lbi.Id == template.Id);
+            LootBoxInventory? inventory = await _inventoryService.GetAsync(template.Id);
 
             if (inventory is null)
                 await _inventoryService.CreateAsync(template);

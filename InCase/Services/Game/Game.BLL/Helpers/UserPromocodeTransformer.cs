@@ -6,23 +6,9 @@ namespace Game.BLL.Helpers
 {
     public static class UserPromocodeTransformer
     {
-        public static UserPromocodeResponse ToResponse(this UserPromocode entity) => new()
+        public static UserPromocode ToEntity(this UserPromocodeTemplate template) => new()
         {
-            Id = entity.Id,
-            Discount = entity.Discount,
-            UserId = entity.UserId,
-        };
-
-        public static UserPromocode ToEntity(this UserPromocodeRequest request, bool isNewGuid = false) => new()
-        {
-            Id = isNewGuid ? Guid.NewGuid() : request.Id,
-            Discount = request.Discount,
-            UserId = request.UserId,
-        };
-
-        public static UserPromocodeRequest ToRequest(this UserPromocodeTemplate template, bool isNewGuid = false) => new()
-        {
-            Id = isNewGuid ? Guid.NewGuid() : template.Id,
+            Id = template.Id,
             Discount = template.Discount,
             UserId = template.UserId,
         };

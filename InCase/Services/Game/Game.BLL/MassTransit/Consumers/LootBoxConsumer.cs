@@ -1,32 +1,24 @@
 ﻿using Game.BLL.Interfaces;
-using Game.DAL.Data;
 using Game.DAL.Entities;
 using Infrastructure.MassTransit.Resources;
 using MassTransit;
-using Microsoft.EntityFrameworkCore;
 
 namespace Game.BLL.MassTransit.Consumers
 {
     public class LootBoxConsumer : IConsumer<LootBoxTemplate>
     {
         private readonly ILootBoxService _boxService;
-        private readonly ApplicationDbContext _context;
 
-        public LootBoxConsumer(
-            ILootBoxService boxService,
-            ApplicationDbContext context)
+        public LootBoxConsumer(ILootBoxService boxService)
         {
             _boxService = boxService;
-            _context = context;
         }
 
         public async Task Consume(ConsumeContext<LootBoxTemplate> context)
         {
             var template = context.Message;
 
-            LootBox? box = await _context.Boxes
-                .AsNoTracking()
-                .FirstOrDefaultAsync(lb => lb.Id == template.Id);
+            LootBox? box = await _boxService.GetAsync(template.Id);
 
             if (box is null)
                 await _boxService.CreateAsync(template);

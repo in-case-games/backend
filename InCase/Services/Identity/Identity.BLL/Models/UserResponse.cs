@@ -1,5 +1,4 @@
 ﻿using Identity.DAL.Entities;
-using System.Text.Json.Serialization;
 
 namespace Identity.BLL.Models
 {

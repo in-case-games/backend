@@ -1,4 +1,6 @@
 ﻿using Identity.BLL.Models;
+using Identity.DAL.Entities;
+using Infrastructure.MassTransit.User;
 
 namespace Identity.BLL.Interfaces
 {
@@ -6,8 +8,9 @@ namespace Identity.BLL.Interfaces
     {
         public Task<UserResponse> GetAsync(Guid id);
         public Task<UserResponse> GetAsync(string login);
-        public Task<UserResponse> CreateAsync(UserRequest request, bool IsNewGuid = false);
+        public Task<User?> GetByConsumerAsync(Guid id);
+        public Task CreateAsync(UserTemplate template);
         public Task<UserResponse> UpdateLoginAsync(UserRequest request);
-        public Task<UserResponse> DeleteAsync(Guid id);
+        public Task DeleteAsync(Guid id);
     }
 }

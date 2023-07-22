@@ -12,13 +12,13 @@ namespace Game.API.Controllers
     [ApiController]
     public class UserPathBannerController : ControllerBase
     {
-        private readonly IUserPathBannerService _pathBannerService;
+        private readonly IUserPathBannerService _pathService;
         private Guid UserId => Guid
             .Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
 
-        public UserPathBannerController(IUserPathBannerService pathBannerService)
+        public UserPathBannerController(IUserPathBannerService pathService)
         {
-            _pathBannerService = pathBannerService;
+            _pathService = pathService;
         }
 
         [ProducesResponseType(typeof(ApiResult<List<UserPathBannerResponse>>), 
@@ -27,7 +27,7 @@ namespace Game.API.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            List<UserPathBannerResponse> response = await _pathBannerService
+            List<UserPathBannerResponse> response = await _pathService
                 .GetByUserIdAsync(UserId);
 
             return Ok(ApiResult<List<UserPathBannerResponse>>.OK(response));
@@ -39,7 +39,7 @@ namespace Game.API.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(Guid id)
         {
-            UserPathBannerResponse response = await _pathBannerService
+            UserPathBannerResponse response = await _pathService
                 .GetByIdAsync(id, UserId);
 
             return Ok(ApiResult<UserPathBannerResponse>.OK(response));
@@ -51,7 +51,7 @@ namespace Game.API.Controllers
         [HttpGet("box/{id}")]
         public async Task<IActionResult> GetByBoxId(Guid id)
         {
-            UserPathBannerResponse response = await _pathBannerService
+            UserPathBannerResponse response = await _pathService
                 .GetByBoxIdAsync(id, UserId);
 
             return Ok(ApiResult<UserPathBannerResponse>.OK(response));
@@ -63,7 +63,7 @@ namespace Game.API.Controllers
         [HttpGet("item/{id}")]
         public async Task<IActionResult> GetByItemId(Guid id)
         {
-            List<UserPathBannerResponse> response = await _pathBannerService
+            List<UserPathBannerResponse> response = await _pathService
                 .GetByItemIdAsync(id, UserId);
 
             return Ok(ApiResult<List<UserPathBannerResponse>>.OK(response));
@@ -77,7 +77,7 @@ namespace Game.API.Controllers
         {
             request.UserId = UserId;
             
-            UserPathBannerResponse response = await _pathBannerService
+            UserPathBannerResponse response = await _pathService
                 .CreateAsync(request);
 
             return Ok(ApiResult<UserPathBannerResponse>.OK(response));
@@ -91,7 +91,7 @@ namespace Game.API.Controllers
         {
             request.UserId = UserId;
 
-            UserPathBannerResponse response = await _pathBannerService
+            UserPathBannerResponse response = await _pathService
                 .UpdateAsync(request);
 
             return Ok(ApiResult<UserPathBannerResponse>.OK(response));
@@ -103,7 +103,7 @@ namespace Game.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            UserPathBannerResponse response = await _pathBannerService
+            UserPathBannerResponse response = await _pathService
                 .DeleteAsync(id, UserId);
 
             return Ok(ApiResult<UserPathBannerResponse>.OK(response));

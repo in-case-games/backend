@@ -1,5 +1,4 @@
-﻿using InCase.Infrastructure.Services;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Payment.BLL.Exceptions;
 using Payment.BLL.Interfaces;
 using Payment.BLL.Models;
@@ -12,16 +11,16 @@ namespace Payment.BLL.Services
         private static readonly int NumberAttempts = 5;
         private readonly IResponseService _responseService;
         private readonly IEncryptorService _rsaService;
-        private readonly IConfiguration _configuration;
+        private readonly IConfiguration _cfg;
 
         public GameMoneyService(
             IResponseService responseService, 
             IEncryptorService rsaService, 
-            IConfiguration configuration)
+            IConfiguration cfg)
         {
             _responseService = responseService;
             _rsaService = rsaService;
-            _configuration = configuration;
+            _cfg = cfg;
         }
 
         public async Task<PaymentBalanceResponse> GetBalanceAsync(string currency)
@@ -29,7 +28,7 @@ namespace Payment.BLL.Services
             GameMoneyBalanceRequest request = new()
             {
                 Currency = currency,
-                ProjectId = int.Parse(_configuration["GameMoney:projectId"]!),
+                ProjectId = int.Parse(_cfg["GameMoney:projectId"]!),
             };
 
             byte[] hashBytes = Encoding.ASCII.GetBytes(request.ToString());
@@ -47,9 +46,7 @@ namespace Payment.BLL.Services
                     if (!_rsaService.VerifySignatureRSA(response!))
                         throw new ForbiddenException("Неверная подпись rsa");
 
-                    return new() { 
-                        Balance = ((GameMoneyBalanceResponse)response!).ProjectBalance 
-                    };
+                    return new() { Balance = ((GameMoneyBalanceResponse)response!).ProjectBalance };
                 }
                 catch (Exception)
                 {
@@ -64,7 +61,7 @@ namespace Payment.BLL.Services
         {
             GameMoneyInvoiceInfoRequest request = new()
             {
-                ProjectId = _configuration["GameMoney:projectId"],
+                ProjectId = _cfg["GameMoney:projectId"],
                 InvoiceId = invoiceId,
             };
 
@@ -96,11 +93,11 @@ namespace Payment.BLL.Services
 
         public HashOfDataForDepositResponse GetHashOfDataForDeposit(Guid userId) => new()
         {
-            HMAC = $"project:{_configuration["GameMoney:projectId"]};" +
+            HMAC = $"project:{_cfg["GameMoney:projectId"]};" +
             $"user:{userId};" +
-            $"currency:{_configuration["GameMoney:currency"]};" +
-            $"success_url:{_configuration["GameMoney:url:success"]};" +
-            $"fail_url:{_configuration["GameMoney:url:fail"]};"
+            $"currency:{_cfg["GameMoney:currency"]};" +
+            $"success_url:{_cfg["GameMoney:url:success"]};" +
+            $"fail_url:{_cfg["GameMoney:url:fail"]};"
         };
     }
 }

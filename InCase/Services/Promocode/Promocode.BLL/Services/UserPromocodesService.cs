@@ -2,6 +2,7 @@
 using Promocode.BLL.Exceptions;
 using Promocode.BLL.Helpers;
 using Promocode.BLL.Interfaces;
+using Promocode.BLL.MassTransit;
 using Promocode.BLL.Models;
 using Promocode.DAL.Data;
 using Promocode.DAL.Entities;
@@ -11,25 +12,26 @@ namespace Promocode.BLL.Services
     public class UserPromocodesService : IUserPromocodesService
     {
         private readonly ApplicationDbContext _context;
+        private readonly BasePublisher _publisher;
 
-        public UserPromocodesService(ApplicationDbContext context)
+        public UserPromocodesService(ApplicationDbContext context, BasePublisher publisher)
         {
             _context = context;
+            _publisher = publisher;
         }
 
         public async Task<UserPromocodeResponse> GetAsync(Guid id, Guid userId)
         {
-            UserPromocode history = await _context.UserPromocodes
+            UserPromocode promocode = await _context.UserPromocodes
                 .Include(uhp => uhp.Promocode)
                 .Include(uhp => uhp.Promocode!.Type)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(uhp => uhp.Id == id) ??
                 throw new NotFoundException("История активации промокода не найдена");
 
-            if (history.UserId != userId)
+            return promocode.UserId == userId ?
+                promocode.ToResponse() :
                 throw new ForbiddenException("История активации числится на другого пользователя");
-
-            return history.ToResponse();
         }
 
         public async Task<List<UserPromocodeResponse>> GetAsync(Guid userId, int count)
@@ -37,7 +39,7 @@ namespace Promocode.BLL.Services
             if (count <= 0 || count >= 10000)
                 throw new BadRequestException("Размер выборки должен быть в пределе 1-10000");
 
-            List<UserPromocode> history = await _context.UserPromocodes
+            List<UserPromocode> promocode = await _context.UserPromocodes
                 .Include(uhp => uhp.Promocode)
                 .Include(uhp => uhp.Promocode!.Type)
                 .AsNoTracking()
@@ -46,7 +48,7 @@ namespace Promocode.BLL.Services
                 .Take(count)
                 .ToListAsync();
 
-            return history.ToResponse();
+            return promocode.ToResponse();
         }
 
         public async Task<List<UserPromocodeResponse>> GetAsync(int count)
@@ -72,41 +74,36 @@ namespace Promocode.BLL.Services
                 .FirstOrDefaultAsync(p => p.Name == name) ??
                 throw new NotFoundException("Промокод не найден");
 
+            bool isUsedType = await _context.UserPromocodes
+                .AnyAsync(up =>
+                up.Promocode!.Type!.Id == promocode.TypeId &&
+                up.IsActivated == false &&
+                up.UserId == userId);
+
             if (promocode.NumberActivations <= 0 || promocode.ExpirationDate <= DateTime.UtcNow)
                 throw new ForbiddenException("Промокод истёк");
-
-            UserPromocode? history = await _context.UserPromocodes
-                .AsNoTracking()
-                .FirstOrDefaultAsync(uhp => uhp.PromocodeId == promocode.Id);
-
-            UserPromocode? historyType = await _context.UserPromocodes
-                .AsNoTracking()
-                .FirstOrDefaultAsync(uhp =>
-                uhp.Promocode!.Type!.Id == promocode.TypeId &&
-                uhp.IsActivated == false &&
-                uhp.UserId == userId);
-
-            if (history is not null && history.IsActivated)
+            if (await _context.UserPromocodes.AnyAsync(uhp => uhp.PromocodeId == promocode.Id))
                 throw new ConflictException("Промокод уже используется");
-            if (historyType is not null)
+            if (isUsedType)
                 throw new ConflictException("Тип промокода уже используется");
 
-            promocode.NumberActivations--;
-
-            history = new()
+            UserPromocode userPromocode = new()
             {
                 IsActivated = false,
                 Date = DateTime.UtcNow,
                 PromocodeId = promocode.Id,
                 UserId = userId,
+                Promocode = promocode,
             };
 
-            //TODO Notify rabbit mq
+            promocode.NumberActivations--;
 
-            await _context.UserPromocodes.AddAsync(history);
+            await _context.UserPromocodes.AddAsync(userPromocode);
             await _context.SaveChangesAsync();
 
-            return history.ToResponse();
+            await _publisher.SendAsync(userPromocode.ToTemplate(), "/user-promocode");
+
+            return userPromocode.ToResponse();
         }
 
         public async Task<UserPromocodeResponse> ExchangeAsync(Guid userId, string name)
@@ -116,37 +113,38 @@ namespace Promocode.BLL.Services
                 .FirstOrDefaultAsync(p => p.Name == name) ??
                 throw new NotFoundException("Промокод не найден");
 
-            if (promocode.NumberActivations <= 0 || promocode.ExpirationDate <= DateTime.UtcNow)
-                throw new ConflictException("Промокод истёк");
-
-            bool isUsed = await _context.UserPromocodes
-                .AnyAsync(uhp => uhp.PromocodeId == promocode.Id && uhp.IsActivated);
-
-            if (isUsed)
-                throw new ConflictException("Промокод уже использован");
-
-            UserPromocode? history = await _context.UserPromocodes
+            UserPromocode userPromocode = await _context.UserPromocodes
                 .Include(uhp => uhp.Promocode)
                 .Include(uhp => uhp.Promocode!.Type)
                 .FirstOrDefaultAsync(uhp =>
                 uhp.Promocode!.Type!.Id == promocode.TypeId &&
                 uhp.IsActivated == false &&
-                uhp.UserId == userId) ?? 
+                uhp.UserId == userId) ??
                 throw new ConflictException("Прошлый промокод не найден");
 
-            if (history.Promocode!.Id == promocode.Id)
+            bool isUsed = await _context.UserPromocodes
+                .AnyAsync(uhp => 
+                uhp.UserId == userId && 
+                uhp.PromocodeId == promocode.Id && 
+                uhp.IsActivated);
+
+            if (promocode.NumberActivations <= 0 || promocode.ExpirationDate <= DateTime.UtcNow)
+                throw new ConflictException("Промокод истёк");
+            if (isUsed)
+                throw new ConflictException("Промокод уже использован");
+            if (userPromocode.Promocode!.Id == promocode.Id)
                 throw new ConflictException("Промокод уже используется");
 
-            //TODO Notify rabbit mq
-
-            history.Promocode.NumberActivations++;
-            history.Date = DateTime.UtcNow;
-            history.PromocodeId = promocode.Id;
+            userPromocode.Date = DateTime.UtcNow;
+            userPromocode.PromocodeId = promocode.Id;
+            userPromocode.Promocode.NumberActivations++;
             promocode.NumberActivations--;
 
             await _context.SaveChangesAsync();
 
-            return history.ToResponse();
+            await _publisher.SendAsync(userPromocode.ToTemplate(), "/user-promocode");
+
+            return userPromocode.ToResponse();
         }
     }
 }

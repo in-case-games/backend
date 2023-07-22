@@ -17,6 +17,10 @@ namespace Game.BLL.Services
             _context = context;
         }
 
+        public async Task<LootBox?> GetAsync(Guid id) => await _context.Boxes
+            .AsNoTracking()
+            .FirstOrDefaultAsync(lb => lb.Id == id);
+
         public async Task CreateAsync(LootBoxTemplate template)
         {
             LootBox box = template.ToEntity();

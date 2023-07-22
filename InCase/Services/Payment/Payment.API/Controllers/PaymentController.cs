@@ -22,22 +22,26 @@ namespace Payment.API.Controllers
             _paymentService = paymentService;
         }
 
-        [ProducesResponseType(typeof(ApiResult<UserPaymentsResponse>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<UserPaymentsResponse>), 
+            (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpPost("top-up")]
         public async Task<IActionResult> TopUpBalance(GameMoneyTopUpResponse request)
         {
-            UserPaymentsResponse response = await _paymentService.TopUpBalanceAsync(request);
+            UserPaymentsResponse response = await _paymentService
+                .TopUpBalanceAsync(request);
 
             return Ok(ApiResult<UserPaymentsResponse>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<PaymentBalanceResponse>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<PaymentBalanceResponse>), 
+            (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Owner, Roles.Bot)]
         [HttpGet("balance/{currency}")]
         public async Task<IActionResult> GetBalance(string currency)
         {
-            PaymentBalanceResponse response = await _paymentService.GetPaymentBalanceAsync(currency);
+            PaymentBalanceResponse response = await _paymentService
+                .GetPaymentBalanceAsync(currency);
 
             return Ok(ApiResult<PaymentBalanceResponse>.OK(response));
         }

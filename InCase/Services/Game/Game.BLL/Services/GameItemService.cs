@@ -17,6 +17,10 @@ namespace Game.BLL.Services
             _context = context;
         }
 
+        public async Task<GameItem?> GetAsync(Guid id) => await _context.Items
+            .AsNoTracking()
+            .FirstOrDefaultAsync(gi => gi.Id == id);
+
         public async Task CreateAsync(GameItemTemplate template)
         {
             GameItem item = template.ToEntity();

@@ -9,16 +9,16 @@ namespace Payment.BLL.Services
 {
     public class EncryptorService : IEncryptorService
     {
-        private readonly IConfiguration _configuration;
+        private readonly IConfiguration _cfg;
 
-        public EncryptorService(IConfiguration configuration)
+        public EncryptorService(IConfiguration cfg)
         {
-            _configuration = configuration;
+            _cfg = cfg;
         }
 
         public string GenerateHMAC(byte[] hashOfDataToSign)
         {
-            byte[] keyBytes = Encoding.ASCII.GetBytes(_configuration["GameMoney:HMACSecret"]!);
+            byte[] keyBytes = Encoding.ASCII.GetBytes(_cfg["GameMoney:HMACSecret"]!);
 
             using HMACSHA256 hash = new(keyBytes);
 
@@ -37,25 +37,25 @@ namespace Payment.BLL.Services
 
         public bool VerifySignatureRSA(byte[] hashOfDataToSign, byte[] signature)
         {
-            string pathPublicKey = Path.Combine(
+            string path = Path.Combine(
                 Directory.GetCurrentDirectory(),
                 "RsaKeys",
-                _configuration["GameMoney:RSA:PublicKey"]!);
-            using TextReader publicKeyTextReader = new StringReader(File.ReadAllText(pathPublicKey));
-            RsaKeyParameters publicKeyParam = (RsaKeyParameters)new PemReader(publicKeyTextReader).ReadObject();
+                _cfg["GameMoney:RSA:PublicKey"]!);
+            using TextReader reader = new StringReader(File.ReadAllText(path));
+            RsaKeyParameters param = (RsaKeyParameters)new PemReader(reader).ReadObject();
 
             RSACryptoServiceProvider rsa = new(2048);
             RSAParameters parms = new()
             {
-                Modulus = publicKeyParam.Modulus.ToByteArrayUnsigned(),
-                Exponent = publicKeyParam.Exponent.ToByteArrayUnsigned()
+                Modulus = param.Modulus.ToByteArrayUnsigned(),
+                Exponent = param.Exponent.ToByteArrayUnsigned()
             };
             rsa.ImportParameters(parms);
 
-            var rsaDeformatter = new RSAPKCS1SignatureDeformatter(rsa);
-            rsaDeformatter.SetHashAlgorithm("SHA256");
+            var deformatter = new RSAPKCS1SignatureDeformatter(rsa);
+            deformatter.SetHashAlgorithm("SHA256");
 
-            return rsaDeformatter.VerifySignature(hashOfDataToSign, signature);
+            return deformatter.VerifySignature(hashOfDataToSign, signature);
         }
     }
 }

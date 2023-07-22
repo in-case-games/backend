@@ -4,9 +4,8 @@ using Authentication.DAL.Data;
 using Authentication.DAL.Entities;
 using Microsoft.EntityFrameworkCore;
 using Authentication.BLL.Exceptions;
-using MassTransit;
 using Infrastructure.MassTransit.Email;
-using Microsoft.Extensions.Configuration;
+using Authentication.BLL.MassTransit;
 
 namespace Authentication.BLL.Services
 {
@@ -16,21 +15,18 @@ namespace Authentication.BLL.Services
         private readonly IAuthenticationService _authenticationService;
         private readonly IJwtService _jwtService;
         private readonly ApplicationDbContext _context;
-        private readonly IBus _bus;
-        private readonly IConfiguration _configuration;
+        private readonly BasePublisher _publisher;
 
         public AuthenticationSendingService(
             IAuthenticationService authenticationService, 
             IJwtService jwtService,
             ApplicationDbContext context,
-            IBus bus,
-            IConfiguration configuration)
+            BasePublisher publisher)
         {
             _authenticationService = authenticationService;
             _jwtService = jwtService;
             _context = context;
-            _bus = bus;
-            _configuration = configuration;
+            _publisher = publisher;
         }
 
         public async Task ConfirmAccountAsync(DataMailRequest request, string password)
@@ -79,9 +75,7 @@ namespace Authentication.BLL.Services
                 };
             }
 
-            Uri uri = new(_configuration["MassTransit:Uri"] + "/email");
-            var endPoint = await _bus.GetSendEndpoint(uri);
-            await endPoint.Send(template);
+            await _publisher.SendAsync(template, "/email");
         }
 
         public async Task ConfirmNewEmailAsync(DataMailRequest request, string email)
@@ -109,9 +103,7 @@ namespace Authentication.BLL.Services
                 }
             };
 
-            Uri uri = new(_configuration["MassTransit:Uri"] + "/email");
-            var endPoint = await _bus.GetSendEndpoint(uri);
-            await endPoint.Send(template);
+            await _publisher.SendAsync(template, "/email");
         }
 
         public async Task DeleteAccountAsync(DataMailRequest request, string password)
@@ -147,9 +139,7 @@ namespace Authentication.BLL.Services
                 }
             };
 
-            Uri uri = new(_configuration["MassTransit:Uri"] + "/email");
-            var endPoint = await _bus.GetSendEndpoint(uri);
-            await endPoint.Send(template);
+            await _publisher.SendAsync(template, "/email");
         }
 
         public async Task ForgotPasswordAsync(DataMailRequest request)
@@ -177,9 +167,7 @@ namespace Authentication.BLL.Services
                 }
             };
 
-            Uri uri = new(_configuration["MassTransit:Uri"] + "/email");
-            var endPoint = await _bus.GetSendEndpoint(uri);
-            await endPoint.Send(template);
+            await _publisher.SendAsync(template, "/email");
         }
 
         public async Task UpdateEmailAsync(DataMailRequest request, string password)
@@ -216,9 +204,7 @@ namespace Authentication.BLL.Services
                 }
             };
 
-            Uri uri = new(_configuration["MassTransit:Uri"] + "/email");
-            var endPoint = await _bus.GetSendEndpoint(uri);
-            await endPoint.Send(template);
+            await _publisher.SendAsync(template, "/email");
         }
 
         public async Task UpdatePasswordAsync(DataMailRequest request, string password)
@@ -254,9 +240,7 @@ namespace Authentication.BLL.Services
                 }
             };
 
-            Uri uri = new(_configuration["MassTransit:Uri"] + "/email");
-            var endPoint = await _bus.GetSendEndpoint(uri);
-            await endPoint.Send(template);
+            await _publisher.SendAsync(template, "/email");
         }
 
         private void MapDataMailRequest(ref DataMailRequest request, in User user)

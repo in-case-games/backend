@@ -6,6 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Payment.API.Middlewares;
 using Payment.BLL.Interfaces;
+using Payment.BLL.MassTransit;
 using Payment.BLL.MassTransit.Consumers;
 using Payment.BLL.Services;
 using Payment.DAL.Data;
@@ -73,6 +74,7 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
+builder.Services.AddSingleton<BasePublisher>();
 builder.Services.AddSingleton<IEncryptorService, EncryptorService>();
 builder.Services.AddSingleton<IResponseService, ResponseService>();
 builder.Services.AddSingleton<IGameMoneyService, GameMoneyService>();

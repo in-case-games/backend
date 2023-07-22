@@ -13,13 +13,13 @@ namespace Promocode.API.Controllers
     [ApiController]
     public class UserPromocodesController : ControllerBase
     {
-        private readonly IUserPromocodesService _userPromocodesService;
+        private readonly IUserPromocodesService _promocodeService;
         private Guid UserId => Guid
             .Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
 
-        public UserPromocodesController(IUserPromocodesService userPromocodesService)
+        public UserPromocodesController(IUserPromocodesService promocodeService)
         {
-            _userPromocodesService = userPromocodesService;
+            _promocodeService = promocodeService;
         }
 
         [ProducesResponseType(typeof(ApiResult<List<UserPromocodeResponse>>), 
@@ -28,7 +28,7 @@ namespace Promocode.API.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            List<UserPromocodeResponse> response = await _userPromocodesService
+            List<UserPromocodeResponse> response = await _promocodeService
                 .GetAsync(UserId, 100);
 
             return Ok(ApiResult<List<UserPromocodeResponse>>.OK(response));
@@ -40,7 +40,7 @@ namespace Promocode.API.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(Guid id)
         {
-            UserPromocodeResponse response = await _userPromocodesService
+            UserPromocodeResponse response = await _promocodeService
                 .GetAsync(id, UserId);
 
             return Ok(ApiResult<UserPromocodeResponse>.OK(response));
@@ -52,7 +52,7 @@ namespace Promocode.API.Controllers
         [HttpGet("admin")]
         public async Task<IActionResult> Get(int count = 100)
         {
-            List<UserPromocodeResponse> response = await _userPromocodesService
+            List<UserPromocodeResponse> response = await _promocodeService
                 .GetAsync(count);
 
             return Ok(ApiResult<List<UserPromocodeResponse>>.OK(response));
@@ -64,7 +64,7 @@ namespace Promocode.API.Controllers
         [HttpGet("{userId}/admin")]
         public async Task<IActionResult> GetByAdmin(Guid userId, int count = 100)
         {
-            List<UserPromocodeResponse> response = await _userPromocodesService
+            List<UserPromocodeResponse> response = await _promocodeService
                 .GetAsync(userId, count);
 
             return Ok(ApiResult<List<UserPromocodeResponse>>.OK(response));
@@ -76,7 +76,7 @@ namespace Promocode.API.Controllers
         [HttpGet("{userId}/admin/{id}")]
         public async Task<IActionResult> GetByIdAdmin(Guid userId, Guid id)
         {
-            UserPromocodeResponse response = await _userPromocodesService
+            UserPromocodeResponse response = await _promocodeService
                 .GetAsync(id, userId);
 
             return Ok(ApiResult<UserPromocodeResponse>.OK(response));
@@ -85,10 +85,10 @@ namespace Promocode.API.Controllers
         [ProducesResponseType(typeof(ApiResult<UserPromocodeResponse>),
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
-        [HttpGet("activate/promocode/{name}")]
+        [HttpGet("activate/{name}")]
         public async Task<IActionResult> ActivatePromocode(string name)
         {
-            UserPromocodeResponse response = await _userPromocodesService
+            UserPromocodeResponse response = await _promocodeService
                 .ActivateAsync(UserId, name);
 
             return Ok(ApiResult<UserPromocodeResponse>.OK(response));
@@ -97,10 +97,10 @@ namespace Promocode.API.Controllers
         [ProducesResponseType(typeof(ApiResult<UserPromocodeResponse>),
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
-        [HttpGet("exchange/promocode/{name}")]
+        [HttpGet("exchange/{name}")]
         public async Task<IActionResult> ExchangePromocode(string name)
         {
-            UserPromocodeResponse response = await _userPromocodesService
+            UserPromocodeResponse response = await _promocodeService
                 .ExchangeAsync(UserId, name);
 
             return Ok(ApiResult<UserPromocodeResponse>.OK(response));

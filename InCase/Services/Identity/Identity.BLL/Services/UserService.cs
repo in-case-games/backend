@@ -4,6 +4,7 @@ using Identity.BLL.Interfaces;
 using Identity.BLL.Models;
 using Identity.DAL.Data;
 using Identity.DAL.Entities;
+using Infrastructure.MassTransit.User;
 using Microsoft.EntityFrameworkCore;
 
 namespace Identity.BLL.Services
@@ -17,6 +18,10 @@ namespace Identity.BLL.Services
             _context = context;
         }
 
+        public async Task<User?> GetByConsumerAsync(Guid id) => await _context.Users
+            .AsNoTracking()
+            .FirstOrDefaultAsync(u => u.Id == id);
+           
         public async Task<UserResponse> GetAsync(Guid id)
         {
             User user = await _context.Users
@@ -43,17 +48,16 @@ namespace Identity.BLL.Services
             return user.ToResponse();
         }
 
-        public async Task<UserResponse> CreateAsync(UserRequest request, bool IsNewGuid = false)
+        public async Task CreateAsync(UserTemplate template)
         {
-            if (await _context.Users.AnyAsync(u => u.Id == request.Id))
+            if (await _context.Users.AnyAsync(u => u.Id == template.Id))
                 throw new ForbiddenException("Пользователь существует");
 
-            User user = request.ToEntity(IsNewGuid: IsNewGuid);
+            User user = template.ToEntity();
             UserRole role = await _context.Roles.FirstAsync(ur => ur.Name == "user");
-
             UserAdditionalInfo info = new()
             {
-                UserId = request.Id,
+                UserId = template.Id,
                 CreationDate = DateTime.UtcNow,
                 RoleId = role.Id
             };
@@ -61,20 +65,6 @@ namespace Identity.BLL.Services
             await _context.Users.AddAsync(user);
             await _context.AdditionalInfos.AddAsync(info);
             await _context.SaveChangesAsync();
-
-            return user.ToResponse();
-        }
-
-        public async Task<UserResponse> DeleteAsync(Guid id)
-        {
-            User user = await _context.Users
-                .FirstOrDefaultAsync(u => u.Id == id) ??
-                throw new NotFoundException("Пользователь не найден");
-
-            _context.Users.Remove(user);
-            await _context.SaveChangesAsync();
-
-            return user.ToResponse();
         }
 
         public async Task<UserResponse> UpdateLoginAsync(UserRequest request)
@@ -91,6 +81,16 @@ namespace Identity.BLL.Services
             await _context.SaveChangesAsync();
 
             return user.ToResponse();
+        }
+
+        public async Task DeleteAsync(Guid id)
+        {
+            User user = await _context.Users
+                .FirstOrDefaultAsync(u => u.Id == id) ??
+                throw new NotFoundException("Пользователь не найден");
+
+            _context.Users.Remove(user);
+            await _context.SaveChangesAsync();
         }
     }
 }

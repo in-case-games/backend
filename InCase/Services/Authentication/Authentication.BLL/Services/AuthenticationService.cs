@@ -1,14 +1,13 @@
 ﻿using Authentication.BLL.Exceptions;
 using Authentication.BLL.Helpers;
 using Authentication.BLL.Interfaces;
+using Authentication.BLL.MassTransit;
 using Authentication.BLL.Models;
 using Authentication.DAL.Data;
 using Authentication.DAL.Entities;
 using Infrastructure.MassTransit.Email;
 using Infrastructure.MassTransit.User;
-using MassTransit;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using System.Security.Claims;
 
 namespace Authentication.BLL.Services
@@ -18,19 +17,16 @@ namespace Authentication.BLL.Services
     {
         private readonly ApplicationDbContext _context;
         private readonly IJwtService _jwtService;
-        private readonly IBus _bus;
-        private readonly IConfiguration _configuration;
+        private readonly BasePublisher _publisher;
 
         public AuthenticationService(
             ApplicationDbContext context, 
             IJwtService jwtService,
-            IBus bus,
-            IConfiguration configuration)
+            BasePublisher publisher)
         {
             _context = context;
             _jwtService = jwtService;
-            _bus = bus;
-            _configuration = configuration;
+            _publisher = publisher;
         }
 
         public async Task SignInAsync(UserRequest request)
@@ -78,9 +74,7 @@ namespace Authentication.BLL.Services
                 };
             }
 
-            Uri uri = new(_configuration["MassTransit:Uri"] + "/email");
-            var endPoint = await _bus.GetSendEndpoint(uri);
-            await endPoint.Send(template);
+            await _publisher.SendAsync(template, "/email");
         }
 
         public async Task SignUpAsync(UserRequest request)
@@ -131,13 +125,8 @@ namespace Authentication.BLL.Services
 
             await _context.SaveChangesAsync();
 
-            Uri uri = new(_configuration["MassTransit:Uri"] + "/user");
-            var endPoint = await _bus.GetSendEndpoint(uri);
-            await endPoint.Send(user.ToTemplate(false));
-
-            uri = new(_configuration["MassTransit:Uri"] + "/email");
-            endPoint = await _bus.GetSendEndpoint(uri);
-            await endPoint.Send(template);
+            await _publisher.SendAsync(user.ToTemplate(false), "/user");
+            await _publisher.SendAsync(template, "/email");
         }
 
         public async Task<TokensResponse> RefreshTokensAsync(string token)

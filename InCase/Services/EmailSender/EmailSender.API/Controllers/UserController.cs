@@ -3,7 +3,6 @@ using EmailSender.API.Filters;
 using EmailSender.BLL.Interfaces;
 using EmailSender.BLL.Models;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using System.Security.Claims;

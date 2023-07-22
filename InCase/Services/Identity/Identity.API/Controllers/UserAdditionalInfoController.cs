@@ -13,13 +13,13 @@ namespace Identity.API.Controllers
     [ApiController]
     public class UserAdditionalInfoController : Controller
     {
-        private readonly IUserAdditionalInfoService _userInfoService;
+        private readonly IUserAdditionalInfoService _infoService;
         private Guid UserId => Guid
             .Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
 
-        public UserAdditionalInfoController(IUserAdditionalInfoService userInfoService)
+        public UserAdditionalInfoController(IUserAdditionalInfoService infoService)
         {
-            _userInfoService = userInfoService;
+            _infoService = infoService;
         }
 
         [ProducesResponseType(typeof(ApiResult<UserAdditionalInfoResponse>),
@@ -28,7 +28,7 @@ namespace Identity.API.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(Guid id)
         {
-            UserAdditionalInfoResponse response = await _userInfoService.GetAsync(id);
+            UserAdditionalInfoResponse response = await _infoService.GetAsync(id);
 
             return Ok(ApiResult<UserAdditionalInfoResponse>.OK(response));
         }
@@ -39,7 +39,7 @@ namespace Identity.API.Controllers
         [HttpGet("user/{id}")]
         public async Task<IActionResult> GetByUserId(Guid userId)
         {
-            UserAdditionalInfoResponse response = await _userInfoService.GetByUserIdAsync(userId);
+            UserAdditionalInfoResponse response = await _infoService.GetByUserIdAsync(userId);
 
             return Ok(ApiResult<UserAdditionalInfoResponse>.OK(response));
         }
@@ -50,7 +50,7 @@ namespace Identity.API.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            UserAdditionalInfoResponse response = await _userInfoService.GetByUserIdAsync(UserId);
+            UserAdditionalInfoResponse response = await _infoService.GetByUserIdAsync(UserId);
 
             return Ok(ApiResult<UserAdditionalInfoResponse>.OK(response));
         }
@@ -61,7 +61,7 @@ namespace Identity.API.Controllers
         [HttpPut("role")]
         public async Task<IActionResult> UpdateRole(UserAdditionalInfoRequest request)
         {
-            UserAdditionalInfoResponse response = await _userInfoService.UpdateRoleAsync(request);
+            UserAdditionalInfoResponse response = await _infoService.UpdateRoleAsync(request);
 
             return Ok(ApiResult<UserAdditionalInfoResponse>.OK(response));
         }
@@ -72,7 +72,7 @@ namespace Identity.API.Controllers
         [HttpPut("deletion/date")]
         public async Task<IActionResult> UpdateDeletionDate(UserAdditionalInfoRequest request)
         {
-            UserAdditionalInfoResponse response = await _userInfoService.UpdateDeletionDateAsync(request);
+            UserAdditionalInfoResponse response = await _infoService.UpdateDeletionDateAsync(request);
 
             return Ok(ApiResult<UserAdditionalInfoResponse>.OK(response));
         }
@@ -83,7 +83,7 @@ namespace Identity.API.Controllers
         [HttpPut("image")]
         public async Task<IActionResult> UpdateImage(UserAdditionalInfoRequest request)
         {
-            UserAdditionalInfoResponse response = await _userInfoService.UpdateImageAsync(request);
+            UserAdditionalInfoResponse response = await _infoService.UpdateImageAsync(request);
 
             return Ok(ApiResult<UserAdditionalInfoResponse>.OK(response));
         }

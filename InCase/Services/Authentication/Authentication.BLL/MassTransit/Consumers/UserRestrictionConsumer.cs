@@ -1,40 +1,31 @@
-﻿using Authentication.BLL.Helpers;
-using Authentication.BLL.Interfaces;
-using Authentication.DAL.Data;
+﻿using Authentication.BLL.Interfaces;
 using Authentication.DAL.Entities;
 using Infrastructure.MassTransit.User;
 using MassTransit;
-using Microsoft.EntityFrameworkCore;
 
 namespace Authentication.BLL.MassTransit.Consumers
 {
     public class UserRestrictionConsumer : IConsumer<UserRestrictionTemplate>
     {
-        private readonly ApplicationDbContext _context;
         private readonly IUserRestrictionService _restrictionService;
 
-        public UserRestrictionConsumer(
-            ApplicationDbContext context, 
-            IUserRestrictionService restrictionService)
+        public UserRestrictionConsumer(IUserRestrictionService restrictionService)
         {
-            _context = context;
             _restrictionService = restrictionService;
         }
 
         public async Task Consume(ConsumeContext<UserRestrictionTemplate> context)
         {
-            UserRestrictionTemplate template = context.Message;
+            var template = context.Message;
 
-            UserRestriction? restriction = await _context.Restrictions
-                .AsNoTracking()
-                .FirstOrDefaultAsync(u => u.Id == template.Id);
+            UserRestriction? restriction = await _restrictionService.GetAsync(template.Id);
 
             if (restriction is null)
-                await _restrictionService.CreateAsync(template.ToRequest());
+                await _restrictionService.CreateAsync(template);
             else if (template.IsDeleted)
                 await _restrictionService.DeleteAsync(template.Id);
             else
-                await _restrictionService.UpdateAsync(template.ToRequest());
+                await _restrictionService.UpdateAsync(template);
         }
     }
 }
