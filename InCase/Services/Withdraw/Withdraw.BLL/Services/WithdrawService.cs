@@ -72,7 +72,7 @@ namespace Withdraw.BLL.Services
                             WithdrawnFunds = Convert.ToInt32(withdraw.FixedCost)
                         };
 
-                        await _publisher.Send(template, "/statistics", cancellationToken);
+                        await _publisher.SendAsync(template, "/statistics", cancellationToken);
                     }
                 }
                 catch(Exception) { }

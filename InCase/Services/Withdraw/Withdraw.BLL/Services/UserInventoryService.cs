@@ -118,7 +118,7 @@ namespace Withdraw.BLL.Services
             UserInventoryTemplate template = inventory.ToTemplate();
             template.FixedCost = differenceCost;
 
-            await _publisher.Send(template, "/user-inventory_sell");
+            await _publisher.SendAsync(template, "/user-inventory_sell");
 
             return inventory.ToResponse();
 
@@ -140,7 +140,7 @@ namespace Withdraw.BLL.Services
             _context.Inventories.Remove(inventory);
             await _context.SaveChangesAsync();
 
-            await _publisher.Send(inventory.ToTemplate(), "/user-inventory_sell");
+            await _publisher.SendAsync(inventory.ToTemplate(), "/user-inventory_sell");
 
             return new() { Cost = inventory.FixedCost };
         }
@@ -166,7 +166,7 @@ namespace Withdraw.BLL.Services
             _context.Inventories.Remove(inventory);
             await _context.SaveChangesAsync();
 
-            await _publisher.Send(inventory.ToTemplate(), "/user-inventory_sell");
+            await _publisher.SendAsync(inventory.ToTemplate(), "/user-inventory_sell");
 
             return new() { Cost = inventory.FixedCost };
         }
