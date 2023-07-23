@@ -25,18 +25,7 @@ namespace EmailSender.API.Controllers
         [ProducesResponseType(typeof(ApiResult<UserAdditionalInfoResponse>),
             (int)HttpStatusCode.OK)]
         [AllowAnonymous]
-        [HttpGet("info/{id}")]
-        public async Task<IActionResult> Get(Guid id)
-        {
-            UserAdditionalInfoResponse response = await _userService.GetAsync(id);
-
-            return Ok(ApiResult<UserAdditionalInfoResponse>.OK(response));
-        }
-
-        [ProducesResponseType(typeof(ApiResult<UserAdditionalInfoResponse>),
-            (int)HttpStatusCode.OK)]
-        [AllowAnonymous]
-        [HttpGet("{id}/info")]
+        [HttpGet("{id}/is-notify")]
         public async Task<IActionResult> GetByUserId(Guid id)
         {
             UserAdditionalInfoResponse response = await _userService.GetByUserIdAsync(id);
@@ -47,7 +36,7 @@ namespace EmailSender.API.Controllers
         [ProducesResponseType(typeof(ApiResult<UserAdditionalInfoResponse>),
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
-        [HttpGet("info")]
+        [HttpGet("is-notify")]
         public async Task<IActionResult> Get()
         {
             UserAdditionalInfoResponse response = await _userService.GetByUserIdAsync(UserId);
@@ -58,7 +47,7 @@ namespace EmailSender.API.Controllers
         [ProducesResponseType(typeof(ApiResult<UserAdditionalInfoResponse>),
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
-        [HttpGet("{isNotify}/email")]
+        [HttpGet("is-notify/{isNotify}")]
         public async Task<IActionResult> ChangeNotifyEmail(bool isNotify)
         {
             UserAdditionalInfoResponse response = await _userService.UpdateNotifyEmailAsync(UserId, isNotify);
@@ -69,7 +58,7 @@ namespace EmailSender.API.Controllers
         [ProducesResponseType(typeof(ApiResult<UserAdditionalInfoResponse>),
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Admin, Roles.Owner)]
-        [HttpGet("{id}&{isNotify}/email/admin")]
+        [HttpGet("{id}/is-notify/{isNotify}/admin")]
         public async Task<IActionResult> ChangeNotifyEmailByAdmin(Guid id, bool isNotify)
         {
             UserAdditionalInfoResponse response = await _userService.UpdateNotifyEmailAsync(id, isNotify);

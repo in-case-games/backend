@@ -17,16 +17,6 @@ namespace EmailSender.BLL.Services
             _context = context;
         }
 
-        public async Task<UserAdditionalInfoResponse> GetAsync(Guid id)
-        {
-            UserAdditionalInfo info = await _context.AdditionalInfos
-                .AsNoTracking()
-                .FirstOrDefaultAsync(uai => uai.Id == id) ??
-                throw new NotFoundException("Информация не найдена");
-
-            return info.ToResponse();
-        }
-
         public async Task<UserAdditionalInfoResponse> GetByUserIdAsync(Guid id)
         {
             UserAdditionalInfo info = await _context.AdditionalInfos

@@ -24,7 +24,7 @@ namespace Game.API.Controllers
         [ProducesResponseType(typeof(ApiResult<GameItemResponse>),
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
-        [HttpGet]
+        [HttpGet("{id}")]
         public async Task<IActionResult> Get(Guid id)
         {
             GameItemResponse response = await _openingService.OpenBox(UserId, id);
@@ -35,7 +35,7 @@ namespace Game.API.Controllers
         [ProducesResponseType(typeof(ApiResult<GameItemResponse>),
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
-        [HttpGet("virtual")]
+        [HttpGet("{id}/virtual")]
         public async Task<IActionResult> GetVirtual(Guid id)
         {
             GameItemResponse response = await _openingService.OpenVirtualBox(UserId, id);

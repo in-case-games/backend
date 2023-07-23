@@ -2,7 +2,6 @@
 using Game.API.Filters;
 using Game.BLL.Interfaces;
 using Game.BLL.Models;
-using Game.BLL.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
@@ -74,7 +73,7 @@ namespace Game.API.Controllers
         [ProducesResponseType(typeof(ApiResult<List<UserOpeningResponse>>),
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
-        [HttpGet("user/{id}")]
+        [HttpGet("{id}/userId")]
         public async Task<IActionResult> GetByUserId(Guid id, int count = 100)
         {
             List<UserOpeningResponse> response = await _openingService
