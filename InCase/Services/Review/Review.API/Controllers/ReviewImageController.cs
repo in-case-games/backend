@@ -94,11 +94,11 @@ namespace Review.API.Controllers
         [ProducesResponseType(typeof(ApiResult<List<ReviewImageResponse>>),
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
-        [HttpGet("admin/user/{id}")]
-        public async Task<IActionResult> GetByAdminUserId(Guid id)
+        [HttpGet("user/{userId}/admin")]
+        public async Task<IActionResult> GetByAdminUserId(Guid userId)
         {
             List<ReviewImageResponse> response = await _reviewImageService
-                .GetByUserIdAsync(id, isOnlyApproved: false);
+                .GetByUserIdAsync(userId, isOnlyApproved: false);
 
             return Ok(ApiResult<List<ReviewImageResponse>>.OK(response));
         }

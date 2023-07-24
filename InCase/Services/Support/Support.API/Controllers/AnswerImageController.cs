@@ -102,7 +102,7 @@ namespace Support.API.Controllers
         [ProducesResponseType(typeof(ApiResult<List<AnswerImageResponse>>),
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
-        [HttpGet("user/{id}/admin")]
+        [HttpGet("user/{userId}/admin")]
         public async Task<IActionResult> GetByAdminUserId(Guid id)
         {
             List<AnswerImageResponse> response = await _imageService.GetByUserIdAsync(id);

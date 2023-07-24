@@ -1,9 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Resources.API.Common;
 using Resources.API.Filters;
-using Resources.BLL.Exceptions;
 using Resources.BLL.Interfaces;
 using Resources.BLL.Models;
 using System.Net;

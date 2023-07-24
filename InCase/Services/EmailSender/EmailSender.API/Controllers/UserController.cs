@@ -58,10 +58,10 @@ namespace EmailSender.API.Controllers
         [ProducesResponseType(typeof(ApiResult<UserAdditionalInfoResponse>),
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Admin, Roles.Owner)]
-        [HttpGet("{id}/is-notify/{isNotify}/admin")]
-        public async Task<IActionResult> ChangeNotifyEmailByAdmin(Guid id, bool isNotify)
+        [HttpGet("{userId}/is-notify/{isNotify}/admin")]
+        public async Task<IActionResult> ChangeNotifyEmailByAdmin(Guid userId, bool isNotify)
         {
-            UserAdditionalInfoResponse response = await _userService.UpdateNotifyEmailAsync(id, isNotify);
+            UserAdditionalInfoResponse response = await _userService.UpdateNotifyEmailAsync(userId, isNotify);
 
             return Ok(ApiResult<UserAdditionalInfoResponse>.OK(response));
         }

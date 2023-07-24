@@ -36,11 +36,11 @@ namespace Withdraw.API.Controllers
         [ProducesResponseType(typeof(ApiResult<List<UserInventoryResponse>>), 
             (int)HttpStatusCode.OK)]
         [AllowAnonymous]
-        [HttpGet("user/{userId}")]
-        public async Task<IActionResult> GetByUserId(Guid userId)
+        [HttpGet("user/{id}")]
+        public async Task<IActionResult> GetByUserId(Guid id)
         {
             List<UserInventoryResponse> response = await _userInventoryService
-                .GetAsync(userId, 100);
+                .GetAsync(id, 100);
 
             return Ok(ApiResult<List<UserInventoryResponse>>.OK(response));
         }
@@ -60,8 +60,8 @@ namespace Withdraw.API.Controllers
         [ProducesResponseType(typeof(ApiResult<List<UserInventoryResponse>>), 
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
-        [HttpGet("{userId}/admin/{count}")]
-        public async Task<IActionResult> Get(Guid userId, int count)
+        [HttpGet("{userId}/admin")]
+        public async Task<IActionResult> Get(Guid userId, int count = 100)
         {
             List<UserInventoryResponse> response = await _userInventoryService
                 .GetAsync(userId, count);

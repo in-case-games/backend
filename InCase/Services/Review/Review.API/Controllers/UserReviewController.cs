@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Review.API.Common;
 using Review.API.Filters;
@@ -26,7 +25,7 @@ namespace Review.API.Controllers
         [ProducesResponseType(typeof(ApiResult<List<UserReviewResponse>>), 
             (int)HttpStatusCode.OK)]
         [AllowAnonymous]
-        [HttpGet]
+        [HttpGet("all")]
         public async Task<IActionResult> Get()
         {
             List<UserReviewResponse> response = await _userReviewService.GetAsync(isOnlyApproved: true);
@@ -82,11 +81,11 @@ namespace Review.API.Controllers
         [ProducesResponseType(typeof(ApiResult<List<UserReviewResponse>>),
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
-        [HttpGet("user/{id}/admin")]
-        public async Task<IActionResult> GetByAdminUserId(Guid id)
+        [HttpGet("user/{userId}/admin")]
+        public async Task<IActionResult> GetByAdminUserId(Guid userId)
         {
             List<UserReviewResponse> response = await _userReviewService
-                .GetByUserIdAsync(id, isOnlyApproved: false);
+                .GetByUserIdAsync(userId, isOnlyApproved: false);
 
             return Ok(ApiResult<List<UserReviewResponse>>.OK(response));
         }
@@ -94,7 +93,7 @@ namespace Review.API.Controllers
         [ProducesResponseType(typeof(ApiResult<List<UserReviewResponse>>),
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
-        [HttpGet("user")]
+        [HttpGet]
         public async Task<IActionResult> GetByUserId()
         {
             List<UserReviewResponse> response = await _userReviewService

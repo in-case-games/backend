@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Support.API.Common;
 using Support.API.Filters;
 using Support.BLL.Interfaces;
@@ -58,7 +57,7 @@ namespace Support.API.Controllers
         [ProducesResponseType(typeof(ApiResult<List<SupportTopicAnswerResponse>>),
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
-        [HttpGet("user/{id}/admin")]
+        [HttpGet("user/{userId}/admin")]
         public async Task<IActionResult> GetByAdminUserId(Guid id)
         {
             List<SupportTopicAnswerResponse> response = await _answerService.GetByUserIdAsync(id);
