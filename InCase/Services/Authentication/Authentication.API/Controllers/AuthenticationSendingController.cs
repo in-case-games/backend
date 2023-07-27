@@ -32,7 +32,7 @@ namespace Authentication.API.Controllers
         [ProducesResponseType(typeof(ApiResult<string>),
             (int)HttpStatusCode.OK)]
         [AllowAnonymous]
-        [HttpPost("confirm/{email}")]
+        [HttpPost("confirm/new/{email}")]
         public async Task<IActionResult> ConfirmNewEmail(DataMailRequest request, string email)
         {
             await _authSendingService.ConfirmNewEmailAsync(request, email);

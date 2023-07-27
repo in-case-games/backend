@@ -17,7 +17,7 @@ namespace Authentication.API.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.8")
+                .HasAnnotation("ProductVersion", "7.0.9")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -77,7 +77,6 @@ namespace Authentication.API.Migrations
                         .HasColumnName("id");
 
                     b.Property<DateTime?>("DeletionDate")
-                        .IsRequired()
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("deletion_date");
 
@@ -168,22 +167,22 @@ namespace Authentication.API.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("c520ca90-e390-48f9-be9b-dfe26866f597"),
+                            Id = new Guid("fc375bf3-4e87-4c5a-8143-5d1d47f319d2"),
                             Name = "user"
                         },
                         new
                         {
-                            Id = new Guid("6cd93d48-f41b-4705-9fec-10a26c488de1"),
+                            Id = new Guid("c68544ad-f45a-4145-ba19-95b73024f94b"),
                             Name = "admin"
                         },
                         new
                         {
-                            Id = new Guid("8a8cbe38-0be4-49aa-8e52-2a934eee8815"),
+                            Id = new Guid("c6ff75e9-1ca0-440c-a9f1-1cb033439b63"),
                             Name = "owner"
                         },
                         new
                         {
-                            Id = new Guid("49e4e6bc-6402-4369-b029-93a11ab500b7"),
+                            Id = new Guid("7549d74d-7b55-462f-ad66-c286b3279390"),
                             Name = "bot"
                         });
                 });

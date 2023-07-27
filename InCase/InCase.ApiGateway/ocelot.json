@@ -104,7 +104,7 @@
       "UpstreamHttpMethod": [ "Post" ]
     },
     {
-      "DownstreamPathTemplate": "/api/authentication/sending/confirm/{email}",
+      "DownstreamPathTemplate": "/api/authentication/sending/confirm/new/{email}",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
@@ -112,7 +112,7 @@
           "Port": 7298
         }
       ],
-      "UpstreamPathTemplate": "/api/authentication/sending/confirm/{email}",
+      "UpstreamPathTemplate": "/api/authentication/sending/confirm/new/{email}",
       "UpstreamHttpMethod": [ "Post" ]
     },
     {

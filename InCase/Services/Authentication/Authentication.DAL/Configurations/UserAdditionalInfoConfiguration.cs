@@ -15,7 +15,7 @@ namespace Authentication.DAL.Configurations
             builder.Property(uai => uai.IsConfirmed)
                 .IsRequired();
             builder.Property(uai => uai.DeletionDate)
-                .IsRequired();
+                .IsRequired(false);
 
             builder.HasIndex(uai => uai.UserId)
                 .IsUnique();

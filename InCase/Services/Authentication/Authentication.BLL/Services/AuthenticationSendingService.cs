@@ -197,8 +197,7 @@ namespace Authentication.BLL.Services
                     Title = $"Дорогой {user.Login!}.",
                     Description = $"Подтвердите, что это вы хотите поменять email." +
                     $"Если это были не вы, то срочно измените пароль в настройках вашего аккаунта, " +
-                    $"вас автоматически отключит со всех устройств.<br>" +
-                    $"С уважением команда InCase</div>",
+                    $"вас автоматически отключит со всех устройств.<br>",
                     ButtonText = "Подтверждаю",
                     ButtonLink = $"email/confirm/update/email?token={request.Token}"
                 }

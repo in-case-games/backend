@@ -65,7 +65,7 @@ namespace Authentication.API.Migrations
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
                     is_confirmed = table.Column<bool>(type: "boolean", nullable: false),
-                    deletion_date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    deletion_date = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     role_id = table.Column<Guid>(type: "uuid", nullable: false),
                     user_id = table.Column<Guid>(type: "uuid", nullable: false)
                 },
@@ -91,10 +91,10 @@ namespace Authentication.API.Migrations
                 columns: new[] { "id", "name" },
                 values: new object[,]
                 {
-                    { new Guid("49e4e6bc-6402-4369-b029-93a11ab500b7"), "bot" },
-                    { new Guid("6cd93d48-f41b-4705-9fec-10a26c488de1"), "admin" },
-                    { new Guid("8a8cbe38-0be4-49aa-8e52-2a934eee8815"), "owner" },
-                    { new Guid("c520ca90-e390-48f9-be9b-dfe26866f597"), "user" }
+                    { new Guid("7549d74d-7b55-462f-ad66-c286b3279390"), "bot" },
+                    { new Guid("c68544ad-f45a-4145-ba19-95b73024f94b"), "admin" },
+                    { new Guid("c6ff75e9-1ca0-440c-a9f1-1cb033439b63"), "owner" },
+                    { new Guid("fc375bf3-4e87-4c5a-8143-5d1d47f319d2"), "user" }
                 });
 
             migrationBuilder.CreateIndex(
