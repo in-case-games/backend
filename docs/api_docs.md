@@ -17,11 +17,11 @@ HTTP_SECURE = true
 ## GET - /api/authentication/confirm/account
 Roles - Any
 
-RequestBody -  
+RequestBody - { 
     "params": {
         "token": "string",
     }
-
+}
 
 ### 200 ResponseBody - {
     "code": 0,
