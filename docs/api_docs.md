@@ -405,7 +405,7 @@ Roles - Any
 ## GET - /api/user/{id}/is-notify
 Roles - Any
 
-# RequestBody {
+### RequestBody {
     "queries": "GUID"
 }
 
