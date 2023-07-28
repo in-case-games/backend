@@ -11,10 +11,10 @@ HTTP_SECURE = true
     }
 }
 
-<!-- ===Authentication Service=== -->
-<!-- [C] Confirm -->
-<!-- [M] ConfirmAccount -->
-GET - /api/authentication/confirm/account
+# ===Authentication Service=== 
+## [C] Confirm
+## [M] ConfirmAccount
+## GET - /api/authentication/confirm/account
 Roles - Any
 
 RequestBody - { 
@@ -23,7 +23,7 @@ RequestBody - {
     }
 }
 
-200 ResponseBody - {
+### 200 ResponseBody - {
     "code": 0,
     "data": {
         "accessToken": "string",
@@ -33,15 +33,15 @@ RequestBody - {
     }
 }
 
-400 ResponseBody - {
+### 400 ResponseBody - {
     "error": {
         "code": 0,
         "message": "error message"
     }
 }
-<!-- [M] UpdateEmail -->
+## [M] UpdateEmail 
 
-GET - /api/authentication/confirm/email/{email}
+## GET - /api/authentication/confirm/email/{email}
 Roles - Any
 
 RequestBody - { 
@@ -53,7 +53,7 @@ RequestBody - {
     }
 }
 
-200 ResponseBody - {
+### 200 ResponseBody - {
     "code": 0,
     "data": {
         "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
@@ -62,36 +62,36 @@ RequestBody - {
     }
 }
 
-400 ResponseBody - {
+### 400 ResponseBody - {
     "error": {
         "code": 0,
         "message": "error message"
     }
 }
 
-400 ResponseBody - {
+### 400 ResponseBody - {
     "error": {
         "code": 5,
         "message": "Email почта занята"
     }
 }
 
-400 ResponseBody - {
+### 400 ResponseBody - {
     "error": {
         "code": 4,
         "message": "Пользователь не найден"
     }
 }
 
-400 ResponseBody - {
+### 400 ResponseBody - {
     "error": {
         "code": 1,
         "message": "Не валидный {type} токен"
     }
 }
-<!-- [M] UpdatePassword -->
+## [M] UpdatePassword 
 
-GET - /api/authentication/confirm/password/{password}
+## GET - /api/authentication/confirm/password/{password}
 Roles - Any
 
 RequestBody - { 
@@ -103,7 +103,7 @@ RequestBody - {
     }
 }
 
-200 ResponseBody - {
+### 200 ResponseBody - {
     "code": 0,
     "data": {
         "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
@@ -112,29 +112,29 @@ RequestBody - {
     }
 }
 
-400 ResponseBody - {
+### 400 ResponseBody - {
     "error": {
         "code": 0,
         "message": "Пароль некорректный"
     }
 }
 
-400 ResponseBody - {
+### 400 ResponseBody - {
     "error": {
         "code": 4,
         "message": "Пользователь не найден"
     }
 }
 
-400 ResponseBody - {
+### 400 ResponseBody - {
     "error": {
         "code": 1,
         "message": "Не валидный {type} токен"
     }
 }
-<!-- [M] Delete -->
+## [M] Delete 
 
-DELETE - /api/authentication/confirm/account
+## DELETE - /api/authentication/confirm/account
 Roles - Any
 
 RequestBody - { 
@@ -144,7 +144,7 @@ RequestBody - {
 }
 
 
-200 ResponseBody - {
+### 200 ResponseBody - {
     "code": 0,
     "data": {
         "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
@@ -153,23 +153,23 @@ RequestBody - {
     }
 }
 
-400 ResponseBody - {
+### 400 ResponseBody - {
     "error": {
         "code": 4,
         "message": "Пользователь не найден"
     }
 }
 
-400 ResponseBody - {
+### 400 ResponseBody - {
     "error": {
         "code": 1,
         "message": "Не валидный {type} токен"
     }
 }
 <!-- [C] Authentication -->
-<!-- [M] SignIn -->
+## [M] SignIn 
 
-POST - /api/authentication/sign-in
+## POST - /api/authentication/sign-in
 Roles - Any
 
 RequestBody - {
@@ -179,58 +179,58 @@ RequestBody - {
     "password": "string"
 }
 
-200 ResponseBody - {
+### 200 ResponseBody - {
     "code": 0,
     "data": "string"
 }
 
-400 ResponseBody - {
+### 400 ResponseBody - {
     "error": {
         "code": 4,
         "message": "Пользователь не найден"
     }
 }
 
-400 ResponseBody - {
+### 400 ResponseBody - {
     "error": {
         "code": 1,
         "message": "Неверный пароль"
     }
 }
 
-400 ResponseBody - {
+### 400 ResponseBody - {
     "error": {
         "code": 1,
         "message": "Вход запрещён до {ban.ExpirationDate}."
     }
 }
-<!-- [M] SignUp -->
+## [M] SignUp 
 
-POST - /api/authentication/sign-up
+## POST - /api/authentication/sign-up
 Roles - Any
 
-RequestBody - {
+### RequestBody - {
     "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
     "login": "string",
     "email": "string",
     "password": "string"
 }
 
-200 ResponseBody - {
+### 200 ResponseBody - {
     "code": 0,
     "data": "string"
 }
 
-400 ResponseBody - {
+### 400 ResponseBody - {
     "error": {
         "code": 5,
         "message": "Пользователь уже существует"
     }
 }
 
-<!-- [M] Refresh -->
+## [M] Refresh 
 
-GET - /api/authentication/refresh
+## GET - /api/authentication/refresh
 Roles - Any 
 
 RequestBody - {
@@ -239,7 +239,7 @@ RequestBody - {
     }
 }
 
-200 ResponseBody - {
+### 200 ResponseBody - {
     "code": 0,
     "data": {
         "accessToken": "string",
@@ -249,37 +249,37 @@ RequestBody - {
     }
 }
 
-400 ResponseBody - {
+### 400 ResponseBody - {
     "error": {
         "code": 4,
         "message": "Пользователь не найден"
     }
 }
 
-400 ResponseBody - {
+### 400 ResponseBody - {
     "error": {
         "code": 1,
         "message": "Не валидный {type} токен"
     }
 }
 
-400 ResponseBody - {
+### 400 ResponseBody - {
     "error": {
         "code": 1,
         "message": "Аккаунт в очереди на удаление, отмените входом в аккаунт"
     }
 }
 
-400 ResponseBody - {
+### 400 ResponseBody - {
     "error": {
         "code": 1,
         "message": "Вход запрещён до {ban.ExpirationDate}."
     }
 }
 <!-- [C] AuthenticationSending -->
-<!-- [M] ForgotPassword -->
+## [M] ForgotPassword 
 
-PUT - /api/authentication/sending/forgot/password
+## PUT - /api/authentication/sending/forgot/password
 Roles - Any
 
 RequestBody - {
@@ -288,20 +288,20 @@ RequestBody - {
     "token": "string"
 }
 
-200 ResponseBody - {
+### 200 ResponseBody - {
     "code": 0,
     "data": "string"
 }
 
-400 ResponseBody - {
+### 400 ResponseBody - {
     "error": {
         "code": 4,
         "message": "Пользователь не найден"
     }
 }
-<!-- [M] UpdateEmail -->
+## [M] UpdateEmail 
 
-PUT - /api/authentication/sending/email/{password}
+## PUT - /api/authentication/sending/email/{password}
 
 RequestBody - {
     "queries": {
@@ -314,27 +314,27 @@ RequestBody - {
     }
 }
 
-200 ResponseBody - {
+### 200 ResponseBody - {
     "code": 0,
     "data": "string"
 }
 
-400 ResponseBody - {
+### 400 ResponseBody - {
     "error": {
         "code": 4,
         "message": "Пользователь не найден"
     }
 }
 
-400 ResponseBody - {
+### 400 ResponseBody - {
     "error": {
         "code": 1,
         "message": "Неверный пароль"
     }
 }
-<!-- [M] UpdatePassword -->
+## [M] UpdatePassword 
 
-PUT - /api/authentication/sending/password/{password}
+## PUT - /api/authentication/sending/password/{password}
 
 RequestBody - {
     "queries": {
@@ -347,27 +347,27 @@ RequestBody - {
     }
 }
 
-200 ResponseBody - {
+### 200 ResponseBody - {
     "code": 0,
     "data": "string"
 }
 
-400 ResponseBody - {
+### 400 ResponseBody - {
     "error": {
         "code": 4,
         "message": "Пользователь не найден"
     }
 }
 
-400 ResponseBody - {
+### 400 ResponseBody - {
     "error": {
         "code": 1,
         "message": "Неверный пароль"
     }
 }
-<!-- [M] DeleteAccount -->
+## [M] DeleteAccount 
 
-DELETE - /api/authentication/sending/confirm/{password}
+## DELETE - /api/authentication/sending/confirm/{password}
 
 RequestBody - {
     "queries": {
@@ -380,19 +380,19 @@ RequestBody - {
     }
 }
 
-200 ResponseBody - {
+### 200 ResponseBody - {
     "code": 0,
     "data": "string"
 }
 
-400 ResponseBody - {
+### 400 ResponseBody - {
     "error": {
         "code": 4,
         "message": "Пользователь не найден"
     }
 }
 
-400 ResponseBody - {
+### 400 ResponseBody - {
     "error": {
         "code": 1,
         "message": "Неверный пароль"
