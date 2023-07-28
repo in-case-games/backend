@@ -398,7 +398,7 @@ Roles - Any
         "message": "Неверный пароль"
     }
 }
-# ===Authentication Service=== 
+# ===EmailSender Service=== 
 <!-- [C] User -->
 <!-- [M] GetByUserId -->
 
