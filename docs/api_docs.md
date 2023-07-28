@@ -17,11 +17,11 @@ HTTP_SECURE = true
 ## GET - /api/authentication/confirm/account
 Roles - Any
 
-RequestBody - ```{ 
+### RequestBody - { 
     "params": {
         "token": "string",
     }
-}```
+}
 
 ### 200 ResponseBody - {
     "code": 0,
@@ -44,7 +44,7 @@ RequestBody - ```{
 ## GET - /api/authentication/confirm/email/{email}
 Roles - Any
 
-RequestBody - { 
+### RequestBody - { 
     "queries": {
         "email": "string",
     },
@@ -94,7 +94,7 @@ RequestBody - {
 ## GET - /api/authentication/confirm/password/{password}
 Roles - Any
 
-RequestBody - { 
+### RequestBody - { 
     "queries": {
         "password": "string",
     },
@@ -137,7 +137,7 @@ RequestBody - {
 ## DELETE - /api/authentication/confirm/account
 Roles - Any
 
-RequestBody - { 
+### RequestBody - { 
     "params": {
         "token": "string",
     }
@@ -172,7 +172,7 @@ RequestBody - {
 ## POST - /api/authentication/sign-in
 Roles - Any
 
-RequestBody - {
+### RequestBody - {
     "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
     "login": "string",
     "email": "string",
@@ -233,7 +233,7 @@ Roles - Any
 ## GET - /api/authentication/refresh
 Roles - Any 
 
-RequestBody - {
+### RequestBody - {
     "params": {
         "token": "string"
     }
@@ -282,7 +282,7 @@ RequestBody - {
 ## PUT - /api/authentication/sending/forgot/password
 Roles - Any
 
-RequestBody - {
+### RequestBody - {
     "login": "string",
     "email": "string",
     "token": "string"
@@ -303,7 +303,7 @@ RequestBody - {
 
 ## PUT - /api/authentication/sending/email/{password}
 
-RequestBody - {
+### RequestBody - {
     "queries": {
         "password": "string"
     },
@@ -336,7 +336,7 @@ RequestBody - {
 
 ## PUT - /api/authentication/sending/password/{password}
 
-RequestBody - {
+### RequestBody - {
     "queries": {
         "password": "string"
     },
@@ -369,7 +369,7 @@ RequestBody - {
 
 ## DELETE - /api/authentication/sending/confirm/{password}
 
-RequestBody - {
+### RequestBody - {
     "queries": {
         "password": "string"
     },
