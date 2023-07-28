@@ -398,3 +398,123 @@ Roles - Any
         "message": "Неверный пароль"
     }
 }
+# ===Authentication Service=== 
+<!-- [C] User -->
+<!-- [M] GetByUserId -->
+
+## GET - /api/user/{id}/is-notify
+Roles - Any
+
+# RequestBody {
+    "queries": "GUID"
+}
+
+### 200 ResponseBody - {
+    "code": 0,
+    "data": {
+        "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+        "isNotifyEmail": true,
+        "userId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    }
+}
+
+### 400 ResponseBody - {
+    "error": {
+        "code": 4,
+        "message": "Пользователь не найден"
+    }
+}
+<!-- [M] Get -->
+
+## GET - /api/user/is-notify
+Roles - User, Admin , Owner , Bot
+
+### 200 ResponseBody - {
+    "code": 0,
+    "data": {
+        "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+        "isNotifyEmail": true,
+        "userId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    }
+}
+
+### 400 ResponseBody - {
+    "error": {
+        "code": 4,
+        "message": "Пользователь не найден"
+    }
+}
+
+### 400 ResponseBody - {
+    "error": {
+        "code": 1,
+        "message": "Forbidden"
+    }
+}
+<!-- [M] ChangeNotifyEmail -->
+
+## GET - /api/user/is-notify/{isNotify}
+Roles - User, Admin , Owner , Bot
+
+### RequestBody - {
+    "queries": {
+        "isNotify": boolean
+    }
+}
+
+### 200 ResponseBody - {
+    "code": 0,
+    "data": {
+        "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+        "isNotifyEmail": true,
+        "userId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    }
+}
+
+### 400 ResponseBody - {
+    "error": {
+        "code": 4,
+        "message": "Пользователь не найден"
+    }
+}
+
+### 400 ResponseBody - {
+    "error": {
+        "code": 1,
+        "message": "Forbidden"
+    }
+}
+<!-- [M] ChangeNotifyEmailByAdmin -->
+
+## GET - /api/user/is-notify/{isNotify}
+Roles - Admin , Owner
+
+### RequestBody - {
+    "queries": {
+        "userId": "GUID",
+        "isNotify": boolean
+    }
+}
+
+### 200 ResponseBody - {
+    "code": 0,
+    "data": {
+        "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+        "isNotifyEmail": true,
+        "userId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    }
+}
+
+### 400 ResponseBody - {
+    "error": {
+        "code": 4,
+        "message": "Пользователь не найден"
+    }
+}
+
+### 400 ResponseBody - {
+    "error": {
+        "code": 1,
+        "message": "Forbidden"
+    }
+}
