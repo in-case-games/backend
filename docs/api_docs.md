@@ -12,8 +12,8 @@ HTTP_SECURE = true
 }
 
 # ===Authentication Service=== 
-## [C] Confirm
-## [M] ConfirmAccount
+<!-- [C] Confirm -->
+<!-- [M] ConfirmAccount -->
 ## GET - /api/authentication/confirm/account
 Roles - Any
 
@@ -39,7 +39,7 @@ RequestBody - {
         "message": "error message"
     }
 }
-## [M] UpdateEmail 
+<!-- [M] UpdateEmail -->
 
 ## GET - /api/authentication/confirm/email/{email}
 Roles - Any
@@ -89,7 +89,7 @@ RequestBody - {
         "message": "Не валидный {type} токен"
     }
 }
-## [M] UpdatePassword 
+<!-- [M] UpdatePassword -->
 
 ## GET - /api/authentication/confirm/password/{password}
 Roles - Any
@@ -132,7 +132,7 @@ RequestBody - {
         "message": "Не валидный {type} токен"
     }
 }
-## [M] Delete 
+<!-- [M] Delete -->
 
 ## DELETE - /api/authentication/confirm/account
 Roles - Any
@@ -167,7 +167,7 @@ RequestBody - {
     }
 }
 <!-- [C] Authentication -->
-## [M] SignIn 
+<!-- [M] SignIn -->
 
 ## POST - /api/authentication/sign-in
 Roles - Any
@@ -204,7 +204,7 @@ RequestBody - {
         "message": "Вход запрещён до {ban.ExpirationDate}."
     }
 }
-## [M] SignUp 
+<!-- [M] SignUp -->
 
 ## POST - /api/authentication/sign-up
 Roles - Any
@@ -228,7 +228,7 @@ Roles - Any
     }
 }
 
-## [M] Refresh 
+<!-- [M] Refresh -->
 
 ## GET - /api/authentication/refresh
 Roles - Any 
@@ -277,7 +277,7 @@ RequestBody - {
     }
 }
 <!-- [C] AuthenticationSending -->
-## [M] ForgotPassword 
+<!-- [M] ForgotPassword -->
 
 ## PUT - /api/authentication/sending/forgot/password
 Roles - Any
@@ -299,7 +299,7 @@ RequestBody - {
         "message": "Пользователь не найден"
     }
 }
-## [M] UpdateEmail 
+<!-- [M] UpdateEmail -->
 
 ## PUT - /api/authentication/sending/email/{password}
 
@@ -332,7 +332,7 @@ RequestBody - {
         "message": "Неверный пароль"
     }
 }
-## [M] UpdatePassword 
+<!-- [M] UpdatePassword -->
 
 ## PUT - /api/authentication/sending/password/{password}
 
@@ -365,7 +365,7 @@ RequestBody - {
         "message": "Неверный пароль"
     }
 }
-## [M] DeleteAccount 
+<!-- [M] DeleteAccount -->
 
 ## DELETE - /api/authentication/sending/confirm/{password}
 
