@@ -29,83 +29,6 @@ namespace Authentication.BLL.Services
             _publisher = publisher;
         }
 
-        public async Task ConfirmAccountAsync(DataMailRequest request, string password)
-        {
-            User user = await _context.Users
-                .Include(u => u.AdditionalInfo)
-                .AsNoTracking()
-                .FirstOrDefaultAsync(u => u.Login == request.Login || request.Email == request.Email) ??
-                throw new NotFoundException("Пользователь не найден");
-
-            if (!ValidationService.IsValidUserPassword(in user, password))
-                throw new ForbiddenException("Неверный пароль");
-
-            request.Email = user.Email!;
-
-            MapDataMailRequest(ref request, in user);
-
-            EmailTemplate template = new()
-            {
-                Email = user.Email!,
-                IsRequiredMessage = true,
-            };
-
-            if (user.AdditionalInfo!.IsConfirmed)
-            {
-                template.Subject = "Подтверждение входа в систему";
-                template.Body = new()
-                {
-                    Title = $"Дорогой {user.Login!}",
-                    Description = $"Подтвердите вход в аккаунт." +
-                    $"Если это были не вы, то срочно измените пароль в настройках вашего аккаунта, " +
-                    $"вас автоматически отключит со всех устройств.",
-                    ButtonLink = $"email/confirm/account?token={request.Token}"
-                };
-            }
-            else
-            {
-                template.Subject = "Завершение регистрации в системе";
-                template.Body = new()
-                {
-                    Title = $"Дорогой {user.Login!}",
-                    Description = $"Для завершения этапа регистрации," +
-                    $"вам необходимо нажать на кнопку ниже для подтверждения почты." +
-                    $"Если это были не вы, проигнорируйте это сообщение.",
-                    ButtonLink = $"email/confirm/account?token={request.Token}"
-                };
-            }
-
-            await _publisher.SendAsync(template, "/email");
-        }
-
-        public async Task ConfirmNewEmailAsync(DataMailRequest request, string email)
-        {
-            if (await _context.Users.AnyAsync(u => u.Email == email))
-                throw new ConflictException("Email почта занята");
-
-            User user = await _authenticationService.GetUserFromTokenAsync(request.Token, "email");
-
-            MapDataMailRequest(ref request, in user);
-            request.Email = email;
-
-            EmailTemplate template = new()
-            {
-                Email = email,
-                IsRequiredMessage = true,
-                Subject = "Подтвердите новую почту аккаунта",
-                Body = new()
-                {
-                    Title = $"Дорогой {user.Login!}.",
-                    Description = $"Подтвердите, что это ваш новый email." +
-                    $"Если это были не вы, то срочно измените пароль в настройках вашего аккаунта," +
-                    $"вас автоматически отключит со всех устройств.",
-                    ButtonLink = $"email/confirm/update/password?token={request.Token}"
-                }
-            };
-
-            await _publisher.SendAsync(template, "/email");
-        }
-
         public async Task DeleteAccountAsync(DataMailRequest request, string password)
         {
             User user = await _context.Users
@@ -197,7 +120,7 @@ namespace Authentication.BLL.Services
                     Title = $"Дорогой {user.Login!}.",
                     Description = $"Подтвердите, что это вы хотите поменять email." +
                     $"Если это были не вы, то срочно измените пароль в настройках вашего аккаунта, " +
-                    $"вас автоматически отключит со всех устройств.<br>",
+                    $"вас автоматически отключит со всех устройств.",
                     ButtonText = "Подтверждаю",
                     ButtonLink = $"email/confirm/update/email?token={request.Token}"
                 }

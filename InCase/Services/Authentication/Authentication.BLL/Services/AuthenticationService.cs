@@ -133,6 +133,9 @@ namespace Authentication.BLL.Services
         {
             User user = await GetUserFromTokenAsync(token, "refresh");
 
+            if (!await _context.AdditionalInfos.AnyAsync(uai => uai.Id == user.Id && uai.DeletionDate != null))
+                throw new ForbiddenException($"Аккаунт в очереди на удаление, отмените входом в аккаунт");
+
             await CheckUserForBanAsync(user.Id);
 
             return _jwtService.CreateTokenPair(in user);

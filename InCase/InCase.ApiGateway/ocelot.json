@@ -92,30 +92,6 @@
     },
     //EndPoint: authentication/sending
     {
-      "DownstreamPathTemplate": "/api/authentication/sending/confirm/{password}",
-      "DownstreamScheme": "https",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "localhost",
-          "Port": 7298
-        }
-      ],
-      "UpstreamPathTemplate": "/api/authentication/sending/confirm/{password}",
-      "UpstreamHttpMethod": [ "Post" ]
-    },
-    {
-      "DownstreamPathTemplate": "/api/authentication/sending/confirm/new/{email}",
-      "DownstreamScheme": "https",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "localhost",
-          "Port": 7298
-        }
-      ],
-      "UpstreamPathTemplate": "/api/authentication/sending/confirm/new/{email}",
-      "UpstreamHttpMethod": [ "Post" ]
-    },
-    {
       "DownstreamPathTemplate": "/api/authentication/sending/forgot/password",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [

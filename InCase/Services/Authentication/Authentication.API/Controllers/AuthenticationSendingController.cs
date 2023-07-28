@@ -21,28 +21,6 @@ namespace Authentication.API.Controllers
         [ProducesResponseType(typeof(ApiResult<string>),
             (int)HttpStatusCode.OK)]
         [AllowAnonymous]
-        [HttpPost("confirm/{password}")]
-        public async Task<IActionResult> ConfirmAccount(DataMailRequest request, string password)
-        {
-            await _authSendingService.ConfirmAccountAsync(request, password);
-
-            return Ok(ApiResult<string>.SentEmail());
-        }
-
-        [ProducesResponseType(typeof(ApiResult<string>),
-            (int)HttpStatusCode.OK)]
-        [AllowAnonymous]
-        [HttpPost("confirm/new/{email}")]
-        public async Task<IActionResult> ConfirmNewEmail(DataMailRequest request, string email)
-        {
-            await _authSendingService.ConfirmNewEmailAsync(request, email);
-
-            return Ok(ApiResult<string>.SentEmail());
-        }
-
-        [ProducesResponseType(typeof(ApiResult<string>),
-            (int)HttpStatusCode.OK)]
-        [AllowAnonymous]
         [HttpPut("forgot/password")]
         public async Task<IActionResult> ForgotPassword(DataMailRequest request)
         {

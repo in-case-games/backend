@@ -134,9 +134,14 @@ namespace Authentication.BLL.Services
             if (await _context.Users.AsNoTracking().AnyAsync(u => u.Email == email))
                 throw new ConflictException("Email почта занята");
 
-            User user = await _authenticationService.GetUserFromTokenAsync(token, "email");
+            User temp = await _authenticationService.GetUserFromTokenAsync(token, "email");
+
+            User user = await _context.Users
+                .FirstAsync(u => u.Id == temp.Id);
 
             user.Email = email;
+
+            await _context.SaveChangesAsync();
 
             EmailTemplate template = new()
             {
@@ -153,8 +158,6 @@ namespace Authentication.BLL.Services
 
             await _publisher.SendAsync(user.ToTemplate(false), "/user");
             await _publisher.SendAsync(template, "/email");
-
-            await _context.SaveChangesAsync();
 
             return user.ToResponse();
         }
