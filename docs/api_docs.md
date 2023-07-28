@@ -4,7 +4,7 @@ BASE_URI = https://localhost:5000
 HTTP_SECURE = true
 <!-- Generic Response -->
 
-500 ResponseBody - {
+### 500 ResponseBody - {
     "error": {
         "code": 500,
         "message": "error message"
