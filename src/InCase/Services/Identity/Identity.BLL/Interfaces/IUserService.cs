@@ -10,7 +10,7 @@ namespace Identity.BLL.Interfaces
         public Task<UserResponse> GetAsync(string login);
         public Task<User?> GetByConsumerAsync(Guid id);
         public Task CreateAsync(UserTemplate template);
-        public Task<UserResponse> UpdateLoginAsync(UserRequest request);
+        public Task UpdateLoginAsync(UserTemplate template);
         public Task DeleteAsync(Guid id);
     }
 }

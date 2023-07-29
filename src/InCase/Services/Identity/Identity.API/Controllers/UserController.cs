@@ -54,18 +54,5 @@ namespace Identity.API.Controllers
 
             return Ok(ApiResult<UserResponse>.OK(response));
         }
-
-        [ProducesResponseType(typeof(ApiResult<UserResponse>),
-            (int)HttpStatusCode.OK)]
-        [AuthorizeByRole(Roles.All)]
-        [HttpPut]
-        public async Task<IActionResult> Put(UserRequest request)
-        {
-            request.Id = UserId;
-
-            UserResponse response = await _userService.UpdateLoginAsync(request);
-
-            return Ok(ApiResult<UserResponse>.OK(response));
-        }
     }
 }

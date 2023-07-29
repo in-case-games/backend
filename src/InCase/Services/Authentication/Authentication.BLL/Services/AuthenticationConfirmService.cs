@@ -162,6 +162,39 @@ namespace Authentication.BLL.Services
             return user.ToResponse();
         }
 
+        public async Task<UserResponse> UpdateLoginAsync(string login, string token)
+        {
+            if (await _context.Users.AsNoTracking().AnyAsync(u => u.Login == login))
+                throw new ConflictException("Логин занят");
+
+            User temp = await _authenticationService.GetUserFromTokenAsync(token, "email");
+
+            User user = await _context.Users
+                .FirstAsync(u => u.Id == temp.Id);
+
+            user.Login = login;
+
+            await _context.SaveChangesAsync();
+
+            EmailTemplate template = new()
+            {
+                Email = user.Email!,
+                IsRequiredMessage = true,
+                Subject = "Ваш аккаунт сменил логин",
+                Body = new()
+                {
+                    Title = $"Дорогой {user.Login!}",
+                    Description = $"Вы изменили логин своего аккаунта." +
+                    $"Если это были не вы обратитесь в тех поддержку."
+                }
+            };
+
+            await _publisher.SendAsync(user.ToTemplate(false));
+            await _publisher.SendAsync(template);
+
+            return user.ToResponse();
+        }
+
         public async Task<UserResponse> UpdatePasswordAsync(string password, string token)
         {
             User user = await _authenticationService.GetUserFromTokenAsync(token, "email");

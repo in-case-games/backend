@@ -37,9 +37,9 @@ namespace Identity.API.Controllers
             (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("user/{id}")]
-        public async Task<IActionResult> GetByUserId(Guid userId)
+        public async Task<IActionResult> GetByUserId(Guid id)
         {
-            UserAdditionalInfoResponse response = await _infoService.GetByUserIdAsync(userId);
+            UserAdditionalInfoResponse response = await _infoService.GetByUserIdAsync(id);
 
             return Ok(ApiResult<UserAdditionalInfoResponse>.OK(response));
         }
@@ -58,10 +58,10 @@ namespace Identity.API.Controllers
         [ProducesResponseType(typeof(ApiResult<UserAdditionalInfoResponse>),
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Owner)]
-        [HttpPut("role")]
-        public async Task<IActionResult> UpdateRole(UserAdditionalInfoRequest request)
+        [HttpGet("role/{id}")]
+        public async Task<IActionResult> UpdateRole(Guid id)
         {
-            UserAdditionalInfoResponse response = await _infoService.UpdateRoleAsync(request);
+            UserAdditionalInfoResponse response = await _infoService.UpdateRoleAsync(UserId, id);
 
             return Ok(ApiResult<UserAdditionalInfoResponse>.OK(response));
         }
@@ -69,10 +69,10 @@ namespace Identity.API.Controllers
         [ProducesResponseType(typeof(ApiResult<UserAdditionalInfoResponse>),
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Admin, Roles.Owner)]
-        [HttpPut("deletion/date")]
-        public async Task<IActionResult> UpdateDeletionDate(UserAdditionalInfoRequest request)
+        [HttpGet("deletion/{date}")]
+        public async Task<IActionResult> UpdateDeletionDate(DateTime? date = null)
         {
-            UserAdditionalInfoResponse response = await _infoService.UpdateDeletionDateAsync(request);
+            UserAdditionalInfoResponse response = await _infoService.UpdateDeletionDateAsync(UserId, date);
 
             return Ok(ApiResult<UserAdditionalInfoResponse>.OK(response));
         }
@@ -80,10 +80,10 @@ namespace Identity.API.Controllers
         [ProducesResponseType(typeof(ApiResult<UserAdditionalInfoResponse>),
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
-        [HttpPut("image")]
-        public async Task<IActionResult> UpdateImage(UserAdditionalInfoRequest request)
+        [HttpGet("image/{uri}")]
+        public async Task<IActionResult> UpdateImage(string uri)
         {
-            UserAdditionalInfoResponse response = await _infoService.UpdateImageAsync(request);
+            UserAdditionalInfoResponse response = await _infoService.UpdateImageAsync(UserId, uri);
 
             return Ok(ApiResult<UserAdditionalInfoResponse>.OK(response));
         }

@@ -1,6 +1,4 @@
-﻿using Authentication.BLL.Models;
-
-namespace Authentication.BLL.Interfaces
+﻿namespace Authentication.BLL.Interfaces
 {
     public interface IUserService
     {

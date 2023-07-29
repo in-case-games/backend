@@ -44,6 +44,17 @@ namespace Authentication.API.Controllers
         [ProducesResponseType(typeof(ApiResult<UserResponse>),
             (int)HttpStatusCode.OK)]
         [AllowAnonymous]
+        [HttpGet("login/{login}")]
+        public async Task<IActionResult> UpdateLogin(string login, string token)
+        {
+            UserResponse response = await _authConfirmService.UpdateLoginAsync(login, token);
+
+            return Ok(ApiResult<UserResponse>.OK(response));
+        }
+
+        [ProducesResponseType(typeof(ApiResult<UserResponse>),
+            (int)HttpStatusCode.OK)]
+        [AllowAnonymous]
         [HttpGet("password/{password}")]
         public async Task<IActionResult> UpdatePassword(string password, string token)
         {

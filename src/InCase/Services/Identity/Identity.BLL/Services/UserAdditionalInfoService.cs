@@ -5,16 +5,19 @@ using Identity.BLL.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using Identity.DAL.Entities;
 using Identity.BLL.Helpers;
+using Identity.BLL.MassTransit;
 
 namespace Identity.BLL.Services
 {
     public class UserAdditionalInfoService : IUserAdditionalInfoService
     {
         private readonly ApplicationDbContext _context;
+        private readonly BasePublisher _publisher;
 
-        public UserAdditionalInfoService(ApplicationDbContext context)
+        public UserAdditionalInfoService(ApplicationDbContext context, BasePublisher publisher)
         {
             _context = context;
+            _publisher = publisher;
         }
 
         public async Task<UserAdditionalInfoResponse> GetAsync(Guid id)
@@ -33,34 +36,36 @@ namespace Identity.BLL.Services
             UserAdditionalInfo info = await _context.AdditionalInfos
                 .Include(uai => uai.Role)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(uai => uai.Id == userId) ??
+                .FirstOrDefaultAsync(uai => uai.UserId == userId) ??
                 throw new NotFoundException("Пользователь не найден");
 
             return info.ToResponse();
         }
 
-        public async Task<UserAdditionalInfoResponse> UpdateDeletionDateAsync(UserAdditionalInfoRequest request)
+        public async Task<UserAdditionalInfoResponse> UpdateDeletionDateAsync(Guid userId, DateTime? deletionDate)
         {
-            if (request.DeletionDate is not null && request.DeletionDate <= DateTime.UtcNow)
+            if (deletionDate is not null && deletionDate <= DateTime.UtcNow)
                 throw new BadRequestException("Дата не корректна");
 
             UserAdditionalInfo info = await _context.AdditionalInfos
                 .Include(uai => uai.Role)
-                .FirstOrDefaultAsync(uai => uai.Id == request.UserId) ??
+                .FirstOrDefaultAsync(uai => uai.Id == userId) ??
                 throw new NotFoundException("Пользователь не найден");
 
-            info.DeletionDate = request.DeletionDate;
+            info.DeletionDate = deletionDate;
 
             await _context.SaveChangesAsync();
+
+            await _publisher.SendAsync(info);
 
             return info.ToResponse();
         }
 
-        public async Task<UserAdditionalInfoResponse> UpdateImageAsync(UserAdditionalInfoRequest request)
+        public async Task<UserAdditionalInfoResponse> UpdateImageAsync(Guid userId, string uri)
         {
             UserAdditionalInfo info = await _context.AdditionalInfos
                 .Include(uai => uai.Role)
-                .FirstOrDefaultAsync(uai => uai.Id == request.UserId) ??
+                .FirstOrDefaultAsync(uai => uai.Id == userId) ??
                 throw new NotFoundException("Пользователь не найден");
 
             //TODO Upload image
@@ -70,20 +75,22 @@ namespace Identity.BLL.Services
             return info.ToResponse();
         }
 
-        public async Task<UserAdditionalInfoResponse> UpdateRoleAsync(UserAdditionalInfoRequest request)
+        public async Task<UserAdditionalInfoResponse> UpdateRoleAsync(Guid userId, Guid roleId)
         {
             UserRole role = await _context.Roles
                 .AsNoTracking()
-                .FirstOrDefaultAsync(ur => ur.Id == request.RoleId) ??
+                .FirstOrDefaultAsync(ur => ur.Id == roleId) ??
                 throw new NotFoundException("Роль не найдена");
             UserAdditionalInfo info = await _context.AdditionalInfos
                 .Include(uai => uai.Role)
-                .FirstOrDefaultAsync(uai => uai.Id == request.UserId) ??
+                .FirstOrDefaultAsync(uai => uai.Id == userId) ??
                 throw new NotFoundException("Пользователь не найден");
 
             info.RoleId = role.Id;
 
             await _context.SaveChangesAsync();
+
+            await _publisher.SendAsync(info);
 
             return info.ToResponse();
         }

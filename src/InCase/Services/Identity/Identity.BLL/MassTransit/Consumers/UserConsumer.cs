@@ -26,7 +26,7 @@ namespace Identity.BLL.MassTransit.Consumers
             else if (template.IsDeleted)
                 await _userService.DeleteAsync(user.Id);
             else if (user.Login != template.Login)
-                await _userService.UpdateLoginAsync(template.ToRequest());
+                await _userService.UpdateLoginAsync(template);
         }
     }
 }

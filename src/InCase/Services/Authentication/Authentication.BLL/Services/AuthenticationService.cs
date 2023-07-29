@@ -133,7 +133,12 @@ namespace Authentication.BLL.Services
         {
             User user = await GetUserFromTokenAsync(token, "refresh");
 
-            if (!await _context.AdditionalInfos.AnyAsync(uai => uai.Id == user.Id && uai.DeletionDate != null))
+            UserAdditionalInfo info = await _context.AdditionalInfos
+                .AsNoTracking()
+                .FirstOrDefaultAsync(uai => uai.UserId == user.Id) ??
+                throw new NotFoundException("Пользователь не найден");
+
+            if (info.DeletionDate is not null)
                 throw new ForbiddenException($"Аккаунт в очереди на удаление, отмените входом в аккаунт");
 
             await CheckUserForBanAsync(user.Id);

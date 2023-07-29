@@ -497,7 +497,7 @@
       "UpstreamHttpMethod": [ "Get" ]
     },
     {
-      "DownstreamPathTemplate": "/api/user-additional-info/role",
+      "DownstreamPathTemplate": "/api/user-additional-info/role/{id}",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
@@ -505,11 +505,11 @@
           "Port": 7105
         }
       ],
-      "UpstreamPathTemplate": "/api/user/info/role",
-      "UpstreamHttpMethod": [ "Put" ]
+      "UpstreamPathTemplate": "/api/user/info/role/{id}",
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
-      "DownstreamPathTemplate": "/api/user-additional-info/deletion/date",
+      "DownstreamPathTemplate": "/api/user-additional-info/deletion/{date}",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
@@ -517,11 +517,11 @@
           "Port": 7105
         }
       ],
-      "UpstreamPathTemplate": "/api/user/info/deletion/date",
-      "UpstreamHttpMethod": [ "Put" ]
+      "UpstreamPathTemplate": "/api/user/info/deletion/{date}",
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
-      "DownstreamPathTemplate": "/api/user-additional-info/image",
+      "DownstreamPathTemplate": "/api/user-additional-info/image/{uri}",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
@@ -530,7 +530,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/info/image",
-      "UpstreamHttpMethod": [ "Put" ]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     //EndPoint: user
     {
@@ -580,18 +580,6 @@
       ],
       "UpstreamPathTemplate": "/api/user/login/{login}",
       "UpstreamHttpMethod": [ "Get" ]
-    },
-    {
-      "DownstreamPathTemplate": "/api/user",
-      "DownstreamScheme": "https",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "localhost",
-          "Port": 7105
-        }
-      ],
-      "UpstreamPathTemplate": "/api/user",
-      "UpstreamHttpMethod": [ "Put" ]
     },
     //EndPoint: user-restriction
     {

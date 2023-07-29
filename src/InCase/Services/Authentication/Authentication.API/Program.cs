@@ -4,6 +4,7 @@ using Authentication.BLL.MassTransit;
 using Authentication.BLL.MassTransit.Consumers;
 using Authentication.BLL.Services;
 using Authentication.DAL.Data;
+using Identity.BLL.MassTransit.Consumers;
 using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -80,11 +81,13 @@ builder.Services.AddScoped<IAuthenticationConfirmService, AuthenticationConfirmS
 builder.Services.AddScoped<IAuthenticationSendingService, AuthenticationSendingService>();
 builder.Services.AddScoped<IUserRestrictionService, UserRestrictionService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IUserAdditionalInfoService, UserAdditionalInfoService>();
 builder.Services.AddHostedService<UserManagerService>();
 
 builder.Services.AddMassTransit(x =>
 {
     x.AddConsumer<UserRestrictionConsumer>();
+    x.AddConsumer<UserAdditionalInfoConsumer>();
     x.SetKebabCaseEndpointNameFormatter();
 
     x.AddBus(provider => Bus.Factory.CreateUsingRabbitMq(cfg =>
@@ -99,6 +102,12 @@ builder.Services.AddMassTransit(x =>
             ep.PrefetchCount = 16;
             ep.UseMessageRetry(r => r.Interval(4, 100));
             ep.ConfigureConsumer<UserRestrictionConsumer>(provider);
+        });
+        cfg.ReceiveEndpoint(ep =>
+        {
+            ep.PrefetchCount = 16;
+            ep.UseMessageRetry(r => r.Interval(4, 100));
+            ep.ConfigureConsumer<UserAdditionalInfoConsumer>(provider);
         });
     }));
 });

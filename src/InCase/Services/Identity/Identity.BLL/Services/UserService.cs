@@ -1,6 +1,7 @@
 ﻿using Identity.BLL.Exceptions;
 using Identity.BLL.Helpers;
 using Identity.BLL.Interfaces;
+using Identity.BLL.MassTransit;
 using Identity.BLL.Models;
 using Identity.DAL.Data;
 using Identity.DAL.Entities;
@@ -26,6 +27,7 @@ namespace Identity.BLL.Services
         {
             User user = await _context.Users
                 .Include(u => u.AdditionalInfo)
+                .Include(u => u.AdditionalInfo!.Role)
                 .Include(u => u.Restrictions)
                 .Include(u => u.OwnerRestrictions)
                 .AsNoTracking()
@@ -39,6 +41,7 @@ namespace Identity.BLL.Services
         {
             User user = await _context.Users
                 .Include(u => u.AdditionalInfo)
+                .Include(u => u.AdditionalInfo!.Role)
                 .Include(u => u.Restrictions)
                 .Include(u => u.OwnerRestrictions)
                 .AsNoTracking()
@@ -67,22 +70,6 @@ namespace Identity.BLL.Services
             await _context.SaveChangesAsync();
         }
 
-        public async Task<UserResponse> UpdateLoginAsync(UserRequest request)
-        {
-            User user = await _context.Users
-                .Include(u => u.AdditionalInfo)
-                .Include(u => u.Restrictions)
-                .Include(u => u.OwnerRestrictions)
-                .FirstOrDefaultAsync(u => u.Id == request.Id) ??
-                throw new NotFoundException("Пользователь не найден");
-
-            user.Login = request.Login;
-
-            await _context.SaveChangesAsync();
-
-            return user.ToResponse();
-        }
-
         public async Task DeleteAsync(Guid id)
         {
             User user = await _context.Users
@@ -90,6 +77,20 @@ namespace Identity.BLL.Services
                 throw new NotFoundException("Пользователь не найден");
 
             _context.Users.Remove(user);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task UpdateLoginAsync(UserTemplate template)
+        {
+            User user = await _context.Users
+                 .Include(u => u.AdditionalInfo)
+                 .Include(u => u.Restrictions)
+                 .Include(u => u.OwnerRestrictions)
+                 .FirstOrDefaultAsync(u => u.Id == template.Id) ??
+                 throw new NotFoundException("Пользователь не найден");
+
+            user.Login = template.Login;
+
             await _context.SaveChangesAsync();
         }
     }
