@@ -19,7 +19,7 @@ namespace Identity.BLL.Helpers
         {
             Id = entity.Id,
             DeletionDate = entity.DeletionDate,
-            RoleId = entity.RoleId,
+            RoleName = entity.Role?.Name,
             UserId = entity.UserId,
         };
     }

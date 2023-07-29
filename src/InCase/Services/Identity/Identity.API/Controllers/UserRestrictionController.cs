@@ -127,6 +127,8 @@ namespace Identity.API.Controllers
         [HttpPost]
         public async Task<IActionResult> Post(UserRestrictionRequest request)
         {
+            request.OwnerId = UserId;
+
             UserRestrictionResponse response = await _restrictionService.CreateAsync(request);
 
             return Ok(ApiResult<UserRestrictionResponse>.OK(response));
@@ -138,6 +140,8 @@ namespace Identity.API.Controllers
         [HttpPut]
         public async Task<IActionResult> Put(UserRestrictionRequest request)
         {
+            request.OwnerId = UserId;
+
             UserRestrictionResponse response = await _restrictionService.UpdateAsync(request);
 
             return Ok(ApiResult<UserRestrictionResponse>.OK(response));

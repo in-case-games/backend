@@ -49,7 +49,7 @@ namespace Identity.BLL.Services
 
             UserAdditionalInfo info = await _context.AdditionalInfos
                 .Include(uai => uai.Role)
-                .FirstOrDefaultAsync(uai => uai.Id == userId) ??
+                .FirstOrDefaultAsync(uai => uai.UserId == userId) ??
                 throw new NotFoundException("Пользователь не найден");
 
             info.DeletionDate = deletionDate;
@@ -65,7 +65,7 @@ namespace Identity.BLL.Services
         {
             UserAdditionalInfo info = await _context.AdditionalInfos
                 .Include(uai => uai.Role)
-                .FirstOrDefaultAsync(uai => uai.Id == userId) ??
+                .FirstOrDefaultAsync(uai => uai.UserId == userId) ??
                 throw new NotFoundException("Пользователь не найден");
 
             //TODO Upload image
@@ -83,12 +83,14 @@ namespace Identity.BLL.Services
                 throw new NotFoundException("Роль не найдена");
             UserAdditionalInfo info = await _context.AdditionalInfos
                 .Include(uai => uai.Role)
-                .FirstOrDefaultAsync(uai => uai.Id == userId) ??
+                .FirstOrDefaultAsync(uai => uai.UserId == userId) ??
                 throw new NotFoundException("Пользователь не найден");
 
             info.RoleId = role.Id;
 
             await _context.SaveChangesAsync();
+
+            info.Role = role;
 
             await _publisher.SendAsync(info.ToTemplate());
 

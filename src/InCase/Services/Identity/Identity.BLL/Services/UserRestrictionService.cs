@@ -49,7 +49,8 @@ namespace Identity.BLL.Services
         public async Task<List<UserRestrictionResponse>> GetByLoginAsync(string login)
         {
             User user = await _context.Users
-                .Include(u => u.Restrictions)
+                .Include(u => u.Restrictions!)
+                    .ThenInclude(ur => ur.Type)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(u => u.Login == login) ??
                 throw new NotFoundException("Пользователь не найден");
@@ -60,7 +61,8 @@ namespace Identity.BLL.Services
         public async Task<List<UserRestrictionResponse>> GetByUserIdAsync(Guid userId)
         {
             User user = await _context.Users
-                .Include(u => u.Restrictions)
+                .Include(u => u.Restrictions!)
+                    .ThenInclude(ur => ur.Type)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(u => u.Id == userId) ??
                 throw new NotFoundException("Пользователь не найден");
@@ -71,7 +73,8 @@ namespace Identity.BLL.Services
         public async Task<List<UserRestrictionResponse>> GetByOwnerIdAsync(Guid ownerId)
         {
             User user = await _context.Users
-                .Include(u => u.OwnerRestrictions)
+                .Include(u => u.OwnerRestrictions!)
+                    .ThenInclude(ur => ur.Type)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(u => u.Id == ownerId) ??
                 throw new NotFoundException("Пользователь не найден");
@@ -118,9 +121,17 @@ namespace Identity.BLL.Services
             await _context.Restrictions.AddAsync(restriction);
             await _context.SaveChangesAsync();
 
+            if (request.TypeId != type.Id)
+            {
+                type = await _context.RestrictionTypes
+                    .AsNoTracking()
+                    .FirstAsync(rt => rt.Id == request.TypeId);
+            }
+
             restriction.Type = type;
 
-            await _publisher.SendAsync(restriction.ToTemplate());
+            if (restriction.Type.Name == "ban")
+                await _publisher.SendAsync(restriction.ToTemplate());
 
             return restriction.ToResponse();
         }
@@ -159,9 +170,17 @@ namespace Identity.BLL.Services
             _context.Entry(restrictionOld).CurrentValues.SetValues(restriction);
             await _context.SaveChangesAsync();
 
+            if(request.TypeId != type.Id)
+            {
+                type = await _context.RestrictionTypes
+                    .AsNoTracking()
+                    .FirstAsync(rt => rt.Id == request.TypeId);
+            }
+
             restriction.Type = type;
 
-            await _publisher.SendAsync(restriction.ToTemplate());
+            if(restriction.Type.Name == "ban")
+                await _publisher.SendAsync(restriction.ToTemplate());
 
             return restriction.ToResponse();
         }

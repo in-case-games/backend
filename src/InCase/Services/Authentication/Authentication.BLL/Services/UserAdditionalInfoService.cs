@@ -19,11 +19,19 @@ namespace Authentication.BLL.Services
         public async Task UpdateAsync(UserAdditionalInfoTemplate template)
         {
             UserAdditionalInfo info = await _context.AdditionalInfos
-                .FirstOrDefaultAsync(uai => uai.Id == template.Id) ?? 
+                .FirstOrDefaultAsync(uai => uai.UserId == template.UserId) ?? 
                 throw new NotFoundException("Пользователь не найден");
 
+            UserRole? role = await _context.Roles
+                .AsNoTracking()
+                .FirstOrDefaultAsync(ur => ur.Name == template.RoleName);
+
             info.DeletionDate = template.DeletionDate;
-            info.RoleId = template.RoleId;
+
+            if(role is not null)
+                info.RoleId = role.Id;
+
+            await _context.SaveChangesAsync();
         }
     }
 }
