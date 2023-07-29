@@ -69,6 +69,7 @@ builder.Services.AddMassTransit(x =>
 {
     x.AddConsumer<StatisticsConsumer>();
     x.AddConsumer<StatisticsAdminConsumer>();
+    x.SetKebabCaseEndpointNameFormatter();
 
     x.AddBus(provider => Bus.Factory.CreateUsingRabbitMq(cfg =>
     {
@@ -77,13 +78,13 @@ builder.Services.AddMassTransit(x =>
             h.Username(builder.Configuration["MassTransit:Username"]!);
             h.Password(builder.Configuration["MassTransit:Password"]!);
         });
-        cfg.ReceiveEndpoint("statistics", ep =>
+        cfg.ReceiveEndpoint(ep =>
         {
             ep.PrefetchCount = 16;
             ep.UseMessageRetry(r => r.Interval(4, 100));
             ep.ConfigureConsumer<StatisticsConsumer>(provider);
         });
-        cfg.ReceiveEndpoint("statistics_admin", ep =>
+        cfg.ReceiveEndpoint(ep =>
         {
             ep.PrefetchCount = 16;
             ep.UseMessageRetry(r => r.Interval(4, 100));

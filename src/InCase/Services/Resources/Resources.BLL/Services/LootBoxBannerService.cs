@@ -72,7 +72,7 @@ namespace Resources.BLL.Services
             await _context.Banners.AddAsync(banner);
             await _context.SaveChangesAsync();
 
-            await _publisher.SendAsync(banner.ToTemplate(isDeleted: false), "/box-banner");
+            await _publisher.SendAsync(banner.ToTemplate(isDeleted: false));
 
             banner.Box = box;
 
@@ -101,7 +101,7 @@ namespace Resources.BLL.Services
             _context.Banners.Update(banner);
             await _context.SaveChangesAsync();
 
-            await _publisher.SendAsync(banner.ToTemplate(isDeleted: false), "/box-banner");
+            await _publisher.SendAsync(banner.ToTemplate(isDeleted: false));
 
             banner.Box = box;
 
@@ -119,7 +119,7 @@ namespace Resources.BLL.Services
             _context.Banners.Remove(banner);
             await _context.SaveChangesAsync();
 
-            await _publisher.SendAsync(banner.ToTemplate(isDeleted: true), "/box-banner");
+            await _publisher.SendAsync(banner.ToTemplate(isDeleted: true));
 
             return banner.ToResponse();
         }

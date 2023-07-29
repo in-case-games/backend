@@ -62,7 +62,7 @@ namespace Authentication.BLL.Services
                 }
             };
 
-            await _publisher.SendAsync(template, "/email");
+            await _publisher.SendAsync(template);
         }
 
         public async Task ForgotPasswordAsync(DataMailRequest request)
@@ -90,7 +90,7 @@ namespace Authentication.BLL.Services
                 }
             };
 
-            await _publisher.SendAsync(template, "/email");
+            await _publisher.SendAsync(template);
         }
 
         public async Task UpdateEmailAsync(DataMailRequest request, string password)
@@ -126,7 +126,7 @@ namespace Authentication.BLL.Services
                 }
             };
 
-            await _publisher.SendAsync(template, "/email");
+            await _publisher.SendAsync(template);
         }
 
         public async Task UpdatePasswordAsync(DataMailRequest request, string password)
@@ -162,7 +162,7 @@ namespace Authentication.BLL.Services
                 }
             };
 
-            await _publisher.SendAsync(template, "/email");
+            await _publisher.SendAsync(template);
         }
 
         private void MapDataMailRequest(ref DataMailRequest request, in User user)

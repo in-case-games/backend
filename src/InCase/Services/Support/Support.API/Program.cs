@@ -81,6 +81,7 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddMassTransit(x =>
 {
     x.AddConsumer<UserConsumer>();
+    x.SetKebabCaseEndpointNameFormatter();
 
     x.AddBus(provider => Bus.Factory.CreateUsingRabbitMq(cfg =>
     {
@@ -89,7 +90,7 @@ builder.Services.AddMassTransit(x =>
             h.Username(builder.Configuration["MassTransit:Username"]!);
             h.Password(builder.Configuration["MassTransit:Password"]!);
         });
-        cfg.ReceiveEndpoint("user", ep =>
+        cfg.ReceiveEndpoint(ep =>
         {
             ep.PrefetchCount = 16;
             ep.UseMessageRetry(r => r.Interval(4, 100));

@@ -94,7 +94,7 @@ namespace Resources.BLL.Services
             await _context.BoxInventories.AddAsync(inventory);
             await _context.SaveChangesAsync();
 
-            await _publisher.SendAsync(request.ToTemplate(isDeleted: false), "/box-inventory");
+            await _publisher.SendAsync(request.ToTemplate(isDeleted: false));
 
             inventory.Item = item;
             inventory.Box = box;
@@ -128,7 +128,7 @@ namespace Resources.BLL.Services
             _context.BoxInventories.Update(inventory);
             await _context.SaveChangesAsync();
 
-            await _publisher.SendAsync(request.ToTemplate(isDeleted: false), "/box-inventory");
+            await _publisher.SendAsync(request.ToTemplate(isDeleted: false));
 
             inventory.Item = item;
             inventory.Box = box;
@@ -152,7 +152,7 @@ namespace Resources.BLL.Services
             _context.BoxInventories.Remove(inventory);
             await _context.SaveChangesAsync();
 
-            await _publisher.SendAsync(inventory.ToTemplate(isDeleted: true), "/box-inventory");
+            await _publisher.SendAsync(inventory.ToTemplate(isDeleted: true));
 
             return inventory.ToResponse();
         }

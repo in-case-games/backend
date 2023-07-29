@@ -21,13 +21,9 @@ namespace EmailSender.BLL.MassTransit.Consumers
         {
             var template = context.Message;
 
-            if(template.IsNewEmail)
-                await _emailService.SendToEmailAsync(template);
+            User? user = await _userService.GetAsync(template.Email);
 
-            User user = await _userService.GetAsync(template.Email) ??
-                throw new NotFoundException("Пользователь не найден");
-
-            if(user.AdditionalInfo!.IsNotifyEmail || template.IsRequiredMessage)
+            if(user is null || user.AdditionalInfo!.IsNotifyEmail || template.IsRequiredMessage)
                 await _emailService.SendToEmailAsync(template);
         }
     }

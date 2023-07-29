@@ -29,7 +29,7 @@ namespace Authentication.BLL.Services
             foreach (var user in users)
             {
                 _context.Users.Remove(user);
-                await _publisher.SendAsync(user.ToTemplate(true), "/user");
+                await _publisher.SendAsync(user.ToTemplate(true));
             }
 
             await _context.SaveChangesAsync(stoppingToken);

@@ -160,8 +160,8 @@ namespace Game.BLL.Services
 
             SiteStatisticsAdminTemplate statisticsAdminTemplate = new() { BalanceWithdrawn = totalSpent * 0.1M };
 
-            await _publisher.SendAsync(statisticsAdminTemplate, "/statistics_admin");
-
+            await _publisher.SendAsync(statisticsAdminTemplate);
+                
             info.Balance += totalSpent * 0.9M;
 
             _context.PathBanners.Update(banner);
@@ -189,7 +189,7 @@ namespace Game.BLL.Services
 
             SiteStatisticsAdminTemplate statisticsAdminTemplate = new() { BalanceWithdrawn = totalSpent * 0.1M };
 
-            await _publisher.SendAsync(statisticsAdminTemplate, "/statistics_admin");
+            await _publisher.SendAsync(statisticsAdminTemplate);
 
             info.Balance += totalSpent * 0.9M;
 

@@ -92,6 +92,7 @@ builder.Services.AddMassTransit(x =>
     x.AddConsumer<LootBoxConsumer>();
     x.AddConsumer<LootBoxInventoryConsumer>();
     x.AddConsumer<UserInventoryConsumer>();
+    x.SetKebabCaseEndpointNameFormatter();
 
     x.AddBus(provider => Bus.Factory.CreateUsingRabbitMq(cfg =>
     {
@@ -100,49 +101,49 @@ builder.Services.AddMassTransit(x =>
             h.Username(builder.Configuration["MassTransit:Username"]!);
             h.Password(builder.Configuration["MassTransit:Password"]!);
         });
-        cfg.ReceiveEndpoint("user", ep =>
+        cfg.ReceiveEndpoint(ep =>
         {
             ep.PrefetchCount = 16;
             ep.UseMessageRetry(r => r.Interval(4, 100));
             ep.ConfigureConsumer<UserConsumer>(provider);
         });
-        cfg.ReceiveEndpoint("user-promocode", ep =>
+        cfg.ReceiveEndpoint(ep =>
         {
             ep.PrefetchCount = 16;
             ep.UseMessageRetry(r => r.Interval(4, 100));
             ep.ConfigureConsumer<UserPromocodeConsumer>(provider);
         });
-        cfg.ReceiveEndpoint("user-payment", ep =>
+        cfg.ReceiveEndpoint(ep =>
         {
             ep.PrefetchCount = 16;
             ep.UseMessageRetry(r => r.Interval(4, 100));
             ep.ConfigureConsumer<UserPaymentConsumer>(provider);
         });
-        cfg.ReceiveEndpoint("game-item", ep =>
+        cfg.ReceiveEndpoint(ep =>
         {
             ep.PrefetchCount = 16;
             ep.UseMessageRetry(r => r.Interval(4, 100));
             ep.ConfigureConsumer<GameItemConsumer>(provider);
         });
-        cfg.ReceiveEndpoint("box-banner", ep =>
+        cfg.ReceiveEndpoint(ep =>
         {
             ep.PrefetchCount = 16;
             ep.UseMessageRetry(r => r.Interval(4, 100));
             ep.ConfigureConsumer<LootBoxBannerConsumer>(provider);
         });
-        cfg.ReceiveEndpoint("loot-box", ep =>
+        cfg.ReceiveEndpoint(ep =>
         {
             ep.PrefetchCount = 16;
             ep.UseMessageRetry(r => r.Interval(4, 100));
             ep.ConfigureConsumer<LootBoxConsumer>(provider);
         });
-        cfg.ReceiveEndpoint("box-inventory", ep =>
+        cfg.ReceiveEndpoint(ep =>
         {
             ep.PrefetchCount = 16;
             ep.UseMessageRetry(r => r.Interval(4, 100));
             ep.ConfigureConsumer<LootBoxInventoryConsumer>(provider);
         });
-        cfg.ReceiveEndpoint("user-inventory_sell", ep =>
+        cfg.ReceiveEndpoint(ep =>
         {
             ep.PrefetchCount = 16;
             ep.UseMessageRetry(r => r.Interval(4, 100));

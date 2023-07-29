@@ -120,7 +120,7 @@ namespace Identity.BLL.Services
 
             restriction.Type = type;
 
-            await _publisher.SendAsync(restriction.ToTemplate(), "/user-restriction");
+            await _publisher.SendAsync(restriction.ToTemplate());
 
             return restriction.ToResponse();
         }
@@ -161,7 +161,7 @@ namespace Identity.BLL.Services
 
             restriction.Type = type;
 
-            await _publisher.SendAsync(restriction.ToTemplate(), "/user-restriction");
+            await _publisher.SendAsync(restriction.ToTemplate());
 
             return restriction.ToResponse();
         }
@@ -174,7 +174,7 @@ namespace Identity.BLL.Services
                 .FirstOrDefaultAsync(ur => ur.Id == id) ??
                 throw new NotFoundException("Эффект не найден");
 
-            await _publisher.SendAsync(restriction.ToTemplate(isDeleted: true), "/user-restriction");
+            await _publisher.SendAsync(restriction.ToTemplate(isDeleted: true));
 
             _context.Restrictions.Remove(restriction);
             await _context.SaveChangesAsync();

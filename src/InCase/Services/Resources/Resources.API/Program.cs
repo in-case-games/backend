@@ -83,6 +83,8 @@ builder.Services.AddHostedService<GameItemManagerService>();
 
 builder.Services.AddMassTransit(x =>
 {
+    x.SetKebabCaseEndpointNameFormatter();
+
     x.AddBus(provider => Bus.Factory.CreateUsingRabbitMq(cfg =>
     {
         cfg.Host(new Uri(builder.Configuration["MassTransit:Uri"]!), h =>

@@ -53,13 +53,13 @@ namespace Payment.BLL.Services
 
             SiteStatisticsAdminTemplate templateStats = new() { TotalReplenished = pay };
 
-            await _publisher.SendAsync(templateStats, "/statistics_admin");
+            await _publisher.SendAsync(templateStats);
 
             if (promocode is not null)
             {
                 UserPromocodeTemplate templatePromo = promocode.ToTemplate();
 
-                await _publisher.SendAsync(templatePromo, "/user-promocode_activated");
+                await _publisher.SendAsync(templatePromo);
 
                 _context.UserPromocodes.Remove(promocode);
 
@@ -78,7 +78,7 @@ namespace Payment.BLL.Services
                 UserId = invoice.UserId
             };
 
-            await _publisher.SendAsync(payment.ToTemplate(), "/user-payment");
+            await _publisher.SendAsync(payment.ToTemplate());
 
             await _context.Payments.AddAsync(payment);
             await _context.SaveChangesAsync();

@@ -186,7 +186,7 @@ namespace Resources.BLL.Services
             await _context.Items.AddAsync(item);
             await _context.SaveChangesAsync();
 
-            await _publisher.SendAsync(item.ToTemplate(request.IdForMarket), "/game-item");
+            await _publisher.SendAsync(item.ToTemplate(request.IdForMarket));
 
             item.Game = game;
             item.Quality = quality;
@@ -225,7 +225,7 @@ namespace Resources.BLL.Services
             _context.Items.Update(item);
             await _context.SaveChangesAsync();
 
-            await _publisher.SendAsync(item.ToTemplate(request.IdForMarket), "/game-item");
+            await _publisher.SendAsync(item.ToTemplate(request.IdForMarket));
 
             item.Game = game;
             item.Quality = quality;
@@ -249,7 +249,7 @@ namespace Resources.BLL.Services
             _context.Items.Remove(item);
             await _context.SaveChangesAsync();
 
-            await _publisher.SendAsync(item.ToTemplate(idForMarket: null, isDeleted: true), "/game-item");
+            await _publisher.SendAsync(item.ToTemplate(idForMarket: null, isDeleted: true));
 
             return item.ToResponse();
         }

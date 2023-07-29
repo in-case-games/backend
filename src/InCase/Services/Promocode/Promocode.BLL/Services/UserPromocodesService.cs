@@ -101,7 +101,7 @@ namespace Promocode.BLL.Services
             await _context.UserPromocodes.AddAsync(userPromocode);
             await _context.SaveChangesAsync();
 
-            await _publisher.SendAsync(userPromocode.ToTemplate(), "/user-promocode");
+            await _publisher.SendAsync(userPromocode.ToTemplate());
 
             return userPromocode.ToResponse();
         }
@@ -142,7 +142,7 @@ namespace Promocode.BLL.Services
 
             await _context.SaveChangesAsync();
 
-            await _publisher.SendAsync(userPromocode.ToTemplate(), "/user-promocode");
+            await _publisher.SendAsync(userPromocode.ToTemplate());
 
             return userPromocode.ToResponse();
         }

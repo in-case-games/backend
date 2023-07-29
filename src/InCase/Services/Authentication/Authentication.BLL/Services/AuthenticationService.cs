@@ -74,7 +74,7 @@ namespace Authentication.BLL.Services
                 };
             }
 
-            await _publisher.SendAsync(template, "/email");
+            await _publisher.SendAsync(template);
         }
 
         public async Task SignUpAsync(UserRequest request)
@@ -125,8 +125,8 @@ namespace Authentication.BLL.Services
 
             await _context.SaveChangesAsync();
 
-            await _publisher.SendAsync(user.ToTemplate(false), "/user");
-            await _publisher.SendAsync(template, "/email");
+            await _publisher.SendAsync(user.ToTemplate(false));
+            await _publisher.SendAsync(template);
         }
 
         public async Task<TokensResponse> RefreshTokensAsync(string token)

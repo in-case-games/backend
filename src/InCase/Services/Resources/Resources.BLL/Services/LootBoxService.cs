@@ -76,7 +76,7 @@ namespace Resources.BLL.Services
             await _context.LootBoxes.AddAsync(box);
             await _context.SaveChangesAsync();
 
-            await _publisher.SendAsync(box.ToTemplate(isDeleted: false), "/loot-box");
+            await _publisher.SendAsync(box.ToTemplate(isDeleted: false));
 
             return box.ToResponse();
         }
@@ -97,7 +97,7 @@ namespace Resources.BLL.Services
             _context.LootBoxes.Update(newBox);
             await _context.SaveChangesAsync();
 
-            await _publisher.SendAsync(newBox.ToTemplate(isDeleted: false), "/loot-box");
+            await _publisher.SendAsync(newBox.ToTemplate(isDeleted: false));
 
             return newBox.ToResponse();
         }
@@ -112,7 +112,7 @@ namespace Resources.BLL.Services
             _context.LootBoxes.Remove(box);
             await _context.SaveChangesAsync();
 
-            await _publisher.SendAsync(box.ToTemplate(isDeleted: true), "/loot-box");
+            await _publisher.SendAsync(box.ToTemplate(isDeleted: true));
 
             return box.ToResponse();
         }

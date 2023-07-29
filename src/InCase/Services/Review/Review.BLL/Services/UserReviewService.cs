@@ -74,7 +74,7 @@ namespace Review.BLL.Services
             await _context.Reviews.AddAsync(review);
             await _context.SaveChangesAsync();
 
-            await _publisher.SendAsync(template, "/statistics");
+            await _publisher.SendAsync(template);
 
             return review.ToResponse();
         }
@@ -150,7 +150,7 @@ namespace Review.BLL.Services
             _context.Reviews.Remove(review);
             await _context.SaveChangesAsync();
 
-            await _publisher.SendAsync(template, "/statistics");
+            await _publisher.SendAsync(template);
 
             return review.ToResponse();
         }
@@ -170,7 +170,7 @@ namespace Review.BLL.Services
             _context.Reviews.Remove(review);
             await _context.SaveChangesAsync();
 
-            await _publisher.SendAsync(template, "/statistics");
+            await _publisher.SendAsync(template);
 
             return review.ToResponse();
         }

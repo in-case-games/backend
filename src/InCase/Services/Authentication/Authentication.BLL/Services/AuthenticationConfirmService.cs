@@ -61,7 +61,7 @@ namespace Authentication.BLL.Services
 
                 SiteStatisticsTemplate statisticsTemplate = new() { Users = 1 };
 
-                await _publisher.SendAsync(statisticsTemplate, "/statistics");
+                await _publisher.SendAsync(statisticsTemplate);
             }
             else if (info.DeletionDate != null)
             {
@@ -89,7 +89,7 @@ namespace Authentication.BLL.Services
                 };
             }
 
-            await _publisher.SendAsync(template, "/email");
+            await _publisher.SendAsync(template);
 
             info.IsConfirmed = true;
             info.DeletionDate = null;
@@ -121,7 +121,7 @@ namespace Authentication.BLL.Services
                 }
             };
 
-            await _publisher.SendAsync(template, "/email");
+            await _publisher.SendAsync(template);
 
             _context.AdditionalInfos.Update(user.AdditionalInfo);
             await _context.SaveChangesAsync();
@@ -156,8 +156,8 @@ namespace Authentication.BLL.Services
                 }
             };
 
-            await _publisher.SendAsync(user.ToTemplate(false), "/user");
-            await _publisher.SendAsync(template, "/email");
+            await _publisher.SendAsync(user.ToTemplate(false));
+            await _publisher.SendAsync(template);
 
             return user.ToResponse();
         }
@@ -181,7 +181,7 @@ namespace Authentication.BLL.Services
                 }
             };
 
-            await _publisher.SendAsync(template, "/email");
+            await _publisher.SendAsync(template);
 
             _context.Users.Update(user);
             await _context.SaveChangesAsync();

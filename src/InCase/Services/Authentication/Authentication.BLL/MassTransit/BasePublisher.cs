@@ -5,21 +5,18 @@ namespace Authentication.BLL.MassTransit
 {
     public class BasePublisher
     {
-        private readonly IConfiguration _cfg;
         private readonly IBus _bus;
 
-        public BasePublisher(IConfiguration cfg, IBus bus)
+        public BasePublisher(IBus bus)
         {
-            _cfg = cfg;
             _bus = bus;
         }
 
-        public async Task SendAsync<T>(T template, string name)
+        public async Task SendAsync<T>(T template) where T : class
         {
             if (template is not null)
             {
-                Uri uri = new(_cfg["MassTransit:Uri"] + name);
-                var endPoint = await _bus.GetSendEndpoint(uri);
+                var endPoint = await _bus.GetPublishSendEndpoint<T>();
                 await endPoint.Send(template);
             }
         }

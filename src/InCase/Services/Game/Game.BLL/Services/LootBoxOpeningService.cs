@@ -47,7 +47,7 @@ namespace Game.BLL.Services
             {
                 UserPromocodeTemplate templatePromo = promocode.ToTemplate();
 
-                await _publisher.SendAsync(templatePromo, "/user-promocode_activated");
+                await _publisher.SendAsync(templatePromo);
 
                 _context.UserPromocodes.Remove(promocode);
             }
@@ -85,8 +85,8 @@ namespace Game.BLL.Services
             SiteStatisticsTemplate statisticsTemplate = new() { LootBoxes = 1 };
             SiteStatisticsAdminTemplate statisticsAdminTemplate = new() { BalanceWithdrawn = revenue };
 
-            await _publisher.SendAsync(statisticsTemplate, "/statistics");
-            await _publisher.SendAsync(statisticsAdminTemplate, "/statistics_admin");
+            await _publisher.SendAsync(statisticsTemplate);
+            await _publisher.SendAsync(statisticsAdminTemplate);
 
             box.Balance -= expenses;
 
@@ -114,7 +114,7 @@ namespace Game.BLL.Services
                 UserId = userId,
             };
 
-            await _publisher.SendAsync(templateUser, "/user-inventory");
+            await _publisher.SendAsync(templateUser);
 
             await _context.Openings.AddAsync(opening);
 
