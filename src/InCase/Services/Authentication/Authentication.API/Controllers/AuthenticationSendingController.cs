@@ -21,10 +21,10 @@ namespace Authentication.API.Controllers
         [ProducesResponseType(typeof(ApiResult<string>),
             (int)HttpStatusCode.OK)]
         [AllowAnonymous]
-        [HttpGet("forgot/password/{login}")]
-        public async Task<IActionResult> ForgotPassword(string login)
+        [HttpPut("forgot/password")]
+        public async Task<IActionResult> ForgotPassword(DataMailRequest request)
         {
-            await _authSendingService.ForgotPasswordAsync(login);
+            await _authSendingService.ForgotPasswordAsync(request);
 
             return Ok(ApiResult<string>.SentEmail());
         }
@@ -32,10 +32,10 @@ namespace Authentication.API.Controllers
         [ProducesResponseType(typeof(ApiResult<string>),
             (int)HttpStatusCode.OK)]
         [AllowAnonymous]
-        [HttpGet("email/{login}&{password}")]
-        public async Task<IActionResult> UpdateEmail(string login, string password)
+        [HttpPut("email/{password}")]
+        public async Task<IActionResult> UpdateEmail(DataMailRequest request, string password)
         {
-            await _authSendingService.UpdateEmailAsync(login, password);
+            await _authSendingService.UpdateEmailAsync(request, password);
 
             return Ok(ApiResult<string>.SentEmail());
         }
@@ -43,10 +43,10 @@ namespace Authentication.API.Controllers
         [ProducesResponseType(typeof(ApiResult<string>),
             (int)HttpStatusCode.OK)]
         [AllowAnonymous]
-        [HttpGet("login/{login}&{password}")]
-        public async Task<IActionResult> UpdateLogin(string login, string password)
+        [HttpPut("login/{password}")]
+        public async Task<IActionResult> UpdateLogin(DataMailRequest request, string password)
         {
-            await _authSendingService.UpdateLoginAsync(login, password);
+            await _authSendingService.UpdateLoginAsync(request, password);
 
             return Ok(ApiResult<string>.SentEmail());
         }
@@ -54,10 +54,10 @@ namespace Authentication.API.Controllers
         [ProducesResponseType(typeof(ApiResult<string>),
             (int)HttpStatusCode.OK)]
         [AllowAnonymous]
-        [HttpGet("password/{login}&{password}")]
-        public async Task<IActionResult> UpdatePassword(string login, string password)
+        [HttpPut("password/{password}")]
+        public async Task<IActionResult> UpdatePassword(DataMailRequest request, string password)
         {
-            await _authSendingService.UpdatePasswordAsync(login, password);
+            await _authSendingService.UpdatePasswordAsync(request, password);
 
             return Ok(ApiResult<string>.SentEmail());
         }
@@ -65,10 +65,10 @@ namespace Authentication.API.Controllers
         [ProducesResponseType(typeof(ApiResult<string>),
             (int)HttpStatusCode.OK)]
         [AllowAnonymous]
-        [HttpDelete("confirm/{login}&{password}")]
-        public async Task<IActionResult> DeleteAccount(string login, string password)
+        [HttpDelete("confirm/{password}")]
+        public async Task<IActionResult> DeleteAccount(DataMailRequest request, string password)
         {
-            await _authSendingService.DeleteAccountAsync(login, password);
+            await _authSendingService.DeleteAccountAsync(request, password);
 
             return Ok(ApiResult<string>.SentEmail());
         }

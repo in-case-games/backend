@@ -497,7 +497,7 @@
       "UpstreamHttpMethod": [ "Get" ]
     },
     {
-      "DownstreamPathTemplate": "/api/user-additional-info/role/{id}",
+      "DownstreamPathTemplate": "/api/user-additional-info/role/{id}&{userId}",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
@@ -505,11 +505,11 @@
           "Port": 7105
         }
       ],
-      "UpstreamPathTemplate": "/api/user/info/role/{id}",
+      "UpstreamPathTemplate": "/api/user/{userId}/info/role/{id}",
       "UpstreamHttpMethod": [ "Get" ]
     },
     {
-      "DownstreamPathTemplate": "/api/user-additional-info/deletion/{date}",
+      "DownstreamPathTemplate": "/api/user-additional-info/deletion/{date}&{userId}",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
@@ -517,7 +517,7 @@
           "Port": 7105
         }
       ],
-      "UpstreamPathTemplate": "/api/user/info/deletion/{date}",
+      "UpstreamPathTemplate": "/api/user/{userId}/info/deletion/{date}",
       "UpstreamHttpMethod": [ "Get" ]
     },
     {

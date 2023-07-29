@@ -58,10 +58,10 @@ namespace Identity.API.Controllers
         [ProducesResponseType(typeof(ApiResult<UserAdditionalInfoResponse>),
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Owner)]
-        [HttpGet("role/{id}")]
-        public async Task<IActionResult> UpdateRole(Guid id)
+        [HttpGet("role/{id}&{userId}")]
+        public async Task<IActionResult> UpdateRole(Guid id, Guid userId)
         {
-            UserAdditionalInfoResponse response = await _infoService.UpdateRoleAsync(UserId, id);
+            UserAdditionalInfoResponse response = await _infoService.UpdateRoleAsync(userId, id);
 
             return Ok(ApiResult<UserAdditionalInfoResponse>.OK(response));
         }
@@ -69,10 +69,10 @@ namespace Identity.API.Controllers
         [ProducesResponseType(typeof(ApiResult<UserAdditionalInfoResponse>),
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Admin, Roles.Owner)]
-        [HttpGet("deletion/{date}")]
-        public async Task<IActionResult> UpdateDeletionDate(DateTime? date = null)
+        [HttpGet("deletion/{date}&{userId}")]
+        public async Task<IActionResult> UpdateDeletionDate(Guid userId, DateTime? date = null)
         {
-            UserAdditionalInfoResponse response = await _infoService.UpdateDeletionDateAsync(UserId, date);
+            UserAdditionalInfoResponse response = await _infoService.UpdateDeletionDateAsync(userId, date);
 
             return Ok(ApiResult<UserAdditionalInfoResponse>.OK(response));
         }

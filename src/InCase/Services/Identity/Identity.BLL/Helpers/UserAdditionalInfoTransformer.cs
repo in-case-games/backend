@@ -1,5 +1,6 @@
 using Identity.BLL.Models;
 using Identity.DAL.Entities;
+using Infrastructure.MassTransit.User;
 
 namespace Identity.BLL.Helpers
 {
@@ -12,6 +13,14 @@ namespace Identity.BLL.Helpers
             DeletionDate = entity.DeletionDate,
             UserId = entity.UserId,
             Role = entity.Role?.ToResponse(),
+        };
+
+        public static UserAdditionalInfoTemplate ToTemplate(this UserAdditionalInfo entity) => new()
+        {
+            Id = entity.Id,
+            DeletionDate = entity.DeletionDate,
+            RoleId = entity.RoleId,
+            UserId = entity.UserId,
         };
     }
 }

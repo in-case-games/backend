@@ -56,7 +56,7 @@ namespace Identity.BLL.Services
 
             await _context.SaveChangesAsync();
 
-            await _publisher.SendAsync(info);
+            await _publisher.SendAsync(info.ToTemplate());
 
             return info.ToResponse();
         }
@@ -90,7 +90,7 @@ namespace Identity.BLL.Services
 
             await _context.SaveChangesAsync();
 
-            await _publisher.SendAsync(info);
+            await _publisher.SendAsync(info.ToTemplate());
 
             return info.ToResponse();
         }

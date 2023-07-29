@@ -26,11 +26,11 @@ namespace Authentication.BLL.Services
             _publisher = publisher;
         }
 
-        public async Task DeleteAccountAsync(string login, string password)
+        public async Task DeleteAccountAsync(DataMailRequest request, string password)
         {
             User user = await _context.Users
                 .AsNoTracking()
-                .FirstOrDefaultAsync(u => u.Login == login) ??
+                .FirstOrDefaultAsync(u => u.Login == request.Login || u.Email == request.Email) ??
                 throw new NotFoundException("Пользователь не найден");
 
             if (!ValidationService.IsValidUserPassword(in user, password))
@@ -62,11 +62,11 @@ namespace Authentication.BLL.Services
             await _publisher.SendAsync(template);
         }
 
-        public async Task ForgotPasswordAsync(string login)
+        public async Task ForgotPasswordAsync(DataMailRequest request)
         {
             User user = await _context.Users
                 .AsNoTracking()
-                .FirstOrDefaultAsync(u => u.Login == login) ??
+                .FirstOrDefaultAsync(u => u.Login == request.Login || u.Email == request.Email) ??
                 throw new NotFoundException("Пользователь не найден");
 
             string token = _jwtService.CreateEmailToken(user);
@@ -88,11 +88,11 @@ namespace Authentication.BLL.Services
             await _publisher.SendAsync(template);
         }
 
-        public async Task UpdateEmailAsync(string login, string password)
+        public async Task UpdateEmailAsync(DataMailRequest request, string password)
         {
             User user = await _context.Users
                 .AsNoTracking()
-                .FirstOrDefaultAsync(u => u.Login == login) ??
+                .FirstOrDefaultAsync(u => u.Login == request.Login || u.Email == request.Email) ??
                 throw new NotFoundException("Пользователь не найден");
 
             if (!ValidationService.IsValidUserPassword(in user, password))
@@ -124,11 +124,11 @@ namespace Authentication.BLL.Services
             await _publisher.SendAsync(template);
         }
 
-        public async Task UpdateLoginAsync(string login, string password)
+        public async Task UpdateLoginAsync(DataMailRequest request, string password)
         {
             User user = await _context.Users
                 .AsNoTracking()
-                .FirstOrDefaultAsync(u => u.Login == login) ??
+                .FirstOrDefaultAsync(u => u.Login == request.Login || u.Email == request.Email) ??
                 throw new NotFoundException("Пользователь не найден");
 
             if (!ValidationService.IsValidUserPassword(in user, password))
@@ -160,11 +160,11 @@ namespace Authentication.BLL.Services
             await _publisher.SendAsync(template);
         }
 
-        public async Task UpdatePasswordAsync(string login, string password)
+        public async Task UpdatePasswordAsync(DataMailRequest request, string password)
         {
             User user = await _context.Users
                 .AsNoTracking()
-                .FirstOrDefaultAsync(u => u.Login == login) ??
+                .FirstOrDefaultAsync(u => u.Login == request.Login || u.Email == request.Email) ??
                 throw new NotFoundException("Пользователь не найден");
 
             if (!ValidationService.IsValidUserPassword(in user, password))
