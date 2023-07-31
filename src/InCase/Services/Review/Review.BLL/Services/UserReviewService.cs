@@ -63,12 +63,17 @@ namespace Review.BLL.Services
 
         public async Task<UserReviewResponse> CreateAsync(UserReviewRequest request)
         {
+            if (request.Score > 5 || request.Score < 1)
+                throw new BadRequestException("Оценка отзыва должна быть больше 1 и меньше 5");
+            if (await _context.Reviews.AnyAsync(u => u.UserId == request.UserId))
+                throw new ConflictException("У вас уже есть отзыв");
             if (!await _context.User.AnyAsync(u => u.Id == request.UserId))
                 throw new NotFoundException("Пользователь не найден");
 
             UserReview review = request.ToEntity(isNewGuid: true);
             SiteStatisticsTemplate template = new() { Reviews = 1 };
 
+            review.CreationDate = DateTime.UtcNow;
             review.IsApproved = false;
 
             await _context.Reviews.AddAsync(review);
@@ -83,7 +88,6 @@ namespace Review.BLL.Services
         {
             UserReview review = await _context.Reviews
                 .Include(review => review.Images)
-                .AsNoTracking()
                 .FirstOrDefaultAsync(ur => ur.Id == id) ??
                 throw new NotFoundException("Отзыв не найден");
 
@@ -98,7 +102,6 @@ namespace Review.BLL.Services
         {
             UserReview review = await _context.Reviews
                 .Include(review => review.Images)
-                .AsNoTracking()
                 .FirstOrDefaultAsync(ur => ur.Id == id) ??
                 throw new NotFoundException("Отзыв не найден");
 
@@ -111,6 +114,8 @@ namespace Review.BLL.Services
 
         public async Task<UserReviewResponse> UpdateAsync(UserReviewRequest request)
         {
+            if (request.Score > 5 || request.Score < 1)
+                throw new BadRequestException("Оценка отзыва должна быть больше 1 и меньше 5");
             if (!await _context.User.AnyAsync(u => u.Id == request.UserId))
                 throw new NotFoundException("Пользователь не найден");
 
@@ -122,6 +127,7 @@ namespace Review.BLL.Services
                 .FirstOrDefaultAsync(ur => ur.Id == review.Id) ??
                 throw new NotFoundException("Отзыв не найден");
 
+            review.CreationDate = reviewOld.CreationDate;
             review.IsApproved = false;
 
             _context.Entry(reviewOld).CurrentValues.SetValues(review);

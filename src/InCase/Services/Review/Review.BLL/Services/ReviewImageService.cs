@@ -74,7 +74,6 @@ namespace Review.BLL.Services
         public async Task<ReviewImageResponse> CreateAsync(Guid userId, ReviewImageRequest request)
         {
             UserReview review = await _context.Reviews
-                .AsNoTracking()
                 .FirstOrDefaultAsync(ur => ur.Id == request.ReviewId) ??
                 throw new NotFoundException("Отзыв не найден");
 
@@ -82,6 +81,8 @@ namespace Review.BLL.Services
 
             if (review.UserId != userId)
                 throw new ForbiddenException("Доступ к отзыву только у создателя");
+
+            review.IsApproved = false;
 
             //TODO Save image local folder 
 
