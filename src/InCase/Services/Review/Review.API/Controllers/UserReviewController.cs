@@ -97,7 +97,7 @@ namespace Review.API.Controllers
         public async Task<IActionResult> GetByUserId()
         {
             List<UserReviewResponse> response = await _userReviewService
-                .GetByUserIdAsync(UserId, isOnlyApproved: true);
+                .GetByUserIdAsync(UserId, isOnlyApproved: false);
 
             return Ok(ApiResult<List<UserReviewResponse>>.OK(response));
         }
@@ -119,7 +119,7 @@ namespace Review.API.Controllers
         [HttpGet("{id}/denied")]
         public async Task<IActionResult> Denied(Guid id)
         {
-            UserReviewResponse response = await _userReviewService.ApproveReviewAsync(id);
+            UserReviewResponse response = await _userReviewService.DeniedReviewAsync(id);
 
             return Ok(ApiResult<UserReviewResponse>.OK(response));
         }
@@ -130,6 +130,8 @@ namespace Review.API.Controllers
         [HttpPost]
         public async Task<IActionResult> Post(UserReviewRequest request)
         {
+            request.UserId = UserId;
+
             UserReviewResponse response = await _userReviewService.CreateAsync(request);
 
             return Ok(ApiResult<UserReviewResponse>.OK(response));
@@ -141,6 +143,8 @@ namespace Review.API.Controllers
         [HttpPut]
         public async Task<IActionResult> Put(UserReviewRequest request)
         {
+            request.UserId = UserId;
+
             UserReviewResponse response = await _userReviewService.UpdateAsync(request);
 
             return Ok(ApiResult<UserReviewResponse>.OK(response));
