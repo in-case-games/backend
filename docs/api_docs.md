@@ -89,6 +89,56 @@ Roles - Any
         "message": "Не валидный {type} токен"
     }
 }
+<!-- [M] UpdateLogin -->
+
+## GET - /api/authentication/confirm/login/{login}
+Roles - Any
+
+### RequestBody - { 
+    "queries": {
+        "email": "string",
+    },
+    "params": {
+        "token": "string",
+    }
+}
+
+### 200 ResponseBody - {
+    "code": 0,
+    "data": {
+        "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+        "email": "string",
+        "login": "string"
+    }
+}
+
+### 400 ResponseBody - {
+    "error": {
+        "code": 0,
+        "message": "error message"
+    }
+}
+
+### 400 ResponseBody - {
+    "error": {
+        "code": 5,
+        "message": "Логин занят"
+    }
+}
+
+### 400 ResponseBody - {
+    "error": {
+        "code": 4,
+        "message": "Пользователь не найден"
+    }
+}
+
+### 400 ResponseBody - {
+    "error": {
+        "code": 1,
+        "message": "Не валидный {type} токен"
+    }
+}
 <!-- [M] UpdatePassword -->
 
 ## GET - /api/authentication/confirm/password/{password}
@@ -332,6 +382,39 @@ Roles - Any
         "message": "Неверный пароль"
     }
 }
+<!-- [M] UpdateLogin -->
+
+## PUT - /api/authentication/sending/login/{login}
+
+### RequestBody - {
+    "queries": {
+        "password": "string"
+    },
+    {
+        "login": "string",
+        "email": "string",
+        "token": "string"
+    }
+}
+
+### 200 ResponseBody - {
+    "code": 0,
+    "data": "string"
+}
+
+### 400 ResponseBody - {
+    "error": {
+        "code": 4,
+        "message": "Пользователь не найден"
+    }
+}
+
+### 400 ResponseBody - {
+    "error": {
+        "code": 1,
+        "message": "Неверный пароль"
+    }
+}
 <!-- [M] UpdatePassword -->
 
 ## PUT - /api/authentication/sending/password/{password}
@@ -516,5 +599,376 @@ Roles - Admin , Owner
     "error": {
         "code": 1,
         "message": "Forbidden"
+    }
+}
+# ===Identity Service=== 
+<!-- [C] User -->
+<!-- [M] Get -->
+
+## GET - /api/user/{id}
+Roles - Any
+
+### RequestBody - {
+    "queries": {
+        "id": "GUID",
+    }
+}
+
+### 200 ResponseBody - {
+    "code": 0,
+    "data": {
+    "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+    "login": "string",
+    "restrictions": [
+      {
+        "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+        "creationDate": "2023-07-31T12:34:49.541Z",
+        "expirationDate": "2023-07-31T12:34:49.541Z",
+        "description": "string",
+        "userId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+        "ownerId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+        "type": {
+          "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+          "name": "string"
+        }
+      }
+    ],
+    "ownerRestrictions": [
+      {
+        "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+        "creationDate": "2023-07-31T12:34:49.541Z",
+        "expirationDate": "2023-07-31T12:34:49.541Z",
+        "description": "string",
+        "userId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+        "ownerId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+        "type": {
+          "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+          "name": "string"
+        }
+      }
+    ],
+    "additionalInfo": {
+      "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "imageUri": "string",
+      "creationDate": "2023-07-31T12:34:49.541Z",
+      "deletionDate": "2023-07-31T12:34:49.541Z",
+      "role": {
+        "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+        "name": "string"
+      },
+      "userId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    }
+  }
+}
+
+### 400 ResponseBody - {
+    "error": {
+        "code": 4,
+        "message": "Пользователь не найден"
+    }
+}
+<!-- [M] Get -->
+
+## GET - /api/user
+Roles - User, Admin , Owner , Bot
+
+### 200 ResponseBody - {
+    "code": 0,
+    "data": {
+    "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+    "login": "string",
+    "restrictions": [
+      {
+        "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+        "creationDate": "2023-07-31T12:34:49.541Z",
+        "expirationDate": "2023-07-31T12:34:49.541Z",
+        "description": "string",
+        "userId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+        "ownerId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+        "type": {
+          "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+          "name": "string"
+        }
+      }
+    ],
+    "ownerRestrictions": [
+      {
+        "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+        "creationDate": "2023-07-31T12:34:49.541Z",
+        "expirationDate": "2023-07-31T12:34:49.541Z",
+        "description": "string",
+        "userId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+        "ownerId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+        "type": {
+          "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+          "name": "string"
+        }
+      }
+    ],
+    "additionalInfo": {
+      "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "imageUri": "string",
+      "creationDate": "2023-07-31T12:34:49.541Z",
+      "deletionDate": "2023-07-31T12:34:49.541Z",
+      "role": {
+        "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+        "name": "string"
+      },
+      "userId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    }
+  }
+}
+
+### 400 ResponseBody - {
+    "error": {
+        "code": 4,
+        "message": "Пользователь не найден"
+    }
+}
+<!-- [M] Get -->
+
+## GET - /api/user/login/{login}
+Roles - Any
+
+### RequestBody - {
+    "queries": {
+        "login": "string",
+    }
+}
+
+### 200 ResponseBody - {
+    "code": 0,
+    "data": {
+    "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+    "login": "string",
+    "restrictions": [
+      {
+        "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+        "creationDate": "2023-07-31T12:34:49.541Z",
+        "expirationDate": "2023-07-31T12:34:49.541Z",
+        "description": "string",
+        "userId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+        "ownerId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+        "type": {
+          "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+          "name": "string"
+        }
+      }
+    ],
+    "ownerRestrictions": [
+      {
+        "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+        "creationDate": "2023-07-31T12:34:49.541Z",
+        "expirationDate": "2023-07-31T12:34:49.541Z",
+        "description": "string",
+        "userId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+        "ownerId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+        "type": {
+          "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+          "name": "string"
+        }
+      }
+    ],
+    "additionalInfo": {
+      "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "imageUri": "string",
+      "creationDate": "2023-07-31T12:34:49.541Z",
+      "deletionDate": "2023-07-31T12:34:49.541Z",
+      "role": {
+        "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+        "name": "string"
+      },
+      "userId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    }
+  }
+}
+
+### 400 ResponseBody - {
+    "error": {
+        "code": 4,
+        "message": "Пользователь не найден"
+    }
+}
+<!-- [C] UserAdditionalInfo -->
+<!-- [M] Get -->
+
+## GET - /api/user-additional-info/{id}
+Roles - Any
+
+### RequestBody - {
+    "queries": {
+        "id": "GUID",
+    }
+}
+
+### 200 ResponseBody - {
+    {
+    "code": 0,
+    "data": {
+        "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+        "imageUri": "string",
+        "creationDate": "2023-07-31T12:39:51.607Z",
+        "deletionDate": "2023-07-31T12:39:51.607Z",
+        "role": {
+            "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+            "name": "string"
+        },
+    "userId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+  }
+    }
+}
+
+### 400 ResponseBody - {
+    "error": {
+        "code": 4,
+        "message": "Пользователь не найден"
+    }
+}
+<!-- [M] GetByUserId -->
+
+## GET - /api/user-additional-info/user/{id}
+Roles - Any
+
+### RequestBody - {
+    "queries": {
+        "id": "GUID",
+    }
+}
+
+### 200 ResponseBody - {
+    {
+    "code": 0,
+    "data": {
+        "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+        "imageUri": "string",
+        "creationDate": "2023-07-31T12:39:51.607Z",
+        "deletionDate": "2023-07-31T12:39:51.607Z",
+        "role": {
+            "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+            "name": "string"
+        },
+    "userId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+  }
+    }
+}
+
+### 400 ResponseBody - {
+    "error": {
+        "code": 4,
+        "message": "Пользователь не найден"
+    }
+}
+
+<!-- [M] Get -->
+
+## GET - /api/user-additional-info
+Roles - User, Admin , Owner , Bot
+
+### 200 ResponseBody - {
+    {
+    "code": 0,
+    "data": {
+        "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+        "imageUri": "string",
+        "creationDate": "2023-07-31T12:39:51.607Z",
+        "deletionDate": "2023-07-31T12:39:51.607Z",
+        "role": {
+            "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+            "name": "string"
+        },
+    "userId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+  }
+    }
+}
+
+### 400 ResponseBody - {
+    "error": {
+        "code": 4,
+        "message": "Пользователь не найден"
+    }
+}
+<!-- [M] UpdateRole -->
+
+## GET - /api/user-additional-info/role/{id}&{userId}
+Roles - Owner
+
+### RequestBody - {
+    "queries": {
+        "id": "GUID",
+        "userId": "GUID"
+    }
+}
+
+### 200 ResponseBody - {
+    {
+    "code": 0,
+    "data": {
+        "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+        "imageUri": "string",
+        "creationDate": "2023-07-31T12:39:51.607Z",
+        "deletionDate": "2023-07-31T12:39:51.607Z",
+        "role": {
+            "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+            "name": "string"
+        },
+    "userId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+  }
+    }
+}
+
+### 400 ResponseBody - {
+    "error": {
+        "code": 4,
+        "message": "Пользователь не найден"
+    }
+}
+
+### 400 ResponseBody - {
+    "error": {
+        "code": 4,
+        "message": "Роль не найдена"
+    }
+}
+
+<!-- [M] UpdateDeletionDate -->
+
+## GET - /api/user-additional-info/deletion/date/{userId}
+Roles - Owner
+
+### RequestBody - {
+    "queries": {
+        "userId": "GUID",
+        "date": "null"
+    }
+}
+
+### 200 ResponseBody - {
+    {
+    "code": 0,
+    "data": {
+        "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+        "imageUri": "string",
+        "creationDate": "2023-07-31T12:39:51.607Z",
+        "deletionDate": "2023-07-31T12:39:51.607Z",
+        "role": {
+            "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+            "name": "string"
+        },
+    "userId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+  }
+    }
+}
+
+### 400 ResponseBody - {
+    "error": {
+        "code": 4,
+        "message": "Пользователь не найден"
+    }
+}
+
+### 400 ResponseBody - {
+    "error": {
+        "code": 0,
+        "message": "Дата не корректна"
     }
 }
