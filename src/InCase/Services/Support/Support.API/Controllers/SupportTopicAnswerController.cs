@@ -58,9 +58,9 @@ namespace Support.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
         [HttpGet("user/{userId}/admin")]
-        public async Task<IActionResult> GetByAdminUserId(Guid id)
+        public async Task<IActionResult> GetByAdminUserId(Guid userId)
         {
-            List<SupportTopicAnswerResponse> response = await _answerService.GetByUserIdAsync(id);
+            List<SupportTopicAnswerResponse> response = await _answerService.GetByUserIdAsync(userId);
 
             return Ok(ApiResult<List<SupportTopicAnswerResponse>>.OK(response));
         }

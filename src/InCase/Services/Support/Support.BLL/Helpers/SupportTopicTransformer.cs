@@ -7,7 +7,7 @@ namespace Support.BLL.Helpers
     {
         public static SupportTopic ToEntity(this SupportTopicRequest request, bool isNewGuid = false) => new()
         {
-            Id = request.Id,
+            Id = isNewGuid ? Guid.NewGuid() : request.Id,
             Content = request.Content,
             Date = request.Date,
             IsClosed = request.IsClosed,
