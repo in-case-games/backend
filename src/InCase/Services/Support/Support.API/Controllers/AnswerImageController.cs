@@ -103,9 +103,9 @@ namespace Support.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet("user/{userId}/admin")]
-        public async Task<IActionResult> GetByAdminUserId(Guid id)
+        public async Task<IActionResult> GetByAdminUserId(Guid userId)
         {
-            List<AnswerImageResponse> response = await _imageService.GetByUserIdAsync(id);
+            List<AnswerImageResponse> response = await _imageService.GetByUserIdAsync(userId);
 
             return Ok(ApiResult<List<AnswerImageResponse>>.OK(response));
         }

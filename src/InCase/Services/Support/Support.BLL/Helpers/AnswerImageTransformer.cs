@@ -8,7 +8,7 @@ namespace Support.BLL.Helpers
         public static AnswerImage ToEntity(this AnswerImageRequest request, bool isNewGuid = false) => new()
         {
             Id = isNewGuid ? Guid.NewGuid() : request.Id,
-            AnswerId = request.Id,
+            AnswerId = request.AnswerId,
         };
 
         public static AnswerImageResponse ToResponse(this AnswerImage entity) => new()

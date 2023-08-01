@@ -137,7 +137,7 @@ namespace Support.API.Controllers
 
         [ProducesResponseType(typeof(ApiResult<SupportTopicResponse>),
             (int)HttpStatusCode.OK)]
-        [AuthorizeByRole(Roles.Admin, Roles.Owner)]
+        [AuthorizeByRole(Roles.Owner)]
         [HttpDelete("{id}/admin")]
         public async Task<IActionResult> DeleteByAdmin(Guid id)
         {

@@ -39,7 +39,7 @@ namespace Support.BLL.Services
 
             return topic.UserId == userId ? 
                 image.ToResponse() : 
-                throw new ForbiddenException("Вы не создатель топика"); 
+                throw new ForbiddenException("Вы не создатель сообщения"); 
         }
 
         public async Task<AnswerImageResponse> GetAsync(Guid id)
@@ -70,7 +70,7 @@ namespace Support.BLL.Services
 
             return topic.UserId == userId ? 
                 answer.Images!.ToResponse() : 
-                throw new ForbiddenException("Вы не создатель топика");
+                throw new ForbiddenException("Вы не создатель сообщения");
         }
 
         public async Task<List<AnswerImageResponse>> GetByAnswerIdAsync(Guid id)
@@ -97,7 +97,7 @@ namespace Support.BLL.Services
                 throw new NotFoundException("Топик не найден");
 
             if (topic.UserId != userId)
-                throw new ForbiddenException("Вы не создатель топика");
+                throw new ForbiddenException("Вы не создатель сообщения");
 
             List<AnswerImageResponse> response = new();
 
@@ -112,20 +112,16 @@ namespace Support.BLL.Services
             if (!await _context.Users.AnyAsync(u => u.Id == userId))
                 throw new NotFoundException("Пользователь не найден");
 
-            List<SupportTopic> topics = await _context.Topics
-                .Include(st => st.Answers!)
-                    .ThenInclude(sta => sta.Images)
+            List<SupportTopicAnswer> answers = await _context.Answers
+                .Include(sta => sta.Images)
                 .AsNoTracking()
-                .Where(st => st.UserId == userId)
+                .Where(st => st.PlaintiffId == userId)
                 .ToListAsync();
 
             List<AnswerImageResponse> response = new();
-
-            foreach(var topic in topics)
-            {
-                foreach (var answer in topic.Answers!)
-                    response.AddRange(answer.Images!.ToResponse());
-            }
+            
+            foreach (var answer in answers)
+                response.AddRange(answer.Images!.ToResponse());
 
             return response;
         }
@@ -188,8 +184,8 @@ namespace Support.BLL.Services
                 .FirstOrDefaultAsync(st => st.Id == answer.TopicId) ??
                 throw new NotFoundException("Топик не найден");
 
-            if (topic.UserId != userId)
-                throw new ForbiddenException("Вы не создатель топика");
+            if (answer.PlaintiffId != userId)
+                throw new ForbiddenException("Вы не создатель сообщения");
 
             _context.Images.Remove(image);
             await _context.SaveChangesAsync();
