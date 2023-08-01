@@ -85,7 +85,8 @@ namespace Resources.BLL.Services
         {
             if (request.Cost <= 0) 
                 throw new BadRequestException("Кейс должен стоить больше 0");
-            if (!await _context.LootBoxes.AnyAsync(lb => lb.Id == request.Id))
+            LootBox oldBox = await _context.LootBoxes
+                .FirstOrDefaultAsync(lb => lb.Id == request.Id) ??
                 throw new NotFoundException("Кейс не найден");
             if (!await _context.Games.AnyAsync(g => g.Id == request.GameId))
                 throw new NotFoundException("Игра не найдена");
@@ -94,7 +95,7 @@ namespace Resources.BLL.Services
 
             LootBox newBox = request.ToEntity(isNewGuid: false);
 
-            _context.LootBoxes.Update(newBox);
+            _context.Entry(oldBox).CurrentValues.SetValues(newBox);
             await _context.SaveChangesAsync();
 
             await _publisher.SendAsync(newBox.ToTemplate(isDeleted: false));

@@ -36,7 +36,7 @@ namespace Resources.BLL.Services
         {
             request.Id = Guid.NewGuid();
 
-            if (!await _context.GroupBoxes.AnyAsync(glb => glb.Name == request.Name))
+            if (await _context.GroupBoxes.AnyAsync(glb => glb.Name == request.Name))
                 throw new ConflictException("Название группы кейсов занято");
 
             await _context.GroupBoxes.AddAsync(request);
