@@ -1533,4 +1533,43 @@ Roles - Admin, Owner
         "message": "Forbidden"
     }
 }
- 
+<!-- [C] UserRole -->
+<!-- [M] Get -->
+
+# GET - /api/user-role/{id}
+Roles - Any 
+
+### RequestBody - {
+    "queries": {
+        "id": "GUID"
+    }
+}
+
+### 200 ResponseBody - {
+    "code": 0,
+    "data": {
+        "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+        "name": "string"
+    }
+}
+
+### 400 ResponseBody - {
+    "error": {
+        "code": 4,
+        "message": "Роль не найдена"
+    }
+}   
+<!-- [M] Get -->
+
+# GET - /api/user-role
+Roles - Any 
+
+### 200 ResponseBody - {
+    "code": 0,
+    "data": [
+        {
+            "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+            "name": "string"
+        }
+    ]
+}
