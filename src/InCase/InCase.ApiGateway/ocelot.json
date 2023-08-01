@@ -595,7 +595,7 @@
     },
     //EndPoint: user-restriction
     {
-      "DownstreamPathTemplate": "/api/user-restriction",
+      "DownstreamPathTemplate": "/api/user-restriction/{id}",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
