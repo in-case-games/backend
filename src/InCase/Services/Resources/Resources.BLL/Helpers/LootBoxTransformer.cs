@@ -31,7 +31,8 @@ namespace Resources.BLL.Helpers
                 Id = isNewGuid ? Guid.NewGuid() : request.Id,
                 GameId = request.GameId,
                 Name = request.Name,
-                IsLocked = request.IsLocked
+                IsLocked = request.IsLocked,
+                Cost = request.Cost,
             };
 
         public static LootBoxTemplate ToTemplate(this LootBox entity, bool isDeleted = false) => new()

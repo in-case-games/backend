@@ -200,7 +200,9 @@ namespace Resources.BLL.Services
         {
             if (request.Cost <= 0) 
                 throw new BadRequestException("Предмет должен стоить больше 0");
-            if (!await _context.Items.AnyAsync(gi => gi.Id == request.Id))
+
+            GameItem itemOld = await _context.Items
+                .FirstOrDefaultAsync(gi => gi.Id == request.Id) ??
                 throw new NotFoundException("Предмет не найден");
 
             GameItemQuality quality = await _context.Qualities
@@ -222,7 +224,7 @@ namespace Resources.BLL.Services
 
             GameItem item = request.ToEntity();
 
-            _context.Items.Update(item);
+            _context.Entry(itemOld).CurrentValues.SetValues(item);
             await _context.SaveChangesAsync();
 
             await _publisher.SendAsync(item.ToTemplate(request.IdForMarket));
