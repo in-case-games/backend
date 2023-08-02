@@ -2251,18 +2251,6 @@
       "UpstreamHttpMethod": [ "Get" ]
     },
     {
-      "DownstreamPathTemplate": "/api/support-topic/{id}",
-      "DownstreamScheme": "https",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "localhost",
-          "Port": 7079
-        }
-      ],
-      "UpstreamPathTemplate": "/api/user/topic/{id}",
-      "UpstreamHttpMethod": [ "Get" ]
-    },
-    {
       "DownstreamPathTemplate": "/api/support-topic",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [

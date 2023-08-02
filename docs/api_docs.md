@@ -2504,3 +2504,617 @@ Roles - User, Admin, Owner, Bot
         "message": "Forbidden"
     }
 } 
+<!-- [С] SupportTopic -->
+<!-- [M] Get -->
+
+# GET - /api/support-topic/{id}
+Roles - User, Admin, Owner, Bot
+
+### RequestBody - {
+    "queries": {
+        "id": "GUID"
+    }
+}
+
+### 200 ResponseBody - {
+    "code": 0,
+    "data": {
+        "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+        "title": "string",
+        "content": "string",
+        "date": "2023-08-01T13:45:09.320Z",
+        "isClosed": true,
+        "answers": [
+            {
+                "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+                "content": "string",
+                "date": "2023-08-01T13:45:09.320Z",
+                "images": [
+                    {
+                    "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+                    "answerId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+                    }
+                ],
+            "plaintiffId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+            "topicId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+            }
+        ],
+        "userId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    }
+}
+
+### 400 ResponseBody - {
+    "error": {
+        "code": 4,
+        "message": "Пользователь не найден"
+    }
+} 
+
+### 400 ResponseBody - {
+    "error": {
+        "code": 4,
+        "message": "Топик не найден"
+    }
+} 
+
+### 400 ResponseBody - {
+    "error": {
+        "code": 1,
+        "message": "Вы не создатель топика"
+    }
+} 
+
+### 400 ResponseBody - {
+    "error": {
+        "code": 1,
+        "message": "Forbidden"
+    }
+} 
+<!-- [M] GetByAdmin -->
+
+# GET - /api/support-topic/{id}/admin
+Roles - Admin, Owner, Bot
+
+### RequestBody - {
+    "queries": {
+        "id": "GUID"
+    }
+}
+
+### 200 ResponseBody - {
+    "code": 0,
+    "data": {
+        "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+        "title": "string",
+        "content": "string",
+        "date": "2023-08-01T13:45:09.320Z",
+        "isClosed": true,
+        "answers": [
+            {
+                "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+                "content": "string",
+                "date": "2023-08-01T13:45:09.320Z",
+                "images": [
+                    {
+                    "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+                    "answerId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+                    }
+                ],
+            "plaintiffId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+            "topicId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+            }
+        ],
+        "userId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    }
+}
+
+### 400 ResponseBody - {
+    "error": {
+        "code": 1,
+        "message": "Топик не найден"
+    }
+} 
+
+### 400 ResponseBody - {
+    "error": {
+        "code": 1,
+        "message": "Forbidden"
+    }
+} 
+<!-- [M] GetByUserId -->
+
+# GET - /api/support-topic
+Roles - User, Admin, Owner, Bot
+
+### 200 ResponseBody - {
+    "code": 0,
+    "data": {
+        "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+        "title": "string",
+        "content": "string",
+        "date": "2023-08-01T13:45:09.320Z",
+        "isClosed": true,
+        "answers": [
+            {
+                "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+                "content": "string",
+                "date": "2023-08-01T13:45:09.320Z",
+                "images": [
+                    {
+                    "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+                    "answerId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+                    }
+                ],
+            "plaintiffId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+            "topicId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+            }
+        ],
+        "userId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    }
+}
+
+### 400 ResponseBody - {
+    "error": {
+        "code": 1,
+        "message": "Пользователь не найден"
+    }
+} 
+
+### 400 ResponseBody - {
+    "error": {
+        "code": 1,
+        "message": "Forbidden"
+    }
+} 
+<!-- [M] GetByAdminUserId -->
+
+# GET - /api/support-topic/user/{userId}/admin
+Roles - Admin, Owner, Bot
+
+### RequestBody - {
+    "queries": {
+        "userId": "GUID"
+    }
+}
+
+### 200 ResponseBody - {
+    "code": 0,
+    "data": {
+        "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+        "title": "string",
+        "content": "string",
+        "date": "2023-08-01T13:45:09.320Z",
+        "isClosed": true,
+        "answers": [
+            {
+                "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+                "content": "string",
+                "date": "2023-08-01T13:45:09.320Z",
+                "images": [
+                    {
+                    "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+                    "answerId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+                    }
+                ],
+            "plaintiffId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+            "topicId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+            }
+        ],
+        "userId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    }
+}
+
+### 400 ResponseBody - {
+    "error": {
+        "code": 1,
+        "message": "Пользователь не найден"
+    }
+} 
+
+### 400 ResponseBody - {
+    "error": {
+        "code": 1,
+        "message": "Forbidden"
+    }
+} 
+<!-- [M] GetOpenedTopics -->
+
+# GET - /api/support-topic/opened
+Roles - Admin, Owner, Bot
+
+### 200 ResponseBody - {
+    "code": 0,
+    "data": [
+    {
+        "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+        "title": "string",
+        "content": "string",
+        "date": "2023-08-02T13:55:36.734Z",
+        "isClosed": true,
+        "answers": [
+        {
+            "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+            "content": "string",
+            "date": "2023-08-02T13:55:36.734Z",
+            "images": [
+            {
+                "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+                "answerId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+            }
+            ],
+            "plaintiffId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+            "topicId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+        }
+        ],
+        "userId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    }
+  ]
+}
+
+### 400 ResponseBody - {
+    "error": {
+        "code": 1,
+        "message": "Forbidden"
+    }
+} 
+<!-- [M] Close -->
+
+# GET - /api/support-topic/{id}/close
+Roles - User, Admin, Owner, Bot
+
+### RequestBody - {
+    "queries": {
+        "id": "GUID"
+    }
+}
+
+### 200 ResponseBody - {
+    "code": 0,
+    "data": {
+        "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+        "title": "string",
+        "content": "string",
+        "date": "2023-08-01T13:45:09.320Z",
+        "isClosed": true,
+        "answers": [
+            {
+                "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+                "content": "string",
+                "date": "2023-08-01T13:45:09.320Z",
+                "images": [
+                    {
+                    "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+                    "answerId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+                    }
+                ],
+            "plaintiffId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+            "topicId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+            }
+        ],
+        "userId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    }
+}
+
+### 400 ResponseBody - {
+    "error": {
+        "code": 1,
+        "message": "Пользователь не найден"
+    }
+} 
+
+### 400 ResponseBody - {
+    "error": {
+        "code": 1,
+        "message": "Топик не найден"
+    }
+} 
+
+### 400 ResponseBody - {
+    "error": {
+        "code": 1,
+        "message": "Вы не создатель топика"
+    }
+} 
+
+### 400 ResponseBody - {
+    "error": {
+        "code": 1,
+        "message": "Forbidden"
+    }
+} 
+<!-- [M] CloseByAdmin -->
+
+# GET - /api/support-topic/{id}/close/admin
+Roles - Admin, Owner, Bot
+
+### RequestBody - {
+    "queries": {
+        "id": "GUID"
+    }
+}
+
+### 200 ResponseBody - {
+    "code": 0,
+    "data": {
+        "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+        "title": "string",
+        "content": "string",
+        "date": "2023-08-01T13:45:09.320Z",
+        "isClosed": true,
+        "answers": [
+            {
+                "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+                "content": "string",
+                "date": "2023-08-01T13:45:09.320Z",
+                "images": [
+                    {
+                    "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+                    "answerId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+                    }
+                ],
+            "plaintiffId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+            "topicId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+            }
+        ],
+        "userId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    }
+}
+
+### 400 ResponseBody - {
+    "error": {
+        "code": 1,
+        "message": "Топик не найден"
+    }
+} 
+
+### 400 ResponseBody - {
+    "error": {
+        "code": 1,
+        "message": "Forbidden"
+    }
+} 
+<!-- [M] Post -->
+
+# POST - /api/user/topic
+Roles - User, Admin, Owner, Bot
+
+### RequestBody - {
+    "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+    "title": "string",
+    "content": "string",
+    "date": "2023-08-02T14:01:04.398Z",
+    "isClosed": true,
+    "userId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+}
+
+### 200 ResponseBody - {
+    "code": 0,
+    "data": {
+        "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+        "title": "string",
+        "content": "string",
+        "date": "2023-08-01T13:45:09.320Z",
+        "isClosed": true,
+        "answers": [
+            {
+                "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+                "content": "string",
+                "date": "2023-08-01T13:45:09.320Z",
+                "images": [
+                    {
+                    "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+                    "answerId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+                    }
+                ],
+            "plaintiffId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+            "topicId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+            }
+        ],
+        "userId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    }
+}
+
+### 400 ResponseBody - {
+    "error": {
+        "code": 1,
+        "message": "Пользователь не найден"
+    }
+} 
+
+### 400 ResponseBody - {
+    "error": {
+        "code": 5,
+        "message": "Топик не найден"
+    }
+} 
+
+### 400 ResponseBody - {
+    "error": {
+        "code": 1,
+        "message": "Forbidden"
+    }
+} 
+<!-- [M] Put -->
+
+# PUT - /api/user/topic
+Roles - User, Admin, Owner, Bot
+
+### RequestBody - {
+    "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+    "title": "string",
+    "content": "string",
+    "date": "2023-08-02T14:01:04.398Z",
+    "isClosed": true,
+    "userId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+}
+
+### 200 ResponseBody - {
+    "code": 0,
+    "data": {
+        "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+        "title": "string",
+        "content": "string",
+        "date": "2023-08-01T13:45:09.320Z",
+        "isClosed": true,
+        "answers": [
+            {
+                "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+                "content": "string",
+                "date": "2023-08-01T13:45:09.320Z",
+                "images": [
+                    {
+                    "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+                    "answerId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+                    }
+                ],
+            "plaintiffId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+            "topicId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+            }
+        ],
+        "userId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    }
+}
+
+### 400 ResponseBody - {
+    "error": {
+        "code": 1,
+        "message": "Пользователь не найден"
+    }
+} 
+
+### 400 ResponseBody - {
+    "error": {
+        "code": 5,
+        "message": "Топик не найден"
+    }
+} 
+
+### 400 ResponseBody - {
+    "error": {
+        "code": 1,
+        "message": "Вы не создатель топика"
+    }
+} 
+
+### 400 ResponseBody - {
+    "error": {
+        "code": 1,
+        "message": "Forbidden"
+    }
+} 
+<!-- [M] Delete -->
+
+# Delete - /api/user/topic/{id}
+Roles - User, Admin, Owner, Bot
+
+### RequestBody - {
+    "queries": {
+        "id": "GUID"
+    }
+}
+
+### 200 ResponseBody - {
+    "code": 0,
+    "data": {
+        "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+        "title": "string",
+        "content": "string",
+        "date": "2023-08-01T13:45:09.320Z",
+        "isClosed": true,
+        "answers": [
+            {
+                "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+                "content": "string",
+                "date": "2023-08-01T13:45:09.320Z",
+                "images": [
+                    {
+                    "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+                    "answerId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+                    }
+                ],
+            "plaintiffId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+            "topicId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+            }
+        ],
+        "userId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    }
+}
+
+### 400 ResponseBody - {
+    "error": {
+        "code": 1,
+        "message": "Пользователь не найден"
+    }
+} 
+
+### 400 ResponseBody - {
+    "error": {
+        "code": 5,
+        "message": "Топик не найден"
+    }
+} 
+
+### 400 ResponseBody - {
+    "error": {
+        "code": 1,
+        "message": "Вы не создатель топика"
+    }
+} 
+
+### 400 ResponseBody - {
+    "error": {
+        "code": 1,
+        "message": "Forbidden"
+    }
+} 
+<!-- [M] Delete -->
+
+# Delete - /api/user/topic/{id}
+Roles - User, Admin, Owner, Bot
+
+### RequestBody - {
+    "queries": {
+        "id": "GUID"
+    }
+}
+
+### 200 ResponseBody - {
+    "code": 0,
+    "data": {
+        "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+        "title": "string",
+        "content": "string",
+        "date": "2023-08-01T13:45:09.320Z",
+        "isClosed": true,
+        "answers": [
+            {
+                "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+                "content": "string",
+                "date": "2023-08-01T13:45:09.320Z",
+                "images": [
+                    {
+                    "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+                    "answerId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+                    }
+                ],
+            "plaintiffId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+            "topicId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+            }
+        ],
+        "userId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    }
+}
+
+### 400 ResponseBody - {
+    "error": {
+        "code": 5,
+        "message": "Топик не найден"
+    }
+} 
+
+### 400 ResponseBody - {
+    "error": {
+        "code": 1,
+        "message": "Forbidden"
+    }
+} 
