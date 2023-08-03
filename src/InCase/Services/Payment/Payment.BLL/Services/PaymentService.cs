@@ -57,7 +57,7 @@ namespace Payment.BLL.Services
 
             if (promocode is not null)
             {
-                UserPromocodeTemplate templatePromo = promocode.ToTemplate();
+                UserPromocodeBackTemplate templatePromo = promocode.ToTemplate();
 
                 await _publisher.SendAsync(templatePromo);
 

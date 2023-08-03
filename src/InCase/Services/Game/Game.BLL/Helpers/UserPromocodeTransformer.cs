@@ -13,11 +13,9 @@ namespace Game.BLL.Helpers
             UserId = template.UserId,
         };
 
-        public static UserPromocodeTemplate ToTemplate(this UserPromocode entity, bool isNewGuid = false) => new()
+        public static UserPromocodeBackTemplate ToTemplate(this UserPromocode entity, bool isNewGuid = false) => new()
         {
             Id = isNewGuid ? Guid.NewGuid() : entity.Id,
-            Discount = entity.Discount,
-            UserId = entity.UserId
         };
     }
 }

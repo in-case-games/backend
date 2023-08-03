@@ -1,22 +1,21 @@
 ﻿using Infrastructure.MassTransit.User;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
-using Promocode.BLL.Exceptions;
 using Promocode.DAL.Data;
 using Promocode.DAL.Entities;
 
 namespace Promocode.BLL.MassTransit.Consumers
 {
-    public class UserPromocodeConsumer : IConsumer<UserPromocodeTemplate>
+    public class UserPromocodeBackConsumer : IConsumer<UserPromocodeBackTemplate>
     {
         private readonly ApplicationDbContext _context;
 
-        public UserPromocodeConsumer(ApplicationDbContext context)
+        public UserPromocodeBackConsumer(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        public async Task Consume(ConsumeContext<UserPromocodeTemplate> context)
+        public async Task Consume(ConsumeContext<UserPromocodeBackTemplate> context)
         {
             var template = context.Message;
 
