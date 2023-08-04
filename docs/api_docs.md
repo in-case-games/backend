@@ -3067,10 +3067,10 @@ Roles - User, Admin, Owner, Bot
         "message": "Forbidden"
     }
 } 
-<!-- [M] Delete -->
+<!-- [M] DeleteByAdmin -->
 
-# Delete - /api/user/topic/{id}
-Roles - User, Admin, Owner, Bot
+# Delete - /api/user/topic/{id}/admin
+Roles - Admin, Owner, Bot
 
 ### RequestBody - {
     "queries": {
