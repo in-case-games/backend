@@ -61,7 +61,7 @@ namespace Promocode.API.Controllers
         [ProducesResponseType(typeof(ApiResult<List<UserPromocodeResponse>>), 
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
-        [HttpGet("{userId}/admin")]
+        [HttpGet("user/{userId}/admin")]
         public async Task<IActionResult> GetByAdmin(Guid userId, int count = 100)
         {
             List<UserPromocodeResponse> response = await _promocodeService
@@ -73,11 +73,11 @@ namespace Promocode.API.Controllers
         [ProducesResponseType(typeof(ApiResult<UserPromocodeResponse>),
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
-        [HttpGet("{userId}/admin/{id}")]
-        public async Task<IActionResult> GetByIdAdmin(Guid userId, Guid id)
+        [HttpGet("{id}/admin")]
+        public async Task<IActionResult> GetByIdAdmin(Guid id)
         {
             UserPromocodeResponse response = await _promocodeService
-                .GetAsync(id, userId);
+                .GetAsync(id);
 
             return Ok(ApiResult<UserPromocodeResponse>.OK(response));
         }

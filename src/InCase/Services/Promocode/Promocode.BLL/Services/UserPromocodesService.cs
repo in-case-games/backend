@@ -20,6 +20,18 @@ namespace Promocode.BLL.Services
             _publisher = publisher;
         }
 
+        public async Task<UserPromocodeResponse> GetAsync(Guid id)
+        {
+            UserPromocode promocode = await _context.UserPromocodes
+                .Include(uhp => uhp.Promocode)
+                .Include(uhp => uhp.Promocode!.Type)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(uhp => uhp.Id == id) ??
+                throw new NotFoundException("История активации промокода не найдена");
+
+            return promocode.ToResponse();
+        }
+
         public async Task<UserPromocodeResponse> GetAsync(Guid id, Guid userId)
         {
             UserPromocode promocode = await _context.UserPromocodes
@@ -110,6 +122,7 @@ namespace Promocode.BLL.Services
         {
             PromocodeEntity promocode = await _context.Promocodes
                 .Include(p => p.Type)
+                .AsNoTracking()
                 .FirstOrDefaultAsync(p => p.Name == name) ??
                 throw new NotFoundException("Промокод не найден");
 
@@ -117,6 +130,7 @@ namespace Promocode.BLL.Services
                 throw new ConflictException("Промокод истёк");
 
             UserPromocode userPromocode = await _context.UserPromocodes
+                .AsNoTracking()
                 .FirstOrDefaultAsync(uhp =>
                 uhp.Promocode!.Type!.Id == promocode.TypeId &&
                 uhp.IsActivated == false &&
@@ -127,6 +141,7 @@ namespace Promocode.BLL.Services
                 throw new ConflictException("Промокод уже используется");
 
             PromocodeEntity promocodeOld = await _context.Promocodes
+                .AsNoTracking()
                 .FirstOrDefaultAsync(p => p.Id == userPromocode.PromocodeId) ??
                 throw new NotFoundException("Прошлый промокод не найден");
 
@@ -135,6 +150,11 @@ namespace Promocode.BLL.Services
 
             userPromocode.Date = DateTime.UtcNow;
             userPromocode.PromocodeId = promocode.Id;
+
+            _context.Entry(promocodeOld).Property(p => p.NumberActivations).IsModified = true;
+            _context.Entry(promocode).Property(p => p.NumberActivations).IsModified = true;
+            _context.Entry(userPromocode).Property(p => p.Date).IsModified = true;
+            _context.Entry(userPromocode).Property(p => p.PromocodeId).IsModified = true;
 
             await _context.SaveChangesAsync();
 

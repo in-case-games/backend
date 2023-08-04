@@ -974,7 +974,7 @@
       "UpstreamHttpMethod": [ "Get" ]
     },
     {
-      "DownstreamPathTemplate": "/api/user-promocodes/{userId}/admin",
+      "DownstreamPathTemplate": "/api/user-promocodes/user/{userId}/admin",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
@@ -986,7 +986,7 @@
       "UpstreamHttpMethod": [ "Get" ]
     },
     {
-      "DownstreamPathTemplate": "/api/user-promocodes/{userId}/admin/{id}",
+      "DownstreamPathTemplate": "/api/user-promocodes/{id}/admin",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
@@ -994,7 +994,7 @@
           "Port": 7051
         }
       ],
-      "UpstreamPathTemplate": "/api/admin/{userId}/promocode/{id}",
+      "UpstreamPathTemplate": "/api/admin/promocode/{id}",
       "UpstreamHttpMethod": [ "Get" ]
     },
     {
