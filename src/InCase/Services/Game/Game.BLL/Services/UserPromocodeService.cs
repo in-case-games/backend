@@ -17,7 +17,7 @@ namespace Game.BLL.Services
             _context = context;
         }
 
-        public async Task<UserPromocode?> GetAsync(Guid id, Guid userId) => await _context.UserPromocodes
+        public async Task<UserPromocode?> GetAsync(Guid id) => await _context.UserPromocodes
             .AsNoTracking()
             .FirstOrDefaultAsync(ur => ur.Id == id);
 
@@ -35,13 +35,11 @@ namespace Game.BLL.Services
         public async Task UpdateAsync(UserPromocodeTemplate template)
         {
             UserPromocode entityOld = await _context.UserPromocodes
-                .AsNoTracking()
                 .FirstOrDefaultAsync(ur => ur.Id == template.Id && ur.UserId == template.UserId) ??
                 throw new NotFoundException("Промокод пользователя не найден");
 
-            UserPromocode entity = template.ToEntity();
+            entityOld.Discount = template.Discount;
 
-            _context.Entry(entityOld).CurrentValues.SetValues(entity);
             await _context.SaveChangesAsync();
         }
     }

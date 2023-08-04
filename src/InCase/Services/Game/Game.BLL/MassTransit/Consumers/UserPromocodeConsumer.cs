@@ -23,7 +23,7 @@ namespace Game.BLL.MassTransit.Consumers
 
             if (template.Type?.Name == "box")
             {
-                UserPromocode? userPromocode = await _promocodeService.GetAsync(template.Id, template.UserId);
+                UserPromocode? userPromocode = await _promocodeService.GetAsync(template.Id);
 
                 if (userPromocode is null)
                     await _promocodeService.CreateAsync(template);

@@ -10,7 +10,7 @@ namespace Promocode.BLL.Helpers
            Id = entity.Id,
            Discount = entity.Promocode!.Discount,
            Type = entity.Promocode?.Type?.ToTemplate(),
-           UserId = entity.Id,
+           UserId = entity.UserId,
         };
     }
 }

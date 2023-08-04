@@ -6,7 +6,7 @@ namespace Game.BLL.Interfaces
 {
     public interface IUserPromocodeService
     {
-        public Task<UserPromocode?> GetAsync(Guid id, Guid userId);
+        public Task<UserPromocode?> GetAsync(Guid id);
         public Task CreateAsync(UserPromocodeTemplate template);
         public Task UpdateAsync(UserPromocodeTemplate rtemplate);
     }
