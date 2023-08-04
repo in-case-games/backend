@@ -17,7 +17,7 @@ namespace Promocode.API.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.5")
+                .HasAnnotation("ProductVersion", "7.0.9")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -52,20 +52,20 @@ namespace Promocode.API.Migrations
                         .HasColumnName("type_id");
 
                     b.HasKey("Id")
-                        .HasName("pk_promocode");
+                        .HasName("pk_promocode_entity");
 
                     b.HasIndex("Id")
                         .IsUnique()
-                        .HasDatabaseName("ix_promocode_id");
+                        .HasDatabaseName("ix_promocode_entity_id");
 
                     b.HasIndex("Name")
                         .IsUnique()
-                        .HasDatabaseName("ix_promocode_name");
+                        .HasDatabaseName("ix_promocode_entity_name");
 
                     b.HasIndex("TypeId")
-                        .HasDatabaseName("ix_promocode_type_id");
+                        .HasDatabaseName("ix_promocode_entity_type_id");
 
-                    b.ToTable("Promocode", (string)null);
+                    b.ToTable("PromocodeEntity", (string)null);
                 });
 
             modelBuilder.Entity("Promocode.DAL.Entities.PromocodeType", b =>
@@ -85,7 +85,7 @@ namespace Promocode.API.Migrations
 
                     b.HasIndex("Id")
                         .IsUnique()
-                        .HasDatabaseName("ix_promocode_type_id1");
+                        .HasDatabaseName("ix_promocode_type_id");
 
                     b.HasIndex("Name")
                         .IsUnique()
@@ -96,12 +96,12 @@ namespace Promocode.API.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("b74b391d-7d8c-4727-b684-59e993457470"),
+                            Id = new Guid("d4dddc0d-869c-4793-bb8d-024206baac53"),
                             Name = "balance"
                         },
                         new
                         {
-                            Id = new Guid("0321e3ca-0c9b-4323-92cf-f91047ccd99d"),
+                            Id = new Guid("0d91a9a1-2c32-4393-80f8-c1f296060417"),
                             Name = "box"
                         });
                 });
@@ -123,7 +123,7 @@ namespace Promocode.API.Migrations
                     b.ToTable("User", (string)null);
                 });
 
-            modelBuilder.Entity("Promocode.DAL.Entities.UserHistoryPromocode", b =>
+            modelBuilder.Entity("Promocode.DAL.Entities.UserPromocode", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -147,19 +147,19 @@ namespace Promocode.API.Migrations
                         .HasColumnName("user_id");
 
                     b.HasKey("Id")
-                        .HasName("pk_user_history_promocode");
+                        .HasName("pk_user_promocode");
 
                     b.HasIndex("Id")
                         .IsUnique()
-                        .HasDatabaseName("ix_user_history_promocode_id");
+                        .HasDatabaseName("ix_user_promocode_id");
 
                     b.HasIndex("PromocodeId")
-                        .HasDatabaseName("ix_user_history_promocode_promocode_id");
+                        .HasDatabaseName("ix_user_promocode_promocode_id");
 
                     b.HasIndex("UserId")
-                        .HasDatabaseName("ix_user_history_promocode_user_id");
+                        .HasDatabaseName("ix_user_promocode_user_id");
 
-                    b.ToTable("UserHistoryPromocode", (string)null);
+                    b.ToTable("UserPromocode", (string)null);
                 });
 
             modelBuilder.Entity("Promocode.DAL.Entities.PromocodeEntity", b =>
@@ -169,26 +169,26 @@ namespace Promocode.API.Migrations
                         .HasForeignKey("Promocode.DAL.Entities.PromocodeEntity", "TypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_promocode_promocodes_types_type_id");
+                        .HasConstraintName("fk_promocode_entity_promocodes_types_type_id");
 
                     b.Navigation("Type");
                 });
 
-            modelBuilder.Entity("Promocode.DAL.Entities.UserHistoryPromocode", b =>
+            modelBuilder.Entity("Promocode.DAL.Entities.UserPromocode", b =>
                 {
                     b.HasOne("Promocode.DAL.Entities.PromocodeEntity", "Promocode")
                         .WithMany("HistoriesPromocodes")
                         .HasForeignKey("PromocodeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_user_history_promocode_promocode_promocode_id");
+                        .HasConstraintName("fk_user_promocode_promocode_entity_promocode_id");
 
                     b.HasOne("Promocode.DAL.Entities.User", "User")
                         .WithMany("HistoriesPromocodes")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_user_history_promocode_user_user_id");
+                        .HasConstraintName("fk_user_promocode_user_user_id");
 
                     b.Navigation("Promocode");
 

@@ -10,7 +10,7 @@ namespace Promocode.DAL.Configurations
         {
             base.Configure(builder);
 
-            builder.ToTable("Promocode");
+            builder.ToTable(nameof(PromocodeEntity));
 
             builder.HasIndex(pe => pe.Name)
                 .IsUnique();

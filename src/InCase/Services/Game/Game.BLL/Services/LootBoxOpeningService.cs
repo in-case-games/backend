@@ -45,7 +45,7 @@ namespace Game.BLL.Services
                 throw new PaymentRequiredException("Недостаточно средств");
             if (promocode is not null)
             {
-                UserPromocodeTemplate templatePromo = promocode.ToTemplate();
+                UserPromocodeBackTemplate templatePromo = promocode.ToTemplate();
 
                 await _publisher.SendAsync(templatePromo);
 

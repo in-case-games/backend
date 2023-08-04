@@ -113,34 +113,32 @@ namespace Promocode.BLL.Services
                 .FirstOrDefaultAsync(p => p.Name == name) ??
                 throw new NotFoundException("Промокод не найден");
 
+            if (promocode.NumberActivations <= 0 || promocode.ExpirationDate <= DateTime.UtcNow)
+                throw new ConflictException("Промокод истёк");
+
             UserPromocode userPromocode = await _context.UserPromocodes
-                .Include(uhp => uhp.Promocode)
-                .Include(uhp => uhp.Promocode!.Type)
                 .FirstOrDefaultAsync(uhp =>
                 uhp.Promocode!.Type!.Id == promocode.TypeId &&
                 uhp.IsActivated == false &&
                 uhp.UserId == userId) ??
-                throw new ConflictException("Прошлый промокод не найден");
+                throw new ConflictException("Промокод не активировался");
 
-            bool isUsed = await _context.UserPromocodes
-                .AnyAsync(uhp => 
-                uhp.UserId == userId && 
-                uhp.PromocodeId == promocode.Id && 
-                uhp.IsActivated);
-
-            if (promocode.NumberActivations <= 0 || promocode.ExpirationDate <= DateTime.UtcNow)
-                throw new ConflictException("Промокод истёк");
-            if (isUsed)
-                throw new ConflictException("Промокод уже использован");
-            if (userPromocode.Promocode!.Id == promocode.Id)
+            if (userPromocode.PromocodeId == promocode.Id)
                 throw new ConflictException("Промокод уже используется");
+
+            PromocodeEntity promocodeOld = await _context.Promocodes
+                .FirstOrDefaultAsync(p => p.Id == userPromocode.PromocodeId) ??
+                throw new NotFoundException("Прошлый промокод не найден");
+
+            promocodeOld.NumberActivations++;
+            promocode.NumberActivations--;
 
             userPromocode.Date = DateTime.UtcNow;
             userPromocode.PromocodeId = promocode.Id;
-            userPromocode.Promocode.NumberActivations++;
-            promocode.NumberActivations--;
 
             await _context.SaveChangesAsync();
+
+            userPromocode.Promocode = promocode;
 
             await _publisher.SendAsync(userPromocode.ToTemplate());
 

@@ -81,7 +81,7 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddMassTransit(x =>
 {
     x.AddConsumer<UserConsumer>();
-    x.AddConsumer<UserPromocodeConsumer>();
+    x.AddConsumer<UserPromocodeBackConsumer>();
     x.SetKebabCaseEndpointNameFormatter();
 
     x.AddBus(provider => Bus.Factory.CreateUsingRabbitMq(cfg =>
@@ -101,7 +101,7 @@ builder.Services.AddMassTransit(x =>
         {
             ep.PrefetchCount = 16;
             ep.UseMessageRetry(r => r.Interval(4, 100));
-            ep.ConfigureConsumer<UserPromocodeConsumer>(provider);
+            ep.ConfigureConsumer<UserPromocodeBackConsumer>(provider);
         });
     }));
 });
