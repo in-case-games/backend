@@ -1,5 +1,6 @@
 using Game.API.Middlewares;
 using Game.BLL.Interfaces;
+using Game.BLL.MassTransit;
 using Game.BLL.MassTransit.Consumers;
 using Game.BLL.Services;
 using Game.DAL.Data;
@@ -72,6 +73,7 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
+builder.Services.AddSingleton<BasePublisher>();
 builder.Services.AddScoped<IUserPathBannerService, UserPathBannerService>();
 builder.Services.AddScoped<IUserAdditionalInfoService, UserAdditionalInfoService>();
 builder.Services.AddScoped<IUserOpeningService, UserOpeningService>();

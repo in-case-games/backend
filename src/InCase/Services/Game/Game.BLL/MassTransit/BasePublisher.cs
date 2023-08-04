@@ -1,5 +1,4 @@
 ﻿using MassTransit;
-using Microsoft.Extensions.Configuration;
 
 namespace Game.BLL.MassTransit
 {

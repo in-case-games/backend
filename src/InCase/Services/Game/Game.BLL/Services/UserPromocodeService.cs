@@ -23,7 +23,7 @@ namespace Game.BLL.Services
 
         public async Task CreateAsync(UserPromocodeTemplate template)
         {
-            if (!await _context.UserPromocodes.AnyAsync(up => up.UserId == template.UserId))
+            if (await _context.UserPromocodes.AnyAsync(up => up.UserId == template.UserId))
                 throw new BadRequestException("Уже используется промокод");
 
             UserPromocode entity = template.ToEntity();
