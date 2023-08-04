@@ -1,7 +1,9 @@
 <!-- General -->
 
-BASE_URI = https://localhost:5000
-HTTP_SECURE = true
+# General
+
+#### BASE_URI = https://localhost:5000
+#### HTTP_SECURE = true
 <!-- Generic Response -->
 
 ### 500 ResponseBody - {
