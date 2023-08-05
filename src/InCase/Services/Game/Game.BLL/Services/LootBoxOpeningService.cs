@@ -37,6 +37,7 @@ namespace Game.BLL.Services
                 throw new NotFoundException("Пользователь не найден");
 
             UserPromocode? promocode = await _context.UserPromocodes
+                .AsNoTracking()
                 .FirstOrDefaultAsync(uhp => uhp.UserId == userId);
 
             if (box.IsLocked)
@@ -90,20 +91,15 @@ namespace Game.BLL.Services
 
             box.Balance -= expenses;
 
-            _context.Boxes.Attach(box);
-            _context.AdditionalInfos.Attach(info);
             _context.Entry(info).Property(p => p.Balance).IsModified = true;
             _context.Entry(box).Property(p => p.Balance).IsModified = true;
 
-            DateTime date = DateTime.UtcNow;
-
             UserOpening opening = new()
             {
-                Id = new Guid(),
                 UserId = userId,
                 BoxId = box.Id,
                 ItemId = winItem.Id,
-                Date = date
+                Date = DateTime.UtcNow
             };
 
             UserInventoryTemplate templateUser = new()
