@@ -34,12 +34,10 @@ namespace Withdraw.BLL.Helpers
             UserId = template.UserId
         };
 
-        public static UserInventoryTemplate ToTemplate(this UserInventory inventory) => new()
+        public static UserInventoryBackTemplate ToTemplate(this UserInventory inventory) => new()
         {
             Id = inventory.Id,
-            Date = inventory.Date,
             FixedCost = inventory.FixedCost,
-            ItemId = inventory.ItemId,
             UserId = inventory.UserId
         };
     }

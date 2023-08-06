@@ -93,7 +93,7 @@ builder.Services.AddMassTransit(x =>
     x.AddConsumer<LootBoxBannerConsumer>();
     x.AddConsumer<LootBoxConsumer>();
     x.AddConsumer<LootBoxInventoryConsumer>();
-    x.AddConsumer<UserInventoryConsumer>();
+    x.AddConsumer<UserInventoryBackConsumer>();
     x.SetKebabCaseEndpointNameFormatter();
 
     x.AddBus(provider => Bus.Factory.CreateUsingRabbitMq(cfg =>
@@ -149,7 +149,7 @@ builder.Services.AddMassTransit(x =>
         {
             ep.PrefetchCount = 16;
             ep.UseMessageRetry(r => r.Interval(4, 100));
-            ep.ConfigureConsumer<UserInventoryConsumer>(provider);
+            ep.ConfigureConsumer<UserInventoryBackConsumer>(provider);
         });
     }));
 });

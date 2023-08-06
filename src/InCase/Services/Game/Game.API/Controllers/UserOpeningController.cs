@@ -125,7 +125,7 @@ namespace Game.API.Controllers
         public async Task<IActionResult> GetRouleteByItemId(Guid id)
         {
             List<UserOpeningResponse> response = await _openingService
-                .GetByBoxIdAsync(id, 10);
+                .GetByItemIdAsync(id, 10);
 
             return Ok(ApiResult<List<UserOpeningResponse>>.OK(response));
         }

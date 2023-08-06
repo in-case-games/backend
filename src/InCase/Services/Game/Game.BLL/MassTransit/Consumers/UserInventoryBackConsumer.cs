@@ -7,16 +7,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Game.BLL.MassTransit.Consumers
 {
-    public class UserInventoryConsumer : IConsumer<UserInventoryTemplate>
+    public class UserInventoryBackConsumer : IConsumer<UserInventoryBackTemplate>
     {
         private readonly ApplicationDbContext _context;
 
-        public UserInventoryConsumer(ApplicationDbContext context)
+        public UserInventoryBackConsumer(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        public async Task Consume(ConsumeContext<UserInventoryTemplate> context)
+        public async Task Consume(ConsumeContext<UserInventoryBackTemplate> context)
         {
             var data = context.Message;
 

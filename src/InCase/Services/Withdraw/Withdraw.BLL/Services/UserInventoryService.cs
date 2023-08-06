@@ -1,8 +1,5 @@
 ﻿using Infrastructure.MassTransit.User;
-using MassTransit;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using System.Threading;
 using Withdraw.BLL.Exceptions;
 using Withdraw.BLL.Helpers;
 using Withdraw.BLL.Interfaces;
@@ -115,7 +112,7 @@ namespace Withdraw.BLL.Services
 
             await _context.SaveChangesAsync();
 
-            UserInventoryTemplate template = inventory.ToTemplate();
+            UserInventoryBackTemplate template = inventory.ToTemplate();
             template.FixedCost = differenceCost;
 
             await _publisher.SendAsync(template);
