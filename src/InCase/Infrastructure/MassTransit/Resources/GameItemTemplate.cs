@@ -8,9 +8,6 @@
         public decimal Cost { get; set; }
         public bool IsDeleted { get; set; }
 
-        public Guid GameId { get; set; }
-        public Guid TypeId { get; set; }
-        public Guid RarityId { get; set; }
-        public Guid QualityId { get; set; }
+        public string? GameName { get; set; }
     }
 }

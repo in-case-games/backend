@@ -25,6 +25,13 @@ namespace Withdraw.BLL.Services
         {
             GameItem item = template.ToEntity();
 
+            Game game = await _context.Games
+                .AsNoTracking()
+                .FirstOrDefaultAsync(g => g.Name == template.GameName) ?? 
+                throw new NotFoundException("Игра не найдена");
+
+            item.GameId = game.Id;
+
             await _context.Items.AddAsync(item);
             await _context.SaveChangesAsync();
         }
@@ -35,6 +42,12 @@ namespace Withdraw.BLL.Services
                 .FirstOrDefaultAsync(gi => gi.Id == template.Id) ??
                 throw new NotFoundException("Предмет не найден");
 
+            Game game = await _context.Games
+                .AsNoTracking()
+                .FirstOrDefaultAsync(g => g.Name == template.GameName) ??
+                throw new NotFoundException("Игра не найдена");
+
+            item.GameId = game.Id;
             item.Cost = template.Cost;
 
             await _context.SaveChangesAsync();

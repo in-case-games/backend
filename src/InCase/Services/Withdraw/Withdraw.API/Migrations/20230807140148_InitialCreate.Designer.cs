@@ -12,7 +12,7 @@ using Withdraw.DAL.Data;
 namespace Withdraw.API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230520094307_InitialCreate")]
+    [Migration("20230807140148_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -20,7 +20,7 @@ namespace Withdraw.API.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.5")
+                .HasAnnotation("ProductVersion", "7.0.9")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -54,12 +54,12 @@ namespace Withdraw.API.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("3dbf29fe-f7f3-4ec3-bbec-b3797f643eb1"),
+                            Id = new Guid("81006abe-f66a-40d0-9b7d-d817be9a0566"),
                             Name = "csgo"
                         },
                         new
                         {
-                            Id = new Guid("5a798dcc-cae0-4113-a261-633c9745f385"),
+                            Id = new Guid("fa43c255-c9be-4474-ac02-2b933cf38c51"),
                             Name = "dota2"
                         });
                 });
@@ -274,22 +274,22 @@ namespace Withdraw.API.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("c6722a2e-81ef-49b5-918d-6bb9a6302842"),
+                            Id = new Guid("0267d09b-b4c6-4e70-a9f8-46f1b270aa23"),
                             Name = "purchase"
                         },
                         new
                         {
-                            Id = new Guid("1783e4e1-0299-47eb-85fd-8dfe6ff26044"),
+                            Id = new Guid("c133768b-d410-45de-b095-995cb58ec4c4"),
                             Name = "transfer"
                         },
                         new
                         {
-                            Id = new Guid("a6310daf-4ef9-4b11-9f38-392d568075d6"),
+                            Id = new Guid("662ec4d1-f687-4b5b-adec-47551e138350"),
                             Name = "given"
                         },
                         new
                         {
-                            Id = new Guid("cae646a3-7483-456b-af64-df6b0130251d"),
+                            Id = new Guid("7b108192-17ce-4ab9-a1b7-d9d23b4b8f59"),
                             Name = "cancel"
                         });
                 });
@@ -339,7 +339,7 @@ namespace Withdraw.API.Migrations
                         .HasForeignKey("Withdraw.DAL.Entities.UserHistoryWithdraw", "StatusId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_user_history_withdraw_withdraw_statuses_status_id");
+                        .HasConstraintName("fk_user_history_withdraw_statuses_status_id");
 
                     b.HasOne("Withdraw.DAL.Entities.User", "User")
                         .WithMany("HistoriesWithdraws")
@@ -361,7 +361,7 @@ namespace Withdraw.API.Migrations
                 {
                     b.HasOne("Withdraw.DAL.Entities.GameItem", "Item")
                         .WithMany("Inventories")
-                        .HasForeignKey("UserId")
+                        .HasForeignKey("ItemId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_user_inventory_game_item_item_id");

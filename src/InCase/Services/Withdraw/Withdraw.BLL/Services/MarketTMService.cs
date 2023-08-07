@@ -24,7 +24,7 @@ namespace Withdraw.BLL.Services
             ["t_1"] = "purchase",
             ["t_2"] = "purchase",
             ["t_3"] = "purchase",
-            ["t_4"] = "transfer"
+            ["t_4"] = "transfer",
         };
 
         public MarketTMService(
@@ -77,13 +77,13 @@ namespace Withdraw.BLL.Services
             {
                 string tradeUrl = $"{DomainUri[name]}/api/Trades/?key={_cfg["MarketTM:Secret"]}";
 
-                List<TradeInfoTMResponse>? trades = await _responseService
-                    .GetAsync<List<TradeInfoTMResponse>>(tradeUrl);
+                List<TradeInfoTMResponse> trades = await _responseService
+                    .GetAsync<List<TradeInfoTMResponse>>(tradeUrl) ?? new();
 
                 string status = trades!
                     .First(f => f.Id == id).Status!;
 
-                info.Status = TradeStatuses[status];
+                info.Status = TradeStatuses["t_" + status];
             }
             catch(Exception)
             {
@@ -99,7 +99,7 @@ namespace Withdraw.BLL.Services
                 string status = answer!.Histories!
                     .First(f => f.Id == id).Status!;
 
-                info.Status = TradeStatuses[status];
+                info.Status = TradeStatuses["h_" + status];
             }
 
             return info;
@@ -130,39 +130,19 @@ namespace Withdraw.BLL.Services
         }
         private class OperationHistoryTMResponse
         {
-            private string? _status;
-
             [JsonPropertyName("item")] public string? Id { get; set; }
             [JsonPropertyName("h_id")] public string? HistoryId { get; set; }
             [JsonPropertyName("market_name")] public string? MarketName { get; set; }
             [JsonPropertyName("stage")]
-            public string? Status
-            {
-                get => _status;
-                set
-                {
-                    _status = "h_" + value;
-                }
-            }
+            public string? Status { get; set; }
 
         }
         private class TradeInfoTMResponse
         {
-            private string? _status;
-
-            [JsonPropertyName("ui_id")] public string? Id { get; set; }
+            [JsonPropertyName("ui_id")] 
+            public string? Id { get; set; }
             [JsonPropertyName("ui_status")]
-            public string? Status
-            {
-                get => _status;
-                set
-                {
-                    _status = "t_" + value;
-                }
-            }
-            [JsonPropertyName("ui_price")] public decimal Price { get; set; }
-            [JsonPropertyName("position")] public string? Position { get; set; }
-            [JsonPropertyName("left")] public string? Left { get; set; }
+            public string? Status { get; set; }
 
         }
         private class BuyItemTMResponse

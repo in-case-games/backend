@@ -1,6 +1,4 @@
-﻿using MassTransit;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.EntityFrameworkCore;
 using Resources.BLL.Exceptions;
 using Resources.BLL.Helpers;
 using Resources.BLL.Interfaces;
@@ -186,12 +184,12 @@ namespace Resources.BLL.Services
             await _context.Items.AddAsync(item);
             await _context.SaveChangesAsync();
 
-            await _publisher.SendAsync(item.ToTemplate(request.IdForMarket));
-
             item.Game = game;
             item.Quality = quality;
             item.Rarity = rarity;
             item.Type = type;
+
+            await _publisher.SendAsync(item.ToTemplate(request.IdForMarket));
 
             return item.ToResponse();
         }
@@ -227,12 +225,12 @@ namespace Resources.BLL.Services
             _context.Entry(itemOld).CurrentValues.SetValues(item);
             await _context.SaveChangesAsync();
 
-            await _publisher.SendAsync(item.ToTemplate(request.IdForMarket));
-
             item.Game = game;
             item.Quality = quality;
             item.Rarity = rarity;
             item.Type = type;
+
+            await _publisher.SendAsync(item.ToTemplate(request.IdForMarket));
 
             return item.ToResponse();
         }

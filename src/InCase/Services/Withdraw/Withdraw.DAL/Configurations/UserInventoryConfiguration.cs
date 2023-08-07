@@ -29,7 +29,7 @@ namespace Withdraw.DAL.Configurations
                 .OnDelete(DeleteBehavior.Cascade);
             builder.HasOne(ui => ui.Item)
                 .WithMany(i => i.Inventories)
-                .HasForeignKey(ui => ui.UserId)
+                .HasForeignKey(ui => ui.ItemId)
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }

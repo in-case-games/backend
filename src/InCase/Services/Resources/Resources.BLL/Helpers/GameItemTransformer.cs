@@ -43,13 +43,10 @@ namespace Resources.BLL.Helpers
         {
             Id = entity.Id,
             Cost = entity.Cost,
-            GameId = entity.GameId,
+            GameName = entity.Game?.Name,
             HashName = entity.HashName,
             IsDeleted = isDeleted,
             Name = entity.Name,
-            QualityId = entity.QualityId,
-            RarityId = entity.RarityId,
-            TypeId = entity.TypeId,
             IdForMarket = idForMarket
         };
     }

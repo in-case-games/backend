@@ -102,7 +102,7 @@ namespace Withdraw.API.Migrations
                     table.PrimaryKey("pk_user_inventory", x => x.id);
                     table.ForeignKey(
                         name: "fk_user_inventory_game_item_item_id",
-                        column: x => x.user_id,
+                        column: x => x.item_id,
                         principalTable: "GameItem",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
@@ -143,15 +143,15 @@ namespace Withdraw.API.Migrations
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "fk_user_history_withdraw_user_user_id",
-                        column: x => x.user_id,
-                        principalTable: "User",
+                        name: "fk_user_history_withdraw_statuses_status_id",
+                        column: x => x.status_id,
+                        principalTable: "WithdrawStatus",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "fk_user_history_withdraw_withdraw_statuses_status_id",
-                        column: x => x.status_id,
-                        principalTable: "WithdrawStatus",
+                        name: "fk_user_history_withdraw_user_user_id",
+                        column: x => x.user_id,
+                        principalTable: "User",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -161,8 +161,8 @@ namespace Withdraw.API.Migrations
                 columns: new[] { "id", "name" },
                 values: new object[,]
                 {
-                    { new Guid("3dbf29fe-f7f3-4ec3-bbec-b3797f643eb1"), "csgo" },
-                    { new Guid("5a798dcc-cae0-4113-a261-633c9745f385"), "dota2" }
+                    { new Guid("81006abe-f66a-40d0-9b7d-d817be9a0566"), "csgo" },
+                    { new Guid("fa43c255-c9be-4474-ac02-2b933cf38c51"), "dota2" }
                 });
 
             migrationBuilder.InsertData(
@@ -170,10 +170,10 @@ namespace Withdraw.API.Migrations
                 columns: new[] { "id", "name" },
                 values: new object[,]
                 {
-                    { new Guid("1783e4e1-0299-47eb-85fd-8dfe6ff26044"), "transfer" },
-                    { new Guid("a6310daf-4ef9-4b11-9f38-392d568075d6"), "given" },
-                    { new Guid("c6722a2e-81ef-49b5-918d-6bb9a6302842"), "purchase" },
-                    { new Guid("cae646a3-7483-456b-af64-df6b0130251d"), "cancel" }
+                    { new Guid("0267d09b-b4c6-4e70-a9f8-46f1b270aa23"), "purchase" },
+                    { new Guid("662ec4d1-f687-4b5b-adec-47551e138350"), "given" },
+                    { new Guid("7b108192-17ce-4ab9-a1b7-d9d23b4b8f59"), "cancel" },
+                    { new Guid("c133768b-d410-45de-b095-995cb58ec4c4"), "transfer" }
                 });
 
             migrationBuilder.CreateIndex(

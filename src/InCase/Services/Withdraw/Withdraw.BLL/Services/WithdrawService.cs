@@ -63,9 +63,14 @@ namespace Withdraw.BLL.Services
                     TradeInfoResponse response = await _withdrawService
                         .GetTradeInfoAsync(withdraw);
 
-                    withdraw.Status = statuses.First(ws => ws.Name == response.Status);
+                    Console.WriteLine($"{response.Status} w: {withdraw.StatusId}");
 
-                    if(response.Status == "given")
+                    withdraw.StatusId = statuses.First(ws => ws.Name == response.Status).Id;
+
+                    _context.Withdraws.Update(withdraw);
+                    await _context.SaveChangesAsync(cancellationToken);
+
+                    if (response.Status == "given")
                     {
                         SiteStatisticsTemplate template = new() {
                             WithdrawnItems = 1,
@@ -77,8 +82,6 @@ namespace Withdraw.BLL.Services
                 }
                 catch(Exception) { }
             }
-
-            await _context.SaveChangesAsync(cancellationToken);
         }
 
         public async Task<UserHistoryWithdrawResponse> WithdrawItemAsync(
@@ -121,7 +124,7 @@ namespace Withdraw.BLL.Services
             {
                 InvoiceId = buyItem.Id,
                 StatusId = status.Id,
-                Date = DateTime.UtcNow,
+                Date = DateTime.UtcNow - TimeSpan.FromSeconds(120),
                 ItemId = item.Id,
                 UserId = userId,
                 MarketId = buyItem.Market!.Id,

@@ -9,7 +9,6 @@ namespace Withdraw.BLL.Helpers
         {
             Id = template.Id,
             Cost = template.Cost,
-            GameId = template.GameId,
             IdForMarket = template.IdForMarket
         };
     }
