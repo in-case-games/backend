@@ -23,7 +23,7 @@ namespace Withdraw.BLL.Services
             ["h_5"] = "cancel",
             ["t_1"] = "purchase",
             ["t_2"] = "purchase",
-            ["t_3"] = "purchase",
+            ["t_3"] = "transfer",
             ["t_4"] = "transfer",
         };
 
