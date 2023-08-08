@@ -63,8 +63,6 @@ namespace Withdraw.BLL.Services
                     TradeInfoResponse response = await _withdrawService
                         .GetTradeInfoAsync(withdraw);
 
-                    Console.WriteLine($"{response.Status} w: {withdraw.StatusId}");
-
                     withdraw.StatusId = statuses.First(ws => ws.Name == response.Status).Id;
 
                     _context.Withdraws.Update(withdraw);
