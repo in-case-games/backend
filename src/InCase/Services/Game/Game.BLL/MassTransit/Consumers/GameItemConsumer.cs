@@ -20,6 +20,8 @@ namespace Game.BLL.MassTransit.Consumers
 
             GameItem? item = await _itemService.GetAsync(template.Id);
 
+            //TODO Security durak
+
             if (item is null)
                 await _itemService.CreateAsync(template);
             else if (template.IsDeleted)

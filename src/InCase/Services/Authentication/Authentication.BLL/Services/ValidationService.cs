@@ -19,11 +19,11 @@ namespace Authentication.BLL.Services
 
         public static void CheckCorrectPassword(string? password)
         {
-            var regex = new Regex(@"(?=.*?[0-9])(?=.*?[A-Z])(?=.*?[a-z])");
+            var regex = new Regex("^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{5,}$");
 
             if (password is null || password.Length <= 4 || password.Length > 50) 
                 throw new BadRequestException("Пароль должен быть в длину от 5 до 50 символов");
-            if (regex.IsMatch(password)) 
+            if (!regex.IsMatch(password)) 
                 throw new BadRequestException("Пароль должен содержать цифру, заглавную и строчную букву");
         }
 
