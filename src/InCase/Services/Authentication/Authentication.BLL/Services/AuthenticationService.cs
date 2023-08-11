@@ -185,13 +185,11 @@ namespace Authentication.BLL.Services
 
         public static void CreateNewPassword(ref User user, string? password)
         {
-            if (password is null) throw new BadRequestException("Пароль некорректный");
-
-            //TODO Check correct password
+            ValidationService.CheckCorrectPassword(password);
 
             byte[] salt = EncryptorService.GenerationSaltTo64Bytes();
 
-            user.PasswordHash = EncryptorService.GenerationHashSHA512(password, salt);
+            user.PasswordHash = EncryptorService.GenerationHashSHA512(password!, salt);
             user.PasswordSalt = Convert.ToBase64String(salt);
         }
     }

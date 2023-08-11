@@ -24,7 +24,6 @@ namespace Game.BLL.MassTransit.Consumers
                 .FirstOrDefaultAsync(uai => uai.UserId == data.UserId) ??
                 throw new NotFoundException("Пользователь не найден");
 
-            //TODO Check currency and rate
             info.Balance += data.Amount;
 
             await _context.SaveChangesAsync();
