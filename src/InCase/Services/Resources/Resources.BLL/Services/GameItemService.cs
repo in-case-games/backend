@@ -27,7 +27,7 @@ namespace Resources.BLL.Services
             _platformServices = new()
             {
                 ["csgo"] = steamService,
-                ["dota"] = steamService,
+                ["dota2"] = steamService,
             };
         }
 
@@ -273,20 +273,19 @@ namespace Resources.BLL.Services
                 .Take(count)
                 .ToListAsync();
 
-            foreach(var item in items)
+            foreach(GameItem item in items)
             {
                 string game = item.Game!.Name!;
 
-                try
-                {
-                    decimal cost = await _platformServices[game].GetItemCostAsync(item.HashName!, game);
+                decimal cost = await _platformServices[game].GetItemCostAsync(item.HashName!, game);
 
-                    item.Cost = cost;
-                }
-                catch (Exception) { }
+                item.UpdateDate = DateTime.UtcNow;
+                item.Cost = cost * 7;
+
+                _context.Items.Update(item);
+                await _context.SaveChangesAsync(cancellationToken);
+                await _publisher.SendAsync(item.ToTemplate(null));
             }
-
-            await _context.SaveChangesAsync(cancellationToken);
         }
     }
 }

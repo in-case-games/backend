@@ -1,27 +1,43 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Resources.BLL.Interfaces;
+using System.Text.Json.Serialization;
 
 namespace Resources.BLL.Services
 {
     public class GamePlatformSteamService : IGamePlatformService
     {
-        private readonly IConfiguration _cfg;
         private readonly IResponseService _responseService;
         private readonly Dictionary<string, string> AppId = new()
         {
-            ["csgo"] = "111",
-            ["dota"] = "111"
+            ["csgo"] = "730",
+            ["dota2"] = "570"
         };
 
-        public GamePlatformSteamService(IConfiguration cfg, IResponseService responseService)
+        public GamePlatformSteamService(IResponseService responseService)
         {
-            _cfg = cfg;
             _responseService = responseService;
         }
 
-        public Task<decimal> GetItemCostAsync(string hashName, string game)
+        public async Task<decimal> GetItemCostAsync(string hashName, string game)
         {
-            throw new NotImplementedException();
+            string uri = $"https://steamcommunity.com/market/priceoverview/?" +
+                $"currency=5&" +
+                $"country=ru&" +
+                $"appid={AppId[game]}&" +
+                $"market_hash_name={hashName}&" +
+                $"format=json";
+
+            ItemCostResponse? response = await _responseService.GetAsync<ItemCostResponse>(uri);
+
+            string ammount = response!.Cost!.Replace(" pуб.", "");
+
+            return decimal.Parse(ammount);
+        }
+
+
+        private class ItemCostResponse
+        {
+            [JsonPropertyName("lowest_price")] public string? Cost { get; set; }
         }
     }
 }
