@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Resources.BLL.Interfaces;
 
 namespace Resources.BLL.Services
@@ -36,7 +35,7 @@ namespace Resources.BLL.Services
                 {
                 }
 
-                await Task.Delay(10000, stoppingToken);
+                await Task.Delay(1000, stoppingToken);
             }
         }
     }

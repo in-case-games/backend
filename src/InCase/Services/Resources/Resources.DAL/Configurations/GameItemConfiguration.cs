@@ -24,6 +24,8 @@ namespace Resources.DAL.Configurations
             builder.Property(gi => gi.Name)
                 .HasMaxLength(50)
                 .IsRequired();
+            builder.Property(gi => gi.UpdateDate)
+                .IsRequired();
             builder.Property(gi => gi.HashName)
                 .IsRequired(false);
             builder.Property(gi => gi.Cost)

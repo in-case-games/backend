@@ -14,10 +14,21 @@ namespace Resources.BLL.Services
         private readonly ApplicationDbContext _context;
         private readonly BasePublisher _publisher;
 
-        public GameItemService(ApplicationDbContext context, BasePublisher publisher)
+        private readonly Dictionary<string, IGamePlatformService> _platformServices;
+
+        public GameItemService(
+            ApplicationDbContext context, 
+            BasePublisher publisher,
+            GamePlatformSteamService steamService)
         {
             _context = context;
             _publisher = publisher;
+
+            _platformServices = new()
+            {
+                ["csgo"] = steamService,
+                ["dota"] = steamService,
+            };
         }
 
         public async Task<GameItemResponse> GetAsync(Guid id)
@@ -254,10 +265,28 @@ namespace Resources.BLL.Services
             return item.ToResponse();
         }
 
-        public Task UpdateCostManagerAsync(int count, CancellationToken cancellationToken)
+        public async Task UpdateCostManagerAsync(int count, CancellationToken cancellationToken)
         {
-            //TODO 
-            throw new NotImplementedException();
+            List<GameItem> items = await _context.Items
+                .Include(gi => gi.Game)
+                .OrderByDescending(gi => gi.UpdateDate)
+                .Take(count)
+                .ToListAsync();
+
+            foreach(var item in items)
+            {
+                string game = item.Game!.Name!;
+
+                try
+                {
+                    decimal cost = await _platformServices[game].GetItemCostAsync(item.HashName!, game);
+
+                    item.Cost = cost;
+                }
+                catch (Exception) { }
+            }
+
+            await _context.SaveChangesAsync(cancellationToken);
         }
     }
 }

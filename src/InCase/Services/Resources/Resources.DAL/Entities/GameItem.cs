@@ -7,6 +7,7 @@ namespace Resources.DAL.Entities
         public string? Name { get; set; }
         public string? HashName { get; set; }
         public decimal Cost { get; set; }
+        public DateTime UpdateDate { get; set; } = DateTime.UtcNow;
 
         public GameItemQuality? Quality { get; set; }
         public GameItemType? Type { get; set; }
