@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Infrastructure.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Review.API.Common;
@@ -130,10 +131,12 @@ namespace Review.API.Controllers
         [ProducesResponseType(typeof(ApiResult<ReviewImageResponse>),
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
+        [Consumes("multipart/form-data")]
         [HttpPost]
-        public async Task<IActionResult> Post(ReviewImageRequest request)
+        public async Task<IActionResult> Post(IFormFile image, [FromForm] Guid reviewId)
         {
-            ReviewImageResponse response = await _reviewImageService.CreateAsync(UserId, request);
+            ReviewImageRequest reviewImageRequest = new ReviewImageRequest() { ReviewId = reviewId };
+            ReviewImageResponse response = await _reviewImageService.CreateAsync(UserId, reviewImageRequest, image);
 
             return Ok(ApiResult<ReviewImageResponse>.OK(response));
         }

@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Infrastructure.Services;
+using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Review.BLL.Exceptions;
 using Review.BLL.Helpers;
 using Review.BLL.Interfaces;
@@ -71,7 +73,7 @@ namespace Review.BLL.Services
             return images.ToResponse();
         }
 
-        public async Task<ReviewImageResponse> CreateAsync(Guid userId, ReviewImageRequest request)
+        public async Task<ReviewImageResponse> CreateAsync(Guid userId, ReviewImageRequest request, IFormFile uploadImage)
         {
             UserReview review = await _context.Reviews
                 .FirstOrDefaultAsync(ur => ur.Id == request.ReviewId) ??
@@ -84,7 +86,12 @@ namespace Review.BLL.Services
 
             review.IsApproved = false;
 
-            //TODO Save image local folder 
+            //TODO Save image local fold
+            string[] currentDirPath = Environment.CurrentDirectory.Split("src");
+            string path = currentDirPath[0];
+
+            FileService.Upload(uploadImage, 
+                path + $"\\src\\fileserver_imitation\\reviews\\{image.ReviewId}\\{image.Id}\\" + image.Id + ".jpg");
 
             await _context.Images.AddAsync(image);
             await _context.SaveChangesAsync();
@@ -104,6 +111,13 @@ namespace Review.BLL.Services
                 throw new ForbiddenException("Доступ к отзыву только у создателя");
 
             //TODO Remove image local folder 
+            // Temp fileserver imitation
+
+            string[] currentDirPath = Environment.CurrentDirectory.Split("src");
+            string path = currentDirPath[0];
+
+            File.Delete(path + $"src\\fileserver_imitation\\reviews\\{image.ReviewId}\\{image.Id}\\" + image.Id + ".jpg");
+            FileService.RemoveFolder(path + $"\\src\\fileserver_imitation\\reviews\\{image.ReviewId}\\{image.Id}");
 
             _context.Images.Remove(image);
             await _context.SaveChangesAsync();
@@ -120,6 +134,13 @@ namespace Review.BLL.Services
                 throw new NotFoundException("Изображение не найдено");
 
             //TODO Remove image local folder 
+            // Temp fileserver imitation
+
+            string[] currentDirPath = Environment.CurrentDirectory.Split("src");
+            string path = currentDirPath[0];
+
+            File.Delete(path + $"src\\fileserver_imitation\\reviews\\{image.ReviewId}\\{image.Id}\\" + image.Id + ".jpg");
+            FileService.RemoveFolder(path + $"\\src\\fileserver_imitation\\reviews\\{image.ReviewId}\\{image.Id}");
 
             _context.Images.Remove(image);
             await _context.SaveChangesAsync();
