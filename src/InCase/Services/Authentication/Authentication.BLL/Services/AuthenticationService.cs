@@ -93,7 +93,7 @@ namespace Authentication.BLL.Services
             {
                 RoleId = role.Id,
                 UserId = user.Id,
-                DeletionDate = DateTime.UtcNow + TimeSpan.FromDays(30),
+                DeletionDate = DateTime.UtcNow + TimeSpan.FromDays(1),
                 IsConfirmed = false,
             };
 
