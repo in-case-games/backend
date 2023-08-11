@@ -47,6 +47,9 @@ namespace Withdraw.BLL.Services
                 .FirstOrDefaultAsync(g => g.Name == template.GameName) ??
                 throw new NotFoundException("Игра не найдена");
 
+            if (template.IdForMarket is not null)
+                item.IdForMarket = template.IdForMarket;
+
             item.GameId = game.Id;
             item.Cost = template.Cost;
 

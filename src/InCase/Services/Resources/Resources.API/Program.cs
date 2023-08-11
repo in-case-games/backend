@@ -6,6 +6,7 @@ using Microsoft.OpenApi.Models;
 using Resources.API.Middlewares;
 using Resources.BLL.Interfaces;
 using Resources.BLL.MassTransit;
+using Resources.BLL.MassTransit.Consumer;
 using Resources.BLL.Services;
 using Resources.DAL.Data;
 using System.Text;
@@ -72,6 +73,8 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 builder.Services.AddSingleton<BasePublisher>();
+builder.Services.AddSingleton<IResponseService, ResponseService>();
+builder.Services.AddSingleton<GamePlatformSteamService>();
 builder.Services.AddScoped<IGameService, GameService>();
 builder.Services.AddScoped<ILootBoxService, LootBoxService>();
 builder.Services.AddScoped<ILootBoxInventoryService, LootBoxInventoryService>();
@@ -83,6 +86,7 @@ builder.Services.AddHostedService<GameItemManagerService>();
 
 builder.Services.AddMassTransit(x =>
 {
+    x.AddConsumer<LootBoxLockedConsumer>();
     x.SetKebabCaseEndpointNameFormatter();
 
     x.AddBus(provider => Bus.Factory.CreateUsingRabbitMq(cfg =>
@@ -91,6 +95,12 @@ builder.Services.AddMassTransit(x =>
         {
             h.Username(builder.Configuration["MassTransit:Username"]!);
             h.Password(builder.Configuration["MassTransit:Password"]!);
+        });
+        cfg.ReceiveEndpoint(ep =>
+        {
+            ep.PrefetchCount = 16;
+            ep.UseMessageRetry(r => r.Interval(4, 100));
+            ep.ConfigureConsumer<LootBoxLockedConsumer>(provider);
         });
     }));
 });

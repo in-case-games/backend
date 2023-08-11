@@ -1,5 +1,7 @@
-﻿using Authentication.DAL.Entities;
+﻿using Authentication.BLL.Exceptions;
+using Authentication.DAL.Entities;
 using System.Security.Claims;
+using System.Text.RegularExpressions;
 
 namespace Authentication.BLL.Services
 {
@@ -13,6 +15,16 @@ namespace Authentication.BLL.Services
                 .FromBase64String(user.PasswordSalt!));
 
             return hash == user.PasswordHash;
+        }
+
+        public static void CheckCorrectPassword(string? password)
+        {
+            var regex = new Regex("^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{5,}$");
+
+            if (password is null || password.Length <= 4 || password.Length > 50) 
+                throw new BadRequestException("Пароль должен быть в длину от 5 до 50 символов");
+            if (!regex.IsMatch(password)) 
+                throw new BadRequestException("Пароль должен содержать цифру, заглавную и строчную букву");
         }
 
         public static bool IsValidToken(in User user, ClaimsPrincipal principal, string type)
