@@ -31,6 +31,8 @@ namespace Resources.BLL.Services
 
             string ammount = response!.Cost!.Replace(" pуб.", "");
 
+            //TODO if item no steam check price tm
+
             return decimal.Parse(ammount);
         }
 

@@ -86,7 +86,7 @@ builder.Services.AddHostedService<GameItemManagerService>();
 
 builder.Services.AddMassTransit(x =>
 {
-    x.AddConsumer<LootBoxLockedConsumer>();
+    x.AddConsumer<LootBoxBackConsumer>();
     x.SetKebabCaseEndpointNameFormatter();
 
     x.AddBus(provider => Bus.Factory.CreateUsingRabbitMq(cfg =>
@@ -100,7 +100,7 @@ builder.Services.AddMassTransit(x =>
         {
             ep.PrefetchCount = 16;
             ep.UseMessageRetry(r => r.Interval(4, 100));
-            ep.ConfigureConsumer<LootBoxLockedConsumer>(provider);
+            ep.ConfigureConsumer<LootBoxBackConsumer>(provider);
         });
     }));
 });
