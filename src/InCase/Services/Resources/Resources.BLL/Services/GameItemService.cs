@@ -271,12 +271,12 @@ namespace Resources.BLL.Services
                 .Include(gi => gi.Game)
                 .OrderByDescending(gi => gi.UpdateDate)
                 .Take(count)
+                .Where(gi => gi.UpdateDate + TimeSpan.FromMinutes(5) <= DateTime.UtcNow)
                 .ToListAsync();
 
             foreach(GameItem item in items)
             {
                 string game = item.Game!.Name!;
-
                 decimal cost = await _platformServices[game].GetItemCostAsync(item.HashName!, game);
 
                 item.UpdateDate = DateTime.UtcNow;

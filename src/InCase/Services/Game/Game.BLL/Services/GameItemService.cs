@@ -1,6 +1,7 @@
 ﻿using Game.BLL.Exceptions;
 using Game.BLL.Helpers;
 using Game.BLL.Interfaces;
+using Game.BLL.MassTransit;
 using Game.DAL.Data;
 using Game.DAL.Entities;
 using Infrastructure.MassTransit.Resources;
@@ -12,7 +13,7 @@ namespace Game.BLL.Services
     {
         private readonly ApplicationDbContext _context;
 
-        public GameItemService(ApplicationDbContext context)
+        public GameItemService(ApplicationDbContext context, BasePublisher publisher)
         {
             _context = context;
         }
@@ -21,12 +22,14 @@ namespace Game.BLL.Services
             .AsNoTracking()
             .FirstOrDefaultAsync(gi => gi.Id == id);
 
-        public async Task CreateAsync(GameItemTemplate template)
+        public async Task<GameItem> CreateAsync(GameItemTemplate template)
         {
             GameItem item = template.ToEntity();
 
             await _context.Items.AddAsync(item);
             await _context.SaveChangesAsync();
+
+            return item;
         }
 
         public async Task UpdateAsync(GameItemTemplate template)

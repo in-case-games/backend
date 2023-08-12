@@ -6,25 +6,27 @@ using Resources.DAL.Entities;
 
 namespace Resources.BLL.MassTransit.Consumer
 {
-    public class LootBoxLockedConsumer : IConsumer<LootBoxLockedTemplate>
+    public class LootBoxBackConsumer : IConsumer<LootBoxBackTemplate>
     {
         private readonly ApplicationDbContext _context;
 
-        public LootBoxLockedConsumer(ApplicationDbContext context)
+        public LootBoxBackConsumer(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        public async Task Consume(ConsumeContext<LootBoxLockedTemplate> context)
+        public async Task Consume(ConsumeContext<LootBoxBackTemplate> context)
         {
             var template = context.Message;
 
             LootBox? box = await _context.LootBoxes
                 .FirstOrDefaultAsync(lb => lb.Id == template.Id);
 
-            if(box is not null)
+            if (box is not null)
             {
-                box.IsLocked = true;
+                box.IsLocked = template.IsLocked;
+                box.Cost = template.Cost;
+
                 await _context.SaveChangesAsync();
             }
         }
