@@ -15,6 +15,7 @@ namespace Withdraw.BLL.Services
         private readonly ApplicationDbContext _context;
         private readonly IWithdrawItemService _withdrawService;
         private readonly BasePublisher _publisher;
+        private readonly NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
 
         public UserInventoryService(
             ApplicationDbContext context, 
@@ -105,7 +106,10 @@ namespace Withdraw.BLL.Services
             if (itemPrice <= inventory.FixedCost * 1.1M / 7)
                 throw new ConflictException("Товар может быть обменен только в случае нестабильности цены");
 
-            //TODO Write logs
+            logger.Log(NLog.LogLevel.Info, "Withdrawed: UserId - {0}," +
+                                           " GameItemId - {1}, Game - {2}",
+                                           inventory.UserId, inventory.ItemId,
+                                           inventory.Item?.Game?.Name);
 
             inventory.ItemId = item.Id;
             inventory.FixedCost = item.Cost;
