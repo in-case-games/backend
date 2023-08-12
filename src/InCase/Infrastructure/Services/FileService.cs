@@ -35,7 +35,7 @@ namespace Infrastructure.Services
         {
             try
             {
-                Directory.Delete(path);
+                Directory.Delete(path, recursive: true);
                 return true;
             }
             catch (DirectoryNotFoundException)
