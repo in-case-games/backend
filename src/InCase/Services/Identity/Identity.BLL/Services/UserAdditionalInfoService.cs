@@ -6,6 +6,8 @@ using Microsoft.EntityFrameworkCore;
 using Identity.DAL.Entities;
 using Identity.BLL.Helpers;
 using Identity.BLL.MassTransit;
+using Microsoft.AspNetCore.Http;
+using Infrastructure.Services;
 
 namespace Identity.BLL.Services
 {
@@ -61,14 +63,21 @@ namespace Identity.BLL.Services
             return info.ToResponse();
         }
 
-        public async Task<UserAdditionalInfoResponse> UpdateImageAsync(Guid userId, string uri)
+        public async Task<UserAdditionalInfoResponse> UpdateImageAsync(Guid userId, IFormFile image)
         {
             UserAdditionalInfo info = await _context.AdditionalInfos
                 .Include(uai => uai.Role)
                 .FirstOrDefaultAsync(uai => uai.UserId == userId) ??
                 throw new NotFoundException("Пользователь не найден");
 
-            //TODO Upload image
+            string[] currentDirPath = Environment.CurrentDirectory.Split("src");
+            string path = currentDirPath[0];
+
+            bool isUploaded = FileService.Upload(image,
+                path + $"\\src\\fileserver_imitation\\userinfos\\{info.UserId}\\{info.Id}\\" + info.Id + ".jpg");
+
+            if (!isUploaded)
+                throw new ConflictException("Изображение не было загружено");
 
             await _context.SaveChangesAsync();
 

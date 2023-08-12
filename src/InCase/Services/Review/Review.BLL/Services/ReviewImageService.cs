@@ -86,7 +86,6 @@ namespace Review.BLL.Services
 
             review.IsApproved = false;
 
-            //TODO Save image local fold
             string[] currentDirPath = Environment.CurrentDirectory.Split("src");
             string path = currentDirPath[0];
 
@@ -110,7 +109,6 @@ namespace Review.BLL.Services
             if (image.Review!.UserId != userId)
                 throw new ForbiddenException("Доступ к отзыву только у создателя");
 
-            //TODO Remove image local folder 
             // Temp fileserver imitation
 
             string[] currentDirPath = Environment.CurrentDirectory.Split("src");
@@ -133,7 +131,6 @@ namespace Review.BLL.Services
                 .FirstOrDefaultAsync(ri => ri.Id == id) ??
                 throw new NotFoundException("Изображение не найдено");
 
-            //TODO Remove image local folder 
             // Temp fileserver imitation
 
             string[] currentDirPath = Environment.CurrentDirectory.Split("src");
