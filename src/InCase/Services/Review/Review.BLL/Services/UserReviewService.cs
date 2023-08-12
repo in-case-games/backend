@@ -1,4 +1,5 @@
 ﻿using Infrastructure.MassTransit.Statistics;
+using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Review.BLL.Exceptions;
 using Review.BLL.Helpers;
@@ -151,7 +152,9 @@ namespace Review.BLL.Services
             if (review.UserId != userId)
                 throw new ForbiddenException("Доступ к отзыву только у создателя");
 
-            //TODO Remove image local folder 
+            string[] currentDirPath = Environment.CurrentDirectory.Split("src");
+            string path = currentDirPath[0];
+            FileService.RemoveFolder(path + $"\\src\\fileserver_imitation\\reviews\\{review.Id}");
 
             _context.Reviews.Remove(review);
             await _context.SaveChangesAsync();
@@ -171,7 +174,9 @@ namespace Review.BLL.Services
 
             SiteStatisticsTemplate template = new() { Reviews = -1 };
 
-            //TODO Remove image local folder 
+            string[] currentDirPath = Environment.CurrentDirectory.Split("src");
+            string path = currentDirPath[0];
+            FileService.RemoveFolder(path + $"\\src\\fileserver_imitation\\reviews\\{review.Id}");
 
             _context.Reviews.Remove(review);
             await _context.SaveChangesAsync();
