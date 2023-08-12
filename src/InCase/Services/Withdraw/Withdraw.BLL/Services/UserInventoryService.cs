@@ -106,7 +106,7 @@ namespace Withdraw.BLL.Services
             if (itemPrice <= inventory.FixedCost * 1.1M / 7)
                 throw new ConflictException("Товар может быть обменен только в случае нестабильности цены");
 
-            logger.Log(NLog.LogLevel.Info, "Withdrawed: UserId - {0}," +
+            logger.Log(NLog.LogLevel.Info, "Exchanged: UserId - {0}," +
                                            " GameItemId - {1}, Game - {2}",
                                            inventory.UserId, inventory.ItemId,
                                            inventory.Item?.Game?.Name);
@@ -136,7 +136,10 @@ namespace Withdraw.BLL.Services
                 .FirstOrDefaultAsync(ui => ui.Id == id && ui.UserId == userId) ??
                 throw new NotFoundException("Предмет не найден в инвентаре");
 
-            //TODO Write logs
+            logger.Log(NLog.LogLevel.Info, "Selled: UserId - {0}," +
+                                           " GameItemId - {1}, Game - {2}",
+                                           user.Id, inventory.ItemId,
+                                           inventory.Item?.Game?.Name);
 
             _context.Inventories.Remove(inventory);
             await _context.SaveChangesAsync();
@@ -162,7 +165,10 @@ namespace Withdraw.BLL.Services
 
             UserInventory inventory = inventories.MinBy(ui => ui.Date)!;
 
-            //TODO Write logs
+            logger.Log(NLog.LogLevel.Info, "SelledLast: UserId - {0}," +
+                                           " GameItemId - {1}, Game - {2}",
+                                           user.Id, inventory.ItemId,
+                                           inventory.Item?.Game?.Name);
 
             _context.Inventories.Remove(inventory);
             await _context.SaveChangesAsync();
