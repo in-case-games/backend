@@ -66,7 +66,8 @@ namespace Payment.BLL.Services
                 pay += pay * promocode.Discount;
             }
 
-            //TODO Notify true game money
+            // CHECK: Notify true game money
+            await _gmService.SendSuccess();
 
             UserPayment payment = new()
             {

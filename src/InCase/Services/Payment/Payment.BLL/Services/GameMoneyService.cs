@@ -57,6 +57,14 @@ namespace Payment.BLL.Services
             throw new RequestTimeoutException("Сервис пополнения не отвечает");
         }
 
+        public async Task SendSuccess()
+        {
+            GameMoneyNotifySuccessRequest request = new GameMoneyNotifySuccessRequest();
+            request.Success = true;
+            IGameMoneyResponse? response = await _responseService
+                        .ResponsePostAsync(GameMoneyEndpoint.InvoiceInfo, request);
+        }
+
         public async Task<GameMoneyInvoiceInfoResponse> GetInvoiceInfoAsync(string invoiceId)
         {
             GameMoneyInvoiceInfoRequest request = new()
