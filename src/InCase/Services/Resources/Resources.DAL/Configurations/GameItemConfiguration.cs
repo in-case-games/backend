@@ -28,6 +28,8 @@ namespace Resources.DAL.Configurations
                 .IsRequired();
             builder.Property(gi => gi.HashName)
                 .IsRequired(false);
+            builder.Property(gi => gi.IdForMarket)
+                .IsRequired();
             builder.Property(gi => gi.Cost)
                 .HasColumnType("DECIMAL(18,5)")
                 .IsRequired();

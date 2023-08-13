@@ -12,6 +12,7 @@ namespace Resources.BLL.Helpers
                 Id = inventory.Id,
                 Item = inventory.Item?.ToResponse(),
                 Box = inventory.Box?.ToResponse(),
+                ChanceWining = inventory.ChanceWining
             };
 
         public static List<LootBoxInventoryResponse> ToResponse(
@@ -32,6 +33,7 @@ namespace Resources.BLL.Helpers
                 Id = isNewGuid ? Guid.NewGuid() : request.Id,
                 BoxId = request.BoxId,
                 ItemId = request.ItemId,
+                ChanceWining = request.ChanceWining
             };
 
         public static LootBoxInventoryTemplate ToTemplate(
@@ -51,7 +53,7 @@ namespace Resources.BLL.Helpers
         {
             Id = entity.Id,
             BoxId = entity.BoxId,
-            ChanceWining = 0,
+            ChanceWining = entity.ChanceWining,
             ItemId = entity.ItemId,
             IsDeleted = isDeleted
         };

@@ -200,7 +200,7 @@ namespace Resources.BLL.Services
             item.Rarity = rarity;
             item.Type = type;
 
-            await _publisher.SendAsync(item.ToTemplate(request.IdForMarket));
+            await _publisher.SendAsync(item.ToTemplate());
 
             return item.ToResponse();
         }
@@ -241,7 +241,7 @@ namespace Resources.BLL.Services
             item.Rarity = rarity;
             item.Type = type;
 
-            await _publisher.SendAsync(item.ToTemplate(request.IdForMarket));
+            await _publisher.SendAsync(item.ToTemplate());
 
             return item.ToResponse();
         }
@@ -260,32 +260,109 @@ namespace Resources.BLL.Services
             _context.Items.Remove(item);
             await _context.SaveChangesAsync();
 
-            await _publisher.SendAsync(item.ToTemplate(idForMarket: null, isDeleted: true));
+            await _publisher.SendAsync(item.ToTemplate(isDeleted: true));
 
             return item.ToResponse();
         }
 
-        public async Task UpdateCostManagerAsync(int count, CancellationToken cancellationToken)
+        public async Task UpdateCostManagerAsync(int count, CancellationToken cancellationToken = default)
         {
             List<GameItem> items = await _context.Items
                 .Include(gi => gi.Game)
                 .OrderByDescending(gi => gi.UpdateDate)
                 .Take(count)
                 .Where(gi => gi.UpdateDate + TimeSpan.FromMinutes(5) <= DateTime.UtcNow)
-                .ToListAsync();
+                .ToListAsync(cancellationToken);
 
             foreach(GameItem item in items)
             {
                 string game = item.Game!.Name!;
+                string hashName = item.HashName ?? "null";
+
                 decimal cost = await _platformServices[game].GetItemCostAsync(item.HashName!, game);
+
+                //TODO Request platform
 
                 item.UpdateDate = DateTime.UtcNow;
                 item.Cost = cost * 7;
 
                 _context.Items.Update(item);
                 await _context.SaveChangesAsync(cancellationToken);
-                await _publisher.SendAsync(item.ToTemplate(null));
+
+                await _publisher.SendAsync(item.ToTemplate(), cancellationToken);
+
+                await CorrectCostAsync(item.Id, cancellationToken);
+                await CorrectChancesAsync(item.Id, cancellationToken);
             }
+        }
+
+        private async Task CorrectCostAsync(Guid itemId, CancellationToken cancellationToken = default)
+        {
+            List<LootBoxInventory> inventories = await _context.BoxInventories
+                .Include(lbi => lbi.Box)
+                .Where(lbi => lbi.ItemId == itemId)
+                .ToListAsync(cancellationToken);
+
+            foreach (var inventory in inventories)
+            {
+                LootBox box = inventory.Box!;
+
+                LootBoxInventory? itemSmallCost = await _context.BoxInventories
+                    .Include(lbi => lbi.Item)
+                    .OrderBy(lbi => lbi.Item!.Cost)
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(lbi => lbi.BoxId == box.Id, cancellationToken);
+
+                if (itemSmallCost is not null && box.Cost <= itemSmallCost.Item!.Cost * 2M)
+                {
+                    box.Cost = itemSmallCost!.Item!.Cost * 2M;
+
+                    _context.LootBoxes.Update(box);
+                    await _publisher.SendAsync(box.ToTemplate(), cancellationToken);
+                }
+            }
+
+            await _context.SaveChangesAsync(cancellationToken);
+        }
+
+        private async Task CorrectChancesAsync(Guid itemId, CancellationToken cancellationToken = default)
+        {
+            List<LootBoxInventory> itemInventories = await _context.BoxInventories
+                .Include(lbi => lbi.Box)
+                .Where(lbi => lbi.ItemId == itemId)
+                .AsNoTracking()
+                .ToListAsync(cancellationToken);
+
+            foreach (var itemInventory in itemInventories)
+            {   
+                LootBox box = itemInventory.Box!;
+                decimal weightAll = 0;
+                Dictionary<Guid, decimal> weights = new();
+
+                List<LootBoxInventory> boxInventories = await _context.BoxInventories
+                    .Include(lbi => lbi.Item)
+                    .Where(lbi => lbi.BoxId == box.Id)
+                    .ToListAsync(cancellationToken);
+
+                foreach (var boxInventory in boxInventories)
+                {
+                    decimal weight = 1M / boxInventory.Item!.Cost;
+
+                    weightAll += weight;
+                    weights.Add(boxInventory.Id, weight);
+                }
+
+                foreach (var boxInventory in boxInventories)
+                {
+                    boxInventory.ChanceWining = decimal.ToInt32(
+                        Math.Round(weights[boxInventory.Id] / weightAll * 10000000M));
+
+                    _context.BoxInventories.Update(boxInventory);
+                    await _publisher.SendAsync(boxInventory.ToTemplate(), cancellationToken);
+                }
+            }
+
+            await _context.SaveChangesAsync(cancellationToken);
         }
     }
 }

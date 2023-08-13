@@ -22,14 +22,12 @@ namespace Game.BLL.Services
             .AsNoTracking()
             .FirstOrDefaultAsync(gi => gi.Id == id);
 
-        public async Task<GameItem> CreateAsync(GameItemTemplate template)
+        public async Task CreateAsync(GameItemTemplate template)
         {
             GameItem item = template.ToEntity();
 
             await _context.Items.AddAsync(item);
             await _context.SaveChangesAsync();
-
-            return item;
         }
 
         public async Task UpdateAsync(GameItemTemplate template)

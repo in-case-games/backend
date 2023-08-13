@@ -4,6 +4,7 @@ namespace Resources.DAL.Entities
 {
     public class LootBoxInventory : BaseEntity
     {
+        public int ChanceWining { get; set; }
         public GameItem? Item { get; set; }
 
         [JsonIgnore]

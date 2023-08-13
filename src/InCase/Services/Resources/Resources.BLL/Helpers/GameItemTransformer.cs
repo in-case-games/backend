@@ -15,6 +15,8 @@ namespace Resources.BLL.Helpers
                 Rarity = item.Rarity?.Name,
                 Type = item.Type?.Name,
                 Game = item.Game?.Name,
+                HashName = item.HashName,
+                IdForMarket = item.IdForMarket
             };
 
         public static List<GameItemResponse> ToResponse(this IEnumerable<GameItem> items)
@@ -36,10 +38,11 @@ namespace Resources.BLL.Helpers
                 QualityId = request.QualityId,
                 RarityId = request.RarityId,
                 Name = request.Name,
-                TypeId = request.TypeId
+                TypeId = request.TypeId,
+                IdForMarket = request.IdForMarket
             };
 
-        public static GameItemTemplate ToTemplate(this GameItem entity, string? idForMarket, bool isDeleted = false) => new()
+        public static GameItemTemplate ToTemplate(this GameItem entity, bool isDeleted = false) => new()
         {
             Id = entity.Id,
             Cost = entity.Cost,
@@ -47,7 +50,7 @@ namespace Resources.BLL.Helpers
             HashName = entity.HashName,
             IsDeleted = isDeleted,
             Name = entity.Name,
-            IdForMarket = idForMarket
+            IdForMarket = entity.IdForMarket
         };
     }
 }

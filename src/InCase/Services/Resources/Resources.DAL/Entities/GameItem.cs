@@ -6,6 +6,7 @@ namespace Resources.DAL.Entities
     {
         public string? Name { get; set; }
         public string? HashName { get; set; }
+        public string? IdForMarket { get; set; }
         public decimal Cost { get; set; }
         public DateTime UpdateDate { get; set; } = DateTime.UtcNow;
 

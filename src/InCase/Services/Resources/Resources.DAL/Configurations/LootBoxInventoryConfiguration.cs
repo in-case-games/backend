@@ -12,6 +12,8 @@ namespace Resources.DAL.Configurations
 
             builder.ToTable(nameof(LootBoxInventory));
 
+            builder.Property(lbi => lbi.ChanceWining)
+                .IsRequired();
             builder.HasIndex(lbi => lbi.BoxId)
                 .IsUnique(false);
             builder.HasIndex(lbi => lbi.ItemId)
