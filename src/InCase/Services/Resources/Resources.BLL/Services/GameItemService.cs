@@ -6,6 +6,7 @@ using Resources.BLL.MassTransit;
 using Resources.BLL.Models;
 using Resources.DAL.Data;
 using Resources.DAL.Entities;
+using System.Text.Json.Serialization;
 
 namespace Resources.BLL.Services
 {
@@ -279,20 +280,26 @@ namespace Resources.BLL.Services
                 string game = item.Game!.Name!;
                 string hashName = item.HashName ?? "null";
 
-                decimal cost = await _platformServices[game].GetItemCostAsync(item.HashName!, game);
+                ItemCostResponse priceOriginal = await _platformServices[game]
+                    .GetOriginalMarketAsync(hashName, game);
+                ItemCostResponse priceAdditional = await _platformServices[game]
+                    .GetAdditionalMarketAsync(item.IdForMarket!, game);
 
-                //TODO Request platform
+                if(priceOriginal.Success || priceAdditional.Success)
+                {
+                    decimal cost = priceOriginal.Success ? priceOriginal.Cost : priceAdditional.Cost;
 
-                item.UpdateDate = DateTime.UtcNow;
-                item.Cost = cost * 7;
+                    item.UpdateDate = DateTime.UtcNow;
+                    item.Cost = cost * 7;
 
-                _context.Items.Update(item);
-                await _context.SaveChangesAsync(cancellationToken);
+                    _context.Items.Update(item);
+                    await _context.SaveChangesAsync(cancellationToken);
 
-                await _publisher.SendAsync(item.ToTemplate(), cancellationToken);
+                    await _publisher.SendAsync(item.ToTemplate(), cancellationToken);
 
-                await CorrectCostAsync(item.Id, cancellationToken);
-                await CorrectChancesAsync(item.Id, cancellationToken);
+                    await CorrectCostAsync(item.Id, cancellationToken);
+                    await CorrectChancesAsync(item.Id, cancellationToken);
+                }
             }
         }
 
