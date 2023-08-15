@@ -78,7 +78,7 @@ namespace Resources.API.Controllers
         [ProducesResponseType(typeof(ApiResult<GroupLootBox>), 
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Owner)]
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
             GroupLootBox response = await _groupBoxService.DeleteAsync(id);

@@ -1557,18 +1557,6 @@
       "UpstreamHttpMethod": [ "Get" ]
     },
     {
-      "DownstreamPathTemplate": "/api/loot-box-group/group/{id}",
-      "DownstreamScheme": "https",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "localhost",
-          "Port": 7292
-        }
-      ],
-      "UpstreamPathTemplate": "/api/box/group/{id}",
-      "UpstreamHttpMethod": [ "Get" ]
-    },
-    {
       "DownstreamPathTemplate": "/api/loot-box-group",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
@@ -1788,7 +1776,7 @@
       "UpstreamHttpMethod": [ "Get" ]
     },
     {
-      "DownstreamPathTemplate": "/api/review-image",
+      "DownstreamPathTemplate": "/api/review-image/multipart/form-data",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
@@ -1796,7 +1784,7 @@
           "Port": 7253
         }
       ],
-      "UpstreamPathTemplate": "/api/user/review/image",
+      "UpstreamPathTemplate": "/api/user/review/image/multipart/form-data",
       "UpstreamHttpMethod": [ "Post" ]
     },
     {
@@ -2515,18 +2503,6 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/history/withdraw/100/last",
-      "UpstreamHttpMethod": [ "Get" ]
-    },
-    {
-      "DownstreamPathTemplate": "/api/user-withdraws",
-      "DownstreamScheme": "https",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "localhost",
-          "Port": 7036
-        }
-      ],
-      "UpstreamPathTemplate": "/api/user/history/withdraw",
       "UpstreamHttpMethod": [ "Get" ]
     },
     {
