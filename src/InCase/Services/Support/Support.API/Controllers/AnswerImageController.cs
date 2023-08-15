@@ -115,7 +115,7 @@ namespace Support.API.Controllers
         [HttpPost]
         public async Task<IActionResult> Post(IFormFile image, [FromForm] Guid answerId)
         {
-            AnswerImageRequest request = new AnswerImageRequest() { AnswerId = answerId };
+            AnswerImageRequest request = new() { AnswerId = answerId };
             AnswerImageResponse response = await _imageService
                 .CreateAsync(UserId, request, image);
 
