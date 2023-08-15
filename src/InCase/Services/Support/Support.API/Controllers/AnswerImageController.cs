@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Support.API.Common;
 using Support.API.Filters;
 using Support.BLL.Interfaces;
@@ -114,9 +113,11 @@ namespace Support.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpPost]
-        public async Task<IActionResult> Post(AnswerImageRequest request)
+        public async Task<IActionResult> Post(IFormFile image, [FromForm] Guid answerId)
         {
-            AnswerImageResponse response = await _imageService.CreateAsync(UserId, request);
+            AnswerImageRequest request = new AnswerImageRequest() { AnswerId = answerId };
+            AnswerImageResponse response = await _imageService
+                .CreateAsync(UserId, request, image);
 
             return Ok(ApiResult<AnswerImageResponse>.OK(response));
         }
