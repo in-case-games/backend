@@ -30,6 +30,18 @@
       "UpstreamHttpMethod": [ "Get" ]
     },
     {
+      "DownstreamPathTemplate": "/api/authentication/confirm/login/{login}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7298
+        }
+      ],
+      "UpstreamPathTemplate": "/api/authentication/confirm/login/{login}",
+      "UpstreamHttpMethod": [ "Get" ]
+    },
+    {
       "DownstreamPathTemplate": "/api/authentication/confirm/password/{password}",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
@@ -113,6 +125,18 @@
         }
       ],
       "UpstreamPathTemplate": "/api/authentication/sending/email/{password}",
+      "UpstreamHttpMethod": [ "Put" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/authentication/sending/login/{password}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7298
+        }
+      ],
+      "UpstreamPathTemplate": "/api/authentication/sending/login/{password}",
       "UpstreamHttpMethod": [ "Put" ]
     },
     {
@@ -533,7 +557,7 @@
       "UpstreamHttpMethod": [ "Get" ]
     },
     {
-      "DownstreamPathTemplate": "/api/user-additional-info/image/{uri}",
+      "DownstreamPathTemplate": "/api/user-additional-info/image/{userId}",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
@@ -541,8 +565,20 @@
           "Port": 7105
         }
       ],
-      "UpstreamPathTemplate": "/api/user/info/image/{uri}",
-      "UpstreamHttpMethod": [ "Get" ]
+      "UpstreamPathTemplate": "/api/user/{userId}/info/image",
+      "UpstreamHttpMethod": [ "Put" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/user-additional-info/image",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7105
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/info/image",
+      "UpstreamHttpMethod": [ "Put" ]
     },
     //EndPoint: user
     {
@@ -619,7 +655,7 @@
       "UpstreamHttpMethod": [ "Get" ]
     },
     {
-      "DownstreamPathTemplate": "/api/user-restriction/user/{id}",
+      "DownstreamPathTemplate": "/api/user-restriction/login/{login}",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {

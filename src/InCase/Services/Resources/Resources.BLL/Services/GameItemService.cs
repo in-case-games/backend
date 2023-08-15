@@ -6,7 +6,6 @@ using Resources.BLL.MassTransit;
 using Resources.BLL.Models;
 using Resources.DAL.Data;
 using Resources.DAL.Entities;
-using System.Text.Json.Serialization;
 
 namespace Resources.BLL.Services
 {
