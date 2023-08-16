@@ -278,6 +278,7 @@ namespace Resources.BLL.Services
             {
                 string game = item.Game!.Name!;
                 string hashName = item.HashName ?? "null";
+                decimal tempPrice = item.Cost;
 
                 ItemCostResponse priceOriginal = await _platformServices[game]
                     .GetOriginalMarketAsync(hashName, game);
@@ -296,13 +297,13 @@ namespace Resources.BLL.Services
 
                     await _publisher.SendAsync(item.ToTemplate(), cancellationToken);
 
-                    await CorrectCostAsync(item.Id, cancellationToken);
+                    await CorrectCostAsync(item.Id, tempPrice, cancellationToken);
                     await CorrectChancesAsync(item.Id, cancellationToken);
                 }
             }
         }
 
-        private async Task CorrectCostAsync(Guid itemId, CancellationToken cancellationToken = default)
+        private async Task CorrectCostAsync(Guid itemId, decimal lastPriceItem, CancellationToken cancellationToken = default)
         {
             List<LootBoxInventory> inventories = await _context.BoxInventories
                 .Include(lbi => lbi.Box)
@@ -313,15 +314,27 @@ namespace Resources.BLL.Services
             {
                 LootBox box = inventory.Box!;
 
-                LootBoxInventory? itemSmallCost = await _context.BoxInventories
+                LootBoxInventory itemSmallCost = await _context.BoxInventories
                     .Include(lbi => lbi.Item)
                     .OrderBy(lbi => lbi.Item!.Cost)
                     .AsNoTracking()
-                    .FirstOrDefaultAsync(lbi => lbi.BoxId == box.Id, cancellationToken);
+                    .FirstAsync(lbi => lbi.BoxId == box.Id, cancellationToken);
+                LootBoxInventory itemBigCost = await _context.BoxInventories
+                    .Include(lbi => lbi.Item)
+                    .OrderByDescending(lbi => lbi.Item!.Cost)
+                    .AsNoTracking()
+                    .FirstAsync(lbi => lbi.BoxId == box.Id, cancellationToken);
 
-                if (itemSmallCost is not null && box.Cost <= itemSmallCost.Item!.Cost * 2M)
+                decimal boxCostNew = itemSmallCost.Item!.Cost * (box.Cost / itemSmallCost.Item!.Cost);
+
+                if (itemSmallCost.Id == itemId)
+                    boxCostNew = itemSmallCost.Item!.Cost * (box.Cost / lastPriceItem);
+
+                box.IsLocked = itemBigCost.Item!.Cost <= boxCostNew;
+
+                if (box.Cost <= boxCostNew)
                 {
-                    box.Cost = itemSmallCost!.Item!.Cost * 2M;
+                    box.Cost = boxCostNew;
 
                     _context.LootBoxes.Update(box);
                     await _publisher.SendAsync(box.ToTemplate(), cancellationToken);
