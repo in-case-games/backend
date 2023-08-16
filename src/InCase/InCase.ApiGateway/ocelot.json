@@ -224,7 +224,7 @@
           "Port": 7082
         }
       ],
-      "UpstreamPathTemplate": "/api/loot-box-opening/{id}",
+      "UpstreamPathTemplate": "/api/user/opening/box/{id}",
       "UpstreamHttpMethod": [ "Get" ]
     },
     {
@@ -236,7 +236,31 @@
           "Port": 7082
         }
       ],
-      "UpstreamPathTemplate": "/api/loot-box-opening/{id}/virtual",
+      "UpstreamPathTemplate": "/api/user/opening/virtual/box/{id}",
+      "UpstreamHttpMethod": [ "Get" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/loot-box-opening/{id}&{count}/virtual",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7082
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/opening/virtual/box/{id}&{count}",
+      "UpstreamHttpMethod": [ "Get" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/loot-box-opening/{id}&{count}/virtual/admin",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7082
+        }
+      ],
+      "UpstreamPathTemplate": "/api/admin/opening/virtual/box/{id}&{count}",
       "UpstreamHttpMethod": [ "Get" ]
     },
     //EndPoint: user-additional-info

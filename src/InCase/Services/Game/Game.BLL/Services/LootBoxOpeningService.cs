@@ -151,5 +151,69 @@ namespace Game.BLL.Services
 
             return winItem.ToResponse();
         }
+
+
+        public async Task<List<GameItemBigOpenResponse>> OpenVirtualBox(
+            Guid userId,
+            Guid id, 
+            int count, 
+            bool isAdmin = false)
+        {
+            if (count < 1 || (count > 100 && !isAdmin))
+                throw new BadRequestException("Количество открытий должно быть в диапазоне от 1 до 100");
+
+            UserAdditionalInfo userInfo = await _context.AdditionalInfos
+                .AsNoTracking()
+                .FirstOrDefaultAsync(uai => uai.UserId == userId) ??
+                throw new NotFoundException("Пользователь не найден");
+
+            LootBox box = await _context.Boxes
+                .Include(lb => lb.Inventories!)
+                    .ThenInclude(lbi => lbi.Item)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(lb => lb.Id == id) ??
+                throw new NotFoundException("Кейс не найден");
+
+            if (!userInfo.IsGuestMode)
+                throw new ForbiddenException("Не включен режим гостя");
+
+            _context.Boxes.Attach(box);
+            _context.Entry(box).Property(p => p.VirtualBalance).IsModified = true;
+
+            List<GameItemBigOpenResponse> winItems = new();
+
+            for (int i = 0; i < count; i++)
+            {
+                try
+                {
+                    box.VirtualBalance += box.Cost;
+
+                    GameItem item = OpenLootBoxService.RandomizeBySmallest(in box, true);
+                    decimal revenue = OpenLootBoxService.GetRevenue(box.Cost);
+                    decimal expenses = OpenLootBoxService.GetExpenses(item.Cost, revenue);
+
+                    box.VirtualBalance -= expenses;
+
+                    int index = winItems.FindIndex(gi => gi.Id == item.Id);
+
+                    if (index != -1)
+                        winItems[index].Count++;
+                    else
+                        winItems.Add(new() { Id = item.Id, Cost = item.Cost, Count = 1 });
+                }
+                catch(Exception ex)
+                {
+                    await _context.SaveChangesAsync();
+
+                    if (count == 0) throw new Exception(ex.Message);
+
+                    throw new StatusCodeExtendedException(ErrorCodes.UnknownError, ex.Message, winItems);
+                }
+            }
+
+            await _context.SaveChangesAsync();
+
+            return winItems;
+        }
     }
 }

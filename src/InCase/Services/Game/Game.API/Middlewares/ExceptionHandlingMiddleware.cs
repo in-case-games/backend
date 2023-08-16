@@ -19,6 +19,10 @@ namespace Game.API.Middlewares
             {
                 await _next(context);
             }
+            catch (StatusCodeExtendedException ex)
+            {
+                await HandleExceptionAsync(context, ex);
+            }
             catch (StatusCodeException ex)
             {
                 await HandleExceptionAsync(context, ex);
@@ -29,6 +33,19 @@ namespace Game.API.Middlewares
             }
         }
 
+        private static Task HandleExceptionAsync(HttpContext context, StatusCodeExtendedException ex)
+        {
+            context.Response.ContentType = "application/json";
+            context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+
+            string result = JsonSerializer.Serialize(new
+            {
+                error = new { code = ex.StatusCode, data = ex.Data, message = ex.Message }
+            });
+
+            return context.Response.WriteAsync(result);
+
+        }
         private static Task HandleExceptionAsync(HttpContext context, StatusCodeException ex)
         {
             context.Response.ContentType = "application/json";
