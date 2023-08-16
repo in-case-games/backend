@@ -303,7 +303,10 @@ namespace Resources.BLL.Services
             }
         }
 
-        private async Task CorrectCostAsync(Guid itemId, decimal lastPriceItem, CancellationToken cancellationToken = default)
+        private async Task CorrectCostAsync(
+            Guid itemId, 
+            decimal lastPriceItem, 
+            CancellationToken cancellationToken = default)
         {
             List<LootBoxInventory> inventories = await _context.BoxInventories
                 .Include(lbi => lbi.Box)
@@ -314,31 +317,35 @@ namespace Resources.BLL.Services
             {
                 LootBox box = inventory.Box!;
 
-                LootBoxInventory itemSmallCost = await _context.BoxInventories
+                List<LootBoxInventory> boxInventories = await _context.BoxInventories
                     .Include(lbi => lbi.Item)
                     .OrderBy(lbi => lbi.Item!.Cost)
                     .AsNoTracking()
-                    .FirstAsync(lbi => lbi.BoxId == box.Id, cancellationToken);
-                LootBoxInventory itemBigCost = await _context.BoxInventories
-                    .Include(lbi => lbi.Item)
-                    .OrderByDescending(lbi => lbi.Item!.Cost)
-                    .AsNoTracking()
-                    .FirstAsync(lbi => lbi.BoxId == box.Id, cancellationToken);
+                    .Where(lbi => lbi.BoxId == box.Id)
+                    .ToListAsync(cancellationToken);
 
-                decimal boxCostNew = itemSmallCost.Item!.Cost * (box.Cost / itemSmallCost.Item!.Cost);
+                decimal itemMinCost = boxInventories[0].Item!.Cost;
+                decimal itemTwoCost = boxInventories
+                    .FirstOrDefault(lbi => lbi.ItemId != itemId)?.Item?.Cost ?? 0;
+                decimal itemMaxCost = boxInventories[^1].Item!.Cost;
 
-                if (itemSmallCost.Id == itemId)
-                    boxCostNew = itemSmallCost.Item!.Cost * (box.Cost / lastPriceItem);
+                decimal boxCostNew = itemMinCost * (box.Cost / itemMinCost);
 
-                box.IsLocked = itemBigCost.Item!.Cost <= boxCostNew;
-
-                if (box.Cost <= boxCostNew)
+                if (boxInventories[0].Item!.Id == itemId)
                 {
-                    box.Cost = boxCostNew;
-
-                    _context.LootBoxes.Update(box);
-                    await _publisher.SendAsync(box.ToTemplate(), cancellationToken);
+                    if(lastPriceItem < box.Cost)
+                        boxCostNew = itemMinCost * (box.Cost / lastPriceItem);
+                    else if(itemTwoCost != 0)
+                        boxCostNew = itemMinCost * (box.Cost / itemTwoCost);
                 }
+
+                box.IsLocked = boxCostNew >= itemMaxCost;
+                
+                box.Cost = box.IsLocked ? box.Cost : boxCostNew;
+               
+                _context.LootBoxes.Update(box);
+
+                await _publisher.SendAsync(box.ToTemplate(), cancellationToken);
             }
 
             await _context.SaveChangesAsync(cancellationToken);

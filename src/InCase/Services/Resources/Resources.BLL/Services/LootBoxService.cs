@@ -6,6 +6,7 @@ using Resources.BLL.MassTransit;
 using Resources.BLL.Models;
 using Resources.DAL.Data;
 using Resources.DAL.Entities;
+using System.Threading;
 
 namespace Resources.BLL.Services
 {
@@ -71,6 +72,8 @@ namespace Resources.BLL.Services
             if (await _context.LootBoxes.AnyAsync(lb => lb.Name == request.Name)) 
                 throw new ConflictException("Название кейса уже занято");
 
+            request.IsLocked = true;
+
             LootBox box = request.ToEntity(isNewGuid: true);
 
             await _context.LootBoxes.AddAsync(box);
@@ -83,15 +86,29 @@ namespace Resources.BLL.Services
 
         public async Task<LootBoxResponse> UpdateAsync(LootBoxRequest request)
         {
-            if (request.Cost <= 0) 
-                throw new BadRequestException("Кейс должен стоить больше 0");
             LootBox oldBox = await _context.LootBoxes
                 .FirstOrDefaultAsync(lb => lb.Id == request.Id) ??
                 throw new NotFoundException("Кейс не найден");
+
+            if (request.Cost <= 0)
+                throw new BadRequestException("Кейс должен стоить больше 0");
             if (!await _context.Games.AnyAsync(g => g.Id == request.GameId))
                 throw new NotFoundException("Игра не найдена");
             if (await _context.LootBoxes.AnyAsync(lb => lb.Name == request.Name && lb.Id != request.Id))
                 throw new ConflictException("Название кейса уже занято");
+
+            List<LootBoxInventory> boxInventories = await _context.BoxInventories
+                .Include(lbi => lbi.Item)
+                .OrderBy(lbi => lbi.Item!.Cost)
+                .AsNoTracking()
+                .Where(lbi => lbi.BoxId == request.Id)
+                .ToListAsync();
+
+            bool isLocked = boxInventories.Count < 1 || 
+                boxInventories[0].Item!.Cost > request.Cost ||
+                boxInventories[^1].Item!.Cost < request.Cost;
+
+            request.IsLocked = isLocked || request.IsLocked;
 
             LootBox newBox = request.ToEntity(isNewGuid: false);
 
