@@ -6,10 +6,6 @@ namespace Withdraw.DAL.Configurations
 {
     internal class GameConfiguration : BaseEntityConfiguration<Game>
     {
-        private readonly List<Game> games = new() {
-            new() { Name = "csgo" }, new() { Name = "dota2" }
-        };
-
         public override void Configure(EntityTypeBuilder<Game> builder)
         {
             base.Configure(builder);
@@ -22,9 +18,6 @@ namespace Withdraw.DAL.Configurations
             builder.Property(g => g.Name)
                 .HasMaxLength(50)
                 .IsRequired();
-
-            foreach(var game in games)
-                builder.HasData(game);
         }
     }
 }

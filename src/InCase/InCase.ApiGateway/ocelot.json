@@ -630,18 +630,6 @@
       "UpstreamHttpMethod": [ "Get" ]
     },
     {
-      "DownstreamPathTemplate": "/api/user/{id}",
-      "DownstreamScheme": "https",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "localhost",
-          "Port": 7105
-        }
-      ],
-      "UpstreamPathTemplate": "/api/user/{id}",
-      "UpstreamHttpMethod": [ "Get" ]
-    },
-    {
       "DownstreamPathTemplate": "/api/user/login/{login}",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
@@ -1700,7 +1688,7 @@
           "Port": 7253
         }
       ],
-      "UpstreamPathTemplate": "/api/user/review/image",
+      "UpstreamPathTemplate": "/api/review/image",
       "UpstreamHttpMethod": [ "Get" ]
     },
     {

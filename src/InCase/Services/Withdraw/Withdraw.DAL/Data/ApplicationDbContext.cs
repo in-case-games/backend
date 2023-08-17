@@ -21,6 +21,21 @@ namespace Withdraw.DAL.Data
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+
+            foreach (var gp in GamePlatform)
+            {
+                Game game = new() { Name = gp.Key };
+                GameMarket market = new() { Name = gp.Value, GameId = game.Id };
+
+                modelBuilder.Entity<Game>().HasData(game);
+                modelBuilder.Entity<GameMarket>().HasData(market);
+            }
         }
+
+        private readonly Dictionary<string, string> GamePlatform = new()
+        {
+            ["csgo"] = "tm",
+            ["dota2"] = "tm"
+        };
     }
 }
