@@ -44,7 +44,6 @@ services:
       - $APPDATA/Microsoft/UserSecrets/$USER_SECRETS_ID_AUTH:/root/.microsoft/usersecrets/$USER_SECRETS_ID_AUTH:ro
     ports:
       - "5033:80"
-    command: ["dotnet", "ef", "database update"]
 
   email-api:
     environment: 
@@ -62,7 +61,6 @@ services:
       - $APPDATA/Microsoft/UserSecrets/$USER_SECRETS_ID_EMAIL:/root/.microsoft/usersecrets/$USER_SECRETS_ID_EMAIL:ro
     ports:
       - "5225:80"
-    command: ["dotnet", "ef", "database update"]
 
   game-api:
     environment: 
@@ -80,7 +78,6 @@ services:
        - $APPDATA/Microsoft/UserSecrets/$USER_SECRETS_ID_GAME:/root/.microsoft/usersecrets/$USER_SECRETS_ID_GAME:ro
     ports:
       - "5184:80"
-    command: ["dotnet", "ef", "database update"]
 
   identity-api:
     environment: 
@@ -98,7 +95,6 @@ services:
       - $APPDATA/Microsoft/UserSecrets/$USER_SECRETS_ID_IDENTITY:/root/.microsoft/usersecrets/$USER_SECRETS_ID_IDENTITY:ro
     ports:
       - "5259:80"
-    command: ["dotnet", "ef", "database update"]
 
   payment-api:
     environment: 
@@ -116,7 +112,6 @@ services:
       - $APPDATA/Microsoft/UserSecrets/$USER_SECRETS_ID_PAYMENT:/root/.microsoft/usersecrets/$USER_SECRETS_ID_PAYMENT:ro
     ports:
       - "5039:80"
-    command: ["dotnet", "ef", "database update"]
 
   promocode-api:
     environment: 
@@ -134,7 +129,6 @@ services:
       - $APPDATA/Microsoft/UserSecrets/$USER_SECRETS_ID_PROMOCODE:/root/.microsoft/usersecrets/$USER_SECRETS_ID_PROMOCODE:ro
     ports:
       - "5163:80"
-    command: ["dotnet", "ef", "database update"]
 
   resources-api:
     environment: 
@@ -152,7 +146,6 @@ services:
       - $APPDATA/Microsoft/UserSecrets/$USER_SECRETS_ID_RESOURCES:/root/.microsoft/usersecrets/$USER_SECRETS_ID_RESOURCES:ro
     ports:
       - "5073:80"
-    command: ["dotnet", "ef", "database update"]
 
   review-api:
     environment: 
@@ -170,7 +163,6 @@ services:
       - $APPDATA/Microsoft/UserSecrets/$USER_SECRETS_ID_REVIEW:/root/.microsoft/usersecrets/$USER_SECRETS_ID_REVIEW:ro
     ports:
       - "5079:80"
-    command: ["dotnet", "ef", "database update"]
 
   statistics-api:
     environment: 
@@ -189,7 +181,6 @@ services:
       - $APPDATA/Microsoft/UserSecrets/$USER_SECRETS_ID_STATISTICS:/root/.microsoft/usersecrets/$USER_SECRETS_ID_STATISTICS:ro
     ports:
       - "5231:80"
-    command: ["dotnet", "ef", "database update"]
 
   support-api:
     environment: 
@@ -207,7 +198,6 @@ services:
       - $APPDATA/Microsoft/UserSecrets/$USER_SECRETS_ID_SUPPORT:/root/.microsoft/usersecrets/$USER_SECRETS_ID_SUPPORT:ro
     ports:
       - "5155:80"
-    command: dotnet ef database update
 
   withdraw-api:
     environment: 
@@ -225,7 +215,6 @@ services:
       - $APPDATA/Microsoft/UserSecrets/$USER_SECRETS_ID_WITHDRAW:/root/.microsoft/usersecrets/$USER_SECRETS_ID_WITHDRAW:ro
     ports:
       - "5187:80"
-    command: ["dotnet", "ef", "database update"]
 
   gateway-api:
     image: "gateway-api"
