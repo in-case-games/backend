@@ -3,6 +3,7 @@ services:
   nosqldata:
     image: mongo
     restart: always
+    hostname: mongodb
     ports:
       - "20017:27017"
 
