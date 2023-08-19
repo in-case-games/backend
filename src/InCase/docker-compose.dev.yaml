@@ -2,21 +2,31 @@ version: "3"
 services:
   nosqldata:
     image: mongo
+    restart: always
+    ports:
+      - "20017:27017"
+    volumes:
+      - type: bind
+        source: ./data
+        target: /data/db
 
   rabbitmq:
     image: rabbitmq:3.10.7-management
     hostname: rabbitmq
+    restart: always
     container_name: rabbitmq
     expose:
       - "5672"
       - "15672"
-
     volumes:
       - rabbitmq:/rabbitmq
+    ports:
+      - "15672:15672"
 
   psql: 
     image: postgres:13.3
     hostname: psql
+    restart: always
     container_name: psql
     env_file:
       - pg.env
@@ -174,7 +184,6 @@ services:
       context: .
       dockerfile: Services/Statistics/Statistics.API/Dockerfile
     depends_on:
-        - psql
         - rabbitmq
         - nosqldata
     volumes:
