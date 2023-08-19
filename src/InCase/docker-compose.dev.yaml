@@ -5,10 +5,6 @@ services:
     restart: always
     ports:
       - "20017:27017"
-    volumes:
-      - type: bind
-        source: ./data
-        target: /data/db
 
   rabbitmq:
     image: rabbitmq:3.10.7-management
