@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Infrastructure.Services;
+using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Resources.BLL.Exceptions;
 using Resources.BLL.Helpers;
 using Resources.BLL.Interfaces;
@@ -17,7 +19,7 @@ namespace Resources.BLL.Services
         private readonly Dictionary<string, IGamePlatformService> _platformServices;
 
         public GameItemService(
-            ApplicationDbContext context, 
+            ApplicationDbContext context,
             BasePublisher publisher,
             GamePlatformSteamService steamService)
         {
@@ -39,7 +41,7 @@ namespace Resources.BLL.Services
                 .Include(gi => gi.Type)
                 .Include(gi => gi.Game)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(gi => gi.Id == id) ?? 
+                .FirstOrDefaultAsync(gi => gi.Id == id) ??
                 throw new NotFoundException("Предмет не найден");
 
             return item.ToResponse();
@@ -154,7 +156,7 @@ namespace Resources.BLL.Services
             return items.ToResponse();
         }
 
-        public async Task<List<GameItemQuality>> GetQualitiesAsync() => 
+        public async Task<List<GameItemQuality>> GetQualitiesAsync() =>
             await _context.Qualities
             .AsNoTracking()
             .ToListAsync();
@@ -169,13 +171,14 @@ namespace Resources.BLL.Services
             .AsNoTracking()
             .ToListAsync();
 
-        public async Task<GameItemResponse> CreateAsync(GameItemRequest request)
+        public async Task<GameItemResponse> CreateAsync(GameItemRequest request,
+            IFormFile uploadImage)
         {
             if (request.Cost <= 0) throw new BadRequestException("Предмет должен стоить больше 0");
 
             GameItemQuality quality = await _context.Qualities
                 .AsNoTracking()
-                .FirstOrDefaultAsync(giq => giq.Id == request.QualityId) ?? 
+                .FirstOrDefaultAsync(giq => giq.Id == request.QualityId) ??
                 throw new NotFoundException("Качество предмета не найдено");
             GameItemRarity rarity = await _context.Rarities
                 .AsNoTracking()
@@ -192,6 +195,12 @@ namespace Resources.BLL.Services
 
             GameItem item = request.ToEntity(true);
 
+            string[] currentDirPath = Environment.CurrentDirectory.Split("src");
+            string path = currentDirPath[0];
+
+            FileService.Upload(uploadImage,
+                path + $"\\src\\fileserver_imitation\\game-items\\{game.Id}\\{item.Id}\\" + item.Id + ".jpg");
+
             await _context.Items.AddAsync(item);
             await _context.SaveChangesAsync();
 
@@ -205,9 +214,10 @@ namespace Resources.BLL.Services
             return item.ToResponse();
         }
 
-        public async Task<GameItemResponse> UpdateAsync(GameItemRequest request)
+        public async Task<GameItemResponse> UpdateAsync(GameItemRequest request,
+            IFormFile? uploadImage)
         {
-            if (request.Cost <= 0) 
+            if (request.Cost <= 0)
                 throw new BadRequestException("Предмет должен стоить больше 0");
 
             GameItem itemOld = await _context.Items
@@ -232,6 +242,18 @@ namespace Resources.BLL.Services
                 throw new NotFoundException("Игра не найдена");
 
             GameItem item = request.ToEntity();
+
+            string[] currentDirPath = Environment.CurrentDirectory.Split("src");
+            string path = currentDirPath[0];
+
+            if (uploadImage is not null)
+            {
+                string filePath = path + $"\\src\\fileserver_imitation\\game-items\\{game.Id}\\{item.Id}\\" + item.Id + ".jpg";
+                File.Delete(filePath);
+                FileService.RemoveFolder(path + $"\\src\\fileserver_imitation\\game-items\\{game.Id}\\{item.Id}\\");
+
+                FileService.Upload(uploadImage, filePath);
+            }
 
             _context.Entry(itemOld).CurrentValues.SetValues(item);
             await _context.SaveChangesAsync();
@@ -258,11 +280,19 @@ namespace Resources.BLL.Services
                 throw new NotFoundException("Предмет не найден");
 
             _context.Items.Remove(item);
+
+            string[] currentDirPath = Environment.CurrentDirectory.Split("src");
+            string path = currentDirPath[0];
+
+            string filePath = path + $"\\src\\fileserver_imitation\\game-items\\{item.Game?.Id}\\{item?.Id}\\" + item!.Id + ".jpg";
+                File.Delete(filePath);
+                FileService.RemoveFolder(path + $"\\src\\fileserver_imitation\\game-items\\{item.Game?.Id}\\{item?.Id}\\");
+
             await _context.SaveChangesAsync();
 
-            await _publisher.SendAsync(item.ToTemplate(isDeleted: true));
+            await _publisher.SendAsync(item!.ToTemplate(isDeleted: true));
 
-            return item.ToResponse();
+            return item!.ToResponse();
         }
 
         public async Task UpdateCostManagerAsync(int count, CancellationToken cancellationToken = default)
@@ -274,7 +304,7 @@ namespace Resources.BLL.Services
                 .Where(gi => gi.UpdateDate + TimeSpan.FromMinutes(5) <= DateTime.UtcNow)
                 .ToListAsync(cancellationToken);
 
-            foreach(GameItem item in items)
+            foreach (GameItem item in items)
             {
                 string game = item.Game!.Name!;
                 string hashName = item.HashName ?? "null";
@@ -285,7 +315,7 @@ namespace Resources.BLL.Services
                 ItemCostResponse priceAdditional = await _platformServices[game]
                     .GetAdditionalMarketAsync(item.IdForMarket!, game);
 
-                if(priceOriginal.Success || priceAdditional.Success)
+                if (priceOriginal.Success || priceAdditional.Success)
                 {
                     decimal cost = priceOriginal.Success ? priceOriginal.Cost : priceAdditional.Cost;
 
@@ -304,8 +334,8 @@ namespace Resources.BLL.Services
         }
 
         private async Task CorrectCostAsync(
-            Guid itemId, 
-            decimal lastPriceItem, 
+            Guid itemId,
+            decimal lastPriceItem,
             CancellationToken cancellationToken = default)
         {
             List<LootBoxInventory> inventories = await _context.BoxInventories
@@ -333,16 +363,16 @@ namespace Resources.BLL.Services
 
                 if (boxInventories[0].Item!.Id == itemId)
                 {
-                    if(lastPriceItem < box.Cost)
+                    if (lastPriceItem < box.Cost)
                         boxCostNew = itemMinCost * (box.Cost / lastPriceItem);
-                    else if(itemTwoCost != 0)
+                    else if (itemTwoCost != 0)
                         boxCostNew = itemMinCost * (box.Cost / itemTwoCost);
                 }
 
                 box.IsLocked = boxCostNew >= itemMaxCost;
-                
+
                 box.Cost = box.IsLocked ? box.Cost : boxCostNew;
-               
+
                 _context.LootBoxes.Update(box);
 
                 await _publisher.SendAsync(box.ToTemplate(), cancellationToken);
@@ -360,7 +390,7 @@ namespace Resources.BLL.Services
                 .ToListAsync(cancellationToken);
 
             foreach (var itemInventory in itemInventories)
-            {   
+            {
                 LootBox box = itemInventory.Box!;
                 decimal weightAll = 0;
                 Dictionary<Guid, decimal> weights = new();

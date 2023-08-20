@@ -132,6 +132,7 @@ namespace Review.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [Consumes("multipart/form-data")]
+        [RequestSizeLimit(8388608)]
         [HttpPost]
         public async Task<IActionResult> Post(IFormFile image, [FromForm] Guid reviewId)
         {

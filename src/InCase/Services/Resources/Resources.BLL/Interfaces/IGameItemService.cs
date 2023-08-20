@@ -1,4 +1,5 @@
-﻿using Resources.BLL.Models;
+﻿using Microsoft.AspNetCore.Http;
+using Resources.BLL.Models;
 using Resources.DAL.Entities;
 
 namespace Resources.BLL.Interfaces
@@ -16,8 +17,8 @@ namespace Resources.BLL.Interfaces
         public Task<List<GameItemQuality>> GetQualitiesAsync();
         public Task<List<GameItemRarity>> GetRaritiesAsync();
         public Task<List<GameItemType>> GetTypesAsync();
-        public Task<GameItemResponse> CreateAsync(GameItemRequest request);
-        public Task<GameItemResponse> UpdateAsync(GameItemRequest request);
+        public Task<GameItemResponse> CreateAsync(GameItemRequest request, IFormFile uploadImage);
+        public Task<GameItemResponse> UpdateAsync(GameItemRequest request, IFormFile? uploadImage);
         public Task<GameItemResponse> DeleteAsync(Guid id);
 
         public Task UpdateCostManagerAsync(int count, CancellationToken cancellationToken);
