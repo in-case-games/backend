@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Infrastructure.Services;
+using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Resources.BLL.Entities;
 using Resources.BLL.Exceptions;
 using Resources.BLL.Helpers;
@@ -56,7 +58,8 @@ namespace Resources.BLL.Services
             return banner.ToResponse();
         }
 
-        public async Task<LootBoxBannerResponse> CreateAsync(LootBoxBannerRequest request)
+        public async Task<LootBoxBannerResponse> CreateAsync(LootBoxBannerRequest request, 
+            IFormFile uploadImage)
         {
             LootBox box = await _context.LootBoxes
                 .Include(lb => lb.Banner)
@@ -69,6 +72,12 @@ namespace Resources.BLL.Services
             if (box.Banner != null) 
                 throw new ConflictException("Кейс уже использует баннер");
 
+            string[] currentDirPath = Environment.CurrentDirectory.Split("src");
+            string path = currentDirPath[0];
+
+            FileService.Upload(uploadImage,
+                path + $"\\src\\fileserver_imitation\\loot-box-banners\\{box.Id}\\{banner.Id}\\" + banner.Id + ".jpg");
+
             await _context.Banners.AddAsync(banner);
             await _context.SaveChangesAsync();
 
@@ -79,7 +88,8 @@ namespace Resources.BLL.Services
             return banner.ToResponse();
         }
 
-        public async Task<LootBoxBannerResponse> UpdateAsync(LootBoxBannerRequest request)
+        public async Task<LootBoxBannerResponse> UpdateAsync(LootBoxBannerRequest request, 
+            IFormFile uploadImage)
         {
             LootBoxBanner bannerOld = await _context.Banners
                 .AsNoTracking()
@@ -97,6 +107,18 @@ namespace Resources.BLL.Services
 
             if (box.Banner != null && box.Banner.Id != request.Id) 
                 throw new ConflictException("Кейс уже использует баннер");
+
+            string[] currentDirPath = Environment.CurrentDirectory.Split("src");
+            string path = currentDirPath[0];
+
+            if (uploadImage is not null)
+            {
+                string filePath = path + $"\\src\\fileserver_imitation\\loot-box-banners\\{box.Id}\\{banner.Id}\\" + banner.Id + ".jpg";
+                File.Delete(filePath);
+                FileService.RemoveFolder(path + "\\src\\fileserver_imitation\\loot-box-banners\\{box.Id}\\{banner.Id}\\");
+
+                FileService.Upload(uploadImage, filePath);
+            }
 
             _context.Banners.Update(banner);
             await _context.SaveChangesAsync();

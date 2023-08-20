@@ -112,6 +112,7 @@ namespace Support.API.Controllers
         [ProducesResponseType(typeof(ApiResult<AnswerImageResponse>),
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
+        [RequestSizeLimit(8388608)]
         [HttpPost]
         public async Task<IActionResult> Post(IFormFile image, [FromForm] Guid answerId)
         {

@@ -66,10 +66,11 @@ namespace Resources.API.Controllers
         [ProducesResponseType(typeof(ApiResult<LootBoxResponse>), 
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Owner)]
+        [RequestSizeLimit(8388608)]
         [HttpPost]
-        public async Task<IActionResult> Post(LootBoxRequest request)
+        public async Task<IActionResult> Post(IFormFile image, [FromForm] LootBoxRequest request)
         {
-            LootBoxResponse response = await _boxService.CreateAsync(request);
+            LootBoxResponse response = await _boxService.CreateAsync(request, image);
 
             return Ok(ApiResult<LootBoxResponse>.OK(response));
         }
@@ -77,10 +78,11 @@ namespace Resources.API.Controllers
         [ProducesResponseType(typeof(ApiResult<LootBoxResponse>), 
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Owner)]
+        [RequestSizeLimit(8388608)]
         [HttpPut]
-        public async Task<IActionResult> Put(LootBoxRequest request)
+        public async Task<IActionResult> Put(IFormFile image, [FromForm] LootBoxRequest request)
         {
-            LootBoxResponse response = await _boxService.UpdateAsync(request);
+            LootBoxResponse response = await _boxService.UpdateAsync(request, image);
 
             return Ok(ApiResult<LootBoxResponse>.OK(response));
         }

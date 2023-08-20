@@ -80,6 +80,7 @@ namespace Identity.API.Controllers
         [ProducesResponseType(typeof(ApiResult<UserAdditionalInfoResponse>),
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Admin, Roles.Owner)]
+        [RequestSizeLimit(8388608)]
         [HttpPut("image/{userId}")]
         public async Task<IActionResult> UpdateImage(IFormFile image, [FromForm] Guid userId)
         {
