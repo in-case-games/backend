@@ -41,7 +41,7 @@ namespace Game.API.Controllers
         public async Task<IActionResult> GetRoulete()
         {
             List<UserOpeningResponse> response = await _openingService
-                .GetAsync(10);
+                .GetAsync(20);
 
             return Ok(ApiResult<List<UserOpeningResponse>>.OK(response));
         }
@@ -113,7 +113,7 @@ namespace Game.API.Controllers
         public async Task<IActionResult> GetRouleteByBoxId(Guid id)
         {
             List<UserOpeningResponse> response = await _openingService
-                .GetByBoxIdAsync(id, 10);
+                .GetByBoxIdAsync(id, 20);
 
             return Ok(ApiResult<List<UserOpeningResponse>>.OK(response));
         }
@@ -125,7 +125,7 @@ namespace Game.API.Controllers
         public async Task<IActionResult> GetRouleteByItemId(Guid id)
         {
             List<UserOpeningResponse> response = await _openingService
-                .GetByItemIdAsync(id, 10);
+                .GetByItemIdAsync(id, 20);
 
             return Ok(ApiResult<List<UserOpeningResponse>>.OK(response));
         }
