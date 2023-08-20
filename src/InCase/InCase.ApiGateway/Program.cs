@@ -14,7 +14,8 @@ builder.Services.AddCors(options =>
         builder => {
             builder.WithOrigins("http://localhost:3000")
             .AllowAnyHeader()
-            .AllowAnyMethod();
+            .AllowAnyMethod()
+            .AllowCredentials();
         });
 });
 
@@ -22,8 +23,8 @@ builder.Services.AddOcelot(configuration);
 
 var app = builder.Build();
 
-await app.UseOcelot();
 app.UseCors(policyName);
+await app.UseOcelot();
 app.UseAuthorization();
 
 app.Run();

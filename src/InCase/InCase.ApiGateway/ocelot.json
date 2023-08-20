@@ -506,7 +506,7 @@
       "UpstreamPathTemplate": "/api/user/path/banner/{id}",
       "UpstreamHttpMethod": [ "Delete" ]
     },
-    //Base: Indentity.API
+    //Base: Identity.API
     //EndPoint: user-additional-info
     {
       "DownstreamPathTemplate": "/api/user-additional-info/{id}",

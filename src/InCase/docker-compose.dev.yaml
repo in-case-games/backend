@@ -45,8 +45,8 @@ services:
       context: .
       dockerfile: Services/Authentication/Authentication.API/Dockerfile
     depends_on:
-        - psql
-        - rabbitmq
+      - psql
+      - rabbitmq
     volumes:
       - $APPDATA/Microsoft/UserSecrets/$USER_SECRETS_ID_AUTH:/root/.microsoft/usersecrets/$USER_SECRETS_ID_AUTH:ro
     ports:
@@ -62,8 +62,8 @@ services:
       context: .
       dockerfile: Services/EmailSender/EmailSender.API/Dockerfile
     depends_on:
-        - psql
-        - rabbitmq
+      - psql
+      - rabbitmq
     volumes:
       - $APPDATA/Microsoft/UserSecrets/$USER_SECRETS_ID_EMAIL:/root/.microsoft/usersecrets/$USER_SECRETS_ID_EMAIL:ro
     ports:
@@ -79,8 +79,8 @@ services:
       context: .
       dockerfile: Services/Game/Game.API/Dockerfile
     depends_on:
-        - psql
-        - rabbitmq
+      - psql
+      - rabbitmq
     volumes:
        - $APPDATA/Microsoft/UserSecrets/$USER_SECRETS_ID_GAME:/root/.microsoft/usersecrets/$USER_SECRETS_ID_GAME:ro
     ports:
@@ -96,8 +96,8 @@ services:
       context: .
       dockerfile: Services/Identity/Identity.API/Dockerfile
     depends_on:
-        - psql
-        - rabbitmq
+      - psql
+      - rabbitmq
     volumes:
       - $APPDATA/Microsoft/UserSecrets/$USER_SECRETS_ID_IDENTITY:/root/.microsoft/usersecrets/$USER_SECRETS_ID_IDENTITY:ro
     ports:
@@ -113,8 +113,8 @@ services:
       context: .
       dockerfile: Services/Payment/Payment.API/Dockerfile
     depends_on:
-        - psql
-        - rabbitmq 
+      - psql
+      - rabbitmq 
     volumes:
       - $APPDATA/Microsoft/UserSecrets/$USER_SECRETS_ID_PAYMENT:/root/.microsoft/usersecrets/$USER_SECRETS_ID_PAYMENT:ro
     ports:
@@ -130,8 +130,8 @@ services:
       context: .
       dockerfile: Services/Promocode/Promocode.API/Dockerfile
     depends_on:
-        - psql
-        - rabbitmq 
+      - psql
+      - rabbitmq 
     volumes:
       - $APPDATA/Microsoft/UserSecrets/$USER_SECRETS_ID_PROMOCODE:/root/.microsoft/usersecrets/$USER_SECRETS_ID_PROMOCODE:ro
     ports:
@@ -147,8 +147,8 @@ services:
       context: .
       dockerfile: Services/Resources/Resources.API/Dockerfile
     depends_on:
-        - psql
-        - rabbitmq 
+      - psql
+      - rabbitmq 
     volumes:
       - $APPDATA/Microsoft/UserSecrets/$USER_SECRETS_ID_RESOURCES:/root/.microsoft/usersecrets/$USER_SECRETS_ID_RESOURCES:ro
     ports:
@@ -164,8 +164,8 @@ services:
       context: .
       dockerfile: Services/Review/Review.API/Dockerfile
     depends_on:
-        - psql
-        - rabbitmq 
+      - psql
+      - rabbitmq 
     volumes:
       - $APPDATA/Microsoft/UserSecrets/$USER_SECRETS_ID_REVIEW:/root/.microsoft/usersecrets/$USER_SECRETS_ID_REVIEW:ro
     ports:
@@ -181,8 +181,8 @@ services:
       context: .
       dockerfile: Services/Statistics/Statistics.API/Dockerfile
     depends_on:
-        - rabbitmq
-        - nosqldata
+      - rabbitmq
+      - nosqldata
     volumes:
       - $APPDATA/Microsoft/UserSecrets/$USER_SECRETS_ID_STATISTICS:/root/.microsoft/usersecrets/$USER_SECRETS_ID_STATISTICS:ro
     ports:
@@ -198,8 +198,8 @@ services:
       context: .
       dockerfile: Services/Support/Support.API/Dockerfile
     depends_on:
-        - psql
-        - rabbitmq 
+      - psql
+      - rabbitmq 
     volumes:
       - $APPDATA/Microsoft/UserSecrets/$USER_SECRETS_ID_SUPPORT:/root/.microsoft/usersecrets/$USER_SECRETS_ID_SUPPORT:ro
     ports:
@@ -215,8 +215,8 @@ services:
       context: .
       dockerfile: Services/Withdraw/Withdraw.API/Dockerfile
     depends_on:
-        - psql
-        - rabbitmq 
+      - psql
+      - rabbitmq 
     volumes:
       - $APPDATA/Microsoft/UserSecrets/$USER_SECRETS_ID_WITHDRAW:/root/.microsoft/usersecrets/$USER_SECRETS_ID_WITHDRAW:ro
     ports:
@@ -224,11 +224,19 @@ services:
 
   gateway-api:
     image: "gateway-api"
+    environment:
+      ASPNETCORE_HTTPS_PORT: "5000"
+      ASPNETCORE_URLS: https://+:443;http://+:80
+      ASPNETCORE_Kestrel__Certificates__Default__Password: password 
+      ASPNETCORE_Kestrel__Certificates__Default__Path: /https/aspnetapp.pfx
     build:
       context: .
       dockerfile: InCase.ApiGateway/Dockerfile
     ports:
-      - "5000:80"
+      - "5000:443"
+      - "5001:80"
+    volumes:
+      - ~/.aspnet/https:/https:ro
 
 
 volumes:
