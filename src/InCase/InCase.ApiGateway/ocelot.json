@@ -326,7 +326,7 @@
       "UpstreamHttpMethod": [ "Get" ]
     },
     {
-      "DownstreamPathTemplate": "/api/user-opening/roulete",
+      "DownstreamPathTemplate": "/api/user-opening/roulette",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
@@ -334,7 +334,7 @@
           "Port": 7082
         }
       ],
-      "UpstreamPathTemplate": "/api/user/history/opening/roulete",
+      "UpstreamPathTemplate": "/api/user/history/opening/roulette",
       "UpstreamHttpMethod": [ "Get" ]
     },
     {
@@ -398,7 +398,7 @@
       "UpstreamHttpMethod": [ "Get" ]
     },
     {
-      "DownstreamPathTemplate": "/api/user-opening/box/{id}/roulete",
+      "DownstreamPathTemplate": "/api/user-opening/box/{id}/roulette",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
@@ -406,11 +406,11 @@
           "Port": 7082
         }
       ],
-      "UpstreamPathTemplate": "/api/user/history/opening/roulete/box/{id}",
+      "UpstreamPathTemplate": "/api/user/history/opening/roulette/box/{id}",
       "UpstreamHttpMethod": [ "Get" ]
     },
     {
-      "DownstreamPathTemplate": "/api/user-opening/item/{id}/roulete",
+      "DownstreamPathTemplate": "/api/user-opening/item/{id}/roulette",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
@@ -418,7 +418,7 @@
           "Port": 7082
         }
       ],
-      "UpstreamPathTemplate": "/api/user/history/opening/roulete/item/{id}",
+      "UpstreamPathTemplate": "/api/user/history/opening/roulette/item/{id}",
       "UpstreamHttpMethod": [ "Get" ]
     },
     //EndPoint: user-path-banner

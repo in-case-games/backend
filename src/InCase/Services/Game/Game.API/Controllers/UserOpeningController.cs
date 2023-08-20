@@ -37,7 +37,7 @@ namespace Game.API.Controllers
         [ProducesResponseType(typeof(ApiResult<List<UserOpeningResponse>>),
             (int)HttpStatusCode.OK)]
         [AllowAnonymous]
-        [HttpGet("roulete")]
+        [HttpGet("roulette")]
         public async Task<IActionResult> GetRoulete()
         {
             List<UserOpeningResponse> response = await _openingService
@@ -109,7 +109,7 @@ namespace Game.API.Controllers
         [ProducesResponseType(typeof(ApiResult<List<UserOpeningResponse>>),
             (int)HttpStatusCode.OK)]
         [AllowAnonymous]
-        [HttpGet("box/{id}/roulete")]
+        [HttpGet("box/{id}/roulette")]
         public async Task<IActionResult> GetRouleteByBoxId(Guid id)
         {
             List<UserOpeningResponse> response = await _openingService
@@ -121,7 +121,7 @@ namespace Game.API.Controllers
         [ProducesResponseType(typeof(ApiResult<List<UserOpeningResponse>>),
             (int)HttpStatusCode.OK)]
         [AllowAnonymous]
-        [HttpGet("item/{id}/roulete")]
+        [HttpGet("item/{id}/roulette")]
         public async Task<IActionResult> GetRouleteByItemId(Guid id)
         {
             List<UserOpeningResponse> response = await _openingService
