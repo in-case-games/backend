@@ -14,7 +14,6 @@
 |Key|Name|Type|IsRequired|Constrains|
 | :- | :- | :- | :- | :- |
 |PK|Id|uniqueidentifier|True|NEWID(), UNIQUE|
-||ImageUri|nvarchar(MAX)|True|-|
 |FK|AnswerId|uniqueidentifier|True|-|
 
 **SupportTopicAnswer**

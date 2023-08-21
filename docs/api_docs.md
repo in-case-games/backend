@@ -2,7 +2,7 @@
 
 # General
 
-#### BASE_URI = https://localhost:5000
+#### BASE_URI = https://localhost:5001
 #### HTTP_SECURE = true
 <!-- Generic Response -->
 
@@ -1572,7 +1572,7 @@ Roles - Any
         }
     ]
 }
-# ===Authentication Service=== 
+# ===Support Service=== 
 <!-- [C] AnswerImage -->
 <!-- [M] Get -->
 
@@ -3058,14 +3058,14 @@ Roles - User, Admin, Owner, Bot
 
 ### 400 ResponseBody - {
     "error": {
-        "code": 1,
+        "code": 3,
         "message": "Вы не создатель топика"
     }
 } 
 
 ### 400 ResponseBody - {
     "error": {
-        "code": 1,
+        "code": 3,
         "message": "Forbidden"
     }
 } 
@@ -3118,5 +3118,44 @@ Roles - Admin, Owner, Bot
     "error": {
         "code": 1,
         "message": "Forbidden"
+    }
+} 
+
+# ===Payment Service=== 
+<!-- [C] TopUpBalance -->
+<!-- [M] Post -->
+
+# POST - /api/payment/top-up
+Roles - User, Admin, Owner, Bot 
+
+### RequestBody - {
+    "status": "string",
+    "invoice": "string",
+    "signature": "string"
+}
+
+### 200 ResponseBody - {
+    "code": 0,
+    "data": {
+        "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+        "invoiceId": "string",
+        "date": "2023-08-18T11:24:22.023Z",
+        "currency": "string",
+        "amount": 0,
+        "rate": 0
+    }
+}
+
+### 400 ResponseBody - {
+    "error": {
+        "code": 0,
+        "message": "Платеж отклонен"
+    }
+} 
+
+### 400 ResponseBody - {
+    "error": {
+        "code": 1,
+        "message": "Неверная подпись rsa"
     }
 } 
