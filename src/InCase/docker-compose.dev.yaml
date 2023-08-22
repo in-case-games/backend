@@ -30,6 +30,7 @@ services:
     ports:
       - "5432:5432"
     stdin_open: true
+    network_mode: host
     volumes:
       - database:/var/lib/postgresql/data
     tty: true
