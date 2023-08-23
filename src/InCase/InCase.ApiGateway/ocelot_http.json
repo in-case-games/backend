@@ -614,7 +614,7 @@
           "Port": 5259
         }
       ],
-      "UpstreamPathTemplate": "/api/user/{id}",
+      "UpstreamPathTemplate": "/api/user/id/{id}",
       "UpstreamHttpMethod": [ "Get" ]
     },
     {
