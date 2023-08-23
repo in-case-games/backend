@@ -46,19 +46,21 @@ namespace Authentication.UnitTests.Helpers
             await context.Users.AddAsync(user);
             await context.AdditionalInfos.AddAsync(info);
 
+            UserRestriction userRestriction = new UserRestriction()
+            {
+                UserId = guid,
+                ExpirationDate = DateTime.Now.AddDays(30)
+            };
             if (isBanned)
             {
-                UserRestriction _ = new UserRestriction()
-                {
-                    UserId = guid,
-                    ExpirationDate = DateTime.Now.AddDays(30)
-                };
-
-                await context.Restrictions.AddAsync(_);
-                await context.SaveChangesAsync();
+                await context.Restrictions.AddAsync(userRestriction);
             }
 
             await context.SaveChangesAsync();
+            context.Entry(user).State = EntityState.Detached;
+            context.Entry(info).State = EntityState.Detached;
+            context.Entry(userRestriction).State = EntityState.Detached;
+            context.Entry(userRole).State = EntityState.Detached;
 
             return user;
         }

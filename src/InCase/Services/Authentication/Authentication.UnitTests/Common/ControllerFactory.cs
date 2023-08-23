@@ -40,5 +40,34 @@ namespace Authentication.UnitTests.Common
 
             return controller;
         }
+        public static AuthenticationConfirmController CreateAuthenticationConfirmController(
+            ApplicationDbContext context)
+        {
+            var provider = new ServiceCollection()
+            .AddSingleton<BasePublisher>()
+            .AddMassTransitTestHarness(cfg =>
+            {
+                cfg.AddConsumer<UserRestrictionConsumer>();
+                cfg.AddConsumer<UserAdditionalInfoConsumer>();
+                cfg.SetKebabCaseEndpointNameFormatter();
+            }).BuildServiceProvider(true);
+
+            var basePublisher = provider.GetRequiredService<BasePublisher>();
+
+            JwtService jwtService = new JwtService(_configuration);
+
+            AuthenticationService authService = new AuthenticationService(context,
+                jwtService,
+                basePublisher);
+
+            AuthenticationConfirmService service = new AuthenticationConfirmService(context,
+                authService,
+                jwtService,
+                basePublisher);
+            AuthenticationConfirmController controller =
+                new AuthenticationConfirmController(service);
+
+            return controller;
+        }
     }
 }

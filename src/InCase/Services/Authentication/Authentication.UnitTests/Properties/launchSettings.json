@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Authentication.UnitTests": {
+      "commandName": "Project"
+    },
+    "Docker": {
+      "commandName": "Docker"
+    }
+  }
+}

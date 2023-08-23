@@ -5,11 +5,8 @@ using Authentication.BLL.Models;
 using Authentication.DAL.Entities;
 using Authentication.UnitTests.Common;
 using Authentication.UnitTests.Helpers;
-using MassTransit.Internals.GraphValidation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using Xunit;
 using Xunit.Abstractions;
@@ -170,7 +167,7 @@ namespace Authentication.UnitTests.Tests
                 async () => await controller.SignUp(userRequest));
         }
         [Fact]
-        public async Task POST_RefreshTokens_ShouldReturnOk()
+        public async Task GET_RefreshTokens_ShouldReturnOk()
         {
             // Arrange
             string password = "1passwordA";
@@ -188,7 +185,7 @@ namespace Authentication.UnitTests.Tests
                 (int)HttpStatusCode.OK);
         }
         [Fact]
-        public async Task POST_RefreshTokens_TryOnBannedUser_ThrowsForbiddenException()
+        public async Task GET_RefreshTokens_TryOnBannedUser_ThrowsForbiddenException()
         {
             // Arrange
             string password = "1passwordA";
@@ -206,7 +203,7 @@ namespace Authentication.UnitTests.Tests
                 async () => await controller.RefreshTokens(tokens.RefreshToken!));
         }
         [Fact]
-        public async Task POST_RefreshTokens_EmptyOrNotExistedToken_ThrowsNotFoundException()
+        public async Task GET_RefreshTokens_EmptyOrNotExistedToken_ThrowsNotFoundException()
         {
             // Arrange
             Guid guid = Guid.NewGuid();
@@ -242,7 +239,7 @@ namespace Authentication.UnitTests.Tests
                 async () => await controller.RefreshTokens(tokens.RefreshToken!));
         }
         [Fact]
-        public async Task POST_RefreshTokens_InvalidToken_ThrowsUnauthorizedException()
+        public async Task GET_RefreshTokens_InvalidToken_ThrowsUnauthorizedException()
         {
             // Arrange
             string password = "1passwordA";
