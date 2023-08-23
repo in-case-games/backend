@@ -28,6 +28,17 @@ namespace Authentication.UnitTests.Helpers
                 expires: DateTime.UtcNow.Add(expiration),
                 signingCredentials: credentials);
         }
+        public static string CreateEmailToken(in User user)
+        {
+            Claim[] claims = GenerateTokenClaims(in user, "email");
+
+            TimeSpan expiration = TimeSpan.FromMinutes(
+                double.Parse(_configuration["JWT:EmailTokenValidityInMinutes"]!));
+
+            JwtSecurityToken token = GenerateToken(claims, expiration);
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
         public static TokensResponse CreateTokenPair(in User user)
         {
             if (string.IsNullOrEmpty(user.AdditionalInfo?.Role?.Name))

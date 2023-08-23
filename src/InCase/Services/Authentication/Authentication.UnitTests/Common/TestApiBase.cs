@@ -1,6 +1,8 @@
 ﻿using Authentication.DAL.Data;
+using Xunit;
 using Xunit.Abstractions;
 
+[assembly: CollectionBehavior(DisableTestParallelization = true)]
 namespace Authentication.UnitTests.Common
 {
     public class TestApiBase : IDisposable
