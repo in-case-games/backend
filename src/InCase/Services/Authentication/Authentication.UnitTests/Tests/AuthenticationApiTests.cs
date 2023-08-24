@@ -4,6 +4,7 @@ using Authentication.BLL.Exceptions;
 using Authentication.BLL.Models;
 using Authentication.DAL.Entities;
 using Authentication.UnitTests.Common;
+using Authentication.UnitTests.Common.Factory;
 using Authentication.UnitTests.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -15,6 +16,8 @@ namespace Authentication.UnitTests.Tests
 {
     public class AuthenticationApiTests : TestApiBase
     {
+        private readonly Controllers controllerClient
+            = new Controllers(new AuthenticationControllerFactory());
         public AuthenticationApiTests(ITestOutputHelper output) : base(output) { }
         [Theory]
         [InlineData(HttpStatusCode.OK, "1passwordA", true)]
@@ -40,8 +43,8 @@ namespace Authentication.UnitTests.Tests
             }
 
             // Act
-            AuthenticationController controller = ControllerFactory
-                .CreateAuthenticationController(Context);
+            AuthenticationController controller = (AuthenticationController) controllerClient
+                .Create(Context);
 
             // Assert
             var actionResult = await controller.SignIn(userRequest);
@@ -63,8 +66,8 @@ namespace Authentication.UnitTests.Tests
             };
 
             // Act
-            AuthenticationController controller = ControllerFactory
-                .CreateAuthenticationController(Context);
+            AuthenticationController controller = (AuthenticationController) controllerClient
+                .Create(Context);
 
             // Assert
             await Xunit.Assert.ThrowsAsync<NotFoundException>(
@@ -87,8 +90,8 @@ namespace Authentication.UnitTests.Tests
             }; 
 
             // Act
-            AuthenticationController controller = ControllerFactory
-                .CreateAuthenticationController(Context);
+            AuthenticationController controller = (AuthenticationController) controllerClient
+                .Create(Context);
 
             // Assert
             await Xunit.Assert.ThrowsAsync<ForbiddenException>(
@@ -114,8 +117,8 @@ namespace Authentication.UnitTests.Tests
             };
 
             // Act
-            AuthenticationController controller = ControllerFactory
-                .CreateAuthenticationController(Context);
+            AuthenticationController controller = (AuthenticationController) controllerClient
+                .Create(Context);
 
             // Assert
             await Xunit.Assert.ThrowsAsync<ForbiddenException>(
@@ -136,8 +139,8 @@ namespace Authentication.UnitTests.Tests
             };
 
             // Act
-            AuthenticationController controller = ControllerFactory
-                .CreateAuthenticationController(Context);
+            AuthenticationController controller = (AuthenticationController) controllerClient
+                .Create(Context);
 
             // Assert
             var actionResult = await controller.SignUp(userRequest);
@@ -159,8 +162,8 @@ namespace Authentication.UnitTests.Tests
             };
 
             // Act
-            AuthenticationController controller = ControllerFactory
-                .CreateAuthenticationController(Context);
+            AuthenticationController controller = (AuthenticationController) controllerClient
+                .Create(Context);
 
             // Assert
             await Xunit.Assert.ThrowsAsync<BadRequestException>(
@@ -176,8 +179,8 @@ namespace Authentication.UnitTests.Tests
             TokensResponse tokens = TokenHelper.CreateTokenPair(user);
 
             // Act
-            AuthenticationController controller = ControllerFactory
-                .CreateAuthenticationController(Context);
+            AuthenticationController controller = (AuthenticationController) controllerClient
+                .Create(Context);
 
             // Assert
             var actionResult = await controller.RefreshTokens(tokens.RefreshToken!);
@@ -195,8 +198,8 @@ namespace Authentication.UnitTests.Tests
             TokensResponse tokens = TokenHelper.CreateTokenPair(user);
 
             // Act
-            AuthenticationController controller = ControllerFactory
-                .CreateAuthenticationController(Context);
+            AuthenticationController controller = (AuthenticationController) controllerClient
+                .Create(Context);
 
             // Assert
             await Xunit.Assert.ThrowsAsync<ForbiddenException>(
@@ -231,8 +234,8 @@ namespace Authentication.UnitTests.Tests
             TokensResponse tokens = TokenHelper.CreateTokenPair(user);
 
             // Act
-            AuthenticationController controller = ControllerFactory
-                .CreateAuthenticationController(Context);
+            AuthenticationController controller = (AuthenticationController) controllerClient
+                .Create(Context);
 
             // Assert
             await Xunit.Assert.ThrowsAsync<NotFoundException>(
@@ -250,8 +253,8 @@ namespace Authentication.UnitTests.Tests
             TokensResponse tokens = TokenHelper.CreateTokenPair(user);
 
             // Act
-            AuthenticationController controller = ControllerFactory
-                .CreateAuthenticationController(Context);
+            AuthenticationController controller = (AuthenticationController) controllerClient
+                .Create(Context);
 
             // Assert
             await Xunit.Assert.ThrowsAsync<UnauthorizedException>(
