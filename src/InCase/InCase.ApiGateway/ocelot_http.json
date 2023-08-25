@@ -1092,7 +1092,7 @@
           "Port": 5073
         }
       ],
-      "UpstreamPathTemplate": "/api/game/{id}",
+      "UpstreamPathTemplate": "/api/game/id/{id}",
       "UpstreamHttpMethod": [ "Get" ]
     },
     {
@@ -1129,7 +1129,7 @@
           "Port": 5073
         }
       ],
-      "UpstreamPathTemplate": "/api/game/item/{id}",
+      "UpstreamPathTemplate": "/api/game/item/id/{id}",
       "UpstreamHttpMethod": [ "Get" ]
     },
     {
