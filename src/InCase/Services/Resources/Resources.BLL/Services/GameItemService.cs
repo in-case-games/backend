@@ -315,12 +315,14 @@ namespace Resources.BLL.Services
                 ItemCostResponse priceAdditional = await _platformServices[game]
                     .GetAdditionalMarketAsync(item.IdForMarket!, game);
 
-                if (priceOriginal.Success || priceAdditional.Success)
-                {
-                    decimal cost = priceOriginal.Success ? priceOriginal.Cost : priceAdditional.Cost;
+                bool isAdditionalCost = priceOriginal.Cost == 0 ||
+                    (priceOriginal.Cost > 0 && priceAdditional.Cost < priceOriginal.Cost);
+                decimal cost = isAdditionalCost ? priceAdditional.Cost : priceOriginal.Cost;
 
+                if (cost > 0)
+                {
                     item.UpdateDate = DateTime.UtcNow;
-                    item.Cost = cost * 7;
+                    item.Cost = cost * 7M;
 
                     _context.Items.Update(item);
                     await _context.SaveChangesAsync(cancellationToken);
@@ -369,7 +371,7 @@ namespace Resources.BLL.Services
                         boxCostNew = itemMinCost * (box.Cost / itemTwoCost);
                 }
 
-                box.IsLocked = boxCostNew >= itemMaxCost;
+                box.IsLocked = boxCostNew >= itemMaxCost || boxCostNew <= itemMinCost;
 
                 box.Cost = box.IsLocked ? box.Cost : boxCostNew;
 

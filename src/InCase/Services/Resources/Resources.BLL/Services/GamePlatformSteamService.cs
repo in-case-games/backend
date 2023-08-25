@@ -32,12 +32,19 @@ namespace Resources.BLL.Services
 
             string uri = $"{DomainUri[game]}/api/ItemInfo/{id}/ru/?key={_cfg["MarketTM:Secret"]}";
 
-            ItemInfoTMResponse? info = await _responseService
-                .GetAsync<ItemInfoTMResponse>(uri);
+            try
+            {
+                ItemInfoTMResponse? info = await _responseService
+                    .GetAsync<ItemInfoTMResponse>(uri);
 
-            return (info is null || info.Cost is null) ? 
-                new() { Success = false, Cost = 0M } : 
-                new() { Success = true, Cost = decimal.Parse(info.Cost!) / 100 };
+                return (info is null || info.Cost is null) ?
+                    new() { Success = false, Cost = 0M } :
+                    new() { Success = true, Cost = decimal.Parse(info.Cost!) / 100 };
+            }
+            catch(Exception)
+            {
+                return new() { Success = false, Cost = 0M };
+            }
         }
 
         public async Task<ItemCostResponse> GetOriginalMarketAsync(string hashName, string game)
@@ -49,12 +56,26 @@ namespace Resources.BLL.Services
                 $"market_hash_name={hashName}&" +
                 $"format=json";
 
-            ItemInfoSteamResponse? info = await _responseService
-                .GetAsync<ItemInfoSteamResponse>(uri);
+            try
+            {
+                ItemInfoSteamResponse? info = await _responseService
+                    .GetAsync<ItemInfoSteamResponse>(uri);
+                if ((info is null || !info.Success || info.Cost is null))
+                    return new() { Success = false, Cost = 0M };
+                else
+                {
+                    string temp = info!.Cost!.Replace(" pуб.", "");
+                    decimal cost = decimal.Parse(temp);
 
-            return (info is null || !info.Success || info.Cost is null) ?
-                new() { Success = false, Cost = 0M } :
-                new() { Success = true, Cost = decimal.Parse(info!.Cost!.Replace(" pуб.", "")) };
+                    if (temp != cost.ToString()) cost /= 100;
+
+                    return new() { Success = true, Cost = cost };
+                }
+            }
+            catch (Exception)
+            {
+                return new() { Success = false, Cost = 0M };
+            }
         }
 
         private class ItemInfoTMResponse
@@ -62,7 +83,7 @@ namespace Resources.BLL.Services
             [JsonPropertyName("min_price")] public string? Cost { get; set; }
         }
 
-        public class ItemInfoSteamResponse
+        private class ItemInfoSteamResponse
         {
             [JsonPropertyName("success")] public bool Success { get; set; } = false;
             [JsonPropertyName("lowest_price")] public string? Cost { get; set; }
