@@ -26,12 +26,12 @@ namespace Withdraw.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpPost]
-        public async Task<IActionResult> Withdraw(WithdrawItemRequest request)
+        public async Task<IActionResult> Withdraw(IEnumerable<WithdrawItemRequest> request)
         {
-            UserHistoryWithdrawResponse response = await _withdrawService
+            IEnumerable<UserHistoryWithdrawResponse> response = await _withdrawService
                 .WithdrawItemAsync(request, UserId);
 
-            return Ok(ApiResult<UserHistoryWithdrawResponse>.OK(response));
+            return Ok(ApiResult<IEnumerable<UserHistoryWithdrawResponse>>.OK(response));
         }
 
         [ProducesResponseType(typeof(ApiResult<BalanceMarketResponse>), (int)HttpStatusCode.OK)]

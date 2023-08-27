@@ -82,12 +82,17 @@ namespace Withdraw.BLL.Services
             }
         }
 
-        public async Task<UserHistoryWithdrawResponse> WithdrawItemAsync(
-            WithdrawItemRequest request, 
+        public async Task<IEnumerable<UserHistoryWithdrawResponse>> WithdrawItemAsync(
+            IEnumerable<WithdrawItemRequest> requestList, 
             Guid userId)
         {
-            UserInventory inventory = await _context.Inventories
-                .Include(ui => ui.Item)
+            List<UserInventory> inventories = new List<UserInventory>();
+            List<UserHistoryWithdraw> withdraws = new List<UserHistoryWithdraw>();
+
+            foreach (WithdrawItemRequest request in requestList)
+
+            {
+                UserInventory inventory = await _context.Inventories.Include(ui => ui.Item)
                 .Include(ui => ui.Item!.Game)
                 .Include(ui => ui.Item!.Game!.Market)
                 .AsNoTracking()
@@ -95,46 +100,50 @@ namespace Withdraw.BLL.Services
                 ui.UserId == userId) ??
                 throw new NotFoundException("Предмет не найден в инвентаре");
 
-            GameItem item = inventory.Item!;
+                GameItem item = inventory.Item!;
 
-            ItemInfoResponse info = await _withdrawService
-                .GetItemInfoAsync(item);
+                ItemInfoResponse info = await _withdrawService
+                    .GetItemInfoAsync(item);
 
-            decimal price = info.PriceKopecks * 0.01M;
+                decimal price = info.PriceKopecks * 0.01M;
 
-            if (price > inventory.FixedCost * 1.1M / 7)
-                throw new ConflictException("Цена на предмет нестабильна");
+                if (price > inventory.FixedCost * 1.1M / 7)
+                    throw new ConflictException("Цена на предмет нестабильна");
 
-            BalanceMarketResponse balance = await _withdrawService
-                .GetBalanceAsync(info.Market.Name!);
+                BalanceMarketResponse balance = await _withdrawService
+                    .GetBalanceAsync(info.Market.Name!);
 
-            if (balance.Balance <= price)
-                throw new PaymentRequiredException("Ожидаем пополнения сервиса покупки");
+                if (balance.Balance <= price)
+                    throw new PaymentRequiredException("Ожидаем пополнения сервиса покупки");
 
-            BuyItemResponse buyItem = await _withdrawService
-                .BuyItemAsync(info, request.TradeUrl!);
+                BuyItemResponse buyItem = await _withdrawService
+                    .BuyItemAsync(info, request.TradeUrl!);
 
-            WithdrawStatus status = await _context.Statuses
-                .AsNoTracking()
-                .FirstAsync(iws => iws.Name == "purchase");
+                WithdrawStatus status = await _context.Statuses
+                    .AsNoTracking()
+                    .FirstAsync(iws => iws.Name == "purchase");
 
-            UserHistoryWithdraw withdraw = new()
-            {
-                InvoiceId = buyItem.Id,
-                StatusId = status.Id,
-                Date = DateTime.UtcNow - TimeSpan.FromSeconds(120),
-                ItemId = item.Id,
-                UserId = userId,
-                MarketId = buyItem.Market!.Id,
-                FixedCost = inventory.FixedCost
-            };
+                UserHistoryWithdraw withdraw = new()
+                {
+                    InvoiceId = buyItem.Id,
+                    StatusId = status.Id,
+                    Date = DateTime.UtcNow - TimeSpan.FromSeconds(120),
+                    ItemId = item.Id,
+                    UserId = userId,
+                    MarketId = buyItem.Market!.Id,
+                    FixedCost = inventory.FixedCost
+                };
 
-            _context.Inventories.Remove(inventory);
-            await _context.Withdraws.AddAsync(withdraw);
+                inventories.Add(inventory);
+                withdraws.Add(withdraw);
+            }            
+
+            _context.Inventories.RemoveRange(inventories.ToArray());
+            await _context.Withdraws.AddRangeAsync(withdraws.ToArray());
 
             await _context.SaveChangesAsync();
 
-            return withdraw.ToResponse();
+            return withdraws.ToResponse();
         }
     }
 }
