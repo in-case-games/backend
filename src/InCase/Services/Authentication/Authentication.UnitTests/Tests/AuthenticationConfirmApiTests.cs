@@ -1,12 +1,11 @@
 ﻿using Authentication.API.Controllers;
-using Authentication.BLL;
 using Authentication.BLL.Exceptions;
 using Authentication.DAL.Entities;
 using Authentication.UnitTests.Common;
+using Authentication.UnitTests.Common.Factory;
 using Authentication.UnitTests.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json.Linq;
 using System.Net;
 using Xunit;
 using Xunit.Abstractions;
@@ -15,6 +14,8 @@ namespace Authentication.UnitTests.Tests
 {
     public class AuthenticationConfirmApiTests : TestApiBase
     {
+        private readonly Controllers controllerClient
+            = new Controllers(new AuthenticationConfirmControllerFactory());
         public AuthenticationConfirmApiTests(ITestOutputHelper output) : base(output) { }
 
         [Fact]
@@ -27,8 +28,9 @@ namespace Authentication.UnitTests.Tests
             string token = TokenHelper.CreateEmailToken(user);
 
             // Act 
-            AuthenticationConfirmController controller =
-                ControllerFactory.CreateAuthenticationConfirmController(Context);
+            AuthenticationConfirmController controller = 
+                (AuthenticationConfirmController) controllerClient
+                .Create(Context);
 
             // Assert
             var actionResult = await controller.ConfirmAccount(token);
@@ -47,8 +49,9 @@ namespace Authentication.UnitTests.Tests
             string token = TokenHelper.CreateEmailToken(user);
 
             // Act 
-            AuthenticationConfirmController controller =
-                ControllerFactory.CreateAuthenticationConfirmController(Context);
+            AuthenticationConfirmController controller = 
+                (AuthenticationConfirmController) controllerClient
+                .Create(Context);
 
             // Assert
             await Xunit.Assert.ThrowsAsync<UnauthorizedException>(
@@ -84,8 +87,9 @@ namespace Authentication.UnitTests.Tests
             string token = TokenHelper.CreateEmailToken(user);
 
             // Act
-            AuthenticationConfirmController controller =
-                ControllerFactory.CreateAuthenticationConfirmController(Context);
+            AuthenticationConfirmController controller = 
+                (AuthenticationConfirmController) controllerClient
+                .Create(Context);
 
             // Assert
             await Xunit.Assert.ThrowsAsync<NotFoundException>(
@@ -102,8 +106,9 @@ namespace Authentication.UnitTests.Tests
             string token = TokenHelper.CreateEmailToken(user);
 
             // Act 
-            AuthenticationConfirmController controller =
-                ControllerFactory.CreateAuthenticationConfirmController(Context);
+            AuthenticationConfirmController controller = 
+                (AuthenticationConfirmController) controllerClient
+                .Create(Context);
 
             // Assert
             var actionResult = await controller.UpdateEmail("newmail@mail.ru", token);
@@ -122,8 +127,9 @@ namespace Authentication.UnitTests.Tests
             string token = TokenHelper.CreateEmailToken(user);
 
             // Act 
-            AuthenticationConfirmController controller =
-                ControllerFactory.CreateAuthenticationConfirmController(Context);
+            AuthenticationConfirmController controller = 
+                (AuthenticationConfirmController) controllerClient
+                .Create(Context);
 
             // Assert
             await Xunit.Assert.ThrowsAsync<ConflictException>(
@@ -141,8 +147,9 @@ namespace Authentication.UnitTests.Tests
             string token = TokenHelper.CreateEmailToken(user);
 
             // Act 
-            AuthenticationConfirmController controller =
-                ControllerFactory.CreateAuthenticationConfirmController(Context);
+            AuthenticationConfirmController controller = 
+                (AuthenticationConfirmController) controllerClient
+                .Create(Context);
 
             // Assert
             await Xunit.Assert.ThrowsAsync<UnauthorizedException>(
@@ -159,8 +166,9 @@ namespace Authentication.UnitTests.Tests
             string token = TokenHelper.CreateEmailToken(user);
 
             // Act 
-            AuthenticationConfirmController controller =
-                ControllerFactory.CreateAuthenticationConfirmController(Context);
+            AuthenticationConfirmController controller = 
+                (AuthenticationConfirmController) controllerClient
+                .Create(Context);
 
             // Assert
             var actionResult = await controller.UpdateLogin("login", token);
@@ -179,8 +187,9 @@ namespace Authentication.UnitTests.Tests
             string token = TokenHelper.CreateEmailToken(user);
 
             // Act 
-            AuthenticationConfirmController controller =
-                ControllerFactory.CreateAuthenticationConfirmController(Context);
+            AuthenticationConfirmController controller = 
+                (AuthenticationConfirmController) controllerClient
+                .Create(Context);
 
             // Assert
             await Xunit.Assert.ThrowsAsync<ConflictException>(
@@ -198,8 +207,9 @@ namespace Authentication.UnitTests.Tests
             string token = TokenHelper.CreateEmailToken(user);
 
             // Act 
-            AuthenticationConfirmController controller =
-                ControllerFactory.CreateAuthenticationConfirmController(Context);
+            AuthenticationConfirmController controller = 
+                (AuthenticationConfirmController) controllerClient
+                .Create(Context);
 
             // Assert
             await Xunit.Assert.ThrowsAsync<UnauthorizedException>(
@@ -216,8 +226,9 @@ namespace Authentication.UnitTests.Tests
             string token = TokenHelper.CreateEmailToken(user);
 
             // Act 
-            AuthenticationConfirmController controller =
-                ControllerFactory.CreateAuthenticationConfirmController(Context);
+            AuthenticationConfirmController controller = 
+                (AuthenticationConfirmController) controllerClient
+                .Create(Context);
 
             // Assert
             var actionResult = await controller.UpdatePassword("1Alogin", token);
@@ -236,8 +247,9 @@ namespace Authentication.UnitTests.Tests
             string token = TokenHelper.CreateEmailToken(user);
 
             // Act 
-            AuthenticationConfirmController controller =
-                ControllerFactory.CreateAuthenticationConfirmController(Context);
+            AuthenticationConfirmController controller = 
+                (AuthenticationConfirmController) controllerClient
+                .Create(Context);
 
             // Assert
             await Xunit.Assert.ThrowsAsync<UnauthorizedException>(
@@ -254,8 +266,9 @@ namespace Authentication.UnitTests.Tests
             string token = TokenHelper.CreateEmailToken(user);
 
             // Act 
-            AuthenticationConfirmController controller =
-                ControllerFactory.CreateAuthenticationConfirmController(Context);
+            AuthenticationConfirmController controller = 
+                (AuthenticationConfirmController) controllerClient
+                .Create(Context);
 
             // Assert
             await Xunit.Assert.ThrowsAsync<BadRequestException>(
@@ -272,8 +285,9 @@ namespace Authentication.UnitTests.Tests
             string token = TokenHelper.CreateEmailToken(user);
 
             // Act 
-            AuthenticationConfirmController controller =
-                ControllerFactory.CreateAuthenticationConfirmController(Context);
+            AuthenticationConfirmController controller = 
+                (AuthenticationConfirmController) controllerClient
+                .Create(Context);
 
             // Assert
             var actionResult = await controller.Delete(token);
@@ -292,8 +306,9 @@ namespace Authentication.UnitTests.Tests
             string token = TokenHelper.CreateEmailToken(user);
 
             // Act 
-            AuthenticationConfirmController controller =
-                ControllerFactory.CreateAuthenticationConfirmController(Context);
+            AuthenticationConfirmController controller = 
+                (AuthenticationConfirmController) controllerClient
+                .Create(Context);
 
             // Assert
             await Xunit.Assert.ThrowsAsync<UnauthorizedException>(
