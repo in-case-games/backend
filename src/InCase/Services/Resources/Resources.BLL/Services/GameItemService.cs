@@ -315,8 +315,8 @@ namespace Resources.BLL.Services
                 ItemCostResponse priceAdditional = await _platformServices[game]
                     .GetAdditionalMarketAsync(item.IdForMarket!, game);
 
-                bool isAdditionalCost = priceOriginal.Cost == 0 ||
-                    (priceOriginal.Cost > 0 && priceAdditional.Cost < priceOriginal.Cost);
+                bool isAdditionalCost = priceOriginal.Cost <= 0 ||
+                    (priceAdditional.Cost > priceOriginal.Cost);
                 decimal cost = isAdditionalCost ? priceAdditional.Cost : priceOriginal.Cost;
 
                 if (cost > 0)
