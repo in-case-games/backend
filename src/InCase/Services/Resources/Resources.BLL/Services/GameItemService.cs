@@ -320,15 +320,14 @@ namespace Resources.BLL.Services
                 decimal cost = isAdditionalCost ? priceAdditional.Cost : priceOriginal.Cost;
 
 
-                item.UpdateDate = DateTime.UtcNow;
-                item.Cost = cost > 0 ? cost * 7M : item.Cost;
-
-                _context.Items.Update(item);
-                await _context.SaveChangesAsync(cancellationToken);
-
-
-                if (tempPrice != item.Cost)
+                if (cost > 0)
                 {
+                    item.UpdateDate = DateTime.UtcNow;
+                    item.Cost = cost * 7M;
+
+                    _context.Items.Update(item);
+                    await _context.SaveChangesAsync(cancellationToken);
+
                     await _publisher.SendAsync(item.ToTemplate(), cancellationToken);
 
                     await CorrectCostAsync(item.Id, tempPrice, cancellationToken);
