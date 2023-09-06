@@ -16,7 +16,8 @@ namespace Resources.BLL.Helpers
                 Type = item.Type?.Name,
                 Game = item.Game?.Name,
                 HashName = item.HashName,
-                IdForMarket = item.IdForMarket
+                IdForMarket = item.IdForMarket,
+                UpdateDate = item.UpdateDate,
             };
 
         public static List<GameItemResponse> ToResponse(this IEnumerable<GameItem> items)

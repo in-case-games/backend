@@ -6,6 +6,7 @@ namespace Resources.BLL.Models
     {
         public string? Name { get; set; }
         public string? IdForMarket { get; set; }
+        public DateTime UpdateDate { get; set; }
         public string? HashName { get; set; }
         public decimal Cost { get; set; }
         public string? Game { get; set; }
