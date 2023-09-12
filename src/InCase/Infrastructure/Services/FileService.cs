@@ -4,10 +4,13 @@ namespace Infrastructure.Services
 {
     public static class FileService
     {
+        private const string PATH_URI = "\\static\\images\\";
         public static bool Upload(IFormFile file, string path)
         {
             if (file is null)
                 return false;
+
+            path = PATH_URI + path;
 
             string fileName = path.Split('\\')[path.Split('\\').Length - 1];
             CreateFolderIfNotExist(path.Replace("\\"+fileName, ""));
@@ -26,16 +29,16 @@ namespace Infrastructure.Services
         }
         public static void CreateFolderIfNotExist(string path)
         {
-            if (!Directory.Exists(path))
+            if (!Directory.Exists(PATH_URI + path))
             {
-                Directory.CreateDirectory(path);
+                Directory.CreateDirectory(PATH_URI + path);
             }
         }
         public static bool RemoveFolder(string path)
         {
             try
             {
-                Directory.Delete(path, recursive: true);
+                Directory.Delete(PATH_URI + path, recursive: true);
                 return true;
             }
             catch (DirectoryNotFoundException)

@@ -74,7 +74,7 @@ namespace Identity.BLL.Services
             string path = currentDirPath[0];
 
             bool isUploaded = FileService.Upload(image,
-                path + $"\\src\\fileserver_imitation\\userinfos\\{info.UserId}\\{info.Id}\\" + info.Id + ".jpg");
+                path + $"userinfos\\{info.UserId}\\{info.Id}\\" + info.Id + ".jpg");
 
             if (!isUploaded)
                 throw new ConflictException("Изображение не было загружено");

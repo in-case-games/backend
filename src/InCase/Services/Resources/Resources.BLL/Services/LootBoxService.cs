@@ -83,7 +83,7 @@ namespace Resources.BLL.Services
             string path = currentDirPath[0];
 
             FileService.Upload(uploadImage,
-                path + $"\\src\\fileserver_imitation\\loot-boxes\\{request.GameId}\\{box.Id}\\" + box.Id + ".jpg");
+                "loot-boxes\\{request.GameId}\\{box.Id}\\" + box.Id + ".jpg");
 
             await _context.LootBoxes.AddAsync(box);
             await _context.SaveChangesAsync();
@@ -129,9 +129,9 @@ namespace Resources.BLL.Services
 
             if (uploadImage is not null)
             {
-                string filePath = path + $"\\src\\fileserver_imitation\\loot-boxes\\{request.GameId}\\{newBox.Id}\\" + newBox.Id + ".jpg";
+                string filePath = "loot-boxes\\{request.GameId}\\{newBox.Id}\\" + newBox.Id + ".jpg";
                 File.Delete(filePath);
-                FileService.RemoveFolder(path + $"\\src\\fileserver_imitation\\loot-boxes\\{request.GameId}\\{newBox.Id}\\");
+                FileService.RemoveFolder("loot-boxes\\{request.GameId}\\{newBox.Id}\\");
 
                 FileService.Upload(uploadImage, filePath);
             }
