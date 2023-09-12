@@ -1,5 +1,21 @@
 version: "3"
 services:
+  nginx:
+    container_name: nginx-dev
+    hostname: nginx-dev
+    image: nginx
+    volumes:
+      - ./../fileserver_imitation:/static/images
+      - ./../docker-images/nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./../docker-images/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./../docker-images/nginx/logs:/var/log/nginx
+    ports:
+      - "80:8080"
+      - "443:8443"
+    networks:
+      default:
+        ipv4_address: 172.16.1.4
+
   nosqldata:
     image: mongo
     restart: always
@@ -40,7 +56,7 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
     env_file:
       - .env
-    image: "auth-api"
+    image: "auth-api:dev"
     build:
       context: .
       dockerfile: Services/Authentication/Authentication.API/Dockerfile
@@ -48,7 +64,8 @@ services:
       - psql
       - rabbitmq
     volumes:
-      - $APPDATA/Microsoft/UserSecrets/$USER_SECRETS_ID_AUTH:/root/.microsoft/usersecrets/$USER_SECRETS_ID_AUTH:ro
+      - $APPDATA/Microsoft/UserSecrets/$USER_SECRETS_ID_AUTH:/root/.microsoft/usersecrets/$USER_SECRETS_ID_AUTH:ro    
+      - ./../fileserver_imitation:/static/images
     ports:
       - "5033:80"
 
@@ -57,7 +74,7 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
     env_file:
       - .env
-    image: "email-api"
+    image: "email-api:dev"
     build:
       context: .
       dockerfile: Services/EmailSender/EmailSender.API/Dockerfile
@@ -66,6 +83,7 @@ services:
       - rabbitmq
     volumes:
       - $APPDATA/Microsoft/UserSecrets/$USER_SECRETS_ID_EMAIL:/root/.microsoft/usersecrets/$USER_SECRETS_ID_EMAIL:ro
+      - ./../fileserver_imitation:/static/images   
     ports:
       - "5225:80"
 
@@ -74,7 +92,7 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
     env_file:
       - .env
-    image: "game-api"
+    image: "game-api:dev"
     build:
       context: .
       dockerfile: Services/Game/Game.API/Dockerfile
@@ -82,6 +100,7 @@ services:
       - psql
       - rabbitmq
     volumes:
+       - ./../fileserver_imitation:/static/images
        - $APPDATA/Microsoft/UserSecrets/$USER_SECRETS_ID_GAME:/root/.microsoft/usersecrets/$USER_SECRETS_ID_GAME:ro
     ports:
       - "5184:80"
@@ -91,7 +110,7 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
     env_file:
       - .env
-    image: "identity-api"
+    image: "identity-api:dev"
     build:
       context: .
       dockerfile: Services/Identity/Identity.API/Dockerfile
@@ -99,6 +118,7 @@ services:
       - psql
       - rabbitmq
     volumes:
+       - ./../fileserver_imitation:/static/images
       - $APPDATA/Microsoft/UserSecrets/$USER_SECRETS_ID_IDENTITY:/root/.microsoft/usersecrets/$USER_SECRETS_ID_IDENTITY:ro
     ports:
       - "5259:80"
@@ -108,7 +128,7 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
     env_file:
       - .env
-    image: "payment-api"
+    image: "payment-api:dev"
     build:
       context: .
       dockerfile: Services/Payment/Payment.API/Dockerfile
@@ -116,6 +136,7 @@ services:
       - psql
       - rabbitmq 
     volumes:
+       - ./../fileserver_imitation:/static/images
       - $APPDATA/Microsoft/UserSecrets/$USER_SECRETS_ID_PAYMENT:/root/.microsoft/usersecrets/$USER_SECRETS_ID_PAYMENT:ro
     ports:
       - "5039:80"
@@ -125,7 +146,7 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
     env_file:
       - .env
-    image: "promocode-api"
+    image: "promocode-api:dev"
     build:
       context: .
       dockerfile: Services/Promocode/Promocode.API/Dockerfile
@@ -133,6 +154,7 @@ services:
       - psql
       - rabbitmq 
     volumes:
+       - ./../fileserver_imitation:/static/images
       - $APPDATA/Microsoft/UserSecrets/$USER_SECRETS_ID_PROMOCODE:/root/.microsoft/usersecrets/$USER_SECRETS_ID_PROMOCODE:ro
     ports:
       - "5163:80"
@@ -142,7 +164,7 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
     env_file:
       - .env
-    image: "resources-api"
+    image: "resources-api:dev"
     build:
       context: .
       dockerfile: Services/Resources/Resources.API/Dockerfile
@@ -150,6 +172,7 @@ services:
       - psql
       - rabbitmq 
     volumes:
+       - ./../fileserver_imitation:/static/images
       - $APPDATA/Microsoft/UserSecrets/$USER_SECRETS_ID_RESOURCES:/root/.microsoft/usersecrets/$USER_SECRETS_ID_RESOURCES:ro
     ports:
       - "5073:80"
@@ -159,7 +182,7 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
     env_file:
       - .env
-    image: "review-api"
+    image: "review-api:dev"
     build:
       context: .
       dockerfile: Services/Review/Review.API/Dockerfile
@@ -167,6 +190,7 @@ services:
       - psql
       - rabbitmq 
     volumes:
+       - ./../fileserver_imitation:/static/images
       - $APPDATA/Microsoft/UserSecrets/$USER_SECRETS_ID_REVIEW:/root/.microsoft/usersecrets/$USER_SECRETS_ID_REVIEW:ro
     ports:
       - "5079:80"
@@ -176,7 +200,7 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
     env_file:
       - .env
-    image: "statistics-api"
+    image: "statistics-api:dev"
     build:
       context: .
       dockerfile: Services/Statistics/Statistics.API/Dockerfile
@@ -184,6 +208,7 @@ services:
       - rabbitmq
       - nosqldata
     volumes:
+       - ./../fileserver_imitation:/static/images
       - $APPDATA/Microsoft/UserSecrets/$USER_SECRETS_ID_STATISTICS:/root/.microsoft/usersecrets/$USER_SECRETS_ID_STATISTICS:ro
     ports:
       - "5231:80"
@@ -193,7 +218,7 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
     env_file:
       - .env
-    image: "support-api"
+    image: "support-api:dev"
     build:
       context: .
       dockerfile: Services/Support/Support.API/Dockerfile
@@ -201,6 +226,7 @@ services:
       - psql
       - rabbitmq 
     volumes:
+       - ./../fileserver_imitation:/static/images
       - $APPDATA/Microsoft/UserSecrets/$USER_SECRETS_ID_SUPPORT:/root/.microsoft/usersecrets/$USER_SECRETS_ID_SUPPORT:ro
     ports:
       - "5155:80"
@@ -210,7 +236,7 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
     env_file:
       - .env
-    image: "withdraw-api"
+    image: "withdraw-api:dev"
     build:
       context: .
       dockerfile: Services/Withdraw/Withdraw.API/Dockerfile
@@ -218,12 +244,13 @@ services:
       - psql
       - rabbitmq 
     volumes:
+       - ./../fileserver_imitation:/static/images
       - $APPDATA/Microsoft/UserSecrets/$USER_SECRETS_ID_WITHDRAW:/root/.microsoft/usersecrets/$USER_SECRETS_ID_WITHDRAW:ro
     ports:
       - "5187:80"
 
   gateway-api:
-    image: "gateway-api"
+    image: "gateway-api:dev"
     environment:
       ASPNETCORE_HTTPS_PORT: "5000"
       ASPNETCORE_URLS: https://+:443;http://+:80
