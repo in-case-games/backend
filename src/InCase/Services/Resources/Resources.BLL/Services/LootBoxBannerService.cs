@@ -76,7 +76,7 @@ namespace Resources.BLL.Services
             string path = currentDirPath[0];
 
             FileService.Upload(uploadImage,
-                path + $"\\src\\fileserver_imitation\\loot-box-banners\\{box.Id}\\{banner.Id}\\" + banner.Id + ".jpg");
+                "loot-box-banners\\{box.Id}\\{banner.Id}\\" + banner.Id + ".jpg");
 
             await _context.Banners.AddAsync(banner);
             await _context.SaveChangesAsync();
@@ -113,9 +113,9 @@ namespace Resources.BLL.Services
 
             if (uploadImage is not null)
             {
-                string filePath = path + $"\\src\\fileserver_imitation\\loot-box-banners\\{box.Id}\\{banner.Id}\\" + banner.Id + ".jpg";
+                string filePath = "loot-box-banners\\{box.Id}\\{banner.Id}\\" + banner.Id + ".jpg";
                 File.Delete(filePath);
-                FileService.RemoveFolder(path + "\\src\\fileserver_imitation\\loot-box-banners\\{box.Id}\\{banner.Id}\\");
+                FileService.RemoveFolder("loot-box-banners\\{box.Id}\\{banner.Id}\\");
 
                 FileService.Upload(uploadImage, filePath);
             }

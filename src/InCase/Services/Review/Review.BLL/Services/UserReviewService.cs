@@ -154,7 +154,7 @@ namespace Review.BLL.Services
 
             string[] currentDirPath = Environment.CurrentDirectory.Split("src");
             string path = currentDirPath[0];
-            FileService.RemoveFolder(path + $"\\src\\fileserver_imitation\\reviews\\{review.Id}");
+            FileService.RemoveFolder("reviews\\{review.Id}");
 
             _context.Reviews.Remove(review);
             await _context.SaveChangesAsync();
@@ -176,7 +176,7 @@ namespace Review.BLL.Services
 
             string[] currentDirPath = Environment.CurrentDirectory.Split("src");
             string path = currentDirPath[0];
-            FileService.RemoveFolder(path + $"\\src\\fileserver_imitation\\reviews\\{review.Id}");
+            FileService.RemoveFolder("reviews\\{review.Id}");
 
             _context.Reviews.Remove(review);
             await _context.SaveChangesAsync();

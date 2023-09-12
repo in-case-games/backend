@@ -199,7 +199,7 @@ namespace Resources.BLL.Services
             string path = currentDirPath[0];
 
             FileService.Upload(uploadImage,
-                path + $"\\src\\fileserver_imitation\\game-items\\{game.Id}\\{item.Id}\\" + item.Id + ".jpg");
+                "game-items\\{game.Id}\\{item.Id}\\" + item.Id + ".jpg");
 
             await _context.Items.AddAsync(item);
             await _context.SaveChangesAsync();
@@ -248,9 +248,9 @@ namespace Resources.BLL.Services
 
             if (uploadImage is not null)
             {
-                string filePath = path + $"\\src\\fileserver_imitation\\game-items\\{game.Id}\\{item.Id}\\" + item.Id + ".jpg";
+                string filePath = "game-items\\{game.Id}\\{item.Id}\\" + item.Id + ".jpg";
                 File.Delete(filePath);
-                FileService.RemoveFolder(path + $"\\src\\fileserver_imitation\\game-items\\{game.Id}\\{item.Id}\\");
+                FileService.RemoveFolder("game-items\\{game.Id}\\{item.Id}\\");
 
                 FileService.Upload(uploadImage, filePath);
             }
@@ -284,9 +284,9 @@ namespace Resources.BLL.Services
             string[] currentDirPath = Environment.CurrentDirectory.Split("src");
             string path = currentDirPath[0];
 
-            string filePath = path + $"\\src\\fileserver_imitation\\game-items\\{item.Game?.Id}\\{item?.Id}\\" + item!.Id + ".jpg";
+            string filePath = "game-items\\{item.Game?.Id}\\{item?.Id}\\" + item!.Id + ".jpg";
                 File.Delete(filePath);
-                FileService.RemoveFolder(path + $"\\src\\fileserver_imitation\\game-items\\{item.Game?.Id}\\{item?.Id}\\");
+                FileService.RemoveFolder("game-items\\{item.Game?.Id}\\{item?.Id}\\");
 
             await _context.SaveChangesAsync();
 

@@ -166,7 +166,7 @@ namespace Support.BLL.Services
             string path = currentDirPath[0];
 
             FileService.Upload(uploadImage, 
-                path + $"\\src\\fileserver_imitation\\answers\\{image.AnswerId}\\{image.Id}\\" + image.Id + ".jpg");
+               "answers\\{image.AnswerId}\\{image.Id}\\" + image.Id + ".jpg");
 
             await _context.Images.AddAsync(image);
             await _context.SaveChangesAsync();
@@ -200,8 +200,8 @@ namespace Support.BLL.Services
             string[] currentDirPath = Environment.CurrentDirectory.Split("src");
             string path = currentDirPath[0];
 
-            File.Delete(path + $"src\\fileserver_imitation\\reviews\\{image.AnswerId}\\{image.Id}\\" + image.Id + ".jpg");
-            FileService.RemoveFolder(path + $"\\src\\fileserver_imitation\\reviews\\{image.AnswerId}\\{image.Id}");
+            File.Delete("answers\\{image.AnswerId}\\{image.Id}\\" + image.Id + ".jpg");
+            FileService.RemoveFolder("answers\\{image.AnswerId}\\{image.Id}");
 
             _context.Images.Remove(image);
             await _context.SaveChangesAsync();
@@ -219,8 +219,8 @@ namespace Support.BLL.Services
             string[] currentDirPath = Environment.CurrentDirectory.Split("src");
             string path = currentDirPath[0];
 
-            File.Delete(path + $"src\\fileserver_imitation\\reviews\\{image.AnswerId}\\{image.Id}\\" + image.Id + ".jpg");
-            FileService.RemoveFolder(path + $"\\src\\fileserver_imitation\\reviews\\{image.AnswerId}\\{image.Id}");
+            File.Delete("answers\\{image.AnswerId}\\{image.Id}\\" + image.Id + ".jpg");
+            FileService.RemoveFolder("answers\\{image.AnswerId}\\{image.Id}");
 
             _context.Images.Remove(image);
             await _context.SaveChangesAsync();
