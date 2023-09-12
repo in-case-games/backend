@@ -79,24 +79,20 @@ namespace Withdraw.BLL.Services
             await _context.SaveChangesAsync();
         }
 
-        public async Task<UserInventoryResponse> ExchangeAsync(Guid id, Guid itemId, Guid userId)
+        public async Task<List<UserInventoryResponse>> ExchangeAsync(ExchangeItemRequest request, Guid userId)
         {
+            if (request.Items is null)
+                throw new BadRequestException("Не выбран ни один предмет для обмена");
+
+            if (request.Items.Sum(x => x.Count) > 10)
+                throw new BadRequestException("Запрещено выводить более 10 предметов");
+
             UserInventory inventory = await _context.Inventories
                 .Include(ui => ui.Item)
                 .Include(ui => ui.Item!.Game!)
                     .ThenInclude(g => g.Market)
-                .FirstOrDefaultAsync(ui => ui.Id == id && ui.UserId == userId) ??
-                throw new NotFoundException("Предмет не найден в инвентаре");
-
-            GameItem item = await _context.Items
-                .AsNoTracking()
-                .FirstOrDefaultAsync(gi => gi.Id == itemId) ??
-                throw new NotFoundException("Предмет не найден");
-
-            decimal differenceCost = inventory.FixedCost - item.Cost;
-
-            if (differenceCost < 0)
-                throw new BadRequestException("Стоимость товара при обмене не может быть выше");
+                .FirstOrDefaultAsync(ui => ui.Id == request.InventoryId && ui.UserId == userId) ??
+                throw new NotFoundException("Заменяемый предмет не найден в инвентаре");
 
             ItemInfoResponse itemInfo = await _withdrawService
                 .GetItemInfoAsync(inventory.Item!);
@@ -106,23 +102,55 @@ namespace Withdraw.BLL.Services
             if (itemPrice <= inventory.FixedCost * 1.1M / 7)
                 throw new ConflictException("Товар может быть обменен только в случае нестабильности цены");
 
+            List<UserInventory> inventories = new List<UserInventory>();
+
+            decimal totalItemsCost = 0;
+
+            foreach (ExchangeItemModel itemModel in request.Items)
+            {
+                GameItem? gameItem = await _context.Items
+                .AsNoTracking()
+                .FirstOrDefaultAsync(gi => gi.Id == itemModel.ItemId);
+
+                if (gameItem is null) 
+                    throw new NotFoundException($"Предмет с заданным Id {itemModel.ItemId} не найден");
+
+                totalItemsCost += gameItem.Cost * itemModel.Count;
+
+                for (int i = 0; i < itemModel.Count; i++)
+                {
+                    inventories.Add(new() {
+                        FixedCost = gameItem.Cost,
+                        Date = inventory.Date,
+                        ItemId = gameItem.Id,
+                        UserId = userId
+                    });
+                }
+            }
+
+            decimal differenceCost = inventory.FixedCost - totalItemsCost;
+
+            if (differenceCost < 0)
+                throw new BadRequestException("Стоимость товара при обмене не может быть выше");
+
+            _context.Inventories.Remove(inventory);
+            await _context.Inventories.AddRangeAsync(inventories);
+
+            await _context.SaveChangesAsync();
+
+            foreach (UserInventory userInventory in inventories)
+            {
+                UserInventoryBackTemplate template = userInventory.ToTemplate();
+                template.FixedCost = differenceCost;
+                await _publisher.SendAsync(template);
+            }
+            
             logger.Log(NLog.LogLevel.Info, "Exchanged: UserId - {0}," +
                                            " GameItemId - {1}, Game - {2}",
                                            inventory.UserId, inventory.ItemId,
                                            inventory.Item?.Game?.Name);
 
-            inventory.ItemId = item.Id;
-            inventory.FixedCost = item.Cost;
-
-            await _context.SaveChangesAsync();
-
-            UserInventoryBackTemplate template = inventory.ToTemplate();
-            template.FixedCost = differenceCost;
-
-            await _publisher.SendAsync(template);
-
-            return inventory.ToResponse();
-
+            return inventories.ToResponse();
         }
         public async Task<SellItemResponse> SellAsync(Guid id, Guid userId)
         {

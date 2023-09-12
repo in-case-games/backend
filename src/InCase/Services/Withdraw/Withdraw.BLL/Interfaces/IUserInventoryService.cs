@@ -13,6 +13,6 @@ namespace Withdraw.BLL.Interfaces
         public Task CreateAsync(UserInventoryTemplate template);
         public Task<SellItemResponse> SellAsync(Guid id, Guid userId);
         public Task<SellItemResponse> SellLastAsync(Guid itemId, Guid userId);
-        public Task<UserInventoryResponse> ExchangeAsync(Guid id, Guid itemId, Guid userId);
+        public Task<List<UserInventoryResponse>> ExchangeAsync(ExchangeItemRequest request, Guid userId);
     }
 }
