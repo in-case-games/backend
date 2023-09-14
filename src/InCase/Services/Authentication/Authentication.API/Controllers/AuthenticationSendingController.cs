@@ -65,7 +65,7 @@ namespace Authentication.API.Controllers
         [ProducesResponseType(typeof(ApiResult<string>),
             (int)HttpStatusCode.OK)]
         [AllowAnonymous]
-        [HttpDelete("confirm/{password}")]
+        [HttpDelete("account/{password}")]
         public async Task<IActionResult> DeleteAccount(DataMailRequest request, string password)
         {
             await _authSendingService.DeleteAccountAsync(request, password);

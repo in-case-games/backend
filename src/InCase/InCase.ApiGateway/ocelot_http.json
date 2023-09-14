@@ -152,7 +152,7 @@
       "UpstreamHttpMethod": [ "Put" ]
     },
     {
-      "DownstreamPathTemplate": "/api/authentication/sending/confirm/{password}",
+      "DownstreamPathTemplate": "/api/authentication/sending/account/{password}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -160,8 +160,8 @@
           "Port": 5033
         }
       ],
-      "UpstreamPathTemplate": "/api/authentication/sending/confirm/{password}",
-      "UpstreamHttpMethod": [ "Put" ]
+      "UpstreamPathTemplate": "/api/authentication/sending/account/{password}",
+      "UpstreamHttpMethod": [ "Delete" ]
     },
     //Base: EmailSender.API
     //EndPoint: user
@@ -2445,7 +2445,7 @@
       "UpstreamHttpMethod": [ "Get" ]
     },
     {
-      "DownstreamPathTemplate": "/api/user-inventory/{id}/exchange/{itemId}",
+      "DownstreamPathTemplate": "/api/user-inventory/exchange",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -2453,8 +2453,8 @@
           "Port": 5187
         }
       ],
-      "UpstreamPathTemplate": "/api/user/inventory/{id}/exchange/{itemId}",
-      "UpstreamHttpMethod": [ "Get" ]
+      "UpstreamPathTemplate": "/api/user/inventory/exchange",
+      "UpstreamHttpMethod": [ "Put" ]
     },
     {
       "DownstreamPathTemplate": "/api/user-inventory/{id}/sell",

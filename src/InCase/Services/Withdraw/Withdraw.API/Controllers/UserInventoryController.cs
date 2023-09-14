@@ -69,15 +69,16 @@ namespace Withdraw.API.Controllers
             return Ok(ApiResult<List<UserInventoryResponse>>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<UserInventoryResponse>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<List<UserInventoryResponse>>), 
+            (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
-        [HttpGet("{id}/exchange/{itemId}")]
-        public async Task<IActionResult> Exchange(Guid id, Guid itemId)
+        [HttpPut("exchange")]
+        public async Task<IActionResult> Exchange(ExchangeItemRequest request)
         {
-            UserInventoryResponse response = await _userInventoryService
-                .ExchangeAsync(id, itemId, UserId);
+            List<UserInventoryResponse> response = await _userInventoryService
+                .ExchangeAsync(request, UserId);
 
-            return Ok(ApiResult<UserInventoryResponse>.OK(response));
+            return Ok(ApiResult<List<UserInventoryResponse>>.OK(response));
         }
 
         [ProducesResponseType(typeof(ApiResult<SellItemResponse>), (int)HttpStatusCode.OK)]
