@@ -97,23 +97,22 @@ namespace Withdraw.BLL.Services
             ItemInfoResponse itemInfo = await _withdrawService
                 .GetItemInfoAsync(inventory.Item!);
 
-            decimal itemPrice = itemInfo.PriceKopecks * 0.01M;
+            decimal price = itemInfo.PriceKopecks * 0.01M;
+            decimal itemCost = inventory.FixedCost / 7;
 
-            if (itemPrice <= inventory.FixedCost * 1.1M / 7)
+            if (price >= itemCost * 0.9M && price <= itemCost * 1.1M)
                 throw new ConflictException("Товар может быть обменен только в случае нестабильности цены");
 
-            List<UserInventory> inventories = new List<UserInventory>();
+            List<UserInventory> inventories = new();
 
             decimal totalItemsCost = 0;
 
             foreach (ExchangeItemModel itemModel in request.Items)
             {
-                GameItem? gameItem = await _context.Items
+                GameItem gameItem = await _context.Items
                 .AsNoTracking()
-                .FirstOrDefaultAsync(gi => gi.Id == itemModel.ItemId);
-
-                if (gameItem is null) 
-                    throw new NotFoundException($"Предмет с заданным Id {itemModel.ItemId} не найден");
+                .FirstOrDefaultAsync(gi => gi.Id == itemModel.ItemId) ?? 
+                throw new NotFoundException($"Предмет с заданным Id {itemModel.ItemId} не найден");
 
                 totalItemsCost += gameItem.Cost * itemModel.Count;
 
