@@ -56,7 +56,7 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
     env_file:
       - .env
-    image: "auth-api:dev"
+    image: "auth-api"
     build:
       context: .
       dockerfile: Services/Authentication/Authentication.API/Dockerfile
@@ -74,7 +74,7 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
     env_file:
       - .env
-    image: "email-api:dev"
+    image: "email-api"
     build:
       context: .
       dockerfile: Services/EmailSender/EmailSender.API/Dockerfile
@@ -92,7 +92,7 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
     env_file:
       - .env
-    image: "game-api:dev"
+    image: "game-api"
     build:
       context: .
       dockerfile: Services/Game/Game.API/Dockerfile
@@ -110,7 +110,7 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
     env_file:
       - .env
-    image: "identity-api:dev"
+    image: "identity-api"
     build:
       context: .
       dockerfile: Services/Identity/Identity.API/Dockerfile
@@ -128,7 +128,7 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
     env_file:
       - .env
-    image: "payment-api:dev"
+    image: "payment-api"
     build:
       context: .
       dockerfile: Services/Payment/Payment.API/Dockerfile
@@ -146,7 +146,7 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
     env_file:
       - .env
-    image: "promocode-api:dev"
+    image: "promocode-api"
     build:
       context: .
       dockerfile: Services/Promocode/Promocode.API/Dockerfile
@@ -164,7 +164,7 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
     env_file:
       - .env
-    image: "resources-api:dev"
+    image: "resources-api"
     build:
       context: .
       dockerfile: Services/Resources/Resources.API/Dockerfile
@@ -182,7 +182,7 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
     env_file:
       - .env
-    image: "review-api:dev"
+    image: "review-api"
     build:
       context: .
       dockerfile: Services/Review/Review.API/Dockerfile
@@ -200,7 +200,7 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
     env_file:
       - .env
-    image: "statistics-api:dev"
+    image: "statistics-api"
     build:
       context: .
       dockerfile: Services/Statistics/Statistics.API/Dockerfile
@@ -218,7 +218,7 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
     env_file:
       - .env
-    image: "support-api:dev"
+    image: "support-api"
     build:
       context: .
       dockerfile: Services/Support/Support.API/Dockerfile
@@ -236,7 +236,7 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
     env_file:
       - .env
-    image: "withdraw-api:dev"
+    image: "withdraw-api"
     build:
       context: .
       dockerfile: Services/Withdraw/Withdraw.API/Dockerfile
@@ -250,7 +250,7 @@ services:
       - "5187:80"
 
   gateway-api:
-    image: "gateway-api:dev"
+    image: "gateway-api"
     environment:
       ASPNETCORE_HTTPS_PORT: "5000"
       ASPNETCORE_URLS: https://+:443;http://+:80
