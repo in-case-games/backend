@@ -118,7 +118,7 @@ services:
       - psql
       - rabbitmq
     volumes:
-       - ./../fileserver_imitation:/static/images
+      - ./../fileserver_imitation:/static/images
       - $APPDATA/Microsoft/UserSecrets/$USER_SECRETS_ID_IDENTITY:/root/.microsoft/usersecrets/$USER_SECRETS_ID_IDENTITY:ro
     ports:
       - "5259:80"
@@ -136,7 +136,7 @@ services:
       - psql
       - rabbitmq 
     volumes:
-       - ./../fileserver_imitation:/static/images
+      - ./../fileserver_imitation:/static/images
       - $APPDATA/Microsoft/UserSecrets/$USER_SECRETS_ID_PAYMENT:/root/.microsoft/usersecrets/$USER_SECRETS_ID_PAYMENT:ro
     ports:
       - "5039:80"
@@ -154,7 +154,7 @@ services:
       - psql
       - rabbitmq 
     volumes:
-       - ./../fileserver_imitation:/static/images
+      - ./../fileserver_imitation:/static/images
       - $APPDATA/Microsoft/UserSecrets/$USER_SECRETS_ID_PROMOCODE:/root/.microsoft/usersecrets/$USER_SECRETS_ID_PROMOCODE:ro
     ports:
       - "5163:80"
@@ -172,7 +172,7 @@ services:
       - psql
       - rabbitmq 
     volumes:
-       - ./../fileserver_imitation:/static/images
+      - ./../fileserver_imitation:/static/images
       - $APPDATA/Microsoft/UserSecrets/$USER_SECRETS_ID_RESOURCES:/root/.microsoft/usersecrets/$USER_SECRETS_ID_RESOURCES:ro
     ports:
       - "5073:80"
@@ -190,7 +190,7 @@ services:
       - psql
       - rabbitmq 
     volumes:
-       - ./../fileserver_imitation:/static/images
+      - ./../fileserver_imitation:/static/images
       - $APPDATA/Microsoft/UserSecrets/$USER_SECRETS_ID_REVIEW:/root/.microsoft/usersecrets/$USER_SECRETS_ID_REVIEW:ro
     ports:
       - "5079:80"
@@ -208,7 +208,7 @@ services:
       - rabbitmq
       - nosqldata
     volumes:
-       - ./../fileserver_imitation:/static/images
+      - ./../fileserver_imitation:/static/images
       - $APPDATA/Microsoft/UserSecrets/$USER_SECRETS_ID_STATISTICS:/root/.microsoft/usersecrets/$USER_SECRETS_ID_STATISTICS:ro
     ports:
       - "5231:80"
@@ -226,7 +226,7 @@ services:
       - psql
       - rabbitmq 
     volumes:
-       - ./../fileserver_imitation:/static/images
+      - ./../fileserver_imitation:/static/images
       - $APPDATA/Microsoft/UserSecrets/$USER_SECRETS_ID_SUPPORT:/root/.microsoft/usersecrets/$USER_SECRETS_ID_SUPPORT:ro
     ports:
       - "5155:80"
@@ -244,7 +244,7 @@ services:
       - psql
       - rabbitmq 
     volumes:
-       - ./../fileserver_imitation:/static/images
+      - ./../fileserver_imitation:/static/images
       - $APPDATA/Microsoft/UserSecrets/$USER_SECRETS_ID_WITHDRAW:/root/.microsoft/usersecrets/$USER_SECRETS_ID_WITHDRAW:ro
     ports:
       - "5187:80"
