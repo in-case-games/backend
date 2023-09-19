@@ -8,6 +8,7 @@ using Resources.BLL.MassTransit;
 using Resources.BLL.Models;
 using Resources.DAL.Data;
 using Resources.DAL.Entities;
+using System.Threading;
 
 namespace Resources.BLL.Services
 {
@@ -264,6 +265,9 @@ namespace Resources.BLL.Services
             item.Type = type;
 
             await _publisher.SendAsync(item.ToTemplate());
+
+            await CorrectCostAsync(item.Id, itemOld.Cost);
+            await CorrectChancesAsync(item.Id);
 
             return item.ToResponse();
         }

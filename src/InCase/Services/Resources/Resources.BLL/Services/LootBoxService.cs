@@ -88,8 +88,6 @@ namespace Resources.BLL.Services
             await _context.LootBoxes.AddAsync(box);
             await _context.SaveChangesAsync();
 
-            
-
             await _publisher.SendAsync(box.ToTemplate(isDeleted: false));
 
             return box.ToResponse();
