@@ -12,7 +12,7 @@ namespace Support.BLL.Interfaces
         public Task<List<AnswerImageResponse>> GetByTopicIdAsync(Guid userId, Guid id);
         public Task<List<AnswerImageResponse>> GetByTopicIdAsync(Guid id);
         public Task<List<AnswerImageResponse>> GetByUserIdAsync(Guid userId);
-        public Task<AnswerImageResponse> CreateAsync(Guid userId, AnswerImageRequest request, IFormFile uploadImage);
+        public Task<AnswerImageResponse> CreateAsync(Guid userId, AnswerImageRequest request);
         public Task<AnswerImageResponse> DeleteAsync(Guid userId, Guid id);
         public Task<AnswerImageResponse> DeleteAsync(Guid id);
     }

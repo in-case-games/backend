@@ -1,30 +1,23 @@
-﻿using Microsoft.AspNetCore.Http;
-
-namespace Infrastructure.Services
+﻿namespace Infrastructure.Services
 {
     public static class FileService
     {
         private const string PATH_URI = "\\static\\images\\";
-        public static bool Upload(IFormFile file, string path)
+        public static bool Upload(string base64, string path)
         {
-            if (file is null)
-                return false;
-
             path = PATH_URI + path;
 
-            string fileName = path.Split('\\')[path.Split('\\').Length - 1];
+            string fileName = path.Split('\\')[^1];
             CreateFolderIfNotExist(path.Replace("\\"+fileName, ""));
 
-            using FileStream fileStream = new FileStream(path, FileMode.OpenOrCreate);
             try
             {
-                Task.Run(async () => await file.CopyToAsync(fileStream)).Wait();
+                File.WriteAllBytes(path, Convert.FromBase64String(base64));
             }
             catch (DirectoryNotFoundException)
             {
                 return false;
             }
-
             return true;
         }
         public static void CreateFolderIfNotExist(string path)

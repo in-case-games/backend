@@ -4,6 +4,7 @@ namespace Resources.BLL.Models
 {
     public class GameItemRequest : BaseEntity
     {
+        public string? Image { get; set; }
         public string? Name { get; set; }
         public string? IdForMarket { get; set; }
         public string? HashName { get; set; }

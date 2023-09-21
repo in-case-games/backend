@@ -82,7 +82,7 @@ namespace Identity.API.Controllers
         [AuthorizeByRole(Roles.Admin, Roles.Owner)]
         [RequestSizeLimit(8388608)]
         [HttpPut("image/{userId}")]
-        public async Task<IActionResult> UpdateImage(IFormFile image, [FromForm] Guid userId)
+        public async Task<IActionResult> UpdateImage(Guid userId, string? image)
         {
             UserAdditionalInfoResponse response = await _infoService
                 .UpdateImageAsync(userId, image);
@@ -94,7 +94,7 @@ namespace Identity.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpPut("image")]
-        public async Task<IActionResult> UpdateImage(IFormFile image)
+        public async Task<IActionResult> UpdateImage(string? image)
         {
             UserAdditionalInfoResponse response = await _infoService.UpdateImageAsync(UserId, image);
 

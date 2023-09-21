@@ -146,9 +146,9 @@ namespace Resources.API.Controllers
         [AuthorizeByRole(Roles.Owner)]
         [RequestSizeLimit(8388608)]
         [HttpPost]
-        public async Task<IActionResult> Post(IFormFile image, [FromForm] GameItemRequest request)
+        public async Task<IActionResult> Post(GameItemRequest request)
         {
-            GameItemResponse response = await _itemService.CreateAsync(request, image);
+            GameItemResponse response = await _itemService.CreateAsync(request);
 
             return Ok(ApiResult<GameItemResponse>.OK(response));
         }
@@ -158,9 +158,9 @@ namespace Resources.API.Controllers
         [AuthorizeByRole(Roles.Owner)]
         [RequestSizeLimit(8388608)]
         [HttpPut]
-        public async Task<IActionResult> Put(IFormFile image, [FromForm] GameItemRequest request)
+        public async Task<IActionResult> Put(GameItemRequest request)
         {
-            GameItemResponse response = await _itemService.UpdateAsync(request, image);
+            GameItemResponse response = await _itemService.UpdateAsync(request);
 
             return Ok(ApiResult<GameItemResponse>.OK(response));
         }

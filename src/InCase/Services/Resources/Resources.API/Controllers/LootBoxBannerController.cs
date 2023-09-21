@@ -58,9 +58,9 @@ namespace Resources.API.Controllers
         [RequestSizeLimit(8388608)]
         [AuthorizeByRole(Roles.Owner)]
         [HttpPost]
-        public async Task<IActionResult> Post(IFormFile image , [FromForm] LootBoxBannerRequest request)
+        public async Task<IActionResult> Post(LootBoxBannerRequest request)
         {
-            LootBoxBannerResponse response = await _bannerService.CreateAsync(request, image);
+            LootBoxBannerResponse response = await _bannerService.CreateAsync(request);
 
             return Ok(ApiResult<LootBoxBannerResponse>.OK(response));
         }
@@ -70,9 +70,9 @@ namespace Resources.API.Controllers
         [AuthorizeByRole(Roles.Owner)]
         [RequestSizeLimit(8388608)]
         [HttpPut]
-        public async Task<IActionResult> Put(IFormFile image , [FromForm] LootBoxBannerRequest request)
+        public async Task<IActionResult> Put(LootBoxBannerRequest request)
         {
-            LootBoxBannerResponse response = await _bannerService.UpdateAsync(request, image);
+            LootBoxBannerResponse response = await _bannerService.UpdateAsync(request);
 
             return Ok(ApiResult<LootBoxBannerResponse>.OK(response));
         }

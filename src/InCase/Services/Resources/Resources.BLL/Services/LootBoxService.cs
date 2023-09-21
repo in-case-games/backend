@@ -65,9 +65,9 @@ namespace Resources.BLL.Services
             return boxes.ToResponse();
         }
 
-        public async Task<LootBoxResponse> CreateAsync(LootBoxRequest request,
-            IFormFile uploadImage)
+        public async Task<LootBoxResponse> CreateAsync(LootBoxRequest request)
         {
+            if (request.Image is null) throw new BadRequestException("Загрузите фото в base 64");
             if (request.Cost <= 0) 
                 throw new BadRequestException("Кейс должен стоить больше 0");
             if (!await _context.Games.AnyAsync(g => g.Id == request.GameId))
@@ -82,7 +82,7 @@ namespace Resources.BLL.Services
             string[] currentDirPath = Environment.CurrentDirectory.Split("src");
             string path = currentDirPath[0];
 
-            FileService.Upload(uploadImage,
+            FileService.Upload(request.Image,
                 "loot-boxes\\{request.GameId}\\{box.Id}\\" + box.Id + ".jpg");
 
             await _context.LootBoxes.AddAsync(box);
@@ -93,8 +93,7 @@ namespace Resources.BLL.Services
             return box.ToResponse();
         }
 
-        public async Task<LootBoxResponse> UpdateAsync(LootBoxRequest request,
-            IFormFile? uploadImage)
+        public async Task<LootBoxResponse> UpdateAsync(LootBoxRequest request)
         {
             LootBox oldBox = await _context.LootBoxes
                 .FirstOrDefaultAsync(lb => lb.Id == request.Id) ??
@@ -122,16 +121,16 @@ namespace Resources.BLL.Services
 
             LootBox newBox = request.ToEntity(isNewGuid: false);
 
-            string[] currentDirPath = Environment.CurrentDirectory.Split("src");
-            string path = currentDirPath[0];
-
-            if (uploadImage is not null)
+            if (request.Image is not null)
             {
+                string[] currentDirPath = Environment.CurrentDirectory.Split("src");
+                string path = currentDirPath[0];
+
                 string filePath = "loot-boxes\\{request.GameId}\\{newBox.Id}\\" + newBox.Id + ".jpg";
                 File.Delete(filePath);
                 FileService.RemoveFolder("loot-boxes\\{request.GameId}\\{newBox.Id}\\");
 
-                FileService.Upload(uploadImage, filePath);
+                FileService.Upload(request.Image, filePath);
             }
 
             _context.Entry(oldBox).CurrentValues.SetValues(newBox);

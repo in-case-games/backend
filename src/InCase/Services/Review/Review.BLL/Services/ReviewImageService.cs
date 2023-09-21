@@ -73,8 +73,10 @@ namespace Review.BLL.Services
             return images.ToResponse();
         }
 
-        public async Task<ReviewImageResponse> CreateAsync(Guid userId, ReviewImageRequest request, IFormFile uploadImage)
+        public async Task<ReviewImageResponse> CreateAsync(Guid userId, ReviewImageRequest request)
         {
+            if (request.Image is null) throw new BadRequestException("Загрузите фото в base 64");
+
             UserReview review = await _context.Reviews
                 .FirstOrDefaultAsync(ur => ur.Id == request.ReviewId) ??
                 throw new NotFoundException("Отзыв не найден");
@@ -89,7 +91,7 @@ namespace Review.BLL.Services
             string[] currentDirPath = Environment.CurrentDirectory.Split("src");
             string path = currentDirPath[0];
 
-            FileService.Upload(uploadImage, 
+            FileService.Upload(request.Image, 
                 "reviews\\{image.ReviewId}\\{image.Id}\\" + image.Id + ".jpg");
 
             await _context.Images.AddAsync(image);

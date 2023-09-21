@@ -146,9 +146,10 @@ namespace Support.BLL.Services
         }
 
         public async Task<AnswerImageResponse> CreateAsync(Guid userId, 
-            AnswerImageRequest request,
-            IFormFile uploadImage)
+            AnswerImageRequest request)
         {
+            if (request.Image is null) 
+                throw new BadRequestException("Загрузите фото в base 64");
             if (!await _context.Users.AnyAsync(u => u.Id == userId))
                 throw new NotFoundException("Пользователь не найден");
 
@@ -165,7 +166,7 @@ namespace Support.BLL.Services
             string[] currentDirPath = Environment.CurrentDirectory.Split("src");
             string path = currentDirPath[0];
 
-            FileService.Upload(uploadImage, 
+            FileService.Upload(request.Image, 
                "answers\\{image.AnswerId}\\{image.Id}\\" + image.Id + ".jpg");
 
             await _context.Images.AddAsync(image);

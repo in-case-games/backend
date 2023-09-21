@@ -114,11 +114,10 @@ namespace Support.API.Controllers
         [AuthorizeByRole(Roles.All)]
         [RequestSizeLimit(8388608)]
         [HttpPost]
-        public async Task<IActionResult> Post(IFormFile image, [FromForm] Guid answerId)
+        public async Task<IActionResult> Post(AnswerImageRequest request)
         {
-            AnswerImageRequest request = new() { AnswerId = answerId };
             AnswerImageResponse response = await _imageService
-                .CreateAsync(UserId, request, image);
+                .CreateAsync(UserId, request);
 
             return Ok(ApiResult<AnswerImageResponse>.OK(response));
         }

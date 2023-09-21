@@ -4,7 +4,7 @@ namespace Identity.BLL.Models
 {
     public class UserAdditionalInfoRequest : BaseEntity
     {
-        public string? ImageUri { get; set; } = "";
+        public string? Image { get; set; }
         public DateTime CreationDate { get; set; }
         public DateTime? DeletionDate { get; set; }
 

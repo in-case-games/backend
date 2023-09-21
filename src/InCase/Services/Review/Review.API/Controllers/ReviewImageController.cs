@@ -134,10 +134,9 @@ namespace Review.API.Controllers
         [Consumes("multipart/form-data")]
         [RequestSizeLimit(8388608)]
         [HttpPost]
-        public async Task<IActionResult> Post(IFormFile image, [FromForm] Guid reviewId)
+        public async Task<IActionResult> Post(ReviewImageRequest request)
         {
-            ReviewImageRequest reviewImageRequest = new ReviewImageRequest() { ReviewId = reviewId };
-            ReviewImageResponse response = await _reviewImageService.CreateAsync(UserId, reviewImageRequest, image);
+            ReviewImageResponse response = await _reviewImageService.CreateAsync(UserId, request);
 
             return Ok(ApiResult<ReviewImageResponse>.OK(response));
         }

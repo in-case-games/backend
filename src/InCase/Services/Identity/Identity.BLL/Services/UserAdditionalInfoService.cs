@@ -63,8 +63,11 @@ namespace Identity.BLL.Services
             return info.ToResponse();
         }
 
-        public async Task<UserAdditionalInfoResponse> UpdateImageAsync(Guid userId, IFormFile image)
+        public async Task<UserAdditionalInfoResponse> UpdateImageAsync(Guid userId, string? image)
         {
+            if (image is null)
+                throw new BadRequestException("Загрузите фото в base 64");
+
             UserAdditionalInfo info = await _context.AdditionalInfos
                 .Include(uai => uai.Role)
                 .FirstOrDefaultAsync(uai => uai.UserId == userId) ??
@@ -75,9 +78,6 @@ namespace Identity.BLL.Services
 
             bool isUploaded = FileService.Upload(image,
                 path + $"userinfos\\{info.UserId}\\{info.Id}\\" + info.Id + ".jpg");
-
-            if (!isUploaded)
-                throw new ConflictException("Изображение не было загружено");
 
             await _context.SaveChangesAsync();
 

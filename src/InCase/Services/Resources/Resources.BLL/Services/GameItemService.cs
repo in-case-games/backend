@@ -172,10 +172,10 @@ namespace Resources.BLL.Services
             .AsNoTracking()
             .ToListAsync();
 
-        public async Task<GameItemResponse> CreateAsync(GameItemRequest request,
-            IFormFile uploadImage)
+        public async Task<GameItemResponse> CreateAsync(GameItemRequest request)
         {
             if (request.Cost <= 0) throw new BadRequestException("Предмет должен стоить больше 0");
+            if (request.Image is null) throw new BadRequestException("Загрузите фото в base 64");
 
             GameItemQuality quality = await _context.Qualities
                 .AsNoTracking()
@@ -199,7 +199,7 @@ namespace Resources.BLL.Services
             string[] currentDirPath = Environment.CurrentDirectory.Split("src");
             string path = currentDirPath[0];
 
-            FileService.Upload(uploadImage,
+            FileService.Upload(request.Image, 
                 "game-items\\{game.Id}\\{item.Id}\\" + item.Id + ".jpg");
 
             await _context.Items.AddAsync(item);
@@ -215,8 +215,7 @@ namespace Resources.BLL.Services
             return item.ToResponse();
         }
 
-        public async Task<GameItemResponse> UpdateAsync(GameItemRequest request,
-            IFormFile? uploadImage)
+        public async Task<GameItemResponse> UpdateAsync(GameItemRequest request)
         {
             if (request.Cost <= 0)
                 throw new BadRequestException("Предмет должен стоить больше 0");
@@ -244,16 +243,16 @@ namespace Resources.BLL.Services
 
             GameItem item = request.ToEntity();
 
-            string[] currentDirPath = Environment.CurrentDirectory.Split("src");
-            string path = currentDirPath[0];
-
-            if (uploadImage is not null)
+            if (request.Image is not null)
             {
+                string[] currentDirPath = Environment.CurrentDirectory.Split("src");
+                string path = currentDirPath[0];
+
                 string filePath = "game-items\\{game.Id}\\{item.Id}\\" + item.Id + ".jpg";
                 File.Delete(filePath);
                 FileService.RemoveFolder("game-items\\{game.Id}\\{item.Id}\\");
 
-                FileService.Upload(uploadImage, filePath);
+                FileService.Upload(request.Image, filePath);
             }
 
             _context.Entry(itemOld).CurrentValues.SetValues(item);

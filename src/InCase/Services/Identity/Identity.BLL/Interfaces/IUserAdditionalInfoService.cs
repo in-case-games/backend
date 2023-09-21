@@ -9,6 +9,6 @@ namespace Identity.BLL.Interfaces
         public Task<UserAdditionalInfoResponse> GetByUserIdAsync(Guid userId);
         public Task<UserAdditionalInfoResponse> UpdateRoleAsync(Guid userId, Guid roleId);
         public Task<UserAdditionalInfoResponse> UpdateDeletionDateAsync(Guid userId, DateTime? deletionDate);
-        public Task<UserAdditionalInfoResponse> UpdateImageAsync(Guid userId, IFormFile image);
+        public Task<UserAdditionalInfoResponse> UpdateImageAsync(Guid userId, string? image);
     }
 }
