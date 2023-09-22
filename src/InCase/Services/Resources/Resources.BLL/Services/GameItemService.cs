@@ -195,7 +195,7 @@ namespace Resources.BLL.Services
             GameItem item = request.ToEntity(true);
 
             FileService.UploadImageBase64(request.Image, 
-                @$"game-items\{game.Id}\{item.Id}\", $"{item.Id}");
+                @$"game-items/{game.Id}/{item.Id}/", $"{item.Id}");
 
             await _context.Items.AddAsync(item);
             await _context.SaveChangesAsync();
@@ -241,7 +241,7 @@ namespace Resources.BLL.Services
             if (request.Image is not null)
             {
                 FileService.UploadImageBase64(request.Image,
-                    @$"game-items\{game.Id}\{item.Id}\", $"{item.Id}");
+                    @$"game-items/{game.Id}/{item.Id}/", $"{item.Id}");
             }
 
             _context.Entry(itemOld).CurrentValues.SetValues(item);
@@ -276,7 +276,7 @@ namespace Resources.BLL.Services
             await _context.SaveChangesAsync();
             await _publisher.SendAsync(item!.ToTemplate(isDeleted: true));
 
-            FileService.RemoveFolder(@$"game-items\{item.GameId}\{id}\");
+            FileService.RemoveFolder(@$"game-items/{item.GameId}/{id}/");
 
             return item!.ToResponse();
         }

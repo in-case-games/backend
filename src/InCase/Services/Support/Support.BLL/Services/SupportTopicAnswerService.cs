@@ -114,7 +114,7 @@ namespace Support.BLL.Services
             if (topic.UserId != request.PlaintiffId)
                 throw new ForbiddenException("Вы не создатель топика");
 
-            FileService.CreateFolder(@$"topic-answers\{answer.TopicId}\{request.Id}\");
+            FileService.CreateFolder(@$"topic-answers/{answer.TopicId}/{request.Id}/");
 
             await _context.Answers.AddAsync(answer);
             await _context.SaveChangesAsync();
@@ -131,7 +131,7 @@ namespace Support.BLL.Services
 
             SupportTopicAnswer answer = request.ToEntity(isNewGuid: true);
 
-            FileService.CreateFolder(@$"topic-answers\{answer.TopicId}\{request.Id}\");
+            FileService.CreateFolder(@$"topic-answers/{answer.TopicId}/{request.Id}/");
 
             await _context.Answers.AddAsync(answer);
             await _context.SaveChangesAsync();
@@ -173,7 +173,7 @@ namespace Support.BLL.Services
             if (answer.PlaintiffId != userId)
                 throw new ForbiddenException("Вы не создатель сообщения");
 
-            FileService.RemoveFolder(@$"topic-answers\{answer.TopicId}\{id}\");
+            FileService.RemoveFolder(@$"topic-answers/{answer.TopicId}/{id}/");
 
             _context.Answers.Remove(answer);
             await _context.SaveChangesAsync();

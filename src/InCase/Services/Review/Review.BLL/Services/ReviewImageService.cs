@@ -87,7 +87,7 @@ namespace Review.BLL.Services
             review.IsApproved = false;
             
             FileService.UploadImageBase64(request.Image, 
-                    @$"reviews\{image.ReviewId}\{image.Id}\", $"{image.Id}");
+                    @$"reviews/{image.ReviewId}/{image.Id}/", $"{image.Id}");
 
             await _context.Images.AddAsync(image);
             await _context.SaveChangesAsync();
@@ -109,7 +109,7 @@ namespace Review.BLL.Services
             _context.Images.Remove(image);
             await _context.SaveChangesAsync();
 
-            FileService.RemoveFolder(@$"reviews\{image.ReviewId}\{id}\");
+            FileService.RemoveFolder(@$"reviews/{image.ReviewId}/{id}/");
 
             return image.ToResponse();
         }
@@ -125,7 +125,7 @@ namespace Review.BLL.Services
             _context.Images.Remove(image);
             await _context.SaveChangesAsync();
 
-            FileService.RemoveFolder(@$"reviews\{image.ReviewId}\{id}\");
+            FileService.RemoveFolder(@$"reviews/{image.ReviewId}/{id}/");
 
             return image.ToResponse();
         }

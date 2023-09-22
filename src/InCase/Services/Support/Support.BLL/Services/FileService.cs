@@ -5,8 +5,7 @@ namespace Support.BLL.Services
 {
     public static class FileService
     {
-        private static readonly string PATH_URI = Environment.CurrentDirectory
-            .Split("src")[0] + @"static\images\";
+        private static readonly string PATH_URI = @"/static/images/";
 
         public static void UploadImageBase64(string base64, string filePath, string fileName)
         {

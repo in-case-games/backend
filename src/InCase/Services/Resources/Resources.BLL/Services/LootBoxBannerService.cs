@@ -72,7 +72,7 @@ namespace Resources.BLL.Services
                 throw new ConflictException("Кейс уже использует баннер");
 
             FileService.UploadImageBase64(request.Image, 
-                @$"loot-box-banners\{box.Id}\", $"{banner.Id}");
+                @$"loot-box-banners/{box.Id}/", $"{banner.Id}");
 
             await _context.Banners.AddAsync(banner);
             await _context.SaveChangesAsync();
@@ -106,7 +106,7 @@ namespace Resources.BLL.Services
             if (request.Image is not null)
             {
                 FileService.UploadImageBase64(request.Image,
-                    @$"loot-box-banners\{box.Id}\", $"{banner.Id}");
+                    @$"loot-box-banners/{box.Id}/", $"{banner.Id}");
             }
 
             _context.Banners.Update(banner);
@@ -132,7 +132,7 @@ namespace Resources.BLL.Services
 
             await _publisher.SendAsync(banner.ToTemplate(isDeleted: true));
 
-            FileService.RemoveFolder(@$"loot-box-banners\{banner.BoxId}\");
+            FileService.RemoveFolder(@$"loot-box-banners/{banner.BoxId}/");
 
             return banner.ToResponse();
         }

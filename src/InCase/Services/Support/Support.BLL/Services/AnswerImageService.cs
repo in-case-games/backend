@@ -162,7 +162,7 @@ namespace Support.BLL.Services
             AnswerImage image = request.ToEntity(isNewGuid: true);
             
             FileService.UploadImageBase64(request.Image, 
-                @$"topic-answers\{answer.TopicId}\{image.AnswerId}\{image.Id}\", $"{image.Id}");
+                @$"topic-answers/{answer.TopicId}/{image.AnswerId}/{image.Id}/", $"{image.Id}");
 
             await _context.Images.AddAsync(image);
             await _context.SaveChangesAsync();
@@ -197,7 +197,7 @@ namespace Support.BLL.Services
             await _context.SaveChangesAsync();
 
             FileService
-                .RemoveFolder(@$"topic-answers\{answer.TopicId}\{image.AnswerId}\{id}\");
+                .RemoveFolder(@$"topic-answers/{answer.TopicId}/{image.AnswerId}/{id}/");
 
             return image.ToResponse();
         }
@@ -218,7 +218,7 @@ namespace Support.BLL.Services
             await _context.SaveChangesAsync();
 
             FileService
-                .RemoveFolder(@$"topic-answers\{answer.TopicId}\{image.AnswerId}\{id}\");
+                .RemoveFolder(@$"topic-answers/{answer.TopicId}/{image.AnswerId}/{id}/");
 
             return image.ToResponse();
         }

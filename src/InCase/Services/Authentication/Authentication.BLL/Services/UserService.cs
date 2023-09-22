@@ -32,7 +32,7 @@ namespace Authentication.BLL.Services
                 _context.Users.Remove(user);
                 await _publisher.SendAsync(user.ToTemplate(true));
 
-                FileService.RemoveFolder(@$"users\{user.Id}\");
+                FileService.RemoveFolder(@$"users/{user.Id}/");
             }
 
             await _context.SaveChangesAsync(stoppingToken);

@@ -71,7 +71,7 @@ namespace Identity.BLL.Services
                 throw new NotFoundException("Пользователь не найден");
 
             FileService.UploadImageBase64(image, 
-                @$"users\{info.UserId}\", $"{info.UserId}");
+                @$"users/{info.UserId}/", $"{info.UserId}");
 
             await _context.SaveChangesAsync();
 

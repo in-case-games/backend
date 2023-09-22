@@ -76,7 +76,7 @@ namespace Review.BLL.Services
             review.CreationDate = DateTime.UtcNow;
             review.IsApproved = false;
 
-            FileService.CreateFolder(@$"reviews\{review.Id}\");
+            FileService.CreateFolder(@$"reviews/{review.Id}/");
 
             await _context.Reviews.AddAsync(review);
             await _context.SaveChangesAsync();
@@ -158,7 +158,7 @@ namespace Review.BLL.Services
 
             await _publisher.SendAsync(template);
 
-            FileService.RemoveFolder(@$"reviews\{id}\");
+            FileService.RemoveFolder(@$"reviews/{id}/");
 
             return review.ToResponse();
         }
@@ -178,7 +178,7 @@ namespace Review.BLL.Services
 
             await _publisher.SendAsync(template);
 
-            FileService.RemoveFolder(@$"reviews\{id}\");
+            FileService.RemoveFolder(@$"reviews/{id}/");
 
             return review.ToResponse();
         }

@@ -79,8 +79,8 @@ namespace Resources.BLL.Services
             LootBox box = request.ToEntity(isNewGuid: true);
 
             FileService.UploadImageBase64(request.Image,
-                @$"loot-boxes\{box.Id}\", $"{box.Id}");
-            FileService.CreateFolder(@$"loot-box-banners\{box.Id}\");
+                @$"loot-boxes/{box.Id}/", $"{box.Id}");
+            FileService.CreateFolder(@$"loot-box-banners/{box.Id}/");
 
             await _context.LootBoxes.AddAsync(box);
             await _context.SaveChangesAsync();
@@ -121,7 +121,7 @@ namespace Resources.BLL.Services
             if (request.Image is not null)
             {
                 FileService.UploadImageBase64(request.Image,
-                    @$"loot-boxes\{request.Id}\", $"{request.Id}");
+                    @$"loot-boxes/{request.Id}/", $"{request.Id}");
             }
 
             _context.Entry(oldBox).CurrentValues.SetValues(newBox);
@@ -145,8 +145,8 @@ namespace Resources.BLL.Services
 
             await _publisher.SendAsync(box.ToTemplate(isDeleted: true));
 
-            FileService.RemoveFolder(@$"loot-boxes\{box.Id}\");
-            FileService.RemoveFolder(@$"loot-box-banners\{box.Id}\");
+            FileService.RemoveFolder(@$"loot-boxes/{box.Id}/");
+            FileService.RemoveFolder(@$"loot-box-banners/{box.Id}/");
 
             return box.ToResponse();
         }
