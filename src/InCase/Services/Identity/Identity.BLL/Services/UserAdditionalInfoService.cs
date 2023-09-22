@@ -6,8 +6,6 @@ using Microsoft.EntityFrameworkCore;
 using Identity.DAL.Entities;
 using Identity.BLL.Helpers;
 using Identity.BLL.MassTransit;
-using Microsoft.AspNetCore.Http;
-using Infrastructure.Services;
 
 namespace Identity.BLL.Services
 {
@@ -65,19 +63,15 @@ namespace Identity.BLL.Services
 
         public async Task<UserAdditionalInfoResponse> UpdateImageAsync(Guid userId, string? image)
         {
-            if (image is null)
-                throw new BadRequestException("Загрузите фото в base 64");
+            if (image is null) throw new BadRequestException("Загрузите картинку в base64");
 
             UserAdditionalInfo info = await _context.AdditionalInfos
                 .Include(uai => uai.Role)
                 .FirstOrDefaultAsync(uai => uai.UserId == userId) ??
                 throw new NotFoundException("Пользователь не найден");
 
-            string[] currentDirPath = Environment.CurrentDirectory.Split("src");
-            string path = currentDirPath[0];
-
-            bool isUploaded = FileService.Upload(image,
-                path + $"userinfos\\{info.UserId}\\{info.Id}\\" + info.Id + ".jpg");
+            FileService.UploadImageBase64(image, 
+                @$"users\{info.UserId}\", $"{info.UserId}");
 
             await _context.SaveChangesAsync();
 

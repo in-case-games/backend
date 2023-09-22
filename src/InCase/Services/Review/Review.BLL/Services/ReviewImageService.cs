@@ -1,6 +1,4 @@
-﻿using Infrastructure.Services;
-using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Review.BLL.Exceptions;
 using Review.BLL.Helpers;
 using Review.BLL.Interfaces;
@@ -75,7 +73,7 @@ namespace Review.BLL.Services
 
         public async Task<ReviewImageResponse> CreateAsync(Guid userId, ReviewImageRequest request)
         {
-            if (request.Image is null) throw new BadRequestException("Загрузите фото в base 64");
+            if (request.Image is null) throw new BadRequestException("Загрузите картинку в base 64");
 
             UserReview review = await _context.Reviews
                 .FirstOrDefaultAsync(ur => ur.Id == request.ReviewId) ??
@@ -87,12 +85,9 @@ namespace Review.BLL.Services
                 throw new ForbiddenException("Доступ к отзыву только у создателя");
 
             review.IsApproved = false;
-
-            string[] currentDirPath = Environment.CurrentDirectory.Split("src");
-            string path = currentDirPath[0];
-
-            FileService.Upload(request.Image, 
-                "reviews\\{image.ReviewId}\\{image.Id}\\" + image.Id + ".jpg");
+            
+            FileService.UploadImageBase64(request.Image, 
+                    @$"reviews\{image.ReviewId}\{image.Id}\", $"{image.Id}");
 
             await _context.Images.AddAsync(image);
             await _context.SaveChangesAsync();
@@ -111,16 +106,10 @@ namespace Review.BLL.Services
             if (image.Review!.UserId != userId)
                 throw new ForbiddenException("Доступ к отзыву только у создателя");
 
-            // Temp fileserver imitation
-
-            string[] currentDirPath = Environment.CurrentDirectory.Split("src");
-            string path = currentDirPath[0];
-
-            File.Delete("reviews\\image.ReviewId}\\{image.Id}\\" + image.Id + ".jpg");
-            FileService.RemoveFolder("reviews\\image.ReviewId}\\{image.Id}");
-
             _context.Images.Remove(image);
             await _context.SaveChangesAsync();
+
+            FileService.RemoveFolder(@$"reviews\{image.ReviewId}\{id}\");
 
             return image.ToResponse();
         }
@@ -133,16 +122,10 @@ namespace Review.BLL.Services
                 .FirstOrDefaultAsync(ri => ri.Id == id) ??
                 throw new NotFoundException("Изображение не найдено");
 
-            // Temp fileserver imitation
-
-            string[] currentDirPath = Environment.CurrentDirectory.Split("src");
-            string path = currentDirPath[0];
-
-            File.Delete("reviews\\{image.ReviewId}\\{image.Id}\\" + image.Id + ".jpg");
-            FileService.RemoveFolder("reviews\\{image.ReviewId}\\{image.Id}");
-
             _context.Images.Remove(image);
             await _context.SaveChangesAsync();
+
+            FileService.RemoveFolder(@$"reviews\{image.ReviewId}\{id}\");
 
             return image.ToResponse();
         }

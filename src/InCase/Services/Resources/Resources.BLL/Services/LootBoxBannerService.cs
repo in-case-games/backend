@@ -1,6 +1,4 @@
-﻿using Infrastructure.Services;
-using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Resources.BLL.Entities;
 using Resources.BLL.Exceptions;
 using Resources.BLL.Helpers;
@@ -60,7 +58,7 @@ namespace Resources.BLL.Services
 
         public async Task<LootBoxBannerResponse> CreateAsync(LootBoxBannerRequest request)
         {
-            if (request.Image is null) throw new BadRequestException("Загрузите фото в base 64");
+            if (request.Image is null) throw new BadRequestException("Загрузите картинку в base64");
 
             LootBox box = await _context.LootBoxes
                 .Include(lb => lb.Banner)
@@ -73,11 +71,8 @@ namespace Resources.BLL.Services
             if (box.Banner != null) 
                 throw new ConflictException("Кейс уже использует баннер");
 
-            string[] currentDirPath = Environment.CurrentDirectory.Split("src");
-            string path = currentDirPath[0];
-
-            FileService.Upload(request.Image,
-                "loot-box-banners\\{box.Id}\\{banner.Id}\\" + banner.Id + ".jpg");
+            FileService.UploadImageBase64(request.Image, 
+                @$"loot-box-banners\{box.Id}\", $"{banner.Id}");
 
             await _context.Banners.AddAsync(banner);
             await _context.SaveChangesAsync();
@@ -110,14 +105,8 @@ namespace Resources.BLL.Services
 
             if (request.Image is not null)
             {
-                string[] currentDirPath = Environment.CurrentDirectory.Split("src");
-                string path = currentDirPath[0];
-
-                string filePath = "loot-box-banners\\{box.Id}\\{banner.Id}\\" + banner.Id + ".jpg";
-                File.Delete(filePath);
-                FileService.RemoveFolder("loot-box-banners\\{box.Id}\\{banner.Id}\\");
-
-                FileService.Upload(request.Image, filePath);
+                FileService.UploadImageBase64(request.Image,
+                    @$"loot-box-banners\{box.Id}\", $"{banner.Id}");
             }
 
             _context.Banners.Update(banner);
@@ -142,6 +131,8 @@ namespace Resources.BLL.Services
             await _context.SaveChangesAsync();
 
             await _publisher.SendAsync(banner.ToTemplate(isDeleted: true));
+
+            FileService.RemoveFolder(@$"loot-box-banners\{banner.BoxId}\");
 
             return banner.ToResponse();
         }

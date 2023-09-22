@@ -1,6 +1,4 @@
-﻿using Infrastructure.Services;
-using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Resources.BLL.Exceptions;
 using Resources.BLL.Helpers;
 using Resources.BLL.Interfaces;
@@ -8,7 +6,7 @@ using Resources.BLL.MassTransit;
 using Resources.BLL.Models;
 using Resources.DAL.Data;
 using Resources.DAL.Entities;
-using System.Threading;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Resources.BLL.Services
 {
@@ -175,7 +173,7 @@ namespace Resources.BLL.Services
         public async Task<GameItemResponse> CreateAsync(GameItemRequest request)
         {
             if (request.Cost <= 0) throw new BadRequestException("Предмет должен стоить больше 0");
-            if (request.Image is null) throw new BadRequestException("Загрузите фото в base 64");
+            if (request.Image is null) throw new BadRequestException("Загрузите картинку в base64");
 
             GameItemQuality quality = await _context.Qualities
                 .AsNoTracking()
@@ -196,11 +194,8 @@ namespace Resources.BLL.Services
 
             GameItem item = request.ToEntity(true);
 
-            string[] currentDirPath = Environment.CurrentDirectory.Split("src");
-            string path = currentDirPath[0];
-
-            FileService.Upload(request.Image, 
-                "game-items\\{game.Id}\\{item.Id}\\" + item.Id + ".jpg");
+            FileService.UploadImageBase64(request.Image, 
+                @$"game-items\{game.Id}\{item.Id}\", $"{item.Id}");
 
             await _context.Items.AddAsync(item);
             await _context.SaveChangesAsync();
@@ -245,14 +240,8 @@ namespace Resources.BLL.Services
 
             if (request.Image is not null)
             {
-                string[] currentDirPath = Environment.CurrentDirectory.Split("src");
-                string path = currentDirPath[0];
-
-                string filePath = "game-items\\{game.Id}\\{item.Id}\\" + item.Id + ".jpg";
-                File.Delete(filePath);
-                FileService.RemoveFolder("game-items\\{game.Id}\\{item.Id}\\");
-
-                FileService.Upload(request.Image, filePath);
+                FileService.UploadImageBase64(request.Image,
+                    @$"game-items\{game.Id}\{item.Id}\", $"{item.Id}");
             }
 
             _context.Entry(itemOld).CurrentValues.SetValues(item);
@@ -284,16 +273,10 @@ namespace Resources.BLL.Services
 
             _context.Items.Remove(item);
 
-            string[] currentDirPath = Environment.CurrentDirectory.Split("src");
-            string path = currentDirPath[0];
-
-            string filePath = "game-items\\{item.Game?.Id}\\{item?.Id}\\" + item!.Id + ".jpg";
-                File.Delete(filePath);
-                FileService.RemoveFolder("game-items\\{item.Game?.Id}\\{item?.Id}\\");
-
             await _context.SaveChangesAsync();
-
             await _publisher.SendAsync(item!.ToTemplate(isDeleted: true));
+
+            FileService.RemoveFolder(@$"game-items\{item.GameId}\{id}\");
 
             return item!.ToResponse();
         }

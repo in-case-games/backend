@@ -127,6 +127,8 @@ namespace Authentication.BLL.Services
 
             await _publisher.SendAsync(user.ToTemplate(false));
             await _publisher.SendAsync(template);
+
+            FileService.CreateFolder(@$"users\{user.Id}\");
         }
 
         public async Task<TokensResponse> RefreshTokensAsync(string token)

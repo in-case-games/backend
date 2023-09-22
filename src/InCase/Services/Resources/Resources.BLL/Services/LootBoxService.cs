@@ -1,6 +1,4 @@
-﻿using Infrastructure.Services;
-using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Resources.BLL.Exceptions;
 using Resources.BLL.Helpers;
 using Resources.BLL.Interfaces;
@@ -8,6 +6,7 @@ using Resources.BLL.MassTransit;
 using Resources.BLL.Models;
 using Resources.DAL.Data;
 using Resources.DAL.Entities;
+using System.Reflection;
 using System.Threading;
 
 namespace Resources.BLL.Services
@@ -67,7 +66,7 @@ namespace Resources.BLL.Services
 
         public async Task<LootBoxResponse> CreateAsync(LootBoxRequest request)
         {
-            if (request.Image is null) throw new BadRequestException("Загрузите фото в base 64");
+            if (request.Image is null) throw new BadRequestException("Загрузите картинку в base 64");
             if (request.Cost <= 0) 
                 throw new BadRequestException("Кейс должен стоить больше 0");
             if (!await _context.Games.AnyAsync(g => g.Id == request.GameId))
@@ -79,11 +78,9 @@ namespace Resources.BLL.Services
 
             LootBox box = request.ToEntity(isNewGuid: true);
 
-            string[] currentDirPath = Environment.CurrentDirectory.Split("src");
-            string path = currentDirPath[0];
-
-            FileService.Upload(request.Image,
-                "loot-boxes\\{request.GameId}\\{box.Id}\\" + box.Id + ".jpg");
+            FileService.UploadImageBase64(request.Image,
+                @$"loot-boxes\{box.Id}\", $"{box.Id}");
+            FileService.CreateFolder(@$"loot-box-banners\{box.Id}\");
 
             await _context.LootBoxes.AddAsync(box);
             await _context.SaveChangesAsync();
@@ -123,14 +120,8 @@ namespace Resources.BLL.Services
 
             if (request.Image is not null)
             {
-                string[] currentDirPath = Environment.CurrentDirectory.Split("src");
-                string path = currentDirPath[0];
-
-                string filePath = "loot-boxes\\{request.GameId}\\{newBox.Id}\\" + newBox.Id + ".jpg";
-                File.Delete(filePath);
-                FileService.RemoveFolder("loot-boxes\\{request.GameId}\\{newBox.Id}\\");
-
-                FileService.Upload(request.Image, filePath);
+                FileService.UploadImageBase64(request.Image,
+                    @$"loot-boxes\{request.Id}\", $"{request.Id}");
             }
 
             _context.Entry(oldBox).CurrentValues.SetValues(newBox);
@@ -144,6 +135,7 @@ namespace Resources.BLL.Services
         public async Task<LootBoxResponse> DeleteAsync(Guid id)
         {
             LootBox box = await _context.LootBoxes
+                .Include(lb => lb.Game)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(lb => lb.Id == id) ??
                 throw new NotFoundException("Кейс не найден");
@@ -152,6 +144,9 @@ namespace Resources.BLL.Services
             await _context.SaveChangesAsync();
 
             await _publisher.SendAsync(box.ToTemplate(isDeleted: true));
+
+            FileService.RemoveFolder(@$"loot-boxes\{box.Id}\");
+            FileService.RemoveFolder(@$"loot-box-banners\{box.Id}\");
 
             return box.ToResponse();
         }

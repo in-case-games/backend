@@ -1,4 +1,5 @@
-﻿using Authentication.BLL.Helpers;
+﻿using Authentication.BLL.Exceptions;
+using Authentication.BLL.Helpers;
 using Authentication.BLL.Interfaces;
 using Authentication.BLL.MassTransit;
 using Authentication.DAL.Data;
@@ -30,6 +31,8 @@ namespace Authentication.BLL.Services
             {
                 _context.Users.Remove(user);
                 await _publisher.SendAsync(user.ToTemplate(true));
+
+                FileService.RemoveFolder(@$"users\{user.Id}\");
             }
 
             await _context.SaveChangesAsync(stoppingToken);

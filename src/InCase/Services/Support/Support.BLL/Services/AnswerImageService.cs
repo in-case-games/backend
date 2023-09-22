@@ -1,6 +1,4 @@
-﻿using Infrastructure.Services;
-using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Support.BLL.Exceptions;
 using Support.BLL.Helpers;
 using Support.BLL.Interfaces;
@@ -148,8 +146,8 @@ namespace Support.BLL.Services
         public async Task<AnswerImageResponse> CreateAsync(Guid userId, 
             AnswerImageRequest request)
         {
-            if (request.Image is null) 
-                throw new BadRequestException("Загрузите фото в base 64");
+            if (request.Image is null) throw new BadRequestException("Загрузите картинку в base 64");
+
             if (!await _context.Users.AnyAsync(u => u.Id == userId))
                 throw new NotFoundException("Пользователь не найден");
 
@@ -162,12 +160,9 @@ namespace Support.BLL.Services
                 throw new ForbiddenException("Вы не создатель сообщения");
 
             AnswerImage image = request.ToEntity(isNewGuid: true);
-
-            string[] currentDirPath = Environment.CurrentDirectory.Split("src");
-            string path = currentDirPath[0];
-
-            FileService.Upload(request.Image, 
-               "answers\\{image.AnswerId}\\{image.Id}\\" + image.Id + ".jpg");
+            
+            FileService.UploadImageBase64(request.Image, 
+                @$"topic-answers\{answer.TopicId}\{image.AnswerId}\{image.Id}\", $"{image.Id}");
 
             await _context.Images.AddAsync(image);
             await _context.SaveChangesAsync();
@@ -198,14 +193,11 @@ namespace Support.BLL.Services
             if (answer.PlaintiffId != userId)
                 throw new ForbiddenException("Вы не создатель сообщения");
 
-            string[] currentDirPath = Environment.CurrentDirectory.Split("src");
-            string path = currentDirPath[0];
-
-            File.Delete("answers\\{image.AnswerId}\\{image.Id}\\" + image.Id + ".jpg");
-            FileService.RemoveFolder("answers\\{image.AnswerId}\\{image.Id}");
-
             _context.Images.Remove(image);
             await _context.SaveChangesAsync();
+
+            FileService
+                .RemoveFolder(@$"topic-answers\{answer.TopicId}\{image.AnswerId}\{id}\");
 
             return image.ToResponse();
         }
@@ -217,14 +209,16 @@ namespace Support.BLL.Services
                 .FirstOrDefaultAsync(ai => ai.Id == id) ??
                 throw new NotFoundException("Картинка не найдена");
 
-            string[] currentDirPath = Environment.CurrentDirectory.Split("src");
-            string path = currentDirPath[0];
-
-            File.Delete("answers\\{image.AnswerId}\\{image.Id}\\" + image.Id + ".jpg");
-            FileService.RemoveFolder("answers\\{image.AnswerId}\\{image.Id}");
+            SupportTopicAnswer answer = await _context.Answers
+                .AsNoTracking()
+                .FirstOrDefaultAsync(sta => sta.Id == image.AnswerId) ??
+                throw new NotFoundException("Сообщение не найдено");
 
             _context.Images.Remove(image);
             await _context.SaveChangesAsync();
+
+            FileService
+                .RemoveFolder(@$"topic-answers\{answer.TopicId}\{image.AnswerId}\{id}\");
 
             return image.ToResponse();
         }

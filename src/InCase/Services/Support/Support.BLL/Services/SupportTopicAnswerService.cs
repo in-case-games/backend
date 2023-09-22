@@ -5,6 +5,7 @@ using Support.BLL.Interfaces;
 using Support.BLL.Models;
 using Support.DAL.Data;
 using Support.DAL.Entities;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Support.BLL.Services
 {
@@ -113,6 +114,8 @@ namespace Support.BLL.Services
             if (topic.UserId != request.PlaintiffId)
                 throw new ForbiddenException("Вы не создатель топика");
 
+            FileService.CreateFolder(@$"topic-answers\{answer.TopicId}\{request.Id}\");
+
             await _context.Answers.AddAsync(answer);
             await _context.SaveChangesAsync();
 
@@ -127,6 +130,8 @@ namespace Support.BLL.Services
             request.Date = DateTime.UtcNow;
 
             SupportTopicAnswer answer = request.ToEntity(isNewGuid: true);
+
+            FileService.CreateFolder(@$"topic-answers\{answer.TopicId}\{request.Id}\");
 
             await _context.Answers.AddAsync(answer);
             await _context.SaveChangesAsync();
@@ -167,6 +172,8 @@ namespace Support.BLL.Services
                 throw new NotFoundException("Пользователь не найден");
             if (answer.PlaintiffId != userId)
                 throw new ForbiddenException("Вы не создатель сообщения");
+
+            FileService.RemoveFolder(@$"topic-answers\{answer.TopicId}\{id}\");
 
             _context.Answers.Remove(answer);
             await _context.SaveChangesAsync();
