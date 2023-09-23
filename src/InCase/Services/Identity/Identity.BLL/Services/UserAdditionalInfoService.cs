@@ -61,16 +61,16 @@ namespace Identity.BLL.Services
             return info.ToResponse();
         }
 
-        public async Task<UserAdditionalInfoResponse> UpdateImageAsync(Guid userId, string? image)
+        public async Task<UserAdditionalInfoResponse> UpdateImageAsync(UpdateImageRequest request)
         {
-            if (image is null) throw new BadRequestException("Загрузите картинку в base64");
+            if (request.Image is null) throw new BadRequestException("Загрузите картинку в base64");
 
             UserAdditionalInfo info = await _context.AdditionalInfos
                 .Include(uai => uai.Role)
-                .FirstOrDefaultAsync(uai => uai.UserId == userId) ??
+                .FirstOrDefaultAsync(uai => uai.UserId == request.UserId) ??
                 throw new NotFoundException("Пользователь не найден");
 
-            FileService.UploadImageBase64(image, 
+            FileService.UploadImageBase64(request.Image, 
                 @$"users/{info.UserId}/", $"{info.UserId}");
 
             await _context.SaveChangesAsync();

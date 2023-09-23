@@ -71,12 +71,19 @@ namespace Withdraw.BLL.Services
             return inventory.ToResponse();
         }
 
-        public async Task CreateAsync(UserInventoryTemplate template)
+        public async Task<UserInventoryResponse> CreateAsync(UserInventoryTemplate template)
         {
+            if (!await _context.Items.AnyAsync(gi => gi.Id == template.ItemId))
+                throw new NotFoundException("Предмет не найден");
+            if (!await _context.Users.AnyAsync(u => u.Id == template.UserId))
+                throw new NotFoundException("Пользователь не найден");
+
             UserInventory inventory = template.ToEntity();
 
             await _context.Inventories.AddAsync(inventory);
             await _context.SaveChangesAsync();
+
+            return inventory.ToResponse();
         }
 
         public async Task<List<UserInventoryResponse>> ExchangeAsync(ExchangeItemRequest request, Guid userId)
@@ -203,6 +210,19 @@ namespace Withdraw.BLL.Services
             await _publisher.SendAsync(inventory.ToTemplate());
 
             return new() { Cost = inventory.FixedCost };
+        }
+
+        public async Task<UserInventoryResponse> DeleteAsync(Guid id)
+        {
+            UserInventory inventory = await _context.Inventories
+                .AsNoTracking()
+                .FirstOrDefaultAsync(ui => ui.Id == id) ??
+                throw new NotFoundException("Предмет не найден в инвентаре");
+
+            _context.Inventories.Remove(inventory);
+            await _context.SaveChangesAsync();
+
+            return inventory.ToResponse();
         }
     }
 }

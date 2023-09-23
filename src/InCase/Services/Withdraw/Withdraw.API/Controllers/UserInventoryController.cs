@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Infrastructure.MassTransit.User;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using System.Security.Claims;
@@ -69,6 +70,17 @@ namespace Withdraw.API.Controllers
             return Ok(ApiResult<List<UserInventoryResponse>>.OK(response));
         }
 
+        [ProducesResponseType(typeof(ApiResult<UserInventoryResponse>),
+            (int)HttpStatusCode.OK)]
+        [AuthorizeByRole(Roles.Owner)]
+        [HttpPost]
+        public async Task<IActionResult> Post(UserInventoryTemplate request)
+        {
+            UserInventoryResponse response = await _userInventoryService.CreateAsync(request);
+
+            return Ok(ApiResult<UserInventoryResponse>.OK(response));
+        }
+
         [ProducesResponseType(typeof(ApiResult<List<UserInventoryResponse>>), 
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
@@ -101,6 +113,17 @@ namespace Withdraw.API.Controllers
                 .SellLastAsync(itemId, UserId);
 
             return Ok(ApiResult<SellItemResponse>.OK(response));
+        }
+
+        [ProducesResponseType(typeof(ApiResult<UserInventoryResponse>),
+            (int)HttpStatusCode.OK)]
+        [AuthorizeByRole(Roles.Owner)]
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            UserInventoryResponse response = await _userInventoryService.DeleteAsync(id);
+
+            return Ok(ApiResult<UserInventoryResponse>.OK(response));
         }
     }
 }

@@ -129,7 +129,6 @@ namespace Review.API.Controllers
         [ProducesResponseType(typeof(ApiResult<ReviewImageResponse>),
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
-        [Consumes("multipart/form-data")]
         [RequestSizeLimit(8388608)]
         [HttpPost]
         public async Task<IActionResult> Post(ReviewImageRequest request)

@@ -5,7 +5,7 @@ var builder = WebApplication.CreateBuilder(args);
 var policyName = "CorsPolicy";
 
 IConfiguration configuration = new ConfigurationBuilder()
-    .AddJsonFile("ocelot_http.json")
+    .AddJsonFile("ocelot.json")
     .Build();
 
 builder.Services.AddCors(options =>

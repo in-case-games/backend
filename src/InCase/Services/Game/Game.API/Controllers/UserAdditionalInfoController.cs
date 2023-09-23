@@ -46,10 +46,22 @@ namespace Game.API.Controllers
         [ProducesResponseType(typeof(ApiResult<BalanceResponse>),
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
-        [HttpGet("{id}/balance")]
+        [HttpGet("{userId}/balance")]
         public async Task<IActionResult> GetBalanceByAdmin(Guid userId)
         {
             BalanceResponse response = await _infoService.GetBalanceAsync(userId);
+
+            return Ok(ApiResult<BalanceResponse>.OK(response));
+        }
+
+        [ProducesResponseType(typeof(ApiResult<BalanceResponse>),
+            (int)HttpStatusCode.OK)]
+        [AuthorizeByRole(Roles.Owner)]
+        [HttpGet("{userId}/balance/top-up/{amount}/owner")]
+        public async Task<IActionResult> TopUpBalanceByOwner(Guid userId, decimal amount)
+        {
+            BalanceResponse response = await _infoService
+                .TopUpBalanceByOwnerAsync(userId, amount);
 
             return Ok(ApiResult<BalanceResponse>.OK(response));
         }

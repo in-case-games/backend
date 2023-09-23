@@ -43,7 +43,7 @@ namespace Promocode.API.Controllers
         [ProducesResponseType(typeof(ApiResult<PromocodeResponse>), 
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
-        [HttpGet("{name}")]
+        [HttpGet("name/{name}")]
         public async Task<IActionResult> Get(string name)
         {
             PromocodeResponse response = await _promocodeService.GetAsync(name);

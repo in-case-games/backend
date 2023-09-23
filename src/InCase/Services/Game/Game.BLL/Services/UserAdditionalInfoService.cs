@@ -49,5 +49,20 @@ namespace Game.BLL.Services
 
             return info.ToGuestModeResponse();
         }
+
+        public async Task<BalanceResponse> TopUpBalanceByOwnerAsync(Guid userId, decimal amount)
+        {
+            UserAdditionalInfo info = await _context.AdditionalInfos
+                .FirstOrDefaultAsync(uai => uai.UserId == userId) ??
+                throw new NotFoundException("Пользователь не найден");
+
+            info.Balance += amount;
+
+            await _context.SaveChangesAsync();
+
+            return new() { 
+                Balance = info.Balance,
+            };
+        }
     }
 }

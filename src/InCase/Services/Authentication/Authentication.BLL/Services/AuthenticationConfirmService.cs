@@ -139,11 +139,21 @@ namespace Authentication.BLL.Services
             User user = await _context.Users
                 .FirstAsync(u => u.Id == temp.Id);
 
-            user.Email = email;
+            EmailTemplate messageOldEmail = new()
+            {
+                Email = user.Email!,
+                IsRequiredMessage = true,
+                Subject = "Ваш аккаунт сменил почту",
+                Body = new()
+                {
+                    Title = $"Дорогой {user.Login!}",
+                    Description = $"Вы изменили email своего аккаунта. " +
+                    $"Теперь ваш аккаунт привязан к {email}" +
+                    $"Если это были не вы обратитесь в тех поддержку."
+                }
+            };
 
-            await _context.SaveChangesAsync();
-
-            EmailTemplate template = new()
+            EmailTemplate messageNewEmail = new()
             {
                 Email = email,
                 IsRequiredMessage = true,
@@ -152,12 +162,68 @@ namespace Authentication.BLL.Services
                 {
                     Title = $"Дорогой {user.Login!}",
                     Description = $"Вы изменили email своего аккаунта." +
+                    $"Теперь это почта привязана к вашему аккаунта." +
+                    $"Прошлый адрес почты: {user.Email}" +
                     $"Если это были не вы обратитесь в тех поддержку."
                 }
             };
 
+            user.Email = email;
+
+            await _context.SaveChangesAsync();
+
             await _publisher.SendAsync(user.ToTemplate(false));
-            await _publisher.SendAsync(template);
+            await _publisher.SendAsync(messageOldEmail);
+            await _publisher.SendAsync(messageNewEmail);
+
+            return user.ToResponse();
+        }
+
+        public async Task<UserResponse> UpdateEmailByAdminAsync(Guid userId, string email)
+        {
+            if (await _context.Users.AsNoTracking().AnyAsync(u => u.Email == email))
+                throw new ConflictException("Email почта занята");
+
+            User user = await _context.Users
+                .FirstOrDefaultAsync(u => u.Id == userId) ??
+                throw new NotFoundException("Пользователь не найден");
+
+            EmailTemplate messageOldEmail = new()
+            {
+                Email = user.Email!,
+                IsRequiredMessage = true,
+                Subject = "Ваш аккаунт сменил почту",
+                Body = new()
+                {
+                    Title = $"Дорогой {user.Login!}",
+                    Description = $"Администрация сменила вам почту. " +
+                    $"Теперь ваш аккаунт привязан к {email}" +
+                    $"Если это была ошибка обратитесь в тех. поддержку"
+                }
+            };
+
+            EmailTemplate messageNewEmail = new()
+            {
+                Email = email,
+                IsRequiredMessage = true,
+                Subject = "Ваш аккаунт сменил почту",
+                Body = new()
+                {
+                    Title = $"Дорогой {user.Login!}",
+                    Description = $"Администрация сменила вам почту. " +
+                    $"Теперь это почта привязана к вашему аккаунта." +
+                    $"Прошлый адрес почты: {user.Email}" +
+                    $"Если это была ошибка обратитесь в тех. поддержку"
+                }
+            };
+
+            user.Email = email;
+
+            await _context.SaveChangesAsync();
+
+            await _publisher.SendAsync(user.ToTemplate(false));
+            await _publisher.SendAsync(messageOldEmail);
+            await _publisher.SendAsync(messageNewEmail);
 
             return user.ToResponse();
         }
@@ -172,9 +238,38 @@ namespace Authentication.BLL.Services
             User user = await _context.Users
                 .FirstAsync(u => u.Id == temp.Id);
 
+            EmailTemplate template = new()
+            {
+                Email = user.Email!,
+                IsRequiredMessage = true,
+                Subject = "Ваш аккаунт сменил логин",
+                Body = new()
+                {
+                    Title = $"Дорогой {login}",
+                    Description = $"Вы изменили логин своего аккаунта." +
+                    $"Прошлый логин: {user.Login!}" +
+                    $"Если это были не вы обратитесь в тех поддержку."
+                }
+            };
+
             user.Login = login;
 
             await _context.SaveChangesAsync();
+
+            await _publisher.SendAsync(user.ToTemplate(false));
+            await _publisher.SendAsync(template);
+
+            return user.ToResponse();
+        }
+
+        public async Task<UserResponse> UpdateLoginByAdminAsync(Guid userId, string login)
+        {
+            if (await _context.Users.AsNoTracking().AnyAsync(u => u.Login == login))
+                throw new ConflictException("Логин занят");
+
+            User user = await _context.Users
+                .FirstOrDefaultAsync(u => u.Id == userId) ??
+                throw new NotFoundException("Пользователь не найден");
 
             EmailTemplate template = new()
             {
@@ -183,11 +278,16 @@ namespace Authentication.BLL.Services
                 Subject = "Ваш аккаунт сменил логин",
                 Body = new()
                 {
-                    Title = $"Дорогой {user.Login!}",
-                    Description = $"Вы изменили логин своего аккаунта." +
-                    $"Если это были не вы обратитесь в тех поддержку."
+                    Title = $"Дорогой {login}",
+                    Description = $"Ваш логин изменила администрация." +
+                    $"Прошлый логин: {user.Login}." +
+                    $"Если это была ошибка обратитесь в тех поддержку."
                 }
             };
+
+            user.Login = login;
+
+            await _context.SaveChangesAsync();
 
             await _publisher.SendAsync(user.ToTemplate(false));
             await _publisher.SendAsync(template);
