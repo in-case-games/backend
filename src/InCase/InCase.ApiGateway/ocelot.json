@@ -1423,18 +1423,6 @@
       "UpstreamHttpMethod": [ "Post" ]
     },
     {
-      "DownstreamPathTemplate": "/api/loot-box-banner",
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "host.docker.internal",
-          "Port": 5073
-        }
-      ],
-      "UpstreamPathTemplate": "/api/box/banner",
-      "UpstreamHttpMethod": [ "Put" ]
-    },
-    {
       "DownstreamPathTemplate": "/api/loot-box-banner/{id}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [

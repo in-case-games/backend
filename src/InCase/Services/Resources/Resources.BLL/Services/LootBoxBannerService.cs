@@ -84,41 +84,6 @@ namespace Resources.BLL.Services
             return banner.ToResponse();
         }
 
-        public async Task<LootBoxBannerResponse> UpdateAsync(LootBoxBannerRequest request)
-        {
-            LootBoxBanner bannerOld = await _context.Banners
-                .AsNoTracking()
-                .FirstOrDefaultAsync(lbb => lbb.Id == request.Id) ?? 
-                throw new NotFoundException("Баннер не найден");
-
-            LootBox box = await _context.LootBoxes
-                .Include(lb => lb.Banner)
-                .AsNoTracking()
-                .FirstOrDefaultAsync(lb => lb.Id == request.BoxId) ??
-                throw new NotFoundException("Кейс не найден");
-
-            LootBoxBanner banner = request
-                .ToEntity(isNewGuid: false, creationDate: bannerOld.CreationDate);
-
-            if (box.Banner != null && box.Banner.Id != request.Id) 
-                throw new ConflictException("Кейс уже использует баннер");
-
-            if (request.Image is not null)
-            {
-                FileService.UploadImageBase64(request.Image,
-                    @$"loot-box-banners/{box.Id}/", $"{banner.Id}");
-            }
-
-            _context.Banners.Update(banner);
-            await _context.SaveChangesAsync();
-
-            await _publisher.SendAsync(banner.ToTemplate(isDeleted: false));
-
-            banner.Box = box;
-
-            return banner.ToResponse();
-        }
-
         public async Task<LootBoxBannerResponse> DeleteAsync(Guid id)
         {
             LootBoxBanner banner = await _context.Banners

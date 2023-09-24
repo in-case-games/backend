@@ -68,18 +68,6 @@ namespace Resources.API.Controllers
         [ProducesResponseType(typeof(ApiResult<LootBoxBannerResponse>), 
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Owner)]
-        [RequestSizeLimit(8388608)]
-        [HttpPut]
-        public async Task<IActionResult> Put(LootBoxBannerRequest request)
-        {
-            LootBoxBannerResponse response = await _bannerService.UpdateAsync(request);
-
-            return Ok(ApiResult<LootBoxBannerResponse>.OK(response));
-        }
-
-        [ProducesResponseType(typeof(ApiResult<LootBoxBannerResponse>), 
-            (int)HttpStatusCode.OK)]
-        [AuthorizeByRole(Roles.Owner)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
