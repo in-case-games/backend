@@ -103,7 +103,7 @@ namespace Withdraw.BLL.Services
             decimal price = info.PriceKopecks * 0.01M;
             decimal itemCost = inventory.FixedCost / 7;
 
-            if (price > itemCost * 1.1M || price < itemCost * 0.9M)
+            if (price > itemCost * 1.1M)
                 throw new ConflictException("Цена на предмет нестабильна");
 
             BalanceMarketResponse balance = await _withdrawService
