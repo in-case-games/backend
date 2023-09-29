@@ -28,8 +28,10 @@ namespace Identity.BLL.Services
             User user = await _context.Users
                 .Include(u => u.AdditionalInfo)
                 .Include(u => u.AdditionalInfo!.Role)
-                .Include(u => u.Restrictions)
-                .Include(u => u.OwnerRestrictions)
+                .Include(u => u.Restrictions!)
+                    .ThenInclude(r => r.Type)
+                .Include(u => u.OwnerRestrictions!)
+                    .ThenInclude(r => r.Type)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(u => u.Id == id) ??
                 throw new NotFoundException("Пользователь не найден");
@@ -42,8 +44,10 @@ namespace Identity.BLL.Services
             User user = await _context.Users
                 .Include(u => u.AdditionalInfo)
                 .Include(u => u.AdditionalInfo!.Role)
-                .Include(u => u.Restrictions)
-                .Include(u => u.OwnerRestrictions)
+                .Include(u => u.Restrictions!)
+                    .ThenInclude(r => r.Type)
+                .Include(u => u.OwnerRestrictions!)
+                    .ThenInclude(r => r.Type)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(u => u.Login == login) ??
                 throw new NotFoundException("Пользователь не найден");

@@ -410,6 +410,18 @@
       "UpstreamHttpMethod": [ "Get" ]
     },
     {
+      "DownstreamPathTemplate": "/api/user-opening/{userId}/userId/admin",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5184
+        }
+      ],
+      "UpstreamPathTemplate": "/api/admin/{userId}/history/opening",
+      "UpstreamHttpMethod": [ "Get" ]
+    },
+    {
       "DownstreamPathTemplate": "/api/user-opening/box/{id}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [

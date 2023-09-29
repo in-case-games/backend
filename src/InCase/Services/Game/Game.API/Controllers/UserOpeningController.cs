@@ -72,8 +72,20 @@ namespace Game.API.Controllers
 
         [ProducesResponseType(typeof(ApiResult<List<UserOpeningResponse>>),
             (int)HttpStatusCode.OK)]
-        [AuthorizeByRole(Roles.AdminOwnerBot)]
+        [AllowAnonymous]
         [HttpGet("{id}/userId")]
+        public async Task<IActionResult> GetByUserId(Guid id)
+        {
+            List<UserOpeningResponse> response = await _openingService
+                .GetAsync(id, 15);
+
+            return Ok(ApiResult<List<UserOpeningResponse>>.OK(response));
+        }
+
+        [ProducesResponseType(typeof(ApiResult<List<UserOpeningResponse>>),
+            (int)HttpStatusCode.OK)]
+        [AuthorizeByRole(Roles.AdminOwnerBot)]
+        [HttpGet("{userId}/userId/admin")]
         public async Task<IActionResult> GetByUserId(Guid id, int count = 100)
         {
             List<UserOpeningResponse> response = await _openingService
