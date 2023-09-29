@@ -1468,7 +1468,7 @@
           "Port": 5073
         }
       ],
-      "UpstreamPathTemplate": "/api/box/game/{id}",
+      "UpstreamPathTemplate": "/api/game/{id}/box",
       "UpstreamHttpMethod": [ "Get" ]
     },
     {

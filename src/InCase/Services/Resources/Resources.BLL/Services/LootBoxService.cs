@@ -25,6 +25,7 @@ namespace Resources.BLL.Services
         public async Task<LootBoxResponse> GetAsync(Guid id)
         {
             LootBox box = await _context.LootBoxes
+                .Include(lb => lb.Game)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(lb => lb.Id == id) ??
                 throw new NotFoundException("Кейс не найден");
@@ -35,6 +36,7 @@ namespace Resources.BLL.Services
         public async Task<LootBoxResponse> GetAsync(string name)
         {
             LootBox box = await _context.LootBoxes
+                .Include(lb => lb.Game)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(lb => lb.Name == name) ??
                 throw new NotFoundException("Кейс не найден");
@@ -45,6 +47,7 @@ namespace Resources.BLL.Services
         public async Task<List<LootBoxResponse>> GetAsync()
         {
             List<LootBox> boxes = await _context.LootBoxes
+                .Include(lb => lb.Game)
                 .AsNoTracking()
                 .ToListAsync();
 
@@ -57,6 +60,7 @@ namespace Resources.BLL.Services
                 throw new NotFoundException("Игра не найдена");
 
             List<LootBox> boxes = await _context.LootBoxes
+                .Include(lb => lb.Game)
                 .AsNoTracking()
                 .Where(lb => lb.GameId == id)
                 .ToListAsync();
@@ -93,6 +97,7 @@ namespace Resources.BLL.Services
         public async Task<LootBoxResponse> UpdateAsync(LootBoxRequest request)
         {
             LootBox oldBox = await _context.LootBoxes
+                .Include(lb => lb.Game)
                 .FirstOrDefaultAsync(lb => lb.Id == request.Id) ??
                 throw new NotFoundException("Кейс не найден");
 

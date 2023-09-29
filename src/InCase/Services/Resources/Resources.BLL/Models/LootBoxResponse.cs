@@ -7,5 +7,6 @@ namespace Resources.BLL.Models
         public string? Name { get; set; }
         public decimal Cost { get; set; }
         public bool IsLocked { get; set; }
+        public string? Game { get; set; }
     }
 }

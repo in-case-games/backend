@@ -13,6 +13,7 @@ namespace Resources.BLL.Helpers
                 Cost = box.Cost,
                 Name = box.Name,
                 IsLocked = box.IsLocked,
+                Game = box.Game?.Name
             };
 
         public static List<LootBoxResponse> ToResponse(this IEnumerable<LootBox> boxes)
