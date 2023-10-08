@@ -33,6 +33,34 @@ namespace Review.API.Controllers
             return Ok(ApiResult<List<UserReviewResponse>>.OK(response));
         }
 
+        [ProducesResponseType(typeof(ApiResult<List<UserReviewResponse>>),
+            (int)HttpStatusCode.OK)]
+        [AllowAnonymous]
+        [HttpGet("last/{count}")]
+        public async Task<IActionResult> GetLast(int count = 100)
+        {
+            count = count > 100 ? 100 : count;
+
+            List<UserReviewResponse> response = await _userReviewService
+                .GetAsync(isOnlyApproved: true, count: count);
+
+            return Ok(ApiResult<List<UserReviewResponse>>.OK(response));
+        }
+
+        [ProducesResponseType(typeof(ApiResult<List<UserReviewResponse>>),
+            (int)HttpStatusCode.OK)]
+        [AllowAnonymous]
+        [HttpGet("last/{count}/admin")]
+        public async Task<IActionResult> GetLastAdmin(int count = 100)
+        {
+            count = count > 1000 ? 1000 : count;
+
+            List<UserReviewResponse> response = await _userReviewService
+                .GetAsync(isOnlyApproved: false, count: count);
+
+            return Ok(ApiResult<List<UserReviewResponse>>.OK(response));
+        }
+
         [ProducesResponseType(typeof(ApiResult<UserReviewResponse>),
             (int)HttpStatusCode.OK)]
         [AllowAnonymous]

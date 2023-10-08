@@ -9,6 +9,7 @@ namespace Resources.BLL.Interfaces
         public Task<LootBoxBannerResponse> GetAsync(Guid id);
         public Task<LootBoxBannerResponse> GetByBoxIdAsync(Guid id);
         public Task<List<LootBoxBannerResponse>> GetAsync();
+        public Task<List<LootBoxBannerResponse>> GetAsync(bool isActive);
         public Task<LootBoxBannerResponse> CreateAsync(LootBoxBannerRequest request);
         public Task<LootBoxBannerResponse> DeleteAsync(Guid id);
     }

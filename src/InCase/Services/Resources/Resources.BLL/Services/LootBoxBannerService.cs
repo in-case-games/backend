@@ -42,6 +42,17 @@ namespace Resources.BLL.Services
             return banners.ToResponse();
         }
 
+        public async Task<List<LootBoxBannerResponse>> GetAsync(bool isActive)
+        {
+            List<LootBoxBanner> banners = await _context.Banners
+                .Include(lbb => lbb.Box)
+                .AsNoTracking()
+                .Where(lbb => isActive ? DateTime.UtcNow <= lbb.ExpirationDate : DateTime.UtcNow > lbb.ExpirationDate)
+                .ToListAsync();
+
+            return banners.ToResponse();
+        }
+
         public async Task<LootBoxBannerResponse> GetByBoxIdAsync(Guid id)
         {
             if (!await _context.LootBoxes.AnyAsync(lb => lb.Id == id))

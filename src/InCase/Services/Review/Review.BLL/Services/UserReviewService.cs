@@ -47,6 +47,20 @@ namespace Review.BLL.Services
             return reviews.ToResponse();
         }
 
+        public async Task<List<UserReviewResponse>> GetAsync(bool isOnlyApproved, int count)
+        {
+            List<UserReview> reviews = await _context.Reviews
+                .Include(review => review.Images)
+                .AsNoTracking()
+
+                .ToListAsync();
+
+            if (isOnlyApproved)
+                reviews = reviews.Where(ur => ur.IsApproved).Take(count).ToList();
+
+            return reviews.ToResponse();
+        }
+
         public async Task<List<UserReviewResponse>> GetByUserIdAsync(Guid userId, bool isOnlyApproved)
         {
             List<UserReview> reviews = await _context.Reviews

@@ -31,6 +31,17 @@ namespace Resources.API.Controllers
             return Ok(ApiResult<List<LootBoxBannerResponse>>.OK(response));
         }
 
+        [ProducesResponseType(typeof(ApiResult<List<LootBoxBannerResponse>>),
+            (int)HttpStatusCode.OK)]
+        [AllowAnonymous]
+        [HttpGet("active/{isActive}")]
+        public async Task<IActionResult> GetByIsActive(bool isActive = true)
+        {
+            List<LootBoxBannerResponse> response = await _bannerService.GetAsync(isActive);
+
+            return Ok(ApiResult<List<LootBoxBannerResponse>>.OK(response));
+        }
+
         [ProducesResponseType(typeof(ApiResult<LootBoxBannerResponse>), 
             (int)HttpStatusCode.OK)]
         [AllowAnonymous]
