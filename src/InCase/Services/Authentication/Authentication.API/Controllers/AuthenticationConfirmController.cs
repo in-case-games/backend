@@ -44,7 +44,7 @@ namespace Authentication.API.Controllers
 
         [ProducesResponseType(typeof(ApiResult<UserResponse>),
             (int)HttpStatusCode.OK)]
-        [AuthorizeByRole(Roles.Admin, Roles.Owner)]
+        [AuthorizeByRole(Roles.Owner)]
         [HttpGet("{userId}/email/{email}")]
         public async Task<IActionResult> UpdateEmail(Guid userId, string email)
         {
@@ -66,7 +66,7 @@ namespace Authentication.API.Controllers
 
         [ProducesResponseType(typeof(ApiResult<UserResponse>),
             (int)HttpStatusCode.OK)]
-        [AuthorizeByRole(Roles.Admin, Roles.Owner)]
+        [AuthorizeByRole(Roles.Owner)]
         [HttpGet("{userId}/login/{login}")]
         public async Task<IActionResult> UpdateLogin(Guid userId, string login)
         {

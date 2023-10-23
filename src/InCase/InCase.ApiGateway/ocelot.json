@@ -325,7 +325,7 @@
       "UpstreamHttpMethod": ["Get"]
     },
     {
-      "DownstreamPathTemplate": "/api/user-additional-info/{userId}/balance/top-up/{amount}/owner",
+      "DownstreamPathTemplate": "/api/user-additional-info/{userId}/balance/{balance}/owner",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -333,7 +333,7 @@
           "Port": 5184
         }
       ],
-      "UpstreamPathTemplate": "/api/user/{userId}/balance/top-up/{amount}/owner",
+      "UpstreamPathTemplate": "/api/user/{userId}/balance/{balance}/owner",
       "UpstreamHttpMethod": ["Get"]
     },
     {

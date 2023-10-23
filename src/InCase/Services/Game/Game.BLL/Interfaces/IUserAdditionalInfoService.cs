@@ -6,7 +6,7 @@ namespace Game.BLL.Interfaces
     {
         public Task<GuestModeResponse> GetGuestModeAsync(Guid userId);
         public Task<BalanceResponse> GetBalanceAsync(Guid userId);
-        public Task<BalanceResponse> TopUpBalanceByOwnerAsync(Guid userId, decimal amount);
+        public Task<BalanceResponse> ChangeBalanceByOwnerAsync(Guid userId, decimal balance);
         public Task<GuestModeResponse> ChangeGuestModeAsync(Guid userId);
     }
 }
