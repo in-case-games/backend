@@ -6,7 +6,6 @@ using Resources.BLL.MassTransit;
 using Resources.BLL.Models;
 using Resources.DAL.Data;
 using Resources.DAL.Entities;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Resources.BLL.Services
 {
