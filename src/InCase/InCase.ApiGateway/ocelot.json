@@ -1,0 +1,2690 @@
+{
+  "GlobalConfiguration": {
+    "BaseUrl": "https://localhost:5000"
+  },
+  "Routes": [
+    //Base: Authentication.API
+    //EndPoint: authentication/confirm
+    {
+      "DownstreamPathTemplate": "/api/authentication/confirm/account",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5033
+        }
+      ],
+      "UpstreamPathTemplate": "/api/authentication/confirm/account",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/authentication/confirm/email/{email}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5033
+        }
+      ],
+      "UpstreamPathTemplate": "/api/authentication/confirm/email/{email}",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/authentication/confirm/{userId}/email/{email}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5033
+        }
+      ],
+      "UpstreamPathTemplate": "/api/authentication/confirm/{userId}/email/{email}",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/authentication/confirm/login/{login}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5033
+        }
+      ],
+      "UpstreamPathTemplate": "/api/authentication/confirm/login/{login}",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/authentication/confirm/{userId}/login/{login}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5033
+        }
+      ],
+      "UpstreamPathTemplate": "/api/authentication/confirm/{userId}/login/{login}",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/authentication/confirm/password/{password}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5033
+        }
+      ],
+      "UpstreamPathTemplate": "/api/authentication/confirm/password/{password}",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/authentication/confirm/account",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5033
+        }
+      ],
+      "UpstreamPathTemplate": "/api/authentication/confirm/account",
+      "UpstreamHttpMethod": ["Delete"]
+    },
+    //EndPoint: authentication
+    {
+      "DownstreamPathTemplate": "/api/authentication/sign-in",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5033
+        }
+      ],
+      "UpstreamPathTemplate": "/api/authentication/sign-in",
+      "UpstreamHttpMethod": ["Post"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/authentication/sign-up",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5033
+        }
+      ],
+      "UpstreamPathTemplate": "/api/authentication/sign-up",
+      "UpstreamHttpMethod": ["Post"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/authentication/refresh",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5033
+        }
+      ],
+      "UpstreamPathTemplate": "/api/authentication/refresh",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    //EndPoint: authentication/sending
+    {
+      "DownstreamPathTemplate": "/api/authentication/sending/forgot/password",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5033
+        }
+      ],
+      "UpstreamPathTemplate": "/api/authentication/sending/forgot/password",
+      "UpstreamHttpMethod": ["Put"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/authentication/sending/email/{password}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5033
+        }
+      ],
+      "UpstreamPathTemplate": "/api/authentication/sending/email/{password}",
+      "UpstreamHttpMethod": ["Put"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/authentication/sending/login/{password}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5033
+        }
+      ],
+      "UpstreamPathTemplate": "/api/authentication/sending/login/{password}",
+      "UpstreamHttpMethod": ["Put"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/authentication/sending/password/{password}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5033
+        }
+      ],
+      "UpstreamPathTemplate": "/api/authentication/sending/password/{password}",
+      "UpstreamHttpMethod": ["Put"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/authentication/sending/account/{password}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5033
+        }
+      ],
+      "UpstreamPathTemplate": "/api/authentication/sending/account/{password}",
+      "UpstreamHttpMethod": ["Delete"]
+    },
+    //Base: EmailSender.API
+    //EndPoint: user
+    {
+      "DownstreamPathTemplate": "/api/user/{id}/is-notify",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5225
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/{id}/is-notify",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/user/is-notify",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5225
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/is-notify",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/user/is-notify/{isNotify}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5225
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/is-notify/{isNotify}",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/user/{userId}/is-notify/{isNotify}/admin",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5225
+        }
+      ],
+      "UpstreamPathTemplate": "/api/admin/{userId}/is-notify/{isNotify}",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    //Base: Game.API
+    //EndPoint: loot-box-opening
+    {
+      "DownstreamPathTemplate": "/api/loot-box-opening/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5184
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/opening/box/{id}",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/loot-box-opening/{id}/virtual",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5184
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/opening/virtual/box/{id}",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/loot-box-opening/{id}&{count}/virtual",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5184
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/opening/virtual/box/{id}&{count}",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/loot-box-opening/{id}&{count}/virtual/admin",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5184
+        }
+      ],
+      "UpstreamPathTemplate": "/api/admin/opening/virtual/box/{id}&{count}",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    //EndPoint: user-additional-info
+    {
+      "DownstreamPathTemplate": "/api/user-additional-info/guest-mode",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5184
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/guest-mode",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/user-additional-info/balance",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5184
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/balance",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/user-additional-info/{userId}/balance",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5184
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/{userId}/balance",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/user-additional-info/{userId}/balance/{balance}/owner",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5184
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/{userId}/balance/{balance}/owner",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/user-additional-info/guest-mode",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5184
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/guest-mode",
+      "UpstreamHttpMethod": ["Put"]
+    },
+    //EndPoint: user-opening
+    {
+      "DownstreamPathTemplate": "/api/user-opening/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5184
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/history/opening/id/{id}",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/user-opening/roulette",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5184
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/history/opening/roulette",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/user-opening",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5184
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/history/opening",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/user-opening/ten/last",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5184
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/history/opening/ten/last",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/user-opening/{id}/userId",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5184
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/{id}/history/opening",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/user-opening/{userId}/userId/admin",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5184
+        }
+      ],
+      "UpstreamPathTemplate": "/api/admin/{userId}/history/opening",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/user-opening/box/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5184
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/history/opening/box/{id}",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/user-opening/item/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5184
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/history/opening/item/{id}",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/user-opening/box/{id}/roulette",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5184
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/history/opening/roulette/box/{id}",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/user-opening/item/{id}/roulette",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5184
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/history/opening/roulette/item/{id}",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    //EndPoint: user-path-banner
+    {
+      "DownstreamPathTemplate": "/api/user-path-banner",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5184
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/path/banner",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/user-path-banner/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5184
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/path/banner/id/{id}",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/user-path-banner/box/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5184
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/path/banner/box/{id}",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/user-path-banner/item/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5184
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/path/banner/item/{id}",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/user-path-banner",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5184
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/path/banner",
+      "UpstreamHttpMethod": ["Post"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/user-path-banner",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5184
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/path/banner",
+      "UpstreamHttpMethod": ["Put"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/user-path-banner/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5184
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/path/banner/{id}",
+      "UpstreamHttpMethod": ["Delete"]
+    },
+    //Base: Identity.API
+    //EndPoint: user-additional-info
+    {
+      "DownstreamPathTemplate": "/api/user-additional-info/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5259
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/info/id/{id}",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/user-additional-info/user/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5259
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/{id}/info",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/user-additional-info",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5259
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/info",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/user-additional-info/role/{id}&{userId}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5259
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/{userId}/info/role/{id}",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/user-additional-info/deletion/date/{userId}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5259
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/{userId}/info/deletion/date",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/user-additional-info/image",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5259
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/info/image",
+      "UpstreamHttpMethod": ["Put"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/user-additional-info/image/admin",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5259
+        }
+      ],
+      "UpstreamPathTemplate": "/api/admin/info/image",
+      "UpstreamHttpMethod": ["Put"]
+    },
+    //EndPoint: user
+    {
+      "DownstreamPathTemplate": "/api/user/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5259
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/id/{id}",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/user",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5259
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/user/login/{login}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5259
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/login/{login}",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    //EndPoint: user-restriction
+    {
+      "DownstreamPathTemplate": "/api/user-restriction/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5259
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/restriction/id/{id}",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/user-restriction/user/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5259
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/{id}/restriction",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/user-restriction/login/{login}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5259
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/login/{login}/restriction",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/user-restriction",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5259
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/restriction",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/user-restriction/{userId}&{ownerId}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5259
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/{userId}/restriction/owner/{ownerId}",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/user-restriction/owner/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5259
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/restriction/owner/{id}",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/user-restriction/owner",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5259
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/restriction/owner",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/user-restriction/{userId}/owner",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5259
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/{userId}/restriction/owner",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/user-restriction/types",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5259
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/restriction/types",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/user-restriction",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5259
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/restriction",
+      "UpstreamHttpMethod": ["Post"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/user-restriction",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5259
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/restriction",
+      "UpstreamHttpMethod": ["Put"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/user-restriction/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5259
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/restriction/{id}",
+      "UpstreamHttpMethod": ["Delete"]
+    },
+    //EndPoint: user-role
+    {
+      "DownstreamPathTemplate": "/api/user-role/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5259
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/role/id/{id}",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/user-role",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5259
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/role",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    //Base: Payment.API
+    //EndPoint: payment
+    {
+      "DownstreamPathTemplate": "/api/payment/top-up",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5039
+        }
+      ],
+      "UpstreamPathTemplate": "/api/payment/top-up",
+      "UpstreamHttpMethod": ["Post"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/payment/balance/{currency}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5039
+        }
+      ],
+      "UpstreamPathTemplate": "/api/payment/balance/{currency}",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/payment/top-up/signature",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5039
+        }
+      ],
+      "UpstreamPathTemplate": "/api/payment/top-up/signature",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    //EndPoint: user-payments
+    {
+      "DownstreamPathTemplate": "/api/user-payments",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5039
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/history/payment",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/user-payments/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5039
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/history/payment/id/{id}",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/user-payments/admin",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5039
+        }
+      ],
+      "UpstreamPathTemplate": "/api/admin/history/payment",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/user-payments/{userId}/admin",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5039
+        }
+      ],
+      "UpstreamPathTemplate": "/api/admin/{userId}/history/payment",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    //Base: Promocode.API
+    //EndPoint: promocode
+    {
+      "DownstreamPathTemplate": "/api/promocode",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5163
+        }
+      ],
+      "UpstreamPathTemplate": "/api/promocode",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/promocode/empty",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5163
+        }
+      ],
+      "UpstreamPathTemplate": "/api/promocode/empty",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/promocode/name/{name}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5163
+        }
+      ],
+      "UpstreamPathTemplate": "/api/promocode/name/{name}",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/promocode/types",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5163
+        }
+      ],
+      "UpstreamPathTemplate": "/api/promocode/types",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/promocode",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5163
+        }
+      ],
+      "UpstreamPathTemplate": "/api/promocode",
+      "UpstreamHttpMethod": ["Post"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/promocode",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5163
+        }
+      ],
+      "UpstreamPathTemplate": "/api/promocode",
+      "UpstreamHttpMethod": ["Put"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/promocode/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5163
+        }
+      ],
+      "UpstreamPathTemplate": "/api/promocode/{id}",
+      "UpstreamHttpMethod": ["Delete"]
+    },
+    //EndPoint: user-promocodes
+    {
+      "DownstreamPathTemplate": "/api/user-promocodes",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5163
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/promocode",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/user-promocodes/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5163
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/promocode/id/{id}",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/user-promocodes/admin",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5163
+        }
+      ],
+      "UpstreamPathTemplate": "/api/admin/promocode",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/user-promocodes/user/{userId}/admin",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5163
+        }
+      ],
+      "UpstreamPathTemplate": "/api/admin/{userId}/promocode",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/user-promocodes/{id}/admin",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5163
+        }
+      ],
+      "UpstreamPathTemplate": "/api/admin/promocode/{id}",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/user-promocodes/activate/{name}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5163
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/promocode/activate/{name}",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/user-promocodes/exchange/{name}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5163
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/promocode/exchange/{name}",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    //Base: Resources.API
+    //EndPoint: game
+    {
+      "DownstreamPathTemplate": "/api/game",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5073
+        }
+      ],
+      "UpstreamPathTemplate": "/api/game",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/game/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5073
+        }
+      ],
+      "UpstreamPathTemplate": "/api/game/id/{id}",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/game/name/{name}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5073
+        }
+      ],
+      "UpstreamPathTemplate": "/api/game/name/{name}",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    //EndPoint: game-item
+    {
+      "DownstreamPathTemplate": "/api/game-item",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5073
+        }
+      ],
+      "UpstreamPathTemplate": "/api/game/item",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/game-item/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5073
+        }
+      ],
+      "UpstreamPathTemplate": "/api/game/item/id/{id}",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/game-item/name/{name}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5073
+        }
+      ],
+      "UpstreamPathTemplate": "/api/game/item/name/{name}",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/game-item/hash/{name}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5073
+        }
+      ],
+      "UpstreamPathTemplate": "/api/game/item/hash/{name}",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/game-item/game/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5073
+        }
+      ],
+      "UpstreamPathTemplate": "/api/game/{id}/item",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/game-item/qualities",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5073
+        }
+      ],
+      "UpstreamPathTemplate": "/api/game/item/qualities",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/game-item/rarities",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5073
+        }
+      ],
+      "UpstreamPathTemplate": "/api/game/item/rarities",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/game-item/types",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5073
+        }
+      ],
+      "UpstreamPathTemplate": "/api/game/item/types",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/game-item/quality/{name}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5073
+        }
+      ],
+      "UpstreamPathTemplate": "/api/game/item/quality/{name}",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/game-item/rarity/{name}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5073
+        }
+      ],
+      "UpstreamPathTemplate": "/api/game/item/rarity/{name}",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/game-item/type/{name}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5073
+        }
+      ],
+      "UpstreamPathTemplate": "/api/game/item/type/{name}",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/game-item",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5073
+        }
+      ],
+      "UpstreamPathTemplate": "/api/game/item",
+      "UpstreamHttpMethod": ["Post"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/game-item",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5073
+        }
+      ],
+      "UpstreamPathTemplate": "/api/game/item",
+      "UpstreamHttpMethod": ["Put"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/game-item/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5073
+        }
+      ],
+      "UpstreamPathTemplate": "/api/game/item/{id}",
+      "UpstreamHttpMethod": ["Delete"]
+    },
+    //EndPoint: group-loot-box
+    {
+      "DownstreamPathTemplate": "/api/group-loot-box",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5073
+        }
+      ],
+      "UpstreamPathTemplate": "/api/group-box",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/group-loot-box/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5073
+        }
+      ],
+      "UpstreamPathTemplate": "/api/group-box/id/{id}",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/group-loot-box/name/{name}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5073
+        }
+      ],
+      "UpstreamPathTemplate": "/api/group-box/name/{name}",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/group-loot-box",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5073
+        }
+      ],
+      "UpstreamPathTemplate": "/api/group-box",
+      "UpstreamHttpMethod": ["Post"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/group-loot-box",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5073
+        }
+      ],
+      "UpstreamPathTemplate": "/api/group-box",
+      "UpstreamHttpMethod": ["Put"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/group-loot-box/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5073
+        }
+      ],
+      "UpstreamPathTemplate": "/api/group-box/{id}",
+      "UpstreamHttpMethod": ["Delete"]
+    },
+    //EndPoint: loot-box-banner
+    {
+      "DownstreamPathTemplate": "/api/loot-box-banner",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5073
+        }
+      ],
+      "UpstreamPathTemplate": "/api/box/banner",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/loot-box-banner/active/{isActive}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5073
+        }
+      ],
+      "UpstreamPathTemplate": "/api/box/banner/active/{isActive}",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/loot-box-banner/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5073
+        }
+      ],
+      "UpstreamPathTemplate": "/api/box/banner/id/{id}",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/loot-box-banner/box/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5073
+        }
+      ],
+      "UpstreamPathTemplate": "/api/box/{id}/banner",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/loot-box-banner",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5073
+        }
+      ],
+      "UpstreamPathTemplate": "/api/box/banner",
+      "UpstreamHttpMethod": ["Post"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/loot-box-banner/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5073
+        }
+      ],
+      "UpstreamPathTemplate": "/api/box/banner/{id}",
+      "UpstreamHttpMethod": ["Delete"]
+    },
+    //EndPoint: loot-box
+    {
+      "DownstreamPathTemplate": "/api/loot-box",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5073
+        }
+      ],
+      "UpstreamPathTemplate": "/api/box",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/loot-box/game/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5073
+        }
+      ],
+      "UpstreamPathTemplate": "/api/game/{id}/box",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/loot-box/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5073
+        }
+      ],
+      "UpstreamPathTemplate": "/api/box/id/{id}",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/loot-box/name/{name}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5073
+        }
+      ],
+      "UpstreamPathTemplate": "/api/box/name/{name}",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/loot-box",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5073
+        }
+      ],
+      "UpstreamPathTemplate": "/api/box",
+      "UpstreamHttpMethod": ["Post"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/loot-box",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5073
+        }
+      ],
+      "UpstreamPathTemplate": "/api/box",
+      "UpstreamHttpMethod": ["Put"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/loot-box/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5073
+        }
+      ],
+      "UpstreamPathTemplate": "/api/box/{id}",
+      "UpstreamHttpMethod": ["Delete"]
+    },
+    //EndPoint: loot-box-group
+    {
+      "DownstreamPathTemplate": "/api/loot-box-group",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5073
+        }
+      ],
+      "UpstreamPathTemplate": "/api/box/group",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/loot-box-group/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5073
+        }
+      ],
+      "UpstreamPathTemplate": "/api/box/group/id/{id}",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/loot-box-group/game/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5073
+        }
+      ],
+      "UpstreamPathTemplate": "/api/box/group/game/{id}",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/loot-box-group/box/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5073
+        }
+      ],
+      "UpstreamPathTemplate": "/api/box/{id}/group",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/loot-box-group/group/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5073
+        }
+      ],
+      "UpstreamPathTemplate": "/api/box/group/{id}",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/loot-box-group",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5073
+        }
+      ],
+      "UpstreamPathTemplate": "/api/box/group",
+      "UpstreamHttpMethod": ["Post"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/loot-box-group",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5073
+        }
+      ],
+      "UpstreamPathTemplate": "/api/box/group",
+      "UpstreamHttpMethod": ["Put"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/loot-box-group/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5073
+        }
+      ],
+      "UpstreamPathTemplate": "/api/box/group/{id}",
+      "UpstreamHttpMethod": ["Delete"]
+    },
+    //EndPoint: loot-box-inventory
+    {
+      "DownstreamPathTemplate": "/api/loot-box-inventory/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5073
+        }
+      ],
+      "UpstreamPathTemplate": "/api/box/inventory/id/{id}",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/loot-box-inventory/box/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5073
+        }
+      ],
+      "UpstreamPathTemplate": "/api/box/{id}/inventory",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/loot-box-inventory/item/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5073
+        }
+      ],
+      "UpstreamPathTemplate": "/api/box/inventory/item/{id}",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/loot-box-inventory",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5073
+        }
+      ],
+      "UpstreamPathTemplate": "/api/box/inventory",
+      "UpstreamHttpMethod": ["Post"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/loot-box-inventory",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5073
+        }
+      ],
+      "UpstreamPathTemplate": "/api/box/inventory",
+      "UpstreamHttpMethod": ["Put"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/loot-box-inventory/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5073
+        }
+      ],
+      "UpstreamPathTemplate": "/api/box/inventory/{id}",
+      "UpstreamHttpMethod": ["Delete"]
+    },
+    //Base: Review.API
+    //EndPoint: review-image
+    {
+      "DownstreamPathTemplate": "/api/review-image",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5079
+        }
+      ],
+      "UpstreamPathTemplate": "/api/review/image",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/review-image/admin",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5079
+        }
+      ],
+      "UpstreamPathTemplate": "/api/admin/review/image",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/review-image/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5079
+        }
+      ],
+      "UpstreamPathTemplate": "/api/review/image/id/{id}",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/review-image/{id}/admin",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5079
+        }
+      ],
+      "UpstreamPathTemplate": "/api/admin/review/image/id/{id}",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/review-image/user/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5079
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/{id}/review/image",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/review-image/user",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5079
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/review/image",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/review-image/user/{userId}/admin",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5079
+        }
+      ],
+      "UpstreamPathTemplate": "/api/admin/{userId}/review/image",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/review-image/review/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5079
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/review/{id}/image",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/review-image/review/{id}/admin",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5079
+        }
+      ],
+      "UpstreamPathTemplate": "/api/admin/review/{id}/image",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/review-image",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5079
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/review/image",
+      "UpstreamHttpMethod": ["Post"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/review-image/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5079
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/review/image/{id}",
+      "UpstreamHttpMethod": ["Delete"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/review-image/{id}/admin",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5079
+        }
+      ],
+      "UpstreamPathTemplate": "/api/admin/review/image/id/{id}",
+      "UpstreamHttpMethod": ["Delete"]
+    },
+    //EndPoint: user-review
+    {
+      "DownstreamPathTemplate": "/api/user-review/all",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5079
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/review/all",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/user-review/last/{count}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5079
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/review/last/{count}",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/user-review/last/{count}/admin",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5079
+        }
+      ],
+      "UpstreamPathTemplate": "/api/admin/review/last/{count}",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/user-review/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5079
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/review/id/{id}",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/user-review/user/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5079
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/{id}/review",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/user-review/admin",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5079
+        }
+      ],
+      "UpstreamPathTemplate": "/api/admin/review",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/user-review/{id}/admin",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5079
+        }
+      ],
+      "UpstreamPathTemplate": "/api/admin/review/id/{id}",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/user-review/user/{userId}/admin",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5079
+        }
+      ],
+      "UpstreamPathTemplate": "/api/admin/{userId}/review",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/user-review",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5079
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/review",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/user-review/{id}/approve",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5079
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/review/{id}/approve",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/user-review/{id}/denied",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5079
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/review/{id}/denied",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/user-review",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5079
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/review",
+      "UpstreamHttpMethod": ["Post"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/user-review",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5079
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/review",
+      "UpstreamHttpMethod": ["Put"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/user-review/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5079
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/review/{id}",
+      "UpstreamHttpMethod": ["Delete"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/user-review/{id}/admin",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5079
+        }
+      ],
+      "UpstreamPathTemplate": "/api/admin/review/{id}",
+      "UpstreamHttpMethod": ["Delete"]
+    },
+    //Base: Statistics.API
+    //EndPoint: site-statistics
+    {
+      "DownstreamPathTemplate": "/api/site-statistics",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5231
+        }
+      ],
+      "UpstreamPathTemplate": "/api/site/statistics",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/site-statistics/admin",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5231
+        }
+      ],
+      "UpstreamPathTemplate": "/api/admin/site/statistics",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    //Base: Support.API
+    //EndPoint: answer-image
+    {
+      "DownstreamPathTemplate": "/api/answer-image/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5155
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/topic/answer/image/id/{id}",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/answer-image/{id}/admin",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5155
+        }
+      ],
+      "UpstreamPathTemplate": "/api/admin/topic/answer/image/id/{id}",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/answer-image/answer/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5155
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/topic/answer/{id}/image",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/answer-image/answer/{id}/admin",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5155
+        }
+      ],
+      "UpstreamPathTemplate": "/api/admin/topic/answer/{id}/image",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/answer-image/topic/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5155
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/topic/{id}/answer/image",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/answer-image/topic/{id}/admin",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5155
+        }
+      ],
+      "UpstreamPathTemplate": "/api/admin/topic/{id}/answer/image",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/answer-image",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5155
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/topic/answer/image",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/answer-image/user/{userId}/admin",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5155
+        }
+      ],
+      "UpstreamPathTemplate": "/api/admin/{userId}/topic/answer/image",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/answer-image",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5155
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/topic/answer/image",
+      "UpstreamHttpMethod": ["Post"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/answer-image/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5155
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/topic/answer/image/{id}",
+      "UpstreamHttpMethod": ["Delete"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/answer-image/{id}/admin",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5155
+        }
+      ],
+      "UpstreamPathTemplate": "/api/admin/topic/answer/image/{id}",
+      "UpstreamHttpMethod": ["Delete"]
+    },
+    //EndPoint: support-topic-answer
+    {
+      "DownstreamPathTemplate": "/api/support-topic-answer/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5155
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/topic/answer/id/{id}",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/support-topic-answer/{id}/admin",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5155
+        }
+      ],
+      "UpstreamPathTemplate": "/api/admin/topic/answer/id/{id}",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/support-topic-answer",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5155
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/topic/answer",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/support-topic-answer/user/{userId}/admin",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5155
+        }
+      ],
+      "UpstreamPathTemplate": "/api/admin/{userId}/topic/answer",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/support-topic-answer/topic/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5155
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/topic/{id}/answer",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/support-topic-answer/topic/{id}/admin",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5155
+        }
+      ],
+      "UpstreamPathTemplate": "/api/admin/topic/{id}/answer",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/support-topic-answer",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5155
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/topic/answer",
+      "UpstreamHttpMethod": ["Post"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/support-topic-answer/admin",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5155
+        }
+      ],
+      "UpstreamPathTemplate": "/api/admin/topic/answer",
+      "UpstreamHttpMethod": ["Post"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/support-topic-answer",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5155
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/topic/answer",
+      "UpstreamHttpMethod": ["Put"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/support-topic-answer/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5155
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/topic/answer/{id}",
+      "UpstreamHttpMethod": ["Delete"]
+    },
+    //EndPoint: support-topic
+    {
+      "DownstreamPathTemplate": "/api/support-topic/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5155
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/topic/id/{id}",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/support-topic/{id}/admin",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5155
+        }
+      ],
+      "UpstreamPathTemplate": "/api/admin/topic/id/{id}",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/support-topic",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5155
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/topic",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/support-topic/user/{userId}/admin",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5155
+        }
+      ],
+      "UpstreamPathTemplate": "/api/admin/{userId}/topic",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/support-topic/opened",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5155
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/topic/opened",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/support-topic/{id}/close",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5155
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/topic/{id}/close",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/support-topic/{id}/close/admin",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5155
+        }
+      ],
+      "UpstreamPathTemplate": "/api/admin/topic/{id}/close",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/support-topic",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5155
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/topic",
+      "UpstreamHttpMethod": ["Post"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/support-topic",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5155
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/topic",
+      "UpstreamHttpMethod": ["Put"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/support-topic/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5155
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/topic/{id}",
+      "UpstreamHttpMethod": ["Delete"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/support-topic/{id}/admin",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5155
+        }
+      ],
+      "UpstreamPathTemplate": "/api/admin/topic/{id}",
+      "UpstreamHttpMethod": ["Delete"]
+    },
+    //Base: Withdraw.API
+    //EndPoint: user-inventory
+    {
+      "DownstreamPathTemplate": "/api/user-inventory/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5187
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/inventory/id/{id}",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/user-inventory/user/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5187
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/{id}/inventory",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/user-inventory",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5187
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/inventory",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/user-inventory/{userId}/admin",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5187
+        }
+      ],
+      "UpstreamPathTemplate": "/api/admin/{userId}/inventory",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/user-inventory",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5187
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/inventory",
+      "UpstreamHttpMethod": ["Post"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/user-inventory/exchange",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5187
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/inventory/exchange",
+      "UpstreamHttpMethod": ["Put"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/user-inventory/{id}/sell",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5187
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/inventory/{id}/sell",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/user-inventory/last/sell/{itemId}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5187
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/inventory/last/sell/{itemId}",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/user-inventory/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5187
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/inventory/{id}",
+      "UpstreamHttpMethod": ["Delete"]
+    },
+    //EndPoint: user-withdraws
+    {
+      "DownstreamPathTemplate": "/api/user-withdraws/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5187
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/history/withdraw/id/{id}",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/user-withdraws/user/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5187
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/{id}/history/withdraw",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/user-withdraws/100/last",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5187
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/history/withdraw/100/last",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/user-withdraws",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5187
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/history/withdraw",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/user-withdraws/admin",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5187
+        }
+      ],
+      "UpstreamPathTemplate": "/api/admin/history/withdraw",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/user-withdraws/{userId}/admin",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5187
+        }
+      ],
+      "UpstreamPathTemplate": "/api/admin/{userId}/history/withdraw",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/user-withdraws/{id}/transfer",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5187
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/history/withdraw/{id}/transfer",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    //EndPoint: withdraw
+    {
+      "DownstreamPathTemplate": "/api/withdraw",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5187
+        }
+      ],
+      "UpstreamPathTemplate": "/api/withdraw",
+      "UpstreamHttpMethod": ["Post"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/withdraw/market/{name}/balance",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5187
+        }
+      ],
+      "UpstreamPathTemplate": "/api/withdraw/market/{name}/balance",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/withdraw/item/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5187
+        }
+      ],
+      "UpstreamPathTemplate": "/api/withdraw/item/id/{id}",
+      "UpstreamHttpMethod": ["Get"]
+    }
+  ]
+}
