@@ -7,12 +7,12 @@ namespace Withdraw.BLL.Services
 {
     public class WithdrawItemService : IWithdrawItemService
     {
-        private const int NumberAttepmts = 5;
+        private const int NumberAttempts = 5;
         private readonly Dictionary<string, ITradeMarketService> _marketServices;
 
         public WithdrawItemService(MarketTMService tmService)
         {
-            _marketServices = new()
+            _marketServices = new Dictionary<string, ITradeMarketService>
             {
                 ["tm"] = tmService,
             };
@@ -20,18 +20,18 @@ namespace Withdraw.BLL.Services
 
         public async Task<BuyItemResponse> BuyItemAsync(ItemInfoResponse info, string tradeUrl)
         {
-            string name = info.Market.Name!;
+            var name = info.Market.Name!;
 
             if (!_marketServices.ContainsKey(name)) 
                 throw new NotFoundException("Маркет не найден");
 
-            int i = 0;
+            var i = 0;
 
-            while (i < NumberAttepmts)
+            while (i < NumberAttempts)
             {
                 try
                 {
-                    BuyItemResponse item = await _marketServices[name]
+                    var item = await _marketServices[name]
                         .BuyItemAsync(info, tradeUrl);
 
                     item.Market = info.Market;
@@ -42,6 +42,8 @@ namespace Withdraw.BLL.Services
                 { 
                     i++; 
                 }
+
+                await Task.Delay(2000);
             }
 
             throw new RequestTimeoutException("Сервис покупки предметов не отвечает");
@@ -52,9 +54,9 @@ namespace Withdraw.BLL.Services
             if (!_marketServices.ContainsKey(marketName))
                 throw new NotFoundException("Маркет не найден");
 
-            int i = 0;
+            var i = 0;
 
-            while (i < NumberAttepmts)
+            while (i < NumberAttempts)
             {
                 try
                 {
@@ -64,6 +66,8 @@ namespace Withdraw.BLL.Services
                 {
                     i++;
                 }
+
+                await Task.Delay(2000);
             }
 
             throw new RequestTimeoutException("Сервис покупки предметов не отвечает");
@@ -71,19 +75,19 @@ namespace Withdraw.BLL.Services
 
         public async Task<ItemInfoResponse> GetItemInfoAsync(GameItem item)
         {
-            string gameName = item.Game!.Name!;
-            GameMarket market = item.Game!.Market!;
+            var gameName = item.Game!.Name!;
+            var market = item.Game!.Market!;
 
             if (!_marketServices.ContainsKey(market.Name!))
                 throw new NotFoundException("Маркет не найден");
 
-            int i = 0;
+            var i = 0;
 
-            while (i < NumberAttepmts)
+            while (i < NumberAttempts)
             {
                 try
                 {
-                    ItemInfoResponse info = await _marketServices[market.Name!]
+                    var info = await _marketServices[market.Name!]
                         .GetItemInfoAsync(item.IdForMarket!, gameName);
                     
                     info!.Item = item;
@@ -95,6 +99,8 @@ namespace Withdraw.BLL.Services
                 {
                     i++;
                 }
+
+                await Task.Delay(2000);
             }
             
             throw new RequestTimeoutException("Сервис покупки предмета не отвечает");
@@ -102,18 +108,18 @@ namespace Withdraw.BLL.Services
 
         public async Task<TradeInfoResponse> GetTradeInfoAsync(UserHistoryWithdraw history)
         {
-            string name = history.Market!.Name!;
+            var name = history.Market!.Name!;
 
             if (!_marketServices.ContainsKey(name))
                 throw new NotFoundException("Маркет не найден");
 
-            int i = 0;
+            var i = 0;
 
-            while (i < NumberAttepmts)
+            while (i < NumberAttempts)
             {
                 try
                 {
-                    TradeInfoResponse info = await _marketServices[name]
+                    var info = await _marketServices[name]
                         .GetTradeInfoAsync(history);
 
                     info.Item = history.Item;
@@ -124,6 +130,8 @@ namespace Withdraw.BLL.Services
                 {
                     i++;
                 }
+
+                await Task.Delay(2000);
             }
 
             throw new RequestTimeoutException("Сервис покупки предмета не отвечает");

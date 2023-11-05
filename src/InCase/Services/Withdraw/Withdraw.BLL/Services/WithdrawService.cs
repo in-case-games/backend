@@ -28,12 +28,12 @@ namespace Withdraw.BLL.Services
 
         public async Task<ItemInfoResponse> GetItemInfoAsync(Guid id)
         {
-            GameItem item = await _context.Items
-                .Include(gi => gi.Game)
-                .Include(gi => gi.Game!.Market)
-                .AsNoTracking()
-                .FirstOrDefaultAsync(gi => gi.Id == id) ??
-                throw new NotFoundException("Предмет не найден");
+            var item = await _context.Items
+                           .Include(gi => gi.Game)
+                           .Include(gi => gi.Game!.Market)
+                           .AsNoTracking()
+                           .FirstOrDefaultAsync(gi => gi.Id == id) ?? 
+                       throw new NotFoundException("Предмет не найден");
 
             return await _withdrawService.GetItemInfoAsync(item);
         }
@@ -43,7 +43,7 @@ namespace Withdraw.BLL.Services
 
         public async Task WithdrawStatusManagerAsync(int count, CancellationToken cancellationToken)
         {
-            List<UserHistoryWithdraw> withdraws = await _context.Withdraws
+            var withdraws = await _context.Withdraws
                 .Include(uhw => uhw.Item)
                 .Include(uhw => uhw.Item!.Game)
                 .Include(uhw => uhw.Market)
@@ -52,33 +52,28 @@ namespace Withdraw.BLL.Services
                 .Take(count)
                 .ToListAsync(cancellationToken);
 
-            List<WithdrawStatus> statuses = await _context.Statuses
+            var statuses = await _context.Statuses
                 .AsNoTracking()
                 .ToListAsync(cancellationToken);
 
             foreach(var withdraw in withdraws)
             {
-                try
+                var response = await _withdrawService
+                    .GetTradeInfoAsync(withdraw);
+
+                withdraw.StatusId = statuses.First(ws => ws.Name == response.Status).Id;
+                _context.Withdraws.Update(withdraw);
+                await _context.SaveChangesAsync(cancellationToken);
+
+                if (response.Status != "given") continue;
+
+                SiteStatisticsTemplate template = new()
                 {
-                    TradeInfoResponse response = await _withdrawService
-                        .GetTradeInfoAsync(withdraw);
+                    WithdrawnItems = 1,
+                    WithdrawnFunds = Convert.ToInt32(withdraw.FixedCost)
+                };
 
-                    withdraw.StatusId = statuses.First(ws => ws.Name == response.Status).Id;
-
-                    _context.Withdraws.Update(withdraw);
-                    await _context.SaveChangesAsync(cancellationToken);
-
-                    if (response.Status == "given")
-                    {
-                        SiteStatisticsTemplate template = new() {
-                            WithdrawnItems = 1,
-                            WithdrawnFunds = Convert.ToInt32(withdraw.FixedCost)
-                        };
-
-                        await _publisher.SendAsync(template, cancellationToken);
-                    }
-                }
-                catch(Exception) { }
+                await _publisher.SendAsync(template, cancellationToken);
             }
         }
 
@@ -86,36 +81,36 @@ namespace Withdraw.BLL.Services
             WithdrawItemRequest request, 
             Guid userId)
         {
-            UserInventory inventory = await _context.Inventories
-                .Include(ui => ui.Item)
-                .Include(ui => ui.Item!.Game)
-                .Include(ui => ui.Item!.Game!.Market)
-                .AsNoTracking()
-                .FirstOrDefaultAsync(ui => ui.Id == request.InventoryId && 
-                ui.UserId == userId) ??
-                throw new NotFoundException("Предмет не найден в инвентаре");
+            var inventory = await _context.Inventories
+                                .Include(ui => ui.Item)
+                                .Include(ui => ui.Item!.Game)
+                                .Include(ui => ui.Item!.Game!.Market)
+                                .AsNoTracking()
+                                .FirstOrDefaultAsync(ui => ui.Id == request.InventoryId && 
+                                                           ui.UserId == userId) ??
+                            throw new NotFoundException("Предмет не найден в инвентаре");
 
-            GameItem item = inventory.Item!;
+            var item = inventory.Item!;
 
-            ItemInfoResponse info = await _withdrawService
+            var info = await _withdrawService
                 .GetItemInfoAsync(item);
 
-            decimal price = info.PriceKopecks * 0.01M;
-            decimal itemCost = inventory.FixedCost / 7;
+            var price = info.PriceKopecks * 0.01M;
+            var itemCost = inventory.FixedCost / 7;
 
             if (price > itemCost * 1.1M)
                 throw new ConflictException("Цена на предмет нестабильна");
 
-            BalanceMarketResponse balance = await _withdrawService
+            var balance = await _withdrawService
                 .GetBalanceAsync(info.Market.Name!);
 
             if (balance.Balance <= price)
                 throw new PaymentRequiredException("Ожидаем пополнения сервиса покупки");
 
-            BuyItemResponse buyItem = await _withdrawService
+            var buyItem = await _withdrawService
                 .BuyItemAsync(info, request.TradeUrl!);
 
-            WithdrawStatus status = await _context.Statuses
+            var status = await _context.Statuses
                 .AsNoTracking()
                 .FirstAsync(iws => iws.Name == "purchase");
 
