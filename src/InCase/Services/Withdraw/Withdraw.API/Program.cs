@@ -72,7 +72,15 @@ builder.Services.AddSwaggerGen(options =>
         }
     });
 });
+Console.WriteLine(builder.Configuration);
 
+builder.Services.AddLogging(b => 
+    b
+        .AddDebug()
+        .AddConsole()
+        .AddConfiguration(builder.Configuration.GetSection("Logging"))
+        .SetMinimumLevel(LogLevel.Information)
+);
 builder.Services.AddSingleton<BasePublisher>();
 builder.Services.AddSingleton<IResponseService, ResponseService>();
 builder.Services.AddSingleton<MarketTMService>();
