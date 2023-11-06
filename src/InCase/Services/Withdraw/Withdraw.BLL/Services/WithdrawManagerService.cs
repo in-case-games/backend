@@ -7,13 +7,12 @@ namespace Withdraw.BLL.Services
 {
     public class WithdrawManagerService : IHostedService
     {
-        private readonly IWithdrawService _withdrawService;
+        private readonly IServiceProvider _serviceProvider;
         private readonly ILogger<WithdrawManagerService> _logger;
 
         public WithdrawManagerService(IServiceProvider serviceProvider, ILogger<WithdrawManagerService> logger)
         {
-            _withdrawService = serviceProvider.CreateScope().ServiceProvider
-                .GetRequiredService<IWithdrawService>();
+            _serviceProvider = serviceProvider;
             _logger = logger;
         }
 
@@ -24,23 +23,27 @@ namespace Withdraw.BLL.Services
             return Task.CompletedTask;
         }
 
+        public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
+
         private async Task DoWork(CancellationToken stoppingToken)
         {
             while (!stoppingToken.IsCancellationRequested)
             {
                 try
                 {
-                    await _withdrawService.WithdrawStatusManagerAsync(10, stoppingToken);
+                    await using var scope = _serviceProvider.CreateAsyncScope();
+
+                    var withdraw = scope.ServiceProvider.GetService<IWithdrawService>();
+
+                    await withdraw!.WithdrawStatusManagerAsync(10, stoppingToken);
                 }
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, ex.Message);
                 }
 
-                await Task.Delay(10000, stoppingToken);
+                await Task.Delay(1000, stoppingToken);
             }
         }
-
-        public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
     }
 }

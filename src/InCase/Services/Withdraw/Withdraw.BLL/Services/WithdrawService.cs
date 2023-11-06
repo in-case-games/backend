@@ -48,6 +48,7 @@ namespace Withdraw.BLL.Services
                 .Include(uhw => uhw.Item!.Game)
                 .Include(uhw => uhw.Market)
                 .Include(uhw => uhw.Status)
+                .AsNoTracking()
                 .Where(uhw => uhw.Status!.Name != "given" && uhw.Status!.Name != "cancel")
                 .Take(count)
                 .ToListAsync(cancellationToken);
@@ -62,7 +63,7 @@ namespace Withdraw.BLL.Services
                     .GetTradeInfoAsync(withdraw);
 
                 withdraw.StatusId = statuses.First(ws => ws.Name == response.Status).Id;
-                _context.Withdraws.Update(withdraw);
+                _context.Entry(withdraw).Property(p => p.StatusId).IsModified = true;
                 await _context.SaveChangesAsync(cancellationToken);
 
                 if (response.Status != "given") continue;

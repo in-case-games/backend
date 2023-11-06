@@ -1,17 +1,19 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Resources.BLL.Interfaces;
 
 namespace Resources.BLL.Services
 {
     public class GameItemManagerService : IHostedService
     {
-        private readonly IGameItemService _gameItemService;
+        private readonly IServiceProvider _serviceProvider;
+        private readonly ILogger<GameItemManagerService> _logger;
 
-        public GameItemManagerService(IServiceProvider serviceProvider)
+        public GameItemManagerService(IServiceProvider serviceProvider, ILogger<GameItemManagerService> logger)
         {
-            _gameItemService = serviceProvider.CreateScope().ServiceProvider
-                .GetRequiredService<IGameItemService>();
+            _serviceProvider = serviceProvider;
+            _logger = logger;
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
@@ -29,10 +31,13 @@ namespace Resources.BLL.Services
             {
                 try
                 {
-                    await _gameItemService.UpdateCostManagerAsync(10, stoppingToken);
+                    await using var scope = _serviceProvider.CreateAsyncScope();
+                    var gameItemService = scope.ServiceProvider.GetService<IGameItemService>();
+                    await gameItemService!.UpdateCostManagerAsync(10, stoppingToken);
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    _logger.LogError(ex, ex.Message);
                 }
 
                 await Task.Delay(1000, stoppingToken);
