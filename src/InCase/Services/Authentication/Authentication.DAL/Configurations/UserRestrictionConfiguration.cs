@@ -15,7 +15,7 @@ namespace Authentication.DAL.Configurations
             builder.Property(ur => ur.ExpirationDate)
                 .IsRequired();
             builder.HasIndex(ur => ur.UserId)
-                .IsUnique();
+                .IsUnique(false);
 
             builder.HasOne(ur => ur.User)
                 .WithOne(u => u.Restriction)
