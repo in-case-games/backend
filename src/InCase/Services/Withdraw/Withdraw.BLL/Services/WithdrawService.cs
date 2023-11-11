@@ -131,6 +131,8 @@ namespace Withdraw.BLL.Services
 
             await _context.SaveChangesAsync();
 
+            await _publisher.SendAsync(new SiteStatisticsAdminTemplate { BalanceWithdrawn = -inventory.FixedCost });
+
             return withdraw.ToResponse();
         }
     }

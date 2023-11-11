@@ -1,4 +1,5 @@
-﻿using Infrastructure.MassTransit.User;
+﻿using Infrastructure.MassTransit.Statistics;
+using Infrastructure.MassTransit.User;
 using Microsoft.EntityFrameworkCore;
 using Withdraw.BLL.Exceptions;
 using Withdraw.BLL.Helpers;
@@ -94,18 +95,18 @@ namespace Withdraw.BLL.Services
             if (request.Items.Sum(x => x.Count) > 10)
                 throw new BadRequestException("Запрещено выводить более 10 предметов");
 
-            UserInventory inventory = await _context.Inventories
+            var inventory = await _context.Inventories
                 .Include(ui => ui.Item)
                 .Include(ui => ui.Item!.Game!)
                     .ThenInclude(g => g.Market)
                 .FirstOrDefaultAsync(ui => ui.Id == request.InventoryId && ui.UserId == userId) ??
                 throw new NotFoundException("Заменяемый предмет не найден в инвентаре");
 
-            ItemInfoResponse itemInfo = await _withdrawService
+            var itemInfo = await _withdrawService
                 .GetItemInfoAsync(inventory.Item!);
 
-            decimal price = itemInfo.PriceKopecks * 0.01M;
-            decimal itemCost = inventory.FixedCost / 7;
+            var price = itemInfo.PriceKopecks * 0.01M;
+            var itemCost = inventory.FixedCost / 7;
 
             if (price >= itemCost * 0.9M && price <= itemCost * 1.1M)
                 throw new ConflictException("Товар может быть обменен только в случае нестабильности цены");
@@ -114,18 +115,19 @@ namespace Withdraw.BLL.Services
 
             decimal totalItemsCost = 0;
 
-            foreach (ExchangeItemModel itemModel in request.Items)
+            foreach (var itemModel in request.Items)
             {
-                GameItem gameItem = await _context.Items
-                .AsNoTracking()
-                .FirstOrDefaultAsync(gi => gi.Id == itemModel.ItemId) ?? 
-                throw new NotFoundException($"Предмет с заданным Id {itemModel.ItemId} не найден");
+                var gameItem = await _context.Items
+                                   .AsNoTracking()
+                                   .FirstOrDefaultAsync(gi => gi.Id == itemModel.ItemId) ?? 
+                               throw new NotFoundException($"Предмет с заданным Id {itemModel.ItemId} не найден");
 
                 totalItemsCost += gameItem.Cost * itemModel.Count;
 
-                for (int i = 0; i < itemModel.Count; i++)
+                for (var i = 0; i < itemModel.Count; i++)
                 {
-                    inventories.Add(new() {
+                    inventories.Add(new UserInventory
+                    {
                         FixedCost = gameItem.Cost,
                         Date = inventory.Date,
                         ItemId = gameItem.Id,
@@ -134,23 +136,23 @@ namespace Withdraw.BLL.Services
                 }
             }
 
-            decimal differenceCost = inventory.FixedCost - totalItemsCost;
+            var differenceCost = inventory.FixedCost - totalItemsCost;
 
             if (differenceCost < 0)
                 throw new BadRequestException("Стоимость товара при обмене не может быть выше");
 
             _context.Inventories.Remove(inventory);
             await _context.Inventories.AddRangeAsync(inventories);
-
             await _context.SaveChangesAsync();
 
-            foreach (UserInventory userInventory in inventories)
+            foreach (var template in inventories.Select(userInventory => userInventory.ToTemplate()))
             {
-                UserInventoryBackTemplate template = userInventory.ToTemplate();
                 template.FixedCost = differenceCost;
                 await _publisher.SendAsync(template);
             }
-            
+
+            await _publisher.SendAsync(new SiteStatisticsAdminTemplate { BalanceWithdrawn = -differenceCost * request.Items.Count });
+
             logger.Log(NLog.LogLevel.Info, "Exchanged: UserId - {0}," +
                                            " GameItemId - {1}, Game - {2}",
                                            inventory.UserId, inventory.ItemId,
@@ -160,12 +162,12 @@ namespace Withdraw.BLL.Services
         }
         public async Task<SellItemResponse> SellAsync(Guid id, Guid userId)
         {
-            User user = await _context.Users
+            var user = await _context.Users
                 .AsNoTracking()
                 .FirstOrDefaultAsync(uai => uai.Id == userId) ??
                 throw new NotFoundException("Пользователь не найден");
 
-            UserInventory inventory = await _context.Inventories
+            var inventory = await _context.Inventories
                 .AsNoTracking()
                 .FirstOrDefaultAsync(ui => ui.Id == id && ui.UserId == userId) ??
                 throw new NotFoundException("Предмет не найден в инвентаре");
@@ -179,25 +181,27 @@ namespace Withdraw.BLL.Services
             await _context.SaveChangesAsync();
 
             await _publisher.SendAsync(inventory.ToTemplate());
+            await _publisher.SendAsync(new SiteStatisticsAdminTemplate { BalanceWithdrawn = -inventory.FixedCost });
 
-            return new() { Cost = inventory.FixedCost };
+            return new SellItemResponse { Cost = inventory.FixedCost };
         }
 
         public async Task<SellItemResponse> SellLastAsync(Guid itemId, Guid userId)
         {
-            User user = await _context.Users
+            var user = await _context.Users
                 .FirstOrDefaultAsync(uai => uai.Id == userId) ??
                 throw new NotFoundException("Пользователь не найден");
-
-            List<UserInventory> inventories = await _context.Inventories
+            
+            var inventories = await _context.Inventories
                 .AsNoTracking()
-                .Where(ui => ui.UserId == userId && ui.ItemId == itemId)
+                .Where(ui => ui.UserId == userId && ui.ItemId == itemId).Include(userInventory => userInventory.Item)
+                .ThenInclude(gameItem => gameItem!.Game)
                 .ToListAsync();
 
             if (inventories.Count == 0)
                 throw new ConflictException("Инвентарь пуст");
 
-            UserInventory inventory = inventories.MinBy(ui => ui.Date)!;
+            var inventory = inventories.MinBy(ui => ui.Date)!;
 
             logger.Log(NLog.LogLevel.Info, "SelledLast: UserId - {0}," +
                                            " GameItemId - {1}, Game - {2}",
@@ -209,18 +213,20 @@ namespace Withdraw.BLL.Services
 
             await _publisher.SendAsync(inventory.ToTemplate());
 
-            return new() { Cost = inventory.FixedCost };
+            return new SellItemResponse { Cost = inventory.FixedCost };
         }
 
         public async Task<UserInventoryResponse> DeleteAsync(Guid id)
         {
-            UserInventory inventory = await _context.Inventories
+            var inventory = await _context.Inventories
                 .AsNoTracking()
                 .FirstOrDefaultAsync(ui => ui.Id == id) ??
                 throw new NotFoundException("Предмет не найден в инвентаре");
 
             _context.Inventories.Remove(inventory);
             await _context.SaveChangesAsync();
+
+            await _publisher.SendAsync(new SiteStatisticsAdminTemplate { BalanceWithdrawn = -inventory.FixedCost });
 
             return inventory.ToResponse();
         }

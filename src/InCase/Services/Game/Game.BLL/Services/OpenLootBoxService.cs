@@ -31,7 +31,6 @@ namespace Game.BLL.Services
             }
         }
 
-        public static decimal GetRetentionAmount(decimal boxCost) => boxCost * RetentionPrecentageBanner;
         public static decimal GetRevenue(decimal boxCost) => boxCost * RevenuePrecentage;
         public static decimal GetExpenses(decimal winItemCost, decimal revenue) => winItemCost + revenue;
 
