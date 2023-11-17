@@ -151,7 +151,7 @@ namespace Withdraw.BLL.Services
                 await _publisher.SendAsync(template);
             }
 
-            await _publisher.SendAsync(new SiteStatisticsAdminTemplate { BalanceWithdrawn = -differenceCost * request.Items.Count });
+            await _publisher.SendAsync(new SiteStatisticsAdminTemplate { FundsUsersInventories = -differenceCost * request.Items.Count });
 
             logger.Log(NLog.LogLevel.Info, "Exchanged: UserId - {0}," +
                                            " GameItemId - {1}, Game - {2}",
@@ -181,7 +181,7 @@ namespace Withdraw.BLL.Services
             await _context.SaveChangesAsync();
 
             await _publisher.SendAsync(inventory.ToTemplate());
-            await _publisher.SendAsync(new SiteStatisticsAdminTemplate { BalanceWithdrawn = -inventory.FixedCost });
+            await _publisher.SendAsync(new SiteStatisticsAdminTemplate { FundsUsersInventories = -inventory.FixedCost });
 
             return new SellItemResponse { Cost = inventory.FixedCost };
         }
@@ -226,7 +226,7 @@ namespace Withdraw.BLL.Services
             _context.Inventories.Remove(inventory);
             await _context.SaveChangesAsync();
 
-            await _publisher.SendAsync(new SiteStatisticsAdminTemplate { BalanceWithdrawn = -inventory.FixedCost });
+            await _publisher.SendAsync(new SiteStatisticsAdminTemplate { FundsUsersInventories = -inventory.FixedCost });
 
             return inventory.ToResponse();
         }

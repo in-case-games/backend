@@ -17,9 +17,9 @@ namespace Statistics.BLL.Helpers
         public static SiteStatisticsAdminResponse ToResponse(this SiteStatisticsAdmin stats) =>
             new()
             {
-                BalanceWithdrawn = stats.BalanceWithdrawn,
-                SentSites = stats.SentSites,
-                TotalReplenished = stats.TotalReplenished,
+                FundsUsersInventories = stats.FundsUsersInventories,
+                ReturnedFunds = stats.ReturnedFunds,
+                TotalReplenishedFunds = stats.TotalReplenishedFunds,
             };
 
         public static SiteStatistics ToJoin(
@@ -39,9 +39,9 @@ namespace Statistics.BLL.Helpers
             SiteStatisticsAdminTemplate template) => new()
             {
                 Id = entity.Id,
-                BalanceWithdrawn = entity.BalanceWithdrawn + template.BalanceWithdrawn,
-                SentSites = entity.SentSites + template.SentSites,
-                TotalReplenished = entity.TotalReplenished + template.TotalReplenished,
+                FundsUsersInventories = entity.FundsUsersInventories + template.FundsUsersInventories,
+                ReturnedFunds = entity.ReturnedFunds + template.ReturnedFunds,
+                TotalReplenishedFunds = entity.TotalReplenishedFunds + template.TotalReplenishedFunds,
             };
     }
 }

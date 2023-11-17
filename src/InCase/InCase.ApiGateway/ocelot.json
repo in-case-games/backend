@@ -1540,7 +1540,7 @@
           "Port": 5073
         }
       ],
-      "UpstreamPathTemplate": "/api/box/{id}",
+      "UpstreamPathTemplate": "/api/box/id/{id}",
       "UpstreamHttpMethod": ["Delete"]
     },
     //EndPoint: loot-box-group

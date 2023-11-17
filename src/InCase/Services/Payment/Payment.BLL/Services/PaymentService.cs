@@ -51,7 +51,7 @@ namespace Payment.BLL.Services
 
             decimal pay = invoice.Amount;
 
-            SiteStatisticsAdminTemplate templateStats = new() { TotalReplenished = pay };
+            SiteStatisticsAdminTemplate templateStats = new() { TotalReplenishedFunds = pay };
 
             await _publisher.SendAsync(templateStats);
 

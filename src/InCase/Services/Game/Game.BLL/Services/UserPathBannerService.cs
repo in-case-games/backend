@@ -158,7 +158,7 @@ namespace Game.BLL.Services
             
             decimal totalSpent = banner.NumberSteps * banner.Box!.Cost * 0.2M;
 
-            SiteStatisticsAdminTemplate statisticsAdminTemplate = new() { BalanceWithdrawn = totalSpent * 0.1M };
+            SiteStatisticsAdminTemplate statisticsAdminTemplate = new() { FundsUsersInventories = totalSpent * 0.1M };
 
             await _publisher.SendAsync(statisticsAdminTemplate);
                 
@@ -187,7 +187,7 @@ namespace Game.BLL.Services
 
             decimal totalSpent = banner.NumberSteps * banner.Box!.Cost * 0.2M;
 
-            SiteStatisticsAdminTemplate statisticsAdminTemplate = new() { BalanceWithdrawn = totalSpent * 0.1M };
+            SiteStatisticsAdminTemplate statisticsAdminTemplate = new() { FundsUsersInventories = totalSpent * 0.1M };
 
             await _publisher.SendAsync(statisticsAdminTemplate);
 
