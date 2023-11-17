@@ -52,6 +52,7 @@ namespace Game.BLL.Services
                 throw new NotFoundException("Кейс не найден");
 
             box.ExpirationBannerDate = template.ExpirationDate;
+            _context.Entry(box).Property(p => p.ExpirationBannerDate).IsModified = true;
 
             await _context.SaveChangesAsync();
         }

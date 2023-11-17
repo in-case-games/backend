@@ -11,6 +11,7 @@ namespace Resources.BLL.Interfaces
         public Task<List<LootBoxBannerResponse>> GetAsync();
         public Task<List<LootBoxBannerResponse>> GetAsync(bool isActive);
         public Task<LootBoxBannerResponse> CreateAsync(LootBoxBannerRequest request);
+        public Task<LootBoxBannerResponse> UpdateAsync(LootBoxBannerRequest request);
         public Task<LootBoxBannerResponse> DeleteAsync(Guid id);
     }
 }

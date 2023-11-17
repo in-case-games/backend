@@ -18,10 +18,13 @@ namespace Game.BLL.MassTransit.Consumers
         {
             var template = context.Message;
 
-            LootBox? box = await _boxService.GetAsync(template.BoxId);
+            var box = await _boxService.GetAsync(template.BoxId);
 
             if (box is not null)
+            {
+                template.ExpirationDate = template.IsDeleted ? null : template.ExpirationDate;
                 await _boxService.UpdateExpirationBannerAsync(template);
+            }
         }
     }
 }

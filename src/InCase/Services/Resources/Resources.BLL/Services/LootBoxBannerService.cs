@@ -82,8 +82,7 @@ namespace Resources.BLL.Services
             if (box.Banner != null) 
                 throw new ConflictException("Кейс уже использует баннер");
 
-            FileService.UploadImageBase64(request.Image, 
-                @$"loot-box-banners/{box.Id}/", $"{banner.Id}");
+            FileService.UploadImageBase64(request.Image, $"loot-box-banners/{box.Id}/", $"{banner.Id}");
 
             await _context.Banners.AddAsync(banner);
             await _context.SaveChangesAsync();
@@ -93,6 +92,30 @@ namespace Resources.BLL.Services
             banner.Box = box;
 
             return banner.ToResponse();
+        }
+
+        public async Task<LootBoxBannerResponse> UpdateAsync(LootBoxBannerRequest request)
+        {
+            var oldBanner = await _context.Banners
+                                       .Include(lbb => lbb.Box)
+                                       .FirstOrDefaultAsync(lbb => lbb.Id == request.Id) ??
+                                   throw new NotFoundException("Баннер не найден");
+
+            if (oldBanner.BoxId != request.BoxId) throw new BadRequestException("Кейс нельзя поменять");
+            if (request.Image is not null)
+            {
+                FileService.UploadImageBase64(request.Image,
+                    $"loot-box-banners/{request.BoxId}/", $"{request.Id}");
+            }
+
+            var newBanner = request.ToEntity(false, oldBanner.CreationDate);
+
+            _context.Entry(oldBanner).CurrentValues.SetValues(newBanner);
+            await _context.SaveChangesAsync();
+
+            await _publisher.SendAsync(newBanner.ToTemplate(isDeleted: false));
+
+            return newBanner.ToResponse();
         }
 
         public async Task<LootBoxBannerResponse> DeleteAsync(Guid id)

@@ -76,6 +76,18 @@ namespace Resources.API.Controllers
             return Ok(ApiResult<LootBoxBannerResponse>.OK(response));
         }
 
+        [ProducesResponseType(typeof(ApiResult<LootBoxBannerResponse>),
+            (int)HttpStatusCode.OK)]
+        [RequestSizeLimit(8388608)]
+        [AuthorizeByRole(Roles.Owner)]
+        [HttpPut]
+        public async Task<IActionResult> Put(LootBoxBannerRequest request)
+        {
+            LootBoxBannerResponse response = await _bannerService.UpdateAsync(request);
+
+            return Ok(ApiResult<LootBoxBannerResponse>.OK(response));
+        }
+
         [ProducesResponseType(typeof(ApiResult<LootBoxBannerResponse>), 
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Owner)]
