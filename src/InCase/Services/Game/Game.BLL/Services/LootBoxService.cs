@@ -39,6 +39,7 @@ namespace Game.BLL.Services
                 throw new NotFoundException("Кейс не найден");
 
             LootBox boxNew = template.ToEntity();
+            boxNew.ExpirationBannerDate = boxOld.ExpirationBannerDate;;
 
             _context.Entry(boxOld).CurrentValues.SetValues(boxNew);
 
