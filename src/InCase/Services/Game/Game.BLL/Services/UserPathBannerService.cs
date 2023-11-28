@@ -7,6 +7,7 @@ using Game.DAL.Entities;
 using Infrastructure.MassTransit.Statistics;
 using Microsoft.EntityFrameworkCore;
 using Game.BLL.MassTransit;
+using System;
 
 namespace Game.BLL.Services
 {
@@ -135,14 +136,12 @@ namespace Game.BLL.Services
 
         public async Task<UserPathBannerResponse> UpdateAsync(UserPathBannerRequest request)
         {
-            UserAdditionalInfo info = await _context.AdditionalInfos
-                .FirstOrDefaultAsync(uai => uai.UserId == request.UserId) ??
+            if (!await _context.AdditionalInfos.AnyAsync(uai => uai.UserId == request.UserId))
                 throw new NotFoundException("Пользователь не найден");
 
             UserPathBanner banner = await _context.PathBanners
                 .Include(usp => usp.Box)
                 .Include(usp => usp.Item)
-                .AsNoTracking()
                 .FirstOrDefaultAsync(usp => usp.Id == request.Id) ??
                 throw new NotFoundException("Путь к баннеру не найден");
 
@@ -150,19 +149,23 @@ namespace Game.BLL.Services
                 throw new ForbiddenException("Нельзя поменять пользователя");
             if (banner.BoxId != request.BoxId)
                 throw new ForbiddenException("Нельзя поменять кейс");
-            
+            if (banner.ItemId == request.ItemId)
+                throw new BadRequestException("Предмет уже используется");
+
             GameItem item = await _context.Items
                 .AsNoTracking()
                 .FirstOrDefaultAsync(gi => gi.Id == request.ItemId) ?? 
                 throw new NotFoundException("Предмет не найден");
-            
-            decimal totalSpent = banner.NumberSteps * banner.Box!.Cost * 0.2M;
 
-            SiteStatisticsAdminTemplate statisticsAdminTemplate = new() { FundsUsersInventories = totalSpent * 0.1M };
+            if (item.Cost <= banner.Box!.Cost)
+                throw new BadRequestException("Стоимость товара не может быть меньше стоимости кейса");
 
-            await _publisher.SendAsync(statisticsAdminTemplate);
-                
-            info.Balance += totalSpent * 0.9M;
+            banner.NumberSteps = (int)Math.Ceiling(item.Cost / (banner.Box.Cost * 0.2M));
+            banner.FixedCost = item.Cost;
+            banner.ItemId = request.ItemId;
+
+            if (banner.NumberSteps > 100)
+                throw new BadRequestException("Стоимость предмета превышает стоимость кейса в 20 раз");
 
             _context.PathBanners.Update(banner);
             await _context.SaveChangesAsync();
@@ -174,8 +177,7 @@ namespace Game.BLL.Services
 
         public async Task<UserPathBannerResponse> DeleteAsync(Guid id, Guid userId)
         {
-            UserAdditionalInfo info = await _context.AdditionalInfos
-                .FirstOrDefaultAsync(uai => uai.UserId == userId) ??
+            if(!await _context.AdditionalInfos.AnyAsync(uai => uai.UserId == userId))
                 throw new NotFoundException("Пользователь не найден");
             
             UserPathBanner banner = await _context.PathBanners
@@ -184,14 +186,6 @@ namespace Game.BLL.Services
                 .AsNoTracking()
                 .FirstOrDefaultAsync(usp => usp.Id == id && usp.UserId == userId) ??
                 throw new NotFoundException("Путь к баннеру не найден");
-
-            decimal totalSpent = banner.NumberSteps * banner.Box!.Cost * 0.2M;
-
-            SiteStatisticsAdminTemplate statisticsAdminTemplate = new() { FundsUsersInventories = totalSpent * 0.1M };
-
-            await _publisher.SendAsync(statisticsAdminTemplate);
-
-            info.Balance += totalSpent * 0.9M;
 
             _context.PathBanners.Remove(banner);
             await _context.SaveChangesAsync();
