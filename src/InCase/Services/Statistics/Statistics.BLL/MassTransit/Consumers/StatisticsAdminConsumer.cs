@@ -16,7 +16,7 @@ namespace Statistics.BLL.MassTransit.Consumers
             IMongoClient client,
             ISiteStatisticsRepository siteStatisticsRepository)
         {
-            IMongoDatabase database = client.GetDatabase("InCaseStatistics");
+            var database = client.GetDatabase("InCaseStatistics");
 
             _siteStatisticsAdmin = database
                 .GetCollection<SiteStatisticsAdmin>("AdminSite");
@@ -26,14 +26,14 @@ namespace Statistics.BLL.MassTransit.Consumers
 
         public async Task Consume(ConsumeContext<SiteStatisticsAdminTemplate> context)
         {
-            SiteStatisticsAdminTemplate template = context.Message;
+            var template = context.Message;
 
-            SiteStatisticsAdmin statistics = await _siteStatisticsRepository.GetAdminAsync();
-            SiteStatisticsAdmin statisticsNew = statistics.ToJoin(template);
+            var stat = await _siteStatisticsRepository.GetAdminAsync();
+            var statNew = stat.ToJoin(template);
 
-            var filter = Builders<SiteStatisticsAdmin>.Filter.Eq(s => s.Id, statistics.Id);
+            var filter = Builders<SiteStatisticsAdmin>.Filter.Eq(s => s.Id, stat.Id);
 
-            await _siteStatisticsAdmin.ReplaceOneAsync(filter, statisticsNew);
+            await _siteStatisticsAdmin.ReplaceOneAsync(filter, statNew);
         }
     }
 }

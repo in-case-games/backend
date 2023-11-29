@@ -20,6 +20,7 @@ namespace Statistics.BLL.Helpers
                 FundsUsersInventories = stats.FundsUsersInventories,
                 ReturnedFunds = stats.ReturnedFunds,
                 TotalReplenishedFunds = stats.TotalReplenishedFunds,
+                RevenueLootBoxCommission = stats.RevenueLootBoxCommission,
             };
 
         public static SiteStatistics ToJoin(
@@ -42,6 +43,7 @@ namespace Statistics.BLL.Helpers
                 FundsUsersInventories = entity.FundsUsersInventories + template.FundsUsersInventories,
                 ReturnedFunds = entity.ReturnedFunds + template.ReturnedFunds,
                 TotalReplenishedFunds = entity.TotalReplenishedFunds + template.TotalReplenishedFunds,
+                RevenueLootBoxCommission = entity.RevenueLootBoxCommission + template.RevenueLootBoxCommission,
             };
     }
 }

@@ -1,7 +1,6 @@
 ﻿using Statistics.BLL.Helpers;
 using Statistics.BLL.Models;
 using Statistics.BLL.Repository;
-using Statistics.DAL.Entities;
 
 namespace Statistics.BLL.Services
 {
@@ -16,16 +15,16 @@ namespace Statistics.BLL.Services
 
         public async Task<SiteStatisticsResponse> GetAsync()
         {
-            SiteStatistics statistics = await _siteStatisticsRepository.GetAsync();
+            var stats = await _siteStatisticsRepository.GetAsync();
 
-            return statistics.ToResponse();
+            return stats.ToResponse();
         }
 
         public async Task<SiteStatisticsAdminResponse> GetAdminAsync()
         {
-            SiteStatisticsAdmin statisticsAdmin = await _siteStatisticsRepository.GetAdminAsync();
+            var stats = await _siteStatisticsRepository.GetAdminAsync();
 
-            return statisticsAdmin.ToResponse();
+            return stats.ToResponse();
         }
     }
 }

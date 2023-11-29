@@ -36,7 +36,7 @@ namespace Game.BLL.Services
                 .FirstOrDefaultAsync(uai => uai.UserId == userId) ??
                 throw new NotFoundException("Пользователь не найден");
 
-            var promocode = await _context.UserPromocodes
+            var promo = await _context.UserPromocodes
                 .AsNoTracking()
                 .FirstOrDefaultAsync(uhp => uhp.UserId == userId);
 
@@ -44,27 +44,24 @@ namespace Game.BLL.Services
                 throw new ForbiddenException("Кейс заблокирован");
             if (info.Balance < box.Cost)
                 throw new PaymentRequiredException("Недостаточно средств");
-            if (promocode is not null)
+            if (promo is not null)
             {
-                UserPromocodeBackTemplate templatePromo = promocode.ToTemplate();
+                await _publisher.SendAsync(promo.ToTemplate());
 
-                await _publisher.SendAsync(templatePromo);
-
-                _context.UserPromocodes.Remove(promocode);
+                _context.UserPromocodes.Remove(promo);
             }
 
             var path = await _context.PathBanners
                 .AsNoTracking()
                 .FirstOrDefaultAsync(upb => upb.BoxId == box.Id && upb.UserId == userId);
 
-            var discount = promocode?.Discount ?? 0;
+            var discount = promo?.Discount ?? 0;
             var boxCost = discount >= 0.99M ? 1 : box.Cost * (1M - discount);
 
             info.Balance -= boxCost;
             box.Balance += boxCost;
 
             var winItem = OpenLootBoxService.RandomizeBySmallest(in box);
-
             var revenue = OpenLootBoxService.GetRevenue(box.Cost);
             var expenses = OpenLootBoxService.GetExpenses(winItem.Cost, revenue);
 
@@ -74,23 +71,40 @@ namespace Game.BLL.Services
             {
                 --path.NumberSteps;
 
-                var cashBack = OpenLootBoxService.GetCashBack(winItem.Id, box.Cost, path);
+                var retention = OpenLootBoxService.GetRetentionBanner(box.Cost);
+                expenses = winItem.Cost + retention;
 
-                OpenLootBoxService.CheckWinItemAndExpenses(ref winItem, ref expenses, box, path);
-                OpenLootBoxService.CheckCashBackAndRevenue(
-                    ref revenue, ref path, ref info,
-                    cashBack, _context);
+                if (path.NumberSteps == 0)
+                {
+                    winItem = box.Inventories?
+                                  .FirstOrDefault(f => f.ItemId == path.ItemId)?.Item ??
+                              await _context.Items
+                                  .AsNoTracking()
+                                  .FirstOrDefaultAsync(i => i.Id == path.ItemId);
+
+                    winItem!.Cost = path.FixedCost;
+                    expenses = retention;
+
+                    _context.PathBanners.Remove(path);
+                }
+                else
+                {
+                    revenue = 0;
+
+                    _context.PathBanners.Attach(path);
+                    _context.Entry(path).Property(p => p.NumberSteps).IsModified = true;
+                }
             }
 
             await _publisher.SendAsync(new SiteStatisticsTemplate { LootBoxes = 1 });
-            await _publisher.SendAsync(new SiteStatisticsAdminTemplate { FundsUsersInventories = revenue });
+            await _publisher.SendAsync(new SiteStatisticsAdminTemplate { RevenueLootBoxCommission = revenue });
 
             box.Balance -= expenses;
 
             _context.Entry(info).Property(p => p.Balance).IsModified = true;
             _context.Entry(box).Property(p => p.Balance).IsModified = true;
 
-            UserOpening opening = new()
+            var opening = new UserOpening
             {
                 UserId = userId,
                 BoxId = box.Id,
@@ -98,7 +112,7 @@ namespace Game.BLL.Services
                 Date = DateTime.UtcNow
             };
 
-            UserInventoryTemplate templateUser = new()
+            var templateUser = new UserInventoryTemplate
             {
                 Date = DateTime.UtcNow,
                 FixedCost = winItem.Cost,
