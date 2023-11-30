@@ -10,8 +10,14 @@ using Identity.BLL.Services;
 using MassTransit;
 using Identity.BLL.MassTransit.Consumers;
 using Identity.BLL.MassTransit;
+using NLog.Extensions.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
+IConfiguration configuration = new ConfigurationBuilder()
+    .AddJsonFile("appsettings.Development.json")
+    .Build();
+
+builder.Logging.AddConfiguration(configuration).ClearProviders().AddNLog();
 
 builder.Services.AddDbContextPool<ApplicationDbContext>(
     options => {

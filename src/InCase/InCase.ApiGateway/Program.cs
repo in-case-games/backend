@@ -1,3 +1,5 @@
+using NLog;
+using NLog.Extensions.Logging;
 using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
 
@@ -6,7 +8,10 @@ var policyName = "CorsPolicy";
 
 IConfiguration configuration = new ConfigurationBuilder()
     .AddJsonFile("ocelot.json")
+    .AddJsonFile("appsettings.Development.json")
     .Build();
+
+builder.Logging.AddConfiguration(configuration).ClearProviders().AddNLog();
 
 builder.Services.AddCors(options =>
 {
