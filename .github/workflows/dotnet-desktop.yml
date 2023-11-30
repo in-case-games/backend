@@ -2,9 +2,9 @@ name: .NET_CheckMicroservicesHealth
 
 on:
   push:
-    branches: [ "InCase.dev" ]
+    branches: [ "InCase.prod" ]
   pull_request:
-    branches: [ "InCase.dev" ]
+    branches: [ "InCase.prod" ]
 jobs:
   build:
 
