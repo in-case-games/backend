@@ -97,7 +97,11 @@ namespace Game.BLL.Services
             }
 
             await _publisher.SendAsync(new SiteStatisticsTemplate { LootBoxes = 1 });
-            await _publisher.SendAsync(new SiteStatisticsAdminTemplate { RevenueLootBoxCommission = revenue });
+            await _publisher.SendAsync(new SiteStatisticsAdminTemplate
+            {
+                RevenueLootBoxCommission = revenue, 
+                FundsUsersInventories = winItem.Cost
+            });
 
             box.Balance -= expenses;
 
