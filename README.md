@@ -3,4 +3,10 @@
 Документацию можно найти в папке docs<br/>
 Сам проект находиться по пути: src/InCase<br/>
 Архитектура: Микросервисы<br/>
-Стек: .NET 7, PostgreSql, MongoDb, RabbitMq, React Js, Docker<br/>
+Стек: 
+- .NET 7
+- PostgreSql
+- MongoDb 
+- RabbitMq
+- React Js
+- Docker
