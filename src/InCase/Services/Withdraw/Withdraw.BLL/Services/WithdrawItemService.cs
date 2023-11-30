@@ -1,4 +1,5 @@
-﻿using Withdraw.BLL.Exceptions;
+﻿using Microsoft.Extensions.Logging;
+using Withdraw.BLL.Exceptions;
 using Withdraw.BLL.Interfaces;
 using Withdraw.BLL.Models;
 using Withdraw.DAL.Entities;
@@ -9,10 +10,12 @@ namespace Withdraw.BLL.Services
     {
         private const int NumberAttempts = 5;
         private readonly Dictionary<string, ITradeMarketService> _marketServices;
+        private readonly ILogger<WithdrawItemService> _logger;
 
-        public WithdrawItemService(MarketTMService tmService)
+        public WithdrawItemService(MarketTMService tmService, ILogger<WithdrawItemService> logger)
         {
-            _marketServices = new Dictionary<string, ITradeMarketService>
+            _logger = logger;
+            _marketServices = new()
             {
                 ["tm"] = tmService,
             };
@@ -36,6 +39,7 @@ namespace Withdraw.BLL.Services
 
                     item.Market = info.Market;
 
+                    _logger.LogInformation($"The item successfully bougth. ItemId: {item.Id}. MarketName: {name}");
                     return item;
                 }
                 catch (Exception) 

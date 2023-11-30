@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MongoDB.Driver;
+using NLog.Extensions.Logging;
 using Statistics.API.Middlewares;
 using Statistics.BLL.MassTransit.Consumers;
 using Statistics.BLL.Repository;
@@ -10,6 +11,11 @@ using Statistics.BLL.Services;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+IConfiguration configuration = new ConfigurationBuilder()
+    .AddJsonFile("appsettings.Development.json")
+    .Build();
+
+builder.Logging.AddConfiguration(configuration).ClearProviders().AddNLog();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>

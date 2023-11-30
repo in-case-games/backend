@@ -10,9 +10,15 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using NLog.Extensions.Logging;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+IConfiguration configuration = new ConfigurationBuilder()
+    .AddJsonFile("appsettings.Development.json")
+    .Build();
+
+builder.Logging.AddConfiguration(configuration).ClearProviders().AddNLog();
 
 builder.Services.AddDbContextPool<ApplicationDbContext>(
     options => {

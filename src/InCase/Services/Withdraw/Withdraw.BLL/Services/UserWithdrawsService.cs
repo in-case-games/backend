@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Withdraw.BLL.Exceptions;
 using Withdraw.BLL.Helpers;
 using Withdraw.BLL.Interfaces;
@@ -11,9 +12,11 @@ namespace Withdraw.BLL.Services
     public class UserWithdrawsService : IUserWithdrawsService
     {
         private readonly ApplicationDbContext _context;
+        private readonly ILogger<UserWithdrawsService> _logger;
 
-        public UserWithdrawsService(ApplicationDbContext context)
+        public UserWithdrawsService(ApplicationDbContext context, ILogger<UserWithdrawsService> logger)
         {
+            _logger = logger;
             _context = context;
         }
 
@@ -83,6 +86,8 @@ namespace Withdraw.BLL.Services
             _context.Withdraws.Remove(withdraw);
             await _context.Inventories.AddAsync(inventory);
             await _context.SaveChangesAsync();
+
+            _logger.LogInformation($"Items successfully transfered. UserId: {userId}. UserHistoryWithdrawId: {id}");
 
             return inventory.ToResponse();
         }
