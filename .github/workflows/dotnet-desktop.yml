@@ -1,0 +1,288 @@
+name: .NET_CheckMicroservicesHealth
+
+on:
+  push:
+    branches: [ "InCase.dev" ]
+  pull_request:
+    branches: [ "InCase.dev" ]
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 7.0.x
+    - name: Restore authentication api dependencies
+      run: |
+            cd src/InCase/Services/Authentication/Authentication.API
+            dotnet restore 
+    - name: Build authentication service api
+      run: |
+            cd src/InCase/Services/Authentication/Authentication.API
+            dotnet build
+
+    - name: Restore authentication business logic dependencies
+      run: |
+            cd src/InCase/Services/Authentication/Authentication.BLL
+            dotnet restore 
+    - name: Build authentication business logic service
+      run: |
+            cd src/InCase/Services/Authentication/Authentication.BLL
+            dotnet build
+            
+    - name: Restore authentication domain layer dependencies
+      run: |
+            cd src/InCase/Services/Authentication/Authentication.DAL
+            dotnet restore 
+    - name: Build authentication business logic service
+      run: |
+            cd src/InCase/Services/Authentication/Authentication.DAL
+            dotnet build
+    - name: Restore authentication api dependencies
+      run: |
+            cd src/InCase/Services/Authentication/Authentication.API
+            dotnet restore 
+
+            
+    - name: Build email-sender service api
+      run: |
+            cd src/InCase/Services/EmailSender/EmailSender.API
+            dotnet build
+
+    - name: Restore email-sender business logic dependencies
+      run: |
+            cd src/InCase/Services/EmailSender/EmailSender.BLL
+            dotnet restore 
+    - name: Build email-sender business logic service
+      run: |
+            cd src/InCase/Services/EmailSender/EmailSender.BLL
+            dotnet build
+            
+    - name: Restore email-sender domain layer dependencies
+      run: |
+            cd src/InCase/Services/EmailSender/EmailSender.DAL
+            dotnet restore 
+    - name: Build email-sender business logic service
+      run: |
+            cd src/InCase/Services/EmailSender/EmailSender.DAL
+            dotnet build
+
+            
+    - name: Build game service api
+      run: |
+            cd src/InCase/Services/Game/Game.API
+            dotnet build
+
+    - name: Restore game business logic dependencies
+      run: |
+            cd src/InCase/Services/Game/Game.BLL
+            dotnet restore 
+    - name: Build game business logic service
+      run: |
+            cd src/InCase/Services/Game/Game.BLL
+            dotnet build
+            
+    - name: Restore game domain layer dependencies
+      run: |
+            cd src/InCase/Services/Game/Game.DAL
+            dotnet restore 
+    - name: Build game business logic service
+      run: |
+            cd src/InCase/Services/Game/Game.DAL
+            dotnet build
+
+            
+    - name: Build identity service api
+      run: |
+            cd src/InCase/Services/Identity/Identity.API
+            dotnet build
+
+    - name: Restore identity business logic dependencies
+      run: |
+            cd src/InCase/Services/Identity/Identity.BLL
+            dotnet restore 
+    - name: Build identity business logic service
+      run: |
+            cd src/InCase/Services/Identity/Identity.BLL
+            dotnet build
+            
+    - name: Restore identity domain layer dependencies
+      run: |
+            cd src/InCase/Services/Identity/Identity.DAL
+            dotnet restore 
+    - name: Build identity business logic service
+      run: |
+            cd src/InCase/Services/Identity/Identity.DAL
+            dotnet build
+
+            
+    - name: Build payment service api
+      run: |
+            cd src/InCase/Services/Payment/Payment.API
+            dotnet build
+
+    - name: Restore payment business logic dependencies
+      run: |
+            cd src/InCase/Services/Payment/Payment.BLL
+            dotnet restore 
+    - name: Build payment business logic service
+      run: |
+            cd src/InCase/Services/Payment/Payment.BLL
+            dotnet build
+            
+    - name: Restore payment domain layer dependencies
+      run: |
+            cd src/InCase/Services/Payment/Payment.DAL
+            dotnet restore 
+    - name: Build payment business logic service
+      run: |
+            cd src/InCase/Services/Payment/Payment.DAL
+            dotnet build
+
+            
+    - name: Build promocode service api
+      run: |
+            cd src/InCase/Services/Promocode/Promocode.API
+            dotnet build
+
+    - name: Restore promocode business logic dependencies
+      run: |
+            cd src/InCase/Services/Promocode/Promocode.BLL
+            dotnet restore 
+    - name: Build promocode business logic service
+      run: |
+            cd src/InCase/Services/Promocode/Promocode.BLL
+            dotnet build
+            
+    - name: Restore promocode domain layer dependencies
+      run: |
+            cd src/InCase/Services/Promocode/Promocode.DAL
+            dotnet restore 
+    - name: Build payment business logic service
+      run: |
+            cd src/InCase/Services/Promocode/Promocode.DAL
+            dotnet build
+
+            
+    - name: Build resources service api
+      run: |
+            cd src/InCase/Services/Resources/Resources.API
+            dotnet build
+
+    - name: Restore resources business logic dependencies
+      run: |
+            cd src/InCase/Services/Resources/Resources.BLL
+            dotnet restore 
+    - name: Build resources business logic service
+      run: |
+            cd src/InCase/Services/Resources/Resources.BLL
+            dotnet build
+            
+    - name: Restore resources domain layer dependencies
+      run: |
+            cd src/InCase/Services/Resources/Resources.DAL
+            dotnet restore 
+    - name: Build resources business logic service
+      run: |
+            cd src/InCase/Services/Resources/Resources.DAL
+            dotnet build
+
+            
+    - name: Build review service api
+      run: |
+            cd src/InCase/Services/Review/Review.API
+            dotnet build
+
+    - name: Restore review business logic dependencies
+      run: |
+            cd src/InCase/Services/Review/Review.BLL
+            dotnet restore 
+    - name: Build review business logic service
+      run: |
+            cd src/InCase/Services/Review/Review.BLL
+            dotnet build
+            
+    - name: Restore review domain layer dependencies
+      run: |
+            cd src/InCase/Services/Review/Review.DAL
+            dotnet restore 
+    - name: Build review business logic service
+      run: |
+            cd src/InCase/Services/Review/Review.DAL
+            dotnet build
+
+            
+    - name: Build statistics service api
+      run: |
+            cd src/InCase/Services/Statistics/Statistics.API
+            dotnet build
+
+    - name: Restore statistics business logic dependencies
+      run: |
+            cd src/InCase/Services/Statistics/Statistics.BLL
+            dotnet restore 
+    - name: Build statistics business logic service
+      run: |
+            cd src/InCase/Services/Statistics/Statistics.BLL
+            dotnet build
+            
+    - name: Restore statistics domain layer dependencies
+      run: |
+            cd src/InCase/Services/Statistics/Statistics.DAL
+            dotnet restore 
+    - name: Build statistics business logic service
+      run: |
+            cd src/InCase/Services/Statistics/Statistics.DAL
+            dotnet build
+
+            
+    - name: Build support service api
+      run: |
+            cd src/InCase/Services/Support/Support.API
+            dotnet build
+
+    - name: Restore support business logic dependencies
+      run: |
+            cd src/InCase/Services/Support/Support.BLL
+            dotnet restore 
+    - name: Build support business logic service
+      run: |
+            cd src/InCase/Services/Support/Support.BLL
+            dotnet build
+            
+    - name: Restore support domain layer dependencies
+      run: |
+            cd src/InCase/Services/Support/Support.DAL
+            dotnet restore 
+    - name: Build support business logic service
+      run: |
+            cd src/InCase/Services/Support/Support.DAL
+            dotnet build          
+
+            
+    - name: Build withdraw service api
+      run: |
+            cd src/InCase/Services/Withdraw/Withdraw.API
+            dotnet build
+
+    - name: Restore withdraw business logic dependencies
+      run: |
+            cd src/InCase/Services/Withdraw/Withdraw.BLL
+            dotnet restore 
+    - name: Build withdraw business logic service
+      run: |
+            cd src/InCase/Services/Withdraw/Withdraw.BLL
+            dotnet build
+            
+    - name: Restore withdraw domain layer dependencies
+      run: |
+            cd src/InCase/Services/Withdraw/Withdraw.DAL
+            dotnet restore 
+    - name: Build withdraw business logic service
+      run: |
+            cd src/InCase/Services/Withdraw/Withdraw.DAL
+            dotnet build               
