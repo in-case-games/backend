@@ -26,7 +26,7 @@ namespace EmailSender.API.Controllers
             (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("{id}/is-notify")]
-        public async Task<IActionResult> GetByUserId(Guid id, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> GetByUserId(Guid id, CancellationToken cancellationToken)
         {
             UserAdditionalInfoResponse response = await _userService.GetByUserIdAsync(id, cancellationToken);
 
@@ -37,7 +37,7 @@ namespace EmailSender.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet("is-notify")]
-        public async Task<IActionResult> Get(CancellationToken cancellationToken = default)
+        public async Task<IActionResult> Get(CancellationToken cancellationToken)
         {
             UserAdditionalInfoResponse response = await _userService.GetByUserIdAsync(UserId, cancellationToken);
 
@@ -48,7 +48,7 @@ namespace EmailSender.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet("is-notify/{isNotify}")]
-        public async Task<IActionResult> ChangeNotifyEmail(bool isNotify, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> ChangeNotifyEmail(bool isNotify, CancellationToken cancellationToken)
         {
             UserAdditionalInfoResponse response = await _userService.UpdateNotifyEmailAsync(UserId, isNotify, cancellationToken);
 
@@ -59,7 +59,7 @@ namespace EmailSender.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Admin, Roles.Owner)]
         [HttpGet("{userId}/is-notify/{isNotify}/admin")]
-        public async Task<IActionResult> ChangeNotifyEmailByAdmin(Guid userId, bool isNotify, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> ChangeNotifyEmailByAdmin(Guid userId, bool isNotify, CancellationToken cancellationToken)
         {
             UserAdditionalInfoResponse response = await _userService.UpdateNotifyEmailAsync(userId, isNotify, cancellationToken);
 

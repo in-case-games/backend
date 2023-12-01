@@ -25,7 +25,7 @@ namespace Game.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet("{id}")]
-        public async Task<IActionResult> Get(Guid id)
+        public async Task<IActionResult> Get(Guid id, CancellationToken cancellation = default)
         {
             GameItemResponse response = await _openingService.OpenBox(UserId, id);
 
@@ -36,7 +36,7 @@ namespace Game.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet("{id}/virtual")]
-        public async Task<IActionResult> GetVirtual(Guid id)
+        public async Task<IActionResult> GetVirtual(Guid id, CancellationToken cancellation = default)
         {
             GameItemResponse response = await _openingService.OpenVirtualBox(UserId, id);
 
@@ -47,7 +47,7 @@ namespace Game.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet("{id}&{count}/virtual")]
-        public async Task<IActionResult> GetVirtual(Guid id, int count)
+        public async Task<IActionResult> GetVirtual(Guid id, int count, CancellationToken cancellation = default)
         {
             List<GameItemBigOpenResponse> response = await _openingService
                 .OpenVirtualBox(UserId, id, count);
@@ -59,7 +59,7 @@ namespace Game.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
         [HttpGet("{id}&{count}/virtual/admin")]
-        public async Task<IActionResult> GetVirtualByAdmin(Guid id, int count)
+        public async Task<IActionResult> GetVirtualByAdmin(Guid id, int count, CancellationToken cancellation = default)
         {
             List<GameItemBigOpenResponse> response = await _openingService
                 .OpenVirtualBox(UserId, id, count, isAdmin: true);

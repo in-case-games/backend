@@ -23,7 +23,7 @@ namespace Authentication.API.Controllers
             (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpPost("sign-in")]
-        public async Task<IActionResult> SignIn(UserRequest request, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> SignIn(UserRequest request, CancellationToken cancellationToken)
         {
             await _authenticationService.SignInAsync(request, cancellationToken);
 
@@ -34,7 +34,7 @@ namespace Authentication.API.Controllers
             (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpPost("sign-up")]
-        public async Task<IActionResult> SignUp(UserRequest request, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> SignUp(UserRequest request, CancellationToken cancellationToken)
         {
             await _authenticationService.SignUpAsync(request, cancellationToken);
 
@@ -45,7 +45,7 @@ namespace Authentication.API.Controllers
             (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("refresh")]
-        public async Task<IActionResult> RefreshTokens(string token, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> RefreshTokens(string token, CancellationToken cancellationToken)
         {
             TokensResponse response = await _authenticationService.RefreshTokensAsync(token, cancellationToken);
 

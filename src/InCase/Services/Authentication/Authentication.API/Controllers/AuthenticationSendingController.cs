@@ -22,7 +22,7 @@ namespace Authentication.API.Controllers
             (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpPut("forgot/password")]
-        public async Task<IActionResult> ForgotPassword(DataMailRequest request, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> ForgotPassword(DataMailRequest request, CancellationToken cancellationToken)
         {
             await _authSendingService.ForgotPasswordAsync(request, cancellationToken);
 
@@ -33,7 +33,7 @@ namespace Authentication.API.Controllers
             (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpPut("email/{password}")]
-        public async Task<IActionResult> UpdateEmail(DataMailRequest request, string password, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> UpdateEmail(DataMailRequest request, string password, CancellationToken cancellationToken)
         {
             await _authSendingService.UpdateEmailAsync(request, password, cancellationToken);
 
@@ -44,7 +44,7 @@ namespace Authentication.API.Controllers
             (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpPut("login/{password}")]
-        public async Task<IActionResult> UpdateLogin(DataMailRequest request, string password, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> UpdateLogin(DataMailRequest request, string password, CancellationToken cancellationToken)
         {
             await _authSendingService.UpdateLoginAsync(request, password, cancellationToken);
 
@@ -55,7 +55,7 @@ namespace Authentication.API.Controllers
             (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpPut("password/{password}")]
-        public async Task<IActionResult> UpdatePassword(DataMailRequest request, string password, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> UpdatePassword(DataMailRequest request, string password, CancellationToken cancellationToken)
         {
             await _authSendingService.UpdatePasswordAsync(request, password, cancellationToken);
 
@@ -66,7 +66,7 @@ namespace Authentication.API.Controllers
             (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpDelete("account/{password}")]
-        public async Task<IActionResult> DeleteAccount(DataMailRequest request, string password, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> DeleteAccount(DataMailRequest request, string password, CancellationToken cancellationToken)
         {
             await _authSendingService.DeleteAccountAsync(request, password, cancellationToken);
 
