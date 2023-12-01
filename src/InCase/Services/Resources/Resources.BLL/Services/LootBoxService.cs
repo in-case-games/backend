@@ -22,39 +22,39 @@ namespace Resources.BLL.Services
             _publisher = publisher;
         }
 
-        public async Task<LootBoxResponse> GetAsync(Guid id)
+        public async Task<LootBoxResponse> GetAsync(Guid id, CancellationToken cancellation = default)
         {
             LootBox box = await _context.LootBoxes
                 .Include(lb => lb.Game)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(lb => lb.Id == id) ??
+                .FirstOrDefaultAsync(lb => lb.Id == id, cancellation) ??
                 throw new NotFoundException("Кейс не найден");
 
             return box.ToResponse();
         }
 
-        public async Task<LootBoxResponse> GetAsync(string name)
+        public async Task<LootBoxResponse> GetAsync(string name, CancellationToken cancellation = default)
         {
             LootBox box = await _context.LootBoxes
                 .Include(lb => lb.Game)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(lb => lb.Name == name) ??
+                .FirstOrDefaultAsync(lb => lb.Name == name, cancellation) ??
                 throw new NotFoundException("Кейс не найден");
 
             return box.ToResponse();
         }
 
-        public async Task<List<LootBoxResponse>> GetAsync()
+        public async Task<List<LootBoxResponse>> GetAsync(CancellationToken cancellation = default)
         {
             List<LootBox> boxes = await _context.LootBoxes
                 .Include(lb => lb.Game)
                 .AsNoTracking()
-                .ToListAsync();
+                .ToListAsync(cancellation);
 
             return boxes.ToResponse();
         }
 
-        public async Task<List<LootBoxResponse>> GetByGameIdAsync(Guid id)
+        public async Task<List<LootBoxResponse>> GetByGameIdAsync(Guid id, CancellationToken cancellation = default)
         {
             if (!await _context.Games.AnyAsync(g => g.Id == id))
                 throw new NotFoundException("Игра не найдена");
@@ -63,19 +63,19 @@ namespace Resources.BLL.Services
                 .Include(lb => lb.Game)
                 .AsNoTracking()
                 .Where(lb => lb.GameId == id)
-                .ToListAsync();
+                .ToListAsync(cancellation);
 
             return boxes.ToResponse();
         }
 
-        public async Task<LootBoxResponse> CreateAsync(LootBoxRequest request)
+        public async Task<LootBoxResponse> CreateAsync(LootBoxRequest request, CancellationToken cancellation = default)
         {
             if (request.Image is null) throw new BadRequestException("Загрузите картинку в base 64");
             if (request.Cost <= 0) 
                 throw new BadRequestException("Кейс должен стоить больше 0");
-            if (!await _context.Games.AnyAsync(g => g.Id == request.GameId))
+            if (!await _context.Games.AnyAsync(g => g.Id == request.GameId, cancellation))
                 throw new NotFoundException("Игра не найдена");
-            if (await _context.LootBoxes.AnyAsync(lb => lb.Name == request.Name)) 
+            if (await _context.LootBoxes.AnyAsync(lb => lb.Name == request.Name, cancellation)) 
                 throw new ConflictException("Название кейса уже занято");
 
             request.IsLocked = true;
@@ -86,26 +86,26 @@ namespace Resources.BLL.Services
                 @$"loot-boxes/{box.Id}/", $"{box.Id}");
             FileService.CreateFolder(@$"loot-box-banners/{box.Id}/");
 
-            await _context.LootBoxes.AddAsync(box);
-            await _context.SaveChangesAsync();
+            await _context.LootBoxes.AddAsync(box, cancellation);
+            await _context.SaveChangesAsync(cancellation);
 
-            await _publisher.SendAsync(box.ToTemplate(isDeleted: false));
+            await _publisher.SendAsync(box.ToTemplate(isDeleted: false), cancellation);
 
             return box.ToResponse();
         }
 
-        public async Task<LootBoxResponse> UpdateAsync(LootBoxRequest request)
+        public async Task<LootBoxResponse> UpdateAsync(LootBoxRequest request, CancellationToken cancellation = default)
         {
             LootBox oldBox = await _context.LootBoxes
                 .Include(lb => lb.Game)
-                .FirstOrDefaultAsync(lb => lb.Id == request.Id) ??
+                .FirstOrDefaultAsync(lb => lb.Id == request.Id, cancellation) ??
                 throw new NotFoundException("Кейс не найден");
 
             if (request.Cost <= 0)
                 throw new BadRequestException("Кейс должен стоить больше 0");
-            if (!await _context.Games.AnyAsync(g => g.Id == request.GameId))
+            if (!await _context.Games.AnyAsync(g => g.Id == request.GameId, cancellation))
                 throw new NotFoundException("Игра не найдена");
-            if (await _context.LootBoxes.AnyAsync(lb => lb.Name == request.Name && lb.Id != request.Id))
+            if (await _context.LootBoxes.AnyAsync(lb => lb.Name == request.Name && lb.Id != request.Id, cancellation))
                 throw new ConflictException("Название кейса уже занято");
 
             List<LootBoxInventory> boxInventories = await _context.BoxInventories
@@ -113,7 +113,7 @@ namespace Resources.BLL.Services
                 .OrderBy(lbi => lbi.Item!.Cost)
                 .AsNoTracking()
                 .Where(lbi => lbi.BoxId == request.Id)
-                .ToListAsync();
+                .ToListAsync(cancellation);
 
             bool isLocked = boxInventories.Count < 1 || 
                 boxInventories[0].Item!.Cost > request.Cost ||
@@ -130,25 +130,25 @@ namespace Resources.BLL.Services
             }
 
             _context.Entry(oldBox).CurrentValues.SetValues(newBox);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(cancellation);
 
-            await _publisher.SendAsync(newBox.ToTemplate(isDeleted: false));
+            await _publisher.SendAsync(newBox.ToTemplate(isDeleted: false), cancellation);
 
             return newBox.ToResponse();
         }
 
-        public async Task<LootBoxResponse> DeleteAsync(Guid id)
+        public async Task<LootBoxResponse> DeleteAsync(Guid id, CancellationToken cancellation = default)
         {
             LootBox box = await _context.LootBoxes
                 .Include(lb => lb.Game)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(lb => lb.Id == id) ??
+                .FirstOrDefaultAsync(lb => lb.Id == id, cancellation) ??
                 throw new NotFoundException("Кейс не найден");
 
             _context.LootBoxes.Remove(box);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(cancellation);
 
-            await _publisher.SendAsync(box.ToTemplate(isDeleted: true));
+            await _publisher.SendAsync(box.ToTemplate(isDeleted: true), cancellation);
 
             FileService.RemoveFolder(@$"loot-boxes/{box.Id}/");
             FileService.RemoveFolder(@$"loot-box-banners/{box.Id}/");

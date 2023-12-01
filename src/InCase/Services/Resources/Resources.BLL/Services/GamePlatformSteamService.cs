@@ -26,7 +26,7 @@ namespace Resources.BLL.Services
             _responseService = responseService;
         }
 
-        public async Task<ItemCostResponse> GetAdditionalMarketAsync(string idForMarket, string game)
+        public async Task<ItemCostResponse> GetAdditionalMarketAsync(string idForMarket, string game, CancellationToken cancellation = default)
         {
             string id = idForMarket.Replace("-", "_");
 
@@ -35,7 +35,7 @@ namespace Resources.BLL.Services
             try
             {
                 ItemInfoTMResponse? info = await _responseService
-                    .GetAsync<ItemInfoTMResponse>(uri);
+                    .GetAsync<ItemInfoTMResponse>(uri, cancellation);
 
                 return (info is null || info.Cost is null) ?
                     new() { Success = false, Cost = 0M } :
@@ -47,7 +47,7 @@ namespace Resources.BLL.Services
             }
         }
 
-        public async Task<ItemCostResponse> GetOriginalMarketAsync(string hashName, string game)
+        public async Task<ItemCostResponse> GetOriginalMarketAsync(string hashName, string game, CancellationToken cancellation = default)
         {
             string uri = $"https://steamcommunity.com/market/priceoverview/?" +
                 $"currency=5&" +
@@ -59,7 +59,7 @@ namespace Resources.BLL.Services
             try
             {
                 ItemInfoSteamResponse? info = await _responseService
-                    .GetAsync<ItemInfoSteamResponse>(uri);
+                    .GetAsync<ItemInfoSteamResponse>(uri, cancellation);
                 if ((info is null || !info.Success || info.Cost is null))
                     return new() { Success = false, Cost = 0M };
                 else
