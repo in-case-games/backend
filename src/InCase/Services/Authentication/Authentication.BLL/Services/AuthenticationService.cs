@@ -29,19 +29,19 @@ namespace Authentication.BLL.Services
             _publisher = publisher;
         }
 
-        public async Task SignInAsync(UserRequest request)
+        public async Task SignInAsync(UserRequest request, CancellationToken cancellationToken = default)
         {
             User user = await _context.Users
                 .Include(u => u.AdditionalInfo)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(u =>
-                u.Id == request.Id || u.Email == request.Email || u.Login == request.Login) ??
+                u.Id == request.Id || u.Email == request.Email || u.Login == request.Login, cancellationToken) ??
                 throw new NotFoundException("Пользователь не найден");
 
             if(!ValidationService.IsValidUserPassword(in user, request.Password))
                 throw new ForbiddenException("Неверный пароль");
 
-            await CheckUserForBanAsync(user.Id);
+            await CheckUserForBanAsync(user.Id, cancellationToken);
 
             EmailTemplate template = new()
             {
@@ -74,12 +74,12 @@ namespace Authentication.BLL.Services
                 };
             }
 
-            await _publisher.SendAsync(template);
+            await _publisher.SendAsync(template, cancellationToken);
         }
 
-        public async Task SignUpAsync(UserRequest request)
+        public async Task SignUpAsync(UserRequest request, CancellationToken cancellationToken = default)
         {
-            if (await _context.Users.AnyAsync(u => u.Email == request.Email || u.Login == request.Login))
+            if (await _context.Users.AnyAsync(u => u.Email == request.Email || u.Login == request.Login, cancellationToken))
                 throw new ConflictException("Пользователь уже существует");
 
             User user = request.ToEntity(IsNewGuid: true);
@@ -87,7 +87,7 @@ namespace Authentication.BLL.Services
 
             UserRole role = await _context.Roles
                 .AsNoTracking()
-                .FirstAsync(ur => ur.Name == "user");
+                .FirstAsync(ur => ur.Name == "user", cancellationToken);
 
             UserAdditionalInfo info = new()
             {
@@ -120,35 +120,35 @@ namespace Authentication.BLL.Services
                 IsDeleted = false
             };
 
-            await _context.Users.AddAsync(user);
-            await _context.AdditionalInfos.AddAsync(info);
+            await _context.Users.AddAsync(user, cancellationToken);
+            await _context.AdditionalInfos.AddAsync(info, cancellationToken);
 
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(cancellationToken);
 
-            await _publisher.SendAsync(user.ToTemplate(false));
-            await _publisher.SendAsync(template);
+            await _publisher.SendAsync(user.ToTemplate(false), cancellationToken);
+            await _publisher.SendAsync(template, cancellationToken);
 
             FileService.CreateFolder(@$"users/{user.Id}/");
         }
 
-        public async Task<TokensResponse> RefreshTokensAsync(string token)
+        public async Task<TokensResponse> RefreshTokensAsync(string token, CancellationToken cancellationToken = default)
         {
             User user = await GetUserFromTokenAsync(token, "refresh");
 
             UserAdditionalInfo info = await _context.AdditionalInfos
                 .AsNoTracking()
-                .FirstOrDefaultAsync(uai => uai.UserId == user.Id) ??
+                .FirstOrDefaultAsync(uai => uai.UserId == user.Id, cancellationToken) ??
                 throw new NotFoundException("Пользователь не найден");
 
             if (info.DeletionDate is not null)
                 throw new ForbiddenException($"Аккаунт в очереди на удаление, отмените входом в аккаунт");
 
-            await CheckUserForBanAsync(user.Id);
+            await CheckUserForBanAsync(user.Id, cancellationToken);
 
             return _jwtService.CreateTokenPair(in user);
         }
 
-        public async Task<User> GetUserFromTokenAsync(string token, string type)
+        public async Task<User> GetUserFromTokenAsync(string token, string type, CancellationToken cancellationToken = default)
         {
             ClaimsPrincipal principal = _jwtService.GetClaimsToken(token);
 
@@ -160,7 +160,7 @@ namespace Authentication.BLL.Services
                 .Include(u => u.AdditionalInfo)
                 .Include(u => u.AdditionalInfo!.Role)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(u => u.Id == Guid.Parse(id)) ??
+                .FirstOrDefaultAsync(u => u.Id == Guid.Parse(id), cancellationToken) ??
                 throw new NotFoundException("Пользователь не найден");
 
             if (!ValidationService.IsValidToken(in user, principal, type))
@@ -169,11 +169,11 @@ namespace Authentication.BLL.Services
             return user;
         }
 
-        public async Task CheckUserForBanAsync(Guid id)
+        public async Task CheckUserForBanAsync(Guid id, CancellationToken cancellationToken = default)
         {
             UserRestriction? ban = await _context.Restrictions
                 .AsNoTracking()
-                .FirstOrDefaultAsync(ur => ur.UserId == id);
+                .FirstOrDefaultAsync(ur => ur.UserId == id, cancellationToken);
 
             if (ban is not null)
             {
@@ -181,7 +181,7 @@ namespace Authentication.BLL.Services
                     throw new ForbiddenException($"Вход запрещён до {ban.ExpirationDate}.");
 
                 _context.Restrictions.Remove(ban);
-                await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync(cancellationToken);
             }
         }
 
