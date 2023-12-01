@@ -25,10 +25,10 @@ namespace Payment.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> Get(CancellationToken cancellation)
         {
             List<UserPaymentsResponse> response = await _paymentsService
-                .GetAsync(UserId, 100);
+                .GetAsync(UserId, 100, cancellation);
 
             return Ok(ApiResult<List<UserPaymentsResponse>>.OK(response));
         }
@@ -37,10 +37,10 @@ namespace Payment.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(Guid id)
+        public async Task<IActionResult> GetById(Guid id, CancellationToken cancellation)
         {
             UserPaymentsResponse response = await _paymentsService
-                .GetByIdAsync(id, UserId);
+                .GetByIdAsync(id, UserId, cancellation);
 
             return Ok(ApiResult<UserPaymentsResponse>.OK(response));
         }
@@ -49,10 +49,10 @@ namespace Payment.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
         [HttpGet("admin")]
-        public async Task<IActionResult> GetByAdmin(int count = 100)
+        public async Task<IActionResult> GetByAdmin(CancellationToken cancellation, int count = 100)
         {
             List<UserPaymentsResponse> response = await _paymentsService
-                .GetAsync(count);
+                .GetAsync(count, cancellation);
 
             return Ok(ApiResult<List<UserPaymentsResponse>>.OK(response));
         }
@@ -61,10 +61,10 @@ namespace Payment.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
         [HttpGet("{userId}/admin")]
-        public async Task<IActionResult> GetByUserIdAdmin(Guid userId, int count = 100)
+        public async Task<IActionResult> GetByUserIdAdmin(Guid userId, CancellationToken cancellation, int count = 100)
         {
             List<UserPaymentsResponse> response = await _paymentsService
-                .GetAsync(userId, count);
+                .GetAsync(userId, count, cancellation);
 
             return Ok(ApiResult<List<UserPaymentsResponse>>.OK(response));
         }

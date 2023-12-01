@@ -8,10 +8,10 @@ namespace InCase.Infrastructure.Services
     {
         private readonly HttpClient _httpClient = new();
 
-        public async Task<IGameMoneyResponse?> ResponsePostAsync(string uri, IGameMoneyRequest request)
+        public async Task<IGameMoneyResponse?> ResponsePostAsync(string uri, IGameMoneyRequest request, CancellationToken cancellation = default)
         {
             JsonContent json = JsonContent.Create(request);
-            HttpResponseMessage response = await _httpClient.PostAsync(uri, json);
+            HttpResponseMessage response = await _httpClient.PostAsync(uri, json, cancellation);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -25,7 +25,7 @@ namespace InCase.Infrastructure.Services
 
             return await response.Content
                 .ReadFromJsonAsync<IGameMoneyResponse>(
-                new JsonSerializerOptions(JsonSerializerDefaults.Web));
+                new JsonSerializerOptions(JsonSerializerDefaults.Web), cancellation);
         }
     }
 }
