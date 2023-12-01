@@ -20,22 +20,22 @@ namespace Withdraw.BLL.Services
             _context = context;
         }
 
-        public async Task<UserHistoryWithdrawResponse> GetAsync(Guid id)
+        public async Task<UserHistoryWithdrawResponse> GetAsync(Guid id, CancellationToken cancellation = default)
         {
             UserHistoryWithdraw withdraw = await _context.Withdraws
                 .Include(uhw => uhw.Status)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(uhw => uhw.Id == id) ?? 
+                .FirstOrDefaultAsync(uhw => uhw.Id == id, cancellation) ?? 
                 throw new NotFoundException("История вывода не найдена");
 
             return withdraw.ToResponse();
         }
 
-        public async Task<List<UserHistoryWithdrawResponse>> GetAsync(Guid userId, int count)
+        public async Task<List<UserHistoryWithdrawResponse>> GetAsync(Guid userId, int count, CancellationToken cancellation = default)
         {
             if (count <= 0 || count >= 10000)
                 throw new BadRequestException("Размер выборки должен быть в пределе 1-10000");
-            if (!await _context.Users.AnyAsync(u => u.Id == userId))
+            if (!await _context.Users.AnyAsync(u => u.Id == userId, cancellation))
                 throw new NotFoundException("Пользователь не найден");
 
             List<UserHistoryWithdraw> withdraws = await _context.Withdraws
@@ -44,12 +44,12 @@ namespace Withdraw.BLL.Services
                 .Where(uhw => uhw.UserId == userId)
                 .OrderByDescending(uhw => uhw.Date)
                 .Take(count)
-                .ToListAsync();
+                .ToListAsync(cancellation);
 
             return withdraws.ToResponse();
         }
 
-        public async Task<List<UserHistoryWithdrawResponse>> GetAsync(int count)
+        public async Task<List<UserHistoryWithdrawResponse>> GetAsync(int count, CancellationToken cancellation = default)
         {
             if (count <= 0 || count >= 10000)
                 throw new BadRequestException("Размер выборки должен быть в пределе 1-10000");
@@ -59,17 +59,17 @@ namespace Withdraw.BLL.Services
                 .AsNoTracking()
                 .OrderByDescending(uhw => uhw.Date)
                 .Take(count)
-                .ToListAsync();
+                .ToListAsync(cancellation);
 
             return withdraws.ToResponse();
         }
 
-        public async Task<UserInventoryResponse> TransferAsync(Guid id, Guid userId)
+        public async Task<UserInventoryResponse> TransferAsync(Guid id, Guid userId, CancellationToken cancellation = default)
         {
             UserHistoryWithdraw withdraw = await _context.Withdraws
                 .Include(uhw => uhw.Status)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(uhw => uhw.Id == id && uhw.UserId == userId) ??
+                .FirstOrDefaultAsync(uhw => uhw.Id == id && uhw.UserId == userId, cancellation) ??
                 throw new NotFoundException("История вывода не найдена");
 
             if (withdraw.Status?.Name is null || withdraw.Status.Name != "cancel")
@@ -84,8 +84,8 @@ namespace Withdraw.BLL.Services
             };
 
             _context.Withdraws.Remove(withdraw);
-            await _context.Inventories.AddAsync(inventory);
-            await _context.SaveChangesAsync();
+            await _context.Inventories.AddAsync(inventory, cancellation);
+            await _context.SaveChangesAsync(cancellation);
 
             _logger.LogInformation($"Items successfully transfered. UserId: {userId}. UserHistoryWithdrawId: {id}");
 

@@ -35,24 +35,24 @@ namespace Withdraw.BLL.Services
             _responseService = responseService;
         }
 
-        public async Task<BalanceMarketResponse> GetBalanceAsync()
+        public async Task<BalanceMarketResponse> GetBalanceAsync(CancellationToken cancellation = default)
         {
             string uri = $"{DomainUri["csgo"]}/api/GetMoney/?key={_cfg["MarketTM:Secret"]}";
             
             BalanceTMResponse? response = await _responseService
-                .GetAsync<BalanceTMResponse>(uri);
+                .GetAsync<BalanceTMResponse>(uri, cancellation);
 
             return new() { Balance = response!.MoneyKopecks * 0.01M };
         }
 
-        public async Task<ItemInfoResponse> GetItemInfoAsync(string idForMarket, string game)
+        public async Task<ItemInfoResponse> GetItemInfoAsync(string idForMarket, string game, CancellationToken cancellation = default)
         {
             string id = idForMarket.Replace("-", "_");
 
             string uri = $"{DomainUri[game]}/api/ItemInfo/{id}/ru/?key={_cfg["MarketTM:Secret"]}";
 
             ItemInfoTMResponse? info = await _responseService
-                .GetAsync<ItemInfoTMResponse>(uri);
+                .GetAsync<ItemInfoTMResponse>(uri, cancellation);
 
             return new()
             {
@@ -62,7 +62,7 @@ namespace Withdraw.BLL.Services
             };
         }
 
-        public async Task<TradeInfoResponse> GetTradeInfoAsync(UserHistoryWithdraw history)
+        public async Task<TradeInfoResponse> GetTradeInfoAsync(UserHistoryWithdraw history, CancellationToken cancellation = default)
         {
             string name = history.Item!.Game!.Name!;
             string id = history.InvoiceId!;
@@ -78,7 +78,7 @@ namespace Withdraw.BLL.Services
                 string tradeUrl = $"{DomainUri[name]}/api/Trades/?key={_cfg["MarketTM:Secret"]}";
 
                 List<TradeInfoTMResponse> trades = await _responseService
-                    .GetAsync<List<TradeInfoTMResponse>>(tradeUrl) ?? new();
+                    .GetAsync<List<TradeInfoTMResponse>>(tradeUrl, cancellation) ?? new();
 
                 string status = trades!
                     .First(f => f.Id == id).Status!;
@@ -94,7 +94,7 @@ namespace Withdraw.BLL.Services
                     $"/?key={_cfg["MarketTM:Secret"]}";
 
                 AnswerOperationHistoryTMResponse? answer = await _responseService
-                    .GetAsync<AnswerOperationHistoryTMResponse>(historyUrl);
+                    .GetAsync<AnswerOperationHistoryTMResponse>(historyUrl, cancellation);
 
                 string status = answer!.Histories!
                     .First(f => f.Id == id).Status!;
@@ -105,7 +105,7 @@ namespace Withdraw.BLL.Services
             return info;
         }
 
-        public async Task<BuyItemResponse> BuyItemAsync(ItemInfoResponse info, string trade)
+        public async Task<BuyItemResponse> BuyItemAsync(ItemInfoResponse info, string trade, CancellationToken cancellation = default)
         {
             int price = info.PriceKopecks;
             string name = info.Item.Game!.Name!;
@@ -118,7 +118,7 @@ namespace Withdraw.BLL.Services
                 $"&partner={partner}&token={token}";
 
             BuyItemTMResponse? response = await _responseService
-                .GetAsync<BuyItemTMResponse>(url);
+                .GetAsync<BuyItemTMResponse>(url, cancellation);
             
             return new() { Id = response!.Id! };
         }

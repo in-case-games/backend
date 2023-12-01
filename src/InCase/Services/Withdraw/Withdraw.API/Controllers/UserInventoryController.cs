@@ -27,9 +27,9 @@ namespace Withdraw.API.Controllers
             (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("{id}")]
-        public async Task<IActionResult> Get(Guid id)
+        public async Task<IActionResult> Get(Guid id, CancellationToken cancellation)
         {
-            UserInventoryResponse response = await _userInventoryService.GetByIdAsync(id);
+            UserInventoryResponse response = await _userInventoryService.GetByIdAsync(id, cancellation);
 
             return Ok(ApiResult<UserInventoryResponse>.OK(response));
         }
@@ -38,10 +38,10 @@ namespace Withdraw.API.Controllers
             (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("user/{id}")]
-        public async Task<IActionResult> GetByUserId(Guid id)
+        public async Task<IActionResult> GetByUserId(Guid id, CancellationToken cancellation)
         {
             List<UserInventoryResponse> response = await _userInventoryService
-                .GetAsync(id, 100);
+                .GetAsync(id, 100, cancellation);
 
             return Ok(ApiResult<List<UserInventoryResponse>>.OK(response));
         }
@@ -50,10 +50,10 @@ namespace Withdraw.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> Get(CancellationToken cancellation)
         {
             List<UserInventoryResponse> response = await _userInventoryService
-                .GetAsync(UserId);
+                .GetAsync(UserId, cancellation);
 
             return Ok(ApiResult<List<UserInventoryResponse>>.OK(response));
         }
@@ -62,10 +62,10 @@ namespace Withdraw.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
         [HttpGet("{userId}/admin")]
-        public async Task<IActionResult> Get(Guid userId, int count = 100)
+        public async Task<IActionResult> Get(Guid userId, CancellationToken cancellation, int count = 100)
         {
             List<UserInventoryResponse> response = await _userInventoryService
-                .GetAsync(userId, count);
+                .GetAsync(userId, count, cancellation);
 
             return Ok(ApiResult<List<UserInventoryResponse>>.OK(response));
         }
@@ -74,9 +74,9 @@ namespace Withdraw.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Owner)]
         [HttpPost]
-        public async Task<IActionResult> Post(UserInventoryTemplate request)
+        public async Task<IActionResult> Post(UserInventoryTemplate request, CancellationToken cancellation)
         {
-            UserInventoryResponse response = await _userInventoryService.CreateAsync(request);
+            UserInventoryResponse response = await _userInventoryService.CreateAsync(request, cancellation);
 
             return Ok(ApiResult<UserInventoryResponse>.OK(response));
         }
@@ -85,10 +85,10 @@ namespace Withdraw.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpPut("exchange")]
-        public async Task<IActionResult> Exchange(ExchangeItemRequest request)
+        public async Task<IActionResult> Exchange(ExchangeItemRequest request, CancellationToken cancellation)
         {
             List<UserInventoryResponse> response = await _userInventoryService
-                .ExchangeAsync(request, UserId);
+                .ExchangeAsync(request, UserId, cancellation);
 
             return Ok(ApiResult<List<UserInventoryResponse>>.OK(response));
         }
@@ -96,10 +96,10 @@ namespace Withdraw.API.Controllers
         [ProducesResponseType(typeof(ApiResult<SellItemResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet("{id}/sell")]
-        public async Task<IActionResult> Sell(Guid id)
+        public async Task<IActionResult> Sell(Guid id, CancellationToken cancellation)
         {
             SellItemResponse response = await _userInventoryService
-                .SellAsync(id, UserId);
+                .SellAsync(id, UserId, cancellation);
 
             return Ok(ApiResult<SellItemResponse>.OK(response));
         }
@@ -107,10 +107,10 @@ namespace Withdraw.API.Controllers
         [ProducesResponseType(typeof(ApiResult<SellItemResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet("last/sell/{itemId}")]
-        public async Task<IActionResult> SellLastItem(Guid itemId)
+        public async Task<IActionResult> SellLastItem(Guid itemId, CancellationToken cancellation)
         {
             SellItemResponse response = await _userInventoryService
-                .SellLastAsync(itemId, UserId);
+                .SellLastAsync(itemId, UserId, cancellation);
 
             return Ok(ApiResult<SellItemResponse>.OK(response));
         }
@@ -119,9 +119,9 @@ namespace Withdraw.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Owner)]
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(Guid id)
+        public async Task<IActionResult> Delete(Guid id, CancellationToken cancellation)
         {
-            UserInventoryResponse response = await _userInventoryService.DeleteAsync(id);
+            UserInventoryResponse response = await _userInventoryService.DeleteAsync(id, cancellation);
 
             return Ok(ApiResult<UserInventoryResponse>.OK(response));
         }

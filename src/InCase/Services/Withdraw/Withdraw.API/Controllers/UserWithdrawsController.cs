@@ -26,9 +26,9 @@ namespace Withdraw.API.Controllers
             (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("{id}")]
-        public async Task<IActionResult> Get(Guid id)
+        public async Task<IActionResult> Get(Guid id, CancellationToken cancellation)
         {
-            UserHistoryWithdrawResponse response = await _userWithdrawsService.GetAsync(id);
+            UserHistoryWithdrawResponse response = await _userWithdrawsService.GetAsync(id, cancellation);
 
             return Ok(ApiResult<UserHistoryWithdrawResponse>.OK(response));
         }
@@ -37,10 +37,10 @@ namespace Withdraw.API.Controllers
             (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("user/{id}")]
-        public async Task<IActionResult> GetByUserId(Guid id)
+        public async Task<IActionResult> GetByUserId(Guid id, CancellationToken cancellation)
         {
             List<UserHistoryWithdrawResponse> response = await _userWithdrawsService
-                .GetAsync(id, 100);
+                .GetAsync(id, 100, cancellation);
 
             return Ok(ApiResult<List<UserHistoryWithdrawResponse>>.OK(response));
         }
@@ -49,10 +49,10 @@ namespace Withdraw.API.Controllers
             (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("100/last")]
-        public async Task<IActionResult> GetLast100Withdraw()
+        public async Task<IActionResult> GetLast100Withdraw(CancellationToken cancellation)
         {
             List<UserHistoryWithdrawResponse> response = await _userWithdrawsService
-                .GetAsync(100);
+                .GetAsync(100, cancellation);
 
             return Ok(ApiResult<List<UserHistoryWithdrawResponse>>.OK(response));
         }
@@ -61,10 +61,10 @@ namespace Withdraw.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> Get(CancellationToken cancellation)
         {
             List<UserHistoryWithdrawResponse> response = await _userWithdrawsService
-                .GetAsync(UserId, 100);
+                .GetAsync(UserId, 100, cancellation);
 
             return Ok(ApiResult<List<UserHistoryWithdrawResponse>>.OK(response));
         }
@@ -73,10 +73,10 @@ namespace Withdraw.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
         [HttpGet("admin")]
-        public async Task<IActionResult> Get(int count = 100)
+        public async Task<IActionResult> Get(CancellationToken cancellation, int count = 100)
         {
             List<UserHistoryWithdrawResponse> response = await _userWithdrawsService
-                .GetAsync(count);
+                .GetAsync(count, cancellation);
 
             return Ok(ApiResult<List<UserHistoryWithdrawResponse>>.OK(response));
         }
@@ -86,10 +86,10 @@ namespace Withdraw.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
         [HttpGet("{userId}/admin")]
-        public async Task<IActionResult> Get(Guid userId, int count = 100)
+        public async Task<IActionResult> Get(Guid userId, CancellationToken cancellation, int count = 100)
         {
             List<UserHistoryWithdrawResponse> response = await _userWithdrawsService
-                .GetAsync(userId, count);
+                .GetAsync(userId, count, cancellation);
 
             return Ok(ApiResult<List<UserHistoryWithdrawResponse>>.OK(response));
         }
@@ -97,10 +97,10 @@ namespace Withdraw.API.Controllers
         [ProducesResponseType(typeof(ApiResult<UserInventoryResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet("{id}/transfer")]
-        public async Task<IActionResult> TransferToInventory(Guid id)
+        public async Task<IActionResult> TransferToInventory(Guid id, CancellationToken cancellation)
         {
             UserInventoryResponse response = await _userWithdrawsService
-                .TransferAsync(id, UserId);
+                .TransferAsync(id, UserId, cancellation);
 
             return Ok(ApiResult<UserInventoryResponse>.OK(response));
         }

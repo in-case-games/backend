@@ -21,7 +21,7 @@ namespace Withdraw.BLL.Services
             };
         }
 
-        public async Task<BuyItemResponse> BuyItemAsync(ItemInfoResponse info, string tradeUrl)
+        public async Task<BuyItemResponse> BuyItemAsync(ItemInfoResponse info, string tradeUrl, CancellationToken cancellation = default)
         {
             var name = info.Market.Name!;
 
@@ -35,7 +35,7 @@ namespace Withdraw.BLL.Services
                 try
                 {
                     var item = await _marketServices[name]
-                        .BuyItemAsync(info, tradeUrl);
+                        .BuyItemAsync(info, tradeUrl, cancellation);
 
                     item.Market = info.Market;
 
@@ -53,7 +53,7 @@ namespace Withdraw.BLL.Services
             throw new RequestTimeoutException("Сервис покупки предметов не отвечает");
         }
 
-        public async Task<BalanceMarketResponse> GetBalanceAsync(string marketName)
+        public async Task<BalanceMarketResponse> GetBalanceAsync(string marketName, CancellationToken cancellation = default)
         {
             if (!_marketServices.ContainsKey(marketName))
                 throw new NotFoundException("Маркет не найден");
@@ -64,7 +64,7 @@ namespace Withdraw.BLL.Services
             {
                 try
                 {
-                    return await _marketServices[marketName].GetBalanceAsync();
+                    return await _marketServices[marketName].GetBalanceAsync(cancellation);
                 }
                 catch(Exception)
                 {
@@ -77,7 +77,7 @@ namespace Withdraw.BLL.Services
             throw new RequestTimeoutException("Сервис покупки предметов не отвечает");
         }
 
-        public async Task<ItemInfoResponse> GetItemInfoAsync(GameItem item)
+        public async Task<ItemInfoResponse> GetItemInfoAsync(GameItem item, CancellationToken cancellation = default)
         {
             var gameName = item.Game!.Name!;
             var market = item.Game!.Market!;
@@ -92,7 +92,7 @@ namespace Withdraw.BLL.Services
                 try
                 {
                     var info = await _marketServices[market.Name!]
-                        .GetItemInfoAsync(item.IdForMarket!, gameName);
+                        .GetItemInfoAsync(item.IdForMarket!, gameName, cancellation);
                     
                     info!.Item = item;
                     info!.Market = market;
@@ -110,7 +110,7 @@ namespace Withdraw.BLL.Services
             throw new RequestTimeoutException("Сервис покупки предмета не отвечает");
         }
 
-        public async Task<TradeInfoResponse> GetTradeInfoAsync(UserHistoryWithdraw history)
+        public async Task<TradeInfoResponse> GetTradeInfoAsync(UserHistoryWithdraw history, CancellationToken cancellation = default)
         {
             var name = history.Market!.Name!;
 
@@ -124,7 +124,7 @@ namespace Withdraw.BLL.Services
                 try
                 {
                     var info = await _marketServices[name]
-                        .GetTradeInfoAsync(history);
+                        .GetTradeInfoAsync(history, cancellation);
 
                     info.Item = history.Item;
 
