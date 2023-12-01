@@ -26,9 +26,9 @@ namespace Review.API.Controllers
             (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("all")]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> Get(CancellationToken cancellation)
         {
-            List<UserReviewResponse> response = await _userReviewService.GetAsync(isOnlyApproved: true);
+            List<UserReviewResponse> response = await _userReviewService.GetAsync(isOnlyApproved: true, cancellation);
 
             return Ok(ApiResult<List<UserReviewResponse>>.OK(response));
         }
@@ -37,12 +37,12 @@ namespace Review.API.Controllers
             (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("last/{count}")]
-        public async Task<IActionResult> GetLast(int count = 100)
+        public async Task<IActionResult> GetLast(CancellationToken cancellation, int count = 100)
         {
             count = count > 100 ? 100 : count;
 
             List<UserReviewResponse> response = await _userReviewService
-                .GetAsync(isOnlyApproved: true, count: count);
+                .GetAsync(isOnlyApproved: true, count: count, cancellation);
 
             return Ok(ApiResult<List<UserReviewResponse>>.OK(response));
         }
@@ -51,12 +51,12 @@ namespace Review.API.Controllers
             (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("last/{count}/admin")]
-        public async Task<IActionResult> GetLastAdmin(int count = 100)
+        public async Task<IActionResult> GetLastAdmin(CancellationToken cancellation, int count = 100)
         {
             count = count > 1000 ? 1000 : count;
 
             List<UserReviewResponse> response = await _userReviewService
-                .GetAsync(isOnlyApproved: false, count: count);
+                .GetAsync(isOnlyApproved: false, count: count, cancellation);
 
             return Ok(ApiResult<List<UserReviewResponse>>.OK(response));
         }
@@ -65,9 +65,9 @@ namespace Review.API.Controllers
             (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("{id}")]
-        public async Task<IActionResult> Get(Guid id)
+        public async Task<IActionResult> Get(CancellationToken cancellation, Guid id)
         {
-            UserReviewResponse response = await _userReviewService.GetAsync(id, isOnlyApproved: true);
+            UserReviewResponse response = await _userReviewService.GetAsync(id, isOnlyApproved: true, cancellation);
 
             return Ok(ApiResult<UserReviewResponse>.OK(response));
         }
@@ -76,10 +76,10 @@ namespace Review.API.Controllers
             (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("user/{id}")]
-        public async Task<IActionResult> GetByUserId(Guid id)
+        public async Task<IActionResult> GetByUserId(CancellationToken cancellation, Guid id)
         {
             List<UserReviewResponse> response = await _userReviewService
-                .GetByUserIdAsync(id, isOnlyApproved: true);
+                .GetByUserIdAsync(id, isOnlyApproved: true, cancellation);
 
             return Ok(ApiResult<List<UserReviewResponse>>.OK(response));
         }
@@ -88,9 +88,9 @@ namespace Review.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
         [HttpGet("admin")]
-        public async Task<IActionResult> GetByAdmin()
+        public async Task<IActionResult> GetByAdmin(CancellationToken cancellation)
         {
-            List<UserReviewResponse> response = await _userReviewService.GetAsync(isOnlyApproved: false);
+            List<UserReviewResponse> response = await _userReviewService.GetAsync(isOnlyApproved: false, cancellation);
 
             return Ok(ApiResult<List<UserReviewResponse>>.OK(response));
         }
@@ -99,9 +99,9 @@ namespace Review.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
         [HttpGet("{id}/admin")]
-        public async Task<IActionResult> GetByAdmin(Guid id)
+        public async Task<IActionResult> GetByAdmin(CancellationToken cancellation, Guid id)
         {
-            UserReviewResponse response = await _userReviewService.GetAsync(id, isOnlyApproved: false);
+            UserReviewResponse response = await _userReviewService.GetAsync(id, isOnlyApproved: false, cancellation);
 
             return Ok(ApiResult<UserReviewResponse>.OK(response));
         }
@@ -110,10 +110,10 @@ namespace Review.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
         [HttpGet("user/{userId}/admin")]
-        public async Task<IActionResult> GetByAdminUserId(Guid userId)
+        public async Task<IActionResult> GetByAdminUserId(CancellationToken cancellation, Guid userId)
         {
             List<UserReviewResponse> response = await _userReviewService
-                .GetByUserIdAsync(userId, isOnlyApproved: false);
+                .GetByUserIdAsync(userId, isOnlyApproved: false, cancellation);
 
             return Ok(ApiResult<List<UserReviewResponse>>.OK(response));
         }
@@ -122,10 +122,10 @@ namespace Review.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet]
-        public async Task<IActionResult> GetByUserId()
+        public async Task<IActionResult> GetByUserId(CancellationToken cancellation)
         {
             List<UserReviewResponse> response = await _userReviewService
-                .GetByUserIdAsync(UserId, isOnlyApproved: false);
+                .GetByUserIdAsync(UserId, isOnlyApproved: false, cancellation);
 
             return Ok(ApiResult<List<UserReviewResponse>>.OK(response));
         }
@@ -134,9 +134,9 @@ namespace Review.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Admin, Roles.Owner)]
         [HttpGet("{id}/approve")]
-        public async Task<IActionResult> Approve(Guid id)
+        public async Task<IActionResult> Approve(CancellationToken cancellation, Guid id)
         {
-            UserReviewResponse response = await _userReviewService.ApproveReviewAsync(id);
+            UserReviewResponse response = await _userReviewService.ApproveReviewAsync(id, cancellation);
 
             return Ok(ApiResult<UserReviewResponse>.OK(response));
         }
@@ -145,9 +145,9 @@ namespace Review.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Admin, Roles.Owner)]
         [HttpGet("{id}/denied")]
-        public async Task<IActionResult> Denied(Guid id)
+        public async Task<IActionResult> Denied(Guid id, CancellationToken cancellation)
         {
-            UserReviewResponse response = await _userReviewService.DeniedReviewAsync(id);
+            UserReviewResponse response = await _userReviewService.DeniedReviewAsync(id, cancellation);
 
             return Ok(ApiResult<UserReviewResponse>.OK(response));
         }
@@ -156,11 +156,11 @@ namespace Review.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpPost]
-        public async Task<IActionResult> Post(UserReviewRequest request)
+        public async Task<IActionResult> Post(UserReviewRequest request, CancellationToken cancellation)
         {
             request.UserId = UserId;
 
-            UserReviewResponse response = await _userReviewService.CreateAsync(request);
+            UserReviewResponse response = await _userReviewService.CreateAsync(request, cancellation);
 
             return Ok(ApiResult<UserReviewResponse>.OK(response));
         }
@@ -169,11 +169,11 @@ namespace Review.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpPut]
-        public async Task<IActionResult> Put(UserReviewRequest request)
+        public async Task<IActionResult> Put(UserReviewRequest request, CancellationToken cancellation)
         {
             request.UserId = UserId;
 
-            UserReviewResponse response = await _userReviewService.UpdateAsync(request);
+            UserReviewResponse response = await _userReviewService.UpdateAsync(request, cancellation);
 
             return Ok(ApiResult<UserReviewResponse>.OK(response));
         }
@@ -182,9 +182,9 @@ namespace Review.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(Guid id)
+        public async Task<IActionResult> Delete(Guid id, CancellationToken cancellation)
         {
-            UserReviewResponse response = await _userReviewService.DeleteAsync(UserId, id);
+            UserReviewResponse response = await _userReviewService.DeleteAsync(UserId, id, cancellation);
 
             return Ok(ApiResult<UserReviewResponse>.OK(response));
         }
@@ -193,9 +193,9 @@ namespace Review.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Admin, Roles.Owner)]
         [HttpDelete("{id}/admin")]
-        public async Task<IActionResult> DeleteAdmin(Guid id)
+        public async Task<IActionResult> DeleteAdmin(Guid id, CancellationToken cancellation)
         {
-            UserReviewResponse response = await _userReviewService.DeleteAsync(id);
+            UserReviewResponse response = await _userReviewService.DeleteAsync(id, cancellation);
 
             return Ok(ApiResult<UserReviewResponse>.OK(response));
         }
