@@ -17,9 +17,9 @@ namespace Review.BLL.Services
             _context = context;
         }
 
-        public async Task<User?> GetAsync(Guid id) => await _context.User
+        public async Task<User?> GetAsync(Guid id, CancellationToken cancellation = default) => await _context.User
             .AsNoTracking()
-            .FirstOrDefaultAsync(u => u.Id == id);
+            .FirstOrDefaultAsync(u => u.Id == id, cancellation);
 
         public async Task CreateAsync(UserTemplate template, CancellationToken cancellation = default)
         {
