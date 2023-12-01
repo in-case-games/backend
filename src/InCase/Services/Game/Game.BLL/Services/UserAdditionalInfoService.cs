@@ -17,48 +17,48 @@ namespace Game.BLL.Services
             _context = context;
         }
 
-        public async Task<GuestModeResponse> GetGuestModeAsync(Guid userId)
+        public async Task<GuestModeResponse> GetGuestModeAsync(Guid userId, CancellationToken cancellation = default)
         {
             UserAdditionalInfo info = await _context.AdditionalInfos
                 .AsNoTracking()
-                .FirstOrDefaultAsync(uai => uai.UserId == userId) ?? 
+                .FirstOrDefaultAsync(uai => uai.UserId == userId, cancellation) ?? 
                 throw new NotFoundException("Пользователь не найден");
 
             return info.ToGuestModeResponse();
         }
 
-        public async Task<BalanceResponse> GetBalanceAsync(Guid userId)
+        public async Task<BalanceResponse> GetBalanceAsync(Guid userId, CancellationToken cancellation = default)
         {
             UserAdditionalInfo info = await _context.AdditionalInfos
                 .AsNoTracking()
-                .FirstOrDefaultAsync(uai => uai.UserId == userId) ??
+                .FirstOrDefaultAsync(uai => uai.UserId == userId, cancellation) ??
                 throw new NotFoundException("Пользователь не найден");
 
             return info.ToBalanceResponse();
         }
 
-        public async Task<GuestModeResponse> ChangeGuestModeAsync(Guid userId)
+        public async Task<GuestModeResponse> ChangeGuestModeAsync(Guid userId, CancellationToken cancellation = default)
         {
             UserAdditionalInfo info = await _context.AdditionalInfos
-                .FirstOrDefaultAsync(uai => uai.UserId == userId) ??
+                .FirstOrDefaultAsync(uai => uai.UserId == userId, cancellation) ??
                 throw new NotFoundException("Пользователь не найден");
 
             info.IsGuestMode = !info.IsGuestMode;
 
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(cancellation);
 
             return info.ToGuestModeResponse();
         }
 
-        public async Task<BalanceResponse> ChangeBalanceByOwnerAsync(Guid userId, decimal balance)
+        public async Task<BalanceResponse> ChangeBalanceByOwnerAsync(Guid userId, decimal balance, CancellationToken cancellation = default)
         {
             UserAdditionalInfo info = await _context.AdditionalInfos
-                .FirstOrDefaultAsync(uai => uai.UserId == userId) ??
+                .FirstOrDefaultAsync(uai => uai.UserId == userId, cancellation) ??
                 throw new NotFoundException("Пользователь не найден");
 
             info.Balance = balance;
 
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(cancellation);
 
             return new() { 
                 Balance = info.Balance,

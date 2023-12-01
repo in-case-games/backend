@@ -25,9 +25,9 @@ namespace Game.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet("guest-mode")]
-        public async Task<IActionResult> GetGuestMode()
+        public async Task<IActionResult> GetGuestMode(CancellationToken cancellation)
         {
-            GuestModeResponse response = await _infoService.GetGuestModeAsync(UserId);
+            GuestModeResponse response = await _infoService.GetGuestModeAsync(UserId, cancellation);
 
             return Ok(ApiResult<GuestModeResponse>.OK(response));
         }
@@ -36,9 +36,9 @@ namespace Game.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet("balance")]
-        public async Task<IActionResult> GetBalance()
+        public async Task<IActionResult> GetBalance(CancellationToken cancellation)
         {
-            BalanceResponse response = await _infoService.GetBalanceAsync(UserId);
+            BalanceResponse response = await _infoService.GetBalanceAsync(UserId, cancellation);
 
             return Ok(ApiResult<BalanceResponse>.OK(response));
         }
@@ -47,9 +47,9 @@ namespace Game.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
         [HttpGet("{userId}/balance")]
-        public async Task<IActionResult> GetBalanceByAdmin(Guid userId)
+        public async Task<IActionResult> GetBalanceByAdmin(Guid userId, CancellationToken cancellation)
         {
-            BalanceResponse response = await _infoService.GetBalanceAsync(userId);
+            BalanceResponse response = await _infoService.GetBalanceAsync(userId, cancellation);
 
             return Ok(ApiResult<BalanceResponse>.OK(response));
         }
@@ -58,10 +58,10 @@ namespace Game.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Owner)]
         [HttpGet("{userId}/balance/{balance}/owner")]
-        public async Task<IActionResult> ChangeBalanceByOwner(Guid userId, decimal balance)
+        public async Task<IActionResult> ChangeBalanceByOwner(Guid userId, decimal balance, CancellationToken cancellation)
         {
             BalanceResponse response = await _infoService
-                .ChangeBalanceByOwnerAsync(userId, balance);
+                .ChangeBalanceByOwnerAsync(userId, balance, cancellation);
 
             return Ok(ApiResult<BalanceResponse>.OK(response));
         }
@@ -70,9 +70,9 @@ namespace Game.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpPut("guest-mode")]
-        public async Task<IActionResult> SwitchGuestMode()
+        public async Task<IActionResult> SwitchGuestMode(CancellationToken cancellation)
         {
-            GuestModeResponse response = await _infoService.ChangeGuestModeAsync(UserId);
+            GuestModeResponse response = await _infoService.ChangeGuestModeAsync(UserId, cancellation);
 
             return Ok(ApiResult<GuestModeResponse>.OK(response));
         }
