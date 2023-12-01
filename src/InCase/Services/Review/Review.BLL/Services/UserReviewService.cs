@@ -139,8 +139,7 @@ namespace Review.BLL.Services
 
             UserReview reviewOld = await _context.Reviews
                 .Include(ur => ur.Images)
-                .AsNoTracking()
-                .FirstOrDefaultAsync(ur => ur.Id == review.Id, cancellation) ??
+                .FirstOrDefaultAsync(ur => ur.Id == review.Id) ??
                 throw new NotFoundException("Отзыв не найден");
 
             review.CreationDate = reviewOld.CreationDate;
