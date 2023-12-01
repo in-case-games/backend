@@ -24,7 +24,7 @@ namespace Authentication.API.Controllers
             (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("account")]
-        public async Task<IActionResult> ConfirmAccount(string token)
+        public async Task<IActionResult> ConfirmAccount(string token, CancellationToken cancellationToken = default)
         {
             TokensResponse response = await _authConfirmService.ConfirmAccountAsync(token);
 
@@ -35,7 +35,7 @@ namespace Authentication.API.Controllers
             (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("email/{email}")]
-        public async Task<IActionResult> UpdateEmail(string email, string token)
+        public async Task<IActionResult> UpdateEmail(string email, string token, CancellationToken cancellationToken = default)
         {
             UserResponse response = await _authConfirmService.UpdateEmailAsync(email, token);
 
@@ -46,7 +46,7 @@ namespace Authentication.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Owner)]
         [HttpGet("{userId}/email/{email}")]
-        public async Task<IActionResult> UpdateEmail(Guid userId, string email)
+        public async Task<IActionResult> UpdateEmail(Guid userId, string email, CancellationToken cancellationToken = default)
         {
             UserResponse response = await _authConfirmService.UpdateEmailByAdminAsync(userId, email);
 
@@ -57,7 +57,7 @@ namespace Authentication.API.Controllers
             (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("login/{login}")]
-        public async Task<IActionResult> UpdateLogin(string login, string token)
+        public async Task<IActionResult> UpdateLogin(string login, string token, CancellationToken cancellationToken = default)
         {
             UserResponse response = await _authConfirmService.UpdateLoginAsync(login, token);
 
@@ -68,7 +68,7 @@ namespace Authentication.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Owner)]
         [HttpGet("{userId}/login/{login}")]
-        public async Task<IActionResult> UpdateLogin(Guid userId, string login)
+        public async Task<IActionResult> UpdateLogin(Guid userId, string login, CancellationToken cancellationToken = default)
         {
             UserResponse response = await _authConfirmService.UpdateLoginByAdminAsync(userId, login);
 
@@ -79,7 +79,7 @@ namespace Authentication.API.Controllers
             (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("password/{password}")]
-        public async Task<IActionResult> UpdatePassword(string password, string token)
+        public async Task<IActionResult> UpdatePassword(string password, string token, CancellationToken cancellationToken = default)
         {
             UserResponse response = await _authConfirmService.UpdatePasswordAsync(password, token);
 
@@ -90,7 +90,7 @@ namespace Authentication.API.Controllers
             (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpDelete("account")]
-        public async Task<IActionResult> Delete(string token)
+        public async Task<IActionResult> Delete(string token, CancellationToken cancellationToken = default)
         {
             UserResponse response = await _authConfirmService.DeleteAsync(token);
 
