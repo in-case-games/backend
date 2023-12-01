@@ -22,9 +22,9 @@ namespace Promocode.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> Get(CancellationToken cancellation)
         {
-            List<PromocodeResponse> response = await _promocodeService.GetAsync();
+            List<PromocodeResponse> response = await _promocodeService.GetAsync(cancellation);
 
             return Ok(ApiResult<List<PromocodeResponse>>.OK(response));
         }
@@ -33,9 +33,9 @@ namespace Promocode.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
         [HttpGet("empty")]
-        public async Task<IActionResult> GetEmpty()
+        public async Task<IActionResult> GetEmpty(CancellationToken cancellation)
         {
-            List<PromocodeResponse> response = await _promocodeService.GetEmptyPromocodesAsync();
+            List<PromocodeResponse> response = await _promocodeService.GetEmptyPromocodesAsync(cancellation);
 
             return Ok(ApiResult<List<PromocodeResponse>>.OK(response));
         }
@@ -44,9 +44,9 @@ namespace Promocode.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet("name/{name}")]
-        public async Task<IActionResult> Get(string name)
+        public async Task<IActionResult> Get(string name, CancellationToken cancellation)
         {
-            PromocodeResponse response = await _promocodeService.GetAsync(name);
+            PromocodeResponse response = await _promocodeService.GetAsync(name, cancellation);
 
             return Ok(ApiResult<PromocodeResponse>.OK(response));
         }
@@ -55,9 +55,9 @@ namespace Promocode.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet("types")]
-        public async Task<IActionResult> GetTypes()
+        public async Task<IActionResult> GetTypes(CancellationToken cancellation)
         {
-            List<PromocodeTypeResponse> response = await _promocodeService.GetTypesAsync();
+            List<PromocodeTypeResponse> response = await _promocodeService.GetTypesAsync(cancellation);
 
             return Ok(ApiResult<List<PromocodeTypeResponse>>.OK(response));
         }
@@ -66,9 +66,9 @@ namespace Promocode.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
         [HttpPost]
-        public async Task<IActionResult> Post(PromocodeRequest request)
+        public async Task<IActionResult> Post(PromocodeRequest request, CancellationToken cancellation)
         {
-            PromocodeResponse response = await _promocodeService.CreateAsync(request);
+            PromocodeResponse response = await _promocodeService.CreateAsync(request, cancellation);
 
             return Ok(ApiResult<PromocodeResponse>.OK(response));
         }
@@ -77,9 +77,9 @@ namespace Promocode.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
         [HttpPut]
-        public async Task<IActionResult> Put(PromocodeRequest request)
+        public async Task<IActionResult> Put(PromocodeRequest request, CancellationToken cancellation)
         {
-            PromocodeResponse response = await _promocodeService.UpdateAsync(request);
+            PromocodeResponse response = await _promocodeService.UpdateAsync(request, cancellation);
 
             return Ok(ApiResult<PromocodeResponse>.OK(response));
         }
@@ -88,9 +88,9 @@ namespace Promocode.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(Guid id)
+        public async Task<IActionResult> Delete(Guid id, CancellationToken cancellation)
         {
-            PromocodeResponse response = await _promocodeService.DeleteAsync(id);
+            PromocodeResponse response = await _promocodeService.DeleteAsync(id, cancellation);
 
             return Ok(ApiResult<PromocodeResponse>.OK(response));
         }
