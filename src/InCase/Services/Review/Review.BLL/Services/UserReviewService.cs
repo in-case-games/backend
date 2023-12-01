@@ -139,12 +139,7 @@ namespace Review.BLL.Services
 
             UserReview reviewOld = await _context.Reviews
                 .Include(ur => ur.Images)
-<<<<<<< Updated upstream
-                .AsNoTracking()
-                .FirstOrDefaultAsync(ur => ur.Id == review.Id, cancellation) ??
-=======
                 .FirstOrDefaultAsync(ur => ur.Id == review.Id) ??
->>>>>>> Stashed changes
                 throw new NotFoundException("Отзыв не найден");
 
             review.CreationDate = reviewOld.CreationDate;
