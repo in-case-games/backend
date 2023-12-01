@@ -26,9 +26,9 @@ namespace Identity.API.Controllers
             (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("{id}")]
-        public async Task<IActionResult> Get(Guid id)
+        public async Task<IActionResult> Get(Guid id, CancellationToken cancellation)
         {
-            UserRestrictionResponse response = await _restrictionService.GetAsync(id);
+            UserRestrictionResponse response = await _restrictionService.GetAsync(id, cancellation);
 
             return Ok(ApiResult<UserRestrictionResponse>.OK(response));
         }
@@ -37,9 +37,9 @@ namespace Identity.API.Controllers
             (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("user/{id}")]
-        public async Task<IActionResult> GetByUserId(Guid id)
+        public async Task<IActionResult> GetByUserId(Guid id, CancellationToken cancellation)
         {
-            List<UserRestrictionResponse> response = await _restrictionService.GetByUserIdAsync(id);
+            List<UserRestrictionResponse> response = await _restrictionService.GetByUserIdAsync(id, cancellation);
 
             return Ok(ApiResult<List<UserRestrictionResponse>>.OK(response));
         }
@@ -48,9 +48,9 @@ namespace Identity.API.Controllers
             (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("login/{login}")]
-        public async Task<IActionResult> GetByLogin(string login)
+        public async Task<IActionResult> GetByLogin(string login, CancellationToken cancellation)
         {
-            List<UserRestrictionResponse> response = await _restrictionService.GetByLoginAsync(login);
+            List<UserRestrictionResponse> response = await _restrictionService.GetByLoginAsync(login, cancellation);
 
             return Ok(ApiResult<List<UserRestrictionResponse>>.OK(response));
         }
@@ -59,9 +59,9 @@ namespace Identity.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> Get(CancellationToken cancellation)
         {
-            List<UserRestrictionResponse> response = await _restrictionService.GetByUserIdAsync(UserId);
+            List<UserRestrictionResponse> response = await _restrictionService.GetByUserIdAsync(UserId, cancellation);
 
             return Ok(ApiResult<List<UserRestrictionResponse>>.OK(response));
         }
@@ -70,9 +70,9 @@ namespace Identity.API.Controllers
             (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("{userId}&{ownerId}")]
-        public async Task<IActionResult> GetByIds(Guid userId, Guid ownerId)
+        public async Task<IActionResult> GetByIds(Guid userId, Guid ownerId, CancellationToken cancellation)
         {
-            List<UserRestrictionResponse> response = await _restrictionService.GetAsync(userId, ownerId);
+            List<UserRestrictionResponse> response = await _restrictionService.GetAsync(userId, ownerId, cancellation);
 
             return Ok(ApiResult<List<UserRestrictionResponse>>.OK(response));
         }
@@ -81,9 +81,9 @@ namespace Identity.API.Controllers
             (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("owner/{id}")]
-        public async Task<IActionResult> GetByOwnerId(Guid id)
+        public async Task<IActionResult> GetByOwnerId(Guid id, CancellationToken cancellation)
         {
-            List<UserRestrictionResponse> response = await _restrictionService.GetByOwnerIdAsync(id);
+            List<UserRestrictionResponse> response = await _restrictionService.GetByOwnerIdAsync(id, cancellation);
 
             return Ok(ApiResult<List<UserRestrictionResponse>>.OK(response));
         }
@@ -92,9 +92,9 @@ namespace Identity.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
         [HttpGet("owner")]
-        public async Task<IActionResult> GetByAdmin()
+        public async Task<IActionResult> GetByAdmin(CancellationToken cancellation)
         {
-            List<UserRestrictionResponse> response = await _restrictionService.GetByOwnerIdAsync(UserId);
+            List<UserRestrictionResponse> response = await _restrictionService.GetByOwnerIdAsync(UserId, cancellation);
 
             return Ok(ApiResult<List<UserRestrictionResponse>>.OK(response));
         }
@@ -103,9 +103,9 @@ namespace Identity.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
         [HttpGet("{userId}/owner")]
-        public async Task<IActionResult> GetByAdminAndUserId(Guid userId)
+        public async Task<IActionResult> GetByAdminAndUserId(Guid userId, CancellationToken cancellation)
         {
-            List<UserRestrictionResponse> response = await _restrictionService.GetAsync(userId, UserId);
+            List<UserRestrictionResponse> response = await _restrictionService.GetAsync(userId, UserId, cancellation);
 
             return Ok(ApiResult<List<UserRestrictionResponse>>.OK(response));
         }
@@ -114,9 +114,9 @@ namespace Identity.API.Controllers
             (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("types")]
-        public async Task<IActionResult> GetRestrictionType()
+        public async Task<IActionResult> GetRestrictionType(CancellationToken cancellation)
         {
-            List<RestrictionTypeResponse> response = await _restrictionService.GetTypesAsync();
+            List<RestrictionTypeResponse> response = await _restrictionService.GetTypesAsync(cancellation);
 
             return Ok(ApiResult<List<RestrictionTypeResponse>>.OK(response));
         }
@@ -125,11 +125,11 @@ namespace Identity.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Admin, Roles.Owner)]
         [HttpPost]
-        public async Task<IActionResult> Post(UserRestrictionRequest request)
+        public async Task<IActionResult> Post(UserRestrictionRequest request, CancellationToken cancellation)
         {
             request.OwnerId = UserId;
 
-            UserRestrictionResponse response = await _restrictionService.CreateAsync(request);
+            UserRestrictionResponse response = await _restrictionService.CreateAsync(request, cancellation);
 
             return Ok(ApiResult<UserRestrictionResponse>.OK(response));
         }
@@ -138,11 +138,11 @@ namespace Identity.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Admin, Roles.Owner)]
         [HttpPut]
-        public async Task<IActionResult> Put(UserRestrictionRequest request)
+        public async Task<IActionResult> Put(UserRestrictionRequest request, CancellationToken cancellation)
         {
             request.OwnerId = UserId;
 
-            UserRestrictionResponse response = await _restrictionService.UpdateAsync(request);
+            UserRestrictionResponse response = await _restrictionService.UpdateAsync(request, cancellation);
 
             return Ok(ApiResult<UserRestrictionResponse>.OK(response));
         }
@@ -151,9 +151,9 @@ namespace Identity.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Admin, Roles.Owner)]
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(Guid id)
+        public async Task<IActionResult> Delete(Guid id, CancellationToken cancellation)
         {
-            UserRestrictionResponse response = await _restrictionService.DeleteAsync(id);
+            UserRestrictionResponse response = await _restrictionService.DeleteAsync(id, cancellation);
 
             return Ok(ApiResult<UserRestrictionResponse>.OK(response));
         }

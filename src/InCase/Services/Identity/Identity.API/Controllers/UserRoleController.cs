@@ -22,9 +22,9 @@ namespace Identity.API.Controllers
             (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("{id}")]
-        public async Task<IActionResult> Get(Guid id)
+        public async Task<IActionResult> Get(Guid id, CancellationToken cancellation)
         {
-            UserRoleResponse response = await _roleService.GetAsync(id);
+            UserRoleResponse response = await _roleService.GetAsync(id, cancellation);
 
             return Ok(ApiResult<UserRoleResponse>.OK(response));
         }
@@ -33,9 +33,9 @@ namespace Identity.API.Controllers
             (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> Get(CancellationToken cancellation)
         {
-            List<UserRoleResponse> response = await _roleService.GetAsync();
+            List<UserRoleResponse> response = await _roleService.GetAsync(cancellation);
 
             return Ok(ApiResult<List<UserRoleResponse>>.OK(response));
         }
