@@ -4,6 +4,6 @@ namespace EmailSender.BLL.Interfaces
 {
     public interface IEmailService
     {
-        public Task SendToEmailAsync(EmailTemplate template);
+        public Task SendToEmailAsync(EmailTemplate template, CancellationToken cancellationToken = default);
     }
 }
