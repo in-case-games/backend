@@ -4,7 +4,7 @@ namespace Statistics.BLL.Repository
 {
     public interface ISiteStatisticsRepository
     {
-        public Task<SiteStatistics> GetAsync();
-        public Task<SiteStatisticsAdmin> GetAdminAsync();
+        public Task<SiteStatistics> GetAsync(CancellationToken cancellation = default);
+        public Task<SiteStatisticsAdmin> GetAdminAsync(CancellationToken cancellation = default);
     }
 }
