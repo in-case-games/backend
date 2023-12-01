@@ -25,7 +25,7 @@ namespace Authentication.API.Controllers
         [HttpPost("sign-in")]
         public async Task<IActionResult> SignIn(UserRequest request, CancellationToken cancellationToken = default)
         {
-            await _authenticationService.SignInAsync(request);
+            await _authenticationService.SignInAsync(request, cancellationToken);
 
             return Ok(ApiResult<string>.SentEmail());
         }
@@ -36,7 +36,7 @@ namespace Authentication.API.Controllers
         [HttpPost("sign-up")]
         public async Task<IActionResult> SignUp(UserRequest request, CancellationToken cancellationToken = default)
         {
-            await _authenticationService.SignUpAsync(request);
+            await _authenticationService.SignUpAsync(request, cancellationToken);
 
             return Ok(ApiResult<string>.SentEmail());
         }
@@ -47,7 +47,7 @@ namespace Authentication.API.Controllers
         [HttpGet("refresh")]
         public async Task<IActionResult> RefreshTokens(string token, CancellationToken cancellationToken = default)
         {
-            TokensResponse response = await _authenticationService.RefreshTokensAsync(token);
+            TokensResponse response = await _authenticationService.RefreshTokensAsync(token, cancellationToken);
 
             return Ok(ApiResult<TokensResponse>.OK(response));
         }
