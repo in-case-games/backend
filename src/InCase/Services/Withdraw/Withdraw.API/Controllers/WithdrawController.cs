@@ -26,10 +26,10 @@ namespace Withdraw.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpPost]
-        public async Task<IActionResult> Withdraw(WithdrawItemRequest request)
+        public async Task<IActionResult> Withdraw(WithdrawItemRequest request, CancellationToken cancellation)
         {
             UserHistoryWithdrawResponse response = await _withdrawService
-                .WithdrawItemAsync(request, UserId);
+                .WithdrawItemAsync(request, UserId, cancellation);
 
             return Ok(ApiResult<UserHistoryWithdrawResponse>.OK(response));
         }
@@ -37,9 +37,9 @@ namespace Withdraw.API.Controllers
         [ProducesResponseType(typeof(ApiResult<BalanceMarketResponse>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("market/{name}/balance")]
-        public async Task<IActionResult> GetMarketBalance(string name)
+        public async Task<IActionResult> GetMarketBalance(string name, CancellationToken cancellation)
         {
-            BalanceMarketResponse response = await _withdrawService.GetMarketBalanceAsync(name);
+            BalanceMarketResponse response = await _withdrawService.GetMarketBalanceAsync(name, cancellation);
 
             return Ok(ApiResult<BalanceMarketResponse>.OK(response));
         }
@@ -47,9 +47,9 @@ namespace Withdraw.API.Controllers
         [ProducesResponseType(typeof(ApiResult<ItemInfoResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
         [HttpGet("item/{id}")]
-        public async Task<IActionResult> GetItemInfo(Guid id)
+        public async Task<IActionResult> GetItemInfo(Guid id, CancellationToken cancellation)
         {
-            ItemInfoResponse response = await _withdrawService.GetItemInfoAsync(id);
+            ItemInfoResponse response = await _withdrawService.GetItemInfoAsync(id, cancellation);
 
             return Ok(ApiResult<ItemInfoResponse>.OK(response));
         }

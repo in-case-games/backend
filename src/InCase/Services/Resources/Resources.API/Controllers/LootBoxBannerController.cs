@@ -24,9 +24,9 @@ namespace Resources.API.Controllers
             (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> Get(CancellationToken cancellation)
         {
-            List<LootBoxBannerResponse> response = await _bannerService.GetAsync();
+            List<LootBoxBannerResponse> response = await _bannerService.GetAsync(cancellation);
 
             return Ok(ApiResult<List<LootBoxBannerResponse>>.OK(response));
         }
@@ -35,9 +35,9 @@ namespace Resources.API.Controllers
             (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("active/{isActive}")]
-        public async Task<IActionResult> GetByIsActive(bool isActive = true)
+        public async Task<IActionResult> GetByIsActive(CancellationToken cancellation, bool isActive = true)
         {
-            List<LootBoxBannerResponse> response = await _bannerService.GetAsync(isActive);
+            List<LootBoxBannerResponse> response = await _bannerService.GetAsync(isActive, cancellation);
 
             return Ok(ApiResult<List<LootBoxBannerResponse>>.OK(response));
         }
@@ -46,9 +46,9 @@ namespace Resources.API.Controllers
             (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("{id}")]
-        public async Task<IActionResult> Get(Guid id)
+        public async Task<IActionResult> Get(Guid id, CancellationToken cancellation)
         {
-            LootBoxBannerResponse response = await _bannerService.GetAsync(id);
+            LootBoxBannerResponse response = await _bannerService.GetAsync(id, cancellation);
 
             return Ok(ApiResult<LootBoxBannerResponse>.OK(response));
         }
@@ -57,9 +57,9 @@ namespace Resources.API.Controllers
             (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("box/{id}")]
-        public async Task<IActionResult> GetByBoxId(Guid id)
+        public async Task<IActionResult> GetByBoxId(Guid id, CancellationToken cancellation)
         {
-            LootBoxBannerResponse response = await _bannerService.GetByBoxIdAsync(id);
+            LootBoxBannerResponse response = await _bannerService.GetByBoxIdAsync(id, cancellation);
 
             return Ok(ApiResult<LootBoxBannerResponse>.OK(response));
         }
@@ -69,9 +69,9 @@ namespace Resources.API.Controllers
         [RequestSizeLimit(8388608)]
         [AuthorizeByRole(Roles.Owner)]
         [HttpPost]
-        public async Task<IActionResult> Post(LootBoxBannerRequest request)
+        public async Task<IActionResult> Post(LootBoxBannerRequest request, CancellationToken cancellation)
         {
-            LootBoxBannerResponse response = await _bannerService.CreateAsync(request);
+            LootBoxBannerResponse response = await _bannerService.CreateAsync(request, cancellation);
 
             return Ok(ApiResult<LootBoxBannerResponse>.OK(response));
         }
@@ -81,9 +81,9 @@ namespace Resources.API.Controllers
         [RequestSizeLimit(8388608)]
         [AuthorizeByRole(Roles.Owner)]
         [HttpPut]
-        public async Task<IActionResult> Put(LootBoxBannerRequest request)
+        public async Task<IActionResult> Put(LootBoxBannerRequest request, CancellationToken cancellation)
         {
-            LootBoxBannerResponse response = await _bannerService.UpdateAsync(request);
+            LootBoxBannerResponse response = await _bannerService.UpdateAsync(request, cancellation);
 
             return Ok(ApiResult<LootBoxBannerResponse>.OK(response));
         }
@@ -92,9 +92,9 @@ namespace Resources.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Owner)]
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(Guid id)
+        public async Task<IActionResult> Delete(Guid id, CancellationToken cancellation)
         {
-            LootBoxBannerResponse response = await _bannerService.DeleteAsync(id);
+            LootBoxBannerResponse response = await _bannerService.DeleteAsync(id, cancellation);
 
             return Ok(ApiResult<LootBoxBannerResponse>.OK(response));
         }

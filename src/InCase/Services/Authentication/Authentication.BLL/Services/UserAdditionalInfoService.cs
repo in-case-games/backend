@@ -16,22 +16,22 @@ namespace Authentication.BLL.Services
             _context = context;
         }
 
-        public async Task UpdateAsync(UserAdditionalInfoTemplate template)
+        public async Task UpdateAsync(UserAdditionalInfoTemplate template, CancellationToken cancellationToken = default)
         {
             UserAdditionalInfo info = await _context.AdditionalInfos
-                .FirstOrDefaultAsync(uai => uai.UserId == template.UserId) ?? 
+                .FirstOrDefaultAsync(uai => uai.UserId == template.UserId, cancellationToken) ?? 
                 throw new NotFoundException("Пользователь не найден");
 
             UserRole? role = await _context.Roles
                 .AsNoTracking()
-                .FirstOrDefaultAsync(ur => ur.Name == template.RoleName);
+                .FirstOrDefaultAsync(ur => ur.Name == template.RoleName, cancellationToken);
 
             info.DeletionDate = template.DeletionDate;
 
             if(role is not null)
                 info.RoleId = role.Id;
 
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(cancellationToken);
         }
     }
 }

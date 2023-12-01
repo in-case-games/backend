@@ -23,9 +23,9 @@ namespace Statistics.API.Controllers
             (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> Get(CancellationToken cancellation)
         {
-            SiteStatisticsResponse response = await _statisticsService.GetAsync();
+            SiteStatisticsResponse response = await _statisticsService.GetAsync(cancellation);
 
             return Ok(ApiResult<SiteStatisticsResponse>.OK(response));
         }
@@ -34,9 +34,9 @@ namespace Statistics.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Owner, Roles.Bot)]
         [HttpGet("admin")]
-        public async Task<IActionResult> GetAdmin()
+        public async Task<IActionResult> GetAdmin(CancellationToken cancellation)
         {
-            SiteStatisticsAdminResponse response = await _statisticsService.GetAdminAsync();
+            SiteStatisticsAdminResponse response = await _statisticsService.GetAdminAsync(cancellation);
 
             return Ok(ApiResult<SiteStatisticsAdminResponse>.OK(response));
         }

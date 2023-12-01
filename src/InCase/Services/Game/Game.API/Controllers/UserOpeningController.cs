@@ -26,10 +26,10 @@ namespace Game.API.Controllers
             (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("{id}")]
-        public async Task<IActionResult> Get(Guid id)
+        public async Task<IActionResult> Get(Guid id, CancellationToken cancellation)
         {
             UserOpeningResponse response = await _openingService
-                .GetAsync(id);
+                .GetAsync(id, cancellation);
 
             return Ok(ApiResult<UserOpeningResponse>.OK(response));
         }
@@ -38,10 +38,10 @@ namespace Game.API.Controllers
             (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("roulette")]
-        public async Task<IActionResult> GetRoulete()
+        public async Task<IActionResult> GetRoulete(CancellationToken cancellation)
         {
             List<UserOpeningResponse> response = await _openingService
-                .GetAsync(20);
+                .GetAsync(20, cancellation);
 
             return Ok(ApiResult<List<UserOpeningResponse>>.OK(response));
         }
@@ -50,10 +50,10 @@ namespace Game.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
         [HttpGet]
-        public async Task<IActionResult> Get(int count = 100)
+        public async Task<IActionResult> Get(CancellationToken cancellation, int count = 100)
         {
             List<UserOpeningResponse> response = await _openingService
-                .GetAsync(count);
+                .GetAsync(count, cancellation);
 
             return Ok(ApiResult<List<UserOpeningResponse>>.OK(response));
         }
@@ -62,10 +62,10 @@ namespace Game.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet("ten/last")]
-        public async Task<IActionResult> GetByUserId()
+        public async Task<IActionResult> GetByUserId(CancellationToken cancellation)
         {
             List<UserOpeningResponse> response = await _openingService
-                .GetAsync(UserId, 10);
+                .GetAsync(UserId, 10, cancellation);
 
             return Ok(ApiResult<List<UserOpeningResponse>>.OK(response));
         }
@@ -74,10 +74,10 @@ namespace Game.API.Controllers
             (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("{id}/userId")]
-        public async Task<IActionResult> GetByUserId(Guid id)
+        public async Task<IActionResult> GetByUserId(Guid id, CancellationToken cancellation)
         {
             List<UserOpeningResponse> response = await _openingService
-                .GetAsync(id, 15);
+                .GetAsync(id, 15, cancellation);
 
             return Ok(ApiResult<List<UserOpeningResponse>>.OK(response));
         }
@@ -86,10 +86,10 @@ namespace Game.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
         [HttpGet("{userId}/userId/admin")]
-        public async Task<IActionResult> GetByUserId(Guid id, int count = 100)
+        public async Task<IActionResult> GetByUserId(Guid id, CancellationToken cancellation, int count = 100)
         {
             List<UserOpeningResponse> response = await _openingService
-                .GetAsync(id, count);
+                .GetAsync(id, count, cancellation);
 
             return Ok(ApiResult<List<UserOpeningResponse>>.OK(response));
         }
@@ -98,10 +98,10 @@ namespace Game.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet("box/{id}")]
-        public async Task<IActionResult> GetByBoxId(Guid id)
+        public async Task<IActionResult> GetByBoxId(Guid id, CancellationToken cancellation)
         {
             List<UserOpeningResponse> response = await _openingService
-                .GetByBoxIdAsync(UserId, id, 100);
+                .GetByBoxIdAsync(UserId, id, 100, cancellation);
 
             return Ok(ApiResult<List<UserOpeningResponse>>.OK(response));
         }
@@ -110,10 +110,10 @@ namespace Game.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet("item/{id}")]
-        public async Task<IActionResult> GetByItemId(Guid id)
+        public async Task<IActionResult> GetByItemId(Guid id, CancellationToken cancellation)
         {
             List<UserOpeningResponse> response = await _openingService
-                .GetByItemIdAsync(UserId, id, 100);
+                .GetByItemIdAsync(UserId, id, 100, cancellation);
 
             return Ok(ApiResult<List<UserOpeningResponse>>.OK(response));
         }
@@ -122,10 +122,10 @@ namespace Game.API.Controllers
             (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("box/{id}/roulette")]
-        public async Task<IActionResult> GetRouleteByBoxId(Guid id)
+        public async Task<IActionResult> GetRouleteByBoxId(Guid id, CancellationToken cancellation)
         {
             List<UserOpeningResponse> response = await _openingService
-                .GetByBoxIdAsync(id, 20);
+                .GetByBoxIdAsync(id, 20, cancellation);
 
             return Ok(ApiResult<List<UserOpeningResponse>>.OK(response));
         }
@@ -134,10 +134,10 @@ namespace Game.API.Controllers
             (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("item/{id}/roulette")]
-        public async Task<IActionResult> GetRouleteByItemId(Guid id)
+        public async Task<IActionResult> GetRouleteByItemId(Guid id, CancellationToken cancellation)
         {
             List<UserOpeningResponse> response = await _openingService
-                .GetByItemIdAsync(id, 20);
+                .GetByItemIdAsync(id, 20, cancellation);
 
             return Ok(ApiResult<List<UserOpeningResponse>>.OK(response));
         }

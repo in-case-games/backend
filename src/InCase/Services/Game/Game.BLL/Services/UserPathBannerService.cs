@@ -4,10 +4,8 @@ using Game.BLL.Interfaces;
 using Game.BLL.Models;
 using Game.DAL.Data;
 using Game.DAL.Entities;
-using Infrastructure.MassTransit.Statistics;
 using Microsoft.EntityFrameworkCore;
 using Game.BLL.MassTransit;
-using System;
 
 namespace Game.BLL.Services
 {
@@ -22,9 +20,9 @@ namespace Game.BLL.Services
             _publisher = publisher;
         }
 
-        public async Task<List<UserPathBannerResponse>> GetByUserIdAsync(Guid userId)
+        public async Task<List<UserPathBannerResponse>> GetByUserIdAsync(Guid userId, CancellationToken cancellation = default)
         {
-            if (!await _context.Users.AnyAsync(u => u.Id == userId))
+            if (!await _context.Users.AnyAsync(u => u.Id == userId, cancellation))
                 throw new NotFoundException("Пользователь не найден");
 
             List<UserPathBanner> banners = await _context.PathBanners
@@ -32,16 +30,16 @@ namespace Game.BLL.Services
                 .Include(upb => upb.Box)
                 .AsNoTracking()
                 .Where(upb => upb.UserId == userId)
-                .ToListAsync();
+                .ToListAsync(cancellation);
 
             return banners.ToResponse();
         }
 
-        public async Task<List<UserPathBannerResponse>> GetByItemIdAsync(Guid itemId, Guid userId)
+        public async Task<List<UserPathBannerResponse>> GetByItemIdAsync(Guid itemId, Guid userId, CancellationToken cancellation = default)
         {
-            if (!await _context.Users.AnyAsync(u => u.Id == userId))
+            if (!await _context.Users.AnyAsync(u => u.Id == userId, cancellation))
                 throw new NotFoundException("Пользователь не найден");
-            if (!await _context.Items.AnyAsync(gi => gi.Id == itemId))
+            if (!await _context.Items.AnyAsync(gi => gi.Id == itemId, cancellation))
                 throw new NotFoundException("Предмет не найден");
 
             List<UserPathBanner> banners = await _context.PathBanners
@@ -49,63 +47,63 @@ namespace Game.BLL.Services
                 .Include(upb => upb.Box)
                 .AsNoTracking()
                 .Where(upb => upb.ItemId == itemId && upb.UserId == userId)
-                .ToListAsync();
+                .ToListAsync(cancellation);
 
             return banners.ToResponse();
         }
 
-        public async Task<UserPathBannerResponse> GetByIdAsync(Guid id, Guid userId)
+        public async Task<UserPathBannerResponse> GetByIdAsync(Guid id, Guid userId, CancellationToken cancellation = default)
         {
-            if (!await _context.Users.AnyAsync(u => u.Id == userId))
+            if (!await _context.Users.AnyAsync(u => u.Id == userId, cancellation))
                 throw new NotFoundException("Пользователь не найден");
 
             UserPathBanner banner = await _context.PathBanners
                 .Include(upb => upb.Item)
                 .Include(upb => upb.Box)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(upb => upb.Id == id && upb.UserId == userId) ??
+                .FirstOrDefaultAsync(upb => upb.Id == id && upb.UserId == userId, cancellation) ??
                 throw new NotFoundException("Путь к баннеру не найден");
 
             return banner.ToResponse();
         }
 
-        public async Task<UserPathBannerResponse> GetByBoxIdAsync(Guid boxId, Guid userId)
+        public async Task<UserPathBannerResponse> GetByBoxIdAsync(Guid boxId, Guid userId, CancellationToken cancellation = default)
         {
-            if (!await _context.Users.AnyAsync(u => u.Id == userId))
+            if (!await _context.Users.AnyAsync(u => u.Id == userId, cancellation))
                 throw new NotFoundException("Пользователь не найден");
-            if (!await _context.Boxes.AnyAsync(lb => lb.Id == boxId))
+            if (!await _context.Boxes.AnyAsync(lb => lb.Id == boxId, cancellation))
                 throw new NotFoundException("Кейс не найден");
 
             UserPathBanner banner = await _context.PathBanners
                 .Include(upb => upb.Item)
                 .Include(upb => upb.Box)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(upb => upb.BoxId == boxId && upb.UserId == userId) ??
+                .FirstOrDefaultAsync(upb => upb.BoxId == boxId && upb.UserId == userId, cancellation) ??
                 throw new NotFoundException("Путь к баннеру не найден");
 
             return banner.ToResponse();
         }
 
-        public async Task<UserPathBannerResponse> CreateAsync(UserPathBannerRequest request)
+        public async Task<UserPathBannerResponse> CreateAsync(UserPathBannerRequest request, CancellationToken cancellation = default)
         {
-            if (!await _context.AdditionalInfos.AnyAsync(uai => uai.UserId == request.UserId))
+            if (!await _context.AdditionalInfos.AnyAsync(uai => uai.UserId == request.UserId, cancellation))
                 throw new NotFoundException("Пользователь не найден");
 
             if (await _context.PathBanners
-                .AnyAsync(upb => upb.UserId == request.UserId && upb.BoxId == request.BoxId))
+                .AnyAsync(upb => upb.UserId == request.UserId && upb.BoxId == request.BoxId, cancellation))
                 throw new ConflictException("Путь к баннеру уже используется");
 
             LootBox box = await _context.Boxes
                 .Include(lb => lb.Inventories)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(lb => lb.Id == request.BoxId) ??
+                .FirstOrDefaultAsync(lb => lb.Id == request.BoxId, cancellation) ??
                 throw new NotFoundException("Кейс не найден");
 
             LootBoxInventory inventory = await _context.BoxInventories
                 .Include(lbi => lbi.Item)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(lbi => lbi.BoxId == request.BoxId && 
-                lbi.ItemId == request.ItemId) ??
+                lbi.ItemId == request.ItemId, cancellation) ??
                 throw new NotFoundException("Предмет не найден");
 
             GameItem item = inventory.Item!;
@@ -125,8 +123,8 @@ namespace Game.BLL.Services
             if(banner.NumberSteps > 100)
                 throw new BadRequestException("Стоимость предмета превышает стоимость кейса в 20 раз");
 
-            await _context.PathBanners.AddAsync(banner);
-            await _context.SaveChangesAsync();
+            await _context.PathBanners.AddAsync(banner, cancellation);
+            await _context.SaveChangesAsync(cancellation);
 
             banner.Item = item;
             banner.Box = box;
@@ -134,15 +132,15 @@ namespace Game.BLL.Services
             return banner.ToResponse();
         }
 
-        public async Task<UserPathBannerResponse> UpdateAsync(UserPathBannerRequest request)
+        public async Task<UserPathBannerResponse> UpdateAsync(UserPathBannerRequest request, CancellationToken cancellation = default)
         {
-            if (!await _context.AdditionalInfos.AnyAsync(uai => uai.UserId == request.UserId))
+            if (!await _context.AdditionalInfos.AnyAsync(uai => uai.UserId == request.UserId, cancellation))
                 throw new NotFoundException("Пользователь не найден");
 
             UserPathBanner banner = await _context.PathBanners
                 .Include(usp => usp.Box)
                 .Include(usp => usp.Item)
-                .FirstOrDefaultAsync(usp => usp.Id == request.Id) ??
+                .FirstOrDefaultAsync(usp => usp.Id == request.Id, cancellation) ??
                 throw new NotFoundException("Путь к баннеру не найден");
 
             if (banner.UserId != request.UserId)
@@ -154,7 +152,7 @@ namespace Game.BLL.Services
 
             GameItem item = await _context.Items
                 .AsNoTracking()
-                .FirstOrDefaultAsync(gi => gi.Id == request.ItemId) ?? 
+                .FirstOrDefaultAsync(gi => gi.Id == request.ItemId, cancellation) ?? 
                 throw new NotFoundException("Предмет не найден");
 
             if (item.Cost <= banner.Box!.Cost)
@@ -168,27 +166,27 @@ namespace Game.BLL.Services
                 throw new BadRequestException("Стоимость предмета превышает стоимость кейса в 20 раз");
 
             _context.PathBanners.Update(banner);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(cancellation);
 
             banner.Item = item;
 
             return banner.ToResponse();
         }
 
-        public async Task<UserPathBannerResponse> DeleteAsync(Guid id, Guid userId)
+        public async Task<UserPathBannerResponse> DeleteAsync(Guid id, Guid userId, CancellationToken cancellation = default)
         {
-            if(!await _context.AdditionalInfos.AnyAsync(uai => uai.UserId == userId))
+            if(!await _context.AdditionalInfos.AnyAsync(uai => uai.UserId == userId, cancellation))
                 throw new NotFoundException("Пользователь не найден");
             
             UserPathBanner banner = await _context.PathBanners
                 .Include(usp => usp.Box)
                 .Include(usp => usp.Item)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(usp => usp.Id == id && usp.UserId == userId) ??
+                .FirstOrDefaultAsync(usp => usp.Id == id && usp.UserId == userId, cancellation) ??
                 throw new NotFoundException("Путь к баннеру не найден");
 
             _context.PathBanners.Remove(banner);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(cancellation);
 
             return banner.ToResponse();
         }

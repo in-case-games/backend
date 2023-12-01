@@ -26,10 +26,10 @@ namespace Payment.API.Controllers
             (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpPost("top-up")]
-        public async Task<IActionResult> TopUpBalance(GameMoneyTopUpResponse request)
+        public async Task<IActionResult> TopUpBalance(GameMoneyTopUpResponse request, CancellationToken cancellation)
         {
             UserPaymentsResponse response = await _paymentService
-                .TopUpBalanceAsync(request);
+                .TopUpBalanceAsync(request, cancellation);
 
             return Ok(ApiResult<UserPaymentsResponse>.OK(response));
         }
@@ -38,10 +38,10 @@ namespace Payment.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Owner, Roles.Bot)]
         [HttpGet("balance/{currency}")]
-        public async Task<IActionResult> GetBalance(string currency)
+        public async Task<IActionResult> GetBalance(string currency, CancellationToken cancellation)
         {
             PaymentBalanceResponse response = await _paymentService
-                .GetPaymentBalanceAsync(currency);
+                .GetPaymentBalanceAsync(currency, cancellation);
 
             return Ok(ApiResult<PaymentBalanceResponse>.OK(response));
         }
@@ -50,7 +50,7 @@ namespace Payment.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet("top-up/signature")]
-        public IActionResult GetSignatureForDeposit()
+        public IActionResult GetSignatureForDeposit(CancellationToken cancellation)
         {
             HashOfDataForDepositResponse response = _paymentService
                 .GetHashOfDataForDeposit(UserId);

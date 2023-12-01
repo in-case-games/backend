@@ -31,9 +31,9 @@ namespace Authentication.BLL.Services
             _publisher = publisher;
         }
 
-        public async Task<TokensResponse> ConfirmAccountAsync(string token)
+        public async Task<TokensResponse> ConfirmAccountAsync(string token, CancellationToken cancellationToken = default)
         {
-            User user = await _authenticationService.GetUserFromTokenAsync(token, "email");
+            User user = await _authenticationService.GetUserFromTokenAsync(token, "email", cancellationToken);
             UserAdditionalInfo info = user.AdditionalInfo!;
             TokensResponse response = _jwtService.CreateTokenPair(in user);
 
@@ -61,7 +61,7 @@ namespace Authentication.BLL.Services
 
                 SiteStatisticsTemplate statisticsTemplate = new() { Users = 1 };
 
-                await _publisher.SendAsync(statisticsTemplate);
+                await _publisher.SendAsync(statisticsTemplate, cancellationToken);
             }
             else if (info.DeletionDate != null)
             {
@@ -89,20 +89,20 @@ namespace Authentication.BLL.Services
                 };
             }
 
-            await _publisher.SendAsync(template);
+            await _publisher.SendAsync(template, cancellationToken);
 
             info.IsConfirmed = true;
             info.DeletionDate = null;
 
             _context.AdditionalInfos.Update(info);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(cancellationToken);
 
             return response;
         }
 
-        public async Task<UserResponse> DeleteAsync(string token)
+        public async Task<UserResponse> DeleteAsync(string token, CancellationToken cancellationToken = default)
         {
-            User user = await _authenticationService.GetUserFromTokenAsync(token, "email");
+            User user = await _authenticationService.GetUserFromTokenAsync(token, "email", cancellationToken);
 
             user.AdditionalInfo!.DeletionDate = DateTime.UtcNow + TimeSpan.FromDays(30);
 
@@ -121,23 +121,23 @@ namespace Authentication.BLL.Services
                 }
             };
 
-            await _publisher.SendAsync(template);
+            await _publisher.SendAsync(template, cancellationToken);
 
             _context.AdditionalInfos.Update(user.AdditionalInfo);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(cancellationToken);
 
             return user.ToResponse();
         }
 
-        public async Task<UserResponse> UpdateEmailAsync(string email, string token)
+        public async Task<UserResponse> UpdateEmailAsync(string email, string token, CancellationToken cancellationToken = default)
         {
-            if (await _context.Users.AsNoTracking().AnyAsync(u => u.Email == email))
+            if (await _context.Users.AsNoTracking().AnyAsync(u => u.Email == email, cancellationToken))
                 throw new ConflictException("Email почта занята");
 
-            User temp = await _authenticationService.GetUserFromTokenAsync(token, "email");
+            User temp = await _authenticationService.GetUserFromTokenAsync(token, "email", cancellationToken);
 
             User user = await _context.Users
-                .FirstAsync(u => u.Id == temp.Id);
+                .FirstAsync(u => u.Id == temp.Id, cancellationToken);
 
             EmailTemplate messageOldEmail = new()
             {
@@ -170,22 +170,22 @@ namespace Authentication.BLL.Services
 
             user.Email = email;
 
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(cancellationToken);
 
-            await _publisher.SendAsync(user.ToTemplate(false));
-            await _publisher.SendAsync(messageOldEmail);
-            await _publisher.SendAsync(messageNewEmail);
+            await _publisher.SendAsync(user.ToTemplate(false), cancellationToken);
+            await _publisher.SendAsync(messageOldEmail, cancellationToken);
+            await _publisher.SendAsync(messageNewEmail, cancellationToken);
 
             return user.ToResponse();
         }
 
-        public async Task<UserResponse> UpdateEmailByAdminAsync(Guid userId, string email)
+        public async Task<UserResponse> UpdateEmailByAdminAsync(Guid userId, string email, CancellationToken cancellationToken = default)
         {
-            if (await _context.Users.AsNoTracking().AnyAsync(u => u.Email == email))
+            if (await _context.Users.AsNoTracking().AnyAsync(u => u.Email == email, cancellationToken))
                 throw new ConflictException("Email почта занята");
 
             User user = await _context.Users
-                .FirstOrDefaultAsync(u => u.Id == userId) ??
+                .FirstOrDefaultAsync(u => u.Id == userId, cancellationToken) ??
                 throw new NotFoundException("Пользователь не найден");
 
             EmailTemplate messageOldEmail = new()
@@ -219,24 +219,24 @@ namespace Authentication.BLL.Services
 
             user.Email = email;
 
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(cancellationToken);
 
-            await _publisher.SendAsync(user.ToTemplate(false));
-            await _publisher.SendAsync(messageOldEmail);
-            await _publisher.SendAsync(messageNewEmail);
+            await _publisher.SendAsync(user.ToTemplate(false), cancellationToken);
+            await _publisher.SendAsync(messageOldEmail, cancellationToken);
+            await _publisher.SendAsync(messageNewEmail, cancellationToken);
 
             return user.ToResponse();
         }
 
-        public async Task<UserResponse> UpdateLoginAsync(string login, string token)
+        public async Task<UserResponse> UpdateLoginAsync(string login, string token, CancellationToken cancellationToken)
         {
-            if (await _context.Users.AsNoTracking().AnyAsync(u => u.Login == login))
+            if (await _context.Users.AsNoTracking().AnyAsync(u => u.Login == login, cancellationToken))
                 throw new ConflictException("Логин занят");
 
-            User temp = await _authenticationService.GetUserFromTokenAsync(token, "email");
+            User temp = await _authenticationService.GetUserFromTokenAsync(token, "email", cancellationToken);
 
             User user = await _context.Users
-                .FirstAsync(u => u.Id == temp.Id);
+                .FirstAsync(u => u.Id == temp.Id, cancellationToken);
 
             EmailTemplate template = new()
             {
@@ -254,21 +254,21 @@ namespace Authentication.BLL.Services
 
             user.Login = login;
 
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(cancellationToken);
 
-            await _publisher.SendAsync(user.ToTemplate(false));
-            await _publisher.SendAsync(template);
+            await _publisher.SendAsync(user.ToTemplate(false), cancellationToken);
+            await _publisher.SendAsync(template, cancellationToken);
 
             return user.ToResponse();
         }
 
-        public async Task<UserResponse> UpdateLoginByAdminAsync(Guid userId, string login)
+        public async Task<UserResponse> UpdateLoginByAdminAsync(Guid userId, string login, CancellationToken cancellationToken = default)
         {
-            if (await _context.Users.AsNoTracking().AnyAsync(u => u.Login == login))
+            if (await _context.Users.AsNoTracking().AnyAsync(u => u.Login == login, cancellationToken))
                 throw new ConflictException("Логин занят");
 
             User user = await _context.Users
-                .FirstOrDefaultAsync(u => u.Id == userId) ??
+                .FirstOrDefaultAsync(u => u.Id == userId, cancellationToken) ??
                 throw new NotFoundException("Пользователь не найден");
 
             EmailTemplate template = new()
@@ -287,17 +287,17 @@ namespace Authentication.BLL.Services
 
             user.Login = login;
 
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(cancellationToken);
 
-            await _publisher.SendAsync(user.ToTemplate(false));
-            await _publisher.SendAsync(template);
+            await _publisher.SendAsync(user.ToTemplate(false), cancellationToken);
+            await _publisher.SendAsync(template, cancellationToken);
 
             return user.ToResponse();
         }
 
-        public async Task<UserResponse> UpdatePasswordAsync(string password, string token)
+        public async Task<UserResponse> UpdatePasswordAsync(string password, string token, CancellationToken cancellationToken = default)
         {
-            User user = await _authenticationService.GetUserFromTokenAsync(token, "email");
+            User user = await _authenticationService.GetUserFromTokenAsync(token, "email", cancellationToken);
             AuthenticationService.CreateNewPassword(ref user, password);
 
             EmailTemplate template = new()
@@ -314,10 +314,10 @@ namespace Authentication.BLL.Services
                 }
             };
 
-            await _publisher.SendAsync(template);
+            await _publisher.SendAsync(template, cancellationToken);
 
             _context.Users.Update(user);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(cancellationToken);
 
             return user.ToResponse();
         }

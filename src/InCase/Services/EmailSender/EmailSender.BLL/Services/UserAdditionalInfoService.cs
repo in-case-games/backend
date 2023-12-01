@@ -17,25 +17,25 @@ namespace EmailSender.BLL.Services
             _context = context;
         }
 
-        public async Task<UserAdditionalInfoResponse> GetByUserIdAsync(Guid id)
+        public async Task<UserAdditionalInfoResponse> GetByUserIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
             UserAdditionalInfo info = await _context.AdditionalInfos
                 .AsNoTracking()
-                .FirstOrDefaultAsync(uai => uai.UserId == id) ??
+                .FirstOrDefaultAsync(uai => uai.UserId == id, cancellationToken) ??
                 throw new NotFoundException("Информация не найдена");
 
             return info.ToResponse();
         }
 
-        public async Task<UserAdditionalInfoResponse> UpdateNotifyEmailAsync(Guid userId, bool isNotifyEmail)
+        public async Task<UserAdditionalInfoResponse> UpdateNotifyEmailAsync(Guid userId, bool isNotifyEmail, CancellationToken cancellationToken = default)
         {
             UserAdditionalInfo info = await _context.AdditionalInfos
-                .FirstOrDefaultAsync(uai => uai.UserId == userId) ??
+                .FirstOrDefaultAsync(uai => uai.UserId == userId, cancellationToken) ??
                 throw new NotFoundException("Информация не найдена");
 
             info.IsNotifyEmail = isNotifyEmail;
 
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(cancellationToken);
 
             return info.ToResponse();
         }

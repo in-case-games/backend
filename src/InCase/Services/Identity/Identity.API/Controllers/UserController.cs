@@ -26,9 +26,9 @@ namespace Identity.API.Controllers
             (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("{id}")]
-        public async Task<IActionResult> Get(Guid id)
+        public async Task<IActionResult> Get(Guid id, CancellationToken cancellation)
         {
-            UserResponse response = await _userService.GetAsync(id);
+            UserResponse response = await _userService.GetAsync(id, cancellation);
 
             return Ok(ApiResult<UserResponse>.OK(response));
         }
@@ -37,9 +37,9 @@ namespace Identity.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> Get(CancellationToken cancellation)
         {
-            UserResponse response = await _userService.GetAsync(UserId);
+            UserResponse response = await _userService.GetAsync(UserId, cancellation);
 
             return Ok(ApiResult<UserResponse>.OK(response));
         }
@@ -48,9 +48,9 @@ namespace Identity.API.Controllers
             (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("login/{login}")]
-        public async Task<IActionResult> Get(string login)
+        public async Task<IActionResult> Get(string login, CancellationToken cancellation)
         {
-            UserResponse response = await _userService.GetAsync(login);
+            UserResponse response = await _userService.GetAsync(login, cancellation);
 
             return Ok(ApiResult<UserResponse>.OK(response));
         }

@@ -13,16 +13,16 @@ namespace Statistics.BLL.Services
             _siteStatisticsRepository = siteStatisticsRepository;
         }
 
-        public async Task<SiteStatisticsResponse> GetAsync()
+        public async Task<SiteStatisticsResponse> GetAsync(CancellationToken cancellation = default)
         {
-            var stats = await _siteStatisticsRepository.GetAsync();
+            var stats = await _siteStatisticsRepository.GetAsync(cancellation);
 
             return stats.ToResponse();
         }
 
-        public async Task<SiteStatisticsAdminResponse> GetAdminAsync()
+        public async Task<SiteStatisticsAdminResponse> GetAdminAsync(CancellationToken cancellation = default)
         {
-            var stats = await _siteStatisticsRepository.GetAdminAsync();
+            var stats = await _siteStatisticsRepository.GetAdminAsync(cancellation);
 
             return stats.ToResponse();
         }

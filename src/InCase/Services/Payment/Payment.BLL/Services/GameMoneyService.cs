@@ -23,7 +23,7 @@ namespace Payment.BLL.Services
             _cfg = cfg;
         }
 
-        public async Task<PaymentBalanceResponse> GetBalanceAsync(string currency)
+        public async Task<PaymentBalanceResponse> GetBalanceAsync(string currency, CancellationToken cancellation = default)
         {
             GameMoneyBalanceRequest request = new()
             {
@@ -41,7 +41,7 @@ namespace Payment.BLL.Services
                 try
                 {
                     IGameMoneyResponse? response = await _responseService
-                        .ResponsePostAsync(GameMoneyEndpoint.Balance, request);
+                        .ResponsePostAsync(GameMoneyEndpoint.Balance, request, cancellation);
 
                     if (!_rsaService.VerifySignatureRSA(response!))
                         throw new ForbiddenException("Неверная подпись rsa");
@@ -57,15 +57,15 @@ namespace Payment.BLL.Services
             throw new RequestTimeoutException("Сервис пополнения не отвечает");
         }
 
-        public async Task SendSuccess()
+        public async Task SendSuccess(CancellationToken cancellation = default)
         {
             GameMoneyNotifySuccessRequest request = new GameMoneyNotifySuccessRequest();
             request.Success = true;
             IGameMoneyResponse? response = await _responseService
-                        .ResponsePostAsync(GameMoneyEndpoint.InvoiceInfo, request);
+                        .ResponsePostAsync(GameMoneyEndpoint.InvoiceInfo, request, cancellation);
         }
 
-        public async Task<GameMoneyInvoiceInfoResponse> GetInvoiceInfoAsync(string invoiceId)
+        public async Task<GameMoneyInvoiceInfoResponse> GetInvoiceInfoAsync(string invoiceId, CancellationToken cancellation = default)
         {
             GameMoneyInvoiceInfoRequest request = new()
             {
@@ -83,7 +83,7 @@ namespace Payment.BLL.Services
                 try
                 {
                     IGameMoneyResponse? response = await _responseService
-                        .ResponsePostAsync(GameMoneyEndpoint.InvoiceInfo, request);
+                        .ResponsePostAsync(GameMoneyEndpoint.InvoiceInfo, request, cancellation);
 
                     if (!_rsaService.VerifySignatureRSA(response!))
                         throw new ForbiddenException("Неверная подпись rsa");

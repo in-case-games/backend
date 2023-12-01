@@ -11,7 +11,7 @@ namespace Game.BLL.MassTransit
             _bus = bus;
         }
 
-        public async Task SendAsync<T>(T template) where T : class
+        public async Task SendAsync<T>(T template, CancellationToken cancellation = default) where T : class
         {
             if (template is not null)
             {

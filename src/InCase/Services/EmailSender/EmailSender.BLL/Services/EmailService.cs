@@ -23,7 +23,7 @@ namespace EmailSender.BLL.Services
             _requestUrl = configuration["EmailConfig:AddressCallback"]!;
         }
 
-        public async Task SendToEmailAsync(EmailTemplate template)
+        public async Task SendToEmailAsync(EmailTemplate template, CancellationToken cancellationToken = default)
         {
             using var client = new SmtpClient();
 
@@ -37,13 +37,13 @@ namespace EmailSender.BLL.Services
             emailMessage.Subject = template.Subject;
             emailMessage.Body = new TextPart("html") { Text = body };
 
-            await client.ConnectAsync(_host, _port, true);
+            await client.ConnectAsync(_host, _port, true, cancellationToken);
             client.AuthenticationMechanisms.Remove("XOAUTH2");
-            await client.AuthenticateAsync(_smtpEmail, _smtpPassword);
+            await client.AuthenticateAsync(_smtpEmail, _smtpPassword, cancellationToken);
 
             try
             {
-                await client.SendAsync(emailMessage);
+                await client.SendAsync(emailMessage, cancellationToken);
             }
             catch (SmtpCommandException) { }
             catch (Exception) { }

@@ -6,11 +6,11 @@ namespace Identity.BLL.Interfaces
 {
     public interface IUserService
     {
-        public Task<UserResponse> GetAsync(Guid id);
-        public Task<UserResponse> GetAsync(string login);
-        public Task<User?> GetByConsumerAsync(Guid id);
-        public Task CreateAsync(UserTemplate template);
-        public Task UpdateLoginAsync(UserTemplate template);
-        public Task DeleteAsync(Guid id);
+        public Task<UserResponse> GetAsync(Guid id, CancellationToken cancellation = default);
+        public Task<UserResponse> GetAsync(string login, CancellationToken cancellation = default);
+        public Task<User?> GetByConsumerAsync(Guid id, CancellationToken cancellation = default);
+        public Task CreateAsync(UserTemplate template, CancellationToken cancellation = default);
+        public Task UpdateLoginAsync(UserTemplate template, CancellationToken cancellation = default);
+        public Task DeleteAsync(Guid id, CancellationToken cancellation = default);
     }
 }

@@ -13,9 +13,9 @@ namespace Resources.BLL.Services
             _httpClient = new();
         }
 
-        public async Task<T?> GetAsync<T>(string uri)
+        public async Task<T?> GetAsync<T>(string uri, CancellationToken cancellation = default)
         {
-            HttpResponseMessage response = await _httpClient.GetAsync(uri);
+            HttpResponseMessage response = await _httpClient.GetAsync(uri, cancellation);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -29,7 +29,7 @@ namespace Resources.BLL.Services
 
             return await response.Content
                 .ReadFromJsonAsync<T>(
-                new JsonSerializerOptions(JsonSerializerDefaults.Web));
+                new JsonSerializerOptions(JsonSerializerDefaults.Web), cancellation);
         }
     }
 }

@@ -18,11 +18,11 @@ namespace Statistics.BLL.Repository
                 .GetCollection<SiteStatisticsAdmin>("AdminSite");
         }
 
-        public async Task<SiteStatistics> GetAsync()
+        public async Task<SiteStatistics> GetAsync(CancellationToken cancellation = default)
         {
             SiteStatistics? statistics = await _siteStatistics
                 .Find("{}")
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync(cancellation);
 
             if (statistics is null)
                 await _siteStatistics.InsertOneAsync(new SiteStatistics());
@@ -30,11 +30,11 @@ namespace Statistics.BLL.Repository
             return statistics ?? new();
         }
 
-        public async Task<SiteStatisticsAdmin> GetAdminAsync()
+        public async Task<SiteStatisticsAdmin> GetAdminAsync(CancellationToken cancellation = default)
         {
             SiteStatisticsAdmin? statistics = await _siteStatisticsAdmin
                 .Find("{}")
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync(cancellation);
 
             if (statistics is null)
                 await _siteStatisticsAdmin.InsertOneAsync(new SiteStatisticsAdmin());

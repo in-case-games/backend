@@ -17,32 +17,32 @@ namespace Payment.BLL.Services
             _context = context;
         }
 
-        public async Task<UserPromocode?> GetAsync(Guid id, Guid userId) => await _context.UserPromocodes
+        public async Task<UserPromocode?> GetAsync(Guid id, Guid userId, CancellationToken cancellation = default) => await _context.UserPromocodes
             .AsNoTracking()
-            .FirstOrDefaultAsync(ur => ur.Id == id && ur.UserId == userId);
+            .FirstOrDefaultAsync(ur => ur.Id == id && ur.UserId == userId, cancellation);
 
-        public async Task CreateAsync(UserPromocodeTemplate template)
+        public async Task CreateAsync(UserPromocodeTemplate template, CancellationToken cancellation = default)
         {
-            if (!await _context.UserPromocodes.AnyAsync(up => up.UserId == template.UserId))
+            if (!await _context.UserPromocodes.AnyAsync(up => up.UserId == template.UserId, cancellation))
                 throw new BadRequestException("Уже используется промокод");
 
             UserPromocode entity = template.ToEntity();
 
-            await _context.UserPromocodes.AddAsync(entity);
-            await _context.SaveChangesAsync();
+            await _context.UserPromocodes.AddAsync(entity, cancellation);
+            await _context.SaveChangesAsync(cancellation);
         }
 
-        public async Task UpdateAsync(UserPromocodeTemplate template)
+        public async Task UpdateAsync(UserPromocodeTemplate template, CancellationToken cancellation = default)
         {
             UserPromocode entityOld = await _context.UserPromocodes
                 .AsNoTracking()
-                .FirstOrDefaultAsync(ur => ur.Id == template.Id && ur.UserId == template.UserId) ??
+                .FirstOrDefaultAsync(ur => ur.Id == template.Id && ur.UserId == template.UserId, cancellation) ??
                 throw new NotFoundException("Промокод пользователя не найден");
 
             UserPromocode entity = template.ToEntity();
 
             _context.Entry(entityOld).CurrentValues.SetValues(entity);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(cancellation);
         }
     }
 }

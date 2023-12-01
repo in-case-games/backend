@@ -26,10 +26,10 @@ namespace Promocode.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> Get(CancellationToken cancellation)
         {
             List<UserPromocodeResponse> response = await _promocodeService
-                .GetAsync(UserId, 100);
+                .GetAsync(UserId, 100, cancellation);
 
             return Ok(ApiResult<List<UserPromocodeResponse>>.OK(response));
         }
@@ -38,10 +38,10 @@ namespace Promocode.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet("{id}")]
-        public async Task<IActionResult> Get(Guid id)
+        public async Task<IActionResult> Get(Guid id, CancellationToken cancellation)
         {
             UserPromocodeResponse response = await _promocodeService
-                .GetAsync(id, UserId);
+                .GetAsync(id, UserId, cancellation);
 
             return Ok(ApiResult<UserPromocodeResponse>.OK(response));
         }
@@ -50,10 +50,10 @@ namespace Promocode.API.Controllers
             (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("admin")]
-        public async Task<IActionResult> Get(int count = 100)
+        public async Task<IActionResult> Get(CancellationToken cancellation, int count = 100)
         {
             List<UserPromocodeResponse> response = await _promocodeService
-                .GetAsync(count);
+                .GetAsync(count, cancellation);
 
             return Ok(ApiResult<List<UserPromocodeResponse>>.OK(response));
         }
@@ -62,10 +62,10 @@ namespace Promocode.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
         [HttpGet("user/{userId}/admin")]
-        public async Task<IActionResult> GetByAdmin(Guid userId, int count = 100)
+        public async Task<IActionResult> GetByAdmin(Guid userId, CancellationToken cancellation, int count = 100)
         {
             List<UserPromocodeResponse> response = await _promocodeService
-                .GetAsync(userId, count);
+                .GetAsync(userId, count, cancellation);
 
             return Ok(ApiResult<List<UserPromocodeResponse>>.OK(response));
         }
@@ -74,10 +74,10 @@ namespace Promocode.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
         [HttpGet("{id}/admin")]
-        public async Task<IActionResult> GetByIdAdmin(Guid id)
+        public async Task<IActionResult> GetByIdAdmin(Guid id, CancellationToken cancellation)
         {
             UserPromocodeResponse response = await _promocodeService
-                .GetAsync(id);
+                .GetAsync(id, cancellation);
 
             return Ok(ApiResult<UserPromocodeResponse>.OK(response));
         }
@@ -86,10 +86,10 @@ namespace Promocode.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet("activate/{name}")]
-        public async Task<IActionResult> ActivatePromocode(string name)
+        public async Task<IActionResult> ActivatePromocode(string name, CancellationToken cancellation)
         {
             UserPromocodeResponse response = await _promocodeService
-                .ActivateAsync(UserId, name);
+                .ActivateAsync(UserId, name, cancellation);
 
             return Ok(ApiResult<UserPromocodeResponse>.OK(response));
         }
@@ -98,10 +98,10 @@ namespace Promocode.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet("exchange/{name}")]
-        public async Task<IActionResult> ExchangePromocode(string name)
+        public async Task<IActionResult> ExchangePromocode(string name, CancellationToken cancellation)
         {
             UserPromocodeResponse response = await _promocodeService
-                .ExchangeAsync(UserId, name);
+                .ExchangeAsync(UserId, name, cancellation);
 
             return Ok(ApiResult<UserPromocodeResponse>.OK(response));
         }

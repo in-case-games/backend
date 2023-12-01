@@ -26,9 +26,9 @@ namespace Identity.API.Controllers
             (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("{id}")]
-        public async Task<IActionResult> Get(Guid id)
+        public async Task<IActionResult> Get(Guid id, CancellationToken cancellation)
         {
-            UserAdditionalInfoResponse response = await _infoService.GetAsync(id);
+            UserAdditionalInfoResponse response = await _infoService.GetAsync(id, cancellation);
 
             return Ok(ApiResult<UserAdditionalInfoResponse>.OK(response));
         }
@@ -37,9 +37,9 @@ namespace Identity.API.Controllers
             (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("user/{id}")]
-        public async Task<IActionResult> GetByUserId(Guid id)
+        public async Task<IActionResult> GetByUserId(Guid id, CancellationToken cancellation)
         {
-            UserAdditionalInfoResponse response = await _infoService.GetByUserIdAsync(id);
+            UserAdditionalInfoResponse response = await _infoService.GetByUserIdAsync(id, cancellation);
 
             return Ok(ApiResult<UserAdditionalInfoResponse>.OK(response));
         }
@@ -48,9 +48,9 @@ namespace Identity.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> Get(CancellationToken cancellation)
         {
-            UserAdditionalInfoResponse response = await _infoService.GetByUserIdAsync(UserId);
+            UserAdditionalInfoResponse response = await _infoService.GetByUserIdAsync(UserId, cancellation);
 
             return Ok(ApiResult<UserAdditionalInfoResponse>.OK(response));
         }
@@ -59,9 +59,9 @@ namespace Identity.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Owner)]
         [HttpGet("role/{id}&{userId}")]
-        public async Task<IActionResult> UpdateRole(Guid id, Guid userId)
+        public async Task<IActionResult> UpdateRole(Guid id, Guid userId, CancellationToken cancellation)
         {
-            UserAdditionalInfoResponse response = await _infoService.UpdateRoleAsync(userId, id);
+            UserAdditionalInfoResponse response = await _infoService.UpdateRoleAsync(userId, id, cancellation);
 
             return Ok(ApiResult<UserAdditionalInfoResponse>.OK(response));
         }
@@ -70,9 +70,9 @@ namespace Identity.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Admin, Roles.Owner)]
         [HttpGet("deletion/date/{userId}")]
-        public async Task<IActionResult> UpdateDeletionDate(Guid userId, DateTime? date = null)
+        public async Task<IActionResult> UpdateDeletionDate(Guid userId, CancellationToken cancellation, DateTime? date = null)
         {
-            UserAdditionalInfoResponse response = await _infoService.UpdateDeletionDateAsync(userId, date);
+            UserAdditionalInfoResponse response = await _infoService.UpdateDeletionDateAsync(userId, date, cancellation);
 
             return Ok(ApiResult<UserAdditionalInfoResponse>.OK(response));
         }
@@ -82,10 +82,10 @@ namespace Identity.API.Controllers
         [AuthorizeByRole(Roles.Admin, Roles.Owner)]
         [RequestSizeLimit(8388608)]
         [HttpPut("image/admin")]
-        public async Task<IActionResult> UpdateImageByAdmin(UpdateImageRequest request)
+        public async Task<IActionResult> UpdateImageByAdmin(UpdateImageRequest request, CancellationToken cancellation)
         {
             UserAdditionalInfoResponse response = await _infoService
-                .UpdateImageAsync(request);
+                .UpdateImageAsync(request, cancellation);
 
             return Ok(ApiResult<UserAdditionalInfoResponse>.OK(response));
         }
@@ -95,11 +95,11 @@ namespace Identity.API.Controllers
         [AuthorizeByRole(Roles.All)]
         [RequestSizeLimit(8388608)]
         [HttpPut("image")]
-        public async Task<IActionResult> UpdateImage(UpdateImageRequest request)
+        public async Task<IActionResult> UpdateImage(UpdateImageRequest request, CancellationToken cancellation)
         {
             request.UserId = UserId;
 
-            UserAdditionalInfoResponse response = await _infoService.UpdateImageAsync(request);
+            UserAdditionalInfoResponse response = await _infoService.UpdateImageAsync(request, cancellation);
 
             return Ok(ApiResult<UserAdditionalInfoResponse>.OK(response));
         }

@@ -25,10 +25,10 @@ namespace Game.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> Get(CancellationToken cancellation)
         {
             List<UserPathBannerResponse> response = await _pathService
-                .GetByUserIdAsync(UserId);
+                .GetByUserIdAsync(UserId, cancellation);
 
             return Ok(ApiResult<List<UserPathBannerResponse>>.OK(response));
         }
@@ -37,10 +37,10 @@ namespace Game.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet("{id}")]
-        public async Task<IActionResult> Get(Guid id)
+        public async Task<IActionResult> Get(Guid id, CancellationToken cancellation)
         {
             UserPathBannerResponse response = await _pathService
-                .GetByIdAsync(id, UserId);
+                .GetByIdAsync(id, UserId, cancellation);
 
             return Ok(ApiResult<UserPathBannerResponse>.OK(response));
         }
@@ -49,10 +49,10 @@ namespace Game.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet("box/{id}")]
-        public async Task<IActionResult> GetByBoxId(Guid id)
+        public async Task<IActionResult> GetByBoxId(Guid id, CancellationToken cancellation)
         {
             UserPathBannerResponse response = await _pathService
-                .GetByBoxIdAsync(id, UserId);
+                .GetByBoxIdAsync(id, UserId, cancellation);
 
             return Ok(ApiResult<UserPathBannerResponse>.OK(response));
         }
@@ -61,10 +61,10 @@ namespace Game.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet("item/{id}")]
-        public async Task<IActionResult> GetByItemId(Guid id)
+        public async Task<IActionResult> GetByItemId(Guid id, CancellationToken cancellation)
         {
             List<UserPathBannerResponse> response = await _pathService
-                .GetByItemIdAsync(id, UserId);
+                .GetByItemIdAsync(id, UserId, cancellation);
 
             return Ok(ApiResult<List<UserPathBannerResponse>>.OK(response));
         }
@@ -73,12 +73,12 @@ namespace Game.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpPost]
-        public async Task<IActionResult> Post(UserPathBannerRequest request)
+        public async Task<IActionResult> Post(UserPathBannerRequest request, CancellationToken cancellation)
         {
             request.UserId = UserId;
             
             UserPathBannerResponse response = await _pathService
-                .CreateAsync(request);
+                .CreateAsync(request, cancellation);
 
             return Ok(ApiResult<UserPathBannerResponse>.OK(response));
         }
@@ -87,12 +87,12 @@ namespace Game.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpPut]
-        public async Task<IActionResult> Put(UserPathBannerRequest request)
+        public async Task<IActionResult> Put(UserPathBannerRequest request, CancellationToken cancellation)
         {
             request.UserId = UserId;
 
             UserPathBannerResponse response = await _pathService
-                .UpdateAsync(request);
+                .UpdateAsync(request, cancellation);
 
             return Ok(ApiResult<UserPathBannerResponse>.OK(response));
         }
@@ -101,10 +101,10 @@ namespace Game.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(Guid id)
+        public async Task<IActionResult> Delete(Guid id, CancellationToken cancellation)
         {
             UserPathBannerResponse response = await _pathService
-                .DeleteAsync(id, UserId);
+                .DeleteAsync(id, UserId, cancellation);
 
             return Ok(ApiResult<UserPathBannerResponse>.OK(response));
         }

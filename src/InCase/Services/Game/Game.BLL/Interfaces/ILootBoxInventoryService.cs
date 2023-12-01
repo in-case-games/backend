@@ -5,9 +5,9 @@ namespace Game.BLL.Interfaces
 {
     public interface ILootBoxInventoryService
     {
-        public Task<LootBoxInventory?> GetAsync(Guid id);
-        public Task CreateAsync(LootBoxInventoryTemplate template);
-        public Task UpdateAsync(LootBoxInventoryTemplate template);
-        public Task DeleteAsync(Guid id);
+        public Task<LootBoxInventory?> GetAsync(Guid id, CancellationToken cancellation = default);
+        public Task CreateAsync(LootBoxInventoryTemplate template, CancellationToken cancellation = default);
+        public Task UpdateAsync(LootBoxInventoryTemplate template, CancellationToken cancellation = default);
+        public Task DeleteAsync(Guid id, CancellationToken cancellation = default);
     }
 }

@@ -25,9 +25,9 @@ namespace Support.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet("{id}")]
-        public async Task<IActionResult> Get(Guid id)
+        public async Task<IActionResult> Get(Guid id, CancellationToken cancellation)
         {
-            AnswerImageResponse response = await _imageService.GetAsync(UserId, id);
+            AnswerImageResponse response = await _imageService.GetAsync(UserId, id, cancellation);
 
             return Ok(ApiResult<AnswerImageResponse>.OK(response));
         }
@@ -36,9 +36,9 @@ namespace Support.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
         [HttpGet("{id}/admin")]
-        public async Task<IActionResult> GetByAdmin(Guid id)
+        public async Task<IActionResult> GetByAdmin(Guid id, CancellationToken cancellation)
         {
-            AnswerImageResponse response = await _imageService.GetAsync(id);
+            AnswerImageResponse response = await _imageService.GetAsync(id, cancellation);
 
             return Ok(ApiResult<AnswerImageResponse>.OK(response));
         }
@@ -47,9 +47,9 @@ namespace Support.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet("answer/{id}")]
-        public async Task<IActionResult> GetByAnswerId(Guid id)
+        public async Task<IActionResult> GetByAnswerId(Guid id, CancellationToken cancellation)
         {
-            List<AnswerImageResponse> response = await _imageService.GetByAnswerIdAsync(UserId, id);
+            List<AnswerImageResponse> response = await _imageService.GetByAnswerIdAsync(UserId, id, cancellation);
 
             return Ok(ApiResult<List<AnswerImageResponse>>.OK(response));
         }
@@ -58,9 +58,9 @@ namespace Support.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
         [HttpGet("answer/{id}/admin")]
-        public async Task<IActionResult> GetByAdminAnswerId(Guid id)
+        public async Task<IActionResult> GetByAdminAnswerId(Guid id, CancellationToken cancellation)
         {
-            List<AnswerImageResponse> response = await _imageService.GetByAnswerIdAsync(id);
+            List<AnswerImageResponse> response = await _imageService.GetByAnswerIdAsync(id, cancellation);
 
             return Ok(ApiResult<List<AnswerImageResponse>>.OK(response));
         }
@@ -69,9 +69,9 @@ namespace Support.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet("topic/{id}")]
-        public async Task<IActionResult> GetByTopicId(Guid id)
+        public async Task<IActionResult> GetByTopicId(Guid id, CancellationToken cancellation)
         {
-            List<AnswerImageResponse> response = await _imageService.GetByTopicIdAsync(UserId, id);
+            List<AnswerImageResponse> response = await _imageService.GetByTopicIdAsync(UserId, id, cancellation);
 
             return Ok(ApiResult<List<AnswerImageResponse>>.OK(response));
         }
@@ -80,9 +80,9 @@ namespace Support.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
         [HttpGet("topic/{id}/admin")]
-        public async Task<IActionResult> GetByAdminTopicId(Guid id)
+        public async Task<IActionResult> GetByAdminTopicId(Guid id, CancellationToken cancellation)
         {
-            List<AnswerImageResponse> response = await _imageService.GetByTopicIdAsync(id);
+            List<AnswerImageResponse> response = await _imageService.GetByTopicIdAsync(id, cancellation);
 
             return Ok(ApiResult<List<AnswerImageResponse>>.OK(response));
         }
@@ -91,9 +91,9 @@ namespace Support.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> Get(CancellationToken cancellation)
         {
-            List<AnswerImageResponse> response = await _imageService.GetByUserIdAsync(UserId);
+            List<AnswerImageResponse> response = await _imageService.GetByUserIdAsync(UserId, cancellation);
 
             return Ok(ApiResult<List<AnswerImageResponse>>.OK(response));
         }
@@ -102,9 +102,9 @@ namespace Support.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet("user/{userId}/admin")]
-        public async Task<IActionResult> GetByAdminUserId(Guid userId)
+        public async Task<IActionResult> GetByAdminUserId(Guid userId, CancellationToken cancellation)
         {
-            List<AnswerImageResponse> response = await _imageService.GetByUserIdAsync(userId);
+            List<AnswerImageResponse> response = await _imageService.GetByUserIdAsync(userId, cancellation);
 
             return Ok(ApiResult<List<AnswerImageResponse>>.OK(response));
         }
@@ -114,10 +114,10 @@ namespace Support.API.Controllers
         [AuthorizeByRole(Roles.All)]
         [RequestSizeLimit(8388608)]
         [HttpPost]
-        public async Task<IActionResult> Post(AnswerImageRequest request)
+        public async Task<IActionResult> Post(AnswerImageRequest request, CancellationToken cancellation)
         {
             AnswerImageResponse response = await _imageService
-                .CreateAsync(UserId, request);
+                .CreateAsync(UserId, request, cancellation);
 
             return Ok(ApiResult<AnswerImageResponse>.OK(response));
         }
@@ -126,9 +126,9 @@ namespace Support.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(Guid id)
+        public async Task<IActionResult> Delete(Guid id, CancellationToken cancellation)
         {
-            AnswerImageResponse response = await _imageService.DeleteAsync(UserId, id);
+            AnswerImageResponse response = await _imageService.DeleteAsync(UserId, id, cancellation);
 
             return Ok(ApiResult<AnswerImageResponse>.OK(response));
         }
@@ -137,9 +137,9 @@ namespace Support.API.Controllers
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Admin, Roles.Owner)]
         [HttpDelete("{id}/admin")]
-        public async Task<IActionResult> DeleteByAdmin(Guid id)
+        public async Task<IActionResult> DeleteByAdmin(Guid id, CancellationToken cancellation)
         {
-            AnswerImageResponse response = await _imageService.DeleteAsync(id);
+            AnswerImageResponse response = await _imageService.DeleteAsync(id, cancellation);
 
             return Ok(ApiResult<AnswerImageResponse>.OK(response));
         }

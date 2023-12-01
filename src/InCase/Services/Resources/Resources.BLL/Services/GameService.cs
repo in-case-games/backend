@@ -17,39 +17,39 @@ namespace Resources.BLL.Services
             _context = context;
         }
 
-        public async Task<List<GameResponse>> GetAsync()
+        public async Task<List<GameResponse>> GetAsync(CancellationToken cancellation = default)
         {
             List<Game> games = await _context.Games
                 .Include(g => g.Boxes!)
                     .ThenInclude(lb => lb.Inventories!)
                         .ThenInclude(lb => lb.Item)
                 .AsNoTracking()
-                .ToListAsync();
+                .ToListAsync(cancellation);
 
             return games.ToResponse();
         }
 
-        public async Task<GameResponse> GetAsync(Guid id)
+        public async Task<GameResponse> GetAsync(Guid id, CancellationToken cancellation = default)
         {
             Game game = await _context.Games
                 .Include(g => g.Boxes!)
                     .ThenInclude(lb => lb.Inventories!)
                         .ThenInclude(lb => lb.Item)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(g => g.Id == id) ?? 
+                .FirstOrDefaultAsync(g => g.Id == id, cancellation) ?? 
                 throw new NotFoundException("Игра не найдена");
 
             return game.ToResponse();
         }
 
-        public async Task<GameResponse> GetAsync(string name)
+        public async Task<GameResponse> GetAsync(string name, CancellationToken cancellation = default)
         {
             Game game = await _context.Games
                 .Include(g => g.Boxes!)
                     .ThenInclude(lb => lb.Inventories!)
                         .ThenInclude(lb => lb.Item)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(g => g.Name == name) ??
+                .FirstOrDefaultAsync(g => g.Name == name, cancellation) ??
                 throw new NotFoundException("Игра не найдена");
 
             return game.ToResponse();

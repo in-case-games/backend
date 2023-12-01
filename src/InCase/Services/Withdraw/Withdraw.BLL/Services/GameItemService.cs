@@ -17,34 +17,34 @@ namespace Withdraw.BLL.Services
             _context = context;
         }
 
-        public async Task<GameItem?> GetAsync(Guid id) => await _context.Items
+        public async Task<GameItem?> GetAsync(Guid id, CancellationToken cancellation = default) => await _context.Items
             .AsNoTracking()
-            .FirstOrDefaultAsync(gi => gi.Id == id);
+            .FirstOrDefaultAsync(gi => gi.Id == id, cancellation);
 
-        public async Task CreateAsync(GameItemTemplate template)
+        public async Task CreateAsync(GameItemTemplate template, CancellationToken cancellation = default)
         {
             GameItem item = template.ToEntity();
 
             Game game = await _context.Games
                 .AsNoTracking()
-                .FirstOrDefaultAsync(g => g.Name == template.GameName) ?? 
+                .FirstOrDefaultAsync(g => g.Name == template.GameName, cancellation) ?? 
                 throw new NotFoundException("Игра не найдена");
 
             item.GameId = game.Id;
 
-            await _context.Items.AddAsync(item);
-            await _context.SaveChangesAsync();
+            await _context.Items.AddAsync(item, cancellation);
+            await _context.SaveChangesAsync(cancellation);
         }
 
-        public async Task UpdateAsync(GameItemTemplate template)
+        public async Task UpdateAsync(GameItemTemplate template, CancellationToken cancellation = default)
         {
             GameItem item = await _context.Items
-                .FirstOrDefaultAsync(gi => gi.Id == template.Id) ??
+                .FirstOrDefaultAsync(gi => gi.Id == template.Id, cancellation) ??
                 throw new NotFoundException("Предмет не найден");
 
             Game game = await _context.Games
                 .AsNoTracking()
-                .FirstOrDefaultAsync(g => g.Name == template.GameName) ??
+                .FirstOrDefaultAsync(g => g.Name == template.GameName, cancellation) ??
                 throw new NotFoundException("Игра не найдена");
 
             if (template.IdForMarket is not null)
@@ -53,18 +53,18 @@ namespace Withdraw.BLL.Services
             item.GameId = game.Id;
             item.Cost = template.Cost;
 
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(cancellation);
         }
 
-        public async Task DeleteAsync(Guid id)
+        public async Task DeleteAsync(Guid id, CancellationToken cancellation = default)
         {
             GameItem item = await _context.Items
                 .AsNoTracking()
-                .FirstOrDefaultAsync(gi => gi.Id == id) ??
+                .FirstOrDefaultAsync(gi => gi.Id == id, cancellation) ??
                 throw new NotFoundException("Предмет не найден");
 
             _context.Items.Remove(item);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(cancellation);
         }
     }
 }
