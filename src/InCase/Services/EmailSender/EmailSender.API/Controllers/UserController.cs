@@ -28,7 +28,7 @@ namespace EmailSender.API.Controllers
         [HttpGet("{id}/is-notify")]
         public async Task<IActionResult> GetByUserId(Guid id, CancellationToken cancellationToken = default)
         {
-            UserAdditionalInfoResponse response = await _userService.GetByUserIdAsync(id);
+            UserAdditionalInfoResponse response = await _userService.GetByUserIdAsync(id, cancellationToken);
 
             return Ok(ApiResult<UserAdditionalInfoResponse>.OK(response));
         }
@@ -39,7 +39,7 @@ namespace EmailSender.API.Controllers
         [HttpGet("is-notify")]
         public async Task<IActionResult> Get(CancellationToken cancellationToken = default)
         {
-            UserAdditionalInfoResponse response = await _userService.GetByUserIdAsync(UserId);
+            UserAdditionalInfoResponse response = await _userService.GetByUserIdAsync(UserId, cancellationToken);
 
             return Ok(ApiResult<UserAdditionalInfoResponse>.OK(response));
         }
@@ -50,7 +50,7 @@ namespace EmailSender.API.Controllers
         [HttpGet("is-notify/{isNotify}")]
         public async Task<IActionResult> ChangeNotifyEmail(bool isNotify, CancellationToken cancellationToken = default)
         {
-            UserAdditionalInfoResponse response = await _userService.UpdateNotifyEmailAsync(UserId, isNotify);
+            UserAdditionalInfoResponse response = await _userService.UpdateNotifyEmailAsync(UserId, isNotify, cancellationToken);
 
             return Ok(ApiResult<UserAdditionalInfoResponse>.OK(response));
         }
@@ -61,7 +61,7 @@ namespace EmailSender.API.Controllers
         [HttpGet("{userId}/is-notify/{isNotify}/admin")]
         public async Task<IActionResult> ChangeNotifyEmailByAdmin(Guid userId, bool isNotify, CancellationToken cancellationToken = default)
         {
-            UserAdditionalInfoResponse response = await _userService.UpdateNotifyEmailAsync(userId, isNotify);
+            UserAdditionalInfoResponse response = await _userService.UpdateNotifyEmailAsync(userId, isNotify, cancellationToken);
 
             return Ok(ApiResult<UserAdditionalInfoResponse>.OK(response));
         }
