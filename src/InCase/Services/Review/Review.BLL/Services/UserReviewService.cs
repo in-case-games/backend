@@ -144,6 +144,7 @@ namespace Review.BLL.Services
 
             review.CreationDate = reviewOld.CreationDate;
             review.IsApproved = false;
+            review.UserId = reviewOld.UserId;
 
             _context.Entry(reviewOld).CurrentValues.SetValues(review);
             await _context.SaveChangesAsync(cancellation);
