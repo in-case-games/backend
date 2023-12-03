@@ -49,11 +49,22 @@ namespace Game.API.Controllers
         [ProducesResponseType(typeof(ApiResult<List<UserOpeningResponse>>),
             (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
-        [HttpGet]
-        public async Task<IActionResult> Get(CancellationToken cancellation, int count = 100)
+        [HttpGet("all")]
+        public async Task<IActionResult> GetAll(CancellationToken cancellation, int count = 100)
         {
             List<UserOpeningResponse> response = await _openingService
                 .GetAsync(count, cancellation);
+
+            return Ok(ApiResult<List<UserOpeningResponse>>.OK(response));
+        }
+
+        [ProducesResponseType(typeof(ApiResult<List<UserOpeningResponse>>), (int)HttpStatusCode.OK)]
+        [AuthorizeByRole(Roles.All)]
+        [HttpGet]
+        public async Task<IActionResult> Get(CancellationToken cancellation)
+        {
+            List<UserOpeningResponse> response = await _openingService
+                .GetAsync(UserId, 100, cancellation);
 
             return Ok(ApiResult<List<UserOpeningResponse>>.OK(response));
         }
