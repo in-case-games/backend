@@ -1,4 +1,5 @@
-﻿using Review.BLL.Exceptions;
+﻿using ImageMagick;
+using Review.BLL.Exceptions;
 using System.Text.RegularExpressions;
 
 namespace Review.BLL.Services
@@ -20,6 +21,7 @@ namespace Review.BLL.Services
             try
             {
                 File.WriteAllBytes(absolutePath, Convert.FromBase64String(base64));
+                Compress(absolutePath);
             }
             catch (Exception)
             {
@@ -75,6 +77,14 @@ namespace Review.BLL.Services
                     throw new ConflictException($"Не удалось создать папку {absolutePath}");
                 }
             }
+        }
+
+        private static void Compress(string path)
+        {
+            FileInfo file = new FileInfo(path);
+            ImageOptimizer optimizer = new ImageOptimizer();
+            optimizer.OptimalCompression = true;
+            optimizer.Compress(file);
         }
 
         public static (string extensionFile, string base64) SplitBase64(string base64)
