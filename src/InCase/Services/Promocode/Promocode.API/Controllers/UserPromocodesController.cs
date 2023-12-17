@@ -28,8 +28,7 @@ namespace Promocode.API.Controllers
         [HttpGet]
         public async Task<IActionResult> Get(CancellationToken cancellation)
         {
-            List<UserPromocodeResponse> response = await _promocodeService
-                .GetAsync(UserId, 100, cancellation);
+            var response = await _promocodeService.GetAsync(UserId, 100, cancellation);
 
             return Ok(ApiResult<List<UserPromocodeResponse>>.OK(response));
         }
@@ -40,8 +39,7 @@ namespace Promocode.API.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(Guid id, CancellationToken cancellation)
         {
-            UserPromocodeResponse response = await _promocodeService
-                .GetAsync(id, UserId, cancellation);
+            var response = await _promocodeService.GetAsync(id, UserId, cancellation);
 
             return Ok(ApiResult<UserPromocodeResponse>.OK(response));
         }
@@ -52,8 +50,7 @@ namespace Promocode.API.Controllers
         [HttpGet("admin")]
         public async Task<IActionResult> Get(CancellationToken cancellation, int count = 100)
         {
-            List<UserPromocodeResponse> response = await _promocodeService
-                .GetAsync(count, cancellation);
+            var response = await _promocodeService.GetAsync(count, cancellation);
 
             return Ok(ApiResult<List<UserPromocodeResponse>>.OK(response));
         }
@@ -64,8 +61,7 @@ namespace Promocode.API.Controllers
         [HttpGet("user/{userId}/admin")]
         public async Task<IActionResult> GetByAdmin(Guid userId, CancellationToken cancellation, int count = 100)
         {
-            List<UserPromocodeResponse> response = await _promocodeService
-                .GetAsync(userId, count, cancellation);
+            var response = await _promocodeService.GetAsync(userId, count, cancellation);
 
             return Ok(ApiResult<List<UserPromocodeResponse>>.OK(response));
         }
@@ -76,8 +72,7 @@ namespace Promocode.API.Controllers
         [HttpGet("{id}/admin")]
         public async Task<IActionResult> GetByIdAdmin(Guid id, CancellationToken cancellation)
         {
-            UserPromocodeResponse response = await _promocodeService
-                .GetAsync(id, cancellation);
+            var response = await _promocodeService.GetAsync(id, cancellation);
 
             return Ok(ApiResult<UserPromocodeResponse>.OK(response));
         }
@@ -88,8 +83,7 @@ namespace Promocode.API.Controllers
         [HttpGet("activate/{name}")]
         public async Task<IActionResult> ActivatePromocode(string name, CancellationToken cancellation)
         {
-            UserPromocodeResponse response = await _promocodeService
-                .ActivateAsync(UserId, name, cancellation);
+            var response = await _promocodeService.ActivateAsync(UserId, name, cancellation);
 
             return Ok(ApiResult<UserPromocodeResponse>.OK(response));
         }
@@ -100,8 +94,7 @@ namespace Promocode.API.Controllers
         [HttpGet("exchange/{name}")]
         public async Task<IActionResult> ExchangePromocode(string name, CancellationToken cancellation)
         {
-            UserPromocodeResponse response = await _promocodeService
-                .ExchangeAsync(UserId, name, cancellation);
+            var response = await _promocodeService.ExchangeAsync(UserId, name, cancellation);
 
             return Ok(ApiResult<UserPromocodeResponse>.OK(response));
         }

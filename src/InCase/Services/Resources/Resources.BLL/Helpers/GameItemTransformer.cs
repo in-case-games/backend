@@ -22,10 +22,9 @@ namespace Resources.BLL.Helpers
 
         public static List<GameItemResponse> ToResponse(this IEnumerable<GameItem> items)
         {
-            List<GameItemResponse> result = new();
+            var result = new List<GameItemResponse>();
 
-            foreach(var item in items)
-                result.Add(ToResponse(item));
+            foreach(var item in items) result.Add(ToResponse(item));
 
             return result;
         }
@@ -43,15 +42,16 @@ namespace Resources.BLL.Helpers
                 IdForMarket = request.IdForMarket
             };
 
-        public static GameItemTemplate ToTemplate(this GameItem entity, bool isDeleted = false) => new()
-        {
-            Id = entity.Id,
-            Cost = entity.Cost,
-            GameName = entity.Game?.Name,
-            HashName = entity.HashName,
-            IsDeleted = isDeleted,
-            Name = entity.Name,
-            IdForMarket = entity.IdForMarket
-        };
+        public static GameItemTemplate ToTemplate(this GameItem entity, bool isDeleted = false) => 
+            new()
+            {
+                Id = entity.Id,
+                Cost = entity.Cost,
+                GameName = entity.Game?.Name,
+                HashName = entity.HashName,
+                IsDeleted = isDeleted,
+                Name = entity.Name,
+                IdForMarket = entity.IdForMarket
+            };
     }
 }

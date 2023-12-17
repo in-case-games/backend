@@ -15,10 +15,9 @@ namespace Resources.BLL.Helpers
 
         public static List<GameResponse> ToResponse(this List<Game> games)
         {
-            List<GameResponse> result = new();
+            var result = new List<GameResponse>();
 
-            foreach (var game in games)
-                result.Add(ToResponse(game));
+            foreach (var game in games) result.Add(ToResponse(game));
 
             return result;
         }

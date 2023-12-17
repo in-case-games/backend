@@ -24,7 +24,7 @@ namespace Resources.API.Controllers
         [HttpGet]
         public async Task<IActionResult> Get(CancellationToken cancellation)
         {
-            List<GameResponse> response = await _gameService.GetAsync(cancellation);
+            var response = await _gameService.GetAsync(cancellation);
 
             return Ok(ApiResult<List<GameResponse>>.OK(response));
         }
@@ -35,7 +35,7 @@ namespace Resources.API.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(Guid id, CancellationToken cancellation)
         {
-            GameResponse response = await _gameService.GetAsync(id, cancellation);
+            var response = await _gameService.GetAsync(id, cancellation);
 
             return Ok(ApiResult<GameResponse>.OK(response));
         }
@@ -46,7 +46,7 @@ namespace Resources.API.Controllers
         [HttpGet("name/{name}")]
         public async Task<IActionResult> Get(string name, CancellationToken cancellation)
         {
-            GameResponse response = await _gameService.GetAsync(name, cancellation);
+            var response = await _gameService.GetAsync(name, cancellation);
 
             return Ok(ApiResult<GameResponse>.OK(response));
         }

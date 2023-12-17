@@ -20,21 +20,20 @@ namespace Payment.BLL.Models
 
         public override string ToString()
         {
-            string rand = string.IsNullOrEmpty(Rand) ? "" : $"rand:{Rand}";
-            string currency = string.IsNullOrEmpty(Currency) ? "" : $"currency:{Currency}";
+            var rand = string.IsNullOrEmpty(Rand) ? "" : $"rand:{Rand};";
+            var currency = string.IsNullOrEmpty(Currency) ? "" : $"currency:{Currency};";
 
-            return
-                $"state:{State};" +
+            return $"state:{State};" +
                 $"project:{ProjectId};" +
-                $"{currency};" +
-                $"project_income:{ProjectIncome}" +
-                $"project_outcome:{ProjectOutcome}" +
-                $"project_balance:{ProjectBalance}" +
-                $"contract_income:{ContractIncome}" +
-                $"contract_outcome:{ContractOutcome}" +
-                $"contract_balance:{ContractBalance}" +
-                $"time:{Time}" +
-                $"{rand};";
+                $"{currency}" +
+                $"project_income:{ProjectIncome};" +
+                $"project_outcome:{ProjectOutcome};" +
+                $"project_balance:{ProjectBalance};" +
+                $"contract_income:{ContractIncome};" +
+                $"contract_outcome:{ContractOutcome};" +
+                $"contract_balance:{ContractBalance};" +
+                $"time:{Time};" +
+                $"{rand}";
         }
     }
 }

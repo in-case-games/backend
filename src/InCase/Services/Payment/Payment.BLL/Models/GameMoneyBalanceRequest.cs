@@ -10,10 +10,8 @@ namespace Payment.BLL.Models
         [JsonPropertyName("rand")] public string? Rand { get; set; }
         [JsonPropertyName("signature")] public string? SignatureHMAC { get; set; }
 
-        public override string ToString()
-        {
-            string rand = string.IsNullOrEmpty(Rand) ? "" : $"rand:{Rand}";
-            return $"project:{ProjectId};{rand};currency:{Currency};";
-        }
+        public override string ToString() => string.IsNullOrEmpty(Rand) ?
+            $"project:{ProjectId};currency:{Currency};" :
+            $"project:{ProjectId};rand:{Rand};currency:{Currency};";
     }
 }

@@ -26,16 +26,15 @@ namespace Resources.BLL.Services
             _responseService = responseService;
         }
 
-        public async Task<ItemCostResponse> GetAdditionalMarketAsync(string idForMarket, string game, CancellationToken cancellation = default)
+        public async Task<ItemCostResponse> GetAdditionalMarketAsync(string idForMarket, string game, 
+            CancellationToken cancellation = default)
         {
-            string id = idForMarket.Replace("-", "_");
-
-            string uri = $"{DomainUri[game]}/api/ItemInfo/{id}/ru/?key={_cfg["MarketTM:Secret"]}";
+            var id = idForMarket.Replace("-", "_");
+            var uri = $"{DomainUri[game]}/api/ItemInfo/{id}/ru/?key={_cfg["MarketTM:Secret"]}";
 
             try
             {
-                ItemInfoTMResponse? info = await _responseService
-                    .GetAsync<ItemInfoTMResponse>(uri, cancellation);
+                var info = await _responseService.GetAsync<ItemInfoTMResponse>(uri, cancellation);
 
                 return (info is null || info.Cost is null) ?
                     new() { Success = false, Cost = 0M } :
@@ -49,7 +48,7 @@ namespace Resources.BLL.Services
 
         public async Task<ItemCostResponse> GetOriginalMarketAsync(string hashName, string game, CancellationToken cancellation = default)
         {
-            string uri = $"https://steamcommunity.com/market/priceoverview/?" +
+            var uri = $"https://steamcommunity.com/market/priceoverview/?" +
                 $"currency=5&" +
                 $"country=ru&" +
                 $"appid={AppId[game]}&" +
@@ -58,14 +57,16 @@ namespace Resources.BLL.Services
 
             try
             {
-                ItemInfoSteamResponse? info = await _responseService
-                    .GetAsync<ItemInfoSteamResponse>(uri, cancellation);
+                var info = await _responseService.GetAsync<ItemInfoSteamResponse>(uri, cancellation);
+
                 if ((info is null || !info.Success || info.Cost is null))
+                {
                     return new() { Success = false, Cost = 0M };
+                }
                 else
                 {
-                    string temp = info!.Cost!.Replace(" pуб.", "");
-                    decimal cost = decimal.Parse(temp);
+                    var temp = info!.Cost!.Replace(" pуб.", "");
+                    var cost = decimal.Parse(temp);
 
                     if (temp != cost.ToString()) cost /= 100;
 

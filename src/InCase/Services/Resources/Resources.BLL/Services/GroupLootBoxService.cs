@@ -47,7 +47,7 @@ namespace Resources.BLL.Services
 
         public async Task<GroupLootBox> UpdateAsync(GroupLootBox request, CancellationToken cancellation = default)
         {
-            GroupLootBox group = await _context.GroupBoxes
+            var group = await _context.GroupBoxes
                 .AsNoTracking()
                 .FirstOrDefaultAsync(glb => glb.Id == request.Id, cancellation) ??
                 throw new NotFoundException("Группа кейсов не найдена");
@@ -64,7 +64,7 @@ namespace Resources.BLL.Services
 
         public async Task<GroupLootBox> DeleteAsync(Guid id, CancellationToken cancellation = default)
         {
-            GroupLootBox group = await _context.GroupBoxes
+            var group = await _context.GroupBoxes
                 .AsNoTracking()
                 .FirstOrDefaultAsync(glb => glb.Id == id, cancellation) ??
                 throw new NotFoundException("Группа кейсов не найдена");

@@ -25,7 +25,7 @@ namespace Resources.API.Controllers
         [HttpGet]
         public async Task<IActionResult> Get(CancellationToken cancellation)
         {
-            List<LootBoxResponse> response = await _boxService.GetAsync(cancellation);
+            var response = await _boxService.GetAsync(cancellation);
 
             return Ok(ApiResult<List<LootBoxResponse>>.OK(response));
         }
@@ -36,7 +36,7 @@ namespace Resources.API.Controllers
         [HttpGet("game/{id}")]
         public async Task<IActionResult> GetByGameId(Guid id, CancellationToken cancellation)
         {
-            List<LootBoxResponse> response = await _boxService.GetByGameIdAsync(id, cancellation);
+            var response = await _boxService.GetByGameIdAsync(id, cancellation);
 
             return Ok(ApiResult<List<LootBoxResponse>>.OK(response));
         }
@@ -47,7 +47,7 @@ namespace Resources.API.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(Guid id, CancellationToken cancellation)
         {
-            LootBoxResponse response = await _boxService.GetAsync(id, cancellation);
+            var response = await _boxService.GetAsync(id, cancellation);
 
             return Ok(ApiResult<LootBoxResponse>.OK(response));
         }
@@ -58,7 +58,7 @@ namespace Resources.API.Controllers
         [HttpGet("name/{name}")]
         public async Task<IActionResult> Get(string name, CancellationToken cancellation)
         {
-            LootBoxResponse response = await _boxService.GetAsync(name, cancellation);
+            var response = await _boxService.GetAsync(name, cancellation);
 
             return Ok(ApiResult<LootBoxResponse>.OK(response));
         }
@@ -70,7 +70,7 @@ namespace Resources.API.Controllers
         [HttpPost]
         public async Task<IActionResult> Post(LootBoxRequest request, CancellationToken cancellation)
         {
-            LootBoxResponse response = await _boxService.CreateAsync(request, cancellation);
+            var response = await _boxService.CreateAsync(request, cancellation);
 
             return Ok(ApiResult<LootBoxResponse>.OK(response));
         }
@@ -82,7 +82,7 @@ namespace Resources.API.Controllers
         [HttpPut]
         public async Task<IActionResult> Put(LootBoxRequest request, CancellationToken cancellation)
         {
-            LootBoxResponse response = await _boxService.UpdateAsync(request, cancellation);
+            var response = await _boxService.UpdateAsync(request, cancellation);
 
             return Ok(ApiResult<LootBoxResponse>.OK(response));
         }
@@ -93,7 +93,7 @@ namespace Resources.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id, CancellationToken cancellation)
         {
-            LootBoxResponse response = await _boxService.DeleteAsync(id, cancellation);
+            var response = await _boxService.DeleteAsync(id, cancellation);
 
             return Ok(ApiResult<LootBoxResponse>.OK(response));
         }

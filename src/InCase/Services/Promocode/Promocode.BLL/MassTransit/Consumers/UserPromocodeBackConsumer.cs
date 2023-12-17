@@ -2,7 +2,6 @@
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Promocode.DAL.Data;
-using Promocode.DAL.Entities;
 
 namespace Promocode.BLL.MassTransit.Consumers
 {
@@ -17,10 +16,7 @@ namespace Promocode.BLL.MassTransit.Consumers
 
         public async Task Consume(ConsumeContext<UserPromocodeBackTemplate> context)
         {
-            var template = context.Message;
-
-            UserPromocode? promocode = await _context.UserPromocodes
-                .FirstOrDefaultAsync(ur => ur.Id == template.Id);
+            var promocode = await _context.UserPromocodes.FirstOrDefaultAsync(ur => ur.Id == context.Message.Id);
 
             if(promocode is not null)
             {

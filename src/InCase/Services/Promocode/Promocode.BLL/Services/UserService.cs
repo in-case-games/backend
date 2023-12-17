@@ -17,7 +17,8 @@ namespace Promocode.BLL.Services
             _context = context;
         }
 
-        public async Task<User?> GetAsync(Guid id, CancellationToken cancellation = default) => await _context.Users
+        public async Task<User?> GetAsync(Guid id, CancellationToken cancellation = default) => 
+            await _context.Users
             .AsNoTracking()
             .FirstOrDefaultAsync(u => u.Id == id, cancellation);
 
@@ -26,15 +27,16 @@ namespace Promocode.BLL.Services
             if (await _context.Users.AnyAsync(u => u.Id == template.Id, cancellation))
                 throw new ForbiddenException("Пользователь существует");
 
-            User user = template.ToEntity();
-
-            await _context.Users.AddAsync(user, cancellation);
+            await _context.Users.AddAsync(new User
+            {
+                Id = template.Id,
+            }, cancellation);
             await _context.SaveChangesAsync(cancellation);
         }
 
         public async Task DeleteAsync(Guid id, CancellationToken cancellation = default)
         {
-            User user = await _context.Users
+            var user = await _context.Users
                 .FirstOrDefaultAsync(u => u.Id == id, cancellation) ??
                 throw new NotFoundException("Пользователь не найден");
 

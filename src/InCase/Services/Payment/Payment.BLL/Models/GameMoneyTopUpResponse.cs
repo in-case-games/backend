@@ -10,12 +10,6 @@ namespace Payment.BLL.Models
         [JsonPropertyName("type")] string? TypeAnswer { get; set; }
         [JsonPropertyName("signature")] public string SignatureRSA { get; set; } = null!;
 
-        public override string ToString()
-        {
-            return
-                $"status:{StatusAnswer};" +
-                $"invoice:{InvoiceId};" +
-                $"type:{TypeAnswer};";
-        }
+        public override string ToString() => $"status:{StatusAnswer};invoice:{InvoiceId};type:{TypeAnswer};";
     }
 }

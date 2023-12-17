@@ -17,24 +17,13 @@ namespace Resources.BLL.Helpers
             };
 
         public static List<LootBoxResponse> ToResponse(this IEnumerable<LootBox> boxes)
-        {
-            List<LootBoxResponse> response = new();
+        { 
+            var response = new List<LootBoxResponse>();
 
-            foreach (var box in boxes)
-                response.Add(ToResponse(box));
+            foreach (var box in boxes) response.Add(ToResponse(box));
 
             return response;
         }
-
-        public static LootBox ToEntity(this LootBoxRequest request, bool isNewGuid = false) =>
-            new()
-            {
-                Id = isNewGuid ? Guid.NewGuid() : request.Id,
-                GameId = request.GameId,
-                Name = request.Name,
-                IsLocked = request.IsLocked,
-                Cost = request.Cost,
-            };
 
         public static LootBoxTemplate ToTemplate(this LootBox entity, bool isDeleted = false) => new()
         {

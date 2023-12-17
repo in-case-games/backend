@@ -9,7 +9,11 @@ namespace Promocode.BLL.Helpers
         {
            Id = entity.Id,
            Discount = entity.Promocode!.Discount,
-           Type = entity.Promocode?.Type?.ToTemplate(),
+           Type = entity.Promocode?.Type is null ? null : new PromocodeTypeTemplate
+           {
+               Id = entity.Promocode.Type.Id,
+               Name = entity.Promocode?.Type.Name,
+           },
            UserId = entity.UserId,
         };
     }

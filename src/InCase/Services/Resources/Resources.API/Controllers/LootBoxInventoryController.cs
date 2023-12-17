@@ -25,7 +25,7 @@ namespace Resources.API.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(Guid id, CancellationToken cancellation)
         {
-            LootBoxInventoryResponse response = await _inventoryService.GetAsync(id, cancellation);
+            var response = await _inventoryService.GetAsync(id, cancellation);
 
             return Ok(ApiResult<LootBoxInventoryResponse>.OK(response));
         }
@@ -36,8 +36,7 @@ namespace Resources.API.Controllers
         [HttpGet("box/{id}")]
         public async Task<IActionResult> GetByBoxId(Guid id, CancellationToken cancellation)
         {
-            List<LootBoxInventoryResponse> response = await _inventoryService
-                .GetByBoxIdAsync(id, cancellation);
+            var response = await _inventoryService.GetByBoxIdAsync(id, cancellation);
 
             return Ok(ApiResult<List<LootBoxInventoryResponse>>.OK(response));
         }
@@ -48,8 +47,7 @@ namespace Resources.API.Controllers
         [HttpGet("item/{id}")]
         public async Task<IActionResult> GetByItemId(Guid id, CancellationToken cancellation)
         {
-            List<LootBoxInventoryResponse> response = await _inventoryService
-                .GetByItemIdAsync(id, cancellation);
+            var response = await _inventoryService.GetByItemIdAsync(id, cancellation);
 
             return Ok(ApiResult<List<LootBoxInventoryResponse>>.OK(response));
         }
@@ -60,7 +58,7 @@ namespace Resources.API.Controllers
         [HttpPost]
         public async Task<IActionResult> Post(LootBoxInventoryRequest request, CancellationToken cancellation)
         {
-            LootBoxInventoryResponse response = await _inventoryService.CreateAsync(request, cancellation);
+            var response = await _inventoryService.CreateAsync(request, cancellation);
 
             return Ok(ApiResult<LootBoxInventoryResponse>.OK(response));
         }
@@ -71,7 +69,7 @@ namespace Resources.API.Controllers
         [HttpPut]
         public async Task<IActionResult> Put(LootBoxInventoryRequest request, CancellationToken cancellation)
         {
-            LootBoxInventoryResponse response = await _inventoryService.UpdateAsync(request, cancellation);
+            var response = await _inventoryService.UpdateAsync(request, cancellation);
 
             return Ok(ApiResult<LootBoxInventoryResponse>.OK(response));
         }
@@ -82,7 +80,7 @@ namespace Resources.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id, CancellationToken cancellation)
         {
-            LootBoxInventoryResponse response = await _inventoryService.DeleteAsync(id, cancellation);
+            var response = await _inventoryService.DeleteAsync(id, cancellation);
 
             return Ok(ApiResult<LootBoxInventoryResponse>.OK(response));
         }

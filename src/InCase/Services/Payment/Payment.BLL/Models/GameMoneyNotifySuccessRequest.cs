@@ -8,9 +8,6 @@ namespace Payment.BLL.Models
         [JsonPropertyName("success")] public bool Success { get; set; }
         public string? SignatureHMAC { get; set; }
 
-        public override string ToString()
-        {
-            return $"success: {Success};";
-        }
+        public override string ToString() => $"success: {Success};";
     }
 }
