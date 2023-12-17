@@ -12,7 +12,7 @@ using NLog.Extensions.Logging;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
-IConfiguration configuration = new ConfigurationBuilder()
+var configuration = new ConfigurationBuilder()
     .AddJsonFile("appsettings.Development.json")
     .Build();
 
@@ -116,9 +116,9 @@ builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
-using (var Scope = app.Services.CreateScope())
+using (var scope = app.Services.CreateScope())
 {
-    var context = Scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
     context.Database.Migrate();
 }
 
@@ -129,7 +129,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseMiddleware<CancellationTokenHandlingMiddleware>();
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();

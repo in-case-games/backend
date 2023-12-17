@@ -11,12 +11,12 @@ namespace Game.BLL.MassTransit
             _bus = bus;
         }
 
-        public async Task SendAsync<T>(T template, CancellationToken cancellation = default) where T : class
+        public async Task SendAsync<T>(T template, CancellationToken cancellationToken = default) where T : class
         {
             if (template is not null)
             {
                 var endPoint = await _bus.GetPublishSendEndpoint<T>();
-                await endPoint.Send(template);
+                await endPoint.Send(template, cancellationToken);
             }
         }
     }

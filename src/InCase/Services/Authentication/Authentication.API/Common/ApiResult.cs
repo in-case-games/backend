@@ -18,9 +18,6 @@ namespace Authentication.API.Common
         public static ApiResult<T> OK(T data) =>
             new(0, data);
 
-        public static ApiResult<T> Accepted(T data) =>
-            new(1, data);
-
         public static ApiResult<string> SentEmail(string message = SENT_EMAIL) =>
             new(2, message);
     }

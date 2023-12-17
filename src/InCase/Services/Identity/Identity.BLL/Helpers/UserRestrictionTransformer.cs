@@ -6,18 +6,18 @@ namespace Identity.BLL.Helpers
 {
     public static class UserRestrictionTransformer
     {
-        public static RestrictionTypeResponse ToResponse(this RestrictionType entity) => new()
-        {
-            Id = entity.Id,
-            Name = entity.Name,
-        };
-
         public static List<RestrictionTypeResponse> ToResponse(this List<RestrictionType> entities)
         {
-            List<RestrictionTypeResponse> response = new();
+            var response = new List<RestrictionTypeResponse>();
 
             foreach (var entity in entities)
-                response.Add(ToResponse(entity));
+            {
+                response.Add(new RestrictionTypeResponse
+                {
+                    Id = entity.Id,
+                    Name = entity.Name,
+                });
+            }
 
             return response;
         }
@@ -29,26 +29,28 @@ namespace Identity.BLL.Helpers
             Description = entity.Description,
             ExpirationDate = entity.ExpirationDate,
             OwnerId = entity.OwnerId,
-            Type = entity.Type?.ToResponse(),
+            Type = entity.Type is null ? null : new()
+            {
+                Id = entity.Type.Id,
+                Name = entity.Type.Name,
+            },
             UserId = entity.UserId,
         };
 
         public static List<UserRestrictionResponse> ToResponse(this List<UserRestriction> entities)
         {
-            List<UserRestrictionResponse> response = new();
+            var response = new List<UserRestrictionResponse>();
 
-            foreach (var entity in entities)
-                response.Add(ToResponse(entity));
+            foreach (var entity in entities) response.Add(ToResponse(entity));
 
             return response;
         }
 
         public static List<UserRestrictionResponse> ToResponse(this IEnumerable<UserRestriction> entities)
         {
-            List<UserRestrictionResponse> response = new();
+            var response = new List<UserRestrictionResponse>();
 
-            foreach (var entity in entities)
-                response.Add(ToResponse(entity));
+            foreach (var entity in entities) response.Add(ToResponse(entity));
 
             return response;
         }

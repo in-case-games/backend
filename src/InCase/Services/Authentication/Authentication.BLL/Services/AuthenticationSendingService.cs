@@ -1,7 +1,6 @@
 ﻿using Authentication.BLL.Interfaces;
 using Authentication.BLL.Models;
 using Authentication.DAL.Data;
-using Authentication.DAL.Entities;
 using Microsoft.EntityFrameworkCore;
 using Authentication.BLL.Exceptions;
 using Infrastructure.MassTransit.Email;
@@ -9,7 +8,6 @@ using Authentication.BLL.MassTransit;
 
 namespace Authentication.BLL.Services
 {
-    //TODO ButtonLink edit
     public class AuthenticationSendingService : IAuthenticationSendingService
     {
         private readonly IJwtService _jwtService;
@@ -28,7 +26,7 @@ namespace Authentication.BLL.Services
 
         public async Task DeleteAccountAsync(DataMailRequest request, string password, CancellationToken cancellationToken = default)
         {
-            User user = await _context.Users
+            var user = await _context.Users
                 .AsNoTracking()
                 .FirstOrDefaultAsync(u => u.Login == request.Login || u.Email == request.Email, cancellationToken) ??
                 throw new NotFoundException("Пользователь не найден");
@@ -36,9 +34,9 @@ namespace Authentication.BLL.Services
             if (!ValidationService.IsValidUserPassword(in user, password))
                 throw new ForbiddenException("Неверный пароль");
 
-            string token = _jwtService.CreateEmailToken(user);
+            var token = _jwtService.CreateEmailToken(user);
 
-            EmailTemplate template = new()
+            await _publisher.SendAsync(new EmailTemplate
             {
                 Email = user.Email!,
                 IsRequiredMessage = true,
@@ -57,21 +55,19 @@ namespace Authentication.BLL.Services
                     $"Мы удалим ваш аккаунт при достижении 30 дней с момента нажатия на эту кнопку.",
                     ButtonLink = $"email/confirm/delete?token={token}"
                 }
-            };
-
-            await _publisher.SendAsync(template, cancellationToken);
+            }, cancellationToken);
         }
 
         public async Task ForgotPasswordAsync(DataMailRequest request, CancellationToken cancellationToken = default)
         {
-            User user = await _context.Users
+            var user = await _context.Users
                 .AsNoTracking()
                 .FirstOrDefaultAsync(u => u.Login == request.Login || u.Email == request.Email, cancellationToken) ??
                 throw new NotFoundException("Пользователь не найден");
 
-            string token = _jwtService.CreateEmailToken(user);
+            var token = _jwtService.CreateEmailToken(user);
 
-            EmailTemplate template = new()
+            await _publisher.SendAsync(new EmailTemplate
             {
                 Email = user.Email!,
                 IsRequiredMessage = true,
@@ -83,14 +79,12 @@ namespace Authentication.BLL.Services
                     $"что это вы хотите поменять пароль.",
                     ButtonLink = $"email/confirm/update/password?token={token}"
                 }
-            };
-
-            await _publisher.SendAsync(template, cancellationToken);
+            }, cancellationToken);
         }
 
         public async Task UpdateEmailAsync(DataMailRequest request, string password, CancellationToken cancellationToken = default)
         {
-            User user = await _context.Users
+            var user = await _context.Users
                 .AsNoTracking()
                 .FirstOrDefaultAsync(u => u.Login == request.Login || u.Email == request.Email, cancellationToken) ??
                 throw new NotFoundException("Пользователь не найден");
@@ -98,9 +92,9 @@ namespace Authentication.BLL.Services
             if (!ValidationService.IsValidUserPassword(in user, password))
                 throw new ForbiddenException("Неверный пароль");
 
-            string token = _jwtService.CreateEmailToken(user);
+            var token = _jwtService.CreateEmailToken(user);
 
-            EmailTemplate template = new()
+            await _publisher.SendAsync(new EmailTemplate
             {
                 Email = user.Email!,
                 IsRequiredMessage = true,
@@ -119,14 +113,12 @@ namespace Authentication.BLL.Services
                     ButtonText = "Подтверждаю",
                     ButtonLink = $"email/confirm/update/email?token={token}"
                 }
-            };
-
-            await _publisher.SendAsync(template, cancellationToken);
+            }, cancellationToken);
         }
 
         public async Task UpdateLoginAsync(DataMailRequest request, string password, CancellationToken cancellationToken = default)
         {
-            User user = await _context.Users
+            var user = await _context.Users
                 .AsNoTracking()
                 .FirstOrDefaultAsync(u => u.Login == request.Login || u.Email == request.Email, cancellationToken) ??
                 throw new NotFoundException("Пользователь не найден");
@@ -134,9 +126,9 @@ namespace Authentication.BLL.Services
             if (!ValidationService.IsValidUserPassword(in user, password))
                 throw new ForbiddenException("Неверный пароль");
 
-            string token = _jwtService.CreateEmailToken(user);
+            var token = _jwtService.CreateEmailToken(user);
 
-            EmailTemplate template = new()
+            await _publisher.SendAsync(new EmailTemplate
             {
                 Email = user.Email!,
                 IsRequiredMessage = true,
@@ -155,14 +147,12 @@ namespace Authentication.BLL.Services
                     ButtonText = "Подтверждаю",
                     ButtonLink = $"email/confirm/update/login?token={token}"
                 }
-            };
-
-            await _publisher.SendAsync(template, cancellationToken);
+            }, cancellationToken);
         }
 
         public async Task UpdatePasswordAsync(DataMailRequest request, string password, CancellationToken cancellationToken = default)
         {
-            User user = await _context.Users
+            var user = await _context.Users
                 .AsNoTracking()
                 .FirstOrDefaultAsync(u => u.Login == request.Login || u.Email == request.Email, cancellationToken) ??
                 throw new NotFoundException("Пользователь не найден");
@@ -170,9 +160,9 @@ namespace Authentication.BLL.Services
             if (!ValidationService.IsValidUserPassword(in user, password))
                 throw new ForbiddenException("Неверный пароль");
 
-            string token = _jwtService.CreateEmailToken(user);
+            var token = _jwtService.CreateEmailToken(user);
 
-            EmailTemplate template = new()
+            await _publisher.SendAsync(new EmailTemplate
             {
                 Email = user.Email!,
                 IsRequiredMessage = true,
@@ -191,9 +181,7 @@ namespace Authentication.BLL.Services
                     ButtonText = "Подтверждаю",
                     ButtonLink = $"email/confirm/update/password?token={token}"
                 }
-            };
-
-            await _publisher.SendAsync(template, cancellationToken);
+            }, cancellationToken);
         }
     }
 }

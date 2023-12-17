@@ -1,5 +1,4 @@
 ﻿using Game.BLL.Exceptions;
-using Game.BLL.Helpers;
 using Game.BLL.Interfaces;
 using Game.BLL.MassTransit;
 using Game.DAL.Data;
@@ -20,47 +19,53 @@ namespace Game.BLL.Services
             _publisher = publisher;
         }
 
-        public async Task<LootBox?> GetAsync(Guid id, CancellationToken cancellation = default) => await _context.Boxes
+        public async Task<LootBox?> GetAsync(Guid id, CancellationToken cancellation = default) => 
+            await _context.Boxes
             .AsNoTracking()
             .FirstOrDefaultAsync(lb => lb.Id == id, cancellation);
 
         public async Task CreateAsync(LootBoxTemplate template, CancellationToken cancellation = default)
         {
-            LootBox box = template.ToEntity();
-
-            await _context.Boxes.AddAsync(box, cancellation);
+            await _context.Boxes.AddAsync(new LootBox
+            {
+                Id = template.Id,
+                Cost = template.Cost,
+                IsLocked = template.IsLocked,
+            }, cancellation);
             await _context.SaveChangesAsync(cancellation);
         }
 
         public async Task UpdateAsync(LootBoxTemplate template, CancellationToken cancellation = default)
         {
-            LootBox boxOld = await _context.Boxes
+            var boxOld = await _context.Boxes
                 .FirstOrDefaultAsync(lb => lb.Id == template.Id, cancellation) ??
                 throw new NotFoundException("Кейс не найден");
 
-            LootBox boxNew = template.ToEntity();
-            boxNew.ExpirationBannerDate = boxOld.ExpirationBannerDate;;
-
-            _context.Entry(boxOld).CurrentValues.SetValues(boxNew);
+            _context.Entry(boxOld).CurrentValues.SetValues(new LootBox
+            {
+                Id = template.Id,
+                Cost = template.Cost,
+                IsLocked = template.IsLocked,
+                ExpirationBannerDate = boxOld.ExpirationBannerDate
+            });
 
             await _context.SaveChangesAsync(cancellation);
         }
 
         public async Task UpdateExpirationBannerAsync(LootBoxBannerTemplate template, CancellationToken cancellation = default)
         {
-            LootBox box = await _context.Boxes
+            var box = await _context.Boxes
                 .FirstOrDefaultAsync(lb => lb.Id == template.BoxId, cancellation) ??
                 throw new NotFoundException("Кейс не найден");
 
             box.ExpirationBannerDate = template.ExpirationDate;
-            _context.Entry(box).Property(p => p.ExpirationBannerDate).IsModified = true;
 
             await _context.SaveChangesAsync(cancellation);
         }
 
         public async Task DeleteAsync(Guid id, CancellationToken cancellation = default)
         {
-            LootBox box = await _context.Boxes
+            var box = await _context.Boxes
                 .AsNoTracking()
                 .FirstOrDefaultAsync(lb => lb.Id == id, cancellation) ??
                 throw new NotFoundException("Кейс не найден");

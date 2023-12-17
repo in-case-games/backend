@@ -1,7 +1,6 @@
 ﻿using Authentication.BLL.Exceptions;
 using Authentication.BLL.Interfaces;
 using Authentication.DAL.Data;
-using Authentication.DAL.Entities;
 using Infrastructure.MassTransit.User;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,18 +17,17 @@ namespace Authentication.BLL.Services
 
         public async Task UpdateAsync(UserAdditionalInfoTemplate template, CancellationToken cancellationToken = default)
         {
-            UserAdditionalInfo info = await _context.AdditionalInfos
+            var info = await _context.AdditionalInfos
                 .FirstOrDefaultAsync(uai => uai.UserId == template.UserId, cancellationToken) ?? 
                 throw new NotFoundException("Пользователь не найден");
 
-            UserRole? role = await _context.Roles
+            var role = await _context.Roles
                 .AsNoTracking()
                 .FirstOrDefaultAsync(ur => ur.Name == template.RoleName, cancellationToken);
 
             info.DeletionDate = template.DeletionDate;
 
-            if(role is not null)
-                info.RoleId = role.Id;
+            if(role is not null) info.RoleId = role.Id;
 
             await _context.SaveChangesAsync(cancellationToken);
         }

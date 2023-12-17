@@ -13,11 +13,7 @@ namespace Identity.BLL.MassTransit.Consumers
             _infoService = infoService;
         }
 
-        public async Task Consume(ConsumeContext<UserAdditionalInfoTemplate> context)
-        {
-            var template = context.Message;
-            
-            await _infoService.UpdateAsync(template);
-        }
+        public async Task Consume(ConsumeContext<UserAdditionalInfoTemplate> context) => 
+            await _infoService.UpdateAsync(context.Message);
     }
 }

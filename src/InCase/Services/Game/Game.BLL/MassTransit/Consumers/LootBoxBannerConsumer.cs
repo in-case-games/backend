@@ -16,14 +16,12 @@ namespace Game.BLL.MassTransit.Consumers
 
         public async Task Consume(ConsumeContext<LootBoxBannerTemplate> context)
         {
-            var template = context.Message;
-
-            var box = await _boxService.GetAsync(template.BoxId);
+            var box = await _boxService.GetAsync(context.Message.BoxId);
 
             if (box is not null)
             {
-                template.ExpirationDate = template.IsDeleted ? null : template.ExpirationDate;
-                await _boxService.UpdateExpirationBannerAsync(template);
+                context.Message.ExpirationDate = context.Message.IsDeleted ? null : context.Message.ExpirationDate;
+                await _boxService.UpdateExpirationBannerAsync(context.Message);        
             }
         }
     }

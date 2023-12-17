@@ -19,17 +19,24 @@ namespace Game.BLL.Services
 
         public async Task<UserOpeningResponse> GetAsync(Guid id, CancellationToken cancellation = default)
         {
-            UserOpening opening = await _context.Openings
+            var opening = await _context.Openings
                 .AsNoTracking()
                 .FirstOrDefaultAsync(uo => uo.Id == id, cancellation) ?? 
                 throw new NotFoundException("История открытия не найдена");
 
-            return opening.ToResponse();
+            return new UserOpeningResponse
+            {
+                BoxId = opening.BoxId,
+                Date = opening.Date,
+                Id = opening.Id,
+                ItemId = opening.ItemId,
+                UserId = opening.UserId,
+            };
         }
 
         public async Task<List<UserOpeningResponse>> GetAsync(int count, CancellationToken cancellation = default)
         {
-            List<UserOpening> openings = await _context.Openings
+            var openings = await _context.Openings
                 .AsNoTracking()
                 .OrderByDescending(uo => uo.Date)
                 .Take(count)
@@ -43,7 +50,7 @@ namespace Game.BLL.Services
             if (!await _context.Users.AnyAsync(u => u.Id == userId, cancellation))
                 throw new NotFoundException("Пользователь не найден");
 
-            List<UserOpening> openings = await _context.Openings
+            var openings = await _context.Openings
                 .AsNoTracking()
                 .Where(uo => uo.UserId == userId)
                 .OrderByDescending(uo => uo.Date)
@@ -60,7 +67,7 @@ namespace Game.BLL.Services
             if (!await _context.Boxes.AnyAsync(lb => lb.Id == boxId, cancellation))
                 throw new NotFoundException("Кейс не найден");
 
-            List<UserOpening> openings = await _context.Openings
+            var openings = await _context.Openings
                 .AsNoTracking()
                 .Where(uo => uo.UserId == userId && uo.BoxId == boxId)
                 .OrderByDescending(uo => uo.Date)
@@ -75,7 +82,7 @@ namespace Game.BLL.Services
             if (!await _context.Boxes.AnyAsync(lb => lb.Id == boxId, cancellation))
                 throw new NotFoundException("Кейс не найден");
 
-            List<UserOpening> openings = await _context.Openings
+            var openings = await _context.Openings
                 .AsNoTracking()
                 .Where(uo => uo.BoxId == boxId)
                 .OrderByDescending(uo => uo.Date)
@@ -92,7 +99,7 @@ namespace Game.BLL.Services
             if (!await _context.Items.AnyAsync(gi => gi.Id == itemId, cancellation))
                 throw new NotFoundException("Предмет не найден");
 
-            List<UserOpening> openings = await _context.Openings
+            var openings = await _context.Openings
                 .AsNoTracking()
                 .Where(uo => uo.UserId == userId && uo.ItemId == itemId)
                 .OrderByDescending(uo => uo.Date)
@@ -107,7 +114,7 @@ namespace Game.BLL.Services
             if (!await _context.Items.AnyAsync(gi => gi.Id == itemId, cancellation))
                 throw new NotFoundException("Предмет не найден");
 
-            List<UserOpening> openings = await _context.Openings
+            var openings = await _context.Openings
                 .AsNoTracking()
                 .Where(uo => uo.ItemId == itemId)
                 .OrderByDescending(uo => uo.Date)

@@ -25,18 +25,14 @@ namespace EmailSender.BLL.Services
 
         public async Task SendToEmailAsync(EmailTemplate template, CancellationToken cancellationToken = default)
         {
-            using var client = new SmtpClient();
-
-            string body = CreateBodyLetter(template);
-
-            string email = template.Email;
             var emailMessage = new MimeMessage();
 
             emailMessage.From.Add(new MailboxAddress("Администрация сайта", _smtpEmail));
-            emailMessage.To.Add(new MailboxAddress(email, email));
+            emailMessage.To.Add(new MailboxAddress(template.Email, template.Email));
             emailMessage.Subject = template.Subject;
-            emailMessage.Body = new TextPart("html") { Text = body };
+            emailMessage.Body = new TextPart("html") { Text = CreateBodyLetter(template) };
 
+            using var client = new SmtpClient();
             await client.ConnectAsync(_host, _port, true, cancellationToken);
             client.AuthenticationMechanisms.Remove("XOAUTH2");
             await client.AuthenticateAsync(_smtpEmail, _smtpPassword, cancellationToken);
@@ -51,9 +47,9 @@ namespace EmailSender.BLL.Services
 
         private static string ConvertToBodyTemplate(EmailTemplate template)
         {
-            string buttonTemplate = "";
-            string bannerTemplate = "";
-            string bannerTableTemplates = "";
+            var buttonTemplate = "";
+            var bannerTemplate = "";
+            var bannerTableTemplates = "";
 
             template.Body.Description += "<br>С уважением команда InCase.";
 
@@ -79,7 +75,7 @@ namespace EmailSender.BLL.Services
 
             if (string.IsNullOrEmpty(template.Header.Title))
             {
-                List<string> headerWords = template.Subject.Split(" ").ToList();
+                var headerWords = template.Subject.Split(" ").ToList();
 
                 template.Header.Title = headerWords[0];
                 headerWords.Remove(headerWords[0]);

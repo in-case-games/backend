@@ -14,8 +14,7 @@ namespace Identity.API.Controllers
     public class UserAdditionalInfoController : Controller
     {
         private readonly IUserAdditionalInfoService _infoService;
-        private Guid UserId => Guid
-            .Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
+        private Guid UserId => Guid.Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
 
         public UserAdditionalInfoController(IUserAdditionalInfoService infoService)
         {
@@ -28,7 +27,7 @@ namespace Identity.API.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(Guid id, CancellationToken cancellation)
         {
-            UserAdditionalInfoResponse response = await _infoService.GetAsync(id, cancellation);
+            var response = await _infoService.GetAsync(id, cancellation);
 
             return Ok(ApiResult<UserAdditionalInfoResponse>.OK(response));
         }
@@ -39,7 +38,7 @@ namespace Identity.API.Controllers
         [HttpGet("user/{id}")]
         public async Task<IActionResult> GetByUserId(Guid id, CancellationToken cancellation)
         {
-            UserAdditionalInfoResponse response = await _infoService.GetByUserIdAsync(id, cancellation);
+            var response = await _infoService.GetByUserIdAsync(id, cancellation);
 
             return Ok(ApiResult<UserAdditionalInfoResponse>.OK(response));
         }
@@ -50,7 +49,7 @@ namespace Identity.API.Controllers
         [HttpGet]
         public async Task<IActionResult> Get(CancellationToken cancellation)
         {
-            UserAdditionalInfoResponse response = await _infoService.GetByUserIdAsync(UserId, cancellation);
+            var response = await _infoService.GetByUserIdAsync(UserId, cancellation);
 
             return Ok(ApiResult<UserAdditionalInfoResponse>.OK(response));
         }
@@ -61,7 +60,7 @@ namespace Identity.API.Controllers
         [HttpGet("role/{id}&{userId}")]
         public async Task<IActionResult> UpdateRole(Guid id, Guid userId, CancellationToken cancellation)
         {
-            UserAdditionalInfoResponse response = await _infoService.UpdateRoleAsync(userId, id, cancellation);
+            var response = await _infoService.UpdateRoleAsync(userId, id, cancellation);
 
             return Ok(ApiResult<UserAdditionalInfoResponse>.OK(response));
         }
@@ -72,7 +71,7 @@ namespace Identity.API.Controllers
         [HttpGet("deletion/date/{userId}")]
         public async Task<IActionResult> UpdateDeletionDate(Guid userId, CancellationToken cancellation, DateTime? date = null)
         {
-            UserAdditionalInfoResponse response = await _infoService.UpdateDeletionDateAsync(userId, date, cancellation);
+            var response = await _infoService.UpdateDeletionDateAsync(userId, date, cancellation);
 
             return Ok(ApiResult<UserAdditionalInfoResponse>.OK(response));
         }
@@ -84,7 +83,7 @@ namespace Identity.API.Controllers
         [HttpPut("image/admin")]
         public async Task<IActionResult> UpdateImageByAdmin(UpdateImageRequest request, CancellationToken cancellation)
         {
-            UserAdditionalInfoResponse response = await _infoService
+            var response = await _infoService
                 .UpdateImageAsync(request, cancellation);
 
             return Ok(ApiResult<UserAdditionalInfoResponse>.OK(response));
@@ -99,7 +98,7 @@ namespace Identity.API.Controllers
         {
             request.UserId = UserId;
 
-            UserAdditionalInfoResponse response = await _infoService.UpdateImageAsync(request, cancellation);
+            var response = await _infoService.UpdateImageAsync(request, cancellation);
 
             return Ok(ApiResult<UserAdditionalInfoResponse>.OK(response));
         }

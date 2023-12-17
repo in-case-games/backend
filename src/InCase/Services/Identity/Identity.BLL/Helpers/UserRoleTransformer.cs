@@ -13,10 +13,9 @@ namespace Identity.BLL.Helpers
 
         public static List<UserRoleResponse> ToResponse(this List<UserRole> roles)
         {
-            List<UserRoleResponse> response = new();
+            var response = new List<UserRoleResponse>();
 
-            foreach(UserRole role in roles)
-                response.Add(ToResponse(role));
+            foreach(UserRole role in roles) response.Add(ToResponse(role));
 
             return response;
         }

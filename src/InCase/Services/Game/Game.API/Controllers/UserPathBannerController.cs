@@ -13,8 +13,7 @@ namespace Game.API.Controllers
     public class UserPathBannerController : ControllerBase
     {
         private readonly IUserPathBannerService _pathService;
-        private Guid UserId => Guid
-            .Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
+        private Guid UserId => Guid.Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
 
         public UserPathBannerController(IUserPathBannerService pathService)
         {
@@ -27,8 +26,7 @@ namespace Game.API.Controllers
         [HttpGet]
         public async Task<IActionResult> Get(CancellationToken cancellation)
         {
-            List<UserPathBannerResponse> response = await _pathService
-                .GetByUserIdAsync(UserId, cancellation);
+            var response = await _pathService.GetByUserIdAsync(UserId, cancellation);
 
             return Ok(ApiResult<List<UserPathBannerResponse>>.OK(response));
         }
@@ -39,8 +37,7 @@ namespace Game.API.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(Guid id, CancellationToken cancellation)
         {
-            UserPathBannerResponse response = await _pathService
-                .GetByIdAsync(id, UserId, cancellation);
+            var response = await _pathService.GetByIdAsync(id, UserId, cancellation);
 
             return Ok(ApiResult<UserPathBannerResponse>.OK(response));
         }
@@ -51,8 +48,7 @@ namespace Game.API.Controllers
         [HttpGet("box/{id}")]
         public async Task<IActionResult> GetByBoxId(Guid id, CancellationToken cancellation)
         {
-            UserPathBannerResponse response = await _pathService
-                .GetByBoxIdAsync(id, UserId, cancellation);
+            var response = await _pathService.GetByBoxIdAsync(id, UserId, cancellation);
 
             return Ok(ApiResult<UserPathBannerResponse>.OK(response));
         }
@@ -63,8 +59,7 @@ namespace Game.API.Controllers
         [HttpGet("item/{id}")]
         public async Task<IActionResult> GetByItemId(Guid id, CancellationToken cancellation)
         {
-            List<UserPathBannerResponse> response = await _pathService
-                .GetByItemIdAsync(id, UserId, cancellation);
+            var response = await _pathService.GetByItemIdAsync(id, UserId, cancellation);
 
             return Ok(ApiResult<List<UserPathBannerResponse>>.OK(response));
         }
@@ -77,8 +72,7 @@ namespace Game.API.Controllers
         {
             request.UserId = UserId;
             
-            UserPathBannerResponse response = await _pathService
-                .CreateAsync(request, cancellation);
+            var response = await _pathService.CreateAsync(request, cancellation);
 
             return Ok(ApiResult<UserPathBannerResponse>.OK(response));
         }
@@ -91,8 +85,7 @@ namespace Game.API.Controllers
         {
             request.UserId = UserId;
 
-            UserPathBannerResponse response = await _pathService
-                .UpdateAsync(request, cancellation);
+            var response = await _pathService.UpdateAsync(request, cancellation);
 
             return Ok(ApiResult<UserPathBannerResponse>.OK(response));
         }
@@ -103,8 +96,7 @@ namespace Game.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id, CancellationToken cancellation)
         {
-            UserPathBannerResponse response = await _pathService
-                .DeleteAsync(id, UserId, cancellation);
+            var response = await _pathService.DeleteAsync(id, UserId, cancellation);
 
             return Ok(ApiResult<UserPathBannerResponse>.OK(response));
         }

@@ -13,8 +13,7 @@ namespace Game.API.Controllers
     public class LootBoxOpeningController : ControllerBase
     {
         private readonly ILootBoxOpeningService _openingService;
-        private Guid UserId => Guid
-            .Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
+        private Guid UserId => Guid.Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
 
         public LootBoxOpeningController(ILootBoxOpeningService openingService)
         {
@@ -27,7 +26,7 @@ namespace Game.API.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(Guid id, CancellationToken cancellation)
         {
-            GameItemResponse response = await _openingService.OpenBox(UserId, id, cancellation);
+            var response = await _openingService.OpenBox(UserId, id, cancellation);
 
             return Ok(ApiResult<GameItemResponse>.OK(response));
         }
@@ -38,7 +37,7 @@ namespace Game.API.Controllers
         [HttpGet("{id}/virtual")]
         public async Task<IActionResult> GetVirtual(Guid id, CancellationToken cancellation)
         {
-            GameItemResponse response = await _openingService.OpenVirtualBox(UserId, id, cancellation);
+            var response = await _openingService.OpenVirtualBox(UserId, id, cancellation);
 
             return Ok(ApiResult<GameItemResponse>.OK(response));
         }
@@ -49,8 +48,7 @@ namespace Game.API.Controllers
         [HttpGet("{id}&{count}/virtual")]
         public async Task<IActionResult> GetVirtual(Guid id, int count, CancellationToken cancellation)
         {
-            List<GameItemBigOpenResponse> response = await _openingService
-                .OpenVirtualBox(UserId, id, count, cancellation: cancellation);
+            var response = await _openingService.OpenVirtualBox(UserId, id, count, cancellation: cancellation);
 
             return Ok(ApiResult<List<GameItemBigOpenResponse>>.OK(response));
         }
@@ -61,8 +59,7 @@ namespace Game.API.Controllers
         [HttpGet("{id}&{count}/virtual/admin")]
         public async Task<IActionResult> GetVirtualByAdmin(Guid id, int count, CancellationToken cancellation)
         {
-            List<GameItemBigOpenResponse> response = await _openingService
-                .OpenVirtualBox(UserId, id, count, isAdmin: true, cancellation);
+            var response = await _openingService.OpenVirtualBox(UserId, id, count, isAdmin: true, cancellation);
 
             return Ok(ApiResult<List<GameItemBigOpenResponse>>.OK(response));
         }

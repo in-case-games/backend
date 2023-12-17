@@ -14,8 +14,7 @@ namespace Identity.API.Controllers
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
-        private Guid UserId => Guid
-            .Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
+        private Guid UserId => Guid.Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
 
         public UserController(IUserService userService)
         {
@@ -28,7 +27,7 @@ namespace Identity.API.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(Guid id, CancellationToken cancellation)
         {
-            UserResponse response = await _userService.GetAsync(id, cancellation);
+            var response = await _userService.GetAsync(id, cancellation);
 
             return Ok(ApiResult<UserResponse>.OK(response));
         }
@@ -39,7 +38,7 @@ namespace Identity.API.Controllers
         [HttpGet]
         public async Task<IActionResult> Get(CancellationToken cancellation)
         {
-            UserResponse response = await _userService.GetAsync(UserId, cancellation);
+            var response = await _userService.GetAsync(UserId, cancellation);
 
             return Ok(ApiResult<UserResponse>.OK(response));
         }
@@ -50,7 +49,7 @@ namespace Identity.API.Controllers
         [HttpGet("login/{login}")]
         public async Task<IActionResult> Get(string login, CancellationToken cancellation)
         {
-            UserResponse response = await _userService.GetAsync(login, cancellation);
+            var response = await _userService.GetAsync(login, cancellation);
 
             return Ok(ApiResult<UserResponse>.OK(response));
         }

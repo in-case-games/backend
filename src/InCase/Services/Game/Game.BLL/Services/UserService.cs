@@ -1,5 +1,4 @@
 ﻿using Game.BLL.Exceptions;
-using Game.BLL.Helpers;
 using Game.BLL.Interfaces;
 using Game.DAL.Data;
 using Game.DAL.Entities;
@@ -26,23 +25,22 @@ namespace Game.BLL.Services
             if (await _context.Users.AnyAsync(u => u.Id == template.Id, cancellation))
                 throw new NotFoundException("Пользователь существует");
 
-            User user = template.ToEntity();
-
-            UserAdditionalInfo info = new()
+            await _context.Users.AddAsync(new User
+            {
+                Id = template.Id,
+            }, cancellation);
+            await _context.AdditionalInfos.AddAsync(new UserAdditionalInfo
             {
                 UserId = template.Id,
                 Balance = 0,
                 IsGuestMode = false,
-            };
-
-            await _context.Users.AddAsync(user, cancellation);
-            await _context.AdditionalInfos.AddAsync(info, cancellation);
+            }, cancellation);
             await _context.SaveChangesAsync(cancellation);
         }
 
         public async Task DeleteAsync(Guid id, CancellationToken cancellation = default)
         {
-            User user = await _context.Users
+            var user = await _context.Users
                 .FirstOrDefaultAsync(u => u.Id == id, cancellation) ??
                 throw new NotFoundException("Пользователь не найден");
 

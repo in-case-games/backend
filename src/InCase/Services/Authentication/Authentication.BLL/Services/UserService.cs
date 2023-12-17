@@ -19,23 +19,23 @@ namespace Authentication.BLL.Services
             _publisher = publisher;
         }
 
-        public async Task DoWorkManagerAsync(CancellationToken stoppingToken)
+        public async Task DoWorkManagerAsync(CancellationToken cancellationToken)
         {
-            List<User> users = await _context.Users
+            var users = await _context.Users
                 .Include(u => u.AdditionalInfo)
                 .AsNoTracking()
                 .Where(uai => uai.AdditionalInfo!.DeletionDate <= DateTime.UtcNow)
-                .ToListAsync(stoppingToken);
+                .ToListAsync(cancellationToken);
 
             foreach (var user in users)
             {
                 _context.Users.Remove(user);
-                await _publisher.SendAsync(user.ToTemplate(true));
+                await _publisher.SendAsync(user.ToTemplate(true), cancellationToken);
 
                 FileService.RemoveFolder(@$"users/{user.Id}/");
             }
 
-            await _context.SaveChangesAsync(stoppingToken);
+            await _context.SaveChangesAsync(cancellationToken);
         }
     }
 }

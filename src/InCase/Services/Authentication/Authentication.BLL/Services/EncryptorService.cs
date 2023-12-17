@@ -5,9 +5,8 @@ namespace Authentication.BLL.Services
 {
     public static class EncryptorService
     {
-        public static string GenerationHashSHA512(string password, byte[] salt)
-        {
-            string hashed = Convert.ToBase64String(KeyDerivation.Pbkdf2(
+        public static string GenerationHashSHA512(string password, byte[] salt) => 
+            Convert.ToBase64String(KeyDerivation.Pbkdf2(
                 password: password,
                 salt: salt,
                 prf: KeyDerivationPrf.HMACSHA512,
@@ -15,12 +14,6 @@ namespace Authentication.BLL.Services
                 numBytesRequested: 256 / 8
                 ));
 
-            return hashed;
-        }
-
-        public static byte[] GenerationSaltTo64Bytes()
-        {
-            return RandomNumberGenerator.GetBytes(64);
-        }
+        public static byte[] GenerationSaltTo64Bytes() => RandomNumberGenerator.GetBytes(64);
     }
 }

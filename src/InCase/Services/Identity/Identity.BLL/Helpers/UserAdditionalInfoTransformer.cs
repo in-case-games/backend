@@ -14,13 +14,5 @@ namespace Identity.BLL.Helpers
             UserId = entity.UserId,
             Role = entity.Role?.ToResponse(),
         };
-
-        public static UserAdditionalInfoTemplate ToTemplate(this UserAdditionalInfo entity) => new()
-        {
-            Id = entity.Id,
-            DeletionDate = entity.DeletionDate,
-            RoleName = entity.Role?.Name,
-            UserId = entity.UserId,
-        };
     }
 }

@@ -16,16 +16,11 @@ namespace Authentication.BLL.MassTransit.Consumers
 
         public async Task Consume(ConsumeContext<UserRestrictionTemplate> context)
         {
-            var template = context.Message;
+            var restriction = await _restrictionService.GetAsync(context.Message.Id);
 
-            UserRestriction? restriction = await _restrictionService.GetAsync(template.Id);
-
-            if (restriction is null)
-                await _restrictionService.CreateAsync(template);
-            else if (template.IsDeleted)
-                await _restrictionService.DeleteAsync(template.Id);
-            else
-                await _restrictionService.UpdateAsync(template);
+            if (restriction is null) await _restrictionService.CreateAsync(context.Message);
+            else if (context.Message.IsDeleted) await _restrictionService.DeleteAsync(context.Message.Id);
+            else await _restrictionService.UpdateAsync(context.Message);
         }
     }
 }

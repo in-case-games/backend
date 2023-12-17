@@ -47,7 +47,7 @@ namespace Authentication.API.Controllers
         [HttpGet("refresh")]
         public async Task<IActionResult> RefreshTokens(string token, CancellationToken cancellationToken)
         {
-            TokensResponse response = await _authenticationService.RefreshTokensAsync(token, cancellationToken);
+            var response = await _authenticationService.RefreshTokensAsync(token, cancellationToken);
 
             return Ok(ApiResult<TokensResponse>.OK(response));
         }

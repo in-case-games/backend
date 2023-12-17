@@ -24,7 +24,7 @@ namespace Identity.API.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(Guid id, CancellationToken cancellation)
         {
-            UserRoleResponse response = await _roleService.GetAsync(id, cancellation);
+            var response = await _roleService.GetAsync(id, cancellation);
 
             return Ok(ApiResult<UserRoleResponse>.OK(response));
         }
@@ -35,7 +35,7 @@ namespace Identity.API.Controllers
         [HttpGet]
         public async Task<IActionResult> Get(CancellationToken cancellation)
         {
-            List<UserRoleResponse> response = await _roleService.GetAsync(cancellation);
+            var response = await _roleService.GetAsync(cancellation);
 
             return Ok(ApiResult<List<UserRoleResponse>>.OK(response));
         }

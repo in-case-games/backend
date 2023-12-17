@@ -1,6 +1,5 @@
 ﻿using Game.BLL.Exceptions;
 using Game.DAL.Data;
-using Game.DAL.Entities;
 using Infrastructure.MassTransit.User;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
@@ -18,13 +17,11 @@ namespace Game.BLL.MassTransit.Consumers
 
         public async Task Consume(ConsumeContext<UserPaymentTemplate> context)
         {
-            var data = context.Message;
-
-            UserAdditionalInfo info = await _context.AdditionalInfos
-                .FirstOrDefaultAsync(uai => uai.UserId == data.UserId) ??
+            var info = await _context.AdditionalInfos
+                .FirstOrDefaultAsync(uai => uai.UserId == context.Message.UserId) ??
                 throw new NotFoundException("Пользователь не найден");
 
-            info.Balance += data.Amount;
+            info.Balance += context.Message.Amount;
 
             await _context.SaveChangesAsync();
         }
