@@ -5,16 +5,15 @@ namespace Support.BLL.Helpers
 {
     public static class SupportTopicAnswerTransformer
     {
-        public static SupportTopicAnswer ToEntity(
-            this SupportTopicAnswerRequest request, 
-            bool isNewGuid = false) => new()
-        {
-            Id = isNewGuid ? Guid.NewGuid() : request.Id,
-            Content = request.Content,
-            Date = request.Date,
-            PlaintiffId = request.PlaintiffId,
-            TopicId = request.TopicId,
-        };
+        public static SupportTopicAnswer ToEntity(this SupportTopicAnswerRequest request, bool isNewGuid = false) => 
+            new()
+            {
+                Id = isNewGuid ? Guid.NewGuid() : request.Id,
+                Content = request.Content,
+                Date = request.Date,
+                PlaintiffId = request.PlaintiffId,
+                TopicId = request.TopicId,
+            };
 
         public static SupportTopicAnswerResponse ToResponse(this SupportTopicAnswer entity) => new()
         {
@@ -28,10 +27,18 @@ namespace Support.BLL.Helpers
 
         public static List<SupportTopicAnswerResponse> ToResponse(this IEnumerable<SupportTopicAnswer> entities)
         {
-            List<SupportTopicAnswerResponse> response = new();
+            var response = new List<SupportTopicAnswerResponse>();
 
-            foreach (var entity in entities)
-                response.Add(ToResponse(entity));
+            foreach (var entity in entities) response.Add(ToResponse(entity));
+
+            return response;
+        }
+
+        public static List<AnswerImageResponse> ToAnswerImageResponse(this IEnumerable<SupportTopicAnswer> answers)
+        {
+            var response = new List<AnswerImageResponse>();
+
+            foreach (var answer in answers) response.AddRange(answer.Images!.ToResponse());
 
             return response;
         }

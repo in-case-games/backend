@@ -1,5 +1,4 @@
 ﻿using Support.DAL.Entities;
-using System.Text.Json.Serialization;
 
 namespace Support.BLL.Models
 {

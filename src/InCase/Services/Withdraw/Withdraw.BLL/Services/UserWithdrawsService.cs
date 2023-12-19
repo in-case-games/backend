@@ -22,7 +22,7 @@ namespace Withdraw.BLL.Services
 
         public async Task<UserHistoryWithdrawResponse> GetAsync(Guid id, CancellationToken cancellation = default)
         {
-            UserHistoryWithdraw withdraw = await _context.Withdraws
+            var withdraw = await _context.Withdraws
                 .Include(uhw => uhw.Status)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(uhw => uhw.Id == id, cancellation) ?? 
@@ -38,7 +38,7 @@ namespace Withdraw.BLL.Services
             if (!await _context.Users.AnyAsync(u => u.Id == userId, cancellation))
                 throw new NotFoundException("Пользователь не найден");
 
-            List<UserHistoryWithdraw> withdraws = await _context.Withdraws
+            var withdraws = await _context.Withdraws
                 .Include(uhw => uhw.Status)
                 .AsNoTracking()
                 .Where(uhw => uhw.UserId == userId)
@@ -54,7 +54,7 @@ namespace Withdraw.BLL.Services
             if (count <= 0 || count >= 10000)
                 throw new BadRequestException("Размер выборки должен быть в пределе 1-10000");
 
-            List<UserHistoryWithdraw> withdraws = await _context.Withdraws
+            var withdraws = await _context.Withdraws
                 .Include(uhw => uhw.Status)
                 .AsNoTracking()
                 .OrderByDescending(uhw => uhw.Date)
@@ -66,7 +66,7 @@ namespace Withdraw.BLL.Services
 
         public async Task<UserInventoryResponse> TransferAsync(Guid id, Guid userId, CancellationToken cancellation = default)
         {
-            UserHistoryWithdraw withdraw = await _context.Withdraws
+            var withdraw = await _context.Withdraws
                 .Include(uhw => uhw.Status)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(uhw => uhw.Id == id && uhw.UserId == userId, cancellation) ??
@@ -75,7 +75,7 @@ namespace Withdraw.BLL.Services
             if (withdraw.Status?.Name is null || withdraw.Status.Name != "cancel")
                 throw new ConflictException("Ваш предмет выводится");
 
-            UserInventory inventory = new()
+            var inventory = new UserInventory
             {
                 Date = withdraw.Date,
                 FixedCost = withdraw.FixedCost,

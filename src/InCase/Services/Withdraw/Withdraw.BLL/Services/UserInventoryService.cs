@@ -33,7 +33,7 @@ namespace Withdraw.BLL.Services
             if (!await _context.Users.AnyAsync(u => u.Id == userId,cancellation))
                 throw new NotFoundException("Пользователь не найден");
 
-            List<UserInventory> inventories = await _context.Inventories
+            var inventories = await _context.Inventories
                 .AsNoTracking()
                 .Where(ui => ui.UserId == userId)
                 .ToListAsync(cancellation);
@@ -48,7 +48,7 @@ namespace Withdraw.BLL.Services
             if (!await _context.Users.AnyAsync(u => u.Id == userId, cancellation))
                 throw new NotFoundException("Пользователь не найден");
 
-            List<UserInventory> inventories = await _context.Inventories
+            var inventories = await _context.Inventories
                 .AsNoTracking()
                 .Where(ui => ui.UserId == userId)
                 .OrderByDescending(ui => ui.Date)
@@ -58,13 +58,14 @@ namespace Withdraw.BLL.Services
             return inventories.ToResponse();
         }
 
-        public async Task<UserInventory?> GetByConsumerAsync(Guid id, CancellationToken cancellation = default) => await _context.Inventories
+        public async Task<UserInventory?> GetByConsumerAsync(Guid id, CancellationToken cancellation = default) => 
+            await _context.Inventories
             .AsNoTracking()
             .FirstOrDefaultAsync(ui => ui.Id == id, cancellation);
 
         public async Task<UserInventoryResponse> GetByIdAsync(Guid id, CancellationToken cancellation = default)
         {
-            UserInventory inventory = await _context.Inventories
+            var inventory = await _context.Inventories
                 .AsNoTracking()
                 .FirstOrDefaultAsync(ui => ui.Id == id, cancellation) ?? 
                 throw new NotFoundException("Инвентарь не найден");
@@ -79,7 +80,14 @@ namespace Withdraw.BLL.Services
             if (!await _context.Users.AnyAsync(u => u.Id == template.UserId, cancellation))
                 throw new NotFoundException("Пользователь не найден");
 
-            UserInventory inventory = template.ToEntity();
+            var inventory = new UserInventory
+            {
+                Id = template.Id,
+                Date = template.Date,
+                FixedCost = template.FixedCost,
+                ItemId = template.ItemId,
+                UserId = template.UserId
+            };
 
             await _context.Inventories.AddAsync(inventory, cancellation);
             await _context.SaveChangesAsync(cancellation);
@@ -111,7 +119,7 @@ namespace Withdraw.BLL.Services
             if (price >= itemCost * 0.9M && price <= itemCost * 1.1M)
                 throw new ConflictException("Товар может быть обменен только в случае нестабильности цены");
 
-            List<UserInventory> inventories = new();
+            var inventories = new List<UserInventory>();
 
             decimal totalItemsCost = 0;
 
@@ -138,8 +146,7 @@ namespace Withdraw.BLL.Services
 
             var differenceCost = inventory.FixedCost - totalItemsCost;
 
-            if (differenceCost < 0)
-                throw new BadRequestException("Стоимость товара при обмене не может быть выше");
+            if (differenceCost < 0) throw new BadRequestException("Стоимость товара при обмене не может быть выше");
 
             _context.Inventories.Remove(inventory);
             await _context.Inventories.AddRangeAsync(inventories, cancellation);

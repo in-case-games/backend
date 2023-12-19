@@ -1,5 +1,4 @@
-﻿using Statistics.BLL.Helpers;
-using Statistics.BLL.Models;
+﻿using Statistics.BLL.Models;
 using Statistics.BLL.Repository;
 
 namespace Statistics.BLL.Services
@@ -17,14 +16,27 @@ namespace Statistics.BLL.Services
         {
             var stats = await _siteStatisticsRepository.GetAsync(cancellation);
 
-            return stats.ToResponse();
+            return new()
+            {
+                LootBoxes = stats.LootBoxes,
+                Reviews = stats.Reviews,
+                Users = stats.Users,
+                WithdrawnFunds = stats.WithdrawnFunds,
+                WithdrawnItems = stats.WithdrawnItems
+            };
         }
 
         public async Task<SiteStatisticsAdminResponse> GetAdminAsync(CancellationToken cancellation = default)
         {
             var stats = await _siteStatisticsRepository.GetAdminAsync(cancellation);
 
-            return stats.ToResponse();
+            return new()
+            {
+                FundsUsersInventories = stats.FundsUsersInventories,
+                ReturnedFunds = stats.ReturnedFunds,
+                TotalReplenishedFunds = stats.TotalReplenishedFunds,
+                RevenueLootBoxCommission = stats.RevenueLootBoxCommission,
+            };
         }
     }
 }

@@ -4,7 +4,6 @@ using Support.BLL.Helpers;
 using Support.BLL.Interfaces;
 using Support.BLL.Models;
 using Support.DAL.Data;
-using Support.DAL.Entities;
 
 namespace Support.BLL.Services
 {
@@ -22,7 +21,7 @@ namespace Support.BLL.Services
             if (!await _context.Users.AnyAsync(u => u.Id == userId, cancellation))
                 throw new NotFoundException("Пользователь не найден");
 
-            SupportTopic topic = await _context.Topics
+            var topic = await _context.Topics
                 .Include(st => st.Answers!)
                     .ThenInclude(sta => sta.Images)
                 .AsNoTracking()
@@ -36,7 +35,7 @@ namespace Support.BLL.Services
 
         public async Task<SupportTopicResponse> GetAsync(Guid id, CancellationToken cancellation = default)
         {
-            SupportTopic topic = await _context.Topics
+            var topic = await _context.Topics
                 .Include(st => st.Answers!)
                     .ThenInclude(sta => sta.Images)
                 .AsNoTracking()
@@ -51,7 +50,7 @@ namespace Support.BLL.Services
             if (!await _context.Users.AnyAsync(u => u.Id == userId, cancellation))
                 throw new NotFoundException("Пользователь не найден");
 
-            List<SupportTopic> topics = await _context.Topics
+            var topics = await _context.Topics
                 .Include(st => st.Answers!)
                     .ThenInclude(sta => sta.Images)
                 .AsNoTracking()
@@ -63,7 +62,7 @@ namespace Support.BLL.Services
 
         public async Task<List<SupportTopicResponse>> GetOpenedTopicsAsync(CancellationToken cancellation = default)
         {
-            List<SupportTopic> topics = await _context.Topics
+            var topics = await _context.Topics
                 .Include(st => st.Answers!)
                     .ThenInclude(sta => sta.Images)
                 .AsNoTracking()
@@ -75,7 +74,7 @@ namespace Support.BLL.Services
 
         public async Task<SupportTopicResponse> CloseTopic(Guid id, CancellationToken cancellation = default)
         {
-            SupportTopic topic = await _context.Topics
+            var topic = await _context.Topics
                 .Include(st => st.Answers!)
                     .ThenInclude(sta => sta.Images)
                 .FirstOrDefaultAsync(st => st.Id == id, cancellation) ??
@@ -90,7 +89,7 @@ namespace Support.BLL.Services
 
         public async Task<SupportTopicResponse> CloseTopic(Guid userId, Guid id, CancellationToken cancellation = default)
         {
-            SupportTopic topic = await _context.Topics
+            var topic = await _context.Topics
                 .Include(st => st.Answers!)
                     .ThenInclude(sta => sta.Images)
                 .FirstOrDefaultAsync(st => st.Id == id, cancellation) ??
@@ -110,11 +109,11 @@ namespace Support.BLL.Services
 
         public async Task<SupportTopicResponse> CreateAsync(SupportTopicRequest request, CancellationToken cancellation = default)
         {
-            List<SupportTopic> topics = await _context.Topics
+            var topics = await _context.Topics
                 .AsNoTracking()
                 .Where(st => st.UserId == request.UserId && st.IsClosed == false)
                 .ToListAsync(cancellation);
-            SupportTopic topic = request.ToEntity(isNewGuid: true);
+            var topic = request.ToEntity(isNewGuid: true);
 
             if (!await _context.Users.AnyAsync(u => u.Id == request.UserId, cancellation))
                 throw new NotFoundException("Пользователь не найден");
@@ -134,12 +133,12 @@ namespace Support.BLL.Services
 
         public async Task<SupportTopicResponse> UpdateAsync(SupportTopicRequest request, CancellationToken cancellation = default)
         {
-            SupportTopic topicOld = await _context.Topics
+            var topicOld = await _context.Topics
                 .Include(st => st.Answers!)
                     .ThenInclude(sta => sta.Images)
                 .FirstOrDefaultAsync(st => st.Id == request.Id, cancellation) ??
                 throw new NotFoundException("Топик не найден");
-            SupportTopic topic = request.ToEntity(isNewGuid: false);
+            var topic = request.ToEntity(isNewGuid: false);
 
             if (!await _context.Users.AnyAsync(u => u.Id == request.UserId, cancellation))
                 throw new NotFoundException("Пользователь не найден");
@@ -159,7 +158,7 @@ namespace Support.BLL.Services
 
         public async Task<SupportTopicResponse> DeleteAsync(Guid userId, Guid id, CancellationToken cancellation = default)
         {
-            SupportTopic topic = await _context.Topics
+            var topic = await _context.Topics
                 .Include(st => st.Answers!)
                     .ThenInclude(sta => sta.Images)
                 .AsNoTracking()
@@ -181,7 +180,7 @@ namespace Support.BLL.Services
 
         public async Task<SupportTopicResponse> DeleteAsync(Guid id, CancellationToken cancellation = default)
         {
-            SupportTopic topic = await _context.Topics
+            var topic = await _context.Topics
                 .Include(st => st.Answers!)
                     .ThenInclude(sta => sta.Images)
                 .AsNoTracking()

@@ -4,8 +4,6 @@ using Support.BLL.Helpers;
 using Support.BLL.Interfaces;
 using Support.BLL.Models;
 using Support.DAL.Data;
-using Support.DAL.Entities;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Support.BLL.Services
 {
@@ -23,13 +21,13 @@ namespace Support.BLL.Services
             if (!await _context.Users.AnyAsync(u => u.Id == userId, cancellation))
                 throw new NotFoundException("Пользователь не найден");
 
-            SupportTopicAnswer answer = await _context.Answers
+            var answer = await _context.Answers
                 .Include(sta => sta.Images)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(sta => sta.Id == id, cancellation) ??
                 throw new NotFoundException("Сообщение не найдено");
 
-            SupportTopic topic = await _context.Topics
+            var topic = await _context.Topics
                 .AsNoTracking()
                 .FirstOrDefaultAsync(st => st.Id == answer.TopicId, cancellation) ??
                 throw new NotFoundException("Топик не найден");
@@ -41,7 +39,7 @@ namespace Support.BLL.Services
 
         public async Task<SupportTopicAnswerResponse> GetAsync(Guid id, CancellationToken cancellation = default)
         {
-            SupportTopicAnswer answer = await _context.Answers
+            var answer = await _context.Answers
                 .Include(sta => sta.Images)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(sta => sta.Id == id, cancellation) ??
@@ -50,22 +48,22 @@ namespace Support.BLL.Services
             return answer.ToResponse();
         }
 
-        public async Task<List<SupportTopicAnswerResponse>> GetByUserIdAsync(Guid userId, CancellationToken cancellation = default)
+        public async Task<List<SupportTopicAnswerResponse>> GetByUserIdAsync(Guid userId, 
+            CancellationToken cancellation = default)
         {
             if (!await _context.Users.AnyAsync(u => u.Id == userId, cancellation))
                 throw new NotFoundException("Пользователь не найден");
 
-            List<SupportTopic> topics = await _context.Topics
+            var topics = await _context.Topics
                 .Include(st => st.Answers!)
                     .ThenInclude(sta => sta.Images)
                 .AsNoTracking()
                 .Where(st => st.UserId == userId)
                 .ToListAsync(cancellation);
 
-            List<SupportTopicAnswerResponse> response = new();
+            var response = new List<SupportTopicAnswerResponse>();
 
-            foreach (var topic in topics)
-                response.AddRange(topic.Answers!.ToResponse());
+            foreach (var topic in topics) response.AddRange(topic.Answers!.ToResponse());
 
             return response;
         }
@@ -75,7 +73,7 @@ namespace Support.BLL.Services
             if (!await _context.Users.AnyAsync(u => u.Id == userId, cancellation))
                 throw new NotFoundException("Пользователь не найден");
 
-            SupportTopic topic = await _context.Topics
+            var topic = await _context.Topics
                 .Include(st => st.Answers!)
                     .ThenInclude(sta => sta.Images)
                 .AsNoTracking()
@@ -89,7 +87,7 @@ namespace Support.BLL.Services
 
         public async Task<List<SupportTopicAnswerResponse>> GetByTopicIdAsync(Guid id, CancellationToken cancellation = default)
         {
-            SupportTopic topic = await _context.Topics
+            var topic = await _context.Topics
                 .Include(st => st.Answers!)
                     .ThenInclude(sta => sta.Images)
                 .AsNoTracking()
@@ -101,18 +99,17 @@ namespace Support.BLL.Services
 
         public async Task<SupportTopicAnswerResponse> CreateAsync(SupportTopicAnswerRequest request, CancellationToken cancellation = default)
         {
-            SupportTopic topic = await _context.Topics
+            var topic = await _context.Topics
                 .FirstOrDefaultAsync(st => st.Id == request.TopicId, cancellation) ??
                 throw new NotFoundException("Топик не найден");
-            SupportTopicAnswer answer = request.ToEntity(isNewGuid: true);
+            var answer = request.ToEntity(isNewGuid: true);
 
             answer.Date = DateTime.UtcNow;
             topic.IsClosed = false;
 
+            if (topic.UserId != request.PlaintiffId) throw new ForbiddenException("Вы не создатель топика");
             if (!await _context.Users.AnyAsync(u => u.Id == request.PlaintiffId, cancellation))
                 throw new NotFoundException("Пользователь не найден");
-            if (topic.UserId != request.PlaintiffId)
-                throw new ForbiddenException("Вы не создатель топика");
 
             FileService.CreateFolder(@$"topic-answers/{answer.TopicId}/{request.Id}/");
 
@@ -129,7 +126,7 @@ namespace Support.BLL.Services
 
             request.Date = DateTime.UtcNow;
 
-            SupportTopicAnswer answer = request.ToEntity(isNewGuid: true);
+            var answer = request.ToEntity(isNewGuid: true);
 
             FileService.CreateFolder(@$"topic-answers/{answer.TopicId}/{request.Id}/");
 
@@ -141,10 +138,10 @@ namespace Support.BLL.Services
 
         public async Task<SupportTopicAnswerResponse> UpdateAsync(SupportTopicAnswerRequest request, CancellationToken cancellation = default)
         {
-            SupportTopicAnswer answerOld = await _context.Answers
+            var answerOld = await _context.Answers
                 .FirstOrDefaultAsync(sta => sta.Id == request.Id, cancellation) ??
                 throw new NotFoundException("Ответ не найден");
-            SupportTopicAnswer answer = request.ToEntity();
+            var answer = request.ToEntity();
 
             answer.Date = DateTime.UtcNow;
 
@@ -163,7 +160,7 @@ namespace Support.BLL.Services
 
         public async Task<SupportTopicAnswerResponse> DeleteAsync(Guid userId, Guid id, CancellationToken cancellation = default)
         {
-            SupportTopicAnswer answer = await _context.Answers
+            var answer = await _context.Answers
                 .AsNoTracking()
                 .FirstOrDefaultAsync(sta => sta.Id == id, cancellation) ??
                 throw new NotFoundException("Ответ не найден");

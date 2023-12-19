@@ -14,8 +14,7 @@ namespace Review.API.Controllers
     public class ReviewImageController : ControllerBase
     {
         private readonly IReviewImageService _reviewImageService;
-        private Guid UserId => Guid
-            .Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
+        private Guid UserId => Guid.Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
 
         public ReviewImageController(IReviewImageService reviewImageService)
         {
@@ -28,7 +27,7 @@ namespace Review.API.Controllers
         [HttpGet]
         public async Task<IActionResult> Get(CancellationToken cancellation)
         {
-            List<ReviewImageResponse> response = await _reviewImageService.GetAsync(isOnlyApproved: true, cancellation);
+            var response = await _reviewImageService.GetAsync(isOnlyApproved: true, cancellation);
 
             return Ok(ApiResult<List<ReviewImageResponse>>.OK(response));
         }
@@ -39,7 +38,7 @@ namespace Review.API.Controllers
         [HttpGet("admin")]
         public async Task<IActionResult> GetByAdmin(CancellationToken cancellation)
         {
-            List<ReviewImageResponse> response = await _reviewImageService.GetAsync(isOnlyApproved: false, cancellation);
+            var response = await _reviewImageService.GetAsync(isOnlyApproved: false, cancellation);
 
             return Ok(ApiResult<List<ReviewImageResponse>>.OK(response));
         }
@@ -50,7 +49,7 @@ namespace Review.API.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(Guid id, CancellationToken cancellation)
         {
-            ReviewImageResponse response = await _reviewImageService.GetAsync(id, isOnlyApproved: true, cancellation);
+            var response = await _reviewImageService.GetAsync(id, isOnlyApproved: true, cancellation);
 
             return Ok(ApiResult<ReviewImageResponse>.OK(response));
         }
@@ -61,7 +60,7 @@ namespace Review.API.Controllers
         [HttpGet("{id}/admin")]
         public async Task<IActionResult> GetByAdmin(Guid id, CancellationToken cancellation)
         {
-            ReviewImageResponse response = await _reviewImageService.GetAsync(id, isOnlyApproved: false, cancellation);
+            var response = await _reviewImageService.GetAsync(id, isOnlyApproved: false, cancellation);
 
             return Ok(ApiResult<ReviewImageResponse>.OK(response));
         }
@@ -72,8 +71,7 @@ namespace Review.API.Controllers
         [HttpGet("user/{id}")]
         public async Task<IActionResult> GetByUserId(Guid userId, CancellationToken cancellation)
         {
-            List<ReviewImageResponse> response = await _reviewImageService
-                .GetByUserIdAsync(userId, isOnlyApproved: true, cancellation);
+            var response = await _reviewImageService.GetByUserIdAsync(userId, isOnlyApproved: true, cancellation);
 
             return Ok(ApiResult<List<ReviewImageResponse>>.OK(response));
         }
@@ -84,8 +82,7 @@ namespace Review.API.Controllers
         [HttpGet("user")]
         public async Task<IActionResult> GetByUserId(CancellationToken cancellation)
         {
-            List<ReviewImageResponse> response = await _reviewImageService
-                .GetByUserIdAsync(UserId, isOnlyApproved: false, cancellation);
+            var response = await _reviewImageService.GetByUserIdAsync(UserId, isOnlyApproved: false, cancellation);
 
             return Ok(ApiResult<List<ReviewImageResponse>>.OK(response));
         }
@@ -96,8 +93,7 @@ namespace Review.API.Controllers
         [HttpGet("user/{userId}/admin")]
         public async Task<IActionResult> GetByAdminUserId(Guid userId, CancellationToken cancellation)
         {
-            List<ReviewImageResponse> response = await _reviewImageService
-                .GetByUserIdAsync(userId, isOnlyApproved: false, cancellation);
+            var response = await _reviewImageService.GetByUserIdAsync(userId, isOnlyApproved: false, cancellation);
 
             return Ok(ApiResult<List<ReviewImageResponse>>.OK(response));
         }
@@ -108,8 +104,7 @@ namespace Review.API.Controllers
         [HttpGet("review/{id}")]
         public async Task<IActionResult> GetByReviewId(Guid id, CancellationToken cancellation)
         {
-            List<ReviewImageResponse> response = await _reviewImageService
-                .GetByReviewIdAsync(id, isOnlyApproved: true, cancellation);
+            var response = await _reviewImageService.GetByReviewIdAsync(id, isOnlyApproved: true, cancellation);
 
             return Ok(ApiResult<List<ReviewImageResponse>>.OK(response));
         }
@@ -120,8 +115,7 @@ namespace Review.API.Controllers
         [HttpGet("review/{id}/admin")]
         public async Task<IActionResult> GetByAdminReviewId(Guid id, CancellationToken cancellation)
         {
-            List<ReviewImageResponse> response = await _reviewImageService
-                .GetByReviewIdAsync(id, isOnlyApproved: false, cancellation);
+            var response = await _reviewImageService.GetByReviewIdAsync(id, isOnlyApproved: false, cancellation);
 
             return Ok(ApiResult<List<ReviewImageResponse>>.OK(response));
         }
@@ -133,7 +127,7 @@ namespace Review.API.Controllers
         [HttpPost]
         public async Task<IActionResult> Post(ReviewImageRequest request, CancellationToken cancellation)
         {
-            ReviewImageResponse response = await _reviewImageService.CreateAsync(UserId, request, cancellation);
+            var response = await _reviewImageService.CreateAsync(UserId, request, cancellation);
 
             return Ok(ApiResult<ReviewImageResponse>.OK(response));
         }
@@ -144,7 +138,7 @@ namespace Review.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id, CancellationToken cancellation)
         {
-            ReviewImageResponse response = await _reviewImageService.DeleteAsync(UserId, id, cancellation);
+            var response = await _reviewImageService.DeleteAsync(UserId, id, cancellation);
 
             return Ok(ApiResult<ReviewImageResponse>.OK(response));
         }
@@ -155,7 +149,7 @@ namespace Review.API.Controllers
         [HttpDelete("{id}/admin")]
         public async Task<IActionResult> DeleteAdmin(Guid id, CancellationToken cancellation)
         {
-            ReviewImageResponse response = await _reviewImageService.DeleteAsync(id, cancellation);
+            var response = await _reviewImageService.DeleteAsync(id, cancellation);
 
             return Ok(ApiResult<ReviewImageResponse>.OK(response));
         }

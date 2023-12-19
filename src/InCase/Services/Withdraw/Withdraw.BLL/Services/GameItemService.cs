@@ -1,7 +1,6 @@
 ﻿using Infrastructure.MassTransit.Resources;
 using Microsoft.EntityFrameworkCore;
 using Withdraw.BLL.Exceptions;
-using Withdraw.BLL.Helpers;
 using Withdraw.BLL.Interfaces;
 using Withdraw.DAL.Data;
 using Withdraw.DAL.Entities;
@@ -17,15 +16,21 @@ namespace Withdraw.BLL.Services
             _context = context;
         }
 
-        public async Task<GameItem?> GetAsync(Guid id, CancellationToken cancellation = default) => await _context.Items
+        public async Task<GameItem?> GetAsync(Guid id, CancellationToken cancellation = default) => 
+            await _context.Items
             .AsNoTracking()
             .FirstOrDefaultAsync(gi => gi.Id == id, cancellation);
 
         public async Task CreateAsync(GameItemTemplate template, CancellationToken cancellation = default)
         {
-            GameItem item = template.ToEntity();
+            var item = new GameItem
+            {
+                Id = template.Id,
+                Cost = template.Cost,
+                IdForMarket = template.IdForMarket
+            };
 
-            Game game = await _context.Games
+            var game = await _context.Games
                 .AsNoTracking()
                 .FirstOrDefaultAsync(g => g.Name == template.GameName, cancellation) ?? 
                 throw new NotFoundException("Игра не найдена");
@@ -38,17 +43,16 @@ namespace Withdraw.BLL.Services
 
         public async Task UpdateAsync(GameItemTemplate template, CancellationToken cancellation = default)
         {
-            GameItem item = await _context.Items
+            var item = await _context.Items
                 .FirstOrDefaultAsync(gi => gi.Id == template.Id, cancellation) ??
                 throw new NotFoundException("Предмет не найден");
 
-            Game game = await _context.Games
+            var game = await _context.Games
                 .AsNoTracking()
                 .FirstOrDefaultAsync(g => g.Name == template.GameName, cancellation) ??
                 throw new NotFoundException("Игра не найдена");
 
-            if (template.IdForMarket is not null)
-                item.IdForMarket = template.IdForMarket;
+            if (template.IdForMarket is not null) item.IdForMarket = template.IdForMarket;
 
             item.GameId = game.Id;
             item.Cost = template.Cost;
@@ -58,7 +62,7 @@ namespace Withdraw.BLL.Services
 
         public async Task DeleteAsync(Guid id, CancellationToken cancellation = default)
         {
-            GameItem item = await _context.Items
+            var item = await _context.Items
                 .AsNoTracking()
                 .FirstOrDefaultAsync(gi => gi.Id == id, cancellation) ??
                 throw new NotFoundException("Предмет не найден");

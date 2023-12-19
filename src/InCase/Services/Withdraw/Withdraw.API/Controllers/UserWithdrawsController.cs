@@ -14,8 +14,7 @@ namespace Withdraw.API.Controllers
     public class UserWithdrawsController : ControllerBase
     {
         private readonly IUserWithdrawsService _userWithdrawsService;
-        private Guid UserId => Guid
-            .Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
+        private Guid UserId => Guid.Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
 
         public UserWithdrawsController(IUserWithdrawsService userWithdrawsService)
         {
@@ -28,7 +27,7 @@ namespace Withdraw.API.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(Guid id, CancellationToken cancellation)
         {
-            UserHistoryWithdrawResponse response = await _userWithdrawsService.GetAsync(id, cancellation);
+            var response = await _userWithdrawsService.GetAsync(id, cancellation);
 
             return Ok(ApiResult<UserHistoryWithdrawResponse>.OK(response));
         }
@@ -39,8 +38,7 @@ namespace Withdraw.API.Controllers
         [HttpGet("user/{id}")]
         public async Task<IActionResult> GetByUserId(Guid id, CancellationToken cancellation)
         {
-            List<UserHistoryWithdrawResponse> response = await _userWithdrawsService
-                .GetAsync(id, 100, cancellation);
+            var response = await _userWithdrawsService.GetAsync(id, 100, cancellation);
 
             return Ok(ApiResult<List<UserHistoryWithdrawResponse>>.OK(response));
         }
@@ -51,8 +49,7 @@ namespace Withdraw.API.Controllers
         [HttpGet("100/last")]
         public async Task<IActionResult> GetLast100Withdraw(CancellationToken cancellation)
         {
-            List<UserHistoryWithdrawResponse> response = await _userWithdrawsService
-                .GetAsync(100, cancellation);
+            var response = await _userWithdrawsService.GetAsync(100, cancellation);
 
             return Ok(ApiResult<List<UserHistoryWithdrawResponse>>.OK(response));
         }
@@ -63,8 +60,7 @@ namespace Withdraw.API.Controllers
         [HttpGet]
         public async Task<IActionResult> Get(CancellationToken cancellation)
         {
-            List<UserHistoryWithdrawResponse> response = await _userWithdrawsService
-                .GetAsync(UserId, 100, cancellation);
+            var response = await _userWithdrawsService.GetAsync(UserId, 100, cancellation);
 
             return Ok(ApiResult<List<UserHistoryWithdrawResponse>>.OK(response));
         }
@@ -75,8 +71,7 @@ namespace Withdraw.API.Controllers
         [HttpGet("admin")]
         public async Task<IActionResult> Get(CancellationToken cancellation, int count = 100)
         {
-            List<UserHistoryWithdrawResponse> response = await _userWithdrawsService
-                .GetAsync(count, cancellation);
+            var response = await _userWithdrawsService.GetAsync(count, cancellation);
 
             return Ok(ApiResult<List<UserHistoryWithdrawResponse>>.OK(response));
         }
@@ -88,8 +83,7 @@ namespace Withdraw.API.Controllers
         [HttpGet("{userId}/admin")]
         public async Task<IActionResult> Get(Guid userId, CancellationToken cancellation, int count = 100)
         {
-            List<UserHistoryWithdrawResponse> response = await _userWithdrawsService
-                .GetAsync(userId, count, cancellation);
+            var response = await _userWithdrawsService.GetAsync(userId, count, cancellation);
 
             return Ok(ApiResult<List<UserHistoryWithdrawResponse>>.OK(response));
         }
@@ -99,8 +93,7 @@ namespace Withdraw.API.Controllers
         [HttpGet("{id}/transfer")]
         public async Task<IActionResult> TransferToInventory(Guid id, CancellationToken cancellation)
         {
-            UserInventoryResponse response = await _userWithdrawsService
-                .TransferAsync(id, UserId, cancellation);
+            var response = await _userWithdrawsService.TransferAsync(id, UserId, cancellation);
 
             return Ok(ApiResult<UserInventoryResponse>.OK(response));
         }

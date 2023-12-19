@@ -29,13 +29,13 @@ namespace Withdraw.BLL.Services
         public async Task<ItemInfoResponse> GetItemInfoAsync(Guid id, CancellationToken cancellation = default)
         {
             var item = await _context.Items
-                           .Include(gi => gi.Game)
-                           .Include(gi => gi.Game!.Market)
-                           .AsNoTracking()
-                           .FirstOrDefaultAsync(gi => gi.Id == id, cancellation) ?? 
-                       throw new NotFoundException("Предмет не найден");
+                .Include(gi => gi.Game)
+                .Include(gi => gi.Game!.Market)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(gi => gi.Id == id, cancellation) ?? 
+                throw new NotFoundException("Предмет не найден");
 
-            return await _withdrawService.GetItemInfoAsync(item);
+            return await _withdrawService.GetItemInfoAsync(item, cancellation);
         }
 
         public async Task<BalanceMarketResponse> GetMarketBalanceAsync(string marketName, CancellationToken cancellation = default) =>
@@ -59,8 +59,7 @@ namespace Withdraw.BLL.Services
 
             foreach(var withdraw in withdraws)
             {
-                var response = await _withdrawService
-                    .GetTradeInfoAsync(withdraw, cancellation);
+                var response = await _withdrawService.GetTradeInfoAsync(withdraw, cancellation);
 
                 withdraw.StatusId = statuses.First(ws => ws.Name == response.Status).Id;
                 _context.Entry(withdraw).Property(p => p.StatusId).IsModified = true;
@@ -68,55 +67,46 @@ namespace Withdraw.BLL.Services
 
                 if (response.Status != "given") continue;
 
-                SiteStatisticsTemplate template = new()
+                await _publisher.SendAsync(new SiteStatisticsTemplate
                 {
                     WithdrawnItems = 1,
                     WithdrawnFunds = Convert.ToInt32(withdraw.FixedCost)
-                };
-
-                await _publisher.SendAsync(template, cancellation);
+                }, cancellation);
             }
         }
 
-        public async Task<UserHistoryWithdrawResponse> WithdrawItemAsync(
-            WithdrawItemRequest request, 
-            Guid userId,
+        public async Task<UserHistoryWithdrawResponse> WithdrawItemAsync(WithdrawItemRequest request, Guid userId,
             CancellationToken cancellation = default)
         {
             var inventory = await _context.Inventories
-                                .Include(ui => ui.Item)
-                                .Include(ui => ui.Item!.Game)
-                                .Include(ui => ui.Item!.Game!.Market)
-                                .AsNoTracking()
-                                .FirstOrDefaultAsync(ui => ui.Id == request.InventoryId && 
-                                                           ui.UserId == userId, cancellation) ??
-                            throw new NotFoundException("Предмет не найден в инвентаре");
+                .Include(ui => ui.Item)
+                .Include(ui => ui.Item!.Game)
+                .Include(ui => ui.Item!.Game!.Market)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(ui => ui.Id == request.InventoryId && 
+                ui.UserId == userId, cancellation) ??
+                throw new NotFoundException("Предмет не найден в инвентаре");
 
             var item = inventory.Item!;
 
-            var info = await _withdrawService
-                .GetItemInfoAsync(item, cancellation);
+            var info = await _withdrawService.GetItemInfoAsync(item, cancellation);
 
             var price = info.PriceKopecks * 0.01M;
             var itemCost = inventory.FixedCost / 7;
 
-            if (price > itemCost * 1.1M)
-                throw new ConflictException("Цена на предмет нестабильна");
+            if (price > itemCost * 1.1M) throw new ConflictException("Цена на предмет нестабильна");
 
-            var balance = await _withdrawService
-                .GetBalanceAsync(info.Market.Name!, cancellation);
+            var balance = await _withdrawService.GetBalanceAsync(info.Market.Name!, cancellation);
 
-            if (balance.Balance <= price)
-                throw new PaymentRequiredException("Ожидаем пополнения сервиса покупки");
+            if (balance.Balance <= price) throw new PaymentRequiredException("Ожидаем пополнения сервиса покупки");
 
-            var buyItem = await _withdrawService
-                .BuyItemAsync(info, request.TradeUrl!,cancellation);
+            var buyItem = await _withdrawService.BuyItemAsync(info, request.TradeUrl!,cancellation);
 
             var status = await _context.Statuses
                 .AsNoTracking()
                 .FirstAsync(iws => iws.Name == "purchase", cancellation);
 
-            UserHistoryWithdraw withdraw = new()
+            var withdraw = new UserHistoryWithdraw
             {
                 InvoiceId = buyItem.Id,
                 StatusId = status.Id,
@@ -132,7 +122,9 @@ namespace Withdraw.BLL.Services
 
             await _context.SaveChangesAsync(cancellation);
 
-            await _publisher.SendAsync(new SiteStatisticsAdminTemplate { FundsUsersInventories = -inventory.FixedCost }, cancellation);
+            await _publisher.SendAsync(new SiteStatisticsAdminTemplate { 
+                FundsUsersInventories = -inventory.FixedCost 
+            }, cancellation);
 
             return withdraw.ToResponse();
         }

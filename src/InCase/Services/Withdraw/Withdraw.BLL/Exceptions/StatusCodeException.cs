@@ -9,7 +9,6 @@
             StatusCode = statusCode;
         }
 
-        public StatusCodeException(int statusCode, Exception inner)
-            : this(statusCode, inner.ToString()) { }
+        public StatusCodeException(int statusCode, Exception inner) : this(statusCode, inner.ToString()) { }
     }
 }

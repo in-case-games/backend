@@ -28,10 +28,9 @@ namespace Support.BLL.Helpers
 
         public static List<SupportTopicResponse> ToResponse(this List<SupportTopic> entities)
         {
-            List<SupportTopicResponse> response = new();
+            var response = new List<SupportTopicResponse>();
 
-            foreach (var entity in entities)
-                response.Add(entity.ToResponse());
+            foreach (var entity in entities) response.Add(entity.ToResponse());
 
             return response;
         }

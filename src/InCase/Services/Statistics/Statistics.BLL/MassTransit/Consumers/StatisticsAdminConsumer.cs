@@ -1,7 +1,6 @@
 ﻿using Infrastructure.MassTransit.Statistics;
 using MassTransit;
 using MongoDB.Driver;
-using Statistics.BLL.Helpers;
 using Statistics.BLL.Repository;
 using Statistics.DAL.Entities;
 
@@ -18,22 +17,25 @@ namespace Statistics.BLL.MassTransit.Consumers
         {
             var database = client.GetDatabase("InCaseStatistics");
 
-            _siteStatisticsAdmin = database
-                .GetCollection<SiteStatisticsAdmin>("AdminSite");
-
+            _siteStatisticsAdmin = database.GetCollection<SiteStatisticsAdmin>("AdminSite");
             _siteStatisticsRepository = siteStatisticsRepository;
         }
 
         public async Task Consume(ConsumeContext<SiteStatisticsAdminTemplate> context)
         {
-            var template = context.Message;
+            var stats = await _siteStatisticsRepository.GetAdminAsync();
+            var statsNew = new SiteStatisticsAdmin
+            {
+                Id = stats.Id,
+                FundsUsersInventories = stats.FundsUsersInventories + context.Message.FundsUsersInventories,
+                ReturnedFunds = stats.ReturnedFunds + context.Message.ReturnedFunds,
+                TotalReplenishedFunds = stats.TotalReplenishedFunds + context.Message.TotalReplenishedFunds,
+                RevenueLootBoxCommission = stats.RevenueLootBoxCommission + context.Message.RevenueLootBoxCommission,
+            };
 
-            var stat = await _siteStatisticsRepository.GetAdminAsync();
-            var statNew = stat.ToJoin(template);
+            var filter = Builders<SiteStatisticsAdmin>.Filter.Eq(s => s.Id, stats.Id);
 
-            var filter = Builders<SiteStatisticsAdmin>.Filter.Eq(s => s.Id, stat.Id);
-
-            await _siteStatisticsAdmin.ReplaceOneAsync(filter, statNew);
+            await _siteStatisticsAdmin.ReplaceOneAsync(filter, statsNew);
         }
     }
 }

@@ -25,7 +25,7 @@ namespace Statistics.API.Controllers
         [HttpGet]
         public async Task<IActionResult> Get(CancellationToken cancellation)
         {
-            SiteStatisticsResponse response = await _statisticsService.GetAsync(cancellation);
+            var response = await _statisticsService.GetAsync(cancellation);
 
             return Ok(ApiResult<SiteStatisticsResponse>.OK(response));
         }
@@ -36,7 +36,7 @@ namespace Statistics.API.Controllers
         [HttpGet("admin")]
         public async Task<IActionResult> GetAdmin(CancellationToken cancellation)
         {
-            SiteStatisticsAdminResponse response = await _statisticsService.GetAdminAsync(cancellation);
+            var response = await _statisticsService.GetAdminAsync(cancellation);
 
             return Ok(ApiResult<SiteStatisticsAdminResponse>.OK(response));
         }

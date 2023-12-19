@@ -14,9 +14,7 @@ using Payment.DAL.Data;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
-var configuration = new ConfigurationBuilder()
-    .AddJsonFile("appsettings.Development.json")
-    .Build();
+var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.Development.json").Build();
 
 builder.Logging.AddConfiguration(configuration).ClearProviders().AddNLog();
 

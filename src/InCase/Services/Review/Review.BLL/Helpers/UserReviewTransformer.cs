@@ -30,10 +30,9 @@ namespace Review.BLL.Helpers
 
         public static List<UserReviewResponse> ToResponse(this List<UserReview> entities)
         {
-            List<UserReviewResponse> response = new();
+            var response = new List<UserReviewResponse>();
 
-            foreach (var entity in entities)
-                response.Add(ToResponse(entity));
+            foreach (var entity in entities) response.Add(ToResponse(entity));
 
             return response;
         }

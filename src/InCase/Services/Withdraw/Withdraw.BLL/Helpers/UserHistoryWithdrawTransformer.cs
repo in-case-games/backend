@@ -17,13 +17,11 @@ namespace Withdraw.BLL.Helpers
                 Status = withdraw?.Status?.Name 
             };
 
-        public static List<UserHistoryWithdrawResponse> ToResponse(
-            this List<UserHistoryWithdraw> withdraws)
+        public static List<UserHistoryWithdrawResponse> ToResponse(this List<UserHistoryWithdraw> withdraws)
         {
-            List<UserHistoryWithdrawResponse> response = new();
+            var response = new List<UserHistoryWithdrawResponse>();
 
-            foreach (var withdraw in withdraws)
-                response.Add(withdraw.ToResponse());
+            foreach (var withdraw in withdraws) response.Add(withdraw.ToResponse());
 
             return response;
         }

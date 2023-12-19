@@ -17,7 +17,8 @@ namespace Review.BLL.Services
             _context = context;
         }
 
-        public async Task<User?> GetAsync(Guid id, CancellationToken cancellation = default) => await _context.User
+        public async Task<User?> GetAsync(Guid id, CancellationToken cancellation = default) => 
+            await _context.User
             .AsNoTracking()
             .FirstOrDefaultAsync(u => u.Id == id, cancellation);
 
@@ -26,15 +27,13 @@ namespace Review.BLL.Services
             if (await _context.User.AnyAsync(u => u.Id == template.Id, cancellation))
                 throw new NotFoundException("Пользователь существует");
 
-            User user = template.ToEntity();
-
-            await _context.User.AddAsync(user, cancellation);
+            await _context.User.AddAsync(new User { Id = template.Id }, cancellation);
             await _context.SaveChangesAsync(cancellation);
         }
 
         public async Task DeleteAsync(Guid id, CancellationToken cancellation = default)
         {
-            User user = await _context.User
+            var user = await _context.User
                 .FirstOrDefaultAsync(u => u.Id == id, cancellation) ??
                 throw new NotFoundException("Пользователь не найден");
 

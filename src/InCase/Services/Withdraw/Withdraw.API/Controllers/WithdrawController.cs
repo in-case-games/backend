@@ -14,8 +14,7 @@ namespace Withdraw.API.Controllers
     public class WithdrawController : ControllerBase
     {
         private readonly IWithdrawService _withdrawService;
-        private Guid UserId => Guid
-            .Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
+        private Guid UserId => Guid.Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
 
         public WithdrawController(IWithdrawService withdrawService)
         {
@@ -28,8 +27,7 @@ namespace Withdraw.API.Controllers
         [HttpPost]
         public async Task<IActionResult> Withdraw(WithdrawItemRequest request, CancellationToken cancellation)
         {
-            UserHistoryWithdrawResponse response = await _withdrawService
-                .WithdrawItemAsync(request, UserId, cancellation);
+            var response = await _withdrawService.WithdrawItemAsync(request, UserId, cancellation);
 
             return Ok(ApiResult<UserHistoryWithdrawResponse>.OK(response));
         }
@@ -39,7 +37,7 @@ namespace Withdraw.API.Controllers
         [HttpGet("market/{name}/balance")]
         public async Task<IActionResult> GetMarketBalance(string name, CancellationToken cancellation)
         {
-            BalanceMarketResponse response = await _withdrawService.GetMarketBalanceAsync(name, cancellation);
+            var response = await _withdrawService.GetMarketBalanceAsync(name, cancellation);
 
             return Ok(ApiResult<BalanceMarketResponse>.OK(response));
         }
@@ -49,7 +47,7 @@ namespace Withdraw.API.Controllers
         [HttpGet("item/{id}")]
         public async Task<IActionResult> GetItemInfo(Guid id, CancellationToken cancellation)
         {
-            ItemInfoResponse response = await _withdrawService.GetItemInfoAsync(id, cancellation);
+            var response = await _withdrawService.GetItemInfoAsync(id, cancellation);
 
             return Ok(ApiResult<ItemInfoResponse>.OK(response));
         }

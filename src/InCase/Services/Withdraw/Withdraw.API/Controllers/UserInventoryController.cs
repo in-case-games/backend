@@ -15,8 +15,7 @@ namespace Withdraw.API.Controllers
     public class UserInventoryController : ControllerBase
     {
         private readonly IUserInventoryService _userInventoryService;
-        private Guid UserId => Guid
-            .Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
+        private Guid UserId => Guid.Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
 
         public UserInventoryController(IUserInventoryService userInventoryService)
         {
@@ -29,7 +28,7 @@ namespace Withdraw.API.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(Guid id, CancellationToken cancellation)
         {
-            UserInventoryResponse response = await _userInventoryService.GetByIdAsync(id, cancellation);
+            var response = await _userInventoryService.GetByIdAsync(id, cancellation);
 
             return Ok(ApiResult<UserInventoryResponse>.OK(response));
         }
@@ -40,8 +39,7 @@ namespace Withdraw.API.Controllers
         [HttpGet("user/{id}")]
         public async Task<IActionResult> GetByUserId(Guid id, CancellationToken cancellation)
         {
-            List<UserInventoryResponse> response = await _userInventoryService
-                .GetAsync(id, 100, cancellation);
+            var response = await _userInventoryService.GetAsync(id, 100, cancellation);
 
             return Ok(ApiResult<List<UserInventoryResponse>>.OK(response));
         }
@@ -52,8 +50,7 @@ namespace Withdraw.API.Controllers
         [HttpGet]
         public async Task<IActionResult> Get(CancellationToken cancellation)
         {
-            List<UserInventoryResponse> response = await _userInventoryService
-                .GetAsync(UserId, cancellation);
+            var response = await _userInventoryService.GetAsync(UserId, cancellation);
 
             return Ok(ApiResult<List<UserInventoryResponse>>.OK(response));
         }
@@ -64,8 +61,7 @@ namespace Withdraw.API.Controllers
         [HttpGet("{userId}/admin")]
         public async Task<IActionResult> Get(Guid userId, CancellationToken cancellation, int count = 100)
         {
-            List<UserInventoryResponse> response = await _userInventoryService
-                .GetAsync(userId, count, cancellation);
+            var response = await _userInventoryService.GetAsync(userId, count, cancellation);
 
             return Ok(ApiResult<List<UserInventoryResponse>>.OK(response));
         }
@@ -76,7 +72,7 @@ namespace Withdraw.API.Controllers
         [HttpPost]
         public async Task<IActionResult> Post(UserInventoryTemplate request, CancellationToken cancellation)
         {
-            UserInventoryResponse response = await _userInventoryService.CreateAsync(request, cancellation);
+            var response = await _userInventoryService.CreateAsync(request, cancellation);
 
             return Ok(ApiResult<UserInventoryResponse>.OK(response));
         }
@@ -87,8 +83,7 @@ namespace Withdraw.API.Controllers
         [HttpPut("exchange")]
         public async Task<IActionResult> Exchange(ExchangeItemRequest request, CancellationToken cancellation)
         {
-            List<UserInventoryResponse> response = await _userInventoryService
-                .ExchangeAsync(request, UserId, cancellation);
+            var response = await _userInventoryService.ExchangeAsync(request, UserId, cancellation);
 
             return Ok(ApiResult<List<UserInventoryResponse>>.OK(response));
         }
@@ -98,8 +93,7 @@ namespace Withdraw.API.Controllers
         [HttpGet("{id}/sell")]
         public async Task<IActionResult> Sell(Guid id, CancellationToken cancellation)
         {
-            SellItemResponse response = await _userInventoryService
-                .SellAsync(id, UserId, cancellation);
+            var response = await _userInventoryService.SellAsync(id, UserId, cancellation);
 
             return Ok(ApiResult<SellItemResponse>.OK(response));
         }
@@ -109,8 +103,7 @@ namespace Withdraw.API.Controllers
         [HttpGet("last/sell/{itemId}")]
         public async Task<IActionResult> SellLastItem(Guid itemId, CancellationToken cancellation)
         {
-            SellItemResponse response = await _userInventoryService
-                .SellLastAsync(itemId, UserId, cancellation);
+            var response = await _userInventoryService.SellLastAsync(itemId, UserId, cancellation);
 
             return Ok(ApiResult<SellItemResponse>.OK(response));
         }
@@ -121,7 +114,7 @@ namespace Withdraw.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id, CancellationToken cancellation)
         {
-            UserInventoryResponse response = await _userInventoryService.DeleteAsync(id, cancellation);
+            var response = await _userInventoryService.DeleteAsync(id, cancellation);
 
             return Ok(ApiResult<UserInventoryResponse>.OK(response));
         }

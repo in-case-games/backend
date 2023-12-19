@@ -27,9 +27,7 @@ namespace Withdraw.BLL.Services
             ["t_4"] = "transfer",
         };
 
-        public MarketTMService(
-            IConfiguration cfg, 
-            IResponseService responseService)
+        public MarketTMService(IConfiguration cfg, IResponseService responseService)
         {
             _cfg = cfg;
             _responseService = responseService;
@@ -37,22 +35,20 @@ namespace Withdraw.BLL.Services
 
         public async Task<BalanceMarketResponse> GetBalanceAsync(CancellationToken cancellation = default)
         {
-            string uri = $"{DomainUri["csgo"]}/api/GetMoney/?key={_cfg["MarketTM:Secret"]}";
+            var uri = $"{DomainUri["csgo"]}/api/GetMoney/?key={_cfg["MarketTM:Secret"]}";
             
-            BalanceTMResponse? response = await _responseService
-                .GetAsync<BalanceTMResponse>(uri, cancellation);
+            var response = await _responseService.GetAsync<BalanceTMResponse>(uri, cancellation);
 
             return new() { Balance = response!.MoneyKopecks * 0.01M };
         }
 
-        public async Task<ItemInfoResponse> GetItemInfoAsync(string idForMarket, string game, CancellationToken cancellation = default)
+        public async Task<ItemInfoResponse> GetItemInfoAsync(string idForMarket, string game, 
+            CancellationToken cancellation = default)
         {
-            string id = idForMarket.Replace("-", "_");
+            var id = idForMarket.Replace("-", "_");
+            var uri = $"{DomainUri[game]}/api/ItemInfo/{id}/ru/?key={_cfg["MarketTM:Secret"]}";
 
-            string uri = $"{DomainUri[game]}/api/ItemInfo/{id}/ru/?key={_cfg["MarketTM:Secret"]}";
-
-            ItemInfoTMResponse? info = await _responseService
-                .GetAsync<ItemInfoTMResponse>(uri, cancellation);
+            var info = await _responseService.GetAsync<ItemInfoTMResponse>(uri, cancellation);
 
             return new()
             {
@@ -62,12 +58,13 @@ namespace Withdraw.BLL.Services
             };
         }
 
-        public async Task<TradeInfoResponse> GetTradeInfoAsync(UserHistoryWithdraw history, CancellationToken cancellation = default)
+        public async Task<TradeInfoResponse> GetTradeInfoAsync(UserHistoryWithdraw history, 
+            CancellationToken cancellation = default)
         {
-            string name = history.Item!.Game!.Name!;
-            string id = history.InvoiceId!;
+            var name = history.Item!.Game!.Name!;
+            var id = history.InvoiceId!;
 
-            TradeInfoResponse info = new()
+            var info = new TradeInfoResponse
             {
                 Id = id,
                 Item = history.Item
@@ -75,29 +72,24 @@ namespace Withdraw.BLL.Services
 
             try
             {
-                string tradeUrl = $"{DomainUri[name]}/api/Trades/?key={_cfg["MarketTM:Secret"]}";
+                var tradeUrl = $"{DomainUri[name]}/api/Trades/?key={_cfg["MarketTM:Secret"]}";
 
-                List<TradeInfoTMResponse> trades = await _responseService
-                    .GetAsync<List<TradeInfoTMResponse>>(tradeUrl, cancellation) ?? new();
+                var trades = await _responseService.GetAsync<List<TradeInfoTMResponse>>(tradeUrl, cancellation) ?? new();
 
-                string status = trades!
-                    .First(f => f.Id == id).Status!;
+                var status = trades!.First(f => f.Id == id).Status!;
 
                 info.Status = TradeStatuses["t_" + status];
             }
             catch(Exception)
             {
-                long start = ((DateTimeOffset)history.Date).ToUnixTimeSeconds();
-                long end = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+                var start = ((DateTimeOffset)history.Date).ToUnixTimeSeconds();
+                var end = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
 
-                string historyUrl = $"{DomainUri[name]}/api/OperationHistory/{start}/{end}" +
-                    $"/?key={_cfg["MarketTM:Secret"]}";
+                var historyUrl = $"{DomainUri[name]}/api/OperationHistory/{start}/{end}/?key={_cfg["MarketTM:Secret"]}";
 
-                AnswerOperationHistoryTMResponse? answer = await _responseService
-                    .GetAsync<AnswerOperationHistoryTMResponse>(historyUrl, cancellation);
+                var answer = await _responseService.GetAsync<AnswerOperationHistoryTMResponse>(historyUrl, cancellation);
 
-                string status = answer!.Histories!
-                    .First(f => f.Id == id).Status!;
+                var status = answer!.Histories!.First(f => f.Id == id).Status!;
 
                 info.Status = TradeStatuses["h_" + status];
             }
@@ -105,20 +97,19 @@ namespace Withdraw.BLL.Services
             return info;
         }
 
-        public async Task<BuyItemResponse> BuyItemAsync(ItemInfoResponse info, string trade, CancellationToken cancellation = default)
+        public async Task<BuyItemResponse> BuyItemAsync(ItemInfoResponse info, string trade, 
+            CancellationToken cancellation = default)
         {
-            int price = info.PriceKopecks;
-            string name = info.Item.Game!.Name!;
-            string id = info.Item.IdForMarket!.Replace("-", "_");
-            string[] split = trade.Split("&");
-            string partner = split[0].Split("=")[1];
-            string token = split[1].Split("=")[1];
+            var price = info.PriceKopecks;
+            var name = info.Item.Game!.Name!;
+            var id = info.Item.IdForMarket!.Replace("-", "_");
+            var split = trade.Split("&");
+            var partner = split[0].Split("=")[1];
+            var token = split[1].Split("=")[1];
 
-            string url = $"{DomainUri[name]}/api/Buy/{id}/{price}//?key={_cfg["MarketTM:Secret"]}" +
-                $"&partner={partner}&token={token}";
+            var url = $"{DomainUri[name]}/api/Buy/{id}/{price}//?key={_cfg["MarketTM:Secret"]}&partner={partner}&token={token}";
 
-            BuyItemTMResponse? response = await _responseService
-                .GetAsync<BuyItemTMResponse>(url, cancellation);
+            var response = await _responseService.GetAsync<BuyItemTMResponse>(url, cancellation);
             
             return new() { Id = response!.Id! };
         }
