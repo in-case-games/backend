@@ -18,8 +18,7 @@ namespace Identity.API.Controllers
             _roleService = roleService;
         }
 
-        [ProducesResponseType(typeof(ApiResult<UserRoleResponse>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<UserRoleResponse>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(Guid id, CancellationToken cancellation)
@@ -29,8 +28,7 @@ namespace Identity.API.Controllers
             return Ok(ApiResult<UserRoleResponse>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<List<UserRoleResponse>>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<List<UserRoleResponse>>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> Get(CancellationToken cancellation)

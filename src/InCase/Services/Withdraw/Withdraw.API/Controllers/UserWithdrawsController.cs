@@ -21,8 +21,7 @@ namespace Withdraw.API.Controllers
             _userWithdrawsService = userWithdrawsService;
         }
 
-        [ProducesResponseType(typeof(ApiResult<UserHistoryWithdrawResponse>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<UserHistoryWithdrawResponse>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(Guid id, CancellationToken cancellation)
@@ -32,8 +31,7 @@ namespace Withdraw.API.Controllers
             return Ok(ApiResult<UserHistoryWithdrawResponse>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<List<UserHistoryWithdrawResponse>>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<List<UserHistoryWithdrawResponse>>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("user/{id}")]
         public async Task<IActionResult> GetByUserId(Guid id, CancellationToken cancellation)
@@ -43,8 +41,7 @@ namespace Withdraw.API.Controllers
             return Ok(ApiResult<List<UserHistoryWithdrawResponse>>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<List<UserHistoryWithdrawResponse>>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<List<UserHistoryWithdrawResponse>>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("100/last")]
         public async Task<IActionResult> GetLast100Withdraw(CancellationToken cancellation)
@@ -54,8 +51,7 @@ namespace Withdraw.API.Controllers
             return Ok(ApiResult<List<UserHistoryWithdrawResponse>>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<List<UserHistoryWithdrawResponse>>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<List<UserHistoryWithdrawResponse>>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet]
         public async Task<IActionResult> Get(CancellationToken cancellation)
@@ -65,8 +61,7 @@ namespace Withdraw.API.Controllers
             return Ok(ApiResult<List<UserHistoryWithdrawResponse>>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<List<UserHistoryWithdrawResponse>>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<List<UserHistoryWithdrawResponse>>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
         [HttpGet("admin")]
         public async Task<IActionResult> Get(CancellationToken cancellation, int count = 100)
@@ -77,8 +72,7 @@ namespace Withdraw.API.Controllers
         }
 
 
-        [ProducesResponseType(typeof(ApiResult<List<UserHistoryWithdrawResponse>>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<List<UserHistoryWithdrawResponse>>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
         [HttpGet("{userId}/admin")]
         public async Task<IActionResult> Get(Guid userId, CancellationToken cancellation, int count = 100)

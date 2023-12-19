@@ -20,8 +20,7 @@ namespace Authentication.API.Controllers
             _authConfirmService = authConfirmService;
         }
 
-        [ProducesResponseType(typeof(ApiResult<TokensResponse>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<TokensResponse>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("account")]
         public async Task<IActionResult> ConfirmAccount(string token, CancellationToken cancellationToken)
@@ -31,8 +30,7 @@ namespace Authentication.API.Controllers
             return Ok(ApiResult<TokensResponse>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<UserResponse>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<UserResponse>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("email/{email}")]
         public async Task<IActionResult> UpdateEmail(string email, string token, CancellationToken cancellationToken)
@@ -42,8 +40,7 @@ namespace Authentication.API.Controllers
             return Ok(ApiResult<UserResponse>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<UserResponse>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<UserResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Owner)]
         [HttpGet("{userId}/email/{email}")]
         public async Task<IActionResult> UpdateEmail(Guid userId, string email, CancellationToken cancellationToken)
@@ -53,8 +50,7 @@ namespace Authentication.API.Controllers
             return Ok(ApiResult<UserResponse>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<UserResponse>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<UserResponse>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("login/{login}")]
         public async Task<IActionResult> UpdateLogin(string login, string token, CancellationToken cancellationToken)
@@ -64,8 +60,7 @@ namespace Authentication.API.Controllers
             return Ok(ApiResult<UserResponse>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<UserResponse>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<UserResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Owner)]
         [HttpGet("{userId}/login/{login}")]
         public async Task<IActionResult> UpdateLogin(Guid userId, string login, CancellationToken cancellationToken)
@@ -75,8 +70,7 @@ namespace Authentication.API.Controllers
             return Ok(ApiResult<UserResponse>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<UserResponse>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<UserResponse>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("password/{password}")]
         public async Task<IActionResult> UpdatePassword(string password, string token, CancellationToken cancellationToken)
@@ -86,8 +80,7 @@ namespace Authentication.API.Controllers
             return Ok(ApiResult<UserResponse>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<UserResponse>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<UserResponse>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpDelete("account")]
         public async Task<IActionResult> Delete(string token, CancellationToken cancellationToken)

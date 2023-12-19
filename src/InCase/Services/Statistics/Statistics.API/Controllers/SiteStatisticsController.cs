@@ -19,8 +19,7 @@ namespace Statistics.API.Controllers
             _statisticsService = statisticsService;
         }
 
-        [ProducesResponseType(typeof(ApiResult<SiteStatisticsResponse>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<SiteStatisticsResponse>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> Get(CancellationToken cancellation)
@@ -30,8 +29,7 @@ namespace Statistics.API.Controllers
             return Ok(ApiResult<SiteStatisticsResponse>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<SiteStatisticsAdminResponse>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<SiteStatisticsAdminResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Owner, Roles.Bot)]
         [HttpGet("admin")]
         public async Task<IActionResult> GetAdmin(CancellationToken cancellation)

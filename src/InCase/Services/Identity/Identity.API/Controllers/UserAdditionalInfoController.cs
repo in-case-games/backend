@@ -21,8 +21,7 @@ namespace Identity.API.Controllers
             _infoService = infoService;
         }
 
-        [ProducesResponseType(typeof(ApiResult<UserAdditionalInfoResponse>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<UserAdditionalInfoResponse>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(Guid id, CancellationToken cancellation)
@@ -32,8 +31,7 @@ namespace Identity.API.Controllers
             return Ok(ApiResult<UserAdditionalInfoResponse>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<UserAdditionalInfoResponse>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<UserAdditionalInfoResponse>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("user/{id}")]
         public async Task<IActionResult> GetByUserId(Guid id, CancellationToken cancellation)
@@ -43,8 +41,7 @@ namespace Identity.API.Controllers
             return Ok(ApiResult<UserAdditionalInfoResponse>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<UserAdditionalInfoResponse>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<UserAdditionalInfoResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet]
         public async Task<IActionResult> Get(CancellationToken cancellation)
@@ -54,8 +51,7 @@ namespace Identity.API.Controllers
             return Ok(ApiResult<UserAdditionalInfoResponse>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<UserAdditionalInfoResponse>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<UserAdditionalInfoResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Owner)]
         [HttpGet("role/{id}&{userId}")]
         public async Task<IActionResult> UpdateRole(Guid id, Guid userId, CancellationToken cancellation)
@@ -65,8 +61,7 @@ namespace Identity.API.Controllers
             return Ok(ApiResult<UserAdditionalInfoResponse>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<UserAdditionalInfoResponse>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<UserAdditionalInfoResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Admin, Roles.Owner)]
         [HttpGet("deletion/date/{userId}")]
         public async Task<IActionResult> UpdateDeletionDate(Guid userId, CancellationToken cancellation, DateTime? date = null)
@@ -76,8 +71,7 @@ namespace Identity.API.Controllers
             return Ok(ApiResult<UserAdditionalInfoResponse>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<UserAdditionalInfoResponse>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<UserAdditionalInfoResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Admin, Roles.Owner)]
         [RequestSizeLimit(8388608)]
         [HttpPut("image/admin")]
@@ -89,8 +83,7 @@ namespace Identity.API.Controllers
             return Ok(ApiResult<UserAdditionalInfoResponse>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<UserAdditionalInfoResponse>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<UserAdditionalInfoResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [RequestSizeLimit(8388608)]
         [HttpPut("image")]

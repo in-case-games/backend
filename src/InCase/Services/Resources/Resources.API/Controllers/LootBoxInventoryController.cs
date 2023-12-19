@@ -19,8 +19,7 @@ namespace Resources.API.Controllers
             _inventoryService = inventoryService;
         }
 
-        [ProducesResponseType(typeof(ApiResult<LootBoxInventoryResponse>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<LootBoxInventoryResponse>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(Guid id, CancellationToken cancellation)
@@ -30,8 +29,7 @@ namespace Resources.API.Controllers
             return Ok(ApiResult<LootBoxInventoryResponse>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<List<LootBoxInventoryResponse>>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<List<LootBoxInventoryResponse>>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("box/{id}")]
         public async Task<IActionResult> GetByBoxId(Guid id, CancellationToken cancellation)
@@ -41,8 +39,7 @@ namespace Resources.API.Controllers
             return Ok(ApiResult<List<LootBoxInventoryResponse>>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<List<LootBoxInventoryResponse>>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<List<LootBoxInventoryResponse>>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("item/{id}")]
         public async Task<IActionResult> GetByItemId(Guid id, CancellationToken cancellation)
@@ -52,8 +49,7 @@ namespace Resources.API.Controllers
             return Ok(ApiResult<List<LootBoxInventoryResponse>>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<LootBoxInventoryResponse>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<LootBoxInventoryResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Owner)]
         [HttpPost]
         public async Task<IActionResult> Post(LootBoxInventoryRequest request, CancellationToken cancellation)
@@ -63,8 +59,7 @@ namespace Resources.API.Controllers
             return Ok(ApiResult<LootBoxInventoryResponse>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<LootBoxInventoryResponse>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<LootBoxInventoryResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Owner)]
         [HttpPut]
         public async Task<IActionResult> Put(LootBoxInventoryRequest request, CancellationToken cancellation)
@@ -74,8 +69,7 @@ namespace Resources.API.Controllers
             return Ok(ApiResult<LootBoxInventoryResponse>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<LootBoxInventoryResponse>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<LootBoxInventoryResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Owner)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id, CancellationToken cancellation)

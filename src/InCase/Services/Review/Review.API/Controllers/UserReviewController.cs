@@ -21,8 +21,7 @@ namespace Review.API.Controllers
             _userReviewService = userReviewService;
         }
 
-        [ProducesResponseType(typeof(ApiResult<List<UserReviewResponse>>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<List<UserReviewResponse>>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("all")]
         public async Task<IActionResult> Get(CancellationToken cancellation)
@@ -32,8 +31,7 @@ namespace Review.API.Controllers
             return Ok(ApiResult<List<UserReviewResponse>>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<List<UserReviewResponse>>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<List<UserReviewResponse>>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("last/{count}")]
         public async Task<IActionResult> GetLast(CancellationToken cancellation, int count = 100)
@@ -43,8 +41,7 @@ namespace Review.API.Controllers
             return Ok(ApiResult<List<UserReviewResponse>>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<List<UserReviewResponse>>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<List<UserReviewResponse>>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("last/{count}/admin")]
         public async Task<IActionResult> GetLastAdmin(CancellationToken cancellation, int count = 100)
@@ -54,8 +51,7 @@ namespace Review.API.Controllers
             return Ok(ApiResult<List<UserReviewResponse>>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<UserReviewResponse>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<UserReviewResponse>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(Guid id, CancellationToken cancellation)
@@ -65,8 +61,7 @@ namespace Review.API.Controllers
             return Ok(ApiResult<UserReviewResponse>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<List<UserReviewResponse>>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<List<UserReviewResponse>>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("user/{id}")]
         public async Task<IActionResult> GetByUserId(Guid id, CancellationToken cancellation)
@@ -76,8 +71,7 @@ namespace Review.API.Controllers
             return Ok(ApiResult<List<UserReviewResponse>>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<List<UserReviewResponse>>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<List<UserReviewResponse>>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
         [HttpGet("admin")]
         public async Task<IActionResult> GetByAdmin(CancellationToken cancellation)
@@ -87,8 +81,7 @@ namespace Review.API.Controllers
             return Ok(ApiResult<List<UserReviewResponse>>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<UserReviewResponse>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<UserReviewResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
         [HttpGet("{id}/admin")]
         public async Task<IActionResult> GetByAdmin(Guid id, CancellationToken cancellation)
@@ -98,8 +91,7 @@ namespace Review.API.Controllers
             return Ok(ApiResult<UserReviewResponse>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<List<UserReviewResponse>>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<List<UserReviewResponse>>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
         [HttpGet("user/{userId}/admin")]
         public async Task<IActionResult> GetByAdminUserId(Guid userId, CancellationToken cancellation)
@@ -109,8 +101,7 @@ namespace Review.API.Controllers
             return Ok(ApiResult<List<UserReviewResponse>>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<List<UserReviewResponse>>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<List<UserReviewResponse>>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet]
         public async Task<IActionResult> GetByUserId(CancellationToken cancellation)
@@ -120,8 +111,7 @@ namespace Review.API.Controllers
             return Ok(ApiResult<List<UserReviewResponse>>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<UserReviewResponse>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<UserReviewResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Admin, Roles.Owner)]
         [HttpGet("{id}/approve")]
         public async Task<IActionResult> Approve(Guid id, CancellationToken cancellation)
@@ -131,8 +121,7 @@ namespace Review.API.Controllers
             return Ok(ApiResult<UserReviewResponse>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<UserReviewResponse>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<UserReviewResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Admin, Roles.Owner)]
         [HttpGet("{id}/denied")]
         public async Task<IActionResult> Denied(Guid id, CancellationToken cancellation)
@@ -142,8 +131,7 @@ namespace Review.API.Controllers
             return Ok(ApiResult<UserReviewResponse>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<UserReviewResponse>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<UserReviewResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpPost]
         public async Task<IActionResult> Post(UserReviewRequest request, CancellationToken cancellation)
@@ -155,8 +143,7 @@ namespace Review.API.Controllers
             return Ok(ApiResult<UserReviewResponse>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<UserReviewResponse>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<UserReviewResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpPut]
         public async Task<IActionResult> Put(UserReviewRequest request, CancellationToken cancellation)
@@ -168,8 +155,7 @@ namespace Review.API.Controllers
             return Ok(ApiResult<UserReviewResponse>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<UserReviewResponse>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<UserReviewResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id, CancellationToken cancellation)
@@ -179,8 +165,7 @@ namespace Review.API.Controllers
             return Ok(ApiResult<UserReviewResponse>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<UserReviewResponse>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<UserReviewResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Admin, Roles.Owner)]
         [HttpDelete("{id}/admin")]
         public async Task<IActionResult> DeleteAdmin(Guid id, CancellationToken cancellation)

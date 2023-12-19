@@ -19,8 +19,7 @@ namespace Resources.API.Controllers
             _groupService = groupService;
         }
 
-        [ProducesResponseType(typeof(ApiResult<List<LootBoxGroupResponse>>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<List<LootBoxGroupResponse>>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> Get(CancellationToken cancellation)
@@ -30,8 +29,7 @@ namespace Resources.API.Controllers
             return Ok(ApiResult<List<LootBoxGroupResponse>>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<LootBoxGroupResponse>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<LootBoxGroupResponse>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(Guid id, CancellationToken cancellation)
@@ -41,8 +39,7 @@ namespace Resources.API.Controllers
             return Ok(ApiResult<LootBoxGroupResponse>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<List<LootBoxGroupResponse>>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<List<LootBoxGroupResponse>>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("game/{id}")]
         public async Task<IActionResult> GetByGameId(Guid id, CancellationToken cancellation)
@@ -52,8 +49,7 @@ namespace Resources.API.Controllers
             return Ok(ApiResult<List<LootBoxGroupResponse>>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<List<LootBoxGroupResponse>>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<List<LootBoxGroupResponse>>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("box/{id}")]
         public async Task<IActionResult> GetByBoxId(Guid id, CancellationToken cancellation)
@@ -63,8 +59,7 @@ namespace Resources.API.Controllers
             return Ok(ApiResult<List<LootBoxGroupResponse>>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<List<LootBoxGroupResponse>>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<List<LootBoxGroupResponse>>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("group/{id}")]
         public async Task<IActionResult> GetByGroupId(Guid id, CancellationToken cancellation)
@@ -74,8 +69,7 @@ namespace Resources.API.Controllers
             return Ok(ApiResult<List<LootBoxGroupResponse>>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<LootBoxGroupResponse>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<LootBoxGroupResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Owner)]
         [HttpPost]
         public async Task<IActionResult> Post(LootBoxGroupRequest request, CancellationToken cancellation)
@@ -85,8 +79,7 @@ namespace Resources.API.Controllers
             return Ok(ApiResult<LootBoxGroupResponse>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<LootBoxGroupResponse>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<LootBoxGroupResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Owner)]
         [HttpPut]
         public async Task<IActionResult> Put(LootBoxGroupRequest request, CancellationToken cancellation)
@@ -96,8 +89,7 @@ namespace Resources.API.Controllers
             return Ok(ApiResult<LootBoxGroupResponse>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<LootBoxGroupResponse>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<LootBoxGroupResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Owner)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id, CancellationToken cancellation)

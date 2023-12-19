@@ -21,8 +21,7 @@ namespace Withdraw.API.Controllers
             _withdrawService = withdrawService;
         }
 
-        [ProducesResponseType(typeof(ApiResult<UserHistoryWithdrawResponse>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<UserHistoryWithdrawResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpPost]
         public async Task<IActionResult> Withdraw(WithdrawItemRequest request, CancellationToken cancellation)

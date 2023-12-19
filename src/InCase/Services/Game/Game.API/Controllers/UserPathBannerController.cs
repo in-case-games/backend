@@ -20,8 +20,7 @@ namespace Game.API.Controllers
             _pathService = pathService;
         }
 
-        [ProducesResponseType(typeof(ApiResult<List<UserPathBannerResponse>>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<List<UserPathBannerResponse>>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet]
         public async Task<IActionResult> Get(CancellationToken cancellation)
@@ -31,8 +30,7 @@ namespace Game.API.Controllers
             return Ok(ApiResult<List<UserPathBannerResponse>>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<UserPathBannerResponse>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<UserPathBannerResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(Guid id, CancellationToken cancellation)
@@ -42,8 +40,7 @@ namespace Game.API.Controllers
             return Ok(ApiResult<UserPathBannerResponse>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<UserPathBannerResponse>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<UserPathBannerResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet("box/{id}")]
         public async Task<IActionResult> GetByBoxId(Guid id, CancellationToken cancellation)
@@ -53,8 +50,7 @@ namespace Game.API.Controllers
             return Ok(ApiResult<UserPathBannerResponse>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<List<UserPathBannerResponse>>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<List<UserPathBannerResponse>>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet("item/{id}")]
         public async Task<IActionResult> GetByItemId(Guid id, CancellationToken cancellation)
@@ -64,8 +60,7 @@ namespace Game.API.Controllers
             return Ok(ApiResult<List<UserPathBannerResponse>>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<UserPathBannerResponse>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<UserPathBannerResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpPost]
         public async Task<IActionResult> Post(UserPathBannerRequest request, CancellationToken cancellation)
@@ -77,8 +72,7 @@ namespace Game.API.Controllers
             return Ok(ApiResult<UserPathBannerResponse>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<UserPathBannerResponse>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<UserPathBannerResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpPut]
         public async Task<IActionResult> Put(UserPathBannerRequest request, CancellationToken cancellation)
@@ -90,8 +84,7 @@ namespace Game.API.Controllers
             return Ok(ApiResult<UserPathBannerResponse>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<UserPathBannerResponse>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<UserPathBannerResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id, CancellationToken cancellation)

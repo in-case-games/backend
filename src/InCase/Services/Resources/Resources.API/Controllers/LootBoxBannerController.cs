@@ -20,8 +20,7 @@ namespace Resources.API.Controllers
             _bannerService = bannerService;
         }
 
-        [ProducesResponseType(typeof(ApiResult<List<LootBoxBannerResponse>>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<List<LootBoxBannerResponse>>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> Get(CancellationToken cancellation)
@@ -31,8 +30,7 @@ namespace Resources.API.Controllers
             return Ok(ApiResult<List<LootBoxBannerResponse>>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<List<LootBoxBannerResponse>>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<List<LootBoxBannerResponse>>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("active/{isActive}")]
         public async Task<IActionResult> GetByIsActive(CancellationToken cancellation, bool isActive = true)
@@ -42,8 +40,7 @@ namespace Resources.API.Controllers
             return Ok(ApiResult<List<LootBoxBannerResponse>>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<LootBoxBannerResponse>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<LootBoxBannerResponse>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(Guid id, CancellationToken cancellation)
@@ -53,8 +50,7 @@ namespace Resources.API.Controllers
             return Ok(ApiResult<LootBoxBannerResponse>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<LootBoxBannerResponse>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<LootBoxBannerResponse>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("box/{id}")]
         public async Task<IActionResult> GetByBoxId(Guid id, CancellationToken cancellation)
@@ -64,8 +60,7 @@ namespace Resources.API.Controllers
             return Ok(ApiResult<LootBoxBannerResponse>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<LootBoxBannerResponse>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<LootBoxBannerResponse>), (int)HttpStatusCode.OK)]
         [RequestSizeLimit(8388608)]
         [AuthorizeByRole(Roles.Owner)]
         [HttpPost]
@@ -76,8 +71,7 @@ namespace Resources.API.Controllers
             return Ok(ApiResult<LootBoxBannerResponse>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<LootBoxBannerResponse>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<LootBoxBannerResponse>), (int)HttpStatusCode.OK)]
         [RequestSizeLimit(8388608)]
         [AuthorizeByRole(Roles.Owner)]
         [HttpPut]
@@ -88,8 +82,7 @@ namespace Resources.API.Controllers
             return Ok(ApiResult<LootBoxBannerResponse>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<LootBoxBannerResponse>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<LootBoxBannerResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Owner)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id, CancellationToken cancellation)

@@ -21,8 +21,7 @@ namespace EmailSender.API.Controllers
             _userService = userService;
         }
 
-        [ProducesResponseType(typeof(ApiResult<UserAdditionalInfoResponse>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<UserAdditionalInfoResponse>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("{id}/is-notify")]
         public async Task<IActionResult> GetByUserId(Guid id, CancellationToken cancellationToken)
@@ -32,8 +31,7 @@ namespace EmailSender.API.Controllers
             return Ok(ApiResult<UserAdditionalInfoResponse>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<UserAdditionalInfoResponse>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<UserAdditionalInfoResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet("is-notify")]
         public async Task<IActionResult> Get(CancellationToken cancellationToken)
@@ -43,8 +41,7 @@ namespace EmailSender.API.Controllers
             return Ok(ApiResult<UserAdditionalInfoResponse>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<UserAdditionalInfoResponse>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<UserAdditionalInfoResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet("is-notify/{isNotify}")]
         public async Task<IActionResult> ChangeNotifyEmail(bool isNotify, CancellationToken cancellationToken)
@@ -54,8 +51,7 @@ namespace EmailSender.API.Controllers
             return Ok(ApiResult<UserAdditionalInfoResponse>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<UserAdditionalInfoResponse>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<UserAdditionalInfoResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Admin, Roles.Owner)]
         [HttpGet("{userId}/is-notify/{isNotify}/admin")]
         public async Task<IActionResult> ChangeNotifyEmailByAdmin(Guid userId, bool isNotify, CancellationToken cancellationToken)

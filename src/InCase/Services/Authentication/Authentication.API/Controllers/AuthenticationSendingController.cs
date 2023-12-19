@@ -18,8 +18,7 @@ namespace Authentication.API.Controllers
             _authSendingService = authSendingService;
         }
 
-        [ProducesResponseType(typeof(ApiResult<string>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<string>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpPut("forgot/password")]
         public async Task<IActionResult> ForgotPassword(DataMailRequest request, CancellationToken cancellationToken)
@@ -29,8 +28,7 @@ namespace Authentication.API.Controllers
             return Ok(ApiResult<string>.SentEmail());
         }
 
-        [ProducesResponseType(typeof(ApiResult<string>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<string>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpPut("email/{password}")]
         public async Task<IActionResult> UpdateEmail(DataMailRequest request, string password, CancellationToken cancellationToken)
@@ -40,8 +38,7 @@ namespace Authentication.API.Controllers
             return Ok(ApiResult<string>.SentEmail());
         }
 
-        [ProducesResponseType(typeof(ApiResult<string>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<string>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpPut("login/{password}")]
         public async Task<IActionResult> UpdateLogin(DataMailRequest request, string password, CancellationToken cancellationToken)
@@ -51,8 +48,7 @@ namespace Authentication.API.Controllers
             return Ok(ApiResult<string>.SentEmail());
         }
 
-        [ProducesResponseType(typeof(ApiResult<string>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<string>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpPut("password/{password}")]
         public async Task<IActionResult> UpdatePassword(DataMailRequest request, string password, CancellationToken cancellationToken)
@@ -62,8 +58,7 @@ namespace Authentication.API.Controllers
             return Ok(ApiResult<string>.SentEmail());
         }
 
-        [ProducesResponseType(typeof(ApiResult<string>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<string>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpDelete("account/{password}")]
         public async Task<IActionResult> DeleteAccount(DataMailRequest request, string password, CancellationToken cancellationToken)

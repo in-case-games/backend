@@ -21,8 +21,7 @@ namespace Game.API.Controllers
             _openingService = openingService;
         }
 
-        [ProducesResponseType(typeof(ApiResult<UserOpeningResponse>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<UserOpeningResponse>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(Guid id, CancellationToken cancellation)
@@ -32,8 +31,7 @@ namespace Game.API.Controllers
             return Ok(ApiResult<UserOpeningResponse>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<List<UserOpeningResponse>>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<List<UserOpeningResponse>>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("roulette")]
         public async Task<IActionResult> GetRoulete(CancellationToken cancellation)
@@ -43,8 +41,7 @@ namespace Game.API.Controllers
             return Ok(ApiResult<List<UserOpeningResponse>>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<List<UserOpeningResponse>>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<List<UserOpeningResponse>>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
         [HttpGet("all")]
         public async Task<IActionResult> GetAll(CancellationToken cancellation, int count = 100)
@@ -64,8 +61,7 @@ namespace Game.API.Controllers
             return Ok(ApiResult<List<UserOpeningResponse>>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<List<UserOpeningResponse>>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<List<UserOpeningResponse>>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet("ten/last")]
         public async Task<IActionResult> GetByUserId(CancellationToken cancellation)
@@ -75,8 +71,7 @@ namespace Game.API.Controllers
             return Ok(ApiResult<List<UserOpeningResponse>>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<List<UserOpeningResponse>>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<List<UserOpeningResponse>>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("{id}/userId")]
         public async Task<IActionResult> GetByUserId(Guid id, CancellationToken cancellation)
@@ -86,8 +81,7 @@ namespace Game.API.Controllers
             return Ok(ApiResult<List<UserOpeningResponse>>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<List<UserOpeningResponse>>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<List<UserOpeningResponse>>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
         [HttpGet("{userId}/userId/admin")]
         public async Task<IActionResult> GetByUserId(Guid id, CancellationToken cancellation, int count = 100)
@@ -97,8 +91,7 @@ namespace Game.API.Controllers
             return Ok(ApiResult<List<UserOpeningResponse>>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<List<UserOpeningResponse>>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<List<UserOpeningResponse>>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet("box/{id}")]
         public async Task<IActionResult> GetByBoxId(Guid id, CancellationToken cancellation)
@@ -108,8 +101,7 @@ namespace Game.API.Controllers
             return Ok(ApiResult<List<UserOpeningResponse>>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<List<UserOpeningResponse>>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<List<UserOpeningResponse>>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet("item/{id}")]
         public async Task<IActionResult> GetByItemId(Guid id, CancellationToken cancellation)
@@ -119,8 +111,7 @@ namespace Game.API.Controllers
             return Ok(ApiResult<List<UserOpeningResponse>>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<List<UserOpeningResponse>>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<List<UserOpeningResponse>>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("box/{id}/roulette")]
         public async Task<IActionResult> GetRouleteByBoxId(Guid id, CancellationToken cancellation)
@@ -130,8 +121,7 @@ namespace Game.API.Controllers
             return Ok(ApiResult<List<UserOpeningResponse>>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<List<UserOpeningResponse>>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<List<UserOpeningResponse>>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("item/{id}/roulette")]
         public async Task<IActionResult> GetRouleteByItemId(Guid id, CancellationToken cancellation)

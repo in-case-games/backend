@@ -21,8 +21,7 @@ namespace Payment.API.Controllers
             _paymentService = paymentService;
         }
 
-        [ProducesResponseType(typeof(ApiResult<UserPaymentsResponse>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<UserPaymentsResponse>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpPost("top-up")]
         public async Task<IActionResult> TopUpBalance(GameMoneyTopUpResponse request, CancellationToken cancellation)
@@ -32,8 +31,7 @@ namespace Payment.API.Controllers
             return Ok(ApiResult<UserPaymentsResponse>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<PaymentBalanceResponse>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<PaymentBalanceResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Owner, Roles.Bot)]
         [HttpGet("balance/{currency}")]
         public async Task<IActionResult> GetBalance(string currency, CancellationToken cancellation)
@@ -43,8 +41,7 @@ namespace Payment.API.Controllers
             return Ok(ApiResult<PaymentBalanceResponse>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<HashOfDataForDepositResponse>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<HashOfDataForDepositResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet("top-up/signature")]
         public IActionResult GetSignatureForDeposit(CancellationToken cancellation)

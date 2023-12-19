@@ -21,8 +21,7 @@ namespace Identity.API.Controllers
             _userService = userService;
         }
 
-        [ProducesResponseType(typeof(ApiResult<UserResponse>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<UserResponse>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(Guid id, CancellationToken cancellation)
@@ -32,8 +31,7 @@ namespace Identity.API.Controllers
             return Ok(ApiResult<UserResponse>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<UserResponse>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<UserResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet]
         public async Task<IActionResult> Get(CancellationToken cancellation)
@@ -43,8 +41,7 @@ namespace Identity.API.Controllers
             return Ok(ApiResult<UserResponse>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<UserResponse>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<UserResponse>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("login/{login}")]
         public async Task<IActionResult> Get(string login, CancellationToken cancellation)

@@ -20,8 +20,7 @@ namespace Resources.API.Controllers
             _itemService = itemService;
         }
 
-        [ProducesResponseType(typeof(ApiResult<List<GameItemResponse>>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<List<GameItemResponse>>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> Get(CancellationToken cancellation)
@@ -31,8 +30,7 @@ namespace Resources.API.Controllers
             return Ok(ApiResult<List<GameItemResponse>>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<GameItemResponse>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<GameItemResponse>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(Guid id, CancellationToken cancellation)
@@ -42,8 +40,7 @@ namespace Resources.API.Controllers
             return Ok(ApiResult<GameItemResponse>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<List<GameItemResponse>>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<List<GameItemResponse>>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("name/{name}")]
         public async Task<IActionResult> Get(string name, CancellationToken cancellation)
@@ -53,8 +50,7 @@ namespace Resources.API.Controllers
             return Ok(ApiResult<List<GameItemResponse>>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<List<GameItemResponse>>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<List<GameItemResponse>>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("hash/{name}")]
         public async Task<IActionResult> GetByHashName(string name, CancellationToken cancellation)
@@ -64,8 +60,7 @@ namespace Resources.API.Controllers
             return Ok(ApiResult<List<GameItemResponse>>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<List<GameItemResponse>>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<List<GameItemResponse>>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("game/{id}")]
         public async Task<IActionResult> GetByGameId(Guid id, CancellationToken cancellation)
@@ -75,8 +70,7 @@ namespace Resources.API.Controllers
             return Ok(ApiResult<List<GameItemResponse>>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<List<GameItemQuality>>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<List<GameItemQuality>>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("qualities")]
         public async Task<IActionResult> GetQualities(CancellationToken cancellation)
@@ -86,8 +80,7 @@ namespace Resources.API.Controllers
             return Ok(ApiResult<List<GameItemQuality>>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<List<GameItemRarity>>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<List<GameItemRarity>>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("rarities")]
         public async Task<IActionResult> GetRarities(CancellationToken cancellation)
@@ -97,8 +90,7 @@ namespace Resources.API.Controllers
             return Ok(ApiResult<List<GameItemRarity>>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<List<GameItemType>>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<List<GameItemType>>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("types")]
         public async Task<IActionResult> GetTypes(CancellationToken cancellation)
@@ -108,8 +100,7 @@ namespace Resources.API.Controllers
             return Ok(ApiResult<List<GameItemType>>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<List<GameItemResponse>>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<List<GameItemResponse>>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("quality/{name}")]
         public async Task<IActionResult> GetByQuality(string name, CancellationToken cancellation)
@@ -119,8 +110,7 @@ namespace Resources.API.Controllers
             return Ok(ApiResult<List<GameItemResponse>>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<List<GameItemResponse>>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<List<GameItemResponse>>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("rarity/{name}")]
         public async Task<IActionResult> GetByRarity(string name, CancellationToken cancellation)
@@ -130,8 +120,7 @@ namespace Resources.API.Controllers
             return Ok(ApiResult<List<GameItemResponse>>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<List<GameItemResponse>>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<List<GameItemResponse>>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("type/{name}")]
         public async Task<IActionResult> GetByType(string name, CancellationToken cancellation)
@@ -141,8 +130,7 @@ namespace Resources.API.Controllers
             return Ok(ApiResult<List<GameItemResponse>>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<GameItemResponse>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<GameItemResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Owner)]
         [RequestSizeLimit(8388608)]
         [HttpPost]
@@ -153,8 +141,7 @@ namespace Resources.API.Controllers
             return Ok(ApiResult<GameItemResponse>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<GameItemResponse>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<GameItemResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Owner)]
         [RequestSizeLimit(8388608)]
         [HttpPut]
@@ -165,8 +152,7 @@ namespace Resources.API.Controllers
             return Ok(ApiResult<GameItemResponse>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<GameItemResponse>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<GameItemResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Owner)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id, CancellationToken cancellation)

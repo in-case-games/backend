@@ -18,8 +18,7 @@ namespace Promocode.API.Controllers
             _promocodeService = promocodeService;
         }
 
-        [ProducesResponseType(typeof(ApiResult<List<PromocodeResponse>>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<List<PromocodeResponse>>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
         [HttpGet]
         public async Task<IActionResult> Get(CancellationToken cancellation)
@@ -29,8 +28,7 @@ namespace Promocode.API.Controllers
             return Ok(ApiResult<List<PromocodeResponse>>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<List<PromocodeResponse>>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<List<PromocodeResponse>>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
         [HttpGet("empty")]
         public async Task<IActionResult> GetEmpty(CancellationToken cancellation)
@@ -40,8 +38,7 @@ namespace Promocode.API.Controllers
             return Ok(ApiResult<List<PromocodeResponse>>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<PromocodeResponse>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<PromocodeResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet("name/{name}")]
         public async Task<IActionResult> Get(string name, CancellationToken cancellation)
@@ -51,8 +48,7 @@ namespace Promocode.API.Controllers
             return Ok(ApiResult<PromocodeResponse>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<List<PromocodeTypeResponse>>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<List<PromocodeTypeResponse>>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet("types")]
         public async Task<IActionResult> GetTypes(CancellationToken cancellation)
@@ -62,8 +58,7 @@ namespace Promocode.API.Controllers
             return Ok(ApiResult<List<PromocodeTypeResponse>>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<PromocodeResponse>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<PromocodeResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
         [HttpPost]
         public async Task<IActionResult> Post(PromocodeRequest request, CancellationToken cancellation)
@@ -73,8 +68,7 @@ namespace Promocode.API.Controllers
             return Ok(ApiResult<PromocodeResponse>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<PromocodeResponse>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<PromocodeResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
         [HttpPut]
         public async Task<IActionResult> Put(PromocodeRequest request, CancellationToken cancellation)
@@ -84,8 +78,7 @@ namespace Promocode.API.Controllers
             return Ok(ApiResult<PromocodeResponse>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<PromocodeResponse>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<PromocodeResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id, CancellationToken cancellation)

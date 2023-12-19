@@ -20,8 +20,7 @@ namespace Game.API.Controllers
             _infoService = infoService;
         }
 
-        [ProducesResponseType(typeof(ApiResult<GuestModeResponse>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<GuestModeResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet("guest-mode")]
         public async Task<IActionResult> GetGuestMode(CancellationToken cancellation)
@@ -31,8 +30,7 @@ namespace Game.API.Controllers
             return Ok(ApiResult<GuestModeResponse>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<BalanceResponse>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<BalanceResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet("balance")]
         public async Task<IActionResult> GetBalance(CancellationToken cancellation)
@@ -42,8 +40,7 @@ namespace Game.API.Controllers
             return Ok(ApiResult<BalanceResponse>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<BalanceResponse>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<BalanceResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
         [HttpGet("{userId}/balance")]
         public async Task<IActionResult> GetBalanceByAdmin(Guid userId, CancellationToken cancellation)
@@ -53,8 +50,7 @@ namespace Game.API.Controllers
             return Ok(ApiResult<BalanceResponse>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<BalanceResponse>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<BalanceResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Owner)]
         [HttpGet("{userId}/balance/{balance}/owner")]
         public async Task<IActionResult> ChangeBalanceByOwner(Guid userId, decimal balance, CancellationToken cancellation)
@@ -64,8 +60,7 @@ namespace Game.API.Controllers
             return Ok(ApiResult<BalanceResponse>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<GuestModeResponse>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<GuestModeResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpPut("guest-mode")]
         public async Task<IActionResult> SwitchGuestMode(CancellationToken cancellation)

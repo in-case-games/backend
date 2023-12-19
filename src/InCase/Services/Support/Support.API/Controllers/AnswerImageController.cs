@@ -20,8 +20,7 @@ namespace Support.API.Controllers
             _imageService = imageService;
         }
 
-        [ProducesResponseType(typeof(ApiResult<AnswerImageResponse>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<AnswerImageResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(Guid id, CancellationToken cancellation)
@@ -31,8 +30,7 @@ namespace Support.API.Controllers
             return Ok(ApiResult<AnswerImageResponse>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<AnswerImageResponse>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<AnswerImageResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
         [HttpGet("{id}/admin")]
         public async Task<IActionResult> GetByAdmin(Guid id, CancellationToken cancellation)
@@ -42,8 +40,7 @@ namespace Support.API.Controllers
             return Ok(ApiResult<AnswerImageResponse>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<List<AnswerImageResponse>>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<List<AnswerImageResponse>>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet("answer/{id}")]
         public async Task<IActionResult> GetByAnswerId(Guid id, CancellationToken cancellation)
@@ -53,8 +50,7 @@ namespace Support.API.Controllers
             return Ok(ApiResult<List<AnswerImageResponse>>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<List<AnswerImageResponse>>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<List<AnswerImageResponse>>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
         [HttpGet("answer/{id}/admin")]
         public async Task<IActionResult> GetByAdminAnswerId(Guid id, CancellationToken cancellation)
@@ -64,8 +60,7 @@ namespace Support.API.Controllers
             return Ok(ApiResult<List<AnswerImageResponse>>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<List<AnswerImageResponse>>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<List<AnswerImageResponse>>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet("topic/{id}")]
         public async Task<IActionResult> GetByTopicId(Guid id, CancellationToken cancellation)
@@ -75,8 +70,7 @@ namespace Support.API.Controllers
             return Ok(ApiResult<List<AnswerImageResponse>>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<List<AnswerImageResponse>>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<List<AnswerImageResponse>>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
         [HttpGet("topic/{id}/admin")]
         public async Task<IActionResult> GetByAdminTopicId(Guid id, CancellationToken cancellation)
@@ -86,8 +80,7 @@ namespace Support.API.Controllers
             return Ok(ApiResult<List<AnswerImageResponse>>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<List<AnswerImageResponse>>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<List<AnswerImageResponse>>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet]
         public async Task<IActionResult> Get(CancellationToken cancellation)
@@ -97,8 +90,7 @@ namespace Support.API.Controllers
             return Ok(ApiResult<List<AnswerImageResponse>>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<List<AnswerImageResponse>>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<List<AnswerImageResponse>>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet("user/{userId}/admin")]
         public async Task<IActionResult> GetByAdminUserId(Guid userId, CancellationToken cancellation)
@@ -108,8 +100,7 @@ namespace Support.API.Controllers
             return Ok(ApiResult<List<AnswerImageResponse>>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<AnswerImageResponse>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<AnswerImageResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [RequestSizeLimit(8388608)]
         [HttpPost]
@@ -120,8 +111,7 @@ namespace Support.API.Controllers
             return Ok(ApiResult<AnswerImageResponse>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<AnswerImageResponse>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<AnswerImageResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id, CancellationToken cancellation)
@@ -131,8 +121,7 @@ namespace Support.API.Controllers
             return Ok(ApiResult<AnswerImageResponse>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<AnswerImageResponse>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<AnswerImageResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Admin, Roles.Owner)]
         [HttpDelete("{id}/admin")]
         public async Task<IActionResult> DeleteByAdmin(Guid id, CancellationToken cancellation)

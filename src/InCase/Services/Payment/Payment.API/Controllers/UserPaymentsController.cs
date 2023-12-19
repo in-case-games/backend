@@ -20,8 +20,7 @@ namespace Payment.API.Controllers
             _paymentsService = paymentsService;
         }
 
-        [ProducesResponseType(typeof(ApiResult<List<UserPaymentsResponse>>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<List<UserPaymentsResponse>>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet]
         public async Task<IActionResult> Get(CancellationToken cancellation)
@@ -31,8 +30,7 @@ namespace Payment.API.Controllers
             return Ok(ApiResult<List<UserPaymentsResponse>>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<UserPaymentsResponse>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<UserPaymentsResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(Guid id, CancellationToken cancellation)
@@ -42,8 +40,7 @@ namespace Payment.API.Controllers
             return Ok(ApiResult<UserPaymentsResponse>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<List<UserPaymentsResponse>>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<List<UserPaymentsResponse>>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
         [HttpGet("admin")]
         public async Task<IActionResult> GetByAdmin(CancellationToken cancellation, int count = 100)
@@ -53,8 +50,7 @@ namespace Payment.API.Controllers
             return Ok(ApiResult<List<UserPaymentsResponse>>.OK(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<List<UserPaymentsResponse>>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<List<UserPaymentsResponse>>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
         [HttpGet("{userId}/admin")]
         public async Task<IActionResult> GetByUserIdAdmin(Guid userId, CancellationToken cancellation, int count = 100)
