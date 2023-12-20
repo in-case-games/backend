@@ -11,7 +11,7 @@ namespace Authentication.BLL.Services
         {
             password ??= string.Empty;
 
-            var hash = EncryptorService.GenerationHashSHA512(password, Convert.FromBase64String(user.PasswordSalt!));
+            var hash = EncryptorService.GenerationHashSha512(password, Convert.FromBase64String(user.PasswordSalt!));
 
             return hash == user.PasswordHash;
         }
@@ -27,8 +27,9 @@ namespace Authentication.BLL.Services
         }
 
         public static bool IsValidToken(in User user, ClaimsPrincipal principal, string type) => 
-            DateTime.UtcNow < DateTimeOffset.FromUnixTimeSeconds(
-                long.Parse(principal?.Claims.FirstOrDefault(c => c.Type == "exp")?.Value ?? "0")).UtcDateTime &&
+            DateTime.UtcNow < DateTimeOffset.FromUnixTimeSeconds(long.Parse(
+                principal.Claims.FirstOrDefault(c => c.Type == "exp")?.Value ?? "0")
+            ).UtcDateTime &&
             user.Email == principal?.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value &&
             type == principal?.Claims.FirstOrDefault(c => c.Type == "TokenType")?.Value;
     }

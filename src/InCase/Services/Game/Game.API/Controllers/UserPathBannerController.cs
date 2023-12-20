@@ -27,37 +27,37 @@ namespace Game.API.Controllers
         {
             var response = await _pathService.GetByUserIdAsync(UserId, cancellation);
 
-            return Ok(ApiResult<List<UserPathBannerResponse>>.OK(response));
+            return Ok(ApiResult<List<UserPathBannerResponse>>.Ok(response));
         }
 
         [ProducesResponseType(typeof(ApiResult<UserPathBannerResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
-        [HttpGet("{id}")]
+        [HttpGet("{id:guid}")]
         public async Task<IActionResult> Get(Guid id, CancellationToken cancellation)
         {
             var response = await _pathService.GetByIdAsync(id, UserId, cancellation);
 
-            return Ok(ApiResult<UserPathBannerResponse>.OK(response));
+            return Ok(ApiResult<UserPathBannerResponse>.Ok(response));
         }
 
         [ProducesResponseType(typeof(ApiResult<UserPathBannerResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
-        [HttpGet("box/{id}")]
+        [HttpGet("box/{id:guid}")]
         public async Task<IActionResult> GetByBoxId(Guid id, CancellationToken cancellation)
         {
             var response = await _pathService.GetByBoxIdAsync(id, UserId, cancellation);
 
-            return Ok(ApiResult<UserPathBannerResponse>.OK(response));
+            return Ok(ApiResult<UserPathBannerResponse>.Ok(response));
         }
 
         [ProducesResponseType(typeof(ApiResult<List<UserPathBannerResponse>>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
-        [HttpGet("item/{id}")]
+        [HttpGet("item/{id:guid}")]
         public async Task<IActionResult> GetByItemId(Guid id, CancellationToken cancellation)
         {
             var response = await _pathService.GetByItemIdAsync(id, UserId, cancellation);
 
-            return Ok(ApiResult<List<UserPathBannerResponse>>.OK(response));
+            return Ok(ApiResult<List<UserPathBannerResponse>>.Ok(response));
         }
 
         [ProducesResponseType(typeof(ApiResult<UserPathBannerResponse>), (int)HttpStatusCode.OK)]
@@ -69,7 +69,7 @@ namespace Game.API.Controllers
             
             var response = await _pathService.CreateAsync(request, cancellation);
 
-            return Ok(ApiResult<UserPathBannerResponse>.OK(response));
+            return Ok(ApiResult<UserPathBannerResponse>.Ok(response));
         }
 
         [ProducesResponseType(typeof(ApiResult<UserPathBannerResponse>), (int)HttpStatusCode.OK)]
@@ -81,17 +81,17 @@ namespace Game.API.Controllers
 
             var response = await _pathService.UpdateAsync(request, cancellation);
 
-            return Ok(ApiResult<UserPathBannerResponse>.OK(response));
+            return Ok(ApiResult<UserPathBannerResponse>.Ok(response));
         }
 
         [ProducesResponseType(typeof(ApiResult<UserPathBannerResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
-        [HttpDelete("{id}")]
+        [HttpDelete("{id:guid}")]
         public async Task<IActionResult> Delete(Guid id, CancellationToken cancellation)
         {
             var response = await _pathService.DeleteAsync(id, UserId, cancellation);
 
-            return Ok(ApiResult<UserPathBannerResponse>.OK(response));
+            return Ok(ApiResult<UserPathBannerResponse>.Ok(response));
         }
     }
 }

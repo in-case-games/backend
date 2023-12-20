@@ -15,14 +15,7 @@ namespace Game.BLL.Helpers
                 NumberSteps = banner.NumberSteps,
             };
 
-        public static List<UserPathBannerResponse> ToResponse(this List<UserPathBanner> banners)
-        {
-            List<UserPathBannerResponse> response = new();
-
-            foreach (var banner in banners)
-                response.Add(ToResponse(banner));
-
-            return response;
-        }
+        public static List<UserPathBannerResponse> ToResponse(this List<UserPathBanner> banners) => 
+            banners.Select(ToResponse).ToList();
     }
 }

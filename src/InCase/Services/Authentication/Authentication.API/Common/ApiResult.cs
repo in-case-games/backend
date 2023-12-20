@@ -1,11 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
-
-namespace Authentication.API.Common
+﻿namespace Authentication.API.Common
 {
     public class ApiResult<T>
     {
-        private const string SENT_EMAIL = "Сообщение отправлено на email почту";
-
         public int Code { get; set; }
         public T Data { get; set; }
 
@@ -15,10 +11,9 @@ namespace Authentication.API.Common
             Data = data;
         }
 
-        public static ApiResult<T> OK(T data) =>
-            new(0, data);
+        public static ApiResult<T> Ok(T data) => new(0, data);
 
-        public static ApiResult<string> SentEmail(string message = SENT_EMAIL) =>
+        public static ApiResult<string> SentEmail(string message = "Сообщение отправлено на email почту") => 
             new(2, message);
     }
 }

@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-
-namespace EmailSender.API.Common
+﻿namespace EmailSender.API.Common
 {
     public class ApiResult<T>
     {
@@ -13,7 +11,6 @@ namespace EmailSender.API.Common
             Data = data;
         }
 
-        public static ApiResult<T> OK(T data) =>
-            new(0, data);
+        public static ApiResult<T> Ok(T data) => new(0, data);
     }
 }

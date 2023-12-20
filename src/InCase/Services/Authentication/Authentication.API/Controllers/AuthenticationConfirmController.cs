@@ -27,7 +27,7 @@ namespace Authentication.API.Controllers
         {
             var response = await _authConfirmService.ConfirmAccountAsync(token, cancellationToken);
 
-            return Ok(ApiResult<TokensResponse>.OK(response));
+            return Ok(ApiResult<TokensResponse>.Ok(response));
         }
 
         [ProducesResponseType(typeof(ApiResult<UserResponse>), (int)HttpStatusCode.OK)]
@@ -37,17 +37,17 @@ namespace Authentication.API.Controllers
         {
             var response = await _authConfirmService.UpdateEmailAsync(email, token, cancellationToken);
 
-            return Ok(ApiResult<UserResponse>.OK(response));
+            return Ok(ApiResult<UserResponse>.Ok(response));
         }
 
         [ProducesResponseType(typeof(ApiResult<UserResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Owner)]
-        [HttpGet("{userId}/email/{email}")]
+        [HttpGet("{userId:guid}/email/{email}")]
         public async Task<IActionResult> UpdateEmail(Guid userId, string email, CancellationToken cancellationToken)
         {
             var response = await _authConfirmService.UpdateEmailByAdminAsync(userId, email, cancellationToken);
 
-            return Ok(ApiResult<UserResponse>.OK(response));
+            return Ok(ApiResult<UserResponse>.Ok(response));
         }
 
         [ProducesResponseType(typeof(ApiResult<UserResponse>), (int)HttpStatusCode.OK)]
@@ -57,17 +57,17 @@ namespace Authentication.API.Controllers
         {
             var response = await _authConfirmService.UpdateLoginAsync(login, token, cancellationToken);
 
-            return Ok(ApiResult<UserResponse>.OK(response));
+            return Ok(ApiResult<UserResponse>.Ok(response));
         }
 
         [ProducesResponseType(typeof(ApiResult<UserResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Owner)]
-        [HttpGet("{userId}/login/{login}")]
+        [HttpGet("{userId:guid}/login/{login}")]
         public async Task<IActionResult> UpdateLogin(Guid userId, string login, CancellationToken cancellationToken)
         {
             var response = await _authConfirmService.UpdateLoginByAdminAsync(userId, login, cancellationToken);
 
-            return Ok(ApiResult<UserResponse>.OK(response));
+            return Ok(ApiResult<UserResponse>.Ok(response));
         }
 
         [ProducesResponseType(typeof(ApiResult<UserResponse>), (int)HttpStatusCode.OK)]
@@ -77,7 +77,7 @@ namespace Authentication.API.Controllers
         {
             var response = await _authConfirmService.UpdatePasswordAsync(password, token, cancellationToken);
 
-            return Ok(ApiResult<UserResponse>.OK(response));
+            return Ok(ApiResult<UserResponse>.Ok(response));
         }
 
         [ProducesResponseType(typeof(ApiResult<UserResponse>), (int)HttpStatusCode.OK)]
@@ -87,7 +87,7 @@ namespace Authentication.API.Controllers
         {
             var response = await _authConfirmService.DeleteAsync(token, cancellationToken);
 
-            return Ok(ApiResult<UserResponse>.OK(response));
+            return Ok(ApiResult<UserResponse>.Ok(response));
         }
     }
 }

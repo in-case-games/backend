@@ -422,7 +422,7 @@
       "UpstreamHttpMethod": ["Get"]
     },
     {
-      "DownstreamPathTemplate": "/api/user-opening/{userId}/userId/admin",
+      "DownstreamPathTemplate": "/api/user-opening/{id}/userId/admin",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {

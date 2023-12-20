@@ -1,6 +1,4 @@
-﻿using EmailSender.BLL.Exceptions;
-using EmailSender.BLL.Interfaces;
-using EmailSender.DAL.Entities;
+﻿using EmailSender.BLL.Interfaces;
 using Infrastructure.MassTransit.Email;
 using MassTransit;
 

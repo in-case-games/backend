@@ -1,5 +1,4 @@
-﻿using Game.DAL.Data;
-using Game.DAL.Entities;
+﻿using Game.DAL.Entities;
 
 namespace Game.BLL.Services
 {

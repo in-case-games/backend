@@ -1,5 +1,4 @@
 ﻿using Authentication.BLL.Interfaces;
-using Authentication.DAL.Entities;
 using Infrastructure.MassTransit.User;
 using MassTransit;
 

@@ -208,22 +208,17 @@ namespace Identity.BLL.Services
                 .Where(ur => ur.UserId == request.UserId)
                 .ToListAsync(cancellation);
 
-            int numberWarns = (type.Name == "warn") ? 1 : 0;
+            var numberWarns = (type.Name == "warn" ? 1 : 0) + 
+                              restrictions.Count(restriction => restriction.Type!.Name == "warn" && restriction.Id != request.Id);
 
-            foreach (var restriction in restrictions)
-            {
-                if (restriction.Type!.Name == "warn" && restriction.Id != request.Id) ++numberWarns;
-            }
+            if (numberWarns < 3) return request;
 
-            if (numberWarns >= 3)
-            {
-                var ban = await _context.RestrictionTypes
-                    .AsNoTracking()
-                    .FirstOrDefaultAsync(rt => rt.Name == "ban", cancellation);
+            var ban = await _context.RestrictionTypes
+                .AsNoTracking()
+                .FirstOrDefaultAsync(rt => rt.Name == "ban", cancellation);
 
-                request.TypeId = ban!.Id;
-                request.ExpirationDate = DateTime.UtcNow + TimeSpan.FromDays(30);
-            }
+            request.TypeId = ban!.Id;
+            request.ExpirationDate = DateTime.UtcNow + TimeSpan.FromDays(30);
 
             return request;
         }

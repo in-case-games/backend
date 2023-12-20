@@ -1,5 +1,4 @@
 ﻿using Game.BLL.Interfaces;
-using Game.DAL.Entities;
 using Infrastructure.MassTransit.Resources;
 using MassTransit;
 

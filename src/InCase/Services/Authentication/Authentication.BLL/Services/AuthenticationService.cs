@@ -46,21 +46,23 @@ namespace Authentication.BLL.Services
                 Email = user.Email!,
                 IsRequiredMessage = true,
                 Subject = user.AdditionalInfo!.IsConfirmed ? "Подтверждение входа" : "Подтверждение регистрации",
-                Body = user.AdditionalInfo!.IsConfirmed ? new()
-                {
-                    Title = $"Дорогой {user.Login!}",
-                    Description = $"Подтвердите вход в аккаунт. " +
-                    $"Если это были не вы, то срочно измените пароль в настройках вашего аккаунта, " +
-                    $"вас автоматически отключит со всех устройств.",
-                    ButtonLink = $"email/confirm/account?token={_jwtService.CreateEmailToken(user)}"
-                } : new()
-                {
-                    Title = $"Дорогой {user.Login!}",
-                    Description = $"Для завершения этапа регистрации, " +
-                    $"вам необходимо нажать на кнопку ниже для подтверждения почты. " +
-                    $"Если это были не вы, проигнорируйте это сообщение.",
-                    ButtonLink = $"email/confirm/account?token={_jwtService.CreateEmailToken(user)}"
-                }
+                Body = user.AdditionalInfo!.IsConfirmed ? 
+                    new EmailBodyTemplate
+                    {
+                        Title = $"Дорогой {user.Login!}",
+                        Description = $"Подтвердите вход в аккаунт. " +
+                        $"Если это были не вы, то срочно измените пароль в настройках вашего аккаунта, " +
+                        $"вас автоматически отключит со всех устройств.",
+                        ButtonLink = $"email/confirm/account?token={_jwtService.CreateEmailToken(user)}"
+                    } : 
+                    new EmailBodyTemplate
+                    {
+                        Title = $"Дорогой {user.Login!}",
+                        Description = $"Для завершения этапа регистрации, " +
+                        $"вам необходимо нажать на кнопку ниже для подтверждения почты. " +
+                        $"Если это были не вы, проигнорируйте это сообщение.",
+                        ButtonLink = $"email/confirm/account?token={_jwtService.CreateEmailToken(user)}"
+                    }
             }, cancellationToken);
         }
 
@@ -96,7 +98,7 @@ namespace Authentication.BLL.Services
                 Email = user.Email!,
                 IsRequiredMessage = true,
                 Subject = "Подтверждение регистрации",
-                Body = new()
+                Body = new EmailBodyTemplate
                 {
                     Title = $"Дорогой {user.Login!}.",
                     Description = $"Для завершения этапа регистрации, " +
@@ -148,7 +150,17 @@ namespace Authentication.BLL.Services
             return user;
         }
 
-        public async Task CheckUserForBanAsync(Guid id, CancellationToken cancellationToken = default)
+        public static void CreateNewPassword(ref User user, string? password)
+        {
+            ValidationService.CheckCorrectPassword(password);
+
+            var salt = EncryptorService.GenerationSaltTo64Bytes();
+
+            user.PasswordHash = EncryptorService.GenerationHashSha512(password!, salt);
+            user.PasswordSalt = Convert.ToBase64String(salt);
+        }
+
+        private async Task CheckUserForBanAsync(Guid id, CancellationToken cancellationToken = default)
         {
             var ban = await _context.Restrictions
                 .AsNoTracking()
@@ -156,22 +168,12 @@ namespace Authentication.BLL.Services
 
             if (ban is not null)
             {
-                if(ban.ExpirationDate > DateTime.UtcNow)
+                if (ban.ExpirationDate > DateTime.UtcNow)
                     throw new ForbiddenException($"Вход запрещён до {ban.ExpirationDate}.");
 
                 _context.Restrictions.Remove(ban);
                 await _context.SaveChangesAsync(cancellationToken);
             }
-        }
-
-        public static void CreateNewPassword(ref User user, string? password)
-        {
-            ValidationService.CheckCorrectPassword(password);
-
-            var salt = EncryptorService.GenerationSaltTo64Bytes();
-
-            user.PasswordHash = EncryptorService.GenerationHashSHA512(password!, salt);
-            user.PasswordSalt = Convert.ToBase64String(salt);
         }
     }
 }

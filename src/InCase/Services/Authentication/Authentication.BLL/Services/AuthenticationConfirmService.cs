@@ -42,12 +42,12 @@ namespace Authentication.BLL.Services
             if (!user.AdditionalInfo!.IsConfirmed)
             {
                 email.Subject = "Добро пожаловать в InCase!";
-                email.Header = new()
+                email.Header = new EmailHeaderTemplate
                 {
                     Title = "Конец этапа",
                     Subtitle = "регистрации"
                 };
-                email.Body = new()
+                email.Body = new EmailBodyTemplate
                 {
                     Title = $"Добро пожаловать {user.Login!}",
                     Description = $"Мы рады, что вы новый участник нашего проекта. " +
@@ -62,7 +62,7 @@ namespace Authentication.BLL.Services
             else if (user.AdditionalInfo.DeletionDate != null)
             {
                 email.Subject = "Отмена удаления аккаунта";
-                email.Body = new()
+                email.Body = new EmailBodyTemplate
                 {
                     Title = $"Дорогой {user.Login!}",
                     Description = $"Ваш аккаунт больше не в списках на удаление." +
@@ -71,12 +71,12 @@ namespace Authentication.BLL.Services
             }
             else {
                 email.Subject = "Успешный вход в аккаунт";
-                email.Header = new()
+                email.Header = new EmailHeaderTemplate
                 {
                     Title = "Конец этапа",
                     Subtitle = "регистрации"
                 };
-                email.Body = new()
+                email.Body = new EmailBodyTemplate
                 {
                     Title = $"Добро пожаловать {user.Login!}",
                     Description = $"В ваш аккаунт вошли." +
@@ -109,7 +109,7 @@ namespace Authentication.BLL.Services
                 Email = user.Email!,
                 IsRequiredMessage = true,
                 Subject = "Ваш аккаунт будет удален",
-                Body = new()
+                Body = new EmailBodyTemplate
                 {
                     Title = $"Дорогой {user.Login!}.",
                     Description = $"Ваш аккаунт будет удален в течении 30 дней." +
@@ -138,7 +138,7 @@ namespace Authentication.BLL.Services
                 Email = user.Email!,
                 IsRequiredMessage = true,
                 Subject = "Ваш аккаунт сменил почту",
-                Body = new()
+                Body = new EmailBodyTemplate
                 {
                     Title = $"Дорогой {user.Login!}",
                     Description = $"Вы изменили email своего аккаунта. " +
@@ -151,7 +151,7 @@ namespace Authentication.BLL.Services
                 Email = email,
                 IsRequiredMessage = true,
                 Subject = "Ваш аккаунт сменил почту",
-                Body = new()
+                Body = new EmailBodyTemplate
                 {
                     Title = $"Дорогой {user.Login!}",
                     Description = $"Вы изменили email своего аккаунта." +
@@ -182,7 +182,7 @@ namespace Authentication.BLL.Services
                 Email = user.Email!,
                 IsRequiredMessage = true,
                 Subject = "Ваш аккаунт сменил почту",
-                Body = new()
+                Body = new EmailBodyTemplate
                 {
                     Title = $"Дорогой {user.Login!}",
                     Description = $"Администрация сменила вам почту. " +
@@ -195,7 +195,7 @@ namespace Authentication.BLL.Services
                 Email = email,
                 IsRequiredMessage = true,
                 Subject = "Ваш аккаунт сменил почту",
-                Body = new()
+                Body = new EmailBodyTemplate
                 {
                     Title = $"Дорогой {user.Login!}",
                     Description = $"Администрация сменила вам почту. " +
@@ -225,7 +225,7 @@ namespace Authentication.BLL.Services
                 Email = user.Email!,
                 IsRequiredMessage = true,
                 Subject = "Ваш аккаунт сменил логин",
-                Body = new()
+                Body = new EmailBodyTemplate
                 {
                     Title = $"Дорогой {login}",
                     Description = $"Вы изменили логин своего аккаунта." +
@@ -255,7 +255,7 @@ namespace Authentication.BLL.Services
                 Email = user.Email!,
                 IsRequiredMessage = true,
                 Subject = "Ваш аккаунт сменил логин",
-                Body = new()
+                Body = new EmailBodyTemplate
                 {
                     Title = $"Дорогой {login}",
                     Description = $"Ваш логин изменила администрация." +
@@ -282,7 +282,7 @@ namespace Authentication.BLL.Services
                 Email = user.Email!,
                 IsRequiredMessage = true,
                 Subject = "Ваш аккаунт сменил пароль",
-                Body = new()
+                Body = new EmailBodyTemplate
                 {
                     Title = $"Дорогой {user.Login!}",
                     Description = $"Вы изменили пароль своего аккаунта." +

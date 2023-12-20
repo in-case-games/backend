@@ -41,12 +41,12 @@ namespace Authentication.BLL.Services
                 Email = user.Email!,
                 IsRequiredMessage = true,
                 Subject = "Подтвердите удаление аккаунта",
-                Header = new()
+                Header = new EmailHeaderTemplate
                 {
                     Title = "Удаление",
                     Subtitle = "аккаунта"
                 },
-                Body = new()
+                Body = new EmailBodyTemplate
                 {
                     Title = $"Дорогой {user.Login!}.",
                     Description = $"Подтвердите, что это вы удаляете аккаунт. " +
@@ -72,7 +72,7 @@ namespace Authentication.BLL.Services
                 Email = user.Email!,
                 IsRequiredMessage = true,
                 Subject = "Забыли пароль?",
-                Body = new()
+                Body = new EmailBodyTemplate
                 {
                     Title = $"Дорогой {user.Login!}.",
                     Description = $"Подтвердите, " +
@@ -99,12 +99,12 @@ namespace Authentication.BLL.Services
                 Email = user.Email!,
                 IsRequiredMessage = true,
                 Subject = "Подтвердите смену почты",
-                Header = new()
+                Header = new EmailHeaderTemplate
                 {
                     Title = "Смена",
                     Subtitle = "Почты",
                 },
-                Body = new()
+                Body = new EmailBodyTemplate
                 {
                     Title = $"Дорогой {user.Login!}.",
                     Description = $"Подтвердите, что это вы хотите поменять email." +
@@ -133,12 +133,12 @@ namespace Authentication.BLL.Services
                 Email = user.Email!,
                 IsRequiredMessage = true,
                 Subject = "Подтвердите смену логина",
-                Header = new()
+                Header = new EmailHeaderTemplate
                 {
                     Title = "Смена",
                     Subtitle = "Логина",
                 },
-                Body = new()
+                Body = new EmailBodyTemplate
                 {
                     Title = $"Дорогой {user.Login!}.",
                     Description = $"Подтвердите, что это вы хотите поменять логин." +
@@ -167,12 +167,12 @@ namespace Authentication.BLL.Services
                 Email = user.Email!,
                 IsRequiredMessage = true,
                 Subject = "Подтвердите смену пароля",
-                Header = new()
+                Header = new EmailHeaderTemplate
                 {
                     Title = "Смена",
                     Subtitle = "пароля",
                 },
-                Body = new()
+                Body = new EmailBodyTemplate
                 {
                     Title = $"Дорогой {user.Login!}.",
                     Description = $"Подтвердите, что это вы хотите поменять пароль." +

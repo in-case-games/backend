@@ -1,9 +1,7 @@
-﻿using Authentication.BLL.Exceptions;
-using Authentication.BLL.Helpers;
+﻿using Authentication.BLL.Helpers;
 using Authentication.BLL.Interfaces;
 using Authentication.BLL.MassTransit;
 using Authentication.DAL.Data;
-using Authentication.DAL.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Authentication.BLL.Services

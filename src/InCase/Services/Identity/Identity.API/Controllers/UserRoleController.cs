@@ -20,12 +20,12 @@ namespace Identity.API.Controllers
 
         [ProducesResponseType(typeof(ApiResult<UserRoleResponse>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
-        [HttpGet("{id}")]
+        [HttpGet("{id:guid}")]
         public async Task<IActionResult> Get(Guid id, CancellationToken cancellation)
         {
             var response = await _roleService.GetAsync(id, cancellation);
 
-            return Ok(ApiResult<UserRoleResponse>.OK(response));
+            return Ok(ApiResult<UserRoleResponse>.Ok(response));
         }
 
         [ProducesResponseType(typeof(ApiResult<List<UserRoleResponse>>), (int)HttpStatusCode.OK)]
@@ -35,7 +35,7 @@ namespace Identity.API.Controllers
         {
             var response = await _roleService.GetAsync(cancellation);
 
-            return Ok(ApiResult<List<UserRoleResponse>>.OK(response));
+            return Ok(ApiResult<List<UserRoleResponse>>.Ok(response));
         }
     }
 }

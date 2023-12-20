@@ -1,6 +1,5 @@
 using Identity.BLL.Models;
 using Identity.DAL.Entities;
-using Infrastructure.MassTransit.User;
 
 namespace Identity.BLL.Helpers
 {

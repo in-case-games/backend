@@ -27,7 +27,7 @@ namespace Game.API.Controllers
         {
             var response = await _infoService.GetGuestModeAsync(UserId, cancellation);
 
-            return Ok(ApiResult<GuestModeResponse>.OK(response));
+            return Ok(ApiResult<GuestModeResponse>.Ok(response));
         }
 
         [ProducesResponseType(typeof(ApiResult<BalanceResponse>), (int)HttpStatusCode.OK)]
@@ -37,27 +37,27 @@ namespace Game.API.Controllers
         {
             var response = await _infoService.GetBalanceAsync(UserId, cancellation);
 
-            return Ok(ApiResult<BalanceResponse>.OK(response));
+            return Ok(ApiResult<BalanceResponse>.Ok(response));
         }
 
         [ProducesResponseType(typeof(ApiResult<BalanceResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
-        [HttpGet("{userId}/balance")]
+        [HttpGet("{userId:guid}/balance")]
         public async Task<IActionResult> GetBalanceByAdmin(Guid userId, CancellationToken cancellation)
         {
             var response = await _infoService.GetBalanceAsync(userId, cancellation);
 
-            return Ok(ApiResult<BalanceResponse>.OK(response));
+            return Ok(ApiResult<BalanceResponse>.Ok(response));
         }
 
         [ProducesResponseType(typeof(ApiResult<BalanceResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Owner)]
-        [HttpGet("{userId}/balance/{balance}/owner")]
+        [HttpGet("{userId:guid}/balance/{balance:decimal}/owner")]
         public async Task<IActionResult> ChangeBalanceByOwner(Guid userId, decimal balance, CancellationToken cancellation)
         {
             var response = await _infoService.ChangeBalanceByOwnerAsync(userId, balance, cancellation);
 
-            return Ok(ApiResult<BalanceResponse>.OK(response));
+            return Ok(ApiResult<BalanceResponse>.Ok(response));
         }
 
         [ProducesResponseType(typeof(ApiResult<GuestModeResponse>), (int)HttpStatusCode.OK)]
@@ -67,7 +67,7 @@ namespace Game.API.Controllers
         {
             var response = await _infoService.ChangeGuestModeAsync(UserId, cancellation);
 
-            return Ok(ApiResult<GuestModeResponse>.OK(response));
+            return Ok(ApiResult<GuestModeResponse>.Ok(response));
         }
     }
 }

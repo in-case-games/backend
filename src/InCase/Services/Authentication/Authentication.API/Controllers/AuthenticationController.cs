@@ -46,7 +46,7 @@ namespace Authentication.API.Controllers
         {
             var response = await _authenticationService.RefreshTokensAsync(token, cancellationToken);
 
-            return Ok(ApiResult<TokensResponse>.OK(response));
+            return Ok(ApiResult<TokensResponse>.Ok(response));
         }
     }
 }

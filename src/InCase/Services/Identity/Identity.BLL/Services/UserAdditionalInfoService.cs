@@ -3,10 +3,8 @@ using Identity.BLL.Models;
 using Identity.DAL.Data;
 using Identity.BLL.Exceptions;
 using Microsoft.EntityFrameworkCore;
-using Identity.DAL.Entities;
 using Identity.BLL.Helpers;
 using Identity.BLL.MassTransit;
-using ImageMagick;
 using Infrastructure.MassTransit.User;
 
 namespace Identity.BLL.Services

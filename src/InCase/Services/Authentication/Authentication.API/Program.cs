@@ -4,7 +4,6 @@ using Authentication.BLL.MassTransit;
 using Authentication.BLL.MassTransit.Consumers;
 using Authentication.BLL.Services;
 using Authentication.DAL.Data;
-using Identity.BLL.MassTransit.Consumers;
 using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -59,7 +58,7 @@ builder.Services.AddSwaggerGen(options =>
         Scheme = "Bearer",
         BearerFormat = "JWT",
         In = ParameterLocation.Header,
-        Description = "Example: \"Bearer 1safsfsdfdfd\"",
+        Description = "Example: \"Bearer [token]\"",
     });
 
     options.AddSecurityRequirement(new OpenApiSecurityRequirement

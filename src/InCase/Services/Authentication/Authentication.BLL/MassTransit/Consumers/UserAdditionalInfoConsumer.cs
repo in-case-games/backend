@@ -2,7 +2,7 @@
 using Infrastructure.MassTransit.User;
 using MassTransit;
 
-namespace Identity.BLL.MassTransit.Consumers
+namespace Authentication.BLL.MassTransit.Consumers
 {
     public class UserAdditionalInfoConsumer : IConsumer<UserAdditionalInfoTemplate>
     {

@@ -5,7 +5,7 @@ namespace Authentication.BLL.Services
 {
     public static class EncryptorService
     {
-        public static string GenerationHashSHA512(string password, byte[] salt) => 
+        public static string GenerationHashSha512(string password, byte[] salt) => 
             Convert.ToBase64String(KeyDerivation.Pbkdf2(
                 password: password,
                 salt: salt,

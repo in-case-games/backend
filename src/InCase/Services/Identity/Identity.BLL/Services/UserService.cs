@@ -1,11 +1,9 @@
 ﻿using Identity.BLL.Exceptions;
 using Identity.BLL.Helpers;
 using Identity.BLL.Interfaces;
-using Identity.BLL.MassTransit;
 using Identity.BLL.Models;
 using Identity.DAL.Data;
 using Identity.DAL.Entities;
-using ImageMagick;
 using Infrastructure.MassTransit.User;
 using Microsoft.EntityFrameworkCore;
 

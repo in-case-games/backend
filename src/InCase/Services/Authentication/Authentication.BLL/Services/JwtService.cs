@@ -18,12 +18,14 @@ namespace Authentication.BLL.Services
             _configuration = configuration;
         }
 
-        ///<summary>
-        /// Reads and validates a 'JSON Web Token' (JWT) and get claims
-        /// </summary>
-        /// <param name="token">JWT token</param>
-        /// <exception cref="UnauthorizedCodeException"><paramref name="token"/>Is incorrect or invalid</exception>
-        /// <returns>A <see cref="ClaimsPrincipal"/> from the JWT. Does not include claims found in the JWT header.</returns>
+        /// <summary>
+        ///  Reads and validates a 'JSON Web Token' (JWT) and get claims
+        ///  </summary>
+        ///  <param name="token">JWT token</param>
+        ///  <exception>
+        ///      <cref>UnauthorizedCodeException</cref>
+        ///      <paramref name="token"/>Is incorrect or invalid</exception>
+        ///  <returns>A <see cref="ClaimsPrincipal"/> from the JWT. Does not include claims found in the JWT header.</returns>
         public ClaimsPrincipal GetClaimsToken(string token)
         {
             var secret = Encoding.ASCII.GetBytes(_configuration["JWT:Secret"]!);
@@ -39,7 +41,7 @@ namespace Authentication.BLL.Services
 
             try
             {
-                var claims = handler.ValidateToken(token, parameters, out SecurityToken securityToken);
+                var claims = handler.ValidateToken(token, parameters, out var securityToken);
 
                 if (securityToken is not JwtSecurityToken jwtSecurityToken ||
                     !jwtSecurityToken.Header.Alg.Equals("HS512", StringComparison.InvariantCultureIgnoreCase))
@@ -69,7 +71,8 @@ namespace Authentication.BLL.Services
         public TokensResponse CreateTokenPair(in User user)
         {
             if(string.IsNullOrEmpty(user.AdditionalInfo?.Role?.Name))
-                throw new ArgumentNullException("user.RoleName", "The role of the user when creating the token is mandatory");
+                throw new ArgumentNullException(nameof(user), 
+                    "The role of the user when creating the token is mandatory");
 
             var accessToken = GenerateToken(GenerateAccessTokenClaims(in user), 
                 TimeSpan.FromMinutes(double.Parse(_configuration["JWT:AccessTokenValidityInMinutes"]!)));
@@ -85,15 +88,19 @@ namespace Authentication.BLL.Services
             };
         }
 
-        private JwtSecurityToken GenerateToken(Claim[] claims, TimeSpan expiration) =>
-            new(_configuration["JWT:ValidIssuer"], 
+        private JwtSecurityToken GenerateToken(Claim[] claims, TimeSpan expiration)
+        {
+            if (claims == null) throw new ArgumentNullException(nameof(claims));
+
+            return new JwtSecurityToken(_configuration["JWT:ValidIssuer"],
                 _configuration["JWT:ValidAudience"]!,
-                claims, 
+                claims,
                 expires: DateTime.UtcNow.Add(expiration),
                 signingCredentials: new SigningCredentials(
                     new SymmetricSecurityKey(
                         Encoding.ASCII.GetBytes(_configuration["JWT:Secret"]!)),
-                        SecurityAlgorithms.HmacSha512));
+                    SecurityAlgorithms.HmacSha512));
+        }
 
         private static Claim[] GenerateAccessTokenClaims(in User user) => 
             new Claim[] {

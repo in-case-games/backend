@@ -6,9 +6,9 @@ namespace Authentication.BLL.Helpers
 {
     public static class UserTransformer
     {
-        public static UserResponse ToResponse(this User entity, bool IsNewGuid = false) => new() 
+        public static UserResponse ToResponse(this User entity, bool isNewGuid = false) => new() 
         { 
-            Id = IsNewGuid ? Guid.NewGuid() : entity.Id,
+            Id = isNewGuid ? Guid.NewGuid() : entity.Id,
             Email = entity.Email,
             Login = entity.Login,
         };

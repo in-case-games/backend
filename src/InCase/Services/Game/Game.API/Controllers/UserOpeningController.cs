@@ -23,22 +23,22 @@ namespace Game.API.Controllers
 
         [ProducesResponseType(typeof(ApiResult<UserOpeningResponse>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
-        [HttpGet("{id}")]
+        [HttpGet("{id:guid}")]
         public async Task<IActionResult> Get(Guid id, CancellationToken cancellation)
         {
             var response = await _openingService.GetAsync(id, cancellation);
 
-            return Ok(ApiResult<UserOpeningResponse>.OK(response));
+            return Ok(ApiResult<UserOpeningResponse>.Ok(response));
         }
 
         [ProducesResponseType(typeof(ApiResult<List<UserOpeningResponse>>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("roulette")]
-        public async Task<IActionResult> GetRoulete(CancellationToken cancellation)
+        public async Task<IActionResult> GetRoulette(CancellationToken cancellation)
         {
             var response = await _openingService.GetAsync(20, cancellation);
 
-            return Ok(ApiResult<List<UserOpeningResponse>>.OK(response));
+            return Ok(ApiResult<List<UserOpeningResponse>>.Ok(response));
         }
 
         [ProducesResponseType(typeof(ApiResult<List<UserOpeningResponse>>), (int)HttpStatusCode.OK)]
@@ -48,7 +48,7 @@ namespace Game.API.Controllers
         {
             var response = await _openingService.GetAsync(count, cancellation);
 
-            return Ok(ApiResult<List<UserOpeningResponse>>.OK(response));
+            return Ok(ApiResult<List<UserOpeningResponse>>.Ok(response));
         }
 
         [ProducesResponseType(typeof(ApiResult<List<UserOpeningResponse>>), (int)HttpStatusCode.OK)]
@@ -58,7 +58,7 @@ namespace Game.API.Controllers
         {
             var response = await _openingService.GetAsync(UserId, 100, cancellation);
 
-            return Ok(ApiResult<List<UserOpeningResponse>>.OK(response));
+            return Ok(ApiResult<List<UserOpeningResponse>>.Ok(response));
         }
 
         [ProducesResponseType(typeof(ApiResult<List<UserOpeningResponse>>), (int)HttpStatusCode.OK)]
@@ -68,67 +68,67 @@ namespace Game.API.Controllers
         {
             var response = await _openingService.GetAsync(UserId, 10, cancellation);
 
-            return Ok(ApiResult<List<UserOpeningResponse>>.OK(response));
+            return Ok(ApiResult<List<UserOpeningResponse>>.Ok(response));
         }
 
         [ProducesResponseType(typeof(ApiResult<List<UserOpeningResponse>>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
-        [HttpGet("{id}/userId")]
+        [HttpGet("{id:guid}/userId")]
         public async Task<IActionResult> GetByUserId(Guid id, CancellationToken cancellation)
         {
             var response = await _openingService.GetAsync(id, 15, cancellation);
 
-            return Ok(ApiResult<List<UserOpeningResponse>>.OK(response));
+            return Ok(ApiResult<List<UserOpeningResponse>>.Ok(response));
         }
 
         [ProducesResponseType(typeof(ApiResult<List<UserOpeningResponse>>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
-        [HttpGet("{userId}/userId/admin")]
+        [HttpGet("{id:guid}/userId/admin")]
         public async Task<IActionResult> GetByUserId(Guid id, CancellationToken cancellation, int count = 100)
         {
             var response = await _openingService.GetAsync(id, count, cancellation);
 
-            return Ok(ApiResult<List<UserOpeningResponse>>.OK(response));
+            return Ok(ApiResult<List<UserOpeningResponse>>.Ok(response));
         }
 
         [ProducesResponseType(typeof(ApiResult<List<UserOpeningResponse>>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
-        [HttpGet("box/{id}")]
+        [HttpGet("box/{id:guid}")]
         public async Task<IActionResult> GetByBoxId(Guid id, CancellationToken cancellation)
         {
             var response = await _openingService.GetByBoxIdAsync(UserId, id, 100, cancellation);
 
-            return Ok(ApiResult<List<UserOpeningResponse>>.OK(response));
+            return Ok(ApiResult<List<UserOpeningResponse>>.Ok(response));
         }
 
         [ProducesResponseType(typeof(ApiResult<List<UserOpeningResponse>>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
-        [HttpGet("item/{id}")]
+        [HttpGet("item/{id:guid}")]
         public async Task<IActionResult> GetByItemId(Guid id, CancellationToken cancellation)
         {
             var response = await _openingService.GetByItemIdAsync(UserId, id, 100, cancellation);
 
-            return Ok(ApiResult<List<UserOpeningResponse>>.OK(response));
+            return Ok(ApiResult<List<UserOpeningResponse>>.Ok(response));
         }
 
         [ProducesResponseType(typeof(ApiResult<List<UserOpeningResponse>>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
-        [HttpGet("box/{id}/roulette")]
-        public async Task<IActionResult> GetRouleteByBoxId(Guid id, CancellationToken cancellation)
+        [HttpGet("box/{id:guid}/roulette")]
+        public async Task<IActionResult> GetRouletteByBoxId(Guid id, CancellationToken cancellation)
         {
             var response = await _openingService.GetByBoxIdAsync(id, 20, cancellation);
 
-            return Ok(ApiResult<List<UserOpeningResponse>>.OK(response));
+            return Ok(ApiResult<List<UserOpeningResponse>>.Ok(response));
         }
 
         [ProducesResponseType(typeof(ApiResult<List<UserOpeningResponse>>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
-        [HttpGet("item/{id}/roulette")]
-        public async Task<IActionResult> GetRouleteByItemId(Guid id, CancellationToken cancellation)
+        [HttpGet("item/{id:guid}/roulette")]
+        public async Task<IActionResult> GetRouletteByItemId(Guid id, CancellationToken cancellation)
         {
             var response = await _openingService.GetByItemIdAsync(id, 20, cancellation);
 
-            return Ok(ApiResult<List<UserOpeningResponse>>.OK(response));
+            return Ok(ApiResult<List<UserOpeningResponse>>.Ok(response));
         }
     }
 }

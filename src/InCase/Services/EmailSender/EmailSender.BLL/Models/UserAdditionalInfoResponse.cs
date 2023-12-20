@@ -1,5 +1,4 @@
 ﻿using EmailSender.DAL.Entities;
-using System.Text.Json.Serialization;
 
 namespace EmailSender.BLL.Models
 {

@@ -11,13 +11,7 @@ namespace Identity.BLL.Helpers
             Name = role.Name,
         };
 
-        public static List<UserRoleResponse> ToResponse(this List<UserRole> roles)
-        {
-            var response = new List<UserRoleResponse>();
-
-            foreach(UserRole role in roles) response.Add(ToResponse(role));
-
-            return response;
-        }
+        public static List<UserRoleResponse> ToResponse(this List<UserRole> roles) =>
+            roles.Select(ToResponse).ToList();
     }
 }
