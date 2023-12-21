@@ -16,14 +16,8 @@ namespace Resources.BLL.Helpers
                 Game = box.Game?.Name
             };
 
-        public static List<LootBoxResponse> ToResponse(this IEnumerable<LootBox> boxes)
-        { 
-            var response = new List<LootBoxResponse>();
-
-            foreach (var box in boxes) response.Add(ToResponse(box));
-
-            return response;
-        }
+        public static List<LootBoxResponse> ToResponse(this IEnumerable<LootBox> boxes) =>
+            boxes.Select(ToResponse).ToList();
 
         public static LootBoxTemplate ToTemplate(this LootBox entity, bool isDeleted = false) => new()
         {

@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Support.BLL.Models;
+﻿using Support.BLL.Models;
 
 namespace Support.BLL.Interfaces
 {

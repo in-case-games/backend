@@ -20,14 +20,8 @@ namespace Resources.BLL.Helpers
                 UpdateDate = item.UpdateDate,
             };
 
-        public static List<GameItemResponse> ToResponse(this IEnumerable<GameItem> items)
-        {
-            var result = new List<GameItemResponse>();
-
-            foreach(var item in items) result.Add(ToResponse(item));
-
-            return result;
-        }
+        public static List<GameItemResponse> ToResponse(this IEnumerable<GameItem> items) =>
+            items.Select(ToResponse).ToList();
 
         public static GameItem ToEntity(this GameItemRequest request, bool isNewGuid = false) =>
             new() { 

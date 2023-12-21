@@ -11,22 +11,10 @@ namespace Review.BLL.Helpers
             ReviewId = entity.ReviewId,
         };
 
-        public static List<ReviewImageResponse> ToResponse(this List<ReviewImage> entities)
-        {
-            var response = new List<ReviewImageResponse>();
+        public static List<ReviewImageResponse> ToResponse(this List<ReviewImage> entities) =>
+            entities.Select(ToResponse).ToList();
 
-            foreach (var entity in entities) response.Add(ToResponse(entity));
-
-            return response;
-        }
-
-        public static List<ReviewImageResponse> ToResponse(this IEnumerable<ReviewImage> entities)
-        {
-            var response = new List<ReviewImageResponse>();
-
-            foreach (var entity in entities) response.Add(ToResponse(entity));
-
-            return response;
-        }
+        public static List<ReviewImageResponse> ToResponse(this IEnumerable<ReviewImage> entities) =>
+            entities.Select(ToResponse).ToList();
     }
 }

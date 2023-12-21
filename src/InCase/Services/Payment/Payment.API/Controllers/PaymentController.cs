@@ -28,7 +28,7 @@ namespace Payment.API.Controllers
         {
             var response = await _paymentService.TopUpBalanceAsync(request, cancellation);
 
-            return Ok(ApiResult<UserPaymentsResponse>.OK(response));
+            return Ok(ApiResult<UserPaymentsResponse>.Ok(response));
         }
 
         [ProducesResponseType(typeof(ApiResult<PaymentBalanceResponse>), (int)HttpStatusCode.OK)]
@@ -38,17 +38,17 @@ namespace Payment.API.Controllers
         {
             var response = await _paymentService.GetPaymentBalanceAsync(currency, cancellation);
 
-            return Ok(ApiResult<PaymentBalanceResponse>.OK(response));
+            return Ok(ApiResult<PaymentBalanceResponse>.Ok(response));
         }
 
         [ProducesResponseType(typeof(ApiResult<HashOfDataForDepositResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet("top-up/signature")]
-        public IActionResult GetSignatureForDeposit(CancellationToken cancellation)
+        public IActionResult GetSignatureForDeposit()
         {
             var response = _paymentService.GetHashOfDataForDeposit(UserId);
 
-            return Ok(ApiResult<HashOfDataForDepositResponse>.OK(response));
+            return Ok(ApiResult<HashOfDataForDepositResponse>.Ok(response));
         }
     }
 }

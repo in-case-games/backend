@@ -25,7 +25,7 @@ namespace Resources.BLL.Services
             _context = context;
             _publisher = publisher;
 
-            _platformServices = new()
+            _platformServices = new Dictionary<string, IGamePlatformService>
             {
                 ["csgo"] = steamService,
                 ["dota2"] = steamService,
@@ -295,35 +295,29 @@ namespace Resources.BLL.Services
                 var isAdditionalCost = priceOriginal.Cost <= 0 || (priceAdditional.Cost > priceOriginal.Cost);
                 var cost = isAdditionalCost ? priceAdditional.Cost : priceOriginal.Cost;
 
-                if (cost > 0)
-                {
-                    item.UpdateDate = DateTime.UtcNow;
-                    item.Cost = cost * 7M;
+                if (cost <= 0) continue;
 
-                    _context.Items.Update(item);
-                    await _publisher.SendAsync(item.ToTemplate(), cancellationToken);
-                    await _context.SaveChangesAsync(cancellationToken);
+                item.UpdateDate = DateTime.UtcNow;
+                item.Cost = cost * 7M;
 
-                    await CorrectCostAsync(item.Id, item.Cost, cancellationToken);
-                    await CorrectChancesAsync(item.Id, cancellationToken);
-                }
+                _context.Items.Update(item);
+                await _publisher.SendAsync(item.ToTemplate(), cancellationToken);
+                await _context.SaveChangesAsync(cancellationToken);
+
+                await CorrectCostAsync(item.Id, item.Cost, cancellationToken);
+                await CorrectChancesAsync(item.Id, cancellationToken);
             }
         }
 
-        private async Task CorrectCostAsync(
-            Guid itemId,
-            decimal lastPriceItem,
-            CancellationToken cancellationToken = default)
+        private async Task CorrectCostAsync(Guid itemId, decimal lastPriceItem, CancellationToken cancellationToken = default)
         {
             var inventories = await _context.BoxInventories
                 .Include(lbi => lbi.Box)
                 .Where(lbi => lbi.ItemId == itemId)
                 .ToListAsync(cancellationToken);
 
-            foreach (var inventory in inventories)
+            foreach (var box in inventories.Select(inventory => inventory.Box!))
             {
-                var box = inventory.Box!;
-
                 var boxInventories = await _context.BoxInventories
                     .Include(lbi => lbi.Item)
                     .OrderBy(lbi => lbi.Item!.Cost)

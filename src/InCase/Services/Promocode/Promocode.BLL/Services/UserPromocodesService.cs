@@ -48,7 +48,7 @@ namespace Promocode.BLL.Services
 
         public async Task<List<UserPromocodeResponse>> GetAsync(Guid userId, int count, CancellationToken cancellation = default)
         {
-            if (count <= 0 || count >= 10000)
+            if (count is <= 0 or >= 10000)
                 throw new BadRequestException("Размер выборки должен быть в пределе 1-10000");
 
             var promocode = await _context.UserPromocodes
@@ -65,7 +65,7 @@ namespace Promocode.BLL.Services
 
         public async Task<List<UserPromocodeResponse>> GetAsync(int count, CancellationToken cancellation = default)
         {
-            if (count <= 0 || count >= 10000)
+            if (count is <= 0 or >= 10000)
                 throw new BadRequestException("Размер выборки должен быть в пределе 1-10000");
 
             var history = await _context.UserPromocodes
@@ -86,7 +86,7 @@ namespace Promocode.BLL.Services
                 .FirstOrDefaultAsync(p => p.Name == name, cancellation) ??
                 throw new NotFoundException("Промокод не найден");
 
-            bool isUsedType = await _context.UserPromocodes.AnyAsync(up =>
+            var isUsedType = await _context.UserPromocodes.AnyAsync(up =>
                 up.Promocode!.Type!.Id == promocode.TypeId &&
                 up.IsActivated == false &&
                 up.UserId == userId, cancellation);

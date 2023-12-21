@@ -6,7 +6,6 @@ using Review.BLL.Interfaces;
 using Review.BLL.MassTransit;
 using Review.BLL.Models;
 using Review.DAL.Data;
-using Review.DAL.Entities;
 
 namespace Review.BLL.Services
 {
@@ -125,7 +124,7 @@ namespace Review.BLL.Services
 
         public async Task<UserReviewResponse> UpdateAsync(UserReviewRequest request, CancellationToken cancellation = default)
         {
-            if (request.Score > 5 || request.Score < 1)
+            if (request.Score is > 5 or < 1)
                 throw new BadRequestException("Оценка отзыва должна быть больше 1 и меньше 5");
             if (!await _context.User.AnyAsync(u => u.Id == request.UserId, cancellation))
                 throw new NotFoundException("Пользователь не найден");
@@ -134,7 +133,7 @@ namespace Review.BLL.Services
 
             var reviewOld = await _context.Reviews
                 .Include(ur => ur.Images)
-                .FirstOrDefaultAsync(ur => ur.Id == review.Id) ??
+                .FirstOrDefaultAsync(ur => ur.Id == review.Id, cancellationToken: cancellation) ??
                 throw new NotFoundException("Отзыв не найден");
 
             review.CreationDate = reviewOld.CreationDate;

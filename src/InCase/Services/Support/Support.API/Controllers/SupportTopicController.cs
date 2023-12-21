@@ -27,7 +27,7 @@ namespace Support.API.Controllers
         {
             var response = await _topicService.GetAsync(UserId, id, cancellation);
 
-            return Ok(ApiResult<SupportTopicResponse>.OK(response));
+            return Ok(ApiResult<SupportTopicResponse>.Ok(response));
         }
 
         [ProducesResponseType(typeof(ApiResult<SupportTopicResponse>), (int)HttpStatusCode.OK)]
@@ -37,7 +37,7 @@ namespace Support.API.Controllers
         {
             var response = await _topicService.GetAsync(id, cancellation);
 
-            return Ok(ApiResult<SupportTopicResponse>.OK(response));
+            return Ok(ApiResult<SupportTopicResponse>.Ok(response));
         }
 
         [ProducesResponseType(typeof(ApiResult<List<SupportTopicResponse>>), (int)HttpStatusCode.OK)]
@@ -47,7 +47,7 @@ namespace Support.API.Controllers
         {
             var response = await _topicService.GetByUserIdAsync(UserId, cancellation);
 
-            return Ok(ApiResult<List<SupportTopicResponse>>.OK(response));
+            return Ok(ApiResult<List<SupportTopicResponse>>.Ok(response));
         }
 
         [ProducesResponseType(typeof(ApiResult<List<SupportTopicResponse>>), (int)HttpStatusCode.OK)]
@@ -57,7 +57,7 @@ namespace Support.API.Controllers
         {
             var response = await _topicService.GetByUserIdAsync(userId, cancellation);
 
-            return Ok(ApiResult<List<SupportTopicResponse>>.OK(response));
+            return Ok(ApiResult<List<SupportTopicResponse>>.Ok(response));
         }
 
         [ProducesResponseType(typeof(ApiResult<List<SupportTopicResponse>>), (int)HttpStatusCode.OK)]
@@ -67,7 +67,7 @@ namespace Support.API.Controllers
         {
             var response = await _topicService.GetOpenedTopicsAsync(cancellation);
 
-            return Ok(ApiResult<List<SupportTopicResponse>>.OK(response));
+            return Ok(ApiResult<List<SupportTopicResponse>>.Ok(response));
         }
 
         [ProducesResponseType(typeof(ApiResult<SupportTopicResponse>), (int)HttpStatusCode.OK)]
@@ -77,7 +77,7 @@ namespace Support.API.Controllers
         {
             var response = await _topicService.CloseTopic(UserId, id, cancellation);
 
-            return Ok(ApiResult<SupportTopicResponse>.OK(response));
+            return Ok(ApiResult<SupportTopicResponse>.Ok(response));
         }
 
         [ProducesResponseType(typeof(ApiResult<SupportTopicResponse>), (int)HttpStatusCode.OK)]
@@ -87,7 +87,7 @@ namespace Support.API.Controllers
         {
             var response = await _topicService.CloseTopic(id, cancellation);
 
-            return Ok(ApiResult<SupportTopicResponse>.OK(response));
+            return Ok(ApiResult<SupportTopicResponse>.Ok(response));
         }
 
         [ProducesResponseType(typeof(ApiResult<SupportTopicResponse>), (int)HttpStatusCode.OK)]
@@ -99,7 +99,7 @@ namespace Support.API.Controllers
 
             var response = await _topicService.CreateAsync(request, cancellation);
 
-            return Ok(ApiResult<SupportTopicResponse>.OK(response));
+            return Ok(ApiResult<SupportTopicResponse>.Ok(response));
         }
 
         [ProducesResponseType(typeof(ApiResult<SupportTopicResponse>), (int)HttpStatusCode.OK)]
@@ -111,7 +111,7 @@ namespace Support.API.Controllers
 
             var response = await _topicService.UpdateAsync(request, cancellation);
 
-            return Ok(ApiResult<SupportTopicResponse>.OK(response));
+            return Ok(ApiResult<SupportTopicResponse>.Ok(response));
         }
 
         [ProducesResponseType(typeof(ApiResult<SupportTopicResponse>), (int)HttpStatusCode.OK)]
@@ -121,7 +121,7 @@ namespace Support.API.Controllers
         {
             var response = await _topicService.DeleteAsync(UserId, id, cancellation);
 
-            return Ok(ApiResult<SupportTopicResponse>.OK(response));
+            return Ok(ApiResult<SupportTopicResponse>.Ok(response));
         }
 
         [ProducesResponseType(typeof(ApiResult<SupportTopicResponse>), (int)HttpStatusCode.OK)]
@@ -131,7 +131,7 @@ namespace Support.API.Controllers
         {
             var response = await _topicService.DeleteAsync(id, cancellation);
 
-            return Ok(ApiResult<SupportTopicResponse>.OK(response));
+            return Ok(ApiResult<SupportTopicResponse>.Ok(response));
         }
     }
 }

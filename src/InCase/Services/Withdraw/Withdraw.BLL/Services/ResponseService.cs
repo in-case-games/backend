@@ -6,12 +6,7 @@ namespace Withdraw.BLL.Services
 {
     public class ResponseService : IResponseService
     {
-        private readonly HttpClient _httpClient;
-
-        public ResponseService()
-        {
-            _httpClient = new();
-        }
+        private readonly HttpClient _httpClient = new();
 
         public async Task<T?> GetAsync<T>(string uri, CancellationToken cancellation = default)
         {

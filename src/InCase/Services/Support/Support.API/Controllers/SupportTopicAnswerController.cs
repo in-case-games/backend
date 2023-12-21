@@ -22,22 +22,22 @@ namespace Support.API.Controllers
 
         [ProducesResponseType(typeof(ApiResult<SupportTopicAnswerResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
-        [HttpGet("{id}")]
+        [HttpGet("{id:guid}")]
         public async Task<IActionResult> Get(Guid id, CancellationToken cancellation)
         {
             var response = await _answerService.GetAsync(UserId, id, cancellation);
 
-            return Ok(ApiResult<SupportTopicAnswerResponse>.OK(response));
+            return Ok(ApiResult<SupportTopicAnswerResponse>.Ok(response));
         }
 
         [ProducesResponseType(typeof(ApiResult<SupportTopicAnswerResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
-        [HttpGet("{id}/admin")]
+        [HttpGet("{id:guid}/admin")]
         public async Task<IActionResult> GetByAdmin(Guid id, CancellationToken cancellation)
         {
             var response = await _answerService.GetAsync(id, cancellation);
 
-            return Ok(ApiResult<SupportTopicAnswerResponse>.OK(response));
+            return Ok(ApiResult<SupportTopicAnswerResponse>.Ok(response));
         }
 
         [ProducesResponseType(typeof(ApiResult<List<SupportTopicAnswerResponse>>), (int)HttpStatusCode.OK)]
@@ -47,37 +47,37 @@ namespace Support.API.Controllers
         {
             var response = await _answerService.GetByUserIdAsync(UserId, cancellation);
 
-            return Ok(ApiResult<List<SupportTopicAnswerResponse>>.OK(response));
+            return Ok(ApiResult<List<SupportTopicAnswerResponse>>.Ok(response));
         }
 
         [ProducesResponseType(typeof(ApiResult<List<SupportTopicAnswerResponse>>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
-        [HttpGet("user/{userId}/admin")]
+        [HttpGet("user/{userId:guid}/admin")]
         public async Task<IActionResult> GetByAdminUserId(Guid userId, CancellationToken cancellation)
         {
             var response = await _answerService.GetByUserIdAsync(userId, cancellation);
 
-            return Ok(ApiResult<List<SupportTopicAnswerResponse>>.OK(response));
+            return Ok(ApiResult<List<SupportTopicAnswerResponse>>.Ok(response));
         }
 
         [ProducesResponseType(typeof(ApiResult<List<SupportTopicAnswerResponse>>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
-        [HttpGet("topic/{id}")]
+        [HttpGet("topic/{id:guid}")]
         public async Task<IActionResult> GetByTopicId(Guid id, CancellationToken cancellation)
         {
             var response = await _answerService.GetByTopicIdAsync(UserId, id, cancellation);
 
-            return Ok(ApiResult<List<SupportTopicAnswerResponse>>.OK(response));
+            return Ok(ApiResult<List<SupportTopicAnswerResponse>>.Ok(response));
         }
 
         [ProducesResponseType(typeof(ApiResult<List<SupportTopicAnswerResponse>>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
-        [HttpGet("topic/{id}/admin")]
+        [HttpGet("topic/{id:guid}/admin")]
         public async Task<IActionResult> GetByAdminTopicId(Guid id, CancellationToken cancellation)
         {
             var response = await _answerService.GetByTopicIdAsync(id, cancellation);
 
-            return Ok(ApiResult<List<SupportTopicAnswerResponse>>.OK(response));
+            return Ok(ApiResult<List<SupportTopicAnswerResponse>>.Ok(response));
         }
 
         [ProducesResponseType(typeof(ApiResult<SupportTopicAnswerResponse>), (int)HttpStatusCode.OK)]
@@ -89,7 +89,7 @@ namespace Support.API.Controllers
 
             var response = await _answerService.CreateAsync(request, cancellation);
 
-            return Ok(ApiResult<SupportTopicAnswerResponse>.OK(response));
+            return Ok(ApiResult<SupportTopicAnswerResponse>.Ok(response));
         }
 
         [ProducesResponseType(typeof(ApiResult<SupportTopicAnswerResponse>), (int)HttpStatusCode.OK)]
@@ -101,7 +101,7 @@ namespace Support.API.Controllers
 
             var response = await _answerService.CreateByAdminAsync(request, cancellation);
 
-            return Ok(ApiResult<SupportTopicAnswerResponse>.OK(response));
+            return Ok(ApiResult<SupportTopicAnswerResponse>.Ok(response));
         }
 
         [ProducesResponseType(typeof(ApiResult<SupportTopicAnswerResponse>), (int)HttpStatusCode.OK)]
@@ -113,17 +113,17 @@ namespace Support.API.Controllers
 
             var response = await _answerService.UpdateAsync(request, cancellation);
 
-            return Ok(ApiResult<SupportTopicAnswerResponse>.OK(response));
+            return Ok(ApiResult<SupportTopicAnswerResponse>.Ok(response));
         }
 
         [ProducesResponseType(typeof(ApiResult<SupportTopicAnswerResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
-        [HttpDelete("{id}")]
+        [HttpDelete("{id:guid}")]
         public async Task<IActionResult> Delete(Guid id, CancellationToken cancellation)
         {
             var response = await _answerService.DeleteAsync(UserId, id, cancellation);
 
-            return Ok(ApiResult<SupportTopicAnswerResponse>.OK(response));
+            return Ok(ApiResult<SupportTopicAnswerResponse>.Ok(response));
         }
     }
 }

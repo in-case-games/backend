@@ -16,22 +16,24 @@ namespace Statistics.BLL.Repository
             _siteStatisticsAdmin = database.GetCollection<SiteStatisticsAdmin>("AdminSite");
         }
 
+        [Obsolete("Obsolete")]
         public async Task<SiteStatistics> GetAsync(CancellationToken cancellation = default)
         {
             var statistics = await _siteStatistics.Find("{}").FirstOrDefaultAsync(cancellation);
 
             if (statistics is null) await _siteStatistics.InsertOneAsync(new SiteStatistics(), cancellation);
 
-            return statistics ?? new();
+            return statistics ?? new SiteStatistics();
         }
 
+        [Obsolete("Obsolete")]
         public async Task<SiteStatisticsAdmin> GetAdminAsync(CancellationToken cancellation = default)
         {
             var statistics = await _siteStatisticsAdmin.Find("{}").FirstOrDefaultAsync(cancellation);
 
             if (statistics is null) await _siteStatisticsAdmin.InsertOneAsync(new SiteStatisticsAdmin(), cancellation);
 
-            return statistics ?? new();
+            return statistics ?? new SiteStatisticsAdmin();
         }
     }
 }

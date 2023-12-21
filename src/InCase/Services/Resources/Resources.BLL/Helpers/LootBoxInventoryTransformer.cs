@@ -14,14 +14,7 @@ namespace Resources.BLL.Helpers
                 ChanceWining = inventory.ChanceWining
             };
 
-        public static List<LootBoxInventoryResponse> ToResponse(
-            this List<LootBoxInventory> inventories)
-        {
-            var response = new List<LootBoxInventoryResponse>();
-
-            foreach (var inventory in inventories) response.Add(ToResponse(inventory));
-
-            return response;
-        }
+        public static List<LootBoxInventoryResponse> ToResponse(this List<LootBoxInventory> inventories) =>
+            inventories.Select(ToResponse).ToList();
     }
 }

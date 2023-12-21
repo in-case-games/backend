@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Resources.BLL.Entities;
 using Resources.BLL.Exceptions;
 using Resources.BLL.Helpers;
 using Resources.BLL.Interfaces;
@@ -137,7 +136,7 @@ namespace Resources.BLL.Services
             await _publisher.SendAsync(banner.ToTemplate(isDeleted: true), cancellation);
             await _context.SaveChangesAsync(cancellation);
 
-            FileService.RemoveFolder(@$"loot-box-banners/{banner.BoxId}/");
+            FileService.RemoveFolder($"loot-box-banners/{banner.BoxId}/");
 
             return banner.ToResponse();
         }

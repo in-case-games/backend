@@ -24,7 +24,7 @@ namespace Payment.BLL.Models
         [JsonPropertyName("rate")] public decimal Rate { get; set; } = 0M;
         [JsonPropertyName("rand")] public string? Rand { get; set; }
         [JsonPropertyName("reason")] public string? Reason { get; set; }
-        [JsonPropertyName("signature")] public string SignatureRSA { get; set; } = null!;
+        [JsonPropertyName("signature")] public string SignatureRsa { get; set; } = null!;
 
         public override string ToString()
         {

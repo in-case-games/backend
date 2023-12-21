@@ -15,14 +15,7 @@ namespace Promocode.BLL.Helpers
                 Type = history.Promocode?.Type?.Name
             };
 
-        public static List<UserPromocodeResponse> ToResponse(
-            this List<UserPromocode> histories)
-        {
-            var response = new List<UserPromocodeResponse>();
-
-            foreach (var history in histories) response.Add(ToResponse(history));
-
-            return response;
-        }
+        public static List<UserPromocodeResponse> ToResponse(this List<UserPromocode> histories) => 
+            histories.Select(ToResponse).ToList();
     }
 }

@@ -58,7 +58,7 @@ builder.Services.AddSwaggerGen(options =>
         Scheme = "Bearer",
         BearerFormat = "JWT",
         In = ParameterLocation.Header,
-        Description = "Example: \"Bearer 1safsfsdfdfd\"",
+        Description = "Example: \"Bearer [token]\"",
     });
 
     options.AddSecurityRequirement(new OpenApiSecurityRequirement
@@ -87,7 +87,7 @@ builder.Services.AddLogging(b =>
 );
 builder.Services.AddSingleton<BasePublisher>();
 builder.Services.AddSingleton<IResponseService, ResponseService>();
-builder.Services.AddSingleton<MarketTMService>();
+builder.Services.AddSingleton<MarketTmService>();
 builder.Services.AddSingleton<IWithdrawItemService, WithdrawItemService>();
 builder.Services.AddScoped<IWithdrawService, WithdrawService>();
 builder.Services.AddScoped<IUserInventoryService, UserInventoryService>();

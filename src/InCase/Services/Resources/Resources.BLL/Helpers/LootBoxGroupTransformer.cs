@@ -14,13 +14,7 @@ namespace Resources.BLL.Helpers
                 Group = group.Group,
             };
 
-        public static List<LootBoxGroupResponse> ToResponse(this List<LootBoxGroup> groups)
-        {
-            var response = new List<LootBoxGroupResponse>();
-
-            foreach (var group in groups) response.Add(ToResponse(group));
-
-            return response;
-        }
+        public static List<LootBoxGroupResponse> ToResponse(this List<LootBoxGroup> groups) =>
+            groups.Select(ToResponse).ToList();
     }
 }

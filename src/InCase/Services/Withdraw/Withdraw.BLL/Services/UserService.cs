@@ -1,7 +1,6 @@
 ﻿using Infrastructure.MassTransit.User;
 using Microsoft.EntityFrameworkCore;
 using Withdraw.BLL.Exceptions;
-using Withdraw.BLL.Helpers;
 using Withdraw.BLL.Interfaces;
 using Withdraw.DAL.Data;
 using Withdraw.DAL.Entities;

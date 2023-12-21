@@ -13,10 +13,10 @@ namespace Withdraw.BLL.Services
         private readonly ConcurrentDictionary<string, ITradeMarketService> _marketServices;
         private readonly ILogger<WithdrawItemService> _logger;
 
-        public WithdrawItemService(MarketTMService tmService, ILogger<WithdrawItemService> logger)
+        public WithdrawItemService(MarketTmService tmService, ILogger<WithdrawItemService> logger)
         {
             _logger = logger;
-            _marketServices = new()
+            _marketServices = new ConcurrentDictionary<string, ITradeMarketService>
             {
                 ["tm"] = tmService,
             };
@@ -26,7 +26,7 @@ namespace Withdraw.BLL.Services
         {
             var name = info.Market.Name!;
 
-            if (!_marketServices.TryGetValue(name, out ITradeMarketService? value)) 
+            if (!_marketServices.TryGetValue(name, out var value)) 
                 throw new NotFoundException("Маркет не найден");
 
             var i = 0;
@@ -39,7 +39,7 @@ namespace Withdraw.BLL.Services
 
                     item.Market = info.Market;
 
-                    _logger.LogInformation($"The item successfully bougth. ItemId: {item.Id}. MarketName: {name}");
+                    _logger.LogInformation($"The item successfully bought. ItemId: {item.Id}. MarketName: {name}");
                     return item;
                 }
                 catch (Exception) 
@@ -55,7 +55,7 @@ namespace Withdraw.BLL.Services
 
         public async Task<BalanceMarketResponse> GetBalanceAsync(string marketName, CancellationToken cancellation = default)
         {
-            if (!_marketServices.TryGetValue(marketName, out ITradeMarketService? value))
+            if (!_marketServices.TryGetValue(marketName, out var value))
                 throw new NotFoundException("Маркет не найден");
 
             var i = 0;
@@ -82,7 +82,7 @@ namespace Withdraw.BLL.Services
             var gameName = item.Game!.Name!;
             var market = item.Game!.Market!;
 
-            if (!_marketServices.TryGetValue(market.Name!, out ITradeMarketService? value))
+            if (!_marketServices.TryGetValue(market.Name!, out var value))
                 throw new NotFoundException("Маркет не найден");
 
             var i = 0;
@@ -113,7 +113,7 @@ namespace Withdraw.BLL.Services
         {
             var name = history.Market!.Name!;
 
-            if (!_marketServices.TryGetValue(name, out ITradeMarketService? value))
+            if (!_marketServices.TryGetValue(name, out var value))
                 throw new NotFoundException("Маркет не найден");
 
             var i = 0;

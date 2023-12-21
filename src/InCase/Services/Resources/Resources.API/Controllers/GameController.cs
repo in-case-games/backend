@@ -25,17 +25,17 @@ namespace Resources.API.Controllers
         {
             var response = await _gameService.GetAsync(cancellation);
 
-            return Ok(ApiResult<List<GameResponse>>.OK(response));
+            return Ok(ApiResult<List<GameResponse>>.Ok(response));
         }
 
         [ProducesResponseType(typeof(ApiResult<GameResponse>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
-        [HttpGet("{id}")]
+        [HttpGet("{id:guid}")]
         public async Task<IActionResult> Get(Guid id, CancellationToken cancellation)
         {
             var response = await _gameService.GetAsync(id, cancellation);
 
-            return Ok(ApiResult<GameResponse>.OK(response));
+            return Ok(ApiResult<GameResponse>.Ok(response));
         }
 
         [ProducesResponseType(typeof(ApiResult<GameResponse>), (int)HttpStatusCode.OK)]
@@ -45,7 +45,7 @@ namespace Resources.API.Controllers
         {
             var response = await _gameService.GetAsync(name, cancellation);
 
-            return Ok(ApiResult<GameResponse>.OK(response));
+            return Ok(ApiResult<GameResponse>.Ok(response));
         }
     }
 }

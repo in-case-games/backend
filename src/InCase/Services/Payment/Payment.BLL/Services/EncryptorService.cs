@@ -16,7 +16,7 @@ namespace Payment.BLL.Services
             _cfg = cfg;
         }
 
-        public string GenerateHMAC(byte[] hashOfDataToSign)
+        public string GenerateHmac(byte[] hashOfDataToSign)
         {
             using var hash = new HMACSHA256(Encoding.ASCII.GetBytes(_cfg["GameMoney:HMACSecret"]!));
 
@@ -25,15 +25,15 @@ namespace Payment.BLL.Services
             return BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
         }
 
-        public bool VerifySignatureRSA(IGameMoneyResponse response)
+        public bool VerifySignatureRsa(IGameMoneyResponse response)
         {
             var hash = Encoding.ASCII.GetBytes(response.ToString());
-            var signature = Encoding.ASCII.GetBytes(response!.SignatureRSA);
+            var signature = Encoding.ASCII.GetBytes(response!.SignatureRsa);
 
-            return VerifySignatureRSA(hash, signature);
+            return VerifySignatureRsa(hash, signature);
         }
 
-        public bool VerifySignatureRSA(byte[] hashOfDataToSign, byte[] signature)
+        private bool VerifySignatureRsa(byte[] hashOfDataToSign, byte[] signature)
         {
             var path = Path.Combine(Directory.GetCurrentDirectory(), "RsaKeys", _cfg["GameMoney:RSA:PublicKey"]!);
 
@@ -42,17 +42,16 @@ namespace Payment.BLL.Services
             var param = (RsaKeyParameters)new PemReader(reader).ReadObject();
 
             var rsa = new RSACryptoServiceProvider(2048);
-            var parms = new RSAParameters()
+            rsa.ImportParameters(new RSAParameters()
             {
                 Modulus = param.Modulus.ToByteArrayUnsigned(),
                 Exponent = param.Exponent.ToByteArrayUnsigned()
-            };
-            rsa.ImportParameters(parms);
+            });
 
-            var deformatter = new RSAPKCS1SignatureDeformatter(rsa);
-            deformatter.SetHashAlgorithm("SHA256");
+            var formatter = new RSAPKCS1SignatureDeformatter(rsa);
+            formatter.SetHashAlgorithm("SHA256");
 
-            return deformatter.VerifySignature(hashOfDataToSign, signature);
+            return formatter.VerifySignature(hashOfDataToSign, signature);
         }
     }
 }

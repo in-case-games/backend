@@ -1,7 +1,6 @@
 ﻿using Infrastructure.MassTransit.User;
 using Microsoft.EntityFrameworkCore;
 using Promocode.BLL.Exceptions;
-using Promocode.BLL.Helpers;
 using Promocode.BLL.Interfaces;
 using Promocode.DAL.Data;
 using Promocode.DAL.Entities;

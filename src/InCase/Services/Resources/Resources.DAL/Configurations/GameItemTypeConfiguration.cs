@@ -6,11 +6,11 @@ namespace Resources.DAL.Configurations
 {
     internal class GameItemTypeConfiguration : BaseEntityConfiguration<GameItemType>
     {
-        private readonly List<GameItemType> types = new() {
-            new() { Name = "none" }, new() { Name = "pistol" },
-            new() { Name = "weapon" }, new() { Name = "rifle" },
-            new() { Name = "knife" }, new() { Name = "gloves" },
-            new() { Name = "other" }
+        private readonly List<GameItemType> _types = new() {
+            new GameItemType { Name = "none" }, new GameItemType { Name = "pistol" },
+            new GameItemType { Name = "weapon" }, new GameItemType { Name = "rifle" },
+            new GameItemType { Name = "knife" }, new GameItemType { Name = "gloves" },
+            new GameItemType { Name = "other" }
         };
 
         public override void Configure(EntityTypeBuilder<GameItemType> builder)
@@ -25,8 +25,7 @@ namespace Resources.DAL.Configurations
                 .HasMaxLength(50)
                 .IsRequired();
 
-            foreach (var type in types)
-                builder.HasData(type);
+            foreach (var type in _types) builder.HasData(type);
         }
     }
 }

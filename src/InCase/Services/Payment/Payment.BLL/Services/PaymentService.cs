@@ -34,7 +34,7 @@ namespace Payment.BLL.Services
         public async Task<UserPaymentsResponse> TopUpBalanceAsync(GameMoneyTopUpResponse request, CancellationToken cancellation = default)
         {
             if (request.StatusAnswer?.ToLower() != "paid") throw new BadRequestException("Платеж отклонен");
-            if (!_rsaService.VerifySignatureRSA(request)) throw new ForbiddenException("Неверная подпись rsa");
+            if (!_rsaService.VerifySignatureRsa(request)) throw new ForbiddenException("Неверная подпись rsa");
             if (!await _context.Payments.AnyAsync(up => up.InvoiceId == request.InvoiceId!, cancellation))
                 throw new ConflictException("Платеж уже есть в системе, ждем пополнения");
 

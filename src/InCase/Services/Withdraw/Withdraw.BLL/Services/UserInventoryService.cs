@@ -16,7 +16,7 @@ namespace Withdraw.BLL.Services
         private readonly ApplicationDbContext _context;
         private readonly IWithdrawItemService _withdrawService;
         private readonly BasePublisher _publisher;
-        private readonly NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
+        private readonly NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
 
         public UserInventoryService(
             ApplicationDbContext context, 
@@ -43,7 +43,7 @@ namespace Withdraw.BLL.Services
 
         public async Task<List<UserInventoryResponse>> GetAsync(Guid userId, int count, CancellationToken cancellation = default)
         {
-            if (count <= 0 || count >= 10000)
+            if (count is <= 0 or >= 10000)
                 throw new BadRequestException("Размер выборки должен быть в пределе 1-10000");
             if (!await _context.Users.AnyAsync(u => u.Id == userId, cancellation))
                 throw new NotFoundException("Пользователь не найден");
@@ -160,7 +160,7 @@ namespace Withdraw.BLL.Services
 
             await _publisher.SendAsync(new SiteStatisticsAdminTemplate { FundsUsersInventories = -differenceCost * request.Items.Count }, cancellation);
 
-            logger.Log(NLog.LogLevel.Info, "Exchanged: UserId - {0}," +
+            _logger.Log(NLog.LogLevel.Info, "Exchanged: UserId - {0}," +
                                            " GameItemId - {1}, Game - {2}",
                                            inventory.UserId, inventory.ItemId,
                                            inventory.Item?.Game?.Name);
@@ -176,13 +176,13 @@ namespace Withdraw.BLL.Services
 
             var inventory = await _context.Inventories
                 .AsNoTracking()
+                .Include(userInventory => userInventory.Item)
+                .ThenInclude(gameItem => gameItem!.Game)
                 .FirstOrDefaultAsync(ui => ui.Id == id && ui.UserId == userId, cancellation) ??
                 throw new NotFoundException("Предмет не найден в инвентаре");
 
-            logger.Log(NLog.LogLevel.Info, "Selled: UserId - {0}," +
-                                           " GameItemId - {1}, Game - {2}",
-                                           user.Id, inventory.ItemId,
-                                           inventory.Item?.Game?.Name);
+            _logger.Log(NLog.LogLevel.Info, "Selled: UserId - {0}, GameItemId - {1}, Game - {2}",
+                user.Id, inventory.ItemId, inventory.Item?.Game?.Name);
 
             _context.Inventories.Remove(inventory);
             await _context.SaveChangesAsync(cancellation);
@@ -210,7 +210,7 @@ namespace Withdraw.BLL.Services
 
             var inventory = inventories.MinBy(ui => ui.Date)!;
 
-            logger.Log(NLog.LogLevel.Info, "SelledLast: UserId - {0}," +
+            _logger.Log(NLog.LogLevel.Info, "SelledLast: UserId - {0}," +
                                            " GameItemId - {1}, Game - {2}",
                                            user.Id, inventory.ItemId,
                                            inventory.Item?.Game?.Name);

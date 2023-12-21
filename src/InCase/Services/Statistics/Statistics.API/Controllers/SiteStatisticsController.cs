@@ -26,7 +26,7 @@ namespace Statistics.API.Controllers
         {
             var response = await _statisticsService.GetAsync(cancellation);
 
-            return Ok(ApiResult<SiteStatisticsResponse>.OK(response));
+            return Ok(ApiResult<SiteStatisticsResponse>.Ok(response));
         }
 
         [ProducesResponseType(typeof(ApiResult<SiteStatisticsAdminResponse>), (int)HttpStatusCode.OK)]
@@ -36,7 +36,7 @@ namespace Statistics.API.Controllers
         {
             var response = await _statisticsService.GetAdminAsync(cancellation);
 
-            return Ok(ApiResult<SiteStatisticsAdminResponse>.OK(response));
+            return Ok(ApiResult<SiteStatisticsAdminResponse>.Ok(response));
         }
     }
 }

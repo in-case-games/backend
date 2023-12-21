@@ -8,7 +8,7 @@ namespace Payment.BLL.Services
 {
     public class GameMoneyService : IGameMoneyService
     {
-        private static readonly int NumberAttempts = 5;
+        private const int NumberAttempts = 5;
         private readonly IResponseService _responseService;
         private readonly IEncryptorService _rsaService;
         private readonly IConfiguration _cfg;
@@ -32,7 +32,7 @@ namespace Payment.BLL.Services
             };
 
             var hashBytes = Encoding.ASCII.GetBytes(request.ToString());
-            request.SignatureHMAC = _rsaService.GenerateHMAC(hashBytes);
+            request.SignatureHmac = _rsaService.GenerateHmac(hashBytes);
 
             var i = 0;
 
@@ -43,9 +43,10 @@ namespace Payment.BLL.Services
                     var response = await _responseService
                         .ResponsePostAsync(GameMoneyEndpoint.Balance, request, cancellation);
 
-                    if (!_rsaService.VerifySignatureRSA(response!)) throw new ForbiddenException("Неверная подпись rsa");
+                    if (!_rsaService.VerifySignatureRsa(response!)) throw new ForbiddenException("Неверная подпись rsa");
 
-                    return new() { 
+                    return new PaymentBalanceResponse
+                    { 
                         Balance = ((GameMoneyBalanceResponse)response!).ProjectBalance 
                     };
                 }
@@ -74,7 +75,7 @@ namespace Payment.BLL.Services
             };
 
             var hashBytes = Encoding.ASCII.GetBytes(request.ToString());
-            request.SignatureHMAC = _rsaService.GenerateHMAC(hashBytes);
+            request.SignatureHmac = _rsaService.GenerateHmac(hashBytes);
 
             var i = 0;
 
@@ -85,7 +86,7 @@ namespace Payment.BLL.Services
                     var response = await _responseService
                         .ResponsePostAsync(GameMoneyEndpoint.InvoiceInfo, request, cancellation);
 
-                    if (!_rsaService.VerifySignatureRSA(response!)) throw new ForbiddenException("Неверная подпись rsa");
+                    if (!_rsaService.VerifySignatureRsa(response!)) throw new ForbiddenException("Неверная подпись rsa");
 
                     return (GameMoneyInvoiceInfoResponse)response!;
                 }
@@ -101,7 +102,7 @@ namespace Payment.BLL.Services
         public HashOfDataForDepositResponse GetHashOfDataForDeposit(Guid userId) => 
             new()
             {
-                HMAC = $"project:{_cfg["GameMoney:projectId"]};" +
+                Hmac = $"project:{_cfg["GameMoney:projectId"]};" +
                 $"user:{userId};" +
                 $"currency:{_cfg["GameMoney:currency"]};" +
                 $"success_url:{_cfg["GameMoney:url:success"]};" +

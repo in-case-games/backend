@@ -15,24 +15,19 @@ namespace Support.BLL.Helpers
                 TopicId = request.TopicId,
             };
 
-        public static SupportTopicAnswerResponse ToResponse(this SupportTopicAnswer entity) => new()
-        {
-            Id = entity.Id,
-            Content = entity.Content,
-            Date = entity.Date,
-            Images = entity.Images?.ToResponse(),
-            PlaintiffId = entity.PlaintiffId,
-            TopicId = entity.TopicId,
-        };
+        public static SupportTopicAnswerResponse ToResponse(this SupportTopicAnswer entity) => 
+            new()
+            {
+                Id = entity.Id,
+                Content = entity.Content,
+                Date = entity.Date,
+                Images = entity.Images?.ToResponse(),
+                PlaintiffId = entity.PlaintiffId,
+                TopicId = entity.TopicId,
+            };
 
-        public static List<SupportTopicAnswerResponse> ToResponse(this IEnumerable<SupportTopicAnswer> entities)
-        {
-            var response = new List<SupportTopicAnswerResponse>();
-
-            foreach (var entity in entities) response.Add(ToResponse(entity));
-
-            return response;
-        }
+        public static List<SupportTopicAnswerResponse> ToResponse(this IEnumerable<SupportTopicAnswer> entities) =>
+            entities.Select(ToResponse).ToList();
 
         public static List<AnswerImageResponse> ToAnswerImageResponse(this IEnumerable<SupportTopicAnswer> answers)
         {

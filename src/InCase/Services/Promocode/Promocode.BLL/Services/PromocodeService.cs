@@ -83,7 +83,7 @@ namespace Promocode.BLL.Services
         {
             ValidationService.IsPromocode(request);
 
-            bool isExist = await _context.Promocodes
+            var isExist = await _context.Promocodes
                 .AsNoTracking()
                 .AnyAsync(pe => pe.Name == request.Name && pe.Id != request.Id, cancellation);
 

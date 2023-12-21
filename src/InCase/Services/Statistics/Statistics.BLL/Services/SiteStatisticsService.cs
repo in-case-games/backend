@@ -16,7 +16,7 @@ namespace Statistics.BLL.Services
         {
             var stats = await _siteStatisticsRepository.GetAsync(cancellation);
 
-            return new()
+            return new SiteStatisticsResponse
             {
                 LootBoxes = stats.LootBoxes,
                 Reviews = stats.Reviews,
@@ -30,7 +30,7 @@ namespace Statistics.BLL.Services
         {
             var stats = await _siteStatisticsRepository.GetAdminAsync(cancellation);
 
-            return new()
+            return new SiteStatisticsAdminResponse
             {
                 FundsUsersInventories = stats.FundsUsersInventories,
                 ReturnedFunds = stats.ReturnedFunds,

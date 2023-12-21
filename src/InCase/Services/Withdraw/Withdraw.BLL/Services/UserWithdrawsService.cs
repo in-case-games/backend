@@ -33,7 +33,7 @@ namespace Withdraw.BLL.Services
 
         public async Task<List<UserHistoryWithdrawResponse>> GetAsync(Guid userId, int count, CancellationToken cancellation = default)
         {
-            if (count <= 0 || count >= 10000)
+            if (count is <= 0 or >= 10000)
                 throw new BadRequestException("Размер выборки должен быть в пределе 1-10000");
             if (!await _context.Users.AnyAsync(u => u.Id == userId, cancellation))
                 throw new NotFoundException("Пользователь не найден");
@@ -51,7 +51,7 @@ namespace Withdraw.BLL.Services
 
         public async Task<List<UserHistoryWithdrawResponse>> GetAsync(int count, CancellationToken cancellation = default)
         {
-            if (count <= 0 || count >= 10000)
+            if (count is <= 0 or >= 10000)
                 throw new BadRequestException("Размер выборки должен быть в пределе 1-10000");
 
             var withdraws = await _context.Withdraws
@@ -72,7 +72,7 @@ namespace Withdraw.BLL.Services
                 .FirstOrDefaultAsync(uhw => uhw.Id == id && uhw.UserId == userId, cancellation) ??
                 throw new NotFoundException("История вывода не найдена");
 
-            if (withdraw.Status?.Name is null || withdraw.Status.Name != "cancel")
+            if (withdraw.Status?.Name is not "cancel")
                 throw new ConflictException("Ваш предмет выводится");
 
             var inventory = new UserInventory
@@ -87,7 +87,7 @@ namespace Withdraw.BLL.Services
             await _context.Inventories.AddAsync(inventory, cancellation);
             await _context.SaveChangesAsync(cancellation);
 
-            _logger.LogInformation($"Items successfully transfered. UserId: {userId}. UserHistoryWithdrawId: {id}");
+            _logger.LogInformation($"Items successfully transferred. UserId: {userId}. UserHistoryWithdrawId: {id}");
 
             return inventory.ToResponse();
         }

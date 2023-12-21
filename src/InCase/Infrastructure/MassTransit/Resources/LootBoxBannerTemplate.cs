@@ -1,6 +1,4 @@
-﻿using System.Text.Json.Serialization;
-
-namespace Infrastructure.MassTransit.Resources
+﻿namespace Infrastructure.MassTransit.Resources
 {
     public class LootBoxBannerTemplate : BaseTemplate
     {

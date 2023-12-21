@@ -6,8 +6,6 @@ using Resources.BLL.MassTransit;
 using Resources.BLL.Models;
 using Resources.DAL.Data;
 using Resources.DAL.Entities;
-using System.Reflection;
-using System.Threading;
 
 namespace Resources.BLL.Services
 {
@@ -56,7 +54,7 @@ namespace Resources.BLL.Services
 
         public async Task<List<LootBoxResponse>> GetByGameIdAsync(Guid id, CancellationToken cancellation = default)
         {
-            if (!await _context.Games.AnyAsync(g => g.Id == id))
+            if (!await _context.Games.AnyAsync(g => g.Id == id, cancellationToken: cancellation))
                 throw new NotFoundException("Игра не найдена");
 
             var boxes = await _context.LootBoxes

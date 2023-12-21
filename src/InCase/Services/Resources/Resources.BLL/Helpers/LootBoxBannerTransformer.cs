@@ -1,5 +1,5 @@
 ﻿using Infrastructure.MassTransit.Resources;
-using Resources.BLL.Entities;
+using Resources.BLL.Models;
 using Resources.DAL.Entities;
 
 namespace Resources.BLL.Helpers
@@ -15,14 +15,8 @@ namespace Resources.BLL.Helpers
                 ExpirationDate = banner?.ExpirationDate,
             };
 
-        public static List<LootBoxBannerResponse> ToResponse(this List<LootBoxBanner> banners)
-        {
-            var response = new List<LootBoxBannerResponse>();
-
-            foreach (var banner in banners) response.Add(ToResponse(banner));
-
-            return response;
-        }
+        public static List<LootBoxBannerResponse> ToResponse(this List<LootBoxBanner> banners) =>
+            banners.Select(ToResponse).ToList();
 
         public static LootBoxBannerTemplate ToTemplate(this LootBoxBanner entity, bool isDeleted = false) => new()
         {

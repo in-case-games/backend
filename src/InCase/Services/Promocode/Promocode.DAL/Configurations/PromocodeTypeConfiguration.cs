@@ -6,8 +6,8 @@ namespace Promocode.DAL.Configurations
 {
     internal class PromocodeTypeConfiguration : BaseEntityConfiguration<PromocodeType>
     {
-        private readonly List<PromocodeType> types = new() {
-            new() { Name = "balance" }, new() { Name = "box" }
+        private readonly List<PromocodeType> _types = new() {
+            new PromocodeType { Name = "balance" }, new PromocodeType { Name = "box" }
         };
 
         public override void Configure(EntityTypeBuilder<PromocodeType> builder)
@@ -21,8 +21,7 @@ namespace Promocode.DAL.Configurations
             builder.HasIndex(pt => pt.Name)
                 .IsUnique();
 
-            foreach(var type in types)
-                builder.HasData(type);
+            foreach(var type in _types) builder.HasData(type);
         }
     }
 }

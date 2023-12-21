@@ -1,5 +1,4 @@
-﻿using Infrastructure.MassTransit.User;
-using Payment.BLL.Models;
+﻿using Payment.BLL.Models;
 using Payment.DAL.Entities;
 
 namespace Payment.BLL.Helpers
@@ -17,13 +16,7 @@ namespace Payment.BLL.Helpers
                 Rate = payment.Rate,
             };
 
-        public static List<UserPaymentsResponse> ToResponse(this List<UserPayment> payments)
-        {
-            var paymentsResponses = new List<UserPaymentsResponse>();
-
-            foreach (UserPayment payment in payments) paymentsResponses.Add(payment.ToResponse());
-
-            return paymentsResponses;
-        }
+        public static List<UserPaymentsResponse> ToResponse(this List<UserPayment> payments) =>
+            payments.Select(ToResponse).ToList();
     }
 }

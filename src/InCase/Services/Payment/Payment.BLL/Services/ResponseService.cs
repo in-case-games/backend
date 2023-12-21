@@ -1,8 +1,8 @@
-﻿using Payment.BLL.Interfaces;
-using System.Net.Http.Json;
+﻿using System.Net.Http.Json;
 using System.Text.Json;
+using Payment.BLL.Interfaces;
 
-namespace InCase.Infrastructure.Services
+namespace Payment.BLL.Services
 {
     public class ResponseService : IResponseService
     {

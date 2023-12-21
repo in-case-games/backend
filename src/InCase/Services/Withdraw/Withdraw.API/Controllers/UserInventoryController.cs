@@ -24,22 +24,22 @@ namespace Withdraw.API.Controllers
 
         [ProducesResponseType(typeof(ApiResult<UserInventoryResponse>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
-        [HttpGet("{id}")]
+        [HttpGet("{id:guid}")]
         public async Task<IActionResult> Get(Guid id, CancellationToken cancellation)
         {
             var response = await _userInventoryService.GetByIdAsync(id, cancellation);
 
-            return Ok(ApiResult<UserInventoryResponse>.OK(response));
+            return Ok(ApiResult<UserInventoryResponse>.Ok(response));
         }
 
         [ProducesResponseType(typeof(ApiResult<List<UserInventoryResponse>>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
-        [HttpGet("user/{id}")]
+        [HttpGet("user/{id:guid}")]
         public async Task<IActionResult> GetByUserId(Guid id, CancellationToken cancellation)
         {
             var response = await _userInventoryService.GetAsync(id, 100, cancellation);
 
-            return Ok(ApiResult<List<UserInventoryResponse>>.OK(response));
+            return Ok(ApiResult<List<UserInventoryResponse>>.Ok(response));
         }
 
         [ProducesResponseType(typeof(ApiResult<List<UserInventoryResponse>>), (int)HttpStatusCode.OK)]
@@ -49,17 +49,17 @@ namespace Withdraw.API.Controllers
         {
             var response = await _userInventoryService.GetAsync(UserId, cancellation);
 
-            return Ok(ApiResult<List<UserInventoryResponse>>.OK(response));
+            return Ok(ApiResult<List<UserInventoryResponse>>.Ok(response));
         }
 
         [ProducesResponseType(typeof(ApiResult<List<UserInventoryResponse>>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
-        [HttpGet("{userId}/admin")]
+        [HttpGet("{userId:guid}/admin")]
         public async Task<IActionResult> Get(Guid userId, CancellationToken cancellation, int count = 100)
         {
             var response = await _userInventoryService.GetAsync(userId, count, cancellation);
 
-            return Ok(ApiResult<List<UserInventoryResponse>>.OK(response));
+            return Ok(ApiResult<List<UserInventoryResponse>>.Ok(response));
         }
 
         [ProducesResponseType(typeof(ApiResult<UserInventoryResponse>), (int)HttpStatusCode.OK)]
@@ -69,7 +69,7 @@ namespace Withdraw.API.Controllers
         {
             var response = await _userInventoryService.CreateAsync(request, cancellation);
 
-            return Ok(ApiResult<UserInventoryResponse>.OK(response));
+            return Ok(ApiResult<UserInventoryResponse>.Ok(response));
         }
 
         [ProducesResponseType(typeof(ApiResult<List<UserInventoryResponse>>), (int)HttpStatusCode.OK)]
@@ -79,37 +79,37 @@ namespace Withdraw.API.Controllers
         {
             var response = await _userInventoryService.ExchangeAsync(request, UserId, cancellation);
 
-            return Ok(ApiResult<List<UserInventoryResponse>>.OK(response));
+            return Ok(ApiResult<List<UserInventoryResponse>>.Ok(response));
         }
 
         [ProducesResponseType(typeof(ApiResult<SellItemResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
-        [HttpGet("{id}/sell")]
+        [HttpGet("{id:guid}/sell")]
         public async Task<IActionResult> Sell(Guid id, CancellationToken cancellation)
         {
             var response = await _userInventoryService.SellAsync(id, UserId, cancellation);
 
-            return Ok(ApiResult<SellItemResponse>.OK(response));
+            return Ok(ApiResult<SellItemResponse>.Ok(response));
         }
 
         [ProducesResponseType(typeof(ApiResult<SellItemResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
-        [HttpGet("last/sell/{itemId}")]
+        [HttpGet("last/sell/{itemId:guid}")]
         public async Task<IActionResult> SellLastItem(Guid itemId, CancellationToken cancellation)
         {
             var response = await _userInventoryService.SellLastAsync(itemId, UserId, cancellation);
 
-            return Ok(ApiResult<SellItemResponse>.OK(response));
+            return Ok(ApiResult<SellItemResponse>.Ok(response));
         }
 
         [ProducesResponseType(typeof(ApiResult<UserInventoryResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Owner)]
-        [HttpDelete("{id}")]
+        [HttpDelete("{id:guid}")]
         public async Task<IActionResult> Delete(Guid id, CancellationToken cancellation)
         {
             var response = await _userInventoryService.DeleteAsync(id, cancellation);
 
-            return Ok(ApiResult<UserInventoryResponse>.OK(response));
+            return Ok(ApiResult<UserInventoryResponse>.Ok(response));
         }
     }
 }

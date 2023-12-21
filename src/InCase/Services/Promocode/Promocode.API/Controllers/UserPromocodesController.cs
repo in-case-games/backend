@@ -14,8 +14,7 @@ namespace Promocode.API.Controllers
     public class UserPromocodesController : ControllerBase
     {
         private readonly IUserPromocodesService _promocodeService;
-        private Guid UserId => Guid
-            .Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
+        private Guid UserId => Guid.Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
 
         public UserPromocodesController(IUserPromocodesService promocodeService)
         {
@@ -29,17 +28,17 @@ namespace Promocode.API.Controllers
         {
             var response = await _promocodeService.GetAsync(UserId, 100, cancellation);
 
-            return Ok(ApiResult<List<UserPromocodeResponse>>.OK(response));
+            return Ok(ApiResult<List<UserPromocodeResponse>>.Ok(response));
         }
 
         [ProducesResponseType(typeof(ApiResult<UserPromocodeResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
-        [HttpGet("{id}")]
+        [HttpGet("{id:guid}")]
         public async Task<IActionResult> Get(Guid id, CancellationToken cancellation)
         {
             var response = await _promocodeService.GetAsync(id, UserId, cancellation);
 
-            return Ok(ApiResult<UserPromocodeResponse>.OK(response));
+            return Ok(ApiResult<UserPromocodeResponse>.Ok(response));
         }
 
         [ProducesResponseType(typeof(ApiResult<List<UserPromocodeResponse>>), (int)HttpStatusCode.OK)]
@@ -49,27 +48,27 @@ namespace Promocode.API.Controllers
         {
             var response = await _promocodeService.GetAsync(count, cancellation);
 
-            return Ok(ApiResult<List<UserPromocodeResponse>>.OK(response));
+            return Ok(ApiResult<List<UserPromocodeResponse>>.Ok(response));
         }
 
         [ProducesResponseType(typeof(ApiResult<List<UserPromocodeResponse>>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
-        [HttpGet("user/{userId}/admin")]
+        [HttpGet("user/{userId:guid}/admin")]
         public async Task<IActionResult> GetByAdmin(Guid userId, CancellationToken cancellation, int count = 100)
         {
             var response = await _promocodeService.GetAsync(userId, count, cancellation);
 
-            return Ok(ApiResult<List<UserPromocodeResponse>>.OK(response));
+            return Ok(ApiResult<List<UserPromocodeResponse>>.Ok(response));
         }
 
         [ProducesResponseType(typeof(ApiResult<UserPromocodeResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
-        [HttpGet("{id}/admin")]
+        [HttpGet("{id:guid}/admin")]
         public async Task<IActionResult> GetByIdAdmin(Guid id, CancellationToken cancellation)
         {
             var response = await _promocodeService.GetAsync(id, cancellation);
 
-            return Ok(ApiResult<UserPromocodeResponse>.OK(response));
+            return Ok(ApiResult<UserPromocodeResponse>.Ok(response));
         }
 
         [ProducesResponseType(typeof(ApiResult<UserPromocodeResponse>), (int)HttpStatusCode.OK)]
@@ -79,7 +78,7 @@ namespace Promocode.API.Controllers
         {
             var response = await _promocodeService.ActivateAsync(UserId, name, cancellation);
 
-            return Ok(ApiResult<UserPromocodeResponse>.OK(response));
+            return Ok(ApiResult<UserPromocodeResponse>.Ok(response));
         }
 
         [ProducesResponseType(typeof(ApiResult<UserPromocodeResponse>), (int)HttpStatusCode.OK)]
@@ -89,7 +88,7 @@ namespace Promocode.API.Controllers
         {
             var response = await _promocodeService.ExchangeAsync(UserId, name, cancellation);
 
-            return Ok(ApiResult<UserPromocodeResponse>.OK(response));
+            return Ok(ApiResult<UserPromocodeResponse>.Ok(response));
         }
     }
 }

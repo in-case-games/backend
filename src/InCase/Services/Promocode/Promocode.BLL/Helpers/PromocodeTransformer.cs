@@ -16,15 +16,8 @@ namespace Promocode.BLL.Helpers
                 Type = promocode.Type
             };
 
-        public static List<PromocodeResponse> ToResponse(this List<PromocodeEntity> promocodes)
-        {
-            List<PromocodeResponse> responses = new();
-
-            foreach(var promocode in promocodes)
-                responses.Add(ToResponse(promocode));
-
-            return responses;
-        }
+        public static List<PromocodeResponse> ToResponse(this List<PromocodeEntity> promocodes) => 
+            promocodes.Select(ToResponse).ToList();
 
         public static PromocodeEntity ToEntity(this PromocodeRequest request, bool IsNewGuid = false) =>
             new()

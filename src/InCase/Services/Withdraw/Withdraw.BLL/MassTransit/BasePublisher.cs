@@ -13,11 +13,8 @@ namespace Withdraw.BLL.MassTransit
 
         public async Task SendAsync<T>(T template, CancellationToken token = default) where T : class
         {
-            if (template is not null)
-            {
-                var endPoint = await _bus.GetPublishSendEndpoint<T>();
-                await endPoint.Send(template, token);
-            }
+            var endPoint = await _bus.GetPublishSendEndpoint<T>();
+            await endPoint.Send(template, token);
         }
     }
 }

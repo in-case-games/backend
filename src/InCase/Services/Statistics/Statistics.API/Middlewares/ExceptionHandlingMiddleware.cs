@@ -33,14 +33,14 @@ namespace Statistics.API.Middlewares
 
         private static Task HandleExceptionAsync(HttpContext context, string message)
         {
-            int internalServerErrorCode = 500;
+            const int internalServerErrorCode = 500;
 
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = internalServerErrorCode;
 
-            string result = JsonSerializer.Serialize(new
+            var result = JsonSerializer.Serialize(new
             {
-                error = new { code = internalServerErrorCode, message = message }
+                error = new { code = internalServerErrorCode, message }
             });
 
             return context.Response.WriteAsync(result);
@@ -48,12 +48,12 @@ namespace Statistics.API.Middlewares
 
         private static Task HandleExceptionAsync(HttpContext context, Exception ex)
         {
-            int internalServerErrorCode = 500;
+            const int internalServerErrorCode = 500;
 
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = internalServerErrorCode;
 
-            string result = JsonSerializer.Serialize(new
+            var result = JsonSerializer.Serialize(new
             {
                 error = new { code = internalServerErrorCode, message = ex.Message }
             });

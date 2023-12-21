@@ -4,7 +4,6 @@ using Payment.BLL.Helpers;
 using Payment.BLL.Interfaces;
 using Payment.BLL.Models;
 using Payment.DAL.Data;
-using Payment.DAL.Entities;
 
 namespace Payment.BLL.Services
 {
@@ -30,7 +29,7 @@ namespace Payment.BLL.Services
 
         public async Task<List<UserPaymentsResponse>> GetAsync(int count, CancellationToken cancellation = default)
         {
-            if (count <= 0 || count >= 10000)
+            if (count is <= 0 or >= 10000)
                 throw new BadRequestException("Размер выборки должен быть в пределе 1-10000");
 
             var payments = await _context.Payments
@@ -44,7 +43,7 @@ namespace Payment.BLL.Services
 
         public async Task<List<UserPaymentsResponse>> GetAsync(Guid userId, int count, CancellationToken cancellation = default)
         {
-            if (count <= 0 || count >= 10000)
+            if (count is <= 0 or >= 10000)
                 throw new BadRequestException("Размер выборки должен быть в пределе 1-10000");
 
             var payments = await _context.Payments

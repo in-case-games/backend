@@ -4,7 +4,6 @@ using Resources.BLL.Helpers;
 using Resources.BLL.Interfaces;
 using Resources.BLL.Models;
 using Resources.DAL.Data;
-using Resources.DAL.Entities;
 
 namespace Resources.BLL.Services
 {

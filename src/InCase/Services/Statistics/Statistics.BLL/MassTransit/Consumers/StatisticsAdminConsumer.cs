@@ -11,9 +11,7 @@ namespace Statistics.BLL.MassTransit.Consumers
         private readonly IMongoCollection<SiteStatisticsAdmin> _siteStatisticsAdmin;
         private readonly ISiteStatisticsRepository _siteStatisticsRepository;
 
-        public StatisticsAdminConsumer(
-            IMongoClient client,
-            ISiteStatisticsRepository siteStatisticsRepository)
+        public StatisticsAdminConsumer(IMongoClient client, ISiteStatisticsRepository siteStatisticsRepository)
         {
             var database = client.GetDatabase("InCaseStatistics");
 

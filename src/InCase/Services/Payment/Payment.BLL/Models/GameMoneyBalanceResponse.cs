@@ -16,7 +16,7 @@ namespace Payment.BLL.Models
         [JsonPropertyName("contract_balance")] public decimal ContractBalance { get; set; }
         [JsonPropertyName("time")] public int Time { get; set; }
         [JsonPropertyName("rand")] public string? Rand { get; set; }
-        [JsonPropertyName("signature")] public string SignatureRSA { get; set; } = null!;
+        [JsonPropertyName("signature")] public string SignatureRsa { get; set; } = null!;
 
         public override string ToString()
         {

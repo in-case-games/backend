@@ -11,9 +11,7 @@ namespace Payment.BLL.MassTransit.Consumers
         private readonly IUserService _userService;
         private readonly ApplicationDbContext _context;
 
-        public UserConsumer(
-            IUserService userService,
-            ApplicationDbContext context)
+        public UserConsumer(IUserService userService, ApplicationDbContext context)
         {
             _userService = userService;
             _context = context;

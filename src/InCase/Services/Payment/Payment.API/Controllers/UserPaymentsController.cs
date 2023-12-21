@@ -27,17 +27,17 @@ namespace Payment.API.Controllers
         {
             var response = await _paymentsService.GetAsync(UserId, 100, cancellation);
 
-            return Ok(ApiResult<List<UserPaymentsResponse>>.OK(response));
+            return Ok(ApiResult<List<UserPaymentsResponse>>.Ok(response));
         }
 
         [ProducesResponseType(typeof(ApiResult<UserPaymentsResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
-        [HttpGet("{id}")]
+        [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetById(Guid id, CancellationToken cancellation)
         {
             var response = await _paymentsService.GetByIdAsync(id, UserId, cancellation);
 
-            return Ok(ApiResult<UserPaymentsResponse>.OK(response));
+            return Ok(ApiResult<UserPaymentsResponse>.Ok(response));
         }
 
         [ProducesResponseType(typeof(ApiResult<List<UserPaymentsResponse>>), (int)HttpStatusCode.OK)]
@@ -47,17 +47,17 @@ namespace Payment.API.Controllers
         {
             var response = await _paymentsService.GetAsync(count, cancellation);
 
-            return Ok(ApiResult<List<UserPaymentsResponse>>.OK(response));
+            return Ok(ApiResult<List<UserPaymentsResponse>>.Ok(response));
         }
 
         [ProducesResponseType(typeof(ApiResult<List<UserPaymentsResponse>>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
-        [HttpGet("{userId}/admin")]
+        [HttpGet("{userId:guid}/admin")]
         public async Task<IActionResult> GetByUserIdAdmin(Guid userId, CancellationToken cancellation, int count = 100)
         {
             var response = await _paymentsService.GetAsync(userId, count, cancellation);
 
-            return Ok(ApiResult<List<UserPaymentsResponse>>.OK(response));
+            return Ok(ApiResult<List<UserPaymentsResponse>>.Ok(response));
         }
     }
 }

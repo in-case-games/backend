@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using System.Globalization;
+using Microsoft.Extensions.Configuration;
 using Resources.BLL.Interfaces;
 using Resources.BLL.Models;
 using System.Text.Json.Serialization;
@@ -9,12 +10,12 @@ namespace Resources.BLL.Services
     {
         private readonly IConfiguration _cfg;
         private readonly IResponseService _responseService;
-        private readonly Dictionary<string, string> DomainUri = new()
+        private readonly Dictionary<string, string> _domainUri = new()
         {
             ["csgo"] = "https://market.csgo.com",
             ["dota2"] = "https://market.dota2.net"
         };
-        private readonly Dictionary<string, string> AppId = new()
+        private readonly Dictionary<string, string> _appId = new()
         {
             ["csgo"] = "730",
             ["dota2"] = "570"
@@ -30,19 +31,19 @@ namespace Resources.BLL.Services
             CancellationToken cancellation = default)
         {
             var id = idForMarket.Replace("-", "_");
-            var uri = $"{DomainUri[game]}/api/ItemInfo/{id}/ru/?key={_cfg["MarketTM:Secret"]}";
+            var uri = $"{_domainUri[game]}/api/ItemInfo/{id}/ru/?key={_cfg["MarketTM:Secret"]}";
 
             try
             {
-                var info = await _responseService.GetAsync<ItemInfoTMResponse>(uri, cancellation);
+                var info = await _responseService.GetAsync<ItemInfoTmResponse>(uri, cancellation);
 
-                return (info is null || info.Cost is null) ?
-                    new() { Success = false, Cost = 0M } :
-                    new() { Success = true, Cost = decimal.Parse(info.Cost!) / 100 };
+                return (info?.Cost is null) ?
+                    new ItemCostResponse { Success = false, Cost = 0M } :
+                    new ItemCostResponse { Success = true, Cost = decimal.Parse(info.Cost!) / 100 };
             }
             catch(Exception)
             {
-                return new() { Success = false, Cost = 0M };
+                return new ItemCostResponse { Success = false, Cost = 0M };
             }
         }
 
@@ -51,7 +52,7 @@ namespace Resources.BLL.Services
             var uri = $"https://steamcommunity.com/market/priceoverview/?" +
                 $"currency=5&" +
                 $"country=ru&" +
-                $"appid={AppId[game]}&" +
+                $"appid={_appId[game]}&" +
                 $"market_hash_name={hashName}&" +
                 $"format=json";
 
@@ -59,27 +60,25 @@ namespace Resources.BLL.Services
             {
                 var info = await _responseService.GetAsync<ItemInfoSteamResponse>(uri, cancellation);
 
-                if ((info is null || !info.Success || info.Cost is null))
+                if (info is null || !info.Success || info.Cost is null)
                 {
-                    return new() { Success = false, Cost = 0M };
+                    return new ItemCostResponse { Success = false, Cost = 0M };
                 }
-                else
-                {
-                    var temp = info!.Cost!.Replace(" pуб.", "");
-                    var cost = decimal.Parse(temp);
 
-                    if (temp != cost.ToString()) cost /= 100;
+                var temp = info!.Cost!.Replace(" pуб.", "");
+                var cost = decimal.Parse(temp);
 
-                    return new() { Success = true, Cost = cost };
-                }
+                if (temp != cost.ToString()) cost /= 100;
+
+                return new ItemCostResponse { Success = true, Cost = cost };
             }
             catch (Exception)
             {
-                return new() { Success = false, Cost = 0M };
+                return new ItemCostResponse { Success = false, Cost = 0M };
             }
         }
 
-        private class ItemInfoTMResponse
+        private class ItemInfoTmResponse
         {
             [JsonPropertyName("min_price")] public string? Cost { get; set; }
         }

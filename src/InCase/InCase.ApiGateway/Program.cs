@@ -3,7 +3,7 @@ using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
-var policyName = "CorsPolicy";
+const string policyName = "CorsPolicy";
 
 var configuration = new ConfigurationBuilder()
     .AddJsonFile("ocelot.json")
