@@ -11,9 +11,7 @@ using Statistics.BLL.Services;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
-IConfiguration configuration = new ConfigurationBuilder()
-    .AddJsonFile("appsettings.Development.json")
-    .Build();
+var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.Development.json").Build();
 
 builder.Logging.AddConfiguration(configuration).ClearProviders().AddNLog();
 
@@ -47,7 +45,7 @@ builder.Services.AddSwaggerGen(options =>
         Scheme = "Bearer",
         BearerFormat = "JWT",
         In = ParameterLocation.Header,
-        Description = "Example: \"Bearer 1safsfsdfdfd\"",
+        Description = "Example: \"Bearer [token]\"",
     });
 
     options.AddSecurityRequirement(new OpenApiSecurityRequirement
@@ -112,7 +110,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseMiddleware<CancellationTokenHandlingMiddleware>();
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();

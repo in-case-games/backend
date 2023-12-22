@@ -3,7 +3,6 @@ using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Payment.BLL.Interfaces;
 using Payment.DAL.Data;
-using Payment.DAL.Entities;
 
 namespace Payment.BLL.MassTransit.Consumers
 {
@@ -12,9 +11,7 @@ namespace Payment.BLL.MassTransit.Consumers
         private readonly IUserService _userService;
         private readonly ApplicationDbContext _context;
 
-        public UserConsumer(
-            IUserService userService,
-            ApplicationDbContext context)
+        public UserConsumer(IUserService userService, ApplicationDbContext context)
         {
             _userService = userService;
             _context = context;
@@ -22,16 +19,12 @@ namespace Payment.BLL.MassTransit.Consumers
 
         public async Task Consume(ConsumeContext<UserTemplate> context)
         {
-            UserTemplate template = context.Message;
-
-            User? user = await _context.Users
+            var user = await _context.Users
                 .AsNoTracking()
-                .FirstOrDefaultAsync(u => u.Id == template.Id);
+                .FirstOrDefaultAsync(u => u.Id == context.Message.Id);
 
-            if (user is null)
-                await _userService.CreateAsync(template);
-            else if (template.IsDeleted)
-                await _userService.DeleteAsync(user.Id);
+            if (user is null) await _userService.CreateAsync(context.Message);
+            else if (context.Message.IsDeleted) await _userService.DeleteAsync(user.Id);
         }
     }
 }

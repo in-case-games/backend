@@ -1,5 +1,4 @@
 ﻿using Review.DAL.Entities;
-using System.Text.Json.Serialization;
 
 namespace Review.BLL.Models
 {

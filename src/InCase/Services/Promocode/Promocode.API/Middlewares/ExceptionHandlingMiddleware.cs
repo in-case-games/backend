@@ -7,10 +7,12 @@ namespace Promocode.API.Middlewares
     public class ExceptionHandlingMiddleware
     {
         private readonly RequestDelegate _next;
+        private readonly ILogger<ExceptionHandlingMiddleware> _logger;
 
-        public ExceptionHandlingMiddleware(RequestDelegate next)
+        public ExceptionHandlingMiddleware(RequestDelegate next, ILogger<ExceptionHandlingMiddleware> logger)
         {
             _next = next;
+            _logger = logger;
         }
 
         public async Task Invoke(HttpContext context)
@@ -23,6 +25,12 @@ namespace Promocode.API.Middlewares
             {
                 await HandleExceptionAsync(context, ex);
             }
+            catch (OperationCanceledException)
+            {
+                await HandleExceptionAsync(context, "Task was cancelled");
+
+                _logger.LogWarning("Task was cancelled");
+            }
             catch (Exception ex)
             {
                 await HandleExceptionAsync(context, ex);
@@ -34,7 +42,7 @@ namespace Promocode.API.Middlewares
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
 
-            string result = JsonSerializer.Serialize(new
+            var result = JsonSerializer.Serialize(new
             {
                 error = new { code = ex.StatusCode, message = ex.Message }
             });
@@ -42,14 +50,29 @@ namespace Promocode.API.Middlewares
             return context.Response.WriteAsync(result);
         }
 
-        private static Task HandleExceptionAsync(HttpContext context, Exception ex)
+        private static Task HandleExceptionAsync(HttpContext context, string message)
         {
-            int internalServerErrorCode = 500;
+            const int internalServerErrorCode = 500;
 
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = internalServerErrorCode;
 
-            string result = JsonSerializer.Serialize(new
+            var result = JsonSerializer.Serialize(new
+            {
+                error = new { code = internalServerErrorCode, message }
+            });
+
+            return context.Response.WriteAsync(result);
+        }
+
+        private static Task HandleExceptionAsync(HttpContext context, Exception ex)
+        {
+            const int internalServerErrorCode = 500;
+
+            context.Response.ContentType = "application/json";
+            context.Response.StatusCode = internalServerErrorCode;
+
+            var result = JsonSerializer.Serialize(new
             {
                 error = new { code = internalServerErrorCode, message = ex.Message }
             });

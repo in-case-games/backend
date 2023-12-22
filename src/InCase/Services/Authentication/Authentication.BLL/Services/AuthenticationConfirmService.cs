@@ -4,14 +4,12 @@ using Authentication.BLL.Interfaces;
 using Authentication.BLL.MassTransit;
 using Authentication.BLL.Models;
 using Authentication.DAL.Data;
-using Authentication.DAL.Entities;
 using Infrastructure.MassTransit.Email;
 using Infrastructure.MassTransit.Statistics;
 using Microsoft.EntityFrameworkCore;
 
 namespace Authentication.BLL.Services
 {
-    //TODO ButtonLink edit
     public class AuthenticationConfirmService : IAuthenticationConfirmService
     {
         private readonly ApplicationDbContext _context;
@@ -33,25 +31,23 @@ namespace Authentication.BLL.Services
 
         public async Task<TokensResponse> ConfirmAccountAsync(string token, CancellationToken cancellationToken = default)
         {
-            User user = await _authenticationService.GetUserFromTokenAsync(token, "email", cancellationToken);
-            UserAdditionalInfo info = user.AdditionalInfo!;
-            TokensResponse response = _jwtService.CreateTokenPair(in user);
-
-            EmailTemplate template = new()
+            var user = await _authenticationService.GetUserFromTokenAsync(token, "email", cancellationToken);
+            var tokenPair = _jwtService.CreateTokenPair(in user);
+            var email = new EmailTemplate
             {
                 Email = user.Email!,
                 IsRequiredMessage = true,
             };
 
-            if (!info.IsConfirmed)
+            if (!user.AdditionalInfo!.IsConfirmed)
             {
-                template.Subject = "Добро пожаловать в InCase!";
-                template.Header = new()
+                email.Subject = "Добро пожаловать в InCase!";
+                email.Header = new EmailHeaderTemplate
                 {
                     Title = "Конец этапа",
                     Subtitle = "регистрации"
                 };
-                template.Body = new()
+                email.Body = new EmailBodyTemplate
                 {
                     Title = $"Добро пожаловать {user.Login!}",
                     Description = $"Мы рады, что вы новый участник нашего проекта. " +
@@ -63,10 +59,10 @@ namespace Authentication.BLL.Services
 
                 await _publisher.SendAsync(statisticsTemplate, cancellationToken);
             }
-            else if (info.DeletionDate != null)
+            else if (user.AdditionalInfo.DeletionDate != null)
             {
-                template.Subject = "Отмена удаления аккаунта";
-                template.Body = new()
+                email.Subject = "Отмена удаления аккаунта";
+                email.Body = new EmailBodyTemplate
                 {
                     Title = $"Дорогой {user.Login!}",
                     Description = $"Ваш аккаунт больше не в списках на удаление." +
@@ -74,13 +70,13 @@ namespace Authentication.BLL.Services
                 };
             }
             else {
-                template.Subject = "Успешный вход в аккаунт";
-                template.Header = new()
+                email.Subject = "Успешный вход в аккаунт";
+                email.Header = new EmailHeaderTemplate
                 {
                     Title = "Конец этапа",
                     Subtitle = "регистрации"
                 };
-                template.Body = new()
+                email.Body = new EmailBodyTemplate
                 {
                     Title = $"Добро пожаловать {user.Login!}",
                     Description = $"В ваш аккаунт вошли." +
@@ -89,29 +85,31 @@ namespace Authentication.BLL.Services
                 };
             }
 
-            await _publisher.SendAsync(template, cancellationToken);
+            user.AdditionalInfo.IsConfirmed = true;
+            user.AdditionalInfo.DeletionDate = null;
 
-            info.IsConfirmed = true;
-            info.DeletionDate = null;
+            _context.AdditionalInfos.Update(user.AdditionalInfo);
 
-            _context.AdditionalInfos.Update(info);
+            await _publisher.SendAsync(email, cancellationToken);
             await _context.SaveChangesAsync(cancellationToken);
 
-            return response;
+            return tokenPair;
         }
 
         public async Task<UserResponse> DeleteAsync(string token, CancellationToken cancellationToken = default)
         {
-            User user = await _authenticationService.GetUserFromTokenAsync(token, "email", cancellationToken);
+            var user = await _authenticationService.GetUserFromTokenAsync(token, "email", cancellationToken);
 
             user.AdditionalInfo!.DeletionDate = DateTime.UtcNow + TimeSpan.FromDays(30);
 
-            EmailTemplate template = new()
+            _context.AdditionalInfos.Update(user.AdditionalInfo);
+
+            await _publisher.SendAsync(new EmailTemplate
             {
                 Email = user.Email!,
                 IsRequiredMessage = true,
                 Subject = "Ваш аккаунт будет удален",
-                Body = new()
+                Body = new EmailBodyTemplate
                 {
                     Title = $"Дорогой {user.Login!}.",
                     Description = $"Ваш аккаунт будет удален в течении 30 дней." +
@@ -119,11 +117,7 @@ namespace Authentication.BLL.Services
                     $"и произойдет отмена удаления." +
                     $"Если это не пытались удалить аккаунт срочно поменяйте пароль."
                 }
-            };
-
-            await _publisher.SendAsync(template, cancellationToken);
-
-            _context.AdditionalInfos.Update(user.AdditionalInfo);
+            }, cancellationToken);
             await _context.SaveChangesAsync(cancellationToken);
 
             return user.ToResponse();
@@ -134,31 +128,30 @@ namespace Authentication.BLL.Services
             if (await _context.Users.AsNoTracking().AnyAsync(u => u.Email == email, cancellationToken))
                 throw new ConflictException("Email почта занята");
 
-            User temp = await _authenticationService.GetUserFromTokenAsync(token, "email", cancellationToken);
+            var userFromToken = await _authenticationService.GetUserFromTokenAsync(token, "email", cancellationToken);
+            var user = await _context.Users.FirstAsync(u => u.Id == userFromToken.Id, cancellationToken);
 
-            User user = await _context.Users
-                .FirstAsync(u => u.Id == temp.Id, cancellationToken);
+            user.Email = email;
 
-            EmailTemplate messageOldEmail = new()
+            await _publisher.SendAsync(new EmailTemplate
             {
                 Email = user.Email!,
                 IsRequiredMessage = true,
                 Subject = "Ваш аккаунт сменил почту",
-                Body = new()
+                Body = new EmailBodyTemplate
                 {
                     Title = $"Дорогой {user.Login!}",
                     Description = $"Вы изменили email своего аккаунта. " +
                     $"Теперь ваш аккаунт привязан к {email}" +
                     $"Если это были не вы обратитесь в тех поддержку."
                 }
-            };
-
-            EmailTemplate messageNewEmail = new()
+            }, cancellationToken);
+            await _publisher.SendAsync(new EmailTemplate
             {
                 Email = email,
                 IsRequiredMessage = true,
                 Subject = "Ваш аккаунт сменил почту",
-                Body = new()
+                Body = new EmailBodyTemplate
                 {
                     Title = $"Дорогой {user.Login!}",
                     Description = $"Вы изменили email своего аккаунта." +
@@ -166,15 +159,9 @@ namespace Authentication.BLL.Services
                     $"Прошлый адрес почты: {user.Email}" +
                     $"Если это были не вы обратитесь в тех поддержку."
                 }
-            };
-
-            user.Email = email;
-
-            await _context.SaveChangesAsync(cancellationToken);
-
+            }, cancellationToken);
             await _publisher.SendAsync(user.ToTemplate(false), cancellationToken);
-            await _publisher.SendAsync(messageOldEmail, cancellationToken);
-            await _publisher.SendAsync(messageNewEmail, cancellationToken);
+            await _context.SaveChangesAsync(cancellationToken);
 
             return user.ToResponse();
         }
@@ -184,30 +171,31 @@ namespace Authentication.BLL.Services
             if (await _context.Users.AsNoTracking().AnyAsync(u => u.Email == email, cancellationToken))
                 throw new ConflictException("Email почта занята");
 
-            User user = await _context.Users
+            var user = await _context.Users
                 .FirstOrDefaultAsync(u => u.Id == userId, cancellationToken) ??
                 throw new NotFoundException("Пользователь не найден");
 
-            EmailTemplate messageOldEmail = new()
+            user.Email = email;
+
+            await _publisher.SendAsync(new EmailTemplate
             {
                 Email = user.Email!,
                 IsRequiredMessage = true,
                 Subject = "Ваш аккаунт сменил почту",
-                Body = new()
+                Body = new EmailBodyTemplate
                 {
                     Title = $"Дорогой {user.Login!}",
                     Description = $"Администрация сменила вам почту. " +
                     $"Теперь ваш аккаунт привязан к {email}" +
                     $"Если это была ошибка обратитесь в тех. поддержку"
                 }
-            };
-
-            EmailTemplate messageNewEmail = new()
+            }, cancellationToken);
+            await _publisher.SendAsync(new EmailTemplate
             {
                 Email = email,
                 IsRequiredMessage = true,
                 Subject = "Ваш аккаунт сменил почту",
-                Body = new()
+                Body = new EmailBodyTemplate
                 {
                     Title = $"Дорогой {user.Login!}",
                     Description = $"Администрация сменила вам почту. " +
@@ -215,15 +203,9 @@ namespace Authentication.BLL.Services
                     $"Прошлый адрес почты: {user.Email}" +
                     $"Если это была ошибка обратитесь в тех. поддержку"
                 }
-            };
-
-            user.Email = email;
-
-            await _context.SaveChangesAsync(cancellationToken);
-
+            }, cancellationToken);
             await _publisher.SendAsync(user.ToTemplate(false), cancellationToken);
-            await _publisher.SendAsync(messageOldEmail, cancellationToken);
-            await _publisher.SendAsync(messageNewEmail, cancellationToken);
+            await _context.SaveChangesAsync(cancellationToken);
 
             return user.ToResponse();
         }
@@ -233,31 +215,26 @@ namespace Authentication.BLL.Services
             if (await _context.Users.AsNoTracking().AnyAsync(u => u.Login == login, cancellationToken))
                 throw new ConflictException("Логин занят");
 
-            User temp = await _authenticationService.GetUserFromTokenAsync(token, "email", cancellationToken);
+            var userFromToken = await _authenticationService.GetUserFromTokenAsync(token, "email", cancellationToken);
+            var user = await _context.Users.FirstAsync(u => u.Id == userFromToken.Id, cancellationToken);
 
-            User user = await _context.Users
-                .FirstAsync(u => u.Id == temp.Id, cancellationToken);
+            user.Login = login;
 
-            EmailTemplate template = new()
+            await _publisher.SendAsync(new EmailTemplate
             {
                 Email = user.Email!,
                 IsRequiredMessage = true,
                 Subject = "Ваш аккаунт сменил логин",
-                Body = new()
+                Body = new EmailBodyTemplate
                 {
                     Title = $"Дорогой {login}",
                     Description = $"Вы изменили логин своего аккаунта." +
                     $"Прошлый логин: {user.Login!}" +
                     $"Если это были не вы обратитесь в тех поддержку."
                 }
-            };
-
-            user.Login = login;
-
-            await _context.SaveChangesAsync(cancellationToken);
-
+            }, cancellationToken);
             await _publisher.SendAsync(user.ToTemplate(false), cancellationToken);
-            await _publisher.SendAsync(template, cancellationToken);
+            await _context.SaveChangesAsync(cancellationToken);
 
             return user.ToResponse();
         }
@@ -267,56 +244,52 @@ namespace Authentication.BLL.Services
             if (await _context.Users.AsNoTracking().AnyAsync(u => u.Login == login, cancellationToken))
                 throw new ConflictException("Логин занят");
 
-            User user = await _context.Users
+            var user = await _context.Users
                 .FirstOrDefaultAsync(u => u.Id == userId, cancellationToken) ??
                 throw new NotFoundException("Пользователь не найден");
 
-            EmailTemplate template = new()
+            user.Login = login;
+
+            await _publisher.SendAsync(new EmailTemplate
             {
                 Email = user.Email!,
                 IsRequiredMessage = true,
                 Subject = "Ваш аккаунт сменил логин",
-                Body = new()
+                Body = new EmailBodyTemplate
                 {
                     Title = $"Дорогой {login}",
                     Description = $"Ваш логин изменила администрация." +
                     $"Прошлый логин: {user.Login}." +
                     $"Если это была ошибка обратитесь в тех поддержку."
                 }
-            };
-
-            user.Login = login;
-
-            await _context.SaveChangesAsync(cancellationToken);
-
+            }, cancellationToken);
             await _publisher.SendAsync(user.ToTemplate(false), cancellationToken);
-            await _publisher.SendAsync(template, cancellationToken);
+            await _context.SaveChangesAsync(cancellationToken);
 
             return user.ToResponse();
         }
 
         public async Task<UserResponse> UpdatePasswordAsync(string password, string token, CancellationToken cancellationToken = default)
         {
-            User user = await _authenticationService.GetUserFromTokenAsync(token, "email", cancellationToken);
+            var user = await _authenticationService.GetUserFromTokenAsync(token, "email", cancellationToken);
+
             AuthenticationService.CreateNewPassword(ref user, password);
 
-            EmailTemplate template = new()
+            _context.Users.Update(user);
+
+            await _publisher.SendAsync(new EmailTemplate
             {
                 Email = user.Email!,
                 IsRequiredMessage = true,
                 Subject = "Ваш аккаунт сменил пароль",
-                Body = new()
+                Body = new EmailBodyTemplate
                 {
                     Title = $"Дорогой {user.Login!}",
                     Description = $"Вы изменили пароль своего аккаунта." +
                     $"Если это были не вы смените пароль," +
                     $"если у вас нет доступа обратитесь в тех поддержку."
                 }
-            };
-
-            await _publisher.SendAsync(template, cancellationToken);
-
-            _context.Users.Update(user);
+            }, cancellationToken);
             await _context.SaveChangesAsync(cancellationToken);
 
             return user.ToResponse();

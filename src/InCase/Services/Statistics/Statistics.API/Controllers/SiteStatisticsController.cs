@@ -19,26 +19,24 @@ namespace Statistics.API.Controllers
             _statisticsService = statisticsService;
         }
 
-        [ProducesResponseType(typeof(ApiResult<SiteStatisticsResponse>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<SiteStatisticsResponse>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> Get(CancellationToken cancellation)
         {
-            SiteStatisticsResponse response = await _statisticsService.GetAsync(cancellation);
+            var response = await _statisticsService.GetAsync(cancellation);
 
-            return Ok(ApiResult<SiteStatisticsResponse>.OK(response));
+            return Ok(ApiResult<SiteStatisticsResponse>.Ok(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<SiteStatisticsAdminResponse>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<SiteStatisticsAdminResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Owner, Roles.Bot)]
         [HttpGet("admin")]
         public async Task<IActionResult> GetAdmin(CancellationToken cancellation)
         {
-            SiteStatisticsAdminResponse response = await _statisticsService.GetAdminAsync(cancellation);
+            var response = await _statisticsService.GetAdminAsync(cancellation);
 
-            return Ok(ApiResult<SiteStatisticsAdminResponse>.OK(response));
+            return Ok(ApiResult<SiteStatisticsAdminResponse>.Ok(response));
         }
     }
 }

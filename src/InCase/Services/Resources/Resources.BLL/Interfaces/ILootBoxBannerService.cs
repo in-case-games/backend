@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Resources.BLL.Entities;
-using Resources.BLL.Models;
+﻿using Resources.BLL.Models;
 
 namespace Resources.BLL.Interfaces
 {

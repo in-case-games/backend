@@ -20,160 +20,146 @@ namespace Resources.API.Controllers
             _itemService = itemService;
         }
 
-        [ProducesResponseType(typeof(ApiResult<List<GameItemResponse>>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<List<GameItemResponse>>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> Get(CancellationToken cancellation)
         {
-            List<GameItemResponse> response = await _itemService.GetAsync(cancellation);
+            var response = await _itemService.GetAsync(cancellation);
 
-            return Ok(ApiResult<List<GameItemResponse>>.OK(response));
+            return Ok(ApiResult<List<GameItemResponse>>.Ok(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<GameItemResponse>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<GameItemResponse>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
-        [HttpGet("{id}")]
+        [HttpGet("{id:guid}")]
         public async Task<IActionResult> Get(Guid id, CancellationToken cancellation)
         {
-            GameItemResponse response = await _itemService.GetAsync(id, cancellation);
+            var response = await _itemService.GetAsync(id, cancellation);
 
-            return Ok(ApiResult<GameItemResponse>.OK(response));
+            return Ok(ApiResult<GameItemResponse>.Ok(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<List<GameItemResponse>>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<List<GameItemResponse>>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("name/{name}")]
         public async Task<IActionResult> Get(string name, CancellationToken cancellation)
         {
-            List<GameItemResponse> response = await _itemService.GetAsync(name, cancellation);
+            var response = await _itemService.GetAsync(name, cancellation);
 
-            return Ok(ApiResult<List<GameItemResponse>>.OK(response));
+            return Ok(ApiResult<List<GameItemResponse>>.Ok(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<List<GameItemResponse>>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<List<GameItemResponse>>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("hash/{name}")]
         public async Task<IActionResult> GetByHashName(string name, CancellationToken cancellation)
         {
-            List<GameItemResponse> response = await _itemService.GetByHashNameAsync(name, cancellation);
+            var response = await _itemService.GetByHashNameAsync(name, cancellation);
 
-            return Ok(ApiResult<List<GameItemResponse>>.OK(response));
+            return Ok(ApiResult<List<GameItemResponse>>.Ok(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<List<GameItemResponse>>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<List<GameItemResponse>>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
-        [HttpGet("game/{id}")]
+        [HttpGet("game/{id:guid}")]
         public async Task<IActionResult> GetByGameId(Guid id, CancellationToken cancellation)
         {
-            List<GameItemResponse> response = await _itemService.GetByGameIdAsync(id, cancellation);
+            var response = await _itemService.GetByGameIdAsync(id, cancellation);
 
-            return Ok(ApiResult<List<GameItemResponse>>.OK(response));
+            return Ok(ApiResult<List<GameItemResponse>>.Ok(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<List<GameItemQuality>>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<List<GameItemQuality>>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("qualities")]
         public async Task<IActionResult> GetQualities(CancellationToken cancellation)
         {
-            List<GameItemQuality> response = await _itemService.GetQualitiesAsync(cancellation);
+            var response = await _itemService.GetQualitiesAsync(cancellation);
 
-            return Ok(ApiResult<List<GameItemQuality>>.OK(response));
+            return Ok(ApiResult<List<GameItemQuality>>.Ok(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<List<GameItemRarity>>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<List<GameItemRarity>>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("rarities")]
         public async Task<IActionResult> GetRarities(CancellationToken cancellation)
         {
-            List<GameItemRarity> response = await _itemService.GetRaritiesAsync(cancellation);
+            var response = await _itemService.GetRaritiesAsync(cancellation);
 
-            return Ok(ApiResult<List<GameItemRarity>>.OK(response));
+            return Ok(ApiResult<List<GameItemRarity>>.Ok(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<List<GameItemType>>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<List<GameItemType>>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("types")]
         public async Task<IActionResult> GetTypes(CancellationToken cancellation)
         {
-            List<GameItemType> response = await _itemService.GetTypesAsync(cancellation);
+            var response = await _itemService.GetTypesAsync(cancellation);
 
-            return Ok(ApiResult<List<GameItemType>>.OK(response));
+            return Ok(ApiResult<List<GameItemType>>.Ok(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<List<GameItemResponse>>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<List<GameItemResponse>>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("quality/{name}")]
         public async Task<IActionResult> GetByQuality(string name, CancellationToken cancellation)
         {
-            List<GameItemResponse> response = await _itemService.GetByQualityAsync(name, cancellation);
+            var response = await _itemService.GetByQualityAsync(name, cancellation);
 
-            return Ok(ApiResult<List<GameItemResponse>>.OK(response));
+            return Ok(ApiResult<List<GameItemResponse>>.Ok(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<List<GameItemResponse>>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<List<GameItemResponse>>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("rarity/{name}")]
         public async Task<IActionResult> GetByRarity(string name, CancellationToken cancellation)
         {
-            List<GameItemResponse> response = await _itemService.GetByRarityAsync(name, cancellation);
+            var response = await _itemService.GetByRarityAsync(name, cancellation);
 
-            return Ok(ApiResult<List<GameItemResponse>>.OK(response));
+            return Ok(ApiResult<List<GameItemResponse>>.Ok(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<List<GameItemResponse>>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<List<GameItemResponse>>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("type/{name}")]
         public async Task<IActionResult> GetByType(string name, CancellationToken cancellation)
         {
-            List<GameItemResponse> response = await _itemService.GetByTypeAsync(name, cancellation);
+            var response = await _itemService.GetByTypeAsync(name, cancellation);
 
-            return Ok(ApiResult<List<GameItemResponse>>.OK(response));
+            return Ok(ApiResult<List<GameItemResponse>>.Ok(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<GameItemResponse>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<GameItemResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Owner)]
         [RequestSizeLimit(8388608)]
         [HttpPost]
         public async Task<IActionResult> Post(GameItemRequest request, CancellationToken cancellation)
         {
-            GameItemResponse response = await _itemService.CreateAsync(request, cancellation);
+            var response = await _itemService.CreateAsync(request, cancellation);
 
-            return Ok(ApiResult<GameItemResponse>.OK(response));
+            return Ok(ApiResult<GameItemResponse>.Ok(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<GameItemResponse>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<GameItemResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Owner)]
         [RequestSizeLimit(8388608)]
         [HttpPut]
         public async Task<IActionResult> Put(GameItemRequest request, CancellationToken cancellation)
         {
-            GameItemResponse response = await _itemService.UpdateAsync(request, cancellation);
+            var response = await _itemService.UpdateAsync(request, cancellation);
 
-            return Ok(ApiResult<GameItemResponse>.OK(response));
+            return Ok(ApiResult<GameItemResponse>.Ok(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<GameItemResponse>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<GameItemResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Owner)]
-        [HttpDelete("{id}")]
+        [HttpDelete("{id:guid}")]
         public async Task<IActionResult> Delete(Guid id, CancellationToken cancellation)
         {
-            GameItemResponse response = await _itemService.DeleteAsync(id, cancellation);
+            var response = await _itemService.DeleteAsync(id, cancellation);
 
-            return Ok(ApiResult<GameItemResponse>.OK(response));
+            return Ok(ApiResult<GameItemResponse>.Ok(response));
         }
     }
 }

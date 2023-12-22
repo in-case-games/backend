@@ -6,10 +6,10 @@ namespace Resources.DAL.Configurations
 {
     internal class GameItemRarityConfiguration : BaseEntityConfiguration<GameItemRarity>
     {
-        private readonly List<GameItemRarity> rarities = new() {
-            new() { Name = "white" }, new() { Name = "blue" },
-            new() { Name = "violet" }, new() { Name = "pink" },
-            new() { Name = "red" }, new() { Name = "gold" }
+        private readonly List<GameItemRarity> _rarities = new() {
+            new GameItemRarity { Name = "white" }, new GameItemRarity { Name = "blue" },
+            new GameItemRarity { Name = "violet" }, new GameItemRarity { Name = "pink" },
+            new GameItemRarity { Name = "red" }, new GameItemRarity { Name = "gold" }
         };
 
         public override void Configure(EntityTypeBuilder<GameItemRarity> builder)
@@ -25,8 +25,7 @@ namespace Resources.DAL.Configurations
                 .HasMaxLength(50)
                 .IsRequired();
 
-            foreach (var rarity in rarities)
-                builder.HasData(rarity);
+            foreach (var rarity in _rarities) builder.HasData(rarity);
         }
     }
 }

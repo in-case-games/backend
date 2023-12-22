@@ -6,9 +6,9 @@ namespace Withdraw.DAL.Configurations
 {
     internal class WithdrawStatusConfiguration : BaseEntityConfiguration<WithdrawStatus>
     {
-        private static readonly List<WithdrawStatus> statuses = new() {
-            new() { Name = "purchase" }, new() { Name = "transfer" }, 
-            new() { Name = "given" }, new() { Name = "cancel" }
+        private static readonly List<WithdrawStatus> Statuses = new() {
+            new WithdrawStatus { Name = "purchase" }, new WithdrawStatus { Name = "transfer" }, 
+            new WithdrawStatus { Name = "given" }, new WithdrawStatus { Name = "cancel" }
         };
 
         public override void Configure(EntityTypeBuilder<WithdrawStatus> builder)
@@ -22,8 +22,7 @@ namespace Withdraw.DAL.Configurations
             builder.Property(ws => ws.Name)
                 .IsRequired();
 
-            foreach(var stat in statuses)
-                builder.HasData(stat);
+            foreach(var stat in Statuses) builder.HasData(stat);
         }
     }
 }

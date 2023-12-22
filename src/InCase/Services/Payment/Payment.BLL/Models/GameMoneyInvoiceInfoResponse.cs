@@ -24,14 +24,15 @@ namespace Payment.BLL.Models
         [JsonPropertyName("rate")] public decimal Rate { get; set; } = 0M;
         [JsonPropertyName("rand")] public string? Rand { get; set; }
         [JsonPropertyName("reason")] public string? Reason { get; set; }
-        [JsonPropertyName("signature")] public string SignatureRSA { get; set; } = null!;
+        [JsonPropertyName("signature")] public string SignatureRsa { get; set; } = null!;
 
         public override string ToString()
         {
-            string rand = string.IsNullOrEmpty(Rand) ? "" : $"rand:{Rand}";
-            string reason = string.IsNullOrEmpty(Reason) ? "" : $"reason:{Reason}";
-            string comment = string.IsNullOrEmpty(Comment) ? "" : $"comment:{Comment}";
-            string rate = Rate == 0 ? "" : $"rate:{Rate}";
+            var rand = string.IsNullOrEmpty(Rand) ? "" : $"rand:{Rand};";
+            var reason = string.IsNullOrEmpty(Reason) ? "" : $"reason:{Reason};";
+            var comment = string.IsNullOrEmpty(Comment) ? "" : $"comment:{Comment};";
+            var rate = Rate == 0 ? "" : $"rate:{Rate};";
+
             return
                 $"state:{State};" +
                 $"project:{ProjectId};" +
@@ -43,15 +44,15 @@ namespace Payment.BLL.Models
                 $"user:{UserId};" +
                 $"type:{Type};" +
                 $"wallet:{Wallet};" +
-                $"{comment};" +
+                $"{comment}" +
                 $"time:{Time};" +
                 $"currency_project:{CurrencyProject};" +
                 $"currency_user:{CurrencyUser};" +
                 $"date_create:{DateCreate};" +
                 $"date_pay:{DatePay};" +
-                $"{rate};" +
-                $"{rand};" +
-                $"{reason};";
+                $"{rate}" +
+                $"{rand}" +
+                $"{reason}";
         }
     }
 }

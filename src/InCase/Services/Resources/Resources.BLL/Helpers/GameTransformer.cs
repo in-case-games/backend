@@ -13,14 +13,7 @@ namespace Resources.BLL.Helpers
                 Boxes = game.Boxes?.ToResponse(),
             };
 
-        public static List<GameResponse> ToResponse(this List<Game> games)
-        {
-            List<GameResponse> result = new();
-
-            foreach (var game in games)
-                result.Add(ToResponse(game));
-
-            return result;
-        }
+        public static List<GameResponse> ToResponse(this List<Game> games) =>
+            games.Select(ToResponse).ToList();
     }
 }

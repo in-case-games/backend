@@ -16,7 +16,7 @@ namespace Withdraw.BLL.Services
         private readonly ApplicationDbContext _context;
         private readonly IWithdrawItemService _withdrawService;
         private readonly BasePublisher _publisher;
-        private readonly NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
+        private readonly NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
 
         public UserInventoryService(
             ApplicationDbContext context, 
@@ -33,7 +33,7 @@ namespace Withdraw.BLL.Services
             if (!await _context.Users.AnyAsync(u => u.Id == userId,cancellation))
                 throw new NotFoundException("Пользователь не найден");
 
-            List<UserInventory> inventories = await _context.Inventories
+            var inventories = await _context.Inventories
                 .AsNoTracking()
                 .Where(ui => ui.UserId == userId)
                 .ToListAsync(cancellation);
@@ -43,12 +43,12 @@ namespace Withdraw.BLL.Services
 
         public async Task<List<UserInventoryResponse>> GetAsync(Guid userId, int count, CancellationToken cancellation = default)
         {
-            if (count <= 0 || count >= 10000)
+            if (count is <= 0 or >= 10000)
                 throw new BadRequestException("Размер выборки должен быть в пределе 1-10000");
             if (!await _context.Users.AnyAsync(u => u.Id == userId, cancellation))
                 throw new NotFoundException("Пользователь не найден");
 
-            List<UserInventory> inventories = await _context.Inventories
+            var inventories = await _context.Inventories
                 .AsNoTracking()
                 .Where(ui => ui.UserId == userId)
                 .OrderByDescending(ui => ui.Date)
@@ -58,13 +58,14 @@ namespace Withdraw.BLL.Services
             return inventories.ToResponse();
         }
 
-        public async Task<UserInventory?> GetByConsumerAsync(Guid id, CancellationToken cancellation = default) => await _context.Inventories
+        public async Task<UserInventory?> GetByConsumerAsync(Guid id, CancellationToken cancellation = default) => 
+            await _context.Inventories
             .AsNoTracking()
             .FirstOrDefaultAsync(ui => ui.Id == id, cancellation);
 
         public async Task<UserInventoryResponse> GetByIdAsync(Guid id, CancellationToken cancellation = default)
         {
-            UserInventory inventory = await _context.Inventories
+            var inventory = await _context.Inventories
                 .AsNoTracking()
                 .FirstOrDefaultAsync(ui => ui.Id == id, cancellation) ?? 
                 throw new NotFoundException("Инвентарь не найден");
@@ -79,7 +80,14 @@ namespace Withdraw.BLL.Services
             if (!await _context.Users.AnyAsync(u => u.Id == template.UserId, cancellation))
                 throw new NotFoundException("Пользователь не найден");
 
-            UserInventory inventory = template.ToEntity();
+            var inventory = new UserInventory
+            {
+                Id = template.Id,
+                Date = template.Date,
+                FixedCost = template.FixedCost,
+                ItemId = template.ItemId,
+                UserId = template.UserId
+            };
 
             await _context.Inventories.AddAsync(inventory, cancellation);
             await _context.SaveChangesAsync(cancellation);
@@ -111,7 +119,7 @@ namespace Withdraw.BLL.Services
             if (price >= itemCost * 0.9M && price <= itemCost * 1.1M)
                 throw new ConflictException("Товар может быть обменен только в случае нестабильности цены");
 
-            List<UserInventory> inventories = new();
+            var inventories = new List<UserInventory>();
 
             decimal totalItemsCost = 0;
 
@@ -138,8 +146,7 @@ namespace Withdraw.BLL.Services
 
             var differenceCost = inventory.FixedCost - totalItemsCost;
 
-            if (differenceCost < 0)
-                throw new BadRequestException("Стоимость товара при обмене не может быть выше");
+            if (differenceCost < 0) throw new BadRequestException("Стоимость товара при обмене не может быть выше");
 
             _context.Inventories.Remove(inventory);
             await _context.Inventories.AddRangeAsync(inventories, cancellation);
@@ -153,7 +160,7 @@ namespace Withdraw.BLL.Services
 
             await _publisher.SendAsync(new SiteStatisticsAdminTemplate { FundsUsersInventories = -differenceCost * request.Items.Count }, cancellation);
 
-            logger.Log(NLog.LogLevel.Info, "Exchanged: UserId - {0}," +
+            _logger.Log(NLog.LogLevel.Info, "Exchanged: UserId - {0}," +
                                            " GameItemId - {1}, Game - {2}",
                                            inventory.UserId, inventory.ItemId,
                                            inventory.Item?.Game?.Name);
@@ -169,13 +176,13 @@ namespace Withdraw.BLL.Services
 
             var inventory = await _context.Inventories
                 .AsNoTracking()
+                .Include(userInventory => userInventory.Item)
+                .ThenInclude(gameItem => gameItem!.Game)
                 .FirstOrDefaultAsync(ui => ui.Id == id && ui.UserId == userId, cancellation) ??
                 throw new NotFoundException("Предмет не найден в инвентаре");
 
-            logger.Log(NLog.LogLevel.Info, "Selled: UserId - {0}," +
-                                           " GameItemId - {1}, Game - {2}",
-                                           user.Id, inventory.ItemId,
-                                           inventory.Item?.Game?.Name);
+            _logger.Log(NLog.LogLevel.Info, "Selled: UserId - {0}, GameItemId - {1}, Game - {2}",
+                user.Id, inventory.ItemId, inventory.Item?.Game?.Name);
 
             _context.Inventories.Remove(inventory);
             await _context.SaveChangesAsync(cancellation);
@@ -203,7 +210,7 @@ namespace Withdraw.BLL.Services
 
             var inventory = inventories.MinBy(ui => ui.Date)!;
 
-            logger.Log(NLog.LogLevel.Info, "SelledLast: UserId - {0}," +
+            _logger.Log(NLog.LogLevel.Info, "SelledLast: UserId - {0}," +
                                            " GameItemId - {1}, Game - {2}",
                                            user.Id, inventory.ItemId,
                                            inventory.Item?.Game?.Name);

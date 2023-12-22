@@ -2,6 +2,6 @@
 {
     public class HashOfDataForDepositResponse
     {
-        public string HMAC { get; set; } = null!;
+        public string Hmac { get; set; } = null!;
     }
 }

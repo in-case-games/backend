@@ -1,12 +1,11 @@
-using NLog;
 using NLog.Extensions.Logging;
 using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
-var policyName = "CorsPolicy";
+const string policyName = "CorsPolicy";
 
-IConfiguration configuration = new ConfigurationBuilder()
+var configuration = new ConfigurationBuilder()
     .AddJsonFile("ocelot.json")
     .AddJsonFile("appsettings.Development.json")
     .Build();

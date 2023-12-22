@@ -18,81 +18,74 @@ namespace Promocode.API.Controllers
             _promocodeService = promocodeService;
         }
 
-        [ProducesResponseType(typeof(ApiResult<List<PromocodeResponse>>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<List<PromocodeResponse>>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
         [HttpGet]
         public async Task<IActionResult> Get(CancellationToken cancellation)
         {
-            List<PromocodeResponse> response = await _promocodeService.GetAsync(cancellation);
+            var response = await _promocodeService.GetAsync(cancellation);
 
-            return Ok(ApiResult<List<PromocodeResponse>>.OK(response));
+            return Ok(ApiResult<List<PromocodeResponse>>.Ok(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<List<PromocodeResponse>>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<List<PromocodeResponse>>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
         [HttpGet("empty")]
         public async Task<IActionResult> GetEmpty(CancellationToken cancellation)
         {
-            List<PromocodeResponse> response = await _promocodeService.GetEmptyPromocodesAsync(cancellation);
+            var response = await _promocodeService.GetEmptyPromocodesAsync(cancellation);
 
-            return Ok(ApiResult<List<PromocodeResponse>>.OK(response));
+            return Ok(ApiResult<List<PromocodeResponse>>.Ok(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<PromocodeResponse>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<PromocodeResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet("name/{name}")]
         public async Task<IActionResult> Get(string name, CancellationToken cancellation)
         {
-            PromocodeResponse response = await _promocodeService.GetAsync(name, cancellation);
+            var response = await _promocodeService.GetAsync(name, cancellation);
 
-            return Ok(ApiResult<PromocodeResponse>.OK(response));
+            return Ok(ApiResult<PromocodeResponse>.Ok(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<List<PromocodeTypeResponse>>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<List<PromocodeTypeResponse>>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet("types")]
         public async Task<IActionResult> GetTypes(CancellationToken cancellation)
         {
-            List<PromocodeTypeResponse> response = await _promocodeService.GetTypesAsync(cancellation);
+            var response = await _promocodeService.GetTypesAsync(cancellation);
 
-            return Ok(ApiResult<List<PromocodeTypeResponse>>.OK(response));
+            return Ok(ApiResult<List<PromocodeTypeResponse>>.Ok(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<PromocodeResponse>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<PromocodeResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
         [HttpPost]
         public async Task<IActionResult> Post(PromocodeRequest request, CancellationToken cancellation)
         {
-            PromocodeResponse response = await _promocodeService.CreateAsync(request, cancellation);
+            var response = await _promocodeService.CreateAsync(request, cancellation);
 
-            return Ok(ApiResult<PromocodeResponse>.OK(response));
+            return Ok(ApiResult<PromocodeResponse>.Ok(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<PromocodeResponse>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<PromocodeResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
         [HttpPut]
         public async Task<IActionResult> Put(PromocodeRequest request, CancellationToken cancellation)
         {
-            PromocodeResponse response = await _promocodeService.UpdateAsync(request, cancellation);
+            var response = await _promocodeService.UpdateAsync(request, cancellation);
 
-            return Ok(ApiResult<PromocodeResponse>.OK(response));
+            return Ok(ApiResult<PromocodeResponse>.Ok(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<PromocodeResponse>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<PromocodeResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
-        [HttpDelete("{id}")]
+        [HttpDelete("{id:guid}")]
         public async Task<IActionResult> Delete(Guid id, CancellationToken cancellation)
         {
-            PromocodeResponse response = await _promocodeService.DeleteAsync(id, cancellation);
+            var response = await _promocodeService.DeleteAsync(id, cancellation);
 
-            return Ok(ApiResult<PromocodeResponse>.OK(response));
+            return Ok(ApiResult<PromocodeResponse>.Ok(response));
         }
     }
 }

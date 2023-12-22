@@ -6,10 +6,10 @@ namespace Resources.DAL.Configurations
 {
     internal class GameItemQualityConfiguration : BaseEntityConfiguration<GameItemQuality>
     {
-        private readonly List<GameItemQuality> qualities = new() {
-            new() { Name = "none" }, new() { Name = "battle scarred" },
-            new() { Name = "well worn" }, new() { Name = "field tested" },
-            new() { Name = "minimal wear" }, new() { Name = "factory new" },
+        private readonly List<GameItemQuality> _qualities = new() {
+            new GameItemQuality { Name = "none" }, new GameItemQuality { Name = "battle scarred" },
+            new GameItemQuality { Name = "well worn" }, new GameItemQuality { Name = "field tested" },
+            new GameItemQuality { Name = "minimal wear" }, new GameItemQuality { Name = "factory new" },
         };
 
         public override void Configure(EntityTypeBuilder<GameItemQuality> builder)
@@ -25,8 +25,7 @@ namespace Resources.DAL.Configurations
                 .HasMaxLength(50)
                 .IsRequired();
 
-            foreach (var quality in qualities)
-                builder.HasData(quality);
+            foreach (var quality in _qualities) builder.HasData(quality);
         }
     }
 }

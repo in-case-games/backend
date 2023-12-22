@@ -19,8 +19,7 @@ namespace Authentication.API.Controllers
             _authenticationService = authenticationService;
         }
 
-        [ProducesResponseType(typeof(ApiResult<string>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<string>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpPost("sign-in")]
         public async Task<IActionResult> SignIn(UserRequest request, CancellationToken cancellationToken)
@@ -30,8 +29,7 @@ namespace Authentication.API.Controllers
             return Ok(ApiResult<string>.SentEmail());
         }
 
-        [ProducesResponseType(typeof(ApiResult<string>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<string>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpPost("sign-up")]
         public async Task<IActionResult> SignUp(UserRequest request, CancellationToken cancellationToken)
@@ -41,15 +39,14 @@ namespace Authentication.API.Controllers
             return Ok(ApiResult<string>.SentEmail());
         }
 
-        [ProducesResponseType(typeof(ApiResult<TokensResponse>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<TokensResponse>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("refresh")]
         public async Task<IActionResult> RefreshTokens(string token, CancellationToken cancellationToken)
         {
-            TokensResponse response = await _authenticationService.RefreshTokensAsync(token, cancellationToken);
+            var response = await _authenticationService.RefreshTokensAsync(token, cancellationToken);
 
-            return Ok(ApiResult<TokensResponse>.OK(response));
+            return Ok(ApiResult<TokensResponse>.Ok(response));
         }
     }
 }

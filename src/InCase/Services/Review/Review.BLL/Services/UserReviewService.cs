@@ -6,7 +6,6 @@ using Review.BLL.Interfaces;
 using Review.BLL.MassTransit;
 using Review.BLL.Models;
 using Review.DAL.Data;
-using Review.DAL.Entities;
 
 namespace Review.BLL.Services
 {
@@ -23,7 +22,7 @@ namespace Review.BLL.Services
 
         public async Task<UserReviewResponse> GetAsync(Guid id, bool isOnlyApproved, CancellationToken cancellation = default)
         {
-            UserReview review = await _context.Reviews
+            var review = await _context.Reviews
                 .Include(review => review.Images)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(ur => ur.Id == id, cancellation) ??
@@ -36,41 +35,37 @@ namespace Review.BLL.Services
 
         public async Task<List<UserReviewResponse>> GetAsync(bool isOnlyApproved, CancellationToken cancellation = default)
         {
-            List<UserReview> reviews = await _context.Reviews
+            var reviews = await _context.Reviews
                 .Include(review => review.Images)
                 .AsNoTracking()
                 .ToListAsync(cancellation);
 
-            if(isOnlyApproved)
-                reviews = reviews.Where(ur => ur.IsApproved).ToList();
+            if(isOnlyApproved) reviews = reviews.Where(ur => ur.IsApproved).ToList();
 
             return reviews.ToResponse();
         }
 
         public async Task<List<UserReviewResponse>> GetAsync(bool isOnlyApproved, int count, CancellationToken cancellation = default)
         {
-            List<UserReview> reviews = await _context.Reviews
+            var reviews = await _context.Reviews
                 .Include(review => review.Images)
                 .AsNoTracking()
-
                 .ToListAsync(cancellation);
 
-            if (isOnlyApproved)
-                reviews = reviews.Where(ur => ur.IsApproved).Take(count).ToList();
+            if (isOnlyApproved) reviews = reviews.Where(ur => ur.IsApproved).Take(count).ToList();
 
             return reviews.ToResponse();
         }
 
         public async Task<List<UserReviewResponse>> GetByUserIdAsync(Guid userId, bool isOnlyApproved, CancellationToken cancellation = default)
         {
-            List<UserReview> reviews = await _context.Reviews
+            var reviews = await _context.Reviews
                 .Include(review => review.Images)
                 .AsNoTracking()
                 .Where(ur => ur.UserId == userId)
                 .ToListAsync(cancellation);
 
-            if (isOnlyApproved)
-                reviews = reviews.Where(ur => ur.IsApproved).ToList();
+            if (isOnlyApproved) reviews = reviews.Where(ur => ur.IsApproved).ToList();
 
             return reviews.ToResponse();
         }
@@ -84,8 +79,7 @@ namespace Review.BLL.Services
             if (!await _context.User.AnyAsync(u => u.Id == request.UserId, cancellation))
                 throw new NotFoundException("Пользователь не найден");
 
-            UserReview review = request.ToEntity(isNewGuid: true);
-            SiteStatisticsTemplate template = new() { Reviews = 1 };
+            var review = request.ToEntity(isNewGuid: true);
 
             review.CreationDate = DateTime.UtcNow;
             review.IsApproved = false;
@@ -95,14 +89,14 @@ namespace Review.BLL.Services
             await _context.Reviews.AddAsync(review, cancellation);
             await _context.SaveChangesAsync(cancellation);
 
-            await _publisher.SendAsync(template, cancellation);
+            await _publisher.SendAsync(new SiteStatisticsTemplate { Reviews = 1 }, cancellation);
 
             return review.ToResponse();
         }
 
         public async Task<UserReviewResponse> DeniedReviewAsync(Guid id, CancellationToken cancellation = default)
         {
-            UserReview review = await _context.Reviews
+            var review = await _context.Reviews
                 .Include(review => review.Images)
                 .FirstOrDefaultAsync(ur => ur.Id == id, cancellation) ??
                 throw new NotFoundException("Отзыв не найден");
@@ -116,7 +110,7 @@ namespace Review.BLL.Services
 
         public async Task<UserReviewResponse> ApproveReviewAsync(Guid id, CancellationToken cancellation = default)
         {
-            UserReview review = await _context.Reviews
+            var review = await _context.Reviews
                 .Include(review => review.Images)
                 .FirstOrDefaultAsync(ur => ur.Id == id, cancellation) ??
                 throw new NotFoundException("Отзыв не найден");
@@ -130,16 +124,16 @@ namespace Review.BLL.Services
 
         public async Task<UserReviewResponse> UpdateAsync(UserReviewRequest request, CancellationToken cancellation = default)
         {
-            if (request.Score > 5 || request.Score < 1)
+            if (request.Score is > 5 or < 1)
                 throw new BadRequestException("Оценка отзыва должна быть больше 1 и меньше 5");
             if (!await _context.User.AnyAsync(u => u.Id == request.UserId, cancellation))
                 throw new NotFoundException("Пользователь не найден");
 
-            UserReview review = request.ToEntity(isNewGuid: false);
+            var review = request.ToEntity(isNewGuid: false);
 
-            UserReview reviewOld = await _context.Reviews
+            var reviewOld = await _context.Reviews
                 .Include(ur => ur.Images)
-                .FirstOrDefaultAsync(ur => ur.Id == review.Id) ??
+                .FirstOrDefaultAsync(ur => ur.Id == review.Id, cancellationToken: cancellation) ??
                 throw new NotFoundException("Отзыв не найден");
 
             review.CreationDate = reviewOld.CreationDate;
@@ -156,21 +150,18 @@ namespace Review.BLL.Services
 
         public async Task<UserReviewResponse> DeleteAsync(Guid userId, Guid id, CancellationToken cancellation = default)
         {
-            UserReview review = await _context.Reviews
+            var review = await _context.Reviews
                 .Include(ur => ur.Images)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(ur => ur.Id == id, cancellation) ??
                 throw new NotFoundException("Отзыв не найден");
 
-            SiteStatisticsTemplate template = new() { Reviews = -1 };
-
-            if (review.UserId != userId)
-                throw new ForbiddenException("Доступ к отзыву только у создателя");
+            if (review.UserId != userId) throw new ForbiddenException("Доступ к отзыву только у создателя");
 
             _context.Reviews.Remove(review);
             await _context.SaveChangesAsync(cancellation);
 
-            await _publisher.SendAsync(template, cancellation);
+            await _publisher.SendAsync(new SiteStatisticsTemplate { Reviews = -1 }, cancellation);
 
             FileService.RemoveFolder(@$"reviews/{id}/");
 
@@ -179,18 +170,16 @@ namespace Review.BLL.Services
 
         public async Task<UserReviewResponse> DeleteAsync(Guid id, CancellationToken cancellation = default)
         {
-            UserReview review = await _context.Reviews
+            var review = await _context.Reviews
                 .Include(ur => ur.Images)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(ur => ur.Id == id, cancellation) ??
                 throw new NotFoundException("Отзыв не найден");
 
-            SiteStatisticsTemplate template = new() { Reviews = -1 };
-
             _context.Reviews.Remove(review);
             await _context.SaveChangesAsync(cancellation);
 
-            await _publisher.SendAsync(template, cancellation);
+            await _publisher.SendAsync(new SiteStatisticsTemplate { Reviews = -1 }, cancellation);
 
             FileService.RemoveFolder(@$"reviews/{id}/");
 
