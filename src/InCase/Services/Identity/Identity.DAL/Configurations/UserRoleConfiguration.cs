@@ -6,9 +6,9 @@ namespace Identity.DAL.Configurations
 {
     internal class UserRoleConfiguration : BaseEntityConfiguration<UserRole>
     {
-        private readonly List<UserRole> roles = new() {
-            new() { Name = "user" }, new() { Name = "admin" }, 
-            new() { Name = "owner" }, new() { Name = "bot" },
+        private readonly List<UserRole> _roles = new() {
+            new UserRole { Name = "user" }, new UserRole { Name = "admin" }, 
+            new UserRole { Name = "owner" }, new UserRole { Name = "bot" },
         };
 
         public override void Configure(EntityTypeBuilder<UserRole> builder)
@@ -23,8 +23,7 @@ namespace Identity.DAL.Configurations
                 .HasMaxLength(15)
                 .IsRequired();
 
-            foreach(var role in roles) 
-                builder.HasData(role);
+            foreach(var role in _roles) builder.HasData(role);
         }
     }
 }

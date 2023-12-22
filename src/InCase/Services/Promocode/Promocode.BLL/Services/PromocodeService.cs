@@ -4,7 +4,6 @@ using Promocode.BLL.Helpers;
 using Promocode.BLL.Interfaces;
 using Promocode.BLL.Models;
 using Promocode.DAL.Data;
-using Promocode.DAL.Entities;
 
 namespace Promocode.BLL.Services
 {
@@ -19,7 +18,7 @@ namespace Promocode.BLL.Services
 
         public async Task<List<PromocodeResponse>> GetAsync(CancellationToken cancellation = default)
         {
-            List<PromocodeEntity> promocodes = await _context.Promocodes
+            var promocodes = await _context.Promocodes
                 .Include(pe => pe.Type)
                 .AsNoTracking()
                 .ToListAsync(cancellation);
@@ -29,7 +28,7 @@ namespace Promocode.BLL.Services
 
         public async Task<PromocodeResponse> GetAsync(string name, CancellationToken cancellation = default)
         {
-            PromocodeEntity promocode = await _context.Promocodes
+            var promocode = await _context.Promocodes
                 .Include(pe => pe.Type)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(pe => pe.Name == name, cancellation) ??
@@ -40,7 +39,7 @@ namespace Promocode.BLL.Services
 
         public async Task<List<PromocodeResponse>> GetEmptyPromocodesAsync(CancellationToken cancellation = default)
         {
-            List<PromocodeEntity> promocodes = await _context.Promocodes
+            var promocodes = await _context.Promocodes
                 .Include(pe => pe.Type)
                 .AsNoTracking()
                 .Where(pe => pe.NumberActivations <= 0)
@@ -51,7 +50,7 @@ namespace Promocode.BLL.Services
 
         public async Task<List<PromocodeTypeResponse>> GetTypesAsync(CancellationToken cancellation = default)
         {
-            List<PromocodeType> types = await _context.PromocodesTypes
+            var types = await _context.PromocodesTypes
                 .AsNoTracking()
                 .ToListAsync(cancellation);
 
@@ -65,12 +64,12 @@ namespace Promocode.BLL.Services
             if (await _context.Promocodes.AnyAsync(pe => pe.Name == request.Name, cancellation))
                 throw new ConflictException("Имя промокода уже используется");
 
-            PromocodeType type = await _context.PromocodesTypes
+            var type = await _context.PromocodesTypes
                 .AsNoTracking()
                 .FirstOrDefaultAsync(pt => pt.Id == request.TypeId, cancellation) ?? 
                 throw new NotFoundException("Тип промокода не найден");
 
-            PromocodeEntity entity = request.ToEntity(true);
+            var entity = request.ToEntity(true);
 
             await _context.Promocodes.AddAsync(entity, cancellation);
             await _context.SaveChangesAsync(cancellation);
@@ -84,21 +83,20 @@ namespace Promocode.BLL.Services
         {
             ValidationService.IsPromocode(request);
 
-            bool isExist = await _context.Promocodes
+            var isExist = await _context.Promocodes
                 .AsNoTracking()
                 .AnyAsync(pe => pe.Name == request.Name && pe.Id != request.Id, cancellation);
 
-            if (isExist)
-                throw new ConflictException("Имя промокода уже занято");
+            if (isExist) throw new ConflictException("Имя промокода уже занято");
             if (!await _context.Promocodes.AnyAsync(pe => pe.Id == request.Id, cancellation))
                 throw new NotFoundException("Промокод не найден");
 
-            PromocodeType type = await _context.PromocodesTypes
+            var type = await _context.PromocodesTypes
                 .AsNoTracking()
                 .FirstOrDefaultAsync(pt => pt.Id == request.TypeId, cancellation) ??
                 throw new NotFoundException("Тип промокода не найден");
 
-            PromocodeEntity promocode = request.ToEntity();
+            var promocode = request.ToEntity();
 
             _context.Promocodes.Update(promocode);
             await _context.SaveChangesAsync(cancellation);
@@ -110,7 +108,7 @@ namespace Promocode.BLL.Services
 
         public async Task<PromocodeResponse> DeleteAsync(Guid id, CancellationToken cancellation = default)
         {
-            PromocodeEntity promocode = await _context.Promocodes
+            var promocode = await _context.Promocodes
                 .Include(pe => pe.Type)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(pe => pe.Id == id, cancellation) ??

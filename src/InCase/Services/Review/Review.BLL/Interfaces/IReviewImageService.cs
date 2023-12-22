@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Review.BLL.Models;
+﻿using Review.BLL.Models;
 
 namespace Review.BLL.Interfaces
 {

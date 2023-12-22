@@ -1,11 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
-
-namespace EmailSender.API.Common
+﻿namespace EmailSender.API.Common
 {
     public class ApiResult<T>
     {
-        private const string SENT_EMAIL = "Сообщение отправлено на email почту";
-
         public int Code { get; set; }
         public T Data { get; set; }
 
@@ -15,13 +11,6 @@ namespace EmailSender.API.Common
             Data = data;
         }
 
-        public static ApiResult<T> OK(T data) =>
-            new(0, data);
-
-        public static ApiResult<T> Accepted(T data) =>
-            new(1, data);
-
-        public static ApiResult<string> SentEmail(string message = SENT_EMAIL) =>
-            new(2, message);
+        public static ApiResult<T> Ok(T data) => new(0, data);
     }
 }

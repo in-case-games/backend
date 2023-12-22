@@ -1,10 +1,6 @@
-﻿using Game.BLL.Helpers;
-using Game.BLL.Interfaces;
-using Game.DAL.Data;
-using Game.DAL.Entities;
+﻿using Game.BLL.Interfaces;
 using Infrastructure.MassTransit.User;
 using MassTransit;
-using Microsoft.EntityFrameworkCore;
 
 namespace Game.BLL.MassTransit.Consumers
 {
@@ -19,16 +15,12 @@ namespace Game.BLL.MassTransit.Consumers
 
         public async Task Consume(ConsumeContext<UserPromocodeTemplate> context)
         {
-            var template = context.Message;
-
-            if (template.Type?.Name == "box")
+            if (context.Message.Type?.Name == "box")
             {
-                UserPromocode? userPromocode = await _promocodeService.GetAsync(template.Id);
+                var promo = await _promocodeService.GetAsync(context.Message.Id);
 
-                if (userPromocode is null)
-                    await _promocodeService.CreateAsync(template);
-                else
-                    await _promocodeService.UpdateAsync(template);
+                if (promo is null) await _promocodeService.CreateAsync(context.Message);
+                else await _promocodeService.UpdateAsync(context.Message);
             }
         }
     }

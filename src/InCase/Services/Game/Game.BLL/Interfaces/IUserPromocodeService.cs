@@ -1,5 +1,4 @@
-﻿using Game.BLL.Models;
-using Game.DAL.Entities;
+﻿using Game.DAL.Entities;
 using Infrastructure.MassTransit.User;
 
 namespace Game.BLL.Interfaces
@@ -8,6 +7,6 @@ namespace Game.BLL.Interfaces
     {
         public Task<UserPromocode?> GetAsync(Guid id, CancellationToken cancellation = default);
         public Task CreateAsync(UserPromocodeTemplate template, CancellationToken cancellation = default);
-        public Task UpdateAsync(UserPromocodeTemplate rtemplate, CancellationToken cancellation = default);
+        public Task UpdateAsync(UserPromocodeTemplate template, CancellationToken cancellation = default);
     }
 }

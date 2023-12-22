@@ -1,6 +1,4 @@
-﻿using System.Text.Json.Serialization;
-
-namespace Resources.BLL.Models
+﻿namespace Resources.BLL.Models
 {
     public class ItemCostResponse
     {

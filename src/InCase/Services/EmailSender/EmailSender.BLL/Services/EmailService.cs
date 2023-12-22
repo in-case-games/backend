@@ -25,18 +25,14 @@ namespace EmailSender.BLL.Services
 
         public async Task SendToEmailAsync(EmailTemplate template, CancellationToken cancellationToken = default)
         {
-            using var client = new SmtpClient();
-
-            string body = CreateBodyLetter(template);
-
-            string email = template.Email;
             var emailMessage = new MimeMessage();
 
             emailMessage.From.Add(new MailboxAddress("Администрация сайта", _smtpEmail));
-            emailMessage.To.Add(new MailboxAddress(email, email));
+            emailMessage.To.Add(new MailboxAddress(template.Email, template.Email));
             emailMessage.Subject = template.Subject;
-            emailMessage.Body = new TextPart("html") { Text = body };
+            emailMessage.Body = new TextPart("html") { Text = CreateBodyLetter(template) };
 
+            using var client = new SmtpClient();
             await client.ConnectAsync(_host, _port, true, cancellationToken);
             client.AuthenticationMechanisms.Remove("XOAUTH2");
             await client.AuthenticateAsync(_smtpEmail, _smtpPassword, cancellationToken);
@@ -46,14 +42,16 @@ namespace EmailSender.BLL.Services
                 await client.SendAsync(emailMessage, cancellationToken);
             }
             catch (SmtpCommandException) { }
-            catch (Exception) { }
+            catch (Exception)
+            {
+                // ignored
+            }
         }
 
         private static string ConvertToBodyTemplate(EmailTemplate template)
         {
-            string buttonTemplate = "";
-            string bannerTemplate = "";
-            string bannerTableTemplates = "";
+            var buttonTemplate = "";
+            var bannerTemplate = "";
 
             template.Body.Description += "<br>С уважением команда InCase.";
 
@@ -63,8 +61,7 @@ namespace EmailSender.BLL.Services
             if (!string.IsNullOrEmpty(template.Body.ButtonLink))
                 buttonTemplate = $"<div style=\"padding-bottom:30px;text-align:center\"><a href=\"{template.Body.ButtonLink}\" style=\"text-decoration: none; margin: 30px 0; cursor: pointer; background-color: transparent; font-family: 'Trebuchet MS',sans-serif; font-weight: bold; padding: 8px 85px; font-size: 16px; color: #FD7E21; border: 2px solid #FD7E21; border-radius: 8px;\" target=\"_blank\" data-saferedirecturl=\"ya.ru\">{template.Body.ButtonText}</a></div>";
 
-            foreach (var banner in template.BannerTemplates)
-                bannerTableTemplates += $"<table align=\"center\" style=\"padding:10px;\"><tbody><tr><td><a href=\"{banner.Href}\"><img align=\"center\" src=\"{banner.ImageUri}\" width=\"350\" height=\"110\" alt=\"icon\" aria-hidden=\"true\" alt=\"InCase\" data-bit=\"iit\"/></a></td></tr></tbody></table>";
+            var bannerTableTemplates = template.BannerTemplates.Aggregate("", (current, banner) => current + $"<table align=\"center\" style=\"padding:10px;\"><tbody><tr><td><a href=\"{banner.Href}\"><img align=\"center\" src=\"{banner.ImageUri}\" width=\"350\" height=\"110\" alt=\"icon\" aria-hidden=\"true\" alt=\"InCase\" data-bit=\"iit\"/></a></td></tr></tbody></table>");
 
             if (!string.IsNullOrEmpty(bannerTableTemplates))
                 bannerTemplate = $"<div style=\"text-align:left;\"><hr style=\"border: 1px solid #FD7E21; margin: 10px 50px;\">{bannerTableTemplates}</div>";
@@ -77,22 +74,21 @@ namespace EmailSender.BLL.Services
             if (!string.IsNullOrEmpty(template.Body.ButtonLink))
                 template.Body.ButtonLink = _requestUrl + template.Body.ButtonLink;
 
-            if (string.IsNullOrEmpty(template.Header.Title))
+            if (!string.IsNullOrEmpty(template.Header.Title)) return ConvertToBodyTemplate(template);
+
+            var headerWords = template.Subject.Split(" ").ToList();
+
+            template.Header.Title = headerWords[0];
+            headerWords.Remove(headerWords[0]);
+
+            if (headerWords.Count >= 2)
             {
-                List<string> headerWords = template.Subject.Split(" ").ToList();
-
-                template.Header.Title = headerWords[0];
+                template.Header.Title += " " + headerWords[0];
                 headerWords.Remove(headerWords[0]);
-
-                if (headerWords.Count >= 2)
-                {
-                    template.Header.Title += " " + headerWords[0];
-                    headerWords.Remove(headerWords[0]);
-                }
-
-                foreach (var word in headerWords)
-                    template.Header.Subtitle += word + " ";
             }
+
+            foreach (var word in headerWords)
+                template.Header.Subtitle += word + " ";
 
             return ConvertToBodyTemplate(template);
         }

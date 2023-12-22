@@ -14,25 +14,7 @@ namespace Resources.BLL.Helpers
                 Group = group.Group,
             };
 
-        public static List<LootBoxGroupResponse> ToResponse(this List<LootBoxGroup> groups)
-        {
-            List<LootBoxGroupResponse> response = new();
-
-            foreach (var group in groups)
-                response.Add(ToResponse(group));
-
-            return response;
-        }
-
-        public static LootBoxGroup ToEntity(
-            this LootBoxGroupRequest request,
-            bool isNewGuid = false) =>
-            new()
-            {
-                Id = isNewGuid ? Guid.NewGuid() : request.Id,
-                BoxId = request.BoxId,
-                GameId = request.GameId,
-                GroupId = request.GroupId,
-            };
+        public static List<LootBoxGroupResponse> ToResponse(this List<LootBoxGroup> groups) =>
+            groups.Select(ToResponse).ToList();
     }
 }

@@ -1,5 +1,4 @@
 ﻿using EmailSender.BLL.Exceptions;
-using EmailSender.BLL.Helpers;
 using EmailSender.BLL.Interfaces;
 using EmailSender.DAL.Data;
 using EmailSender.DAL.Entities;
@@ -17,12 +16,14 @@ namespace EmailSender.BLL.Services
             _context = context;
         }
 
-        public async Task<User?> GetAsync(Guid id, CancellationToken cancellationToken = default) => await _context.Users
+        public async Task<User?> GetAsync(Guid id, CancellationToken cancellationToken = default) => 
+            await _context.Users
             .Include(u => u.AdditionalInfo)
             .AsNoTracking()
             .FirstOrDefaultAsync(u => u.Id == id, cancellationToken);
 
-        public async Task<User?> GetAsync(string email, CancellationToken cancellationToken = default) => await _context.Users
+        public async Task<User?> GetAsync(string email, CancellationToken cancellationToken = default) => 
+            await _context.Users
             .Include(u => u.AdditionalInfo)
             .AsNoTracking()
             .FirstOrDefaultAsync(u => u.Email == email, cancellationToken);
@@ -32,9 +33,13 @@ namespace EmailSender.BLL.Services
             if (await _context.Users.AnyAsync(u => u.Id == template.Id || u.Email == template.Email, cancellationToken))
                 throw new ForbiddenException("Пользователь существует");
 
-            User user = template.ToEntity();
+            var user = new User
+            {
+                Id = template.Id,
+                Email = template.Email,
+            };
 
-            UserAdditionalInfo info = new()
+            var info = new UserAdditionalInfo
             {
                 IsNotifyEmail = true,
                 UserId = template.Id,
@@ -47,7 +52,7 @@ namespace EmailSender.BLL.Services
 
         public async Task UpdateAsync(UserTemplate template, CancellationToken cancellationToken = default)
         {
-            User user = await _context.Users
+            var user = await _context.Users
                 .FirstOrDefaultAsync(u => u.Id == template.Id, cancellationToken) ??
                 throw new NotFoundException("Пользователь не найден");
 
@@ -58,7 +63,7 @@ namespace EmailSender.BLL.Services
 
         public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            User user = await _context.Users
+            var user = await _context.Users
                 .FirstOrDefaultAsync(u => u.Id == id, cancellationToken) ??
                 throw new NotFoundException("Пользователь не найден");
 

@@ -1,5 +1,4 @@
 using Identity.BLL.Models;
-using Microsoft.AspNetCore.Http;
 
 namespace Identity.BLL.Interfaces
 {

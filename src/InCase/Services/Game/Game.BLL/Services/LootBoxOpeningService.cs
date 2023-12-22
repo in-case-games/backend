@@ -1,5 +1,4 @@
 ﻿using Game.BLL.Exceptions;
-using Game.BLL.Helpers;
 using Game.BLL.Interfaces;
 using Game.BLL.MassTransit;
 using Game.BLL.Models;
@@ -40,13 +39,14 @@ namespace Game.BLL.Services
                 .AsNoTracking()
                 .FirstOrDefaultAsync(uhp => uhp.UserId == userId, cancellation);
 
-            if (box.IsLocked)
-                throw new ForbiddenException("Кейс заблокирован");
-            if (info.Balance < box.Cost)
-                throw new PaymentRequiredException("Недостаточно средств");
+            if (box.IsLocked) throw new ForbiddenException("Кейс заблокирован");
+            if (info.Balance < box.Cost) throw new PaymentRequiredException("Недостаточно средств");
             if (promo is not null)
             {
-                await _publisher.SendAsync(promo.ToTemplate(), cancellation);
+                await _publisher.SendAsync(new UserPromocodeBackTemplate
+                {
+                    Id = promo.Id,
+                }, cancellation);
 
                 _context.UserPromocodes.Remove(promo);
             }
@@ -108,27 +108,27 @@ namespace Game.BLL.Services
             _context.Entry(info).Property(p => p.Balance).IsModified = true;
             _context.Entry(box).Property(p => p.Balance).IsModified = true;
 
-            var opening = new UserOpening
-            {
-                UserId = userId,
-                BoxId = box.Id,
-                ItemId = winItem.Id,
-                Date = DateTime.UtcNow
-            };
-
-            var templateUser = new UserInventoryTemplate
+            await _publisher.SendAsync(new UserInventoryTemplate
             {
                 Date = DateTime.UtcNow,
                 FixedCost = winItem.Cost,
                 ItemId = winItem.Id,
                 UserId = userId,
-            };
-
-            await _publisher.SendAsync(templateUser, cancellation);
-            await _context.Openings.AddAsync(opening, cancellation);
+            }, cancellation);
+            await _context.Openings.AddAsync(new UserOpening
+            {
+                UserId = userId,
+                BoxId = box.Id,
+                ItemId = winItem.Id,
+                Date = DateTime.UtcNow
+            }, cancellation);
             await _context.SaveChangesAsync(cancellation);
 
-            return winItem.ToResponse();
+            return new GameItemResponse
+            {
+                Id = winItem.Id,
+                Cost = winItem.Cost,
+            };
         }
 
         public async Task<GameItemResponse> OpenVirtualBox(Guid userId, Guid id, CancellationToken cancellation = default)
@@ -145,8 +145,7 @@ namespace Game.BLL.Services
                 .FirstOrDefaultAsync(lb => lb.Id == id, cancellation) ??
                 throw new NotFoundException("Кейс не найден");
 
-            if (!userInfo.IsGuestMode)
-                throw new ForbiddenException("Не включен режим гостя");
+            if (!userInfo.IsGuestMode) throw new ForbiddenException("Не включен режим гостя");
 
             box.VirtualBalance += box.Cost;
 
@@ -161,7 +160,11 @@ namespace Game.BLL.Services
 
             await _context.SaveChangesAsync(cancellation);
 
-            return winItem.ToResponse();
+            return new GameItemResponse
+            {
+                Id = winItem.Id,
+                Cost = winItem.Cost,
+            };
         }
 
 
@@ -187,13 +190,12 @@ namespace Game.BLL.Services
                 .FirstOrDefaultAsync(lb => lb.Id == id, cancellation) ??
                 throw new NotFoundException("Кейс не найден");
 
-            if (!userInfo.IsGuestMode)
-                throw new ForbiddenException("Не включен режим гостя");
+            if (!userInfo.IsGuestMode) throw new ForbiddenException("Не включен режим гостя");
 
             _context.Boxes.Attach(box);
             _context.Entry(box).Property(p => p.VirtualBalance).IsModified = true;
 
-            List<GameItemBigOpenResponse> winItems = new();
+            var winItems = new List<GameItemBigOpenResponse>();
 
             for (var i = 0; i < count; i++)
             {
@@ -209,10 +211,13 @@ namespace Game.BLL.Services
 
                     var index = winItems.FindIndex(gi => gi.Id == item.Id);
 
-                    if (index != -1)
-                        winItems[index].Count++;
-                    else
-                        winItems.Add(new GameItemBigOpenResponse { Id = item.Id, Cost = item.Cost, Count = 1 });
+                    if (index != -1) winItems[index].Count++;
+                    else winItems.Add(new GameItemBigOpenResponse 
+                    { 
+                        Id = item.Id, 
+                        Cost = item.Cost, 
+                        Count = 1 
+                    });
                 }
                 catch(Exception ex)
                 {

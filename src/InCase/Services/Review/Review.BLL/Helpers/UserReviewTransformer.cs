@@ -28,14 +28,7 @@ namespace Review.BLL.Helpers
             UserId = entity.UserId,
         };
 
-        public static List<UserReviewResponse> ToResponse(this List<UserReview> entities)
-        {
-            List<UserReviewResponse> response = new();
-
-            foreach (var entity in entities)
-                response.Add(ToResponse(entity));
-
-            return response;
-        }
+        public static List<UserReviewResponse> ToResponse(this List<UserReview> entities) =>
+            entities.Select(ToResponse).ToList();
     }
 }

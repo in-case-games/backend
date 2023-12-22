@@ -6,17 +6,17 @@ using Withdraw.DAL.Entities;
 
 namespace Withdraw.BLL.Services
 {
-    public class MarketTMService : ITradeMarketService
+    public class MarketTmService : ITradeMarketService
     {
         private readonly IConfiguration _cfg;
         private readonly IResponseService _responseService;
-        private readonly Dictionary<string, string> DomainUri = new()
+        private readonly Dictionary<string, string> _domainUri = new()
         {
             ["csgo"] = "https://market.csgo.com",
             ["dota2"] = "https://market.dota2.net"
         };
 
-        private readonly Dictionary<string, string> TradeStatuses = new()
+        private readonly Dictionary<string, string> _tradeStatuses = new()
         {
             ["h_1"] = "purchase",
             ["h_2"] = "given",
@@ -27,9 +27,7 @@ namespace Withdraw.BLL.Services
             ["t_4"] = "transfer",
         };
 
-        public MarketTMService(
-            IConfiguration cfg, 
-            IResponseService responseService)
+        public MarketTmService(IConfiguration cfg, IResponseService responseService)
         {
             _cfg = cfg;
             _responseService = responseService;
@@ -37,24 +35,22 @@ namespace Withdraw.BLL.Services
 
         public async Task<BalanceMarketResponse> GetBalanceAsync(CancellationToken cancellation = default)
         {
-            string uri = $"{DomainUri["csgo"]}/api/GetMoney/?key={_cfg["MarketTM:Secret"]}";
+            var uri = $"{_domainUri["csgo"]}/api/GetMoney/?key={_cfg["MarketTM:Secret"]}";
             
-            BalanceTMResponse? response = await _responseService
-                .GetAsync<BalanceTMResponse>(uri, cancellation);
+            var response = await _responseService.GetAsync<BalanceTmResponse>(uri, cancellation);
 
-            return new() { Balance = response!.MoneyKopecks * 0.01M };
+            return new BalanceMarketResponse { Balance = response!.MoneyKopecks * 0.01M };
         }
 
-        public async Task<ItemInfoResponse> GetItemInfoAsync(string idForMarket, string game, CancellationToken cancellation = default)
+        public async Task<ItemInfoResponse> GetItemInfoAsync(string idForMarket, string game, 
+            CancellationToken cancellation = default)
         {
-            string id = idForMarket.Replace("-", "_");
+            var id = idForMarket.Replace("-", "_");
+            var uri = $"{_domainUri[game]}/api/ItemInfo/{id}/ru/?key={_cfg["MarketTM:Secret"]}";
 
-            string uri = $"{DomainUri[game]}/api/ItemInfo/{id}/ru/?key={_cfg["MarketTM:Secret"]}";
+            var info = await _responseService.GetAsync<ItemInfoTmResponse>(uri, cancellation);
 
-            ItemInfoTMResponse? info = await _responseService
-                .GetAsync<ItemInfoTMResponse>(uri, cancellation);
-
-            return new()
+            return new ItemInfoResponse
             {
                 Id = id,
                 Count = info!.Offers!.Count,
@@ -62,12 +58,13 @@ namespace Withdraw.BLL.Services
             };
         }
 
-        public async Task<TradeInfoResponse> GetTradeInfoAsync(UserHistoryWithdraw history, CancellationToken cancellation = default)
+        public async Task<TradeInfoResponse> GetTradeInfoAsync(UserHistoryWithdraw history, 
+            CancellationToken cancellation = default)
         {
-            string name = history.Item!.Game!.Name!;
-            string id = history.InvoiceId!;
+            var name = history.Item!.Game!.Name!;
+            var id = history.InvoiceId!;
 
-            TradeInfoResponse info = new()
+            var info = new TradeInfoResponse
             {
                 Id = id,
                 Item = history.Item
@@ -75,60 +72,54 @@ namespace Withdraw.BLL.Services
 
             try
             {
-                string tradeUrl = $"{DomainUri[name]}/api/Trades/?key={_cfg["MarketTM:Secret"]}";
+                var tradeUrl = $"{_domainUri[name]}/api/Trades/?key={_cfg["MarketTM:Secret"]}";
 
-                List<TradeInfoTMResponse> trades = await _responseService
-                    .GetAsync<List<TradeInfoTMResponse>>(tradeUrl, cancellation) ?? new();
+                var trades = await _responseService.GetAsync<List<TradeInfoTmResponse>>(tradeUrl, cancellation) ?? new();
 
-                string status = trades!
-                    .First(f => f.Id == id).Status!;
+                var status = trades!.First(f => f.Id == id).Status!;
 
-                info.Status = TradeStatuses["t_" + status];
+                info.Status = _tradeStatuses["t_" + status];
             }
             catch(Exception)
             {
-                long start = ((DateTimeOffset)history.Date).ToUnixTimeSeconds();
-                long end = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+                var start = ((DateTimeOffset)history.Date).ToUnixTimeSeconds();
+                var end = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
 
-                string historyUrl = $"{DomainUri[name]}/api/OperationHistory/{start}/{end}" +
-                    $"/?key={_cfg["MarketTM:Secret"]}";
+                var historyUrl = $"{_domainUri[name]}/api/OperationHistory/{start}/{end}/?key={_cfg["MarketTM:Secret"]}";
 
-                AnswerOperationHistoryTMResponse? answer = await _responseService
-                    .GetAsync<AnswerOperationHistoryTMResponse>(historyUrl, cancellation);
+                var answer = await _responseService.GetAsync<AnswerOperationHistoryTmResponse>(historyUrl, cancellation);
 
-                string status = answer!.Histories!
-                    .First(f => f.Id == id).Status!;
+                var status = answer!.Histories!.First(f => f.Id == id).Status!;
 
-                info.Status = TradeStatuses["h_" + status];
+                info.Status = _tradeStatuses["h_" + status];
             }
 
             return info;
         }
 
-        public async Task<BuyItemResponse> BuyItemAsync(ItemInfoResponse info, string trade, CancellationToken cancellation = default)
+        public async Task<BuyItemResponse> BuyItemAsync(ItemInfoResponse info, string trade, 
+            CancellationToken cancellation = default)
         {
-            int price = info.PriceKopecks;
-            string name = info.Item.Game!.Name!;
-            string id = info.Item.IdForMarket!.Replace("-", "_");
-            string[] split = trade.Split("&");
-            string partner = split[0].Split("=")[1];
-            string token = split[1].Split("=")[1];
+            var price = info.PriceKopecks;
+            var name = info.Item.Game!.Name!;
+            var id = info.Item.IdForMarket!.Replace("-", "_");
+            var split = trade.Split("&");
+            var partner = split[0].Split("=")[1];
+            var token = split[1].Split("=")[1];
 
-            string url = $"{DomainUri[name]}/api/Buy/{id}/{price}//?key={_cfg["MarketTM:Secret"]}" +
-                $"&partner={partner}&token={token}";
+            var url = $"{_domainUri[name]}/api/Buy/{id}/{price}//?key={_cfg["MarketTM:Secret"]}&partner={partner}&token={token}";
 
-            BuyItemTMResponse? response = await _responseService
-                .GetAsync<BuyItemTMResponse>(url, cancellation);
+            var response = await _responseService.GetAsync<BuyItemTmResponse>(url, cancellation);
             
-            return new() { Id = response!.Id! };
+            return new BuyItemResponse { Id = response!.Id! };
         }
 
-        private class AnswerOperationHistoryTMResponse
+        private class AnswerOperationHistoryTmResponse
         {
             [JsonPropertyName("success")] public bool Success { get; set; }
-            [JsonPropertyName("history")] public List<OperationHistoryTMResponse>? Histories { get; set; }
+            [JsonPropertyName("history")] public List<OperationHistoryTmResponse>? Histories { get; set; }
         }
-        private class OperationHistoryTMResponse
+        private class OperationHistoryTmResponse
         {
             [JsonPropertyName("item")] public string? Id { get; set; }
             [JsonPropertyName("h_id")] public string? HistoryId { get; set; }
@@ -137,7 +128,7 @@ namespace Withdraw.BLL.Services
             public string? Status { get; set; }
 
         }
-        private class TradeInfoTMResponse
+        private class TradeInfoTmResponse
         {
             [JsonPropertyName("ui_id")] 
             public string? Id { get; set; }
@@ -145,16 +136,16 @@ namespace Withdraw.BLL.Services
             public string? Status { get; set; }
 
         }
-        private class BuyItemTMResponse
+        private class BuyItemTmResponse
         {
             [JsonPropertyName("result")] public string? Result { get; set; }
             [JsonPropertyName("id")] public string? Id { get; set; }
         }
-        private class BalanceTMResponse
+        private class BalanceTmResponse
         {
             [JsonPropertyName("money")] public int MoneyKopecks { get; set; }
         }
-        private class ItemInfoTMResponse
+        private class ItemInfoTmResponse
         {
             [JsonPropertyName("classid")] public string? ClassId { get; set; }
             [JsonPropertyName("instanceid")] public string? InstanceId { get; set; }
@@ -169,16 +160,16 @@ namespace Withdraw.BLL.Services
             [JsonPropertyName("slot")] public string? Slot { get; set; }
             [JsonPropertyName("stickers")] public string? Stickers { get; set; }
             [JsonPropertyName("min_price")] public string? MinPrice { get; set; }
-            [JsonPropertyName("offers")] public ICollection<OfferTM>? Offers { get; set; }
-            [JsonPropertyName("buy_offers")] public ICollection<BuyOfferTM>? BuyOffers { get; set; }
+            [JsonPropertyName("offers")] public ICollection<OfferTm>? Offers { get; set; }
+            [JsonPropertyName("buy_offers")] public ICollection<BuyOfferTm>? BuyOffers { get; set; }
         }
-        private class BuyOfferTM
+        private class BuyOfferTm
         {
             [JsonPropertyName("c")] public string? Count { get; set; }
             [JsonPropertyName("my_count")] public string? MyCount { get; set; }
             [JsonPropertyName("o_price")] public string? Price { get; set; }
         }
-        private class OfferTM
+        private class OfferTm
         {
             [JsonPropertyName("price")] public string? Price { get; set; }
             [JsonPropertyName("count")] public string? Count { get; set; }

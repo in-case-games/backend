@@ -4,7 +4,6 @@ using Resources.BLL.Helpers;
 using Resources.BLL.Interfaces;
 using Resources.BLL.Models;
 using Resources.DAL.Data;
-using Resources.DAL.Entities;
 
 namespace Resources.BLL.Services
 {
@@ -19,7 +18,7 @@ namespace Resources.BLL.Services
 
         public async Task<List<GameResponse>> GetAsync(CancellationToken cancellation = default)
         {
-            List<Game> games = await _context.Games
+            var games = await _context.Games
                 .Include(g => g.Boxes!)
                     .ThenInclude(lb => lb.Inventories!)
                         .ThenInclude(lb => lb.Item)
@@ -31,7 +30,7 @@ namespace Resources.BLL.Services
 
         public async Task<GameResponse> GetAsync(Guid id, CancellationToken cancellation = default)
         {
-            Game game = await _context.Games
+            var game = await _context.Games
                 .Include(g => g.Boxes!)
                     .ThenInclude(lb => lb.Inventories!)
                         .ThenInclude(lb => lb.Item)
@@ -44,7 +43,7 @@ namespace Resources.BLL.Services
 
         public async Task<GameResponse> GetAsync(string name, CancellationToken cancellation = default)
         {
-            Game game = await _context.Games
+            var game = await _context.Games
                 .Include(g => g.Boxes!)
                     .ThenInclude(lb => lb.Inventories!)
                         .ThenInclude(lb => lb.Item)

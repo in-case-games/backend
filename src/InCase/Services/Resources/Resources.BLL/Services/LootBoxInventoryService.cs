@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Infrastructure.MassTransit.Resources;
+using Microsoft.EntityFrameworkCore;
 using Resources.BLL.Exceptions;
 using Resources.BLL.Helpers;
 using Resources.BLL.Interfaces;
@@ -22,7 +23,7 @@ namespace Resources.BLL.Services
 
         public async Task<LootBoxInventoryResponse> GetAsync(Guid id, CancellationToken cancellation = default)
         {
-            LootBoxInventory inventory = await _context.BoxInventories
+            var inventory = await _context.BoxInventories
                 .Include(lbi => lbi.Item)
                 .Include(lbi => lbi!.Item!.Rarity)
                 .Include(lbi => lbi!.Item!.Quality)
@@ -41,7 +42,7 @@ namespace Resources.BLL.Services
             if (!await _context.LootBoxes.AnyAsync(lbi => lbi.Id == id, cancellation))
                 throw new NotFoundException("Кейс не найден");
 
-            List<LootBoxInventory> inventories = await _context.BoxInventories
+            var inventories = await _context.BoxInventories
                 .Include(lbi => lbi.Item)
                 .Include(lbi => lbi!.Item!.Rarity)
                 .Include(lbi => lbi!.Item!.Quality)
@@ -59,7 +60,7 @@ namespace Resources.BLL.Services
             if (!await _context.Items.AnyAsync(lbi => lbi.Id == id, cancellation))
                 throw new NotFoundException("Предмет не найден");
 
-            List<LootBoxInventory> inventories = await _context.BoxInventories
+            var inventories = await _context.BoxInventories
                 .Include(lbi => lbi.Box)
                 .AsNoTracking()
                 .Where(lbi => lbi.ItemId == id)
@@ -72,12 +73,12 @@ namespace Resources.BLL.Services
         {
             request.Id = Guid.NewGuid();
 
-            LootBox box = await _context.LootBoxes
+            var box = await _context.LootBoxes
                 .AsNoTracking()
                 .FirstOrDefaultAsync(lb => lb.Id == request.BoxId, cancellation) ??
                 throw new NotFoundException("Кейс не найден");
 
-            GameItem item = await _context.Items
+            var item = await _context.Items
                 .Include(gi => gi.Rarity)
                 .Include(gi => gi.Quality)
                 .Include(gi => gi.Type)
@@ -86,30 +87,40 @@ namespace Resources.BLL.Services
                 .FirstOrDefaultAsync(gi => gi.Id == request.ItemId, cancellation) ??
                 throw new NotFoundException("Предмет не найден");
 
-            LootBoxInventory inventory = request.ToEntity(true);
+            var inventory = new LootBoxInventory()
+            {
+                Id = Guid.NewGuid(),
+                BoxId = request.BoxId,
+                ItemId = request.ItemId,
+                ChanceWining = request.ChanceWining,
+                Item = item,
+                Box = box
+            };
 
             if (box.GameId != item.GameId) 
                 throw new ConflictException("Кейс и предмет должны быть с одной игры");
 
             await _context.BoxInventories.AddAsync(inventory, cancellation);
+            await _publisher.SendAsync(new LootBoxInventoryTemplate()
+            {
+                Id = request.Id,
+                BoxId = request.BoxId,
+                ChanceWining = request.ChanceWining,
+                ItemId = request.ItemId
+            }, cancellation);
             await _context.SaveChangesAsync(cancellation);
-
-            await _publisher.SendAsync(request.ToTemplate(isDeleted: false), cancellation);
-
-            inventory.Item = item;
-            inventory.Box = box;
 
             return inventory.ToResponse();
         }
 
         public async Task<LootBoxInventoryResponse> UpdateAsync(LootBoxInventoryRequest request, CancellationToken cancellation = default)
         {
-            LootBox box = await _context.LootBoxes
+            var box = await _context.LootBoxes
                 .AsNoTracking()
                 .FirstOrDefaultAsync(lb => lb.Id == request.BoxId, cancellation) ??
                 throw new NotFoundException("Кейс не найден");
 
-            GameItem item = await _context.Items
+            var item = await _context.Items
                 .Include(gi => gi.Rarity)
                 .Include(gi => gi.Quality)
                 .Include(gi => gi.Type)
@@ -123,22 +134,32 @@ namespace Resources.BLL.Services
             if (box.GameId != item.GameId)
                 throw new ConflictException("Кейс и предмет должны быть с одной игры");
 
-            LootBoxInventory inventory = request.ToEntity();
+            var inventory = new LootBoxInventory()
+            {
+                Id = request.Id,
+                BoxId = request.BoxId,
+                ItemId = request.ItemId,
+                ChanceWining = request.ChanceWining,
+                Item = item,
+                Box = box
+            };
 
             _context.BoxInventories.Update(inventory);
+            await _publisher.SendAsync(new LootBoxInventoryTemplate()
+            {
+                Id = request.Id,
+                BoxId = request.BoxId,
+                ChanceWining = request.ChanceWining,
+                ItemId = request.ItemId
+            }, cancellation);
             await _context.SaveChangesAsync(cancellation);
-
-            await _publisher.SendAsync(request.ToTemplate(isDeleted: false), cancellation);
-
-            inventory.Item = item;
-            inventory.Box = box;
 
             return inventory.ToResponse();
         }
 
         public async Task<LootBoxInventoryResponse> DeleteAsync(Guid id, CancellationToken cancellation = default)
         {
-            LootBoxInventory inventory = await _context.BoxInventories
+            var inventory = await _context.BoxInventories
                 .Include(lbi => lbi.Item)
                 .Include(lbi => lbi!.Item!.Rarity)
                 .Include(lbi => lbi!.Item!.Quality)
@@ -150,9 +171,15 @@ namespace Resources.BLL.Services
                 throw new NotFoundException("Содержимое кейса не найдено");
 
             _context.BoxInventories.Remove(inventory);
+            await _publisher.SendAsync(new LootBoxInventoryTemplate()
+            {
+                Id = inventory.Id,
+                BoxId = inventory.BoxId,
+                ChanceWining = inventory.ChanceWining,
+                ItemId = inventory.ItemId,
+                IsDeleted = true
+            }, cancellation);
             await _context.SaveChangesAsync(cancellation);
-
-            await _publisher.SendAsync(inventory.ToTemplate(isDeleted: true), cancellation);
 
             return inventory.ToResponse();
         }

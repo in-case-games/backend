@@ -1,5 +1,4 @@
 ﻿using Authentication.BLL.Exceptions;
-using Authentication.BLL.Helpers;
 using Authentication.BLL.Interfaces;
 using Authentication.DAL.Data;
 using Authentication.DAL.Entities;
@@ -16,7 +15,8 @@ namespace Authentication.BLL.Services
         {
             _context = context;            
         }
-        public async Task<UserRestriction?> GetAsync(Guid id, CancellationToken cancellationToken = default) => await _context.Restrictions
+        public async Task<UserRestriction?> GetAsync(Guid id, CancellationToken cancellationToken = default) => 
+            await _context.Restrictions
             .AsNoTracking()
             .FirstOrDefaultAsync(ur => ur.Id == id, cancellationToken);
 
@@ -25,9 +25,12 @@ namespace Authentication.BLL.Services
             if (!await _context.Users.AnyAsync(u => u.Id == template.UserId, cancellationToken))
                 throw new NotFoundException("Пользователь не найден");
 
-            UserRestriction restriction = template.ToEntity();
-
-            await _context.Restrictions.AddAsync(restriction, cancellationToken);
+            await _context.Restrictions.AddAsync(new UserRestriction()
+            {
+                Id = template.Id,
+                ExpirationDate = template.ExpirationDate,
+                UserId = template.UserId
+            }, cancellationToken);
             await _context.SaveChangesAsync(cancellationToken);
         }
 
@@ -36,19 +39,22 @@ namespace Authentication.BLL.Services
             if (!await _context.Users.AnyAsync(u => u.Id == template.UserId, cancellationToken))
                 throw new NotFoundException("Пользователь не найден");
 
-            UserRestriction restriction = await _context.Restrictions
+            var old = await _context.Restrictions
                 .FirstOrDefaultAsync(ur => ur.Id == template.Id, cancellationToken) ??
-                throw new NotFoundException("Эффект не найден");
+                throw new NotFoundException("Эффект не найден");;
 
-            UserRestriction restrictionNew = template.ToEntity();
-
-            _context.Entry(restriction).CurrentValues.SetValues(restrictionNew);
+            _context.Entry(old).CurrentValues.SetValues(new UserRestriction()
+            {
+                Id = template.Id,
+                ExpirationDate = template.ExpirationDate,
+                UserId = template.UserId
+            });
             await _context.SaveChangesAsync(cancellationToken);
         }
 
         public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            UserRestriction restriction = await _context.Restrictions
+            var restriction = await _context.Restrictions
                 .AsNoTracking()
                 .FirstOrDefaultAsync(ur => ur.Id == id, cancellationToken) ??
                 throw new NotFoundException("Эффект не найден");

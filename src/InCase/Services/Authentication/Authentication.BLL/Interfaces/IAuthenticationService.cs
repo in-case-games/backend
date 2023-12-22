@@ -9,6 +9,5 @@ namespace Authentication.BLL.Interfaces
         public Task SignUpAsync(UserRequest request, CancellationToken cancellationToken = default);
         public Task<TokensResponse> RefreshTokensAsync(string token, CancellationToken cancellationToken = default);
         public Task<User> GetUserFromTokenAsync(string token, string type, CancellationToken cancellationToken = default);
-        public Task CheckUserForBanAsync(Guid id, CancellationToken cancellationToken = default);
     }
 }

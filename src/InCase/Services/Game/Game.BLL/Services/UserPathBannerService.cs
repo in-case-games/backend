@@ -25,7 +25,7 @@ namespace Game.BLL.Services
             if (!await _context.Users.AnyAsync(u => u.Id == userId, cancellation))
                 throw new NotFoundException("Пользователь не найден");
 
-            List<UserPathBanner> banners = await _context.PathBanners
+            var banners = await _context.PathBanners
                 .Include(upb => upb.Item)
                 .Include(upb => upb.Box)
                 .AsNoTracking()
@@ -42,7 +42,7 @@ namespace Game.BLL.Services
             if (!await _context.Items.AnyAsync(gi => gi.Id == itemId, cancellation))
                 throw new NotFoundException("Предмет не найден");
 
-            List<UserPathBanner> banners = await _context.PathBanners
+            var banners = await _context.PathBanners
                 .Include(upb => upb.Item)
                 .Include(upb => upb.Box)
                 .AsNoTracking()
@@ -57,7 +57,7 @@ namespace Game.BLL.Services
             if (!await _context.Users.AnyAsync(u => u.Id == userId, cancellation))
                 throw new NotFoundException("Пользователь не найден");
 
-            UserPathBanner banner = await _context.PathBanners
+            var banner = await _context.PathBanners
                 .Include(upb => upb.Item)
                 .Include(upb => upb.Box)
                 .AsNoTracking()
@@ -74,7 +74,7 @@ namespace Game.BLL.Services
             if (!await _context.Boxes.AnyAsync(lb => lb.Id == boxId, cancellation))
                 throw new NotFoundException("Кейс не найден");
 
-            UserPathBanner banner = await _context.PathBanners
+            var banner = await _context.PathBanners
                 .Include(upb => upb.Item)
                 .Include(upb => upb.Box)
                 .AsNoTracking()
@@ -93,40 +93,43 @@ namespace Game.BLL.Services
                 .AnyAsync(upb => upb.UserId == request.UserId && upb.BoxId == request.BoxId, cancellation))
                 throw new ConflictException("Путь к баннеру уже используется");
 
-            LootBox box = await _context.Boxes
+            var box = await _context.Boxes
                 .Include(lb => lb.Inventories)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(lb => lb.Id == request.BoxId, cancellation) ??
                 throw new NotFoundException("Кейс не найден");
 
-            LootBoxInventory inventory = await _context.BoxInventories
+            var inventory = await _context.BoxInventories
                 .Include(lbi => lbi.Item)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(lbi => lbi.BoxId == request.BoxId && 
                 lbi.ItemId == request.ItemId, cancellation) ??
                 throw new NotFoundException("Предмет не найден");
 
-            GameItem item = inventory.Item!;
-
             if (box.IsLocked)
                 throw new ForbiddenException("Кейс не активен");
             if (box.ExpirationBannerDate is null || box.ExpirationBannerDate < DateTime.UtcNow)
                 throw new ForbiddenException("Баннер не активен");
-            if (item.Cost <= box.Cost)
+            if (inventory.Item!.Cost <= box.Cost)
                 throw new BadRequestException("Стоимость товара не может быть меньше стоимости кейса");
 
-            UserPathBanner banner = request.ToEntity();
+            var banner = new UserPathBanner
+            {
+                Id = request.Id,
+                BoxId = request.BoxId,
+                ItemId = request.ItemId,
+                UserId = request.UserId,
+                NumberSteps = (int)Math.Ceiling(inventory.Item.Cost / (box.Cost * 0.2M)),
+                FixedCost = inventory.Item.Cost
+            };
 
-            banner.NumberSteps = (int)Math.Ceiling(item.Cost / (box.Cost * 0.2M));
-            banner.FixedCost = item.Cost;
-
-            if(banner.NumberSteps > 100)
+            if (banner.NumberSteps > 100)
                 throw new BadRequestException("Стоимость предмета превышает стоимость кейса в 20 раз");
 
             await _context.PathBanners.AddAsync(banner, cancellation);
             await _context.SaveChangesAsync(cancellation);
 
-            banner.Item = item;
+            banner.Item = inventory.Item;
             banner.Box = box;
 
             return banner.ToResponse();
@@ -137,20 +140,17 @@ namespace Game.BLL.Services
             if (!await _context.AdditionalInfos.AnyAsync(uai => uai.UserId == request.UserId, cancellation))
                 throw new NotFoundException("Пользователь не найден");
 
-            UserPathBanner banner = await _context.PathBanners
+            var banner = await _context.PathBanners
                 .Include(usp => usp.Box)
                 .Include(usp => usp.Item)
                 .FirstOrDefaultAsync(usp => usp.Id == request.Id, cancellation) ??
                 throw new NotFoundException("Путь к баннеру не найден");
 
-            if (banner.UserId != request.UserId)
-                throw new ForbiddenException("Нельзя поменять пользователя");
-            if (banner.BoxId != request.BoxId)
-                throw new ForbiddenException("Нельзя поменять кейс");
-            if (banner.ItemId == request.ItemId)
-                throw new BadRequestException("Предмет уже используется");
+            if (banner.UserId != request.UserId) throw new ForbiddenException("Нельзя поменять пользователя");
+            if (banner.BoxId != request.BoxId) throw new ForbiddenException("Нельзя поменять кейс");
+            if (banner.ItemId == request.ItemId) throw new BadRequestException("Предмет уже используется");
 
-            GameItem item = await _context.Items
+            var item = await _context.Items
                 .AsNoTracking()
                 .FirstOrDefaultAsync(gi => gi.Id == request.ItemId, cancellation) ?? 
                 throw new NotFoundException("Предмет не найден");
@@ -178,7 +178,7 @@ namespace Game.BLL.Services
             if(!await _context.AdditionalInfos.AnyAsync(uai => uai.UserId == userId, cancellation))
                 throw new NotFoundException("Пользователь не найден");
             
-            UserPathBanner banner = await _context.PathBanners
+            var banner = await _context.PathBanners
                 .Include(usp => usp.Box)
                 .Include(usp => usp.Item)
                 .AsNoTracking()

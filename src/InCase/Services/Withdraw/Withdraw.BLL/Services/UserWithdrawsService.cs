@@ -22,7 +22,7 @@ namespace Withdraw.BLL.Services
 
         public async Task<UserHistoryWithdrawResponse> GetAsync(Guid id, CancellationToken cancellation = default)
         {
-            UserHistoryWithdraw withdraw = await _context.Withdraws
+            var withdraw = await _context.Withdraws
                 .Include(uhw => uhw.Status)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(uhw => uhw.Id == id, cancellation) ?? 
@@ -33,12 +33,12 @@ namespace Withdraw.BLL.Services
 
         public async Task<List<UserHistoryWithdrawResponse>> GetAsync(Guid userId, int count, CancellationToken cancellation = default)
         {
-            if (count <= 0 || count >= 10000)
+            if (count is <= 0 or >= 10000)
                 throw new BadRequestException("Размер выборки должен быть в пределе 1-10000");
             if (!await _context.Users.AnyAsync(u => u.Id == userId, cancellation))
                 throw new NotFoundException("Пользователь не найден");
 
-            List<UserHistoryWithdraw> withdraws = await _context.Withdraws
+            var withdraws = await _context.Withdraws
                 .Include(uhw => uhw.Status)
                 .AsNoTracking()
                 .Where(uhw => uhw.UserId == userId)
@@ -51,10 +51,10 @@ namespace Withdraw.BLL.Services
 
         public async Task<List<UserHistoryWithdrawResponse>> GetAsync(int count, CancellationToken cancellation = default)
         {
-            if (count <= 0 || count >= 10000)
+            if (count is <= 0 or >= 10000)
                 throw new BadRequestException("Размер выборки должен быть в пределе 1-10000");
 
-            List<UserHistoryWithdraw> withdraws = await _context.Withdraws
+            var withdraws = await _context.Withdraws
                 .Include(uhw => uhw.Status)
                 .AsNoTracking()
                 .OrderByDescending(uhw => uhw.Date)
@@ -66,16 +66,16 @@ namespace Withdraw.BLL.Services
 
         public async Task<UserInventoryResponse> TransferAsync(Guid id, Guid userId, CancellationToken cancellation = default)
         {
-            UserHistoryWithdraw withdraw = await _context.Withdraws
+            var withdraw = await _context.Withdraws
                 .Include(uhw => uhw.Status)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(uhw => uhw.Id == id && uhw.UserId == userId, cancellation) ??
                 throw new NotFoundException("История вывода не найдена");
 
-            if (withdraw.Status?.Name is null || withdraw.Status.Name != "cancel")
+            if (withdraw.Status?.Name is not "cancel")
                 throw new ConflictException("Ваш предмет выводится");
 
-            UserInventory inventory = new()
+            var inventory = new UserInventory
             {
                 Date = withdraw.Date,
                 FixedCost = withdraw.FixedCost,
@@ -87,7 +87,7 @@ namespace Withdraw.BLL.Services
             await _context.Inventories.AddAsync(inventory, cancellation);
             await _context.SaveChangesAsync(cancellation);
 
-            _logger.LogInformation($"Items successfully transfered. UserId: {userId}. UserHistoryWithdrawId: {id}");
+            _logger.LogInformation($"Items successfully transferred. UserId: {userId}. UserHistoryWithdrawId: {id}");
 
             return inventory.ToResponse();
         }

@@ -22,7 +22,7 @@ namespace Withdraw.DAL.Data
 
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 
-            foreach (var gp in GamePlatform)
+            foreach (var gp in _gamePlatform)
             {
                 Game game = new() { Name = gp.Key };
                 GameMarket market = new() { Name = gp.Value, GameId = game.Id };
@@ -32,7 +32,7 @@ namespace Withdraw.DAL.Data
             }
         }
 
-        private readonly Dictionary<string, string> GamePlatform = new()
+        private readonly Dictionary<string, string> _gamePlatform = new()
         {
             ["csgo"] = "tm",
             ["dota2"] = "tm"

@@ -1,7 +1,6 @@
 ﻿using Infrastructure.MassTransit.User;
 using MassTransit;
 using Support.BLL.Interfaces;
-using Support.DAL.Entities;
 
 namespace Support.BLL.MassTransit.Consumers
 {
@@ -16,14 +15,10 @@ namespace Support.BLL.MassTransit.Consumers
 
         public async Task Consume(ConsumeContext<UserTemplate> context)
         {
-            var template = context.Message;
+            var user = await _userService.GetAsync(context.Message.Id);
 
-            User? user = await _userService.GetAsync(template.Id);
-
-            if (user is null)
-                await _userService.CreateAsync(template);
-            else if (template.IsDeleted)
-                await _userService.DeleteAsync(user.Id);
+            if (user is null) await _userService.CreateAsync(context.Message);
+            else if (context.Message.IsDeleted) await _userService.DeleteAsync(user.Id);
         }
     }
 }

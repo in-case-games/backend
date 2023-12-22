@@ -15,30 +15,15 @@ namespace Withdraw.BLL.Helpers
                 ItemId = inventory.Item?.Id ?? inventory.ItemId,
             };
 
-        public static List<UserInventoryResponse> ToResponse(this List<UserInventory> inventories)
-        {
-            List<UserInventoryResponse> response = new();
+        public static List<UserInventoryResponse> ToResponse(this List<UserInventory> inventories) =>
+            inventories.Select(ToResponse).ToList();
 
-            foreach(var inventory in inventories)
-                response.Add(ToResponse(inventory));
-
-            return response;
-        }
-
-        public static UserInventory ToEntity(this UserInventoryTemplate template) => new()
-        {
-            Id = template.Id,
-            Date = template.Date,
-            FixedCost = template.FixedCost,
-            ItemId = template.ItemId,
-            UserId = template.UserId
-        };
-
-        public static UserInventoryBackTemplate ToTemplate(this UserInventory inventory) => new()
-        {
-            Id = inventory.Id,
-            FixedCost = inventory.FixedCost,
-            UserId = inventory.UserId
-        };
+        public static UserInventoryBackTemplate ToTemplate(this UserInventory inventory) => 
+            new()
+            {
+                Id = inventory.Id,
+                FixedCost = inventory.FixedCost,
+                UserId = inventory.UserId
+            };
     }
 }

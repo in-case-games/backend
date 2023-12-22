@@ -16,46 +16,42 @@ namespace Payment.BLL.Services
             _cfg = cfg;
         }
 
-        public string GenerateHMAC(byte[] hashOfDataToSign)
+        public string GenerateHmac(byte[] hashOfDataToSign)
         {
-            byte[] keyBytes = Encoding.ASCII.GetBytes(_cfg["GameMoney:HMACSecret"]!);
+            using var hash = new HMACSHA256(Encoding.ASCII.GetBytes(_cfg["GameMoney:HMACSecret"]!));
 
-            using HMACSHA256 hash = new(keyBytes);
-
-            byte[] hashBytes = hash.ComputeHash(hashOfDataToSign);
+            var hashBytes = hash.ComputeHash(hashOfDataToSign);
 
             return BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
         }
 
-        public bool VerifySignatureRSA(IGameMoneyResponse response)
+        public bool VerifySignatureRsa(IGameMoneyResponse response)
         {
-            byte[] hash = Encoding.ASCII.GetBytes(response.ToString());
-            byte[] signature = Encoding.ASCII.GetBytes(response!.SignatureRSA);
+            var hash = Encoding.ASCII.GetBytes(response.ToString());
+            var signature = Encoding.ASCII.GetBytes(response!.SignatureRsa);
 
-            return VerifySignatureRSA(hash, signature);
+            return VerifySignatureRsa(hash, signature);
         }
 
-        public bool VerifySignatureRSA(byte[] hashOfDataToSign, byte[] signature)
+        private bool VerifySignatureRsa(byte[] hashOfDataToSign, byte[] signature)
         {
-            string path = Path.Combine(
-                Directory.GetCurrentDirectory(),
-                "RsaKeys",
-                _cfg["GameMoney:RSA:PublicKey"]!);
-            using TextReader reader = new StringReader(File.ReadAllText(path));
-            RsaKeyParameters param = (RsaKeyParameters)new PemReader(reader).ReadObject();
+            var path = Path.Combine(Directory.GetCurrentDirectory(), "RsaKeys", _cfg["GameMoney:RSA:PublicKey"]!);
 
-            RSACryptoServiceProvider rsa = new(2048);
-            RSAParameters parms = new()
+            using var reader = new StringReader(File.ReadAllText(path));
+
+            var param = (RsaKeyParameters)new PemReader(reader).ReadObject();
+
+            var rsa = new RSACryptoServiceProvider(2048);
+            rsa.ImportParameters(new RSAParameters()
             {
                 Modulus = param.Modulus.ToByteArrayUnsigned(),
                 Exponent = param.Exponent.ToByteArrayUnsigned()
-            };
-            rsa.ImportParameters(parms);
+            });
 
-            var deformatter = new RSAPKCS1SignatureDeformatter(rsa);
-            deformatter.SetHashAlgorithm("SHA256");
+            var formatter = new RSAPKCS1SignatureDeformatter(rsa);
+            formatter.SetHashAlgorithm("SHA256");
 
-            return deformatter.VerifySignature(hashOfDataToSign, signature);
+            return formatter.VerifySignature(hashOfDataToSign, signature);
         }
     }
 }

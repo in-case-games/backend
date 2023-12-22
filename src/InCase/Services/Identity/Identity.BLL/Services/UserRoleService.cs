@@ -3,7 +3,6 @@ using Identity.BLL.Helpers;
 using Identity.BLL.Interfaces;
 using Identity.BLL.Models;
 using Identity.DAL.Data;
-using Identity.DAL.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Identity.BLL.Services
@@ -19,7 +18,7 @@ namespace Identity.BLL.Services
 
         public async Task<UserRoleResponse> GetAsync(Guid id, CancellationToken cancellation = default)
         {
-            UserRole role = await _context.Roles
+            var role = await _context.Roles
                 .AsNoTracking()
                 .FirstOrDefaultAsync(ur => ur.Id == id, cancellation) ??
                 throw new NotFoundException("Роль не найдена");
@@ -29,7 +28,7 @@ namespace Identity.BLL.Services
 
         public async Task<List<UserRoleResponse>> GetAsync(CancellationToken cancellation = default)
         {
-            List<UserRole> roles = await _context.Roles
+            var roles = await _context.Roles
                 .AsNoTracking()
                 .ToListAsync(cancellation);
 

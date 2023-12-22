@@ -1,7 +1,6 @@
 ﻿using Infrastructure.MassTransit.User;
 using MassTransit;
 using Withdraw.BLL.Interfaces;
-using Withdraw.DAL.Entities;
 
 namespace Withdraw.BLL.MassTransit.Consumers
 {
@@ -16,12 +15,9 @@ namespace Withdraw.BLL.MassTransit.Consumers
 
         public async Task Consume(ConsumeContext<UserInventoryTemplate> context)
         {
-            var template = context.Message;
+            var inventory = await _inventoryService.GetByConsumerAsync(context.Message.Id);
 
-            UserInventory? inventory = await _inventoryService.GetByConsumerAsync(template.Id);
-
-            if(inventory is null)
-                await _inventoryService.CreateAsync(template);
+            if(inventory is null) await _inventoryService.CreateAsync(context.Message);
         }
     }
 }
