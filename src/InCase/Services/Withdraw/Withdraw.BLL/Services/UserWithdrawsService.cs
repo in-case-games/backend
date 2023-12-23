@@ -1,8 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Infrastructure.MassTransit.Statistics;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Withdraw.BLL.Exceptions;
 using Withdraw.BLL.Helpers;
 using Withdraw.BLL.Interfaces;
+using Withdraw.BLL.MassTransit;
 using Withdraw.BLL.Models;
 using Withdraw.DAL.Data;
 using Withdraw.DAL.Entities;
@@ -12,11 +14,16 @@ namespace Withdraw.BLL.Services
     public class UserWithdrawsService : IUserWithdrawsService
     {
         private readonly ApplicationDbContext _context;
+        private readonly BasePublisher _publisher;
         private readonly ILogger<UserWithdrawsService> _logger;
 
-        public UserWithdrawsService(ApplicationDbContext context, ILogger<UserWithdrawsService> logger)
+        public UserWithdrawsService(
+            ApplicationDbContext context, 
+            BasePublisher publisher,
+            ILogger<UserWithdrawsService> logger)
         {
             _logger = logger;
+            _publisher = publisher;
             _context = context;
         }
 
@@ -51,7 +58,7 @@ namespace Withdraw.BLL.Services
 
         public async Task<List<UserHistoryWithdrawResponse>> GetAsync(int count, CancellationToken cancellation = default)
         {
-            if (count is <= 0 or >= 10000)
+            if (count is <= 0 or >= 10000) 
                 throw new BadRequestException("Размер выборки должен быть в пределе 1-10000");
 
             var withdraws = await _context.Withdraws
@@ -72,8 +79,8 @@ namespace Withdraw.BLL.Services
                 .FirstOrDefaultAsync(uhw => uhw.Id == id && uhw.UserId == userId, cancellation) ??
                 throw new NotFoundException("История вывода не найдена");
 
-            if (withdraw.Status?.Name is not "cancel")
-                throw new ConflictException("Ваш предмет выводится");
+            if (withdraw.Status?.Name is "blocked") throw new ConflictException("Предмет заблокирован, обратитесь к админу");
+            if (withdraw.Status?.Name is not "cancel") throw new ConflictException("Ваш предмет выводится");
 
             var inventory = new UserInventory
             {
@@ -86,6 +93,11 @@ namespace Withdraw.BLL.Services
             _context.Withdraws.Remove(withdraw);
             await _context.Inventories.AddAsync(inventory, cancellation);
             await _context.SaveChangesAsync(cancellation);
+
+            await _publisher.SendAsync(new SiteStatisticsAdminTemplate
+            {
+                FundsUsersInventories = inventory.FixedCost
+            }, cancellation);
 
             _logger.LogInformation($"Items successfully transferred. UserId: {userId}. UserHistoryWithdrawId: {id}");
 

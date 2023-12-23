@@ -194,16 +194,16 @@ namespace Resources.BLL.Services
 
             var item = request.ToEntity(true);
 
+            FileService.UploadImageBase64(request.Image, $"game-items/{game.Id}/{item.Id}/", $"{item.Id}");
+
+            await _context.Items.AddAsync(item, cancellation);
+            await _context.SaveChangesAsync(cancellation);
+
             item.Game = game;
             item.Quality = quality;
             item.Rarity = rarity;
             item.Type = type;
-
-            FileService.UploadImageBase64(request.Image, @$"game-items/{game.Id}/{item.Id}/", $"{item.Id}");
-
-            await _context.Items.AddAsync(item, cancellation);
             await _publisher.SendAsync(item.ToTemplate(), cancellation);
-            await _context.SaveChangesAsync(cancellation);
 
             return item.ToResponse();
         }
@@ -301,8 +301,8 @@ namespace Resources.BLL.Services
                 item.Cost = cost * 7M;
 
                 _context.Items.Update(item);
-                await _publisher.SendAsync(item.ToTemplate(), cancellationToken);
                 await _context.SaveChangesAsync(cancellationToken);
+                await _publisher.SendAsync(item.ToTemplate(), cancellationToken);
 
                 await CorrectCostAsync(item.Id, item.Cost, cancellationToken);
                 await CorrectChancesAsync(item.Id, cancellationToken);
@@ -341,10 +341,8 @@ namespace Resources.BLL.Services
                 box.Cost = box.IsLocked ? box.Cost : boxCostNew;
 
                 _context.LootBoxes.Update(box);
-
-                await _publisher.SendAsync(box.ToTemplate(), cancellationToken);
-
                 await _context.SaveChangesAsync(cancellationToken);
+                await _publisher.SendAsync(box.ToTemplate(), cancellationToken);
             }
         }
 
@@ -380,6 +378,7 @@ namespace Resources.BLL.Services
                         Math.Round(weights[boxInventory.Id] / weightAll * 10000000M));
 
                     _context.BoxInventories.Update(boxInventory);
+                    await _context.SaveChangesAsync(cancellationToken);
                     await _publisher.SendAsync(new LootBoxInventoryTemplate()
                     {
                         Id = boxInventory.Id,
@@ -387,7 +386,6 @@ namespace Resources.BLL.Services
                         ChanceWining = boxInventory.ChanceWining,
                         ItemId = boxInventory.ItemId,
                     }, cancellationToken);
-                    await _context.SaveChangesAsync(cancellationToken);
                 }
             }
         }

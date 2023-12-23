@@ -47,7 +47,7 @@ namespace Withdraw.BLL.Services
                     i++; 
                 }
 
-                await Task.Delay(2000, cancellation);
+                await Task.Delay(200, cancellation);
             }
 
             throw new RequestTimeoutException("Сервис покупки предметов не отвечает");
@@ -71,7 +71,7 @@ namespace Withdraw.BLL.Services
                     i++;
                 }
 
-                await Task.Delay(2000, cancellation);
+                await Task.Delay(200, cancellation);
             }
 
             throw new RequestTimeoutException("Сервис покупки предметов не отвечает");
@@ -103,7 +103,7 @@ namespace Withdraw.BLL.Services
                     i++;
                 }
 
-                await Task.Delay(2000, cancellation);
+                await Task.Delay(200, cancellation);
             }
             
             throw new RequestTimeoutException("Сервис покупки предмета не отвечает");
@@ -133,7 +133,7 @@ namespace Withdraw.BLL.Services
                     i++;
                 }
 
-                await Task.Delay(2000, cancellation);
+                await Task.Delay(200, cancellation);
             }
 
             throw new RequestTimeoutException("Сервис покупки предмета не отвечает");

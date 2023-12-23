@@ -25,10 +25,14 @@ namespace Withdraw.DAL.Configurations
 
             builder.Property(uhw => uhw.InvoiceId)
                 .IsRequired();
+            builder.Property(uhw => uhw.TradeUrl)
+                .IsRequired();
             builder.Property(uhw => uhw.FixedCost)
                 .HasColumnType("DECIMAL(18,5)")
                 .IsRequired();
             builder.Property(uhw => uhw.Date)
+                .IsRequired();
+            builder.Property(uhw => uhw.UpdateDate)
                 .IsRequired();
 
             builder.HasOne(uhw => uhw.Market)

@@ -6,23 +6,28 @@ using Withdraw.DAL.Entities;
 using Withdraw.BLL.Exceptions;
 using Withdraw.BLL.Helpers;
 using Infrastructure.MassTransit.Statistics;
+using Microsoft.Extensions.Logging;
 using Withdraw.BLL.MassTransit;
 
 namespace Withdraw.BLL.Services
 {
     public class WithdrawService : IWithdrawService
     {
-        private readonly ApplicationDbContext _context;
         private readonly IWithdrawItemService _withdrawService;
+        private readonly ILogger<WithdrawService> _logger;
+
+        private readonly ApplicationDbContext _context;
         private readonly BasePublisher _publisher;
 
         public WithdrawService(
-            ApplicationDbContext context, 
             IWithdrawItemService withdrawService,
+            ILogger<WithdrawService> logger,
+            ApplicationDbContext context, 
             BasePublisher publisher)
         {
             _context = context;
             _withdrawService = withdrawService;
+            _logger = logger;
             _publisher = publisher;
         }
 
@@ -41,40 +46,6 @@ namespace Withdraw.BLL.Services
         public async Task<BalanceMarketResponse> GetMarketBalanceAsync(string marketName, CancellationToken cancellation = default) =>
             await _withdrawService.GetBalanceAsync(marketName, cancellation);
 
-        public async Task WithdrawStatusManagerAsync(int count, CancellationToken cancellation = default)
-        {
-            var withdraws = await _context.Withdraws
-                .Include(uhw => uhw.Item)
-                .Include(uhw => uhw.Item!.Game)
-                .Include(uhw => uhw.Market)
-                .Include(uhw => uhw.Status)
-                .AsNoTracking()
-                .Where(uhw => uhw.Status!.Name != "given" && uhw.Status!.Name != "cancel")
-                .Take(count)
-                .ToListAsync(cancellation);
-
-            var statuses = await _context.Statuses
-                .AsNoTracking()
-                .ToListAsync(cancellation);
-
-            foreach(var withdraw in withdraws)
-            {
-                var response = await _withdrawService.GetTradeInfoAsync(withdraw, cancellation);
-
-                withdraw.StatusId = statuses.First(ws => ws.Name == response.Status).Id;
-                _context.Entry(withdraw).Property(p => p.StatusId).IsModified = true;
-                await _context.SaveChangesAsync(cancellation);
-
-                if (response.Status != "given") continue;
-
-                await _publisher.SendAsync(new SiteStatisticsTemplate
-                {
-                    WithdrawnItems = 1,
-                    WithdrawnFunds = Convert.ToInt32(withdraw.FixedCost)
-                }, cancellation);
-            }
-        }
-
         public async Task<UserHistoryWithdrawResponse> WithdrawItemAsync(WithdrawItemRequest request, Guid userId,
             CancellationToken cancellation = default)
         {
@@ -88,11 +59,9 @@ namespace Withdraw.BLL.Services
                 throw new NotFoundException("Предмет не найден в инвентаре");
 
             var item = inventory.Item!;
-
-            var info = await _withdrawService.GetItemInfoAsync(item, cancellation);
-
-            var price = info.PriceKopecks * 0.01M;
             var itemCost = inventory.FixedCost / 7;
+            var info = await _withdrawService.GetItemInfoAsync(item, cancellation);
+            var price = info.PriceKopecks * 0.01M;
 
             if (price > itemCost * 1.1M) throw new ConflictException("Цена на предмет нестабильна");
 
@@ -100,33 +69,139 @@ namespace Withdraw.BLL.Services
 
             if (balance.Balance <= price) throw new PaymentRequiredException("Ожидаем пополнения сервиса покупки");
 
-            var buyItem = await _withdrawService.BuyItemAsync(info, request.TradeUrl!,cancellation);
-
             var status = await _context.Statuses
                 .AsNoTracking()
-                .FirstAsync(iws => iws.Name == "purchase", cancellation);
+                .FirstAsync(iws => iws.Name == "recorded", cancellation);
 
             var withdraw = new UserHistoryWithdraw
             {
-                InvoiceId = buyItem.Id,
+                InvoiceId = "0",
+                TradeUrl = request.TradeUrl,
                 StatusId = status.Id,
                 Date = DateTime.UtcNow - TimeSpan.FromSeconds(120),
+                UpdateDate = DateTime.UtcNow,
                 ItemId = item.Id,
                 UserId = userId,
-                MarketId = buyItem.Market!.Id,
+                MarketId = item.Game!.Market!.Id,
                 FixedCost = inventory.FixedCost
             };
 
+            _logger.LogInformation($"UserId - {userId} оформил заявку на вывод - {item.Id}");
+
             _context.Inventories.Remove(inventory);
             await _context.Withdraws.AddAsync(withdraw, cancellation);
-
             await _context.SaveChangesAsync(cancellation);
+
+            _logger.LogInformation($"UserId - {userId} сделал заявку на вывод - {item.Id}");
 
             await _publisher.SendAsync(new SiteStatisticsAdminTemplate { 
                 FundsUsersInventories = -inventory.FixedCost 
             }, cancellation);
 
             return withdraw.ToResponse();
+        }
+
+        public async Task WithdrawStatusManagerAsync(CancellationToken cancellation = default)
+        {
+            var withdraw = await _context.Withdraws
+                .Include(uhw => uhw.Item)
+                .Include(uhw => uhw.Item!.Game)
+                .Include(uhw => uhw.Market)
+                .Include(uhw => uhw.Status)
+                .AsNoTracking()
+                .Where(uhw => 
+                    uhw.UpdateDate + TimeSpan.FromSeconds(5) <= DateTime.UtcNow && 
+                    uhw.Status!.Name != "given" && 
+                    uhw.Status!.Name != "cancel" && 
+                    uhw.Status!.Name != "blocked")
+                .OrderByDescending(e => e.Date)
+                .FirstOrDefaultAsync(cancellationToken: cancellation);
+
+            if (withdraw is null) return;
+
+            withdraw.UpdateDate = DateTime.UtcNow;
+            _context.Entry(withdraw).Property(p => p.UpdateDate).IsModified = true;
+            await _context.SaveChangesAsync(cancellation);
+
+            var statuses = await _context.Statuses
+                .AsNoTracking()
+                .ToListAsync(cancellation);
+
+            if (withdraw.Status!.Name == "recorded") await BuyItemAsync(withdraw, statuses, cancellation);
+            else await UpdateStatusHistoryWithdraw(withdraw, statuses, cancellation);
+        }
+
+        private async Task BuyItemAsync(UserHistoryWithdraw withdraw, IReadOnlyCollection<WithdrawStatus> statuses, CancellationToken cancellation)
+        {
+            var itemCost = withdraw.FixedCost / 7;
+            var item = withdraw.Item!;
+            var info = await _withdrawService.GetItemInfoAsync(item, cancellation);
+            var price = info.PriceKopecks * 0.01M;
+
+            if (price > itemCost * 1.1M)
+            {
+                withdraw.StatusId = statuses.First(s => s.Name == "cancel").Id;
+                return;
+            }
+
+            var balance = await _withdrawService.GetBalanceAsync(info.Market.Name!, cancellation);
+
+            if (balance.Balance <= price)
+            {
+                _logger.LogInformation("Ожидаем пополнения сервиса покупки");
+                return;
+            }
+
+            _logger.LogInformation($"UserId - {withdraw.UserId}, ItemId - {withdraw.ItemId} отправил запрос на покупку;");
+
+            try
+            {
+                var buyItem = await _withdrawService.BuyItemAsync(info, withdraw.TradeUrl!, cancellation);
+
+                withdraw.InvoiceId = buyItem.Id;
+                withdraw.StatusId = statuses.First(ws => ws.Name == "purchase").Id;
+                _context.Entry(withdraw).Property(p => p.StatusId).IsModified = true;
+                _context.Entry(withdraw).Property(p => p.InvoiceId).IsModified = true;
+                await _context.SaveChangesAsync(cancellation);
+
+                _logger.LogInformation($"UserId - {withdraw.UserId}, ItemId - {withdraw.ItemId} купил предмет;");
+            }
+            catch (RequestTimeoutException ex)
+            {
+                _logger.LogError($"UserId - {withdraw.UserId}, ItemId - {withdraw.ItemId} поймал ошибку на покупке;");
+                _logger.LogError(ex, ex.Message);
+                _logger.LogError(ex, ex.StackTrace);
+            }
+            catch (Exception ex)
+            {
+                //TODO Оповещение по тг
+                _logger.LogCritical($"UserId - {withdraw.UserId}, ItemId - {withdraw.ItemId} поймал ошибку на покупке;");
+                _logger.LogCritical($"UserId - {withdraw.UserId}, ItemId - {withdraw.ItemId} заблокирует вывод предмета;");
+                _logger.LogCritical(ex, ex.Message);
+                _logger.LogError(ex, ex.StackTrace);
+
+                withdraw.StatusId = statuses.First(ws => ws.Name == "blocked").Id;
+                _context.Entry(withdraw).Property(p => p.StatusId).IsModified = true;
+                await _context.SaveChangesAsync(cancellation);
+            }
+        }
+
+        private async Task UpdateStatusHistoryWithdraw(UserHistoryWithdraw withdraw, IEnumerable<WithdrawStatus> statuses, 
+            CancellationToken cancellation)
+        {
+            var info = await _withdrawService.GetTradeInfoAsync(withdraw, cancellation);
+
+            withdraw.StatusId = statuses.First(ws => ws.Name == info.Status).Id;
+            _context.Entry(withdraw).Property(p => p.StatusId).IsModified = true;
+            await _context.SaveChangesAsync(cancellation);
+
+            if (info.Status != "given") return;
+
+            await _publisher.SendAsync(new SiteStatisticsTemplate
+            {
+                WithdrawnItems = 1,
+                WithdrawnFunds = Convert.ToInt32(withdraw.FixedCost)
+            }, cancellation);
         }
     }
 }

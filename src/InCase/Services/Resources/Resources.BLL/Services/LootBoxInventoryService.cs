@@ -89,18 +89,17 @@ namespace Resources.BLL.Services
 
             var inventory = new LootBoxInventory()
             {
-                Id = Guid.NewGuid(),
+                Id = request.Id,
                 BoxId = request.BoxId,
                 ItemId = request.ItemId,
-                ChanceWining = request.ChanceWining,
-                Item = item,
-                Box = box
+                ChanceWining = request.ChanceWining
             };
 
             if (box.GameId != item.GameId) 
                 throw new ConflictException("Кейс и предмет должны быть с одной игры");
 
             await _context.BoxInventories.AddAsync(inventory, cancellation);
+            await _context.SaveChangesAsync(cancellation);
             await _publisher.SendAsync(new LootBoxInventoryTemplate()
             {
                 Id = request.Id,
@@ -108,7 +107,9 @@ namespace Resources.BLL.Services
                 ChanceWining = request.ChanceWining,
                 ItemId = request.ItemId
             }, cancellation);
-            await _context.SaveChangesAsync(cancellation);
+
+            inventory.Item = item;
+            inventory.Box = box;
 
             return inventory.ToResponse();
         }

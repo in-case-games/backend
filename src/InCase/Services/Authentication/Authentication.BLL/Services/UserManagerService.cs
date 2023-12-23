@@ -9,10 +9,15 @@ namespace Authentication.BLL.Services
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly ILogger<UserManagerService> _logger;
+        private readonly IHostApplicationLifetime _lifetime;
 
-        public UserManagerService(IServiceProvider serviceProvider, ILogger<UserManagerService> logger)
+        public UserManagerService(
+            IServiceProvider serviceProvider,
+            IHostApplicationLifetime lifetime,
+            ILogger<UserManagerService> logger)
         {
             _serviceProvider = serviceProvider;
+            _lifetime = lifetime;
             _logger = logger;
         }
 
@@ -27,6 +32,8 @@ namespace Authentication.BLL.Services
 
         private async Task DoWork(CancellationToken stoppingToken)
         {
+            if (!await WaitForAppStartup(stoppingToken)) return;
+
             while (!stoppingToken.IsCancellationRequested)
             {
                 try
@@ -38,10 +45,24 @@ namespace Authentication.BLL.Services
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, ex.Message);
+                    _logger.LogError(ex, ex.StackTrace);
                 }
 
-                await Task.Delay(5000, stoppingToken);
+                await Task.Delay(1000, stoppingToken);
             }
+        }
+
+        private async Task<bool> WaitForAppStartup(CancellationToken stoppingToken)
+        {
+            var startedSource = new TaskCompletionSource();
+            await using var reg1 = _lifetime.ApplicationStarted.Register(() => startedSource.SetResult());
+
+            var cancelledSource = new TaskCompletionSource();
+            await using var reg2 = stoppingToken.Register(() => cancelledSource.SetResult());
+
+            var completedTask = await Task.WhenAny(startedSource.Task, cancelledSource.Task).ConfigureAwait(false);
+
+            return completedTask == startedSource.Task;
         }
     }
 }

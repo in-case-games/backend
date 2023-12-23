@@ -8,7 +8,8 @@ namespace Withdraw.DAL.Configurations
     {
         private static readonly List<WithdrawStatus> Statuses = new() {
             new WithdrawStatus { Name = "purchase" }, new WithdrawStatus { Name = "transfer" }, 
-            new WithdrawStatus { Name = "given" }, new WithdrawStatus { Name = "cancel" }
+            new WithdrawStatus { Name = "given" }, new WithdrawStatus { Name = "cancel" },
+            new WithdrawStatus { Name = "recorded" }, new WithdrawStatus { Name = "blocked" }
         };
 
         public override void Configure(EntityTypeBuilder<WithdrawStatus> builder)

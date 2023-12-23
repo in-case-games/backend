@@ -23,17 +23,17 @@ namespace Authentication.BLL.Services
                 .Include(u => u.AdditionalInfo)
                 .AsNoTracking()
                 .Where(uai => uai.AdditionalInfo!.DeletionDate <= DateTime.UtcNow)
+                .Take(10)
                 .ToListAsync(cancellationToken);
 
             foreach (var user in users)
             {
                 _context.Users.Remove(user);
+                await _context.SaveChangesAsync(cancellationToken);
                 await _publisher.SendAsync(user.ToTemplate(true), cancellationToken);
 
-                FileService.RemoveFolder(@$"users/{user.Id}/");
+                FileService.RemoveFolder($"users/{user.Id}/");
             }
-
-            await _context.SaveChangesAsync(cancellationToken);
         }
     }
 }

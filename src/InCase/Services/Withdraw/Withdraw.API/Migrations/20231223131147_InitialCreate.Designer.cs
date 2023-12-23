@@ -12,7 +12,7 @@ using Withdraw.DAL.Data;
 namespace Withdraw.API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230817064807_InitialCreate")]
+    [Migration("20231223131147_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -54,12 +54,12 @@ namespace Withdraw.API.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("1d59abf1-ac51-46ef-9fe8-a1d3b1f80ad9"),
+                            Id = new Guid("2167273e-9b38-4832-8aad-06d4ea8034fe"),
                             Name = "csgo"
                         },
                         new
                         {
-                            Id = new Guid("8965bfb0-9af1-4362-adb5-7359f4e89a9d"),
+                            Id = new Guid("9e7eebcd-44d6-49f3-a5e9-5530f50dcf40"),
                             Name = "dota2"
                         });
                 });
@@ -131,14 +131,14 @@ namespace Withdraw.API.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("286b451c-1dfc-4be0-9f25-05c3974c3445"),
-                            GameId = new Guid("1d59abf1-ac51-46ef-9fe8-a1d3b1f80ad9"),
+                            Id = new Guid("cede606e-f821-44b4-8c70-ea836cbddb1a"),
+                            GameId = new Guid("2167273e-9b38-4832-8aad-06d4ea8034fe"),
                             Name = "tm"
                         },
                         new
                         {
-                            Id = new Guid("64f32a58-ceaa-44ce-b3ac-d4018917b4a3"),
-                            GameId = new Guid("8965bfb0-9af1-4362-adb5-7359f4e89a9d"),
+                            Id = new Guid("8e6ce950-9744-4c92-ae4c-dad991cbf1ea"),
+                            GameId = new Guid("9e7eebcd-44d6-49f3-a5e9-5530f50dcf40"),
                             Name = "tm"
                         });
                 });
@@ -191,6 +191,15 @@ namespace Withdraw.API.Migrations
                     b.Property<Guid>("StatusId")
                         .HasColumnType("uuid")
                         .HasColumnName("status_id");
+
+                    b.Property<string>("TradeUrl")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("trade_url");
+
+                    b.Property<DateTime>("UpdateDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("update_date");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid")
@@ -288,23 +297,33 @@ namespace Withdraw.API.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("d835f224-ddf1-487b-b4d6-d3e4ca0c3e85"),
+                            Id = new Guid("19c09bea-beb8-4973-967b-54f320dc6383"),
                             Name = "purchase"
                         },
                         new
                         {
-                            Id = new Guid("2f55a378-f701-4808-a13b-72592ba3b0e7"),
+                            Id = new Guid("f49cabfc-a3f2-4d9c-9180-de1291861fe0"),
                             Name = "transfer"
                         },
                         new
                         {
-                            Id = new Guid("3b9ed0cb-9971-4d3a-9911-894ceacdd49f"),
+                            Id = new Guid("0ef9de6c-f80d-4219-94a4-0539092a9618"),
                             Name = "given"
                         },
                         new
                         {
-                            Id = new Guid("de1a7a6a-6d20-4fd9-94d3-361c9e2ec56c"),
+                            Id = new Guid("ab55ab99-8658-4abf-a4e8-9211fde98007"),
                             Name = "cancel"
+                        },
+                        new
+                        {
+                            Id = new Guid("f4b2532a-6391-424f-b79d-7ae2a9f6bf70"),
+                            Name = "recorded"
+                        },
+                        new
+                        {
+                            Id = new Guid("bab4e5ac-232f-4455-9774-87e9b287a7f3"),
+                            Name = "blocked"
                         });
                 });
 
