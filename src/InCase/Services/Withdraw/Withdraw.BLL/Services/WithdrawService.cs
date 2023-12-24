@@ -111,6 +111,8 @@ namespace Withdraw.BLL.Services
                 .AsNoTracking()
                 .Where(uhw => 
                     uhw.UpdateDate + TimeSpan.FromSeconds(5) <= DateTime.UtcNow && 
+                    (uhw.Date + TimeSpan.FromMinutes(5) > uhw.UpdateDate ||
+                     uhw.UpdateDate + TimeSpan.FromMinutes(15) < DateTime.UtcNow) &&
                     uhw.Status!.Name != "given" && 
                     uhw.Status!.Name != "cancel" && 
                     uhw.Status!.Name != "blocked")
@@ -155,7 +157,7 @@ namespace Withdraw.BLL.Services
 
             _logger.LogInformation($"ItemId - {item.Id} Стоимость - {price}");
 
-            if (price > itemCost * 1.1M || info.PriceKopecks == 0 || info.Count == 0)
+            if (price > itemCost * 1.1M || info.PriceKopecks <= 0 || info.Count <= 0)
             {
                 withdraw.StatusId = statuses.First(s => s.Name == "cancel").Id;
                 return;

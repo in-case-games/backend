@@ -48,7 +48,7 @@ namespace Resources.BLL.Services
                     _logger.LogCritical(ex, ex.StackTrace);
                 }
 
-                await Task.Delay(1000, cancellationToken);
+                await Task.Delay(500, cancellationToken);
             }
         }
 

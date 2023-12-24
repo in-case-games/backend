@@ -51,7 +51,7 @@ namespace Resources.BLL.Services
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError($"Не смог получить стоимость предмета additional market - {idForMarket}");
+                    _logger.LogError($"Не смог получить стоимость - {idForMarket} тм");
                     _logger.LogError(ex, ex.Message);
                     _logger.LogError(ex, ex.StackTrace);
                     i++;
@@ -95,7 +95,7 @@ namespace Resources.BLL.Services
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError($"Не смог получить стоимость предмета original market - {hashName}");
+                    _logger.LogError($"Не смог получить стоимость - {hashName} стим");
                     _logger.LogError(ex, ex.Message);
                     _logger.LogError(ex, ex.StackTrace);
                     i++;

@@ -296,12 +296,12 @@ namespace Resources.BLL.Services
             var priceAdditional = await _platformServices[item.Game!.Name!]
                 .GetAdditionalMarketAsync(item.IdForMarket!, item.Game!.Name!, cancellation: cancellationToken);
 
-            var isAdditionalCost = priceOriginal.Cost <= 0 || (priceAdditional.Cost > priceOriginal.Cost);
+            var isAdditionalCost = priceOriginal.Cost <= 0 || priceAdditional.Cost > priceOriginal.Cost;
             var cost = isAdditionalCost ? priceAdditional.Cost : priceOriginal.Cost;
 
             item.UpdateDate = DateTime.UtcNow;
 
-            if (cost > 0) item.Cost = cost * 7M;
+            if (cost > 0) item.Cost = cost <= 1 ? 7 : cost * 7M;
 
             _context.Items.Update(item);
             await _context.SaveChangesAsync(cancellationToken);

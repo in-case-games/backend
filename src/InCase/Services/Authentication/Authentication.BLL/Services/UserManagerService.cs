@@ -48,7 +48,7 @@ namespace Authentication.BLL.Services
                     _logger.LogCritical(ex, ex.StackTrace);
                 }
 
-                await Task.Delay(1000, stoppingToken);
+                await Task.Delay(300, stoppingToken);
             }
         }
 
