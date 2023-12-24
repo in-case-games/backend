@@ -47,10 +47,6 @@ namespace Payment.BLL.Services
 
             var pay = invoice.Amount;
 
-            await _publisher.SendAsync(new SiteStatisticsAdminTemplate { 
-                TotalReplenishedFunds = pay 
-            }, cancellation);
-
             if (promocode is not null)
             {
                 await _publisher.SendAsync(new UserPromocodeBackTemplate
@@ -63,7 +59,7 @@ namespace Payment.BLL.Services
                 pay += pay * promocode.Discount;
             }
 
-            var payment = new UserPayment()
+            var payment = new UserPayment
             {
                 Amount = pay,
                 Currency = invoice.CurrencyProject,
@@ -76,6 +72,7 @@ namespace Payment.BLL.Services
             // CHECK: Notify true game money
             await _gmService.SendSuccess(cancellation);
             await _context.Payments.AddAsync(payment, cancellation);
+            await _context.SaveChangesAsync(cancellation);
             await _publisher.SendAsync(new UserPaymentTemplate
             {
                 Id = payment.Id,
@@ -85,7 +82,7 @@ namespace Payment.BLL.Services
                 Rate = payment.Rate,
                 UserId = payment.UserId
             }, cancellation);
-            await _context.SaveChangesAsync(cancellation);
+            await _publisher.SendAsync(new SiteStatisticsAdminTemplate { TotalReplenishedFunds = pay }, cancellation);
 
             return payment.ToResponse();
         }

@@ -123,10 +123,10 @@ namespace Support.BLL.Services
             topic.IsClosed = false;
             topic.Date = DateTime.UtcNow;
 
-            FileService.CreateFolder(@$"topic-answers/{request.Id}/");
-
             await _context.Topics.AddAsync(topic, cancellation);
             await _context.SaveChangesAsync(cancellation);
+
+            FileService.CreateFolder(@$"topic-answers/{request.Id}/");
 
             return topic.ToResponse();
         }
@@ -173,7 +173,7 @@ namespace Support.BLL.Services
             _context.Topics.Remove(topic);
             await _context.SaveChangesAsync(cancellation);
 
-            FileService.RemoveFolder(@$"topic-answers/{id}/");
+            FileService.RemoveFolder($"topic-answers/{id}/");
 
             return topic.ToResponse();
         }
@@ -190,7 +190,7 @@ namespace Support.BLL.Services
             _context.Topics.Remove(topic);
             await _context.SaveChangesAsync(cancellation);
 
-            FileService.RemoveFolder(@$"topic-answers/{id}/");
+            FileService.RemoveFolder($"topic-answers/{id}/");
 
             return topic.ToResponse();
         }

@@ -16,7 +16,8 @@ namespace Game.BLL.Services
             _context = context;
         }
 
-        public async Task<User?> GetAsync(Guid id, CancellationToken cancellation = default) => await _context.Users
+        public async Task<User?> GetAsync(Guid id, CancellationToken cancellation = default) => 
+            await _context.Users
             .AsNoTracking()
             .FirstOrDefaultAsync(u => u.Id == id, cancellation);
 
@@ -25,10 +26,7 @@ namespace Game.BLL.Services
             if (await _context.Users.AnyAsync(u => u.Id == template.Id, cancellation))
                 throw new NotFoundException("Пользователь существует");
 
-            await _context.Users.AddAsync(new User
-            {
-                Id = template.Id,
-            }, cancellation);
+            await _context.Users.AddAsync(new User { Id = template.Id, }, cancellation);
             await _context.AdditionalInfos.AddAsync(new UserAdditionalInfo
             {
                 UserId = template.Id,

@@ -13,13 +13,13 @@ namespace Authentication.BLL.Services
 {
     public class AuthenticationService : IAuthenticationService
     {
-        private readonly ApplicationDbContext _context;
         private readonly IJwtService _jwtService;
+        private readonly ApplicationDbContext _context;
         private readonly BasePublisher _publisher;
 
         public AuthenticationService(
-            ApplicationDbContext context, 
             IJwtService jwtService,
+            ApplicationDbContext context, 
             BasePublisher publisher)
         {
             _context = context;
@@ -92,7 +92,8 @@ namespace Authentication.BLL.Services
                 DeletionDate = DateTime.UtcNow + TimeSpan.FromDays(1),
                 IsConfirmed = false,
             }, cancellationToken);
-
+            await _context.SaveChangesAsync(cancellationToken);
+            await _publisher.SendAsync(user.ToTemplate(false), cancellationToken);
             await _publisher.SendAsync(new EmailTemplate()
             {
                 Email = user.Email!,
@@ -107,10 +108,8 @@ namespace Authentication.BLL.Services
                     ButtonLink = $"email/confirm/account?token={_jwtService.CreateEmailToken(user)}"
                 }
             }, cancellationToken);
-            await _publisher.SendAsync(user.ToTemplate(false), cancellationToken);
-            await _context.SaveChangesAsync(cancellationToken);
 
-            FileService.CreateFolder(@$"users/{user.Id}/");
+            FileService.CreateFolder($"users/{user.Id}/");
         }
 
         public async Task<TokensResponse> RefreshTokensAsync(string token, CancellationToken cancellationToken = default)

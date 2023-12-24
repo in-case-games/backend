@@ -5,8 +5,10 @@ namespace Withdraw.DAL.Entities
     public class UserHistoryWithdraw : BaseEntity
     {
         public string? InvoiceId { get; set; }
+        public string? TradeUrl { get; set; }
         public decimal FixedCost { get; set; }
         public DateTime Date { get; set; }
+        public DateTime UpdateDate { get; set; }
 
         public GameItem? Item { get; set; }
         public GameMarket? Market { get; set; }

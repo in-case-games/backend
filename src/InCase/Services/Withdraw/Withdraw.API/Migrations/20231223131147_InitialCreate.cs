@@ -120,8 +120,10 @@ namespace Withdraw.API.Migrations
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
                     invoice_id = table.Column<string>(type: "text", nullable: false),
+                    trade_url = table.Column<string>(type: "text", nullable: false),
                     fixed_cost = table.Column<decimal>(type: "numeric(18,5)", nullable: false),
                     date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    update_date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     market_id = table.Column<Guid>(type: "uuid", nullable: false),
                     status_id = table.Column<Guid>(type: "uuid", nullable: false),
                     user_id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -161,8 +163,8 @@ namespace Withdraw.API.Migrations
                 columns: new[] { "id", "name" },
                 values: new object[,]
                 {
-                    { new Guid("1d59abf1-ac51-46ef-9fe8-a1d3b1f80ad9"), "csgo" },
-                    { new Guid("8965bfb0-9af1-4362-adb5-7359f4e89a9d"), "dota2" }
+                    { new Guid("2167273e-9b38-4832-8aad-06d4ea8034fe"), "csgo" },
+                    { new Guid("9e7eebcd-44d6-49f3-a5e9-5530f50dcf40"), "dota2" }
                 });
 
             migrationBuilder.InsertData(
@@ -170,10 +172,12 @@ namespace Withdraw.API.Migrations
                 columns: new[] { "id", "name" },
                 values: new object[,]
                 {
-                    { new Guid("2f55a378-f701-4808-a13b-72592ba3b0e7"), "transfer" },
-                    { new Guid("3b9ed0cb-9971-4d3a-9911-894ceacdd49f"), "given" },
-                    { new Guid("d835f224-ddf1-487b-b4d6-d3e4ca0c3e85"), "purchase" },
-                    { new Guid("de1a7a6a-6d20-4fd9-94d3-361c9e2ec56c"), "cancel" }
+                    { new Guid("0ef9de6c-f80d-4219-94a4-0539092a9618"), "given" },
+                    { new Guid("19c09bea-beb8-4973-967b-54f320dc6383"), "purchase" },
+                    { new Guid("ab55ab99-8658-4abf-a4e8-9211fde98007"), "cancel" },
+                    { new Guid("bab4e5ac-232f-4455-9774-87e9b287a7f3"), "blocked" },
+                    { new Guid("f49cabfc-a3f2-4d9c-9180-de1291861fe0"), "transfer" },
+                    { new Guid("f4b2532a-6391-424f-b79d-7ae2a9f6bf70"), "recorded" }
                 });
 
             migrationBuilder.InsertData(
@@ -181,8 +185,8 @@ namespace Withdraw.API.Migrations
                 columns: new[] { "id", "game_id", "name" },
                 values: new object[,]
                 {
-                    { new Guid("286b451c-1dfc-4be0-9f25-05c3974c3445"), new Guid("1d59abf1-ac51-46ef-9fe8-a1d3b1f80ad9"), "tm" },
-                    { new Guid("64f32a58-ceaa-44ce-b3ac-d4018917b4a3"), new Guid("8965bfb0-9af1-4362-adb5-7359f4e89a9d"), "tm" }
+                    { new Guid("8e6ce950-9744-4c92-ae4c-dad991cbf1ea"), new Guid("9e7eebcd-44d6-49f3-a5e9-5530f50dcf40"), "tm" },
+                    { new Guid("cede606e-f821-44b4-8c70-ea836cbddb1a"), new Guid("2167273e-9b38-4832-8aad-06d4ea8034fe"), "tm" }
                 });
 
             migrationBuilder.CreateIndex(

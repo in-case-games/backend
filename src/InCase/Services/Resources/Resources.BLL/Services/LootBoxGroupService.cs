@@ -99,19 +99,20 @@ namespace Resources.BLL.Services
             if (await _context.Groups.AnyAsync(lb => lb.BoxId == request.BoxId && lb.GroupId == request.GroupId, cancellation))
                 throw new ConflictException("Кейс уже есть в этой группе");
 
-            var boxGroup = new LootBoxGroup()
+            var boxGroup = new LootBoxGroup
             {
                 Id = Guid.NewGuid(),
                 BoxId = request.BoxId,
                 GameId = request.GameId,
                 GroupId = request.GroupId,
-                Game = game,
-                Group = group,
-                Box = box
             };
 
             await _context.Groups.AddAsync(boxGroup, cancellation);
             await _context.SaveChangesAsync(cancellation);
+
+            boxGroup.Game = game;
+            boxGroup.Group = group;
+            boxGroup.Box = box;
 
             return boxGroup.ToResponse();
         }
@@ -134,19 +135,20 @@ namespace Resources.BLL.Services
             if (await _context.Groups.AnyAsync(lb => lb.BoxId == request.BoxId && lb.GroupId == request.GroupId, cancellation))
                 throw new ConflictException("Кейс уже есть в этой группе");
 
-            var boxGroup = new LootBoxGroup()
+            var boxGroup = new LootBoxGroup
             {
                 Id = request.Id,
                 BoxId = request.BoxId,
                 GameId = request.GameId,
-                GroupId = request.GroupId,
-                Game = game,
-                Group = group,
-                Box = box
+                GroupId = request.GroupId
             };
 
             _context.Groups.Update(boxGroup);
             await _context.SaveChangesAsync(cancellation);
+
+            boxGroup.Game = game;
+            boxGroup.Group = group;
+            boxGroup.Box = box;
 
             return boxGroup.ToResponse();
         }

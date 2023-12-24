@@ -1,4 +1,6 @@
-﻿using EmailSender.BLL.Interfaces;
+﻿using System.Text;
+using EmailSender.BLL.Common;
+using EmailSender.BLL.Interfaces;
 using Infrastructure.MassTransit.Email;
 using MailKit.Net.Smtp;
 using Microsoft.Extensions.Configuration;
@@ -25,12 +27,12 @@ namespace EmailSender.BLL.Services
 
         public async Task SendToEmailAsync(EmailTemplate template, CancellationToken cancellationToken = default)
         {
-            var emailMessage = new MimeMessage();
+            var msg = new MimeMessage();
 
-            emailMessage.From.Add(new MailboxAddress("Администрация сайта", _smtpEmail));
-            emailMessage.To.Add(new MailboxAddress(template.Email, template.Email));
-            emailMessage.Subject = template.Subject;
-            emailMessage.Body = new TextPart("html") { Text = CreateBodyLetter(template) };
+            msg.From.Add(new MailboxAddress("Администрация сайта", _smtpEmail));
+            msg.To.Add(new MailboxAddress(template.Email, template.Email));
+            msg.Subject = template.Subject;
+            msg.Body = new TextPart("html") { Text = CreateBodyLetter(template) };
 
             using var client = new SmtpClient();
             await client.ConnectAsync(_host, _port, true, cancellationToken);
@@ -39,34 +41,12 @@ namespace EmailSender.BLL.Services
 
             try
             {
-                await client.SendAsync(emailMessage, cancellationToken);
+                await client.SendAsync(msg, cancellationToken);
             }
             catch (SmtpCommandException) { }
-            catch (Exception)
-            {
+            catch (Exception) {
                 // ignored
             }
-        }
-
-        private static string ConvertToBodyTemplate(EmailTemplate template)
-        {
-            var buttonTemplate = "";
-            var bannerTemplate = "";
-
-            template.Body.Description += "<br>С уважением команда InCase.";
-
-            if (string.IsNullOrEmpty(template.Body.ButtonText))
-                template.Body.ButtonText = "Подтверждаю";
-
-            if (!string.IsNullOrEmpty(template.Body.ButtonLink))
-                buttonTemplate = $"<div style=\"padding-bottom:30px;text-align:center\"><a href=\"{template.Body.ButtonLink}\" style=\"text-decoration: none; margin: 30px 0; cursor: pointer; background-color: transparent; font-family: 'Trebuchet MS',sans-serif; font-weight: bold; padding: 8px 85px; font-size: 16px; color: #FD7E21; border: 2px solid #FD7E21; border-radius: 8px;\" target=\"_blank\" data-saferedirecturl=\"ya.ru\">{template.Body.ButtonText}</a></div>";
-
-            var bannerTableTemplates = template.BannerTemplates.Aggregate("", (current, banner) => current + $"<table align=\"center\" style=\"padding:10px;\"><tbody><tr><td><a href=\"{banner.Href}\"><img align=\"center\" src=\"{banner.ImageUri}\" width=\"350\" height=\"110\" alt=\"icon\" aria-hidden=\"true\" alt=\"InCase\" data-bit=\"iit\"/></a></td></tr></tbody></table>");
-
-            if (!string.IsNullOrEmpty(bannerTableTemplates))
-                bannerTemplate = $"<div style=\"text-align:left;\"><hr style=\"border: 1px solid #FD7E21; margin: 10px 50px;\">{bannerTableTemplates}</div>";
-
-            return $"<!DOCTYPE html PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN'><html><head><meta http-equiv='Content-type' content='text/html; charset=utf-8'/></head><body><div style=\"margin:0;color: #FD7E21;padding:0\" bgcolor=\"#FFFFFF\"><table width=\"100%\" height=\"100%\" style=\"min-width:480px\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" lang=\"en\"><tbody><tr height=\"32\" style=\"height:32px\"><td></td></tr><tr align=\"center\"><td><div><div></div></div><table border=\"0\" cellspacing=\"0\" cellpadding=\"0\" style=\"padding-bottom:10px;max-width:520px;min-width:480px;color: #FD7E21;\" bgcolor=\"#1A1A1D\"><tbody><tr><td width=\"8\" style=\"width:8px\"></td><td><div style=\"padding:40px 10px 0px 10px\" align=\"center\"><!--Header--><div style=\"font-family:'Trebuchet MS',Gadget,'Lucida Sans Unicode',sans-serif;line-height:32px;padding-bottom:60px;text-align:center;word-break:break-word\"><table align=\"center\"><tbody><tr style=\"line-height:normal;\"><td align=\"left\"><p style=\"font-family:'Trebuchet MS',Gadget,'Lucida Sans Unicode',sans-serif;font-size:20px;line-height:20px;margin: 0;color: #FD7E21;\">{template.Header.Title}</p><p style=\"font-family:'Trebuchet MS',Gadget,'Lucida Sans Unicode',sans-serif;font-size:20px;line-height:20px;margin: 0 0 0 50px;color: #FD7E21;\">{template.Header.Subtitle}</p></td><td width=\"160px\"></td><td align=\"right\"><a href=\"https://yandex.ru\" style=\"text-decoration: none;font-family:'Trebuchet MS',Gadget,'Lucida Sans Unicode',sans-serif;font-size:40px;line-height:20px;margin: 0;color: #FD7E21;cursor: pointer;\">InCase</a></td></tr></tbody></table></div><!--Body--><div style=\"font-family:'Trebuchet MS',Gadget,'Lucida Sans Unicode',sans-serif;line-height:32px;padding-bottom:18px;text-align:center;word-break:break-word;font-size:20px;color:#fd7e21;\">{template.Body.Title}</div><div style=\"font-family:'Trebuchet MS',Gadget,'Lucida Sans Unicode',sans-serif;font-size:15px;line-height:20px;text-align:center;color: #FD7E21;padding-bottom:30px;\">{template.Body.Description}</div>{buttonTemplate}{bannerTemplate}<!--FOOTER--><div style=\"text-align:left;\"><hr style=\"border: 1px solid #FD7E21; margin: 10px 50px;\"><table align=\"center\" style=\"padding-bottom:20px;\"><tbody><tr><td><img align=\"center\" src=\"https://sun9-4.userapi.com/impg/rzB56cbWicyBWzmj5u0f_BZ4-IIJFguSnFrPcw/mIziSoNmxvk.jpg?size=175x220&quality=96&sign=46ea7dfbe656fa8ddeadd1896e6b93f4&type=album\" width=\"100\" alt=\"icon\" aria-hidden=\"true\" alt=\"InCase\" data-bit=\"iit\"/></td></tr></tbody></table><div style=\"font-family:'Trebuchet MS',Gadget,'Lucida Sans Unicode',sans-serif;font-size:14px;color: #FD7E21;line-height:18px;text-align:center\"><table align=\"center\" style=\"padding-bottom:20px;\"><tbody><tr><td><a href=\"https://yandex.ru\"><img style=\"cursor: pointer;margin-right: 10px;\" src=\"https://sun9-33.userapi.com/impg/pDHT-ZNEx2eALiBOCavVLivuxZoJcCBbyRukwA/pQiJz3xs1HQ.jpg?size=50x29&quality=96&sign=b32c387df9355b766f711a031c36b443&type=album\" width=\"45\" alt=\"icon\" aria-hidden=\"true\" alt=\"InCase\" data-bit=\"iit\"/></a></td><td><a href=\"https://yandex.ru\"><img style=\"cursor: pointer;margin-right: 10px;\" src=\"https://sun9-21.userapi.com/impg/A-6P4uCJQZfR66QrTrieXWApphA63QRebdH9hw/7DWAmoZcQY8.jpg?size=37x37&quality=96&sign=464dd75123df66fee21ec449826783bb&type=album\" href=\"yandex.ru\" width=\"32\" alt=\"icon\" aria-hidden=\"true\" alt=\"InCase\" data-bit=\"iit\"/></a></td><td><a href=\"https://yandex.ru\"><img style=\"cursor: pointer;margin-right: 10px;\" src=\"https://sun9-18.userapi.com/impg/QHdJOSjvwnI5RF242kIkz8ANmj7e0sCOxL1MxA/gV-DPmqRvB0.jpg?size=38x38&quality=96&sign=5d32284e755ed8a955a90c98751d168f&type=album\" width=\"32\" alt=\"icon\" aria-hidden=\"true\" alt=\"InCase\" data-bit=\"iit\"/></a></td></tr></tbody></table></div></div></div></td><td width=\"8\" style=\"width:8px\"></td></tr></tbody></table></td></tr><tr height=\"32\" style=\"height:32px\"><td></td></tr></tbody></table></div></body></html>";
         }
 
         private string CreateBodyLetter(EmailTemplate template)
@@ -74,7 +54,8 @@ namespace EmailSender.BLL.Services
             if (!string.IsNullOrEmpty(template.Body.ButtonLink))
                 template.Body.ButtonLink = _requestUrl + template.Body.ButtonLink;
 
-            if (!string.IsNullOrEmpty(template.Header.Title)) return ConvertToBodyTemplate(template);
+            if (!string.IsNullOrEmpty(template.Header.Title)) 
+                return ConvertToBodyTemplate(template);
 
             var headerWords = template.Subject.Split(" ").ToList();
 
@@ -87,10 +68,75 @@ namespace EmailSender.BLL.Services
                 headerWords.Remove(headerWords[0]);
             }
 
-            foreach (var word in headerWords)
-                template.Header.Subtitle += word + " ";
+            foreach (var word in headerWords) template.Header.Subtitle += word + " ";
 
             return ConvertToBodyTemplate(template);
+        }
+
+        private static string ConvertToBodyTemplate(EmailTemplate template)
+        {
+            template.Body.Description += "<br>С уважением команда InCase.";
+
+            if (string.IsNullOrEmpty(template.Body.ButtonText)) template.Body.ButtonText = "Подтверждаю";
+
+            var buttonTemplate = CreateButton(template.Body.ButtonLink, template.Body.ButtonText);
+            var bannerTemplate = CreateBanner(template.BannerTemplates);
+
+            return RenderBodyMessage(template, buttonTemplate, bannerTemplate).ToString();
+        }
+
+        private static StringBuilder CreateButton(string? link, string text)
+        {
+            if (string.IsNullOrEmpty(link)) return new StringBuilder();
+
+            var button = new StringBuilder(EmailBodyConstants.ButtonPair1);
+
+            button.Append(link);
+            button.Append(EmailBodyConstants.ButtonPair2);
+            button.Append(text);
+            button.Append(EmailBodyConstants.ButtonPair3);
+
+            return button;
+        }
+
+        private static StringBuilder CreateBanner(List<EmailBannerTemplate> bannerTemplates)
+        {
+            if (bannerTemplates.Count == 0) return new StringBuilder();
+
+            var banners = new StringBuilder(EmailBodyConstants.BannerPair1);
+
+            foreach (var b in bannerTemplates)
+            {
+                banners.Append(EmailBodyConstants.BannerPair2);
+                banners.Append(b.Href);
+                banners.Append(EmailBodyConstants.BannerPair3);
+                banners.Append(b.ImageUri);
+                banners.Append(EmailBodyConstants.BannerPair4);
+            }
+
+            banners.Append(EmailBodyConstants.BannerPair5);
+            
+            return banners;
+        }
+
+        private static StringBuilder RenderBodyMessage(EmailTemplate template, StringBuilder buttonTemplate, 
+            StringBuilder bannerTemplate)
+        {
+            var body = new StringBuilder(EmailBodyConstants.BodyPair1);
+
+            body.Append(template.Header.Title);
+            body.Append(EmailBodyConstants.BodyPair2);
+            body.Append(template.Header.Subtitle);
+            body.Append(EmailBodyConstants.BodyPair3);
+            body.Append(template.Body.Title);
+            body.Append(EmailBodyConstants.BodyPair4);
+            body.Append(template.Body.Description);
+            body.Append(EmailBodyConstants.BodyPair5);
+            body.Append(buttonTemplate);
+            body.Append(bannerTemplate);
+            body.Append(EmailBodyConstants.BodyPair6);
+
+            return body;
         }
     }
 }

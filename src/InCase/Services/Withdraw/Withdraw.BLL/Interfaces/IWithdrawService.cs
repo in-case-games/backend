@@ -6,7 +6,7 @@ namespace Withdraw.BLL.Interfaces
     {
         public Task<UserHistoryWithdrawResponse> WithdrawItemAsync(WithdrawItemRequest request, Guid userId, CancellationToken cancellation = default);
         public Task<BalanceMarketResponse> GetMarketBalanceAsync(string marketName, CancellationToken cancellation = default);
-        public Task WithdrawStatusManagerAsync(int count, CancellationToken cancellation = default);
+        public Task WithdrawStatusManagerAsync(CancellationToken cancellation = default);
         public Task<ItemInfoResponse> GetItemInfoAsync(Guid id, CancellationToken cancellation = default);
     }
 }

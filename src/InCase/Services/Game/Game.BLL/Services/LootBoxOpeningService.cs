@@ -7,16 +7,19 @@ using Game.DAL.Entities;
 using Infrastructure.MassTransit.Statistics;
 using Infrastructure.MassTransit.User;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Game.BLL.Services
 {
     public class LootBoxOpeningService : ILootBoxOpeningService
     {
+        private readonly ILogger<LootBoxOpeningService> _logger;
         private readonly ApplicationDbContext _context;
         private readonly BasePublisher _publisher;
 
-        public LootBoxOpeningService(ApplicationDbContext context, BasePublisher publisher)
+        public LootBoxOpeningService(ILogger<LootBoxOpeningService> logger, ApplicationDbContext context, BasePublisher publisher)
         {
+            _logger = logger;
             _context = context;
             _publisher = publisher;
         }
@@ -96,17 +99,24 @@ namespace Game.BLL.Services
                 }
             }
 
-            await _publisher.SendAsync(new SiteStatisticsTemplate { LootBoxes = 1 }, cancellation);
-            await _publisher.SendAsync(new SiteStatisticsAdminTemplate
+            var opening = new UserOpening
             {
-                RevenueLootBoxCommission = revenue, 
-                FundsUsersInventories = winItem.Cost
-            }, cancellation);
+                UserId = userId,
+                BoxId = box.Id,
+                ItemId = winItem.Id,
+                Date = DateTime.UtcNow
+            };
 
             box.Balance -= expenses;
 
+            _logger.LogTrace($"UID - {userId}, открыл - {id}, выпало - {winItem.Id}, сняло - {boxCost}");
+
             _context.Entry(info).Property(p => p.Balance).IsModified = true;
             _context.Entry(box).Property(p => p.Balance).IsModified = true;
+            await _context.Openings.AddAsync(opening, cancellation);
+            await _context.SaveChangesAsync(cancellation);
+
+            _logger.LogTrace($"UID - {userId}, UOID - {opening.Id} зафиксировал");
 
             await _publisher.SendAsync(new UserInventoryTemplate
             {
@@ -115,14 +125,12 @@ namespace Game.BLL.Services
                 ItemId = winItem.Id,
                 UserId = userId,
             }, cancellation);
-            await _context.Openings.AddAsync(new UserOpening
+            await _publisher.SendAsync(new SiteStatisticsTemplate { LootBoxes = 1 }, cancellation);
+            await _publisher.SendAsync(new SiteStatisticsAdminTemplate
             {
-                UserId = userId,
-                BoxId = box.Id,
-                ItemId = winItem.Id,
-                Date = DateTime.UtcNow
+                RevenueLootBoxCommission = revenue,
+                FundsUsersInventories = winItem.Cost
             }, cancellation);
-            await _context.SaveChangesAsync(cancellation);
 
             return new GameItemResponse
             {
@@ -157,7 +165,6 @@ namespace Game.BLL.Services
 
             _context.Boxes.Attach(box);
             _context.Entry(box).Property(p => p.VirtualBalance).IsModified = true;
-
             await _context.SaveChangesAsync(cancellation);
 
             return new GameItemResponse
@@ -218,6 +225,8 @@ namespace Game.BLL.Services
                         Cost = item.Cost, 
                         Count = 1 
                     });
+
+                    await _context.SaveChangesAsync(cancellation);
                 }
                 catch(Exception ex)
                 {
@@ -226,8 +235,6 @@ namespace Game.BLL.Services
                     throw new StatusCodeExtendedException(ErrorCodes.UnknownError, ex.Message, winItems);
                 }
             }
-
-            await _context.SaveChangesAsync(cancellation);
 
             return winItems;
         }

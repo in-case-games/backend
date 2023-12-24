@@ -34,8 +34,6 @@ namespace Authentication.BLL.Services
             if (!ValidationService.IsValidUserPassword(in user, password))
                 throw new ForbiddenException("Неверный пароль");
 
-            var token = _jwtService.CreateEmailToken(user);
-
             await _publisher.SendAsync(new EmailTemplate
             {
                 Email = user.Email!,
@@ -53,7 +51,7 @@ namespace Authentication.BLL.Services
                     $"Если это были не вы, то срочно измените пароль в настройках вашего аккаунта, " +
                     $"вас автоматически отключит со всех устройств. " +
                     $"Мы удалим ваш аккаунт при достижении 30 дней с момента нажатия на эту кнопку.",
-                    ButtonLink = $"email/confirm/delete?token={token}"
+                    ButtonLink = $"email/confirm/delete?token={_jwtService.CreateEmailToken(user)}"
                 }
             }, cancellationToken);
         }
@@ -65,8 +63,6 @@ namespace Authentication.BLL.Services
                 .FirstOrDefaultAsync(u => u.Login == request.Login || u.Email == request.Email, cancellationToken) ??
                 throw new NotFoundException("Пользователь не найден");
 
-            var token = _jwtService.CreateEmailToken(user);
-
             await _publisher.SendAsync(new EmailTemplate
             {
                 Email = user.Email!,
@@ -77,7 +73,7 @@ namespace Authentication.BLL.Services
                     Title = $"Дорогой {user.Login!}.",
                     Description = $"Подтвердите, " +
                     $"что это вы хотите поменять пароль.",
-                    ButtonLink = $"email/confirm/update/password?token={token}"
+                    ButtonLink = $"email/confirm/update/password?token={_jwtService.CreateEmailToken(user)}"
                 }
             }, cancellationToken);
         }
@@ -91,8 +87,6 @@ namespace Authentication.BLL.Services
 
             if (!ValidationService.IsValidUserPassword(in user, password))
                 throw new ForbiddenException("Неверный пароль");
-
-            var token = _jwtService.CreateEmailToken(user);
 
             await _publisher.SendAsync(new EmailTemplate
             {
@@ -111,7 +105,7 @@ namespace Authentication.BLL.Services
                     $"Если это были не вы, то срочно измените пароль в настройках вашего аккаунта, " +
                     $"вас автоматически отключит со всех устройств.",
                     ButtonText = "Подтверждаю",
-                    ButtonLink = $"email/confirm/update/email?token={token}"
+                    ButtonLink = $"email/confirm/update/email?token={_jwtService.CreateEmailToken(user)}"
                 }
             }, cancellationToken);
         }
@@ -125,8 +119,6 @@ namespace Authentication.BLL.Services
 
             if (!ValidationService.IsValidUserPassword(in user, password))
                 throw new ForbiddenException("Неверный пароль");
-
-            var token = _jwtService.CreateEmailToken(user);
 
             await _publisher.SendAsync(new EmailTemplate
             {
@@ -145,7 +137,7 @@ namespace Authentication.BLL.Services
                     $"Если это были не вы, то срочно измените пароль в настройках вашего аккаунта, " +
                     $"вас автоматически отключит со всех устройств.",
                     ButtonText = "Подтверждаю",
-                    ButtonLink = $"email/confirm/update/login?token={token}"
+                    ButtonLink = $"email/confirm/update/login?token={_jwtService.CreateEmailToken(user)}"
                 }
             }, cancellationToken);
         }
@@ -159,8 +151,6 @@ namespace Authentication.BLL.Services
 
             if (!ValidationService.IsValidUserPassword(in user, password))
                 throw new ForbiddenException("Неверный пароль");
-
-            var token = _jwtService.CreateEmailToken(user);
 
             await _publisher.SendAsync(new EmailTemplate
             {
@@ -179,7 +169,7 @@ namespace Authentication.BLL.Services
                     $"Если это были не вы, то срочно измените пароль в настройках вашего аккаунта, " +
                     $"вас автоматически отключит со всех устройств.",
                     ButtonText = "Подтверждаю",
-                    ButtonLink = $"email/confirm/update/password?token={token}"
+                    ButtonLink = $"email/confirm/update/password?token={_jwtService.CreateEmailToken(user)}"
                 }
             }, cancellationToken);
         }

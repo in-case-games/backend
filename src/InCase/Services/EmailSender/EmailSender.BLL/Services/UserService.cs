@@ -33,20 +33,16 @@ namespace EmailSender.BLL.Services
             if (await _context.Users.AnyAsync(u => u.Id == template.Id || u.Email == template.Email, cancellationToken))
                 throw new ForbiddenException("Пользователь существует");
 
-            var user = new User
+            await _context.Users.AddAsync(new User
             {
                 Id = template.Id,
                 Email = template.Email,
-            };
-
-            var info = new UserAdditionalInfo
+            }, cancellationToken);
+            await _context.AdditionalInfos.AddAsync(new UserAdditionalInfo
             {
                 IsNotifyEmail = true,
                 UserId = template.Id,
-            };
-
-            await _context.Users.AddAsync(user, cancellationToken);
-            await _context.AdditionalInfos.AddAsync(info, cancellationToken);
+            }, cancellationToken);
             await _context.SaveChangesAsync(cancellationToken);
         }
 

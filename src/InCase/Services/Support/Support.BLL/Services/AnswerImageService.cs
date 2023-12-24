@@ -26,12 +26,10 @@ namespace Support.BLL.Services
                 .AsNoTracking()
                 .FirstOrDefaultAsync(ai => ai.Id == id, cancellation) ??
                 throw new NotFoundException("Картинка не найдена");
-
             var answer = await _context.Answers
                 .AsNoTracking()
                 .FirstOrDefaultAsync(sta => sta.Id == image.AnswerId, cancellation) ??
                 throw new NotFoundException("Сообщение не найдено");
-
             var topic = await _context.Topics
                 .AsNoTracking()
                 .FirstOrDefaultAsync(st => st.Id == answer.TopicId, cancellation) ??
@@ -63,7 +61,6 @@ namespace Support.BLL.Services
                 .AsNoTracking()
                 .FirstOrDefaultAsync(sta => sta.Id == id, cancellation) ??
                 throw new NotFoundException("Сообщение не найдено");
-
             var topic = await _context.Topics
                 .AsNoTracking()
                 .FirstOrDefaultAsync(st => st.Id == answer.TopicId, cancellation) ??
@@ -149,12 +146,13 @@ namespace Support.BLL.Services
                 Id = Guid.NewGuid(),
                 AnswerId = request.AnswerId,
             };
-            
-            FileService.UploadImageBase64(request.Image, 
-                @$"topic-answers/{answer.TopicId}/{image.AnswerId}/{image.Id}/", $"{image.Id}");
 
             await _context.Images.AddAsync(image, cancellation);
             await _context.SaveChangesAsync(cancellation);
+
+            FileService.UploadImageBase64(request.Image, 
+                $"topic-answers/{answer.TopicId}/{image.AnswerId}/{image.Id}/", 
+                $"{image.Id}");
 
             return image.ToResponse();
         }
@@ -168,15 +166,11 @@ namespace Support.BLL.Services
                 .AsNoTracking()
                 .FirstOrDefaultAsync(ai => ai.Id == id, cancellation) ??
                 throw new NotFoundException("Картинка не найдена");
-
             var answer = await _context.Answers
                 .AsNoTracking()
                 .FirstOrDefaultAsync(sta => sta.Id == image.AnswerId, cancellation) ??
                 throw new NotFoundException("Сообщение не найдено");
-
-            var topic = await _context.Topics
-                .AsNoTracking()
-                .FirstOrDefaultAsync(st => st.Id == answer.TopicId, cancellation) ??
+            if(!await _context.Topics.AnyAsync(st => st.Id == answer.TopicId, cancellation))
                 throw new NotFoundException("Топик не найден");
 
             if (answer.PlaintiffId != userId) throw new ForbiddenException("Вы не создатель сообщения");
@@ -184,7 +178,7 @@ namespace Support.BLL.Services
             _context.Images.Remove(image);
             await _context.SaveChangesAsync(cancellation);
 
-            FileService.RemoveFolder(@$"topic-answers/{answer.TopicId}/{image.AnswerId}/{id}/");
+            FileService.RemoveFolder($"topic-answers/{answer.TopicId}/{image.AnswerId}/{id}/");
 
             return image.ToResponse();
         }
@@ -195,7 +189,6 @@ namespace Support.BLL.Services
                 .AsNoTracking()
                 .FirstOrDefaultAsync(ai => ai.Id == id, cancellation) ??
                 throw new NotFoundException("Картинка не найдена");
-
             var answer = await _context.Answers
                 .AsNoTracking()
                 .FirstOrDefaultAsync(sta => sta.Id == image.AnswerId, cancellation) ??

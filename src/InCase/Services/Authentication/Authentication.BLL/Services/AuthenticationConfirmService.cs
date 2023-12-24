@@ -38,6 +38,7 @@ namespace Authentication.BLL.Services
                 Email = user.Email!,
                 IsRequiredMessage = true,
             };
+            var stats = new SiteStatisticsTemplate { Users = 0 };
 
             if (!user.AdditionalInfo!.IsConfirmed)
             {
@@ -55,9 +56,7 @@ namespace Authentication.BLL.Services
                     $"Подарит множество эмоций и новых предметов."
                 };
 
-                SiteStatisticsTemplate statisticsTemplate = new() { Users = 1 };
-
-                await _publisher.SendAsync(statisticsTemplate, cancellationToken);
+                stats.Users = 1;
             }
             else if (user.AdditionalInfo.DeletionDate != null)
             {
@@ -89,9 +88,10 @@ namespace Authentication.BLL.Services
             user.AdditionalInfo.DeletionDate = null;
 
             _context.AdditionalInfos.Update(user.AdditionalInfo);
-
-            await _publisher.SendAsync(email, cancellationToken);
             await _context.SaveChangesAsync(cancellationToken);
+            await _publisher.SendAsync(email, cancellationToken);
+
+            if(stats.Users == 1)  await _publisher.SendAsync(stats, cancellationToken);
 
             return tokenPair;
         }
@@ -99,11 +99,11 @@ namespace Authentication.BLL.Services
         public async Task<UserResponse> DeleteAsync(string token, CancellationToken cancellationToken = default)
         {
             var user = await _authenticationService.GetUserFromTokenAsync(token, "email", cancellationToken);
-
+            
             user.AdditionalInfo!.DeletionDate = DateTime.UtcNow + TimeSpan.FromDays(30);
 
             _context.AdditionalInfos.Update(user.AdditionalInfo);
-
+            await _context.SaveChangesAsync(cancellationToken);
             await _publisher.SendAsync(new EmailTemplate
             {
                 Email = user.Email!,
@@ -113,12 +113,11 @@ namespace Authentication.BLL.Services
                 {
                     Title = $"Дорогой {user.Login!}.",
                     Description = $"Ваш аккаунт будет удален в течении 30 дней." +
-                    $"Если вы передумали в своем решении просто войдите в аккаунт," +
-                    $"и произойдет отмена удаления." +
-                    $"Если это не пытались удалить аккаунт срочно поменяйте пароль."
+                                  $"Если вы передумали в своем решении просто войдите в аккаунт," +
+                                  $"и произойдет отмена удаления." +
+                                  $"Если это не пытались удалить аккаунт срочно поменяйте пароль."
                 }
             }, cancellationToken);
-            await _context.SaveChangesAsync(cancellationToken);
 
             return user.ToResponse();
         }
@@ -133,6 +132,8 @@ namespace Authentication.BLL.Services
 
             user.Email = email;
 
+            await _context.SaveChangesAsync(cancellationToken);
+            await _publisher.SendAsync(user.ToTemplate(false), cancellationToken);
             await _publisher.SendAsync(new EmailTemplate
             {
                 Email = user.Email!,
@@ -160,8 +161,6 @@ namespace Authentication.BLL.Services
                     $"Если это были не вы обратитесь в тех поддержку."
                 }
             }, cancellationToken);
-            await _publisher.SendAsync(user.ToTemplate(false), cancellationToken);
-            await _context.SaveChangesAsync(cancellationToken);
 
             return user.ToResponse();
         }
@@ -177,6 +176,8 @@ namespace Authentication.BLL.Services
 
             user.Email = email;
 
+            await _context.SaveChangesAsync(cancellationToken);
+            await _publisher.SendAsync(user.ToTemplate(false), cancellationToken);
             await _publisher.SendAsync(new EmailTemplate
             {
                 Email = user.Email!,
@@ -204,8 +205,6 @@ namespace Authentication.BLL.Services
                     $"Если это была ошибка обратитесь в тех. поддержку"
                 }
             }, cancellationToken);
-            await _publisher.SendAsync(user.ToTemplate(false), cancellationToken);
-            await _context.SaveChangesAsync(cancellationToken);
 
             return user.ToResponse();
         }
@@ -220,6 +219,8 @@ namespace Authentication.BLL.Services
 
             user.Login = login;
 
+            await _context.SaveChangesAsync(cancellationToken);
+            await _publisher.SendAsync(user.ToTemplate(false), cancellationToken);
             await _publisher.SendAsync(new EmailTemplate
             {
                 Email = user.Email!,
@@ -233,8 +234,6 @@ namespace Authentication.BLL.Services
                     $"Если это были не вы обратитесь в тех поддержку."
                 }
             }, cancellationToken);
-            await _publisher.SendAsync(user.ToTemplate(false), cancellationToken);
-            await _context.SaveChangesAsync(cancellationToken);
 
             return user.ToResponse();
         }
@@ -250,6 +249,8 @@ namespace Authentication.BLL.Services
 
             user.Login = login;
 
+            await _context.SaveChangesAsync(cancellationToken);
+            await _publisher.SendAsync(user.ToTemplate(false), cancellationToken);
             await _publisher.SendAsync(new EmailTemplate
             {
                 Email = user.Email!,
@@ -263,8 +264,6 @@ namespace Authentication.BLL.Services
                     $"Если это была ошибка обратитесь в тех поддержку."
                 }
             }, cancellationToken);
-            await _publisher.SendAsync(user.ToTemplate(false), cancellationToken);
-            await _context.SaveChangesAsync(cancellationToken);
 
             return user.ToResponse();
         }
@@ -276,7 +275,7 @@ namespace Authentication.BLL.Services
             AuthenticationService.CreateNewPassword(ref user, password);
 
             _context.Users.Update(user);
-
+            await _context.SaveChangesAsync(cancellationToken);
             await _publisher.SendAsync(new EmailTemplate
             {
                 Email = user.Email!,
@@ -290,7 +289,6 @@ namespace Authentication.BLL.Services
                     $"если у вас нет доступа обратитесь в тех поддержку."
                 }
             }, cancellationToken);
-            await _context.SaveChangesAsync(cancellationToken);
 
             return user.ToResponse();
         }

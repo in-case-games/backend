@@ -110,8 +110,8 @@ namespace Promocode.BLL.Services
             promocode.NumberActivations--;
 
             await _context.UserPromocodes.AddAsync(userPromocode, cancellation);
-            await _publisher.SendAsync(userPromocode.ToTemplate(), cancellation);
             await _context.SaveChangesAsync(cancellation);
+            await _publisher.SendAsync(userPromocode.ToTemplate(), cancellation);
 
             return userPromocode.ToResponse();
         }
@@ -153,11 +153,11 @@ namespace Promocode.BLL.Services
             _context.Entry(promocode).Property(p => p.NumberActivations).IsModified = true;
             _context.Entry(userPromocode).Property(p => p.Date).IsModified = true;
             _context.Entry(userPromocode).Property(p => p.PromocodeId).IsModified = true;
+            await _context.SaveChangesAsync(cancellation);
 
             userPromocode.Promocode = promocode;
 
             await _publisher.SendAsync(userPromocode.ToTemplate(), cancellation);
-            await _context.SaveChangesAsync(cancellation);
 
             return userPromocode.ToResponse();
         }

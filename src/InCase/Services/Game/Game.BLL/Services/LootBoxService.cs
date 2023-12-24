@@ -37,18 +37,17 @@ namespace Game.BLL.Services
 
         public async Task UpdateAsync(LootBoxTemplate template, CancellationToken cancellation = default)
         {
-            var boxOld = await _context.Boxes
+            var old = await _context.Boxes
                 .FirstOrDefaultAsync(lb => lb.Id == template.Id, cancellation) ??
                 throw new NotFoundException("Кейс не найден");
 
-            _context.Entry(boxOld).CurrentValues.SetValues(new LootBox
+            _context.Entry(old).CurrentValues.SetValues(new LootBox
             {
                 Id = template.Id,
                 Cost = template.Cost,
                 IsLocked = template.IsLocked,
-                ExpirationBannerDate = boxOld.ExpirationBannerDate
+                ExpirationBannerDate = old.ExpirationBannerDate
             });
-
             await _context.SaveChangesAsync(cancellation);
         }
 

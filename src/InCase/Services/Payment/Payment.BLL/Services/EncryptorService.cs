@@ -36,12 +36,10 @@ namespace Payment.BLL.Services
         private bool VerifySignatureRsa(byte[] hashOfDataToSign, byte[] signature)
         {
             var path = Path.Combine(Directory.GetCurrentDirectory(), "RsaKeys", _cfg["GameMoney:RSA:PublicKey"]!);
-
             using var reader = new StringReader(File.ReadAllText(path));
-
             var param = (RsaKeyParameters)new PemReader(reader).ReadObject();
-
             var rsa = new RSACryptoServiceProvider(2048);
+
             rsa.ImportParameters(new RSAParameters()
             {
                 Modulus = param.Modulus.ToByteArrayUnsigned(),
