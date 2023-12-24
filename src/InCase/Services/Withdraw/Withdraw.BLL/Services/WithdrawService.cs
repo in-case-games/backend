@@ -121,7 +121,9 @@ namespace Withdraw.BLL.Services
 
             withdraw.UpdateDate = DateTime.UtcNow;
             _context.Entry(withdraw).Property(p => p.UpdateDate).IsModified = true;
-            await _context.SaveChangesAsync(cancellation);
+            _context.Entry(withdraw).Property(p => p.StatusId).IsModified = true;
+            _context.Entry(withdraw).Property(p => p.Date).IsModified = true;
+            _context.Entry(withdraw).Property(p => p.InvoiceId).IsModified = true;
 
             var statuses = await _context.Statuses
                 .AsNoTracking()
@@ -129,16 +131,31 @@ namespace Withdraw.BLL.Services
 
             if (withdraw.Status!.Name == "recorded") await BuyItemAsync(withdraw, statuses, cancellation);
             else await UpdateStatusHistoryWithdraw(withdraw, statuses, cancellation);
+
+            await _context.SaveChangesAsync(cancellation);
         }
 
         private async Task BuyItemAsync(UserHistoryWithdraw withdraw, IReadOnlyCollection<WithdrawStatus> statuses, CancellationToken cancellation)
         {
             var itemCost = withdraw.FixedCost / 7;
             var item = withdraw.Item!;
+            item.Game!.Market = withdraw.Market;
             var info = await _withdrawService.GetItemInfoAsync(item, cancellation);
+
+            if (info.PriceKopecks == 0)
+            {
+                _logger.LogError($"Не смог получить стоимость предмета - {item.Id}");
+            }
+            if (info.Count == 0)
+            {
+                _logger.LogError($"На площадке нет предметов на закупку - {item.Id}");
+            }
+
             var price = info.PriceKopecks * 0.01M;
 
-            if (price > itemCost * 1.1M)
+            _logger.LogInformation($"ItemId - {item.Id} Стоимость - {price}");
+
+            if (price > itemCost * 1.1M || info.PriceKopecks == 0 || info.Count == 0)
             {
                 withdraw.StatusId = statuses.First(s => s.Name == "cancel").Id;
                 return;
@@ -154,15 +171,14 @@ namespace Withdraw.BLL.Services
 
             _logger.LogInformation($"UserId - {withdraw.UserId}, ItemId - {withdraw.ItemId} отправил запрос на покупку;");
 
+            withdraw.Date = DateTime.UtcNow - TimeSpan.FromSeconds(120);
+
             try
             {
                 var buyItem = await _withdrawService.BuyItemAsync(info, withdraw.TradeUrl!, cancellation);
 
                 withdraw.InvoiceId = buyItem.Id;
                 withdraw.StatusId = statuses.First(ws => ws.Name == "purchase").Id;
-                _context.Entry(withdraw).Property(p => p.StatusId).IsModified = true;
-                _context.Entry(withdraw).Property(p => p.InvoiceId).IsModified = true;
-                await _context.SaveChangesAsync(cancellation);
 
                 _logger.LogInformation($"UserId - {withdraw.UserId}, ItemId - {withdraw.ItemId} купил предмет;");
             }
@@ -178,11 +194,9 @@ namespace Withdraw.BLL.Services
                 _logger.LogCritical($"UserId - {withdraw.UserId}, ItemId - {withdraw.ItemId} поймал ошибку на покупке;");
                 _logger.LogCritical($"UserId - {withdraw.UserId}, ItemId - {withdraw.ItemId} заблокирует вывод предмета;");
                 _logger.LogCritical(ex, ex.Message);
-                _logger.LogError(ex, ex.StackTrace);
+                _logger.LogCritical(ex, ex.StackTrace);
 
                 withdraw.StatusId = statuses.First(ws => ws.Name == "blocked").Id;
-                _context.Entry(withdraw).Property(p => p.StatusId).IsModified = true;
-                await _context.SaveChangesAsync(cancellation);
             }
         }
 
@@ -192,7 +206,6 @@ namespace Withdraw.BLL.Services
             var info = await _withdrawService.GetTradeInfoAsync(withdraw, cancellation);
 
             withdraw.StatusId = statuses.First(ws => ws.Name == info.Status).Id;
-            _context.Entry(withdraw).Property(p => p.StatusId).IsModified = true;
             await _context.SaveChangesAsync(cancellation);
 
             if (info.Status != "given") return;

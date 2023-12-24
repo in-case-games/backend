@@ -24,7 +24,7 @@ namespace Withdraw.BLL.Services
 
         public async Task<BuyItemResponse> BuyItemAsync(ItemInfoResponse info, string tradeUrl, CancellationToken cancellation = default)
         {
-            var name = info.Market.Name!;
+            var name = info.Market.Name ?? throw new BadRequestException("Название маркета пустое");
 
             if (!_marketServices.TryGetValue(name, out var value)) 
                 throw new NotFoundException("Маркет не найден");
@@ -42,12 +42,15 @@ namespace Withdraw.BLL.Services
                     _logger.LogInformation($"The item successfully bought. ItemId: {item.Id}. MarketName: {name}");
                     return item;
                 }
-                catch (Exception) 
+                catch (Exception ex) 
                 { 
+                    _logger.LogError($"Не смог купить предмет - {info.Item.Id}");
+                    _logger.LogError(ex, ex.Message);
+                    _logger.LogError(ex, ex.StackTrace);
                     i++; 
                 }
 
-                await Task.Delay(200, cancellation);
+                await Task.Delay(1000, cancellation);
             }
 
             throw new RequestTimeoutException("Сервис покупки предметов не отвечает");
@@ -66,12 +69,15 @@ namespace Withdraw.BLL.Services
                 {
                     return await value.GetBalanceAsync(cancellation);
                 }
-                catch(Exception)
+                catch(Exception ex)
                 {
+                    _logger.LogError($"Не смог получить баланс маркета - {marketName}");
+                    _logger.LogError(ex, ex.Message);
+                    _logger.LogError(ex, ex.StackTrace);
                     i++;
                 }
 
-                await Task.Delay(200, cancellation);
+                await Task.Delay(1000, cancellation);
             }
 
             throw new RequestTimeoutException("Сервис покупки предметов не отвечает");
@@ -79,8 +85,8 @@ namespace Withdraw.BLL.Services
 
         public async Task<ItemInfoResponse> GetItemInfoAsync(GameItem item, CancellationToken cancellation = default)
         {
-            var gameName = item.Game!.Name!;
-            var market = item.Game!.Market!;
+            var gameName = item.Game?.Name ?? throw new BadRequestException("Название игры пустое");
+            var market = item.Game?.Market ?? throw new BadRequestException("Название маркета пустое");
 
             if (!_marketServices.TryGetValue(market.Name!, out var value))
                 throw new NotFoundException("Маркет не найден");
@@ -93,17 +99,20 @@ namespace Withdraw.BLL.Services
                 {
                     var info = await value.GetItemInfoAsync(item.IdForMarket!, gameName, cancellation);
                     
-                    info!.Item = item;
-                    info!.Market = market;
+                    info.Item = item;
+                    info.Market = market;
                     
                     return info;
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    _logger.LogError($"Не смог получить информацию о предмете - {item.Id}");
+                    _logger.LogError(ex, ex.Message);
+                    _logger.LogError(ex, ex.StackTrace);
                     i++;
                 }
 
-                await Task.Delay(200, cancellation);
+                await Task.Delay(1000, cancellation);
             }
             
             throw new RequestTimeoutException("Сервис покупки предмета не отвечает");
@@ -111,7 +120,7 @@ namespace Withdraw.BLL.Services
 
         public async Task<TradeInfoResponse> GetTradeInfoAsync(UserHistoryWithdraw history, CancellationToken cancellation = default)
         {
-            var name = history.Market!.Name!;
+            var name = history.Market?.Name ?? throw new BadRequestException("Название маркета пустое");
 
             if (!_marketServices.TryGetValue(name, out var value))
                 throw new NotFoundException("Маркет не найден");
@@ -128,12 +137,15 @@ namespace Withdraw.BLL.Services
 
                     return info;
                 }
-                catch(Exception)
+                catch(Exception ex)
                 {
+                    _logger.LogError($"Не смог получить информацию о выводе - {history.Item!.Id}");
+                    _logger.LogError(ex, ex.Message);
+                    _logger.LogError(ex, ex.StackTrace);
                     i++;
                 }
 
-                await Task.Delay(200, cancellation);
+                await Task.Delay(1000, cancellation);
             }
 
             throw new RequestTimeoutException("Сервис покупки предмета не отвечает");

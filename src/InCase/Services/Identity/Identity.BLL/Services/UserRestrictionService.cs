@@ -55,7 +55,7 @@ namespace Identity.BLL.Services
                 .FirstOrDefaultAsync(u => u.Login == login, cancellation) ??
                 throw new NotFoundException("Пользователь не найден");
 
-            return user.Restrictions?.ToResponse() ?? new();
+            return user.Restrictions?.ToResponse() ?? new List<UserRestrictionResponse>();
         }
 
         public async Task<List<UserRestrictionResponse>> GetByUserIdAsync(Guid userId, CancellationToken cancellation = default)
@@ -67,7 +67,7 @@ namespace Identity.BLL.Services
                 .FirstOrDefaultAsync(u => u.Id == userId, cancellation) ??
                 throw new NotFoundException("Пользователь не найден");
 
-            return user.Restrictions?.ToResponse() ?? new();
+            return user.Restrictions?.ToResponse() ?? new List<UserRestrictionResponse>();
         }
 
         public async Task<List<UserRestrictionResponse>> GetByOwnerIdAsync(Guid ownerId, CancellationToken cancellation = default)
@@ -79,7 +79,7 @@ namespace Identity.BLL.Services
                 .FirstOrDefaultAsync(u => u.Id == ownerId, cancellation) ??
                 throw new NotFoundException("Пользователь не найден");
 
-            return user.OwnerRestrictions?.ToResponse() ?? new();
+            return user.OwnerRestrictions?.ToResponse() ?? new List<UserRestrictionResponse>();
         }
 
         public async Task<List<RestrictionTypeResponse>> GetTypesAsync(CancellationToken cancellation = default)
@@ -189,10 +189,9 @@ namespace Identity.BLL.Services
                 .FirstOrDefaultAsync(ur => ur.Id == id, cancellation) ??
                 throw new NotFoundException("Эффект не найден");
 
-            await _publisher.SendAsync(restriction.ToTemplate(isDeleted: true), cancellation);
-
             _context.Restrictions.Remove(restriction);
             await _context.SaveChangesAsync(cancellation);
+            await _publisher.SendAsync(restriction.ToTemplate(isDeleted: true), cancellation);
 
             return restriction.ToResponse();
         }

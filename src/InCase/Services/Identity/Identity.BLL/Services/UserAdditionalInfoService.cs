@@ -55,7 +55,7 @@ namespace Identity.BLL.Services
             info.DeletionDate = deletionDate;
 
             await _context.SaveChangesAsync(cancellation);
-            await _publisher.SendAsync(new UserAdditionalInfoTemplate()
+            await _publisher.SendAsync(new UserAdditionalInfoTemplate
             {
                 Id = info.Id,
                 DeletionDate = info.DeletionDate,
@@ -75,9 +75,7 @@ namespace Identity.BLL.Services
                 .FirstOrDefaultAsync(uai => uai.UserId == request.UserId, cancellation) ??
                 throw new NotFoundException("Пользователь не найден");
 
-            FileService.UploadImageBase64(request.Image, @$"users/{info.UserId}/", $"{info.UserId}");
-
-            await _context.SaveChangesAsync(cancellation);
+            FileService.UploadImageBase64(request.Image, $"users/{info.UserId}/", $"{info.UserId}");
 
             return info.ToResponse();
         }
@@ -99,7 +97,7 @@ namespace Identity.BLL.Services
 
             info.Role = role;
 
-            await _publisher.SendAsync(new UserAdditionalInfoTemplate()
+            await _publisher.SendAsync(new UserAdditionalInfoTemplate
             {
                 Id = info.Id,
                 DeletionDate = info.DeletionDate,

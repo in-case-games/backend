@@ -6,7 +6,7 @@ namespace Support.BLL.Services
 {
     public static class FileService
     {
-        private const string PathUri = @"/static/images/";
+        private const string PathUri = "/static/images/";
 
         public static void UploadImageBase64(string base64, string filePath, string fileName)
         {

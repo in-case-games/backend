@@ -78,7 +78,7 @@ namespace Resources.BLL.Services
 
             request.IsLocked = true;
 
-            var box = new LootBox()
+            var box = new LootBox
             {
                 Id = Guid.NewGuid(),
                 GameId = request.GameId,
@@ -87,12 +87,13 @@ namespace Resources.BLL.Services
                 Cost = request.Cost,
             };
 
-            FileService.UploadImageBase64(request.Image, @$"loot-boxes/{box.Id}/", $"{box.Id}");
-            FileService.CreateFolder(@$"loot-box-banners/{box.Id}/");
-
             await _context.LootBoxes.AddAsync(box, cancellation);
-            await _publisher.SendAsync(box.ToTemplate(isDeleted: false), cancellation);
             await _context.SaveChangesAsync(cancellation);
+            
+            await _publisher.SendAsync(box.ToTemplate(isDeleted: false), cancellation);
+
+            FileService.UploadImageBase64(request.Image, $"loot-boxes/{box.Id}/", $"{box.Id}");
+            FileService.CreateFolder(@$"loot-box-banners/{box.Id}/");
 
             return box.ToResponse();
         }
@@ -124,7 +125,7 @@ namespace Resources.BLL.Services
 
             request.IsLocked = isLocked || request.IsLocked;
 
-            var newBox = new LootBox()
+            var newBox = new LootBox
             {
                 Id = request.Id,
                 GameId = request.GameId,
@@ -133,14 +134,14 @@ namespace Resources.BLL.Services
                 Cost = request.Cost,
             };
 
+            _context.Entry(oldBox).CurrentValues.SetValues(newBox);
+            await _context.SaveChangesAsync(cancellation);
+            await _publisher.SendAsync(newBox.ToTemplate(isDeleted: false), cancellation);
+
             if (request.Image is not null)
             {
                 FileService.UploadImageBase64(request.Image, @$"loot-boxes/{request.Id}/", $"{request.Id}");
             }
-
-            _context.Entry(oldBox).CurrentValues.SetValues(newBox);
-            await _publisher.SendAsync(newBox.ToTemplate(isDeleted: false), cancellation);
-            await _context.SaveChangesAsync(cancellation);
 
             return newBox.ToResponse();
         }
@@ -154,11 +155,11 @@ namespace Resources.BLL.Services
                 throw new NotFoundException("Кейс не найден");
 
             _context.LootBoxes.Remove(box);
-            await _publisher.SendAsync(box.ToTemplate(isDeleted: true), cancellation);
             await _context.SaveChangesAsync(cancellation);
+            await _publisher.SendAsync(box.ToTemplate(isDeleted: true), cancellation);
 
-            FileService.RemoveFolder(@$"loot-boxes/{box.Id}/");
-            FileService.RemoveFolder(@$"loot-box-banners/{box.Id}/");
+            FileService.RemoveFolder($"loot-boxes/{box.Id}/");
+            FileService.RemoveFolder($"loot-box-banners/{box.Id}/");
 
             return box.ToResponse();
         }

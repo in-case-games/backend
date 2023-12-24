@@ -1,5 +1,6 @@
 ﻿using Infrastructure.MassTransit.Resources;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Resources.BLL.Exceptions;
 using Resources.BLL.Helpers;
 using Resources.BLL.Interfaces;
@@ -12,12 +13,14 @@ namespace Resources.BLL.Services
 {
     public class GameItemService : IGameItemService
     {
+        private readonly ILogger<GameItemService> _logger;
         private readonly ApplicationDbContext _context;
         private readonly BasePublisher _publisher;
 
         private readonly Dictionary<string, IGamePlatformService> _platformServices;
 
         public GameItemService(
+            ILogger<GameItemService> logger,
             ApplicationDbContext context,
             BasePublisher publisher,
             GamePlatformSteamService steamService)
@@ -25,6 +28,7 @@ namespace Resources.BLL.Services
             _context = context;
             _publisher = publisher;
 
+            _logger = logger;
             _platformServices = new Dictionary<string, IGamePlatformService>
             {
                 ["csgo"] = steamService,
@@ -194,8 +198,6 @@ namespace Resources.BLL.Services
 
             var item = request.ToEntity(true);
 
-            FileService.UploadImageBase64(request.Image, $"game-items/{game.Id}/{item.Id}/", $"{item.Id}");
-
             await _context.Items.AddAsync(item, cancellation);
             await _context.SaveChangesAsync(cancellation);
 
@@ -203,7 +205,10 @@ namespace Resources.BLL.Services
             item.Quality = quality;
             item.Rarity = rarity;
             item.Type = type;
+
             await _publisher.SendAsync(item.ToTemplate(), cancellation);
+
+            FileService.UploadImageBase64(request.Image, $"game-items/{game.Id}/{item.Id}/", $"{item.Id}");
 
             return item.ToResponse();
         }
@@ -215,7 +220,6 @@ namespace Resources.BLL.Services
             var itemOld = await _context.Items
                 .FirstOrDefaultAsync(gi => gi.Id == request.Id, cancellation) ??
                 throw new NotFoundException("Предмет не найден");
-
             var quality = await _context.Qualities
                 .AsNoTracking()
                 .FirstOrDefaultAsync(giq => giq.Id == request.QualityId, cancellation) ??
@@ -235,23 +239,23 @@ namespace Resources.BLL.Services
 
             var item = request.ToEntity();
 
+            _context.Entry(itemOld).CurrentValues.SetValues(item);
+            await _context.SaveChangesAsync(cancellation);
+
             item.Game = game;
             item.Quality = quality;
             item.Rarity = rarity;
             item.Type = type;
 
-            if (request.Image is not null)
-            {
-                FileService.UploadImageBase64(request.Image,
-                    @$"game-items/{game.Id}/{item.Id}/", $"{item.Id}");
-            }
-
-            _context.Entry(itemOld).CurrentValues.SetValues(item);
             await _publisher.SendAsync(item.ToTemplate(), cancellation);
-            await _context.SaveChangesAsync(cancellation);
 
             await CorrectCostAsync(item.Id, itemOld.Cost, cancellation);
             await CorrectChancesAsync(item.Id, cancellation);
+
+            if (request.Image is not null)
+            {
+                FileService.UploadImageBase64(request.Image, $"game-items/{game.Id}/{item.Id}/", $"{item.Id}");
+            }
 
             return item.ToResponse();
         }
@@ -268,45 +272,51 @@ namespace Resources.BLL.Services
                 throw new NotFoundException("Предмет не найден");
 
             _context.Items.Remove(item);
-            await _publisher.SendAsync(item!.ToTemplate(isDeleted: true), cancellation);
             await _context.SaveChangesAsync(cancellation);
+            await _publisher.SendAsync(item.ToTemplate(isDeleted: true), cancellation);
 
-            FileService.RemoveFolder(@$"game-items/{item.GameId}/{id}/");
+            FileService.RemoveFolder($"game-items/{item.GameId}/{id}/");
 
             return item!.ToResponse();
         }
 
-        public async Task UpdateCostManagerAsync(int count, CancellationToken cancellationToken = default)
+        public async Task UpdateCostManagerAsync(CancellationToken cancellationToken = default)
         {
-            var items = await _context.Items
+            var item = await _context.Items
                 .Include(gi => gi.Game)
                 .OrderByDescending(gi => gi.UpdateDate)
-                .Take(count)
                 .Where(gi => gi.UpdateDate + TimeSpan.FromMinutes(5) <= DateTime.UtcNow)
-                .ToListAsync(cancellationToken);
+                .OrderByDescending(gi => gi.UpdateDate)
+                .FirstOrDefaultAsync(cancellationToken);
 
-            foreach (var item in items)
+            if(item is null) return;
+
+            var priceOriginal = await _platformServices[item.Game!.Name!]
+                .GetOriginalMarketAsync(item.HashName ?? "null", item.Game!.Name!, cancellation: cancellationToken);
+            var priceAdditional = await _platformServices[item.Game!.Name!]
+                .GetAdditionalMarketAsync(item.IdForMarket!, item.Game!.Name!, cancellation: cancellationToken);
+
+            var isAdditionalCost = priceOriginal.Cost <= 0 || (priceAdditional.Cost > priceOriginal.Cost);
+            var cost = isAdditionalCost ? priceAdditional.Cost : priceOriginal.Cost;
+
+            item.UpdateDate = DateTime.UtcNow;
+
+            if (cost > 0) item.Cost = cost * 7M;
+
+            _context.Items.Update(item);
+            await _context.SaveChangesAsync(cancellationToken);
+
+            if (cost <= 0)
             {
-                var priceOriginal = await _platformServices[item.Game!.Name!]
-                    .GetOriginalMarketAsync(item.HashName ?? "null", item.Game!.Name!, cancellation: cancellationToken);
-                var priceAdditional = await _platformServices[item.Game!.Name!]
-                    .GetAdditionalMarketAsync(item.IdForMarket!, item.Game!.Name!, cancellation: cancellationToken);
-
-                var isAdditionalCost = priceOriginal.Cost <= 0 || (priceAdditional.Cost > priceOriginal.Cost);
-                var cost = isAdditionalCost ? priceAdditional.Cost : priceOriginal.Cost;
-
-                if (cost <= 0) continue;
-
-                item.UpdateDate = DateTime.UtcNow;
-                item.Cost = cost * 7M;
-
-                _context.Items.Update(item);
-                await _context.SaveChangesAsync(cancellationToken);
-                await _publisher.SendAsync(item.ToTemplate(), cancellationToken);
-
-                await CorrectCostAsync(item.Id, item.Cost, cancellationToken);
-                await CorrectChancesAsync(item.Id, cancellationToken);
+                _logger.LogError($"ItemId - {item.Id} не смог получить цену. " +
+                                 $"Цена маркет - {priceOriginal}; Цена доп маркета - {priceAdditional}");
+                return;
             }
+
+            await _publisher.SendAsync(item.ToTemplate(), cancellationToken);
+
+            await CorrectCostAsync(item.Id, item.Cost, cancellationToken);
+            await CorrectChancesAsync(item.Id, cancellationToken);
         }
 
         private async Task CorrectCostAsync(Guid itemId, decimal lastPriceItem, CancellationToken cancellationToken = default)
@@ -318,31 +328,47 @@ namespace Resources.BLL.Services
 
             foreach (var box in inventories.Select(inventory => inventory.Box!))
             {
-                var boxInventories = await _context.BoxInventories
-                    .Include(lbi => lbi.Item)
-                    .OrderBy(lbi => lbi.Item!.Cost)
-                    .AsNoTracking()
-                    .Where(lbi => lbi.BoxId == box.Id)
-                    .ToListAsync(cancellationToken);
-
-                var itemMinCost = boxInventories[0].Item!.Cost;
-                var itemTwoCost = boxInventories.FirstOrDefault(lbi => lbi.ItemId != itemId)?.Item?.Cost ?? 0;
-                var itemMaxCost = boxInventories[^1].Item!.Cost;
-
-                var boxCostNew = itemMinCost * (box.Cost / itemMinCost);
-
-                if (boxInventories[0].Item!.Id == itemId)
+                try
                 {
-                    if (lastPriceItem < box.Cost) boxCostNew = itemMinCost * (box.Cost / lastPriceItem);
-                    else if (itemTwoCost != 0) boxCostNew = itemMinCost * (box.Cost / itemTwoCost);
+                    var boxInventories = await _context.BoxInventories
+                        .Include(lbi => lbi.Item)
+                        .OrderBy(lbi => lbi.Item!.Cost)
+                        .AsNoTracking()
+                        .Where(lbi => lbi.BoxId == box.Id)
+                        .ToListAsync(cancellationToken);
+
+                    var itemMinCost = boxInventories[0].Item!.Cost;
+                    var itemTwoCost = boxInventories.FirstOrDefault(lbi => lbi.ItemId != itemId)?.Item?.Cost ?? 0;
+                    var itemMaxCost = boxInventories[^1].Item!.Cost;
+
+                    var boxCostNew = itemMinCost * (box.Cost / itemMinCost);
+
+                    if (boxInventories[0].Item!.Id == itemId)
+                    {
+                        if (lastPriceItem < box.Cost) boxCostNew = itemMinCost * (box.Cost / lastPriceItem);
+                        else if (itemTwoCost != 0) boxCostNew = itemMinCost * (box.Cost / itemTwoCost);
+                    }
+
+                    box.IsLocked = boxCostNew >= itemMaxCost || boxCostNew <= itemMinCost;
+                    box.Cost = box.IsLocked ? box.Cost : boxCostNew;
+
+                    _context.LootBoxes.Update(box);
+                    await _context.SaveChangesAsync(cancellationToken);
+                    await _publisher.SendAsync(box.ToTemplate(), cancellationToken);
                 }
+                catch (Exception ex)
+                {
+                    _logger.LogCritical($"BoxId - {box.Id}; ItemId - {itemId}; не смог обновить стоимость кейса");
+                    _logger.LogCritical(ex, ex.Message);
+                    _logger.LogCritical(ex.StackTrace);
 
-                box.IsLocked = boxCostNew >= itemMaxCost || boxCostNew <= itemMinCost;
-                box.Cost = box.IsLocked ? box.Cost : boxCostNew;
+                    box.IsLocked = true;
+                    _context.LootBoxes.Update(box);
+                    await _context.SaveChangesAsync(cancellationToken);
+                    await _publisher.SendAsync(box.ToTemplate(), cancellationToken);
 
-                _context.LootBoxes.Update(box);
-                await _context.SaveChangesAsync(cancellationToken);
-                await _publisher.SendAsync(box.ToTemplate(), cancellationToken);
+                    _logger.LogCritical($"BoxId - {box.Id} заблокирован");
+                }
             }
         }
 
@@ -356,36 +382,45 @@ namespace Resources.BLL.Services
 
             foreach (var itemInventory in itemInventories)
             {
-                var weights = new Dictionary<Guid, decimal>();
-                var boxInventories = await _context.BoxInventories
-                    .Include(lbi => lbi.Item)
-                    .Where(lbi => lbi.BoxId == itemInventory.Box!.Id)
-                    .ToListAsync(cancellationToken);
-
-                decimal weightAll = 0;
-
-                foreach (var boxInventory in boxInventories)
+                try
                 {
-                    var weight = 1M / boxInventory.Item!.Cost;
+                    var weights = new Dictionary<Guid, decimal>();
+                    var boxInventories = await _context.BoxInventories
+                        .Include(lbi => lbi.Item)
+                        .Where(lbi => lbi.BoxId == itemInventory.Box!.Id)
+                        .ToListAsync(cancellationToken);
 
-                    weightAll += weight;
-                    weights.Add(boxInventory.Id, weight);
-                }
+                    decimal weightAll = 0;
 
-                foreach (var boxInventory in boxInventories)
-                {
-                    boxInventory.ChanceWining = decimal.ToInt32(
-                        Math.Round(weights[boxInventory.Id] / weightAll * 10000000M));
-
-                    _context.BoxInventories.Update(boxInventory);
-                    await _context.SaveChangesAsync(cancellationToken);
-                    await _publisher.SendAsync(new LootBoxInventoryTemplate()
+                    foreach (var boxInventory in boxInventories)
                     {
-                        Id = boxInventory.Id,
-                        BoxId = boxInventory.BoxId,
-                        ChanceWining = boxInventory.ChanceWining,
-                        ItemId = boxInventory.ItemId,
-                    }, cancellationToken);
+                        var weight = 1M / boxInventory.Item!.Cost;
+
+                        weightAll += weight;
+                        weights.Add(boxInventory.Id, weight);
+                    }
+
+                    foreach (var boxInventory in boxInventories)
+                    {
+                        boxInventory.ChanceWining = decimal.ToInt32(
+                            Math.Round(weights[boxInventory.Id] / weightAll * 10000000M));
+
+                        _context.BoxInventories.Update(boxInventory);
+                        await _context.SaveChangesAsync(cancellationToken);
+                        await _publisher.SendAsync(new LootBoxInventoryTemplate()
+                        {
+                            Id = boxInventory.Id,
+                            BoxId = boxInventory.BoxId,
+                            ChanceWining = boxInventory.ChanceWining,
+                            ItemId = boxInventory.ItemId,
+                        }, cancellationToken);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogCritical($"InventoryId - {itemInventory.Id}; ItemId - {itemId}; не смог обновить шансы");
+                    _logger.LogCritical(ex, ex.Message);
+                    _logger.LogCritical(ex.StackTrace);
                 }
             }
         }

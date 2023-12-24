@@ -40,12 +40,12 @@ namespace Resources.BLL.Services
                 {
                     await using var scope = _serviceProvider.CreateAsyncScope();
                     var gameItemService = scope.ServiceProvider.GetService<IGameItemService>();
-                    await gameItemService!.UpdateCostManagerAsync(5, cancellationToken);
+                    await gameItemService!.UpdateCostManagerAsync(cancellationToken);
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, ex.Message);
-                    _logger.LogError(ex, ex.StackTrace);
+                    _logger.LogCritical(ex, ex.Message);
+                    _logger.LogCritical(ex, ex.StackTrace);
                 }
 
                 await Task.Delay(1000, cancellationToken);

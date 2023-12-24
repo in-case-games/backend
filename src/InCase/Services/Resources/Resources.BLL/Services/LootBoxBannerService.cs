@@ -83,15 +83,17 @@ namespace Resources.BLL.Services
                 Id = Guid.NewGuid(),
                 CreationDate = DateTime.UtcNow,
                 ExpirationDate = request.ExpirationDate,
-                BoxId = request.BoxId,
-                Box = box
+                BoxId = request.BoxId
             };
 
-            FileService.UploadImageBase64(request.Image, $"loot-box-banners/{box.Id}/", $"{banner.Id}");
-
             await _context.Banners.AddAsync(banner, cancellation);
-            await _publisher.SendAsync(banner.ToTemplate(isDeleted: false), cancellation);
             await _context.SaveChangesAsync(cancellation);
+
+            banner.Box = box;
+
+            await _publisher.SendAsync(banner.ToTemplate(isDeleted: false), cancellation);
+
+            FileService.UploadImageBase64(request.Image, $"loot-box-banners/{box.Id}/", $"{banner.Id}");
 
             return banner.ToResponse();
         }
@@ -118,8 +120,8 @@ namespace Resources.BLL.Services
             };
 
             _context.Entry(oldBanner).CurrentValues.SetValues(newBanner);
-            await _publisher.SendAsync(newBanner.ToTemplate(isDeleted: false), cancellation);
             await _context.SaveChangesAsync(cancellation);
+            await _publisher.SendAsync(newBanner.ToTemplate(isDeleted: false), cancellation);
 
             return newBanner.ToResponse();
         }
@@ -133,8 +135,8 @@ namespace Resources.BLL.Services
                 throw new NotFoundException("Баннер не найден");
 
             _context.Banners.Remove(banner);
-            await _publisher.SendAsync(banner.ToTemplate(isDeleted: true), cancellation);
             await _context.SaveChangesAsync(cancellation);
+            await _publisher.SendAsync(banner.ToTemplate(isDeleted: true), cancellation);
 
             FileService.RemoveFolder($"loot-box-banners/{banner.BoxId}/");
 

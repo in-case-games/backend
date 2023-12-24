@@ -113,11 +113,14 @@ namespace Withdraw.BLL.Services
             var itemInfo = await _withdrawService
                 .GetItemInfoAsync(inventory.Item!, cancellation);
 
-            var price = itemInfo.PriceKopecks * 0.01M;
-            var itemCost = inventory.FixedCost / 7;
+            if (itemInfo.Count != 0 && itemInfo.PriceKopecks != 0)
+            {
+                var price = itemInfo.PriceKopecks * 0.01M;
+                var itemCost = inventory.FixedCost / 7;
 
-            if (price >= itemCost * 0.9M && price <= itemCost * 1.1M)
-                throw new ConflictException("Товар может быть обменен только в случае нестабильности цены");
+                if (price >= itemCost * 0.9M && price <= itemCost * 1.1M)
+                    throw new ConflictException("Товар может быть обменен только в случае нестабильности цены");
+            }
 
             var inventories = new List<UserInventory>();
 

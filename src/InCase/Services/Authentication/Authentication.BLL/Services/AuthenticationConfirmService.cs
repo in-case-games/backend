@@ -38,7 +38,7 @@ namespace Authentication.BLL.Services
                 Email = user.Email!,
                 IsRequiredMessage = true,
             };
-            var statisticsTemplate = new SiteStatisticsTemplate { Users = 0 };
+            var stats = new SiteStatisticsTemplate { Users = 0 };
 
             if (!user.AdditionalInfo!.IsConfirmed)
             {
@@ -56,7 +56,7 @@ namespace Authentication.BLL.Services
                     $"Подарит множество эмоций и новых предметов."
                 };
 
-                statisticsTemplate.Users = 1;
+                stats.Users = 1;
             }
             else if (user.AdditionalInfo.DeletionDate != null)
             {
@@ -91,8 +91,7 @@ namespace Authentication.BLL.Services
             await _context.SaveChangesAsync(cancellationToken);
             await _publisher.SendAsync(email, cancellationToken);
 
-            if(statisticsTemplate.Users == 1) 
-                await _publisher.SendAsync(statisticsTemplate, cancellationToken);
+            if(stats.Users == 1)  await _publisher.SendAsync(stats, cancellationToken);
 
             return tokenPair;
         }
@@ -132,6 +131,7 @@ namespace Authentication.BLL.Services
             var user = await _context.Users.FirstAsync(u => u.Id == userFromToken.Id, cancellationToken);
 
             user.Email = email;
+
             await _context.SaveChangesAsync(cancellationToken);
             await _publisher.SendAsync(user.ToTemplate(false), cancellationToken);
             await _publisher.SendAsync(new EmailTemplate

@@ -44,8 +44,8 @@ namespace Authentication.BLL.Services
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, ex.Message);
-                    _logger.LogError(ex, ex.StackTrace);
+                    _logger.LogCritical(ex, ex.Message);
+                    _logger.LogCritical(ex, ex.StackTrace);
                 }
 
                 await Task.Delay(1000, stoppingToken);

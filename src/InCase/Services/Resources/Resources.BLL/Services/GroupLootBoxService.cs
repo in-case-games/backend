@@ -47,13 +47,9 @@ namespace Resources.BLL.Services
 
         public async Task<GroupLootBox> UpdateAsync(GroupLootBox request, CancellationToken cancellation = default)
         {
-            var group = await _context.GroupBoxes
-                .AsNoTracking()
-                .FirstOrDefaultAsync(glb => glb.Id == request.Id, cancellation) ??
+            if(!await _context.GroupBoxes.AnyAsync(glb => glb.Id == request.Id, cancellation)) 
                 throw new NotFoundException("Группа кейсов не найдена");
-
-            if (await _context.GroupBoxes
-                .AnyAsync(glb => glb.Name == request.Name && glb.Id != request.Id, cancellation))
+            if (await _context.GroupBoxes.AnyAsync(glb => glb.Name == request.Name && glb.Id != request.Id, cancellation))
                 throw new ConflictException("Название группы кейсов занято");
 
             _context.GroupBoxes.Update(request);

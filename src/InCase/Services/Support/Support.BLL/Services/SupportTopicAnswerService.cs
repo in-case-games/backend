@@ -26,7 +26,6 @@ namespace Support.BLL.Services
                 .AsNoTracking()
                 .FirstOrDefaultAsync(sta => sta.Id == id, cancellation) ??
                 throw new NotFoundException("Сообщение не найдено");
-
             var topic = await _context.Topics
                 .AsNoTracking()
                 .FirstOrDefaultAsync(st => st.Id == answer.TopicId, cancellation) ??
@@ -107,14 +106,15 @@ namespace Support.BLL.Services
             answer.Date = DateTime.UtcNow;
             topic.IsClosed = false;
 
-            if (topic.UserId != request.PlaintiffId) throw new ForbiddenException("Вы не создатель топика");
+            if (topic.UserId != request.PlaintiffId) 
+                throw new ForbiddenException("Вы не создатель топика");
             if (!await _context.Users.AnyAsync(u => u.Id == request.PlaintiffId, cancellation))
                 throw new NotFoundException("Пользователь не найден");
 
-            FileService.CreateFolder(@$"topic-answers/{answer.TopicId}/{request.Id}/");
-
             await _context.Answers.AddAsync(answer, cancellation);
             await _context.SaveChangesAsync(cancellation);
+
+            FileService.CreateFolder(@$"topic-answers/{answer.TopicId}/{request.Id}/");
 
             return answer.ToResponse();
         }
@@ -128,10 +128,10 @@ namespace Support.BLL.Services
 
             var answer = request.ToEntity(isNewGuid: true);
 
-            FileService.CreateFolder(@$"topic-answers/{answer.TopicId}/{request.Id}/");
-
             await _context.Answers.AddAsync(answer, cancellation);
             await _context.SaveChangesAsync(cancellation);
+
+            FileService.CreateFolder(@$"topic-answers/{answer.TopicId}/{request.Id}/");
 
             return answer.ToResponse();
         }
@@ -170,10 +170,10 @@ namespace Support.BLL.Services
             if (answer.PlaintiffId != userId)
                 throw new ForbiddenException("Вы не создатель сообщения");
 
-            FileService.RemoveFolder(@$"topic-answers/{answer.TopicId}/{id}/");
-
             _context.Answers.Remove(answer);
             await _context.SaveChangesAsync(cancellation);
+
+            FileService.RemoveFolder($"topic-answers/{answer.TopicId}/{id}/");
 
             return answer.ToResponse();
         }

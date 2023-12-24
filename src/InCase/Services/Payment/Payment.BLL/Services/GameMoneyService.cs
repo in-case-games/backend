@@ -54,6 +54,8 @@ namespace Payment.BLL.Services
                 {
                     i++;
                 }
+
+                await Task.Delay(200, cancellation);
             }
 
             throw new RequestTimeoutException("Сервис пополнения не отвечает");
@@ -61,10 +63,7 @@ namespace Payment.BLL.Services
 
         public async Task SendSuccess(CancellationToken cancellation = default) => 
             await _responseService.ResponsePostAsync(GameMoneyEndpoint.InvoiceInfo, 
-                new GameMoneyNotifySuccessRequest()
-                {
-                    Success = true
-                }, cancellation);
+                new GameMoneyNotifySuccessRequest { Success = true }, cancellation);
 
         public async Task<GameMoneyInvoiceInfoResponse> GetInvoiceInfoAsync(string invoiceId, CancellationToken cancellation = default)
         {
@@ -94,6 +93,8 @@ namespace Payment.BLL.Services
                 {
                     i++;
                 }
+
+                await Task.Delay(200, cancellation);
             }
 
             throw new RequestTimeoutException("Сервис пополнения не отвечает");

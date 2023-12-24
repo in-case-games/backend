@@ -53,8 +53,8 @@ namespace Withdraw.BLL.Services
             return new ItemInfoResponse
             {
                 Id = id,
-                Count = info!.Offers!.Count,
-                PriceKopecks = int.Parse(info.MinPrice!),
+                Count = info?.Offers?.Count ?? 0,
+                PriceKopecks = int.Parse(info?.MinPrice ?? "0"),
             };
         }
 
@@ -116,17 +116,12 @@ namespace Withdraw.BLL.Services
 
         private class AnswerOperationHistoryTmResponse
         {
-            [JsonPropertyName("success")] public bool Success { get; set; }
             [JsonPropertyName("history")] public List<OperationHistoryTmResponse>? Histories { get; set; }
         }
         private class OperationHistoryTmResponse
         {
             [JsonPropertyName("item")] public string? Id { get; set; }
-            [JsonPropertyName("h_id")] public string? HistoryId { get; set; }
-            [JsonPropertyName("market_name")] public string? MarketName { get; set; }
-            [JsonPropertyName("stage")]
-            public string? Status { get; set; }
-
+            [JsonPropertyName("stage")] public string? Status { get; set; }
         }
         private class TradeInfoTmResponse
         {
@@ -138,7 +133,6 @@ namespace Withdraw.BLL.Services
         }
         private class BuyItemTmResponse
         {
-            [JsonPropertyName("result")] public string? Result { get; set; }
             [JsonPropertyName("id")] public string? Id { get; set; }
         }
         private class BalanceTmResponse
@@ -147,27 +141,8 @@ namespace Withdraw.BLL.Services
         }
         private class ItemInfoTmResponse
         {
-            [JsonPropertyName("classid")] public string? ClassId { get; set; }
-            [JsonPropertyName("instanceid")] public string? InstanceId { get; set; }
-            [JsonPropertyName("our_market_instanceid")] public string? OurMarketInstanceId { get; set; }
-            [JsonPropertyName("market_name")] public string? MarketName { get; set; }
-            [JsonPropertyName("name")] public string? Name { get; set; }
-            [JsonPropertyName("market_hash_name")] public string? MarketHashName { get; set; }
-            [JsonPropertyName("rarity")] public string? Rarity { get; set; }
-            [JsonPropertyName("quality")] public string? Quality { get; set; }
-            [JsonPropertyName("type")] public string? Type { get; set; }
-            [JsonPropertyName("mtype")] public string? MType { get; set; }
-            [JsonPropertyName("slot")] public string? Slot { get; set; }
-            [JsonPropertyName("stickers")] public string? Stickers { get; set; }
             [JsonPropertyName("min_price")] public string? MinPrice { get; set; }
             [JsonPropertyName("offers")] public ICollection<OfferTm>? Offers { get; set; }
-            [JsonPropertyName("buy_offers")] public ICollection<BuyOfferTm>? BuyOffers { get; set; }
-        }
-        private class BuyOfferTm
-        {
-            [JsonPropertyName("c")] public string? Count { get; set; }
-            [JsonPropertyName("my_count")] public string? MyCount { get; set; }
-            [JsonPropertyName("o_price")] public string? Price { get; set; }
         }
         private class OfferTm
         {
