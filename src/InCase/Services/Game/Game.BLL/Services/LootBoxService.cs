@@ -46,7 +46,9 @@ namespace Game.BLL.Services
                 Id = template.Id,
                 Cost = template.Cost,
                 IsLocked = template.IsLocked,
-                ExpirationBannerDate = old.ExpirationBannerDate
+                ExpirationBannerDate = old.ExpirationBannerDate,
+                Balance = old.Balance,
+                VirtualBalance = old.VirtualBalance
             });
             await _context.SaveChangesAsync(cancellation);
         }
