@@ -129,6 +129,7 @@ namespace Authentication.BLL.Services
 
             var userFromToken = await _authenticationService.GetUserFromTokenAsync(token, "email", cancellationToken);
             var user = await _context.Users.FirstAsync(u => u.Id == userFromToken.Id, cancellationToken);
+            var oldEmail = user.Email!;
 
             user.Email = email;
 
@@ -143,13 +144,13 @@ namespace Authentication.BLL.Services
                 {
                     Title = $"Дорогой {user.Login!}",
                     Description = $"Вы изменили email своего аккаунта. " +
-                    $"Теперь ваш аккаунт привязан к {email}" +
+                    $"Теперь ваш аккаунт привязан к {email}." +
                     $"Если это были не вы обратитесь в тех поддержку."
                 }
             }, cancellationToken);
             await _publisher.SendAsync(new EmailTemplate
             {
-                Email = email,
+                Email = oldEmail,
                 IsRequiredMessage = true,
                 Subject = "Ваш аккаунт сменил почту",
                 Body = new EmailBodyTemplate
@@ -157,7 +158,7 @@ namespace Authentication.BLL.Services
                     Title = $"Дорогой {user.Login!}",
                     Description = $"Вы изменили email своего аккаунта." +
                     $"Теперь это почта привязана к вашему аккаунта." +
-                    $"Прошлый адрес почты: {user.Email}" +
+                    $"Прошлый адрес почты: {user.Email}." +
                     $"Если это были не вы обратитесь в тех поддержку."
                 }
             }, cancellationToken);
