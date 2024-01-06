@@ -68,8 +68,9 @@ namespace Resources.BLL.Services
 
         public async Task<LootBoxResponse> CreateAsync(LootBoxRequest request, CancellationToken cancellation = default)
         {
+            ValidationService.IsLootBox(request);
+
             if (request.Image is null) throw new BadRequestException("Загрузите картинку в base 64");
-            if (request.Cost <= 0) throw new BadRequestException("Кейс должен стоить больше 0");
 
             if (!await _context.Games.AnyAsync(g => g.Id == request.GameId, cancellation))
                 throw new NotFoundException("Игра не найдена");
@@ -100,12 +101,12 @@ namespace Resources.BLL.Services
 
         public async Task<LootBoxResponse> UpdateAsync(LootBoxRequest request, CancellationToken cancellation = default)
         {
+            ValidationService.IsLootBox(request);
+
             var oldBox = await _context.LootBoxes
                 .Include(lb => lb.Game)
                 .FirstOrDefaultAsync(lb => lb.Id == request.Id, cancellation) ??
                 throw new NotFoundException("Кейс не найден");
-
-            if (request.Cost <= 0) throw new BadRequestException("Кейс должен стоить больше 0");
 
             if (!await _context.Games.AnyAsync(g => g.Id == request.GameId, cancellation))
                 throw new NotFoundException("Игра не найдена");

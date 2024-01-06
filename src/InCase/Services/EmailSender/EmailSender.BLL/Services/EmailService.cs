@@ -43,7 +43,10 @@ namespace EmailSender.BLL.Services
             {
                 await client.SendAsync(msg, cancellationToken);
             }
-            catch (SmtpCommandException) { }
+            catch (SmtpCommandException)
+            {
+                // ignored
+            }
             catch (Exception) {
                 // ignored
             }

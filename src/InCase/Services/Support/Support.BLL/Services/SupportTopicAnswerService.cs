@@ -98,6 +98,8 @@ namespace Support.BLL.Services
 
         public async Task<SupportTopicAnswerResponse> CreateAsync(SupportTopicAnswerRequest request, CancellationToken cancellation = default)
         {
+            ValidationService.IsSupportTopicAnswer(request);
+
             var topic = await _context.Topics
                 .FirstOrDefaultAsync(st => st.Id == request.TopicId, cancellation) ??
                 throw new NotFoundException("Топик не найден");
@@ -121,6 +123,8 @@ namespace Support.BLL.Services
 
         public async Task<SupportTopicAnswerResponse> CreateByAdminAsync(SupportTopicAnswerRequest request, CancellationToken cancellation = default)
         {
+            ValidationService.IsSupportTopicAnswer(request);
+
             if (!await _context.Topics.AnyAsync(st => st.Id == request.TopicId, cancellation))
                 throw new NotFoundException("Топик не найден");
 
@@ -138,6 +142,8 @@ namespace Support.BLL.Services
 
         public async Task<SupportTopicAnswerResponse> UpdateAsync(SupportTopicAnswerRequest request, CancellationToken cancellation = default)
         {
+            ValidationService.IsSupportTopicAnswer(request);
+
             var answerOld = await _context.Answers
                 .FirstOrDefaultAsync(sta => sta.Id == request.Id, cancellation) ??
                 throw new NotFoundException("Ответ не найден");

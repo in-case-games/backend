@@ -176,7 +176,8 @@ namespace Resources.BLL.Services
 
         public async Task<GameItemResponse> CreateAsync(GameItemRequest request, CancellationToken cancellation = default)
         {
-            if (request.Cost <= 0) throw new BadRequestException("Предмет должен стоить больше 0");
+            ValidationService.IsGameItem(request);
+
             if (request.Image is null) throw new BadRequestException("Загрузите картинку в base64");
 
             var quality = await _context.Qualities
@@ -215,7 +216,7 @@ namespace Resources.BLL.Services
 
         public async Task<GameItemResponse> UpdateAsync(GameItemRequest request, CancellationToken cancellation = default)
         {
-            if (request.Cost <= 0) throw new BadRequestException("Предмет должен стоить больше 0");
+            ValidationService.IsGameItem(request);
 
             var itemOld = await _context.Items
                 .FirstOrDefaultAsync(gi => gi.Id == request.Id, cancellation) ??

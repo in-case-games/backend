@@ -34,6 +34,8 @@ namespace Resources.BLL.Services
 
         public async Task<GroupLootBox> CreateAsync(GroupLootBox request, CancellationToken cancellation = default)
         {
+            ValidationService.IsGroupLootBox(request);
+
             request.Id = Guid.NewGuid();
 
             if (await _context.GroupBoxes.AnyAsync(glb => glb.Name == request.Name, cancellation))
@@ -47,7 +49,9 @@ namespace Resources.BLL.Services
 
         public async Task<GroupLootBox> UpdateAsync(GroupLootBox request, CancellationToken cancellation = default)
         {
-            if(!await _context.GroupBoxes.AnyAsync(glb => glb.Id == request.Id, cancellation)) 
+            ValidationService.IsGroupLootBox(request);
+
+            if (!await _context.GroupBoxes.AnyAsync(glb => glb.Id == request.Id, cancellation)) 
                 throw new NotFoundException("Группа кейсов не найдена");
             if (await _context.GroupBoxes.AnyAsync(glb => glb.Name == request.Name && glb.Id != request.Id, cancellation))
                 throw new ConflictException("Название группы кейсов занято");

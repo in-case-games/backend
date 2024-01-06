@@ -124,6 +124,8 @@ namespace Authentication.BLL.Services
 
         public async Task<UserResponse> UpdateEmailAsync(string email, string token, CancellationToken cancellationToken = default)
         {
+            if (!ValidationService.CheckCorrectEmail(email)) 
+                throw new BadRequestException("Некорректный mail");
             if (await _context.Users.AsNoTracking().AnyAsync(u => u.Email == email, cancellationToken))
                 throw new ConflictException("Email почта занята");
 
@@ -168,6 +170,8 @@ namespace Authentication.BLL.Services
 
         public async Task<UserResponse> UpdateEmailByAdminAsync(Guid userId, string email, CancellationToken cancellationToken = default)
         {
+            if (!ValidationService.CheckCorrectEmail(email)) 
+                throw new BadRequestException("Некорректный mail");
             if (await _context.Users.AsNoTracking().AnyAsync(u => u.Email == email, cancellationToken))
                 throw new ConflictException("Email почта занята");
 
@@ -212,6 +216,8 @@ namespace Authentication.BLL.Services
 
         public async Task<UserResponse> UpdateLoginAsync(string login, string token, CancellationToken cancellationToken)
         {
+            if (!ValidationService.CheckCorrectLogin(login)) 
+                throw new BadRequestException("Некорректный логин");
             if (await _context.Users.AsNoTracking().AnyAsync(u => u.Login == login, cancellationToken))
                 throw new ConflictException("Логин занят");
 
@@ -241,6 +247,8 @@ namespace Authentication.BLL.Services
 
         public async Task<UserResponse> UpdateLoginByAdminAsync(Guid userId, string login, CancellationToken cancellationToken = default)
         {
+            if (!ValidationService.CheckCorrectLogin(login))
+                throw new BadRequestException("Некорректный логин");
             if (await _context.Users.AsNoTracking().AnyAsync(u => u.Login == login, cancellationToken))
                 throw new ConflictException("Логин занят");
 
