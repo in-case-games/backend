@@ -29,11 +29,6 @@ namespace Authentication.BLL.Services
 
         public async Task SignInAsync(UserRequest request, CancellationToken cancellationToken = default)
         {
-            if (!ValidationService.CheckCorrectLogin(request.Login))
-                throw new BadRequestException("Некорректный логин");
-            if (!ValidationService.CheckCorrectEmail(request.Email))
-                throw new BadRequestException("Некорректный email");
-
             var user = await _context.Users
                 .Include(u => u.AdditionalInfo)
                 .AsNoTracking()
