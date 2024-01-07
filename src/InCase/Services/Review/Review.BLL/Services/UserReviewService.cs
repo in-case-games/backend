@@ -72,8 +72,8 @@ namespace Review.BLL.Services
 
         public async Task<UserReviewResponse> CreateAsync(UserReviewRequest request, CancellationToken cancellation = default)
         {
-            if (request.Score > 5 || request.Score < 1)
-                throw new BadRequestException("Оценка отзыва должна быть больше 1 и меньше 5");
+            ValidationService.IsUserReview(request);
+
             if (await _context.Reviews.AnyAsync(u => u.UserId == request.UserId, cancellation))
                 throw new ConflictException("У вас уже есть отзыв");
             if (!await _context.User.AnyAsync(u => u.Id == request.UserId, cancellation))
@@ -123,8 +123,8 @@ namespace Review.BLL.Services
 
         public async Task<UserReviewResponse> UpdateAsync(UserReviewRequest request, CancellationToken cancellation = default)
         {
-            if (request.Score is > 5 or < 1)
-                throw new BadRequestException("Оценка отзыва должна быть больше 1 и меньше 5");
+            ValidationService.IsUserReview(request);
+
             if (!await _context.User.AnyAsync(u => u.Id == request.UserId, cancellation))
                 throw new NotFoundException("Пользователь не найден");
 

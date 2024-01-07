@@ -109,6 +109,8 @@ namespace Support.BLL.Services
 
         public async Task<SupportTopicResponse> CreateAsync(SupportTopicRequest request, CancellationToken cancellation = default)
         {
+            ValidationService.IsSupportTopic(request);
+
             var topics = await _context.Topics
                 .AsNoTracking()
                 .Where(st => st.UserId == request.UserId && st.IsClosed == false)
@@ -133,6 +135,8 @@ namespace Support.BLL.Services
 
         public async Task<SupportTopicResponse> UpdateAsync(SupportTopicRequest request, CancellationToken cancellation = default)
         {
+            ValidationService.IsSupportTopic(request);
+
             var topicOld = await _context.Topics
                 .Include(st => st.Answers!)
                     .ThenInclude(sta => sta.Images)

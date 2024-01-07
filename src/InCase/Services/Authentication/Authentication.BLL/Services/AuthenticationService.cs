@@ -68,6 +68,10 @@ namespace Authentication.BLL.Services
 
         public async Task SignUpAsync(UserRequest request, CancellationToken cancellationToken = default)
         {
+            if (!ValidationService.CheckCorrectLogin(request.Login))
+                throw new BadRequestException("Некорректный логин");
+            if (!ValidationService.CheckCorrectEmail(request.Email))
+                throw new BadRequestException("Некорректный email");
             if (await _context.Users.AnyAsync(u => u.Email == request.Email || u.Login == request.Login, cancellationToken))
                 throw new ConflictException("Пользователь уже существует");
 
