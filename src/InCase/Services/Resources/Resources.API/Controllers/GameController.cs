@@ -18,37 +18,34 @@ namespace Resources.API.Controllers
             _gameService = gameService;
         }
 
-        [ProducesResponseType(typeof(ApiResult<List<GameResponse>>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<List<GameResponse>>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> Get(CancellationToken cancellation)
         {
-            List<GameResponse> response = await _gameService.GetAsync();
+            var response = await _gameService.GetAsync(cancellation);
 
-            return Ok(ApiResult<List<GameResponse>>.OK(response));
+            return Ok(ApiResult<List<GameResponse>>.Ok(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<GameResponse>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<GameResponse>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
-        [HttpGet("{id}")]
-        public async Task<IActionResult> Get(Guid id)
+        [HttpGet("{id:guid}")]
+        public async Task<IActionResult> Get(Guid id, CancellationToken cancellation)
         {
-            GameResponse response = await _gameService.GetAsync(id);
+            var response = await _gameService.GetAsync(id, cancellation);
 
-            return Ok(ApiResult<GameResponse>.OK(response));
+            return Ok(ApiResult<GameResponse>.Ok(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<GameResponse>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<GameResponse>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("name/{name}")]
-        public async Task<IActionResult> Get(string name)
+        public async Task<IActionResult> Get(string name, CancellationToken cancellation)
         {
-            GameResponse response = await _gameService.GetAsync(name);
+            var response = await _gameService.GetAsync(name, cancellation);
 
-            return Ok(ApiResult<GameResponse>.OK(response));
+            return Ok(ApiResult<GameResponse>.Ok(response));
         }
     }
 }

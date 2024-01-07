@@ -18,26 +18,24 @@ namespace Identity.API.Controllers
             _roleService = roleService;
         }
 
-        [ProducesResponseType(typeof(ApiResult<UserRoleResponse>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<UserRoleResponse>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
-        [HttpGet("{id}")]
-        public async Task<IActionResult> Get(Guid id)
+        [HttpGet("{id:guid}")]
+        public async Task<IActionResult> Get(Guid id, CancellationToken cancellation)
         {
-            UserRoleResponse response = await _roleService.GetAsync(id);
+            var response = await _roleService.GetAsync(id, cancellation);
 
-            return Ok(ApiResult<UserRoleResponse>.OK(response));
+            return Ok(ApiResult<UserRoleResponse>.Ok(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<List<UserRoleResponse>>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<List<UserRoleResponse>>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> Get(CancellationToken cancellation)
         {
-            List<UserRoleResponse> response = await _roleService.GetAsync();
+            var response = await _roleService.GetAsync(cancellation);
 
-            return Ok(ApiResult<List<UserRoleResponse>>.OK(response));
+            return Ok(ApiResult<List<UserRoleResponse>>.Ok(response));
         }
     }
 }

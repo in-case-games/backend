@@ -19,37 +19,34 @@ namespace Authentication.API.Controllers
             _authenticationService = authenticationService;
         }
 
-        [ProducesResponseType(typeof(ApiResult<string>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<string>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpPost("sign-in")]
-        public async Task<IActionResult> SignIn(UserRequest request)
+        public async Task<IActionResult> SignIn(UserRequest request, CancellationToken cancellationToken)
         {
-            await _authenticationService.SignInAsync(request);
+            await _authenticationService.SignInAsync(request, cancellationToken);
 
             return Ok(ApiResult<string>.SentEmail());
         }
 
-        [ProducesResponseType(typeof(ApiResult<string>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<string>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpPost("sign-up")]
-        public async Task<IActionResult> SignUp(UserRequest request)
+        public async Task<IActionResult> SignUp(UserRequest request, CancellationToken cancellationToken)
         {
-            await _authenticationService.SignUpAsync(request);
+            await _authenticationService.SignUpAsync(request, cancellationToken);
 
             return Ok(ApiResult<string>.SentEmail());
         }
 
-        [ProducesResponseType(typeof(ApiResult<TokensResponse>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<TokensResponse>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("refresh")]
-        public async Task<IActionResult> RefreshTokens(string token)
+        public async Task<IActionResult> RefreshTokens(string token, CancellationToken cancellationToken)
         {
-            TokensResponse response = await _authenticationService.RefreshTokensAsync(token);
+            var response = await _authenticationService.RefreshTokensAsync(token, cancellationToken);
 
-            return Ok(ApiResult<TokensResponse>.OK(response));
+            return Ok(ApiResult<TokensResponse>.Ok(response));
         }
     }
 }

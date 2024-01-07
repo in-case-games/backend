@@ -14,44 +14,41 @@ namespace Withdraw.API.Controllers
     public class WithdrawController : ControllerBase
     {
         private readonly IWithdrawService _withdrawService;
-        private Guid UserId => Guid
-            .Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
+        private Guid UserId => Guid.Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
 
         public WithdrawController(IWithdrawService withdrawService)
         {
             _withdrawService = withdrawService;
         }
 
-        [ProducesResponseType(typeof(ApiResult<UserHistoryWithdrawResponse>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<UserHistoryWithdrawResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpPost]
-        public async Task<IActionResult> Withdraw(WithdrawItemRequest request)
+        public async Task<IActionResult> Withdraw(WithdrawItemRequest request, CancellationToken cancellation)
         {
-            UserHistoryWithdrawResponse response = await _withdrawService
-                .WithdrawItemAsync(request, UserId);
+            var response = await _withdrawService.WithdrawItemAsync(request, UserId, cancellation);
 
-            return Ok(ApiResult<UserHistoryWithdrawResponse>.OK(response));
+            return Ok(ApiResult<UserHistoryWithdrawResponse>.Ok(response));
         }
 
         [ProducesResponseType(typeof(ApiResult<BalanceMarketResponse>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("market/{name}/balance")]
-        public async Task<IActionResult> GetMarketBalance(string name)
+        public async Task<IActionResult> GetMarketBalance(string name, CancellationToken cancellation)
         {
-            BalanceMarketResponse response = await _withdrawService.GetMarketBalanceAsync(name);
+            var response = await _withdrawService.GetMarketBalanceAsync(name, cancellation);
 
-            return Ok(ApiResult<BalanceMarketResponse>.OK(response));
+            return Ok(ApiResult<BalanceMarketResponse>.Ok(response));
         }
 
         [ProducesResponseType(typeof(ApiResult<ItemInfoResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
-        [HttpGet("item/{id}")]
-        public async Task<IActionResult> GetItemInfo(Guid id)
+        [HttpGet("item/{id:guid}")]
+        public async Task<IActionResult> GetItemInfo(Guid id, CancellationToken cancellation)
         {
-            ItemInfoResponse response = await _withdrawService.GetItemInfoAsync(id);
+            var response = await _withdrawService.GetItemInfoAsync(id, cancellation);
 
-            return Ok(ApiResult<ItemInfoResponse>.OK(response));
+            return Ok(ApiResult<ItemInfoResponse>.Ok(response));
         }
     }
 }

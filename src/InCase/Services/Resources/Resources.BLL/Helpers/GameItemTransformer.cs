@@ -20,15 +20,8 @@ namespace Resources.BLL.Helpers
                 UpdateDate = item.UpdateDate,
             };
 
-        public static List<GameItemResponse> ToResponse(this IEnumerable<GameItem> items)
-        {
-            List<GameItemResponse> result = new();
-
-            foreach(var item in items)
-                result.Add(ToResponse(item));
-
-            return result;
-        }
+        public static List<GameItemResponse> ToResponse(this IEnumerable<GameItem> items) =>
+            items.Select(ToResponse).ToList();
 
         public static GameItem ToEntity(this GameItemRequest request, bool isNewGuid = false) =>
             new() { 
@@ -43,15 +36,16 @@ namespace Resources.BLL.Helpers
                 IdForMarket = request.IdForMarket
             };
 
-        public static GameItemTemplate ToTemplate(this GameItem entity, bool isDeleted = false) => new()
-        {
-            Id = entity.Id,
-            Cost = entity.Cost,
-            GameName = entity.Game?.Name,
-            HashName = entity.HashName,
-            IsDeleted = isDeleted,
-            Name = entity.Name,
-            IdForMarket = entity.IdForMarket
-        };
+        public static GameItemTemplate ToTemplate(this GameItem entity, bool isDeleted = false) => 
+            new()
+            {
+                Id = entity.Id,
+                Cost = entity.Cost,
+                GameName = entity.Game?.Name,
+                HashName = entity.HashName,
+                IsDeleted = isDeleted,
+                Name = entity.Name,
+                IdForMarket = entity.IdForMarket
+            };
     }
 }

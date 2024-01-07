@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Resources.API.Common;
 using Resources.API.Filters;
-using Resources.BLL.Entities;
 using Resources.BLL.Interfaces;
 using Resources.BLL.Models;
 using System.Net;
@@ -20,71 +19,76 @@ namespace Resources.API.Controllers
             _bannerService = bannerService;
         }
 
-        [ProducesResponseType(typeof(ApiResult<List<LootBoxBannerResponse>>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<List<LootBoxBannerResponse>>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> Get(CancellationToken cancellation)
         {
-            List<LootBoxBannerResponse> response = await _bannerService.GetAsync();
+            var response = await _bannerService.GetAsync(cancellation);
 
-            return Ok(ApiResult<List<LootBoxBannerResponse>>.OK(response));
+            return Ok(ApiResult<List<LootBoxBannerResponse>>.Ok(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<List<LootBoxBannerResponse>>),
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<List<LootBoxBannerResponse>>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
-        [HttpGet("active/{isActive}")]
-        public async Task<IActionResult> GetByIsActive(bool isActive = true)
+        [HttpGet("active/{isActive:bool}")]
+        public async Task<IActionResult> GetByIsActive(CancellationToken cancellation, bool isActive = true)
         {
-            List<LootBoxBannerResponse> response = await _bannerService.GetAsync(isActive);
+            var response = await _bannerService.GetAsync(isActive, cancellation);
 
-            return Ok(ApiResult<List<LootBoxBannerResponse>>.OK(response));
+            return Ok(ApiResult<List<LootBoxBannerResponse>>.Ok(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<LootBoxBannerResponse>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<LootBoxBannerResponse>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
-        [HttpGet("{id}")]
-        public async Task<IActionResult> Get(Guid id)
+        [HttpGet("{id:guid}")]
+        public async Task<IActionResult> Get(Guid id, CancellationToken cancellation)
         {
-            LootBoxBannerResponse response = await _bannerService.GetAsync(id);
+            var response = await _bannerService.GetAsync(id, cancellation);
 
-            return Ok(ApiResult<LootBoxBannerResponse>.OK(response));
+            return Ok(ApiResult<LootBoxBannerResponse>.Ok(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<LootBoxBannerResponse>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<LootBoxBannerResponse>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
-        [HttpGet("box/{id}")]
-        public async Task<IActionResult> GetByBoxId(Guid id)
+        [HttpGet("box/{id:guid}")]
+        public async Task<IActionResult> GetByBoxId(Guid id, CancellationToken cancellation)
         {
-            LootBoxBannerResponse response = await _bannerService.GetByBoxIdAsync(id);
+            var response = await _bannerService.GetByBoxIdAsync(id, cancellation);
 
-            return Ok(ApiResult<LootBoxBannerResponse>.OK(response));
+            return Ok(ApiResult<LootBoxBannerResponse>.Ok(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<LootBoxBannerResponse>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<LootBoxBannerResponse>), (int)HttpStatusCode.OK)]
         [RequestSizeLimit(8388608)]
         [AuthorizeByRole(Roles.Owner)]
         [HttpPost]
-        public async Task<IActionResult> Post(LootBoxBannerRequest request)
+        public async Task<IActionResult> Post(LootBoxBannerRequest request, CancellationToken cancellation)
         {
-            LootBoxBannerResponse response = await _bannerService.CreateAsync(request);
+            var response = await _bannerService.CreateAsync(request, cancellation);
 
-            return Ok(ApiResult<LootBoxBannerResponse>.OK(response));
+            return Ok(ApiResult<LootBoxBannerResponse>.Ok(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<LootBoxBannerResponse>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<LootBoxBannerResponse>), (int)HttpStatusCode.OK)]
+        [RequestSizeLimit(8388608)]
         [AuthorizeByRole(Roles.Owner)]
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(Guid id)
+        [HttpPut]
+        public async Task<IActionResult> Put(LootBoxBannerRequest request, CancellationToken cancellation)
         {
-            LootBoxBannerResponse response = await _bannerService.DeleteAsync(id);
+            var response = await _bannerService.UpdateAsync(request, cancellation);
 
-            return Ok(ApiResult<LootBoxBannerResponse>.OK(response));
+            return Ok(ApiResult<LootBoxBannerResponse>.Ok(response));
+        }
+
+        [ProducesResponseType(typeof(ApiResult<LootBoxBannerResponse>), (int)HttpStatusCode.OK)]
+        [AuthorizeByRole(Roles.Owner)]
+        [HttpDelete("{id:guid}")]
+        public async Task<IActionResult> Delete(Guid id, CancellationToken cancellation)
+        {
+            var response = await _bannerService.DeleteAsync(id, cancellation);
+
+            return Ok(ApiResult<LootBoxBannerResponse>.Ok(response));
         }
     }
 }

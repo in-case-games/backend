@@ -1,7 +1,6 @@
-﻿using Resources.BLL.Models;
-using Resources.DAL.Entities;
+﻿using Resources.DAL.Entities;
 
-namespace Resources.BLL.Entities
+namespace Resources.BLL.Models
 {
     public class LootBoxBannerResponse : BaseEntity
     {

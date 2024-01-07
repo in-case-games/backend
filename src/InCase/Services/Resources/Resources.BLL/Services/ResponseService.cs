@@ -6,16 +6,11 @@ namespace Resources.BLL.Services
 {
     public class ResponseService : IResponseService
     {
-        private readonly HttpClient _httpClient;
+        private readonly HttpClient _httpClient = new();
 
-        public ResponseService()
+        public async Task<T?> GetAsync<T>(string uri, CancellationToken cancellation = default)
         {
-            _httpClient = new();
-        }
-
-        public async Task<T?> GetAsync<T>(string uri)
-        {
-            HttpResponseMessage response = await _httpClient.GetAsync(uri);
+            var response = await _httpClient.GetAsync(uri, cancellation);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -28,8 +23,7 @@ namespace Resources.BLL.Services
             }
 
             return await response.Content
-                .ReadFromJsonAsync<T>(
-                new JsonSerializerOptions(JsonSerializerDefaults.Web));
+                .ReadFromJsonAsync<T>(new JsonSerializerOptions(JsonSerializerDefaults.Web), cancellation);
         }
     }
 }

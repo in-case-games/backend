@@ -1,6 +1,4 @@
-﻿using EmailSender.BLL.Exceptions;
-using EmailSender.BLL.Interfaces;
-using EmailSender.DAL.Entities;
+﻿using EmailSender.BLL.Interfaces;
 using Infrastructure.MassTransit.Email;
 using MassTransit;
 
@@ -19,12 +17,10 @@ namespace EmailSender.BLL.MassTransit.Consumers
 
         public async Task Consume(ConsumeContext<EmailTemplate> context)
         {
-            var template = context.Message;
+            var user = await _userService.GetAsync(context.Message.Email);
 
-            User? user = await _userService.GetAsync(template.Email);
-
-            if(user is null || user.AdditionalInfo!.IsNotifyEmail || template.IsRequiredMessage)
-                await _emailService.SendToEmailAsync(template);
+            if(user is null || user.AdditionalInfo!.IsNotifyEmail || context.Message.IsRequiredMessage)
+                await _emailService.SendToEmailAsync(context.Message);
         }
     }
 }

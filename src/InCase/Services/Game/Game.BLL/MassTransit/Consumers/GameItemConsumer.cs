@@ -1,5 +1,4 @@
 ﻿using Game.BLL.Interfaces;
-using Game.DAL.Entities;
 using Infrastructure.MassTransit.Resources;
 using MassTransit;
 
@@ -16,16 +15,11 @@ namespace Game.BLL.MassTransit.Consumers
 
         public async Task Consume(ConsumeContext<GameItemTemplate> context)
         {
-            var template = context.Message;
+            var item = await _itemService.GetAsync(context.Message.Id);
 
-            GameItem? item = await _itemService.GetAsync(template.Id);
-
-            if (item is null)
-                await _itemService.CreateAsync(template);
-            else if (template.IsDeleted)
-                await _itemService.DeleteAsync(item.Id);
-            else
-                await _itemService.UpdateAsync(template);  
+            if (item is null) await _itemService.CreateAsync(context.Message);
+            else if (context.Message.IsDeleted) await _itemService.DeleteAsync(item.Id);
+            else await _itemService.UpdateAsync(context.Message);  
         }
     }
 }

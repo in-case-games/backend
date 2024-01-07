@@ -374,6 +374,18 @@
       "UpstreamHttpMethod": ["Get"]
     },
     {
+      "DownstreamPathTemplate": "/api/user-opening/all",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5184
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/history/opening/all",
+      "UpstreamHttpMethod": ["Get"]
+    },
+    {
       "DownstreamPathTemplate": "/api/user-opening",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
@@ -410,7 +422,7 @@
       "UpstreamHttpMethod": ["Get"]
     },
     {
-      "DownstreamPathTemplate": "/api/user-opening/{userId}/userId/admin",
+      "DownstreamPathTemplate": "/api/user-opening/{id}/userId/admin",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -1447,6 +1459,18 @@
       "UpstreamHttpMethod": ["Post"]
     },
     {
+      "DownstreamPathTemplate": "/api/loot-box-banner",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": 5073
+        }
+      ],
+      "UpstreamPathTemplate": "/api/box/banner",
+      "UpstreamHttpMethod": ["Put"]
+    },
+    {
       "DownstreamPathTemplate": "/api/loot-box-banner/{id}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
@@ -1540,7 +1564,7 @@
           "Port": 5073
         }
       ],
-      "UpstreamPathTemplate": "/api/box/{id}",
+      "UpstreamPathTemplate": "/api/box/id/{id}",
       "UpstreamHttpMethod": ["Delete"]
     },
     //EndPoint: loot-box-group

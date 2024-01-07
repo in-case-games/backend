@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MongoDB.Driver;
+using NLog.Extensions.Logging;
 using Statistics.API.Middlewares;
 using Statistics.BLL.MassTransit.Consumers;
 using Statistics.BLL.Repository;
@@ -10,6 +11,9 @@ using Statistics.BLL.Services;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.Development.json").Build();
+
+builder.Logging.AddConfiguration(configuration).ClearProviders().AddNLog();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -41,7 +45,7 @@ builder.Services.AddSwaggerGen(options =>
         Scheme = "Bearer",
         BearerFormat = "JWT",
         In = ParameterLocation.Header,
-        Description = "Example: \"Bearer 1safsfsdfdfd\"",
+        Description = "Example: \"Bearer [token]\"",
     });
 
     options.AddSecurityRequirement(new OpenApiSecurityRequirement
@@ -106,7 +110,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseMiddleware<CancellationTokenHandlingMiddleware>();
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();

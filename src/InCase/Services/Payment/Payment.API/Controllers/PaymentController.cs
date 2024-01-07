@@ -14,48 +14,41 @@ namespace Payment.API.Controllers
     public class PaymentController : ControllerBase
     {
         private readonly IPaymentService _paymentService;
-        private Guid UserId => Guid
-            .Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
+        private Guid UserId => Guid.Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
 
         public PaymentController(IPaymentService paymentService)
         {
             _paymentService = paymentService;
         }
 
-        [ProducesResponseType(typeof(ApiResult<UserPaymentsResponse>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<UserPaymentsResponse>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpPost("top-up")]
-        public async Task<IActionResult> TopUpBalance(GameMoneyTopUpResponse request)
+        public async Task<IActionResult> TopUpBalance(GameMoneyTopUpResponse request, CancellationToken cancellation)
         {
-            UserPaymentsResponse response = await _paymentService
-                .TopUpBalanceAsync(request);
+            var response = await _paymentService.TopUpBalanceAsync(request, cancellation);
 
-            return Ok(ApiResult<UserPaymentsResponse>.OK(response));
+            return Ok(ApiResult<UserPaymentsResponse>.Ok(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<PaymentBalanceResponse>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<PaymentBalanceResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Owner, Roles.Bot)]
         [HttpGet("balance/{currency}")]
-        public async Task<IActionResult> GetBalance(string currency)
+        public async Task<IActionResult> GetBalance(string currency, CancellationToken cancellation)
         {
-            PaymentBalanceResponse response = await _paymentService
-                .GetPaymentBalanceAsync(currency);
+            var response = await _paymentService.GetPaymentBalanceAsync(currency, cancellation);
 
-            return Ok(ApiResult<PaymentBalanceResponse>.OK(response));
+            return Ok(ApiResult<PaymentBalanceResponse>.Ok(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<HashOfDataForDepositResponse>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<HashOfDataForDepositResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet("top-up/signature")]
         public IActionResult GetSignatureForDeposit()
         {
-            HashOfDataForDepositResponse response = _paymentService
-                .GetHashOfDataForDeposit(UserId);
+            var response = _paymentService.GetHashOfDataForDeposit(UserId);
 
-            return Ok(ApiResult<HashOfDataForDepositResponse>.OK(response));
+            return Ok(ApiResult<HashOfDataForDepositResponse>.Ok(response));
         }
     }
 }

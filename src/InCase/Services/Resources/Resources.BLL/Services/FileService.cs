@@ -1,25 +1,27 @@
-﻿using Resources.BLL.Exceptions;
+﻿using ImageMagick;
+using Resources.BLL.Exceptions;
 using System.Text.RegularExpressions;
 
 namespace Resources.BLL.Services
 {
     public static class FileService
     {
-        private static readonly string PATH_URI = @"/static/images/";
+        private const string PathUri = @"/static/images/";
 
         public static void UploadImageBase64(string base64, string filePath, string fileName)
         {
-            (string extensionFile, base64) = SplitBase64(base64);
+            (var extensionFile, base64) = SplitBase64(base64);
 
             fileName += extensionFile;
 
-            string absolutePath = PATH_URI + filePath + fileName;
+            var absolutePath = PathUri + filePath + fileName;
 
             CreateFolder(filePath);
 
             try
             {
                 File.WriteAllBytes(absolutePath, Convert.FromBase64String(base64));
+                Compress(absolutePath);
             }
             catch (Exception)
             {
@@ -29,7 +31,7 @@ namespace Resources.BLL.Services
 
         public static void RemoveFile(string fileName, string filePath)
         {
-            string absolutePath = PATH_URI + filePath + fileName;
+            var absolutePath = PathUri + filePath + fileName;
 
             try
             {
@@ -43,48 +45,56 @@ namespace Resources.BLL.Services
 
         public static void RemoveFolder(string path)
         {
-            string absolutePath = PATH_URI + path;
+            var absolutePath = PathUri + path;
 
-            if (Directory.Exists(absolutePath))
+            if (!Directory.Exists(absolutePath)) return;
+
+            try
             {
-                try
-                {
-                    Directory.Delete(absolutePath, recursive: true);
-                }
-                catch (Exception)
-                {
-                    throw new ConflictException($"Не удалось удалить папку {absolutePath}");
-                }
+                Directory.Delete(absolutePath, recursive: true);
+            }
+            catch (Exception)
+            {
+                throw new ConflictException($"Не удалось удалить папку {absolutePath}");
             }
         }
 
         public static void CreateFolder(string path)
         {
-            string absolutePath = PATH_URI + path;
+            var absolutePath = PathUri + path;
 
-            if (!Directory.Exists(absolutePath))
+            if (Directory.Exists(absolutePath)) return;
+
+            try
             {
-                try
-                {
-                    Directory.CreateDirectory(absolutePath);
-                }
-                catch(Exception)
-                {
-                    throw new ConflictException($"Не удалось создать папку {absolutePath}");
-                }
+                Directory.CreateDirectory(absolutePath);
             }
+            catch(Exception)
+            {
+                throw new ConflictException($"Не удалось создать папку {absolutePath}");
+            }
+        }
+
+        private static void Compress(string path)
+        {
+            var file = new FileInfo(path);
+            var optimizer = new ImageOptimizer
+            {
+                OptimalCompression = true
+            };
+            optimizer.Compress(file);
         }
 
         public static (string extensionFile, string base64) SplitBase64(string base64)
         {
-            string[] piecesFirst = base64.Split(";")[0].Split(@"/");
-            string[] piecesSecond = base64.Split(",");
+            var piecesFirst = base64.Split(";")[0].Split(@"/");
+            var piecesSecond = base64.Split(",");
 
             if (piecesSecond.Length <= 1 || piecesFirst.Length <= 1) 
                 throw new BadRequestException("Base64 не корректный, шаблон: " +
                     "data:image/{png/jpeg/jpg};base64,{base64}");
 
-            string extensionFile = "." + piecesFirst[1];
+            var extensionFile = "." + piecesFirst[1];
 
             if (!Regex.IsMatch("(.*?)\\.(png|jpg|jpeg)$", extensionFile))
                 throw new BadRequestException("Доступные форматы файла png/jpg/jpeg");

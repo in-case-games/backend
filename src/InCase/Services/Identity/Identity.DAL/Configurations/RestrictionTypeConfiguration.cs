@@ -6,9 +6,9 @@ namespace Identity.DAL.Configurations
 {
     internal class RestrictionTypeConfiguration : BaseEntityConfiguration<RestrictionType>
     {
-        private readonly List<RestrictionType> types = new() { 
-            new() { Name = "mute" }, new() { Name = "ban" },
-            new() { Name = "warn" }
+        private readonly List<RestrictionType> _types = new() { 
+            new RestrictionType { Name = "mute" }, new RestrictionType { Name = "ban" },
+            new RestrictionType { Name = "warn" }
         };
 
         public override void Configure(EntityTypeBuilder<RestrictionType> builder)
@@ -27,8 +27,7 @@ namespace Identity.DAL.Configurations
                 .WithOne(m => m.Type)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            foreach (var type in types)
-                builder.HasData(type);
+            foreach (var type in _types) builder.HasData(type);
         }
     }
 }

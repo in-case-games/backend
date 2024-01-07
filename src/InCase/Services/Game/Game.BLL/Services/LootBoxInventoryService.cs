@@ -1,5 +1,4 @@
 ﻿using Game.BLL.Exceptions;
-using Game.BLL.Helpers;
 using Game.BLL.Interfaces;
 using Game.DAL.Data;
 using Game.DAL.Entities;
@@ -17,39 +16,48 @@ namespace Game.BLL.Services
             _context = context;
         }
 
-        public async Task<LootBoxInventory?> GetAsync(Guid id) => await _context.BoxInventories
+        public async Task<LootBoxInventory?> GetAsync(Guid id, CancellationToken cancellation = default) => 
+            await _context.BoxInventories
             .AsNoTracking()
-            .FirstOrDefaultAsync(lbi => lbi.Id == id);
+            .FirstOrDefaultAsync(lbi => lbi.Id == id, cancellation);
 
-        public async Task CreateAsync(LootBoxInventoryTemplate template)
+        public async Task CreateAsync(LootBoxInventoryTemplate template, CancellationToken cancellation = default)
         {
-            LootBoxInventory inventory = template.ToEntity();
-
-            await _context.BoxInventories.AddAsync(inventory);
-            await _context.SaveChangesAsync();
+            await _context.BoxInventories.AddAsync(new LootBoxInventory
+            {
+                Id = template.Id,
+                BoxId = template.BoxId,
+                ChanceWining = template.ChanceWining,
+                ItemId = template.ItemId,
+            }, cancellation);
+            await _context.SaveChangesAsync(cancellation);
         }
 
-        public async Task UpdateAsync(LootBoxInventoryTemplate template)
+        public async Task UpdateAsync(LootBoxInventoryTemplate template, CancellationToken cancellation = default)
         {
-            LootBoxInventory inventory = await _context.BoxInventories
-                .FirstOrDefaultAsync(lbi => lbi.Id == template.Id) ??
+            var inventory = await _context.BoxInventories
+                .FirstOrDefaultAsync(lbi => lbi.Id == template.Id, cancellation) ??
                 throw new NotFoundException("Инвентарь не найден");
 
-            LootBoxInventory inventoryNew = template.ToEntity();
-
-            _context.Entry(inventory).CurrentValues.SetValues(inventoryNew);
-            await _context.SaveChangesAsync();
+            _context.Entry(inventory).CurrentValues.SetValues(new LootBoxInventory
+            {
+                Id = template.Id,
+                BoxId = template.BoxId,
+                ChanceWining = template.ChanceWining,
+                ItemId = template.ItemId,
+            });
+            await _context.SaveChangesAsync(cancellation);
         }
 
-        public async Task DeleteAsync(Guid id)
+        public async Task DeleteAsync(Guid id, CancellationToken cancellation = default)
         {
-            LootBoxInventory inventory = await _context.BoxInventories
+            var inventory = await _context.BoxInventories
                 .AsNoTracking()
-                .FirstOrDefaultAsync(lbi => lbi.Id == id) ??
+                .FirstOrDefaultAsync(lbi => lbi.Id == id, cancellation) ??
                 throw new NotFoundException("Инвентарь не найден");
 
             _context.BoxInventories.Remove(inventory);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(cancellation);
         }
     }
 }

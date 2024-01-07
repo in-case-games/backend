@@ -1,5 +1,4 @@
 ﻿using Game.BLL.Exceptions;
-using Game.BLL.Helpers;
 using Game.BLL.Interfaces;
 using Game.BLL.MassTransit;
 using Game.BLL.Models;
@@ -8,93 +7,99 @@ using Game.DAL.Entities;
 using Infrastructure.MassTransit.Statistics;
 using Infrastructure.MassTransit.User;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Game.BLL.Services
 {
     public class LootBoxOpeningService : ILootBoxOpeningService
     {
+        private readonly ILogger<LootBoxOpeningService> _logger;
         private readonly ApplicationDbContext _context;
         private readonly BasePublisher _publisher;
 
-        public LootBoxOpeningService(ApplicationDbContext context, BasePublisher publisher)
+        public LootBoxOpeningService(ILogger<LootBoxOpeningService> logger, ApplicationDbContext context, BasePublisher publisher)
         {
+            _logger = logger;
             _context = context;
             _publisher = publisher;
         }
 
-        public async Task<GameItemResponse> OpenBox(Guid userId, Guid id)
+        public async Task<GameItemResponse> OpenBox(Guid userId, Guid id, CancellationToken cancellation = default)
         {
-            LootBox box = await _context.Boxes
+            var box = await _context.Boxes
                 .Include(lb => lb.Inventories!)
                 .ThenInclude(lbi => lbi.Item)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(lb => lb.Id == id) ??
+                .FirstOrDefaultAsync(lb => lb.Id == id, cancellation) ??
                 throw new NotFoundException("Кейс не найден");
 
-            UserAdditionalInfo info = await _context.AdditionalInfos
+            var info = await _context.AdditionalInfos
                 .AsNoTracking()
-                .FirstOrDefaultAsync(uai => uai.UserId == userId) ??
+                .FirstOrDefaultAsync(uai => uai.UserId == userId, cancellation) ??
                 throw new NotFoundException("Пользователь не найден");
 
-            UserPromocode? promocode = await _context.UserPromocodes
+            var promo = await _context.UserPromocodes
                 .AsNoTracking()
-                .FirstOrDefaultAsync(uhp => uhp.UserId == userId);
+                .FirstOrDefaultAsync(uhp => uhp.UserId == userId, cancellation);
 
-            if (box.IsLocked)
-                throw new ForbiddenException("Кейс заблокирован");
-            if (info.Balance < box.Cost)
-                throw new PaymentRequiredException("Недостаточно средств");
-            if (promocode is not null)
+            if (box.IsLocked) throw new ForbiddenException("Кейс заблокирован");
+            if (info.Balance < box.Cost) throw new PaymentRequiredException("Недостаточно средств");
+            if (promo is not null)
             {
-                UserPromocodeBackTemplate templatePromo = promocode.ToTemplate();
+                await _publisher.SendAsync(new UserPromocodeBackTemplate
+                {
+                    Id = promo.Id,
+                }, cancellation);
 
-                await _publisher.SendAsync(templatePromo);
-
-                _context.UserPromocodes.Remove(promocode);
+                _context.UserPromocodes.Remove(promo);
             }
 
-            UserPathBanner? path = await _context.PathBanners
+            var path = await _context.PathBanners
                 .AsNoTracking()
-                .FirstOrDefaultAsync(upb => upb.BoxId == box.Id && upb.UserId == userId);
+                .FirstOrDefaultAsync(upb => upb.BoxId == box.Id && upb.UserId == userId, cancellation);
 
-            decimal discount = promocode?.Discount ?? 0;
-            decimal boxCost = discount >= 0.99M ? 1 : box.Cost * (1M - discount);
+            var discount = promo?.Discount ?? 0;
+            var boxCost = discount >= 0.99M ? 1 : box.Cost * (1M - discount);
 
             info.Balance -= boxCost;
             box.Balance += boxCost;
 
-            GameItem winItem = OpenLootBoxService.RandomizeBySmallest(in box);
-
-            decimal revenue = OpenLootBoxService.GetRevenue(box.Cost);
-            decimal expenses = OpenLootBoxService.GetExpenses(winItem.Cost, revenue);
+            var winItem = OpenLootBoxService.RandomizeBySmallest(in box);
+            var revenue = OpenLootBoxService.GetRevenue(box.Cost);
+            var expenses = OpenLootBoxService.GetExpenses(winItem.Cost, revenue);
 
             if (path is not null && 
                 box.ExpirationBannerDate is not null && 
                 box.ExpirationBannerDate >= DateTime.UtcNow)
             {
-                --path!.NumberSteps;
+                --path.NumberSteps;
 
-                decimal retentionAmount = OpenLootBoxService.GetRetentionAmount(box.Cost);
-                decimal cashBack = OpenLootBoxService.GetCashBack(winItem.Id, box.Cost, path);
+                var retention = OpenLootBoxService.GetRetentionBanner(box.Cost);
+                expenses = winItem.Cost + retention;
 
-                OpenLootBoxService.CheckWinItemAndExpenses(ref winItem, ref expenses, box, path);
-                OpenLootBoxService.CheckCashBackAndRevenue(
-                    ref revenue, ref path, ref info,
-                    cashBack, _context);
+                if (path.NumberSteps == 0)
+                {
+                    winItem = box.Inventories?
+                                  .FirstOrDefault(f => f.ItemId == path.ItemId)?.Item ??
+                              await _context.Items
+                                  .AsNoTracking()
+                                  .FirstOrDefaultAsync(i => i.Id == path.ItemId, cancellation);
+
+                    winItem!.Cost = path.FixedCost;
+                    expenses = retention;
+
+                    _context.PathBanners.Remove(path);
+                }
+                else
+                {
+                    revenue = 0;
+
+                    _context.PathBanners.Attach(path);
+                    _context.Entry(path).Property(p => p.NumberSteps).IsModified = true;
+                }
             }
 
-            SiteStatisticsTemplate statisticsTemplate = new() { LootBoxes = 1 };
-            SiteStatisticsAdminTemplate statisticsAdminTemplate = new() { BalanceWithdrawn = revenue };
-
-            await _publisher.SendAsync(statisticsTemplate);
-            await _publisher.SendAsync(statisticsAdminTemplate);
-
-            box.Balance -= expenses;
-
-            _context.Entry(info).Property(p => p.Balance).IsModified = true;
-            _context.Entry(box).Property(p => p.Balance).IsModified = true;
-
-            UserOpening opening = new()
+            var opening = new UserOpening
             {
                 UserId = userId,
                 BoxId = box.Id,
@@ -102,54 +107,71 @@ namespace Game.BLL.Services
                 Date = DateTime.UtcNow
             };
 
-            UserInventoryTemplate templateUser = new()
+            box.Balance -= expenses;
+
+            _logger.LogTrace($"UID - {userId}, открыл - {id}, выпало - {winItem.Id}, сняло - {boxCost}");
+
+            _context.Entry(info).Property(p => p.Balance).IsModified = true;
+            _context.Entry(box).Property(p => p.Balance).IsModified = true;
+            await _context.Openings.AddAsync(opening, cancellation);
+            await _context.SaveChangesAsync(cancellation);
+
+            _logger.LogTrace($"UID - {userId}, UOID - {opening.Id} зафиксировал");
+
+            await _publisher.SendAsync(new UserInventoryTemplate
             {
                 Date = DateTime.UtcNow,
                 FixedCost = winItem.Cost,
                 ItemId = winItem.Id,
                 UserId = userId,
+            }, cancellation);
+            await _publisher.SendAsync(new SiteStatisticsTemplate { LootBoxes = 1 }, cancellation);
+            await _publisher.SendAsync(new SiteStatisticsAdminTemplate
+            {
+                RevenueLootBoxCommission = revenue,
+                FundsUsersInventories = winItem.Cost
+            }, cancellation);
+
+            return new GameItemResponse
+            {
+                Id = winItem.Id,
+                Cost = winItem.Cost,
             };
-
-            await _publisher.SendAsync(templateUser);
-
-            await _context.Openings.AddAsync(opening);
-
-            await _context.SaveChangesAsync();
-
-            return winItem.ToResponse();
         }
 
-        public async Task<GameItemResponse> OpenVirtualBox(Guid userId, Guid id)
+        public async Task<GameItemResponse> OpenVirtualBox(Guid userId, Guid id, CancellationToken cancellation = default)
         {
-            UserAdditionalInfo userInfo = await _context.AdditionalInfos
+            var userInfo = await _context.AdditionalInfos
                 .AsNoTracking()
-                .FirstOrDefaultAsync(uai => uai.UserId == userId) ??
+                .FirstOrDefaultAsync(uai => uai.UserId == userId, cancellation) ??
                 throw new NotFoundException("Пользователь не найден");
 
-            LootBox box = await _context.Boxes
+            var box = await _context.Boxes
                 .Include(lb => lb.Inventories!)
                     .ThenInclude(lbi => lbi.Item)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(lb => lb.Id == id) ??
+                .FirstOrDefaultAsync(lb => lb.Id == id, cancellation) ??
                 throw new NotFoundException("Кейс не найден");
 
-            if (!userInfo.IsGuestMode)
-                throw new ForbiddenException("Не включен режим гостя");
+            if (!userInfo.IsGuestMode) throw new ForbiddenException("Не включен режим гостя");
 
             box.VirtualBalance += box.Cost;
 
-            GameItem winItem = OpenLootBoxService.RandomizeBySmallest(in box, true);
-            decimal revenue = OpenLootBoxService.GetRevenue(box.Cost);
-            decimal expenses = OpenLootBoxService.GetExpenses(winItem.Cost, revenue);
+            var winItem = OpenLootBoxService.RandomizeBySmallest(in box, true);
+            var revenue = OpenLootBoxService.GetRevenue(box.Cost);
+            var expenses = OpenLootBoxService.GetExpenses(winItem.Cost, revenue);
 
             box.VirtualBalance -= expenses;
 
             _context.Boxes.Attach(box);
             _context.Entry(box).Property(p => p.VirtualBalance).IsModified = true;
+            await _context.SaveChangesAsync(cancellation);
 
-            await _context.SaveChangesAsync();
-
-            return winItem.ToResponse();
+            return new GameItemResponse
+            {
+                Id = winItem.Id,
+                Cost = winItem.Cost,
+            };
         }
 
 
@@ -157,61 +179,62 @@ namespace Game.BLL.Services
             Guid userId,
             Guid id, 
             int count, 
-            bool isAdmin = false)
+            bool isAdmin = false,
+            CancellationToken cancellation = default)
         {
             if (count < 1 || (count > 100 && !isAdmin))
                 throw new BadRequestException("Количество открытий должно быть в диапазоне от 1 до 100");
 
-            UserAdditionalInfo userInfo = await _context.AdditionalInfos
+            var userInfo = await _context.AdditionalInfos
                 .AsNoTracking()
-                .FirstOrDefaultAsync(uai => uai.UserId == userId) ??
+                .FirstOrDefaultAsync(uai => uai.UserId == userId, cancellation) ??
                 throw new NotFoundException("Пользователь не найден");
 
-            LootBox box = await _context.Boxes
+            var box = await _context.Boxes
                 .Include(lb => lb.Inventories!)
                     .ThenInclude(lbi => lbi.Item)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(lb => lb.Id == id) ??
+                .FirstOrDefaultAsync(lb => lb.Id == id, cancellation) ??
                 throw new NotFoundException("Кейс не найден");
 
-            if (!userInfo.IsGuestMode)
-                throw new ForbiddenException("Не включен режим гостя");
+            if (!userInfo.IsGuestMode) throw new ForbiddenException("Не включен режим гостя");
 
             _context.Boxes.Attach(box);
             _context.Entry(box).Property(p => p.VirtualBalance).IsModified = true;
 
-            List<GameItemBigOpenResponse> winItems = new();
+            var winItems = new List<GameItemBigOpenResponse>();
 
-            for (int i = 0; i < count; i++)
+            for (var i = 0; i < count; i++)
             {
                 try
                 {
                     box.VirtualBalance += box.Cost;
 
-                    GameItem item = OpenLootBoxService.RandomizeBySmallest(in box, true);
-                    decimal revenue = OpenLootBoxService.GetRevenue(box.Cost);
-                    decimal expenses = OpenLootBoxService.GetExpenses(item.Cost, revenue);
+                    var item = OpenLootBoxService.RandomizeBySmallest(in box, true);
+                    var revenue = OpenLootBoxService.GetRevenue(box.Cost);
+                    var expenses = OpenLootBoxService.GetExpenses(item.Cost, revenue);
 
                     box.VirtualBalance -= expenses;
 
-                    int index = winItems.FindIndex(gi => gi.Id == item.Id);
+                    var index = winItems.FindIndex(gi => gi.Id == item.Id);
 
-                    if (index != -1)
-                        winItems[index].Count++;
-                    else
-                        winItems.Add(new() { Id = item.Id, Cost = item.Cost, Count = 1 });
+                    if (index != -1) winItems[index].Count++;
+                    else winItems.Add(new GameItemBigOpenResponse 
+                    { 
+                        Id = item.Id, 
+                        Cost = item.Cost, 
+                        Count = 1 
+                    });
+
+                    await _context.SaveChangesAsync(cancellation);
                 }
                 catch(Exception ex)
                 {
-                    await _context.SaveChangesAsync();
-
-                    if (count == 0) throw new Exception(ex.Message);
+                    await _context.SaveChangesAsync(cancellation);
 
                     throw new StatusCodeExtendedException(ErrorCodes.UnknownError, ex.Message, winItems);
                 }
             }
-
-            await _context.SaveChangesAsync();
 
             return winItems;
         }

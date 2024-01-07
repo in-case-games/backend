@@ -12,8 +12,5 @@ namespace Game.BLL.Exceptions
             StatusCode = statusCode;
             Data = data;
         }
-
-        public StatusCodeExtendedException(int statusCode, Exception inner, IEnumerable data)
-            : this(statusCode, inner.ToString(), data) { }
     }
 }

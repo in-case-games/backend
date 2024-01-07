@@ -1,5 +1,4 @@
 ﻿using Game.BLL.Interfaces;
-using Game.DAL.Entities;
 using Infrastructure.MassTransit.Resources;
 using MassTransit;
 
@@ -16,12 +15,13 @@ namespace Game.BLL.MassTransit.Consumers
 
         public async Task Consume(ConsumeContext<LootBoxBannerTemplate> context)
         {
-            var template = context.Message;
-
-            LootBox? box = await _boxService.GetAsync(template.BoxId);
+            var box = await _boxService.GetAsync(context.Message.BoxId);
 
             if (box is not null)
-                await _boxService.UpdateExpirationBannerAsync(template);
+            {
+                context.Message.ExpirationDate = context.Message.IsDeleted ? null : context.Message.ExpirationDate;
+                await _boxService.UpdateExpirationBannerAsync(context.Message);        
+            }
         }
     }
 }

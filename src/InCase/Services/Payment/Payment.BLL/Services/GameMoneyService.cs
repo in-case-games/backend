@@ -8,7 +8,7 @@ namespace Payment.BLL.Services
 {
     public class GameMoneyService : IGameMoneyService
     {
-        private static readonly int NumberAttempts = 5;
+        private const int NumberAttempts = 5;
         private readonly IResponseService _responseService;
         private readonly IEncryptorService _rsaService;
         private readonly IConfiguration _cfg;
@@ -23,70 +23,69 @@ namespace Payment.BLL.Services
             _cfg = cfg;
         }
 
-        public async Task<PaymentBalanceResponse> GetBalanceAsync(string currency)
+        public async Task<PaymentBalanceResponse> GetBalanceAsync(string currency, CancellationToken cancellation = default)
         {
-            GameMoneyBalanceRequest request = new()
+            var request = new GameMoneyBalanceRequest
             {
                 Currency = currency,
                 ProjectId = int.Parse(_cfg["GameMoney:projectId"]!),
             };
 
-            byte[] hashBytes = Encoding.ASCII.GetBytes(request.ToString());
-            request.SignatureHMAC = _rsaService.GenerateHMAC(hashBytes);
+            var hashBytes = Encoding.ASCII.GetBytes(request.ToString());
+            request.SignatureHmac = _rsaService.GenerateHmac(hashBytes);
 
-            int i = 0;
+            var i = 0;
 
             while(i < NumberAttempts)
             {
                 try
                 {
-                    IGameMoneyResponse? response = await _responseService
-                        .ResponsePostAsync(GameMoneyEndpoint.Balance, request);
+                    var response = await _responseService
+                        .ResponsePostAsync(GameMoneyEndpoint.Balance, request, cancellation);
 
-                    if (!_rsaService.VerifySignatureRSA(response!))
-                        throw new ForbiddenException("Неверная подпись rsa");
+                    if (!_rsaService.VerifySignatureRsa(response!)) throw new ForbiddenException("Неверная подпись rsa");
 
-                    return new() { Balance = ((GameMoneyBalanceResponse)response!).ProjectBalance };
+                    return new PaymentBalanceResponse
+                    { 
+                        Balance = ((GameMoneyBalanceResponse)response!).ProjectBalance 
+                    };
                 }
                 catch (Exception)
                 {
                     i++;
                 }
+
+                await Task.Delay(200, cancellation);
             }
 
             throw new RequestTimeoutException("Сервис пополнения не отвечает");
         }
 
-        public async Task SendSuccess()
-        {
-            GameMoneyNotifySuccessRequest request = new GameMoneyNotifySuccessRequest();
-            request.Success = true;
-            IGameMoneyResponse? response = await _responseService
-                        .ResponsePostAsync(GameMoneyEndpoint.InvoiceInfo, request);
-        }
+        public async Task SendSuccess(CancellationToken cancellation = default) => 
+            await _responseService.ResponsePostAsync(GameMoneyEndpoint.InvoiceInfo, 
+                new GameMoneyNotifySuccessRequest { Success = true }, cancellation);
 
-        public async Task<GameMoneyInvoiceInfoResponse> GetInvoiceInfoAsync(string invoiceId)
+        public async Task<GameMoneyInvoiceInfoResponse> GetInvoiceInfoAsync(string invoiceId, CancellationToken cancellation = default)
         {
-            GameMoneyInvoiceInfoRequest request = new()
+            var request = new GameMoneyInvoiceInfoRequest
             {
                 ProjectId = _cfg["GameMoney:projectId"],
                 InvoiceId = invoiceId,
             };
 
-            byte[] hashBytes = Encoding.ASCII.GetBytes(request.ToString());
-            request.SignatureHMAC = _rsaService.GenerateHMAC(hashBytes);
+            var hashBytes = Encoding.ASCII.GetBytes(request.ToString());
+            request.SignatureHmac = _rsaService.GenerateHmac(hashBytes);
 
-            int i = 0;
+            var i = 0;
 
             while(i < NumberAttempts)
             {
                 try
                 {
-                    IGameMoneyResponse? response = await _responseService
-                        .ResponsePostAsync(GameMoneyEndpoint.InvoiceInfo, request);
+                    var response = await _responseService
+                        .ResponsePostAsync(GameMoneyEndpoint.InvoiceInfo, request, cancellation);
 
-                    if (!_rsaService.VerifySignatureRSA(response!))
-                        throw new ForbiddenException("Неверная подпись rsa");
+                    if (!_rsaService.VerifySignatureRsa(response!)) throw new ForbiddenException("Неверная подпись rsa");
 
                     return (GameMoneyInvoiceInfoResponse)response!;
                 }
@@ -94,18 +93,21 @@ namespace Payment.BLL.Services
                 {
                     i++;
                 }
+
+                await Task.Delay(200, cancellation);
             }
 
             throw new RequestTimeoutException("Сервис пополнения не отвечает");
         }
 
-        public HashOfDataForDepositResponse GetHashOfDataForDeposit(Guid userId) => new()
-        {
-            HMAC = $"project:{_cfg["GameMoney:projectId"]};" +
-            $"user:{userId};" +
-            $"currency:{_cfg["GameMoney:currency"]};" +
-            $"success_url:{_cfg["GameMoney:url:success"]};" +
-            $"fail_url:{_cfg["GameMoney:url:fail"]};"
-        };
+        public HashOfDataForDepositResponse GetHashOfDataForDeposit(Guid userId) => 
+            new()
+            {
+                Hmac = $"project:{_cfg["GameMoney:projectId"]};" +
+                $"user:{userId};" +
+                $"currency:{_cfg["GameMoney:currency"]};" +
+                $"success_url:{_cfg["GameMoney:url:success"]};" +
+                $"fail_url:{_cfg["GameMoney:url:fail"]};"
+            };
     }
 }

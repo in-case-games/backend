@@ -26,14 +26,7 @@ namespace Support.BLL.Helpers
             UserId = entity.UserId
         };
 
-        public static List<SupportTopicResponse> ToResponse(this List<SupportTopic> entities)
-        {
-            List<SupportTopicResponse> response = new();
-
-            foreach (var entity in entities)
-                response.Add(entity.ToResponse());
-
-            return response;
-        }
+        public static List<SupportTopicResponse> ToResponse(this List<SupportTopic> entities) =>
+            entities.Select(ToResponse).ToList();
     }
 }

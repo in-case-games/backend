@@ -19,72 +19,64 @@ namespace Resources.API.Controllers
             _inventoryService = inventoryService;
         }
 
-        [ProducesResponseType(typeof(ApiResult<LootBoxInventoryResponse>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<LootBoxInventoryResponse>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
-        [HttpGet("{id}")]
-        public async Task<IActionResult> Get(Guid id)
+        [HttpGet("{id:guid}")]
+        public async Task<IActionResult> Get(Guid id, CancellationToken cancellation)
         {
-            LootBoxInventoryResponse response = await _inventoryService.GetAsync(id);
+            var response = await _inventoryService.GetAsync(id, cancellation);
 
-            return Ok(ApiResult<LootBoxInventoryResponse>.OK(response));
+            return Ok(ApiResult<LootBoxInventoryResponse>.Ok(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<List<LootBoxInventoryResponse>>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<List<LootBoxInventoryResponse>>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
-        [HttpGet("box/{id}")]
-        public async Task<IActionResult> GetByBoxId(Guid id)
+        [HttpGet("box/{id:guid}")]
+        public async Task<IActionResult> GetByBoxId(Guid id, CancellationToken cancellation)
         {
-            List<LootBoxInventoryResponse> response = await _inventoryService
-                .GetByBoxIdAsync(id);
+            var response = await _inventoryService.GetByBoxIdAsync(id, cancellation);
 
-            return Ok(ApiResult<List<LootBoxInventoryResponse>>.OK(response));
+            return Ok(ApiResult<List<LootBoxInventoryResponse>>.Ok(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<List<LootBoxInventoryResponse>>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<List<LootBoxInventoryResponse>>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
-        [HttpGet("item/{id}")]
-        public async Task<IActionResult> GetByItemId(Guid id)
+        [HttpGet("item/{id:guid}")]
+        public async Task<IActionResult> GetByItemId(Guid id, CancellationToken cancellation)
         {
-            List<LootBoxInventoryResponse> response = await _inventoryService
-                .GetByItemIdAsync(id);
+            var response = await _inventoryService.GetByItemIdAsync(id, cancellation);
 
-            return Ok(ApiResult<List<LootBoxInventoryResponse>>.OK(response));
+            return Ok(ApiResult<List<LootBoxInventoryResponse>>.Ok(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<LootBoxInventoryResponse>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<LootBoxInventoryResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Owner)]
         [HttpPost]
-        public async Task<IActionResult> Post(LootBoxInventoryRequest request)
+        public async Task<IActionResult> Post(LootBoxInventoryRequest request, CancellationToken cancellation)
         {
-            LootBoxInventoryResponse response = await _inventoryService.CreateAsync(request);
+            var response = await _inventoryService.CreateAsync(request, cancellation);
 
-            return Ok(ApiResult<LootBoxInventoryResponse>.OK(response));
+            return Ok(ApiResult<LootBoxInventoryResponse>.Ok(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<LootBoxInventoryResponse>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<LootBoxInventoryResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Owner)]
         [HttpPut]
-        public async Task<IActionResult> Put(LootBoxInventoryRequest request)
+        public async Task<IActionResult> Put(LootBoxInventoryRequest request, CancellationToken cancellation)
         {
-            LootBoxInventoryResponse response = await _inventoryService.UpdateAsync(request);
+            var response = await _inventoryService.UpdateAsync(request, cancellation);
 
-            return Ok(ApiResult<LootBoxInventoryResponse>.OK(response));
+            return Ok(ApiResult<LootBoxInventoryResponse>.Ok(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<LootBoxInventoryResponse>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<LootBoxInventoryResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Owner)]
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(Guid id)
+        [HttpDelete("{id:guid}")]
+        public async Task<IActionResult> Delete(Guid id, CancellationToken cancellation)
         {
-            LootBoxInventoryResponse response = await _inventoryService.DeleteAsync(id);
+            var response = await _inventoryService.DeleteAsync(id, cancellation);
 
-            return Ok(ApiResult<LootBoxInventoryResponse>.OK(response));
+            return Ok(ApiResult<LootBoxInventoryResponse>.Ok(response));
         }
     }
 }

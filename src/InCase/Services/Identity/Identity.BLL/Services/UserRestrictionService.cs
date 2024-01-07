@@ -20,214 +20,204 @@ namespace Identity.BLL.Services
             _publisher = publisher;
         }
 
-        public async Task<UserRestrictionResponse> GetAsync(Guid id)
+        public async Task<UserRestrictionResponse> GetAsync(Guid id, CancellationToken cancellation = default)
         {
-            UserRestriction restriction = await _context.Restrictions
+            var restriction = await _context.Restrictions
                 .AsNoTracking()
-                .FirstOrDefaultAsync(ur => ur.Id == id) ??
+                .FirstOrDefaultAsync(ur => ur.Id == id, cancellation) ??
                 throw new NotFoundException("Эффект не найден");
 
             return restriction.ToResponse();
         }
 
-        public async Task<List<UserRestrictionResponse>> GetAsync(Guid userId, Guid ownerId)
+        public async Task<List<UserRestrictionResponse>> GetAsync(Guid userId, Guid ownerId, CancellationToken cancellation = default)
         {
-            if (!await _context.Users.AnyAsync(u => u.Id == userId))
+            if (!await _context.Users.AnyAsync(u => u.Id == userId, cancellation))
                 throw new NotFoundException("Обвиняемый не найден");
-            if (!await _context.Users.AnyAsync(u => u.Id == ownerId))
+            if (!await _context.Users.AnyAsync(u => u.Id == ownerId, cancellation))
                 throw new NotFoundException("Обвинитель не найден");
 
-            List<UserRestriction> restrictions = await _context.Restrictions
+            var restrictions = await _context.Restrictions
                 .Include(ur => ur.Type)
                 .AsNoTracking()
                 .Where(ur => ur.OwnerId == ownerId && ur.UserId == userId)
-                .ToListAsync();
+                .ToListAsync(cancellation);
 
             return restrictions.ToResponse();
         }
 
-        public async Task<List<UserRestrictionResponse>> GetByLoginAsync(string login)
+        public async Task<List<UserRestrictionResponse>> GetByLoginAsync(string login, CancellationToken cancellation = default)
         {
-            User user = await _context.Users
+            var user = await _context.Users
                 .Include(u => u.Restrictions!)
                     .ThenInclude(ur => ur.Type)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(u => u.Login == login) ??
+                .FirstOrDefaultAsync(u => u.Login == login, cancellation) ??
                 throw new NotFoundException("Пользователь не найден");
 
-            return user.Restrictions?.ToResponse() ?? new();
+            return user.Restrictions?.ToResponse() ?? new List<UserRestrictionResponse>();
         }
 
-        public async Task<List<UserRestrictionResponse>> GetByUserIdAsync(Guid userId)
+        public async Task<List<UserRestrictionResponse>> GetByUserIdAsync(Guid userId, CancellationToken cancellation = default)
         {
-            User user = await _context.Users
+            var user = await _context.Users
                 .Include(u => u.Restrictions!)
                     .ThenInclude(ur => ur.Type)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(u => u.Id == userId) ??
+                .FirstOrDefaultAsync(u => u.Id == userId, cancellation) ??
                 throw new NotFoundException("Пользователь не найден");
 
-            return user.Restrictions?.ToResponse() ?? new();
+            return user.Restrictions?.ToResponse() ?? new List<UserRestrictionResponse>();
         }
 
-        public async Task<List<UserRestrictionResponse>> GetByOwnerIdAsync(Guid ownerId)
+        public async Task<List<UserRestrictionResponse>> GetByOwnerIdAsync(Guid ownerId, CancellationToken cancellation = default)
         {
-            User user = await _context.Users
+            var user = await _context.Users
                 .Include(u => u.OwnerRestrictions!)
                     .ThenInclude(ur => ur.Type)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(u => u.Id == ownerId) ??
+                .FirstOrDefaultAsync(u => u.Id == ownerId, cancellation) ??
                 throw new NotFoundException("Пользователь не найден");
 
-            return user.OwnerRestrictions?.ToResponse() ?? new();
+            return user.OwnerRestrictions?.ToResponse() ?? new List<UserRestrictionResponse>();
         }
 
-        public async Task<List<RestrictionTypeResponse>> GetTypesAsync()
+        public async Task<List<RestrictionTypeResponse>> GetTypesAsync(CancellationToken cancellation = default)
         {
-            List<RestrictionType> types = await _context.RestrictionTypes
+            var types = await _context.RestrictionTypes
                 .AsNoTracking()
-                .ToListAsync();
+                .ToListAsync(cancellation);
 
             return types.ToResponse();
         }
 
-        public async Task<UserRestrictionResponse> CreateAsync(UserRestrictionRequest request)
+        public async Task<UserRestrictionResponse> CreateAsync(UserRestrictionRequest request, CancellationToken cancellation = default)
         {
-            RestrictionType type = await _context.RestrictionTypes
+            var type = await _context.RestrictionTypes
                 .AsNoTracking()
-                .FirstOrDefaultAsync(rt => rt.Id == request.TypeId) ??
+                .FirstOrDefaultAsync(rt => rt.Id == request.TypeId, cancellation) ??
                 throw new NotFoundException("Тип эффекта не найден");
-            User user = await _context.Users
+            var user = await _context.Users
                 .Include(u => u.AdditionalInfo)
                 .Include(u => u.AdditionalInfo!.Role)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(u => u.Id == request.UserId) ??
+                .FirstOrDefaultAsync(u => u.Id == request.UserId, cancellation) ??
                 throw new NotFoundException("Обвиняемый не найден");
-            User owner = await _context.Users
+            var owner = await _context.Users
                 .Include(u => u.AdditionalInfo)
                 .Include(u => u.AdditionalInfo!.Role)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(u => u.Id == request.OwnerId) ??
+                .FirstOrDefaultAsync(u => u.Id == request.OwnerId, cancellation) ??
                 throw new NotFoundException("Обвинитель не найден");
 
-            request = await CheckUserRestriction(request, type);
+            request = await CheckUserRestriction(request, type, cancellation);
 
-            UserRestriction restriction = request.ToEntity(IsNewGuid: true);
-            string userRole = user.AdditionalInfo!.Role!.Name!;
+            var restriction = request.ToEntity(IsNewGuid: true);
+            var userRole = user.AdditionalInfo!.Role!.Name!;
 
-            if (userRole != "user")
-                throw new ForbiddenException("Эффект можно наложить только на пользователя");
+            if (userRole != "user") throw new ForbiddenException("Эффект можно наложить только на пользователя");
 
-            await _context.Restrictions.AddAsync(restriction);
-            await _context.SaveChangesAsync();
+            await _context.Restrictions.AddAsync(restriction, cancellation);
+            await _context.SaveChangesAsync(cancellation);
 
             if (request.TypeId != type.Id)
             {
                 type = await _context.RestrictionTypes
                     .AsNoTracking()
-                    .FirstAsync(rt => rt.Id == request.TypeId);
+                    .FirstAsync(rt => rt.Id == request.TypeId, cancellation);
             }
 
             restriction.Type = type;
 
-            if (restriction.Type.Name == "ban")
-                await _publisher.SendAsync(restriction.ToTemplate());
+            if (restriction.Type.Name == "ban") await _publisher.SendAsync(restriction.ToTemplate(), cancellation);
 
             return restriction.ToResponse();
         }
 
-        public async Task<UserRestrictionResponse> UpdateAsync(UserRestrictionRequest request)
+        public async Task<UserRestrictionResponse> UpdateAsync(UserRestrictionRequest request, CancellationToken cancellation = default)
         {
-            RestrictionType type = await _context.RestrictionTypes
+            var type = await _context.RestrictionTypes
                 .AsNoTracking()
-                .FirstOrDefaultAsync(rt => rt.Id == request.TypeId) ??
+                .FirstOrDefaultAsync(rt => rt.Id == request.TypeId, cancellation) ??
                 throw new NotFoundException("Тип эффекта не найден");
-            User user = await _context.Users
+            var user = await _context.Users
                 .Include(u => u.AdditionalInfo)
                 .Include(u => u.AdditionalInfo!.Role)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(u => u.Id == request.UserId) ??
+                .FirstOrDefaultAsync(u => u.Id == request.UserId, cancellation) ??
                 throw new NotFoundException("Обвиняемый не найден");
-            User owner = await _context.Users
+            var owner = await _context.Users
                 .Include(u => u.AdditionalInfo)
                 .Include(u => u.AdditionalInfo!.Role)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(u => u.Id == request.OwnerId) ??
+                .FirstOrDefaultAsync(u => u.Id == request.OwnerId, cancellation) ??
                 throw new NotFoundException("Обвинитель не найден");
-            UserRestriction restrictionOld = await _context.Restrictions
+            var restrictionOld = await _context.Restrictions
                 .Include(ur => ur.Type)
-                .FirstOrDefaultAsync(ur => ur.Id == request.Id) ??
+                .FirstOrDefaultAsync(ur => ur.Id == request.Id, cancellation) ??
                 throw new NotFoundException("Эффект не найден");
 
-            request = await CheckUserRestriction(request, type);
+            request = await CheckUserRestriction(request, type, cancellation);
 
-            UserRestriction restriction = request.ToEntity(IsNewGuid: false);
-            string userRole = user.AdditionalInfo!.Role!.Name!;
+            var restriction = request.ToEntity(IsNewGuid: false);
+            var userRole = user.AdditionalInfo!.Role!.Name!;
 
-            if (userRole != "user")
-                throw new ForbiddenException("Эффект можно наложить только на пользователя");
+            if (userRole != "user") throw new ForbiddenException("Эффект можно наложить только на пользователя");
 
             _context.Entry(restrictionOld).CurrentValues.SetValues(restriction);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(cancellation);
 
             if(request.TypeId != type.Id)
             {
                 type = await _context.RestrictionTypes
                     .AsNoTracking()
-                    .FirstAsync(rt => rt.Id == request.TypeId);
+                    .FirstAsync(rt => rt.Id == request.TypeId, cancellation);
             }
 
             restriction.Type = type;
 
-            if(restriction.Type.Name == "ban")
-                await _publisher.SendAsync(restriction.ToTemplate());
+            if(restriction.Type.Name == "ban") await _publisher.SendAsync(restriction.ToTemplate(), cancellation);
 
             return restriction.ToResponse();
         }
 
-        public async Task<UserRestrictionResponse> DeleteAsync(Guid id)
+        public async Task<UserRestrictionResponse> DeleteAsync(Guid id, CancellationToken cancellation = default)
         {
-            UserRestriction restriction = await _context.Restrictions
+            var restriction = await _context.Restrictions
                 .Include(ur => ur.Type)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(ur => ur.Id == id) ??
+                .FirstOrDefaultAsync(ur => ur.Id == id, cancellation) ??
                 throw new NotFoundException("Эффект не найден");
 
-            await _publisher.SendAsync(restriction.ToTemplate(isDeleted: true));
-
             _context.Restrictions.Remove(restriction);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(cancellation);
+            await _publisher.SendAsync(restriction.ToTemplate(isDeleted: true), cancellation);
 
             return restriction.ToResponse();
         }
 
         private async Task<UserRestrictionRequest> CheckUserRestriction(
             UserRestrictionRequest request,
-            RestrictionType type)
+            RestrictionType type,
+            CancellationToken cancellation = default)
         {
-            List<UserRestriction> restrictions = await _context.Restrictions
+            var restrictions = await _context.Restrictions
                 .Include(ur => ur.Type)
                 .AsNoTracking()
                 .Where(ur => ur.UserId == request.UserId)
-                .ToListAsync();
+                .ToListAsync(cancellation);
 
-            int numberWarns = (type.Name == "warn") ? 1 : 0;
+            var numberWarns = (type.Name == "warn" ? 1 : 0) + 
+                              restrictions.Count(restriction => restriction.Type!.Name == "warn" && restriction.Id != request.Id);
 
-            foreach (var restriction in restrictions)
-            {
-                if (restriction.Type!.Name == "warn" && restriction.Id != request.Id)
-                    ++numberWarns;
-            }
+            if (numberWarns < 3) return request;
 
-            if (numberWarns >= 3)
-            {
-                RestrictionType? ban = await _context.RestrictionTypes
-                    .AsNoTracking()
-                    .FirstOrDefaultAsync(rt => rt.Name == "ban");
+            var ban = await _context.RestrictionTypes
+                .AsNoTracking()
+                .FirstOrDefaultAsync(rt => rt.Name == "ban", cancellation);
 
-                request.TypeId = ban!.Id;
-                request.ExpirationDate = DateTime.UtcNow + TimeSpan.FromDays(30);
-            }
+            request.TypeId = ban!.Id;
+            request.ExpirationDate = DateTime.UtcNow + TimeSpan.FromDays(30);
 
             return request;
         }

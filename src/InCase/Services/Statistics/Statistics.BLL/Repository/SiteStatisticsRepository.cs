@@ -10,36 +10,30 @@ namespace Statistics.BLL.Repository
 
         public SiteStatisticsRepository(IMongoClient client)
         {
-            IMongoDatabase database = client.GetDatabase("InCaseStatistics");
+            var database = client.GetDatabase("InCaseStatistics");
 
-            _siteStatistics = database
-                .GetCollection<SiteStatistics>("Site");
-            _siteStatisticsAdmin = database
-                .GetCollection<SiteStatisticsAdmin>("AdminSite");
+            _siteStatistics = database.GetCollection<SiteStatistics>("Site");
+            _siteStatisticsAdmin = database.GetCollection<SiteStatisticsAdmin>("AdminSite");
         }
 
-        public async Task<SiteStatistics> GetAsync()
+        [Obsolete("Obsolete")]
+        public async Task<SiteStatistics> GetAsync(CancellationToken cancellation = default)
         {
-            SiteStatistics? statistics = await _siteStatistics
-                .Find("{}")
-                .FirstOrDefaultAsync();
+            var statistics = await _siteStatistics.Find("{}").FirstOrDefaultAsync(cancellation);
 
-            if (statistics is null)
-                await _siteStatistics.InsertOneAsync(new SiteStatistics());
+            if (statistics is null) await _siteStatistics.InsertOneAsync(new SiteStatistics(), cancellation);
 
-            return statistics ?? new();
+            return statistics ?? new SiteStatistics();
         }
 
-        public async Task<SiteStatisticsAdmin> GetAdminAsync()
+        [Obsolete("Obsolete")]
+        public async Task<SiteStatisticsAdmin> GetAdminAsync(CancellationToken cancellation = default)
         {
-            SiteStatisticsAdmin? statistics = await _siteStatisticsAdmin
-                .Find("{}")
-                .FirstOrDefaultAsync();
+            var statistics = await _siteStatisticsAdmin.Find("{}").FirstOrDefaultAsync(cancellation);
 
-            if (statistics is null)
-                await _siteStatisticsAdmin.InsertOneAsync(new SiteStatisticsAdmin());
+            if (statistics is null) await _siteStatisticsAdmin.InsertOneAsync(new SiteStatisticsAdmin(), cancellation);
 
-            return statistics ?? new();
+            return statistics ?? new SiteStatisticsAdmin();
         }
     }
 }

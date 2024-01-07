@@ -4,15 +4,18 @@ using Authentication.BLL.MassTransit;
 using Authentication.BLL.MassTransit.Consumers;
 using Authentication.BLL.Services;
 using Authentication.DAL.Data;
-using Identity.BLL.MassTransit.Consumers;
 using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using NLog.Extensions.Logging;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.Development.json").Build();
+
+builder.Logging.AddConfiguration(configuration).ClearProviders().AddNLog();
 
 builder.Services.AddDbContextPool<ApplicationDbContext>(
     options => {
@@ -55,7 +58,7 @@ builder.Services.AddSwaggerGen(options =>
         Scheme = "Bearer",
         BearerFormat = "JWT",
         In = ParameterLocation.Header,
-        Description = "Example: \"Bearer 1safsfsdfdfd\"",
+        Description = "Example: \"Bearer [token]\"",
     });
 
     options.AddSecurityRequirement(new OpenApiSecurityRequirement
@@ -118,9 +121,9 @@ builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
-using (var Scope = app.Services.CreateScope())
+using (var scope = app.Services.CreateScope())
 {
-    var context = Scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
     context.Database.Migrate();
 }
 
@@ -131,7 +134,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseMiddleware<CancellationTokenHandlingMiddleware>();
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();

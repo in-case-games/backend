@@ -1,5 +1,4 @@
 ﻿using MassTransit;
-using Microsoft.Extensions.Configuration;
 
 namespace Authentication.BLL.MassTransit
 {
@@ -12,13 +11,10 @@ namespace Authentication.BLL.MassTransit
             _bus = bus;
         }
 
-        public async Task SendAsync<T>(T template) where T : class
+        public async Task SendAsync<T>(T template, CancellationToken cancellationToken = default) where T : class
         {
-            if (template is not null)
-            {
-                var endPoint = await _bus.GetPublishSendEndpoint<T>();
-                await endPoint.Send(template);
-            }
+            var endPoint = await _bus.GetPublishSendEndpoint<T>();
+            await endPoint.Send(template, cancellationToken);
         }
     }
 }

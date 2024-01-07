@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Resources.API.Common;
 using Resources.API.Filters;
 using Resources.BLL.Interfaces;
-using Resources.BLL.Models;
 using Resources.DAL.Entities;
 using System.Net;
 
@@ -20,70 +19,64 @@ namespace Resources.API.Controllers
             _groupBoxService = groupBoxService;
         }
 
-        [ProducesResponseType(typeof(ApiResult<List<GroupLootBox>>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<List<GroupLootBox>>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> Get(CancellationToken cancellation)
         {
-            List<GroupLootBox> response = await _groupBoxService.GetAsync();
+            var response = await _groupBoxService.GetAsync(cancellation);
 
-            return Ok(ApiResult<List<GroupLootBox>>.OK(response));
+            return Ok(ApiResult<List<GroupLootBox>>.Ok(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<GroupLootBox>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<GroupLootBox>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
-        [HttpGet("{id}")]
-        public async Task<IActionResult> Get(Guid id)
+        [HttpGet("{id:guid}")]
+        public async Task<IActionResult> Get(Guid id, CancellationToken cancellation)
         {
-            GroupLootBox response = await _groupBoxService.GetAsync(id);
+            var response = await _groupBoxService.GetAsync(id, cancellation);
 
-            return Ok(ApiResult<GroupLootBox>.OK(response));
+            return Ok(ApiResult<GroupLootBox>.Ok(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<GroupLootBox>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<GroupLootBox>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("name/{name}")]
-        public async Task<IActionResult> Get(string name)
+        public async Task<IActionResult> Get(string name, CancellationToken cancellation)
         {
-            GroupLootBox response = await _groupBoxService.GetAsync(name);
+            var response = await _groupBoxService.GetAsync(name, cancellation);
 
-            return Ok(ApiResult<GroupLootBox>.OK(response));
+            return Ok(ApiResult<GroupLootBox>.Ok(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<GroupLootBox>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<GroupLootBox>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Owner)]
         [HttpPost]
-        public async Task<IActionResult> Post(GroupLootBox request)
+        public async Task<IActionResult> Post(GroupLootBox request, CancellationToken cancellation)
         {
-            GroupLootBox response = await _groupBoxService.CreateAsync(request);
+            var response = await _groupBoxService.CreateAsync(request, cancellation);
 
-            return Ok(ApiResult<GroupLootBox>.OK(response));
+            return Ok(ApiResult<GroupLootBox>.Ok(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<GroupLootBox>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<GroupLootBox>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Owner)]
         [HttpPut]
-        public async Task<IActionResult> Put(GroupLootBox request)
+        public async Task<IActionResult> Put(GroupLootBox request, CancellationToken cancellation)
         {
-            GroupLootBox response = await _groupBoxService.UpdateAsync(request);
+            var response = await _groupBoxService.UpdateAsync(request, cancellation);
 
-            return Ok(ApiResult<GroupLootBox>.OK(response));
+            return Ok(ApiResult<GroupLootBox>.Ok(response));
         }
 
-        [ProducesResponseType(typeof(ApiResult<GroupLootBox>), 
-            (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResult<GroupLootBox>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.Owner)]
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(Guid id)
+        [HttpDelete("{id:guid}")]
+        public async Task<IActionResult> Delete(Guid id, CancellationToken cancellation)
         {
-            GroupLootBox response = await _groupBoxService.DeleteAsync(id);
+            var response = await _groupBoxService.DeleteAsync(id, cancellation);
 
-            return Ok(ApiResult<GroupLootBox>.OK(response));
+            return Ok(ApiResult<GroupLootBox>.Ok(response));
         }
     }
 }

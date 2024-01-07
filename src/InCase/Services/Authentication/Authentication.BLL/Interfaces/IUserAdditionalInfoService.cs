@@ -4,6 +4,6 @@ namespace Authentication.BLL.Interfaces
 {
     public interface IUserAdditionalInfoService
     {
-        public Task UpdateAsync(UserAdditionalInfoTemplate template);
+        public Task UpdateAsync(UserAdditionalInfoTemplate template, CancellationToken cancellationToken = default);
     }
 }

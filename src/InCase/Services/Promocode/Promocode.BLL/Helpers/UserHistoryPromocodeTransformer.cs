@@ -10,23 +10,12 @@ namespace Promocode.BLL.Helpers
                 Id = history.Id,
                 Date = history.Date,
                 IsActivated = history.IsActivated,
-                Discount = TransformDiscount(history),
+                Discount = history.Promocode is null ? null : (int)(history.Promocode.Discount * 100),
                 Name = history.Promocode?.Name,
                 Type = history.Promocode?.Type?.Name
             };
 
-        public static List<UserPromocodeResponse> ToResponse(
-            this List<UserPromocode> histories)
-        {
-            List<UserPromocodeResponse> response = new();
-
-            foreach (var history in histories)
-                response.Add(ToResponse(history));
-
-            return response;
-        }
-
-        private static int? TransformDiscount(UserPromocode history) =>
-            history.Promocode is null ? null : (int)(history.Promocode.Discount * 100);
+        public static List<UserPromocodeResponse> ToResponse(this List<UserPromocode> histories) => 
+            histories.Select(ToResponse).ToList();
     }
 }

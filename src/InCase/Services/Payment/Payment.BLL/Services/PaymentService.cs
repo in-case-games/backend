@@ -31,45 +31,35 @@ namespace Payment.BLL.Services
             _publisher = publisher;
         }
 
-        public async Task<UserPaymentsResponse> TopUpBalanceAsync(GameMoneyTopUpResponse request)
+        public async Task<UserPaymentsResponse> TopUpBalanceAsync(GameMoneyTopUpResponse request, CancellationToken cancellation = default)
         {
-            if (request.StatusAnswer?.ToLower() != "paid")
-                throw new BadRequestException("Платеж отклонен");
-            if (!_rsaService.VerifySignatureRSA(request))
-                throw new ForbiddenException("Неверная подпись rsa");
-
-            if (!await _context.Payments.AnyAsync(up => up.InvoiceId == request.InvoiceId!))
+            if (request.StatusAnswer?.ToLower() != "paid") throw new BadRequestException("Платеж отклонен");
+            if (!_rsaService.VerifySignatureRsa(request)) throw new ForbiddenException("Неверная подпись rsa");
+            if (!await _context.Payments.AnyAsync(up => up.InvoiceId == request.InvoiceId!, cancellation))
                 throw new ConflictException("Платеж уже есть в системе, ждем пополнения");
 
-            GameMoneyInvoiceInfoResponse? invoice = await _gmService
-                .GetInvoiceInfoAsync(request.InvoiceId!) ?? 
-                throw new Exceptions.RequestTimeoutException("Платеж не найден");
+            var invoice = await _gmService.GetInvoiceInfoAsync(request.InvoiceId!, cancellation) ?? 
+                throw new RequestTimeoutException("Платеж не найден");
 
-            UserPromocode? promocode = await _context.UserPromocodes
+            var promocode = await _context.UserPromocodes
                 .AsNoTracking()
-                .FirstOrDefaultAsync(ur => ur.UserId == invoice.UserId);
+                .FirstOrDefaultAsync(ur => ur.UserId == invoice.UserId, cancellation);
 
-            decimal pay = invoice.Amount;
-
-            SiteStatisticsAdminTemplate templateStats = new() { TotalReplenished = pay };
-
-            await _publisher.SendAsync(templateStats);
+            var pay = invoice.Amount;
 
             if (promocode is not null)
             {
-                UserPromocodeBackTemplate templatePromo = promocode.ToTemplate();
-
-                await _publisher.SendAsync(templatePromo);
+                await _publisher.SendAsync(new UserPromocodeBackTemplate
+                {
+                    Id = promocode.Id
+                }, cancellation);
 
                 _context.UserPromocodes.Remove(promocode);
 
                 pay += pay * promocode.Discount;
             }
 
-            // CHECK: Notify true game money
-            await _gmService.SendSuccess();
-
-            UserPayment payment = new()
+            var payment = new UserPayment
             {
                 Amount = pay,
                 Currency = invoice.CurrencyProject,
@@ -79,16 +69,26 @@ namespace Payment.BLL.Services
                 UserId = invoice.UserId
             };
 
-            await _publisher.SendAsync(payment.ToTemplate());
-
-            await _context.Payments.AddAsync(payment);
-            await _context.SaveChangesAsync();
+            // CHECK: Notify true game money
+            await _gmService.SendSuccess(cancellation);
+            await _context.Payments.AddAsync(payment, cancellation);
+            await _context.SaveChangesAsync(cancellation);
+            await _publisher.SendAsync(new UserPaymentTemplate
+            {
+                Id = payment.Id,
+                Amount = payment.Amount,
+                Currency = payment.Currency,
+                Date = payment.Date,
+                Rate = payment.Rate,
+                UserId = payment.UserId
+            }, cancellation);
+            await _publisher.SendAsync(new SiteStatisticsAdminTemplate { TotalReplenishedFunds = pay }, cancellation);
 
             return payment.ToResponse();
         }
 
-        public async Task<PaymentBalanceResponse> GetPaymentBalanceAsync(string currency) => 
-            await _gmService.GetBalanceAsync(currency);
+        public async Task<PaymentBalanceResponse> GetPaymentBalanceAsync(string currency, 
+            CancellationToken cancellation = default) => await _gmService.GetBalanceAsync(currency, cancellation);
 
         public HashOfDataForDepositResponse GetHashOfDataForDeposit(Guid userId) =>
             _gmService.GetHashOfDataForDeposit(userId);

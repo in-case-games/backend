@@ -4,8 +4,8 @@ namespace Resources.BLL.Interfaces
 {
     public interface IGameService
     {
-        public Task<List<GameResponse>> GetAsync();
-        public Task<GameResponse> GetAsync(Guid id);
-        public Task<GameResponse> GetAsync(string name);
+        public Task<List<GameResponse>> GetAsync(CancellationToken cancellation = default);
+        public Task<GameResponse> GetAsync(Guid id, CancellationToken cancellation = default);
+        public Task<GameResponse> GetAsync(string name, CancellationToken cancellation = default);
     }
 }

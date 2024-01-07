@@ -1,7 +1,5 @@
-﻿using Statistics.BLL.Helpers;
-using Statistics.BLL.Models;
+﻿using Statistics.BLL.Models;
 using Statistics.BLL.Repository;
-using Statistics.DAL.Entities;
 
 namespace Statistics.BLL.Services
 {
@@ -14,18 +12,31 @@ namespace Statistics.BLL.Services
             _siteStatisticsRepository = siteStatisticsRepository;
         }
 
-        public async Task<SiteStatisticsResponse> GetAsync()
+        public async Task<SiteStatisticsResponse> GetAsync(CancellationToken cancellation = default)
         {
-            SiteStatistics statistics = await _siteStatisticsRepository.GetAsync();
+            var stats = await _siteStatisticsRepository.GetAsync(cancellation);
 
-            return statistics.ToResponse();
+            return new SiteStatisticsResponse
+            {
+                LootBoxes = stats.LootBoxes,
+                Reviews = stats.Reviews,
+                Users = stats.Users,
+                WithdrawnFunds = stats.WithdrawnFunds,
+                WithdrawnItems = stats.WithdrawnItems
+            };
         }
 
-        public async Task<SiteStatisticsAdminResponse> GetAdminAsync()
+        public async Task<SiteStatisticsAdminResponse> GetAdminAsync(CancellationToken cancellation = default)
         {
-            SiteStatisticsAdmin statisticsAdmin = await _siteStatisticsRepository.GetAdminAsync();
+            var stats = await _siteStatisticsRepository.GetAdminAsync(cancellation);
 
-            return statisticsAdmin.ToResponse();
+            return new SiteStatisticsAdminResponse
+            {
+                FundsUsersInventories = stats.FundsUsersInventories,
+                ReturnedFunds = stats.ReturnedFunds,
+                TotalReplenishedFunds = stats.TotalReplenishedFunds,
+                RevenueLootBoxCommission = stats.RevenueLootBoxCommission,
+            };
         }
     }
 }

@@ -11,7 +11,6 @@
             Data = data;
         }
 
-        public static ApiResult<T> OK(T data) =>
-            new(0, data);
+        public static ApiResult<T> Ok(T data) => new(0, data);
     }
 }

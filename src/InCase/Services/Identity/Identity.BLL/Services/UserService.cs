@@ -1,7 +1,6 @@
 ﻿using Identity.BLL.Exceptions;
 using Identity.BLL.Helpers;
 using Identity.BLL.Interfaces;
-using Identity.BLL.MassTransit;
 using Identity.BLL.Models;
 using Identity.DAL.Data;
 using Identity.DAL.Entities;
@@ -19,13 +18,14 @@ namespace Identity.BLL.Services
             _context = context;
         }
 
-        public async Task<User?> GetByConsumerAsync(Guid id) => await _context.Users
+        public async Task<User?> GetByConsumerAsync(Guid id, CancellationToken cancellation = default) => 
+            await _context.Users
             .AsNoTracking()
-            .FirstOrDefaultAsync(u => u.Id == id);
+            .FirstOrDefaultAsync(u => u.Id == id, cancellation);
            
-        public async Task<UserResponse> GetAsync(Guid id)
+        public async Task<UserResponse> GetAsync(Guid id, CancellationToken cancellation = default)
         {
-            User user = await _context.Users
+            var user = await _context.Users
                 .Include(u => u.AdditionalInfo)
                 .Include(u => u.AdditionalInfo!.Role)
                 .Include(u => u.Restrictions!)
@@ -33,15 +33,22 @@ namespace Identity.BLL.Services
                 .Include(u => u.OwnerRestrictions!)
                     .ThenInclude(r => r.Type)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(u => u.Id == id) ??
+                .FirstOrDefaultAsync(u => u.Id == id, cancellation) ??
                 throw new NotFoundException("Пользователь не найден");
 
-            return user.ToResponse();
+            return new UserResponse()
+            {
+                Id = user.Id,
+                AdditionalInfo = user.AdditionalInfo?.ToResponse(),
+                Login = user.Login,
+                Restrictions = user.Restrictions?.ToResponse(),
+                OwnerRestrictions = user.OwnerRestrictions?.ToResponse(),
+            };
         }
 
-        public async Task<UserResponse> GetAsync(string login)
+        public async Task<UserResponse> GetAsync(string login, CancellationToken cancellation = default)
         {
-            User user = await _context.Users
+            var user = await _context.Users
                 .Include(u => u.AdditionalInfo)
                 .Include(u => u.AdditionalInfo!.Role)
                 .Include(u => u.Restrictions!)
@@ -49,53 +56,62 @@ namespace Identity.BLL.Services
                 .Include(u => u.OwnerRestrictions!)
                     .ThenInclude(r => r.Type)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(u => u.Login == login) ??
+                .FirstOrDefaultAsync(u => u.Login == login, cancellation) ??
                 throw new NotFoundException("Пользователь не найден");
 
-            return user.ToResponse();
+            return new UserResponse()
+            {
+                Id = user.Id,
+                AdditionalInfo = user.AdditionalInfo?.ToResponse(),
+                Login = user.Login,
+                Restrictions = user.Restrictions?.ToResponse(),
+                OwnerRestrictions = user.OwnerRestrictions?.ToResponse(),
+            };
         }
 
-        public async Task CreateAsync(UserTemplate template)
+        public async Task CreateAsync(UserTemplate template, CancellationToken cancellation = default)
         {
-            if (await _context.Users.AnyAsync(u => u.Id == template.Id))
+            if (await _context.Users.AnyAsync(u => u.Id == template.Id, cancellation))
                 throw new ForbiddenException("Пользователь существует");
 
-            User user = template.ToEntity();
-            UserRole role = await _context.Roles.FirstAsync(ur => ur.Name == "user");
-            UserAdditionalInfo info = new()
+            var role = await _context.Roles.FirstAsync(ur => ur.Name == "user", cancellation);
+
+            await _context.Users.AddAsync(new User
+            {
+                Id = template.Id,
+                Login = template.Login
+            }, cancellation);
+            await _context.AdditionalInfos.AddAsync(new UserAdditionalInfo
             {
                 UserId = template.Id,
                 CreationDate = DateTime.UtcNow,
                 RoleId = role.Id
-            };
-
-            await _context.Users.AddAsync(user);
-            await _context.AdditionalInfos.AddAsync(info);
-            await _context.SaveChangesAsync();
+            }, cancellation);
+            await _context.SaveChangesAsync(cancellation);
         }
 
-        public async Task DeleteAsync(Guid id)
+        public async Task DeleteAsync(Guid id, CancellationToken cancellation = default)
         {
-            User user = await _context.Users
-                .FirstOrDefaultAsync(u => u.Id == id) ??
+            var user = await _context.Users
+                .FirstOrDefaultAsync(u => u.Id == id, cancellation) ??
                 throw new NotFoundException("Пользователь не найден");
 
             _context.Users.Remove(user);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(cancellation);
         }
 
-        public async Task UpdateLoginAsync(UserTemplate template)
+        public async Task UpdateLoginAsync(UserTemplate template, CancellationToken cancellation = default)
         {
-            User user = await _context.Users
+            var user = await _context.Users
                  .Include(u => u.AdditionalInfo)
                  .Include(u => u.Restrictions)
                  .Include(u => u.OwnerRestrictions)
-                 .FirstOrDefaultAsync(u => u.Id == template.Id) ??
+                 .FirstOrDefaultAsync(u => u.Id == template.Id, cancellation) ??
                  throw new NotFoundException("Пользователь не найден");
 
             user.Login = template.Login;
 
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(cancellation);
         }
     }
 }

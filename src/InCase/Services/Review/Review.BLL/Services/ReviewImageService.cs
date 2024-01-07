@@ -17,12 +17,12 @@ namespace Review.BLL.Services
             _context = context;
         }
 
-        public async Task<ReviewImageResponse> GetAsync(Guid id, bool isOnlyApproved)
+        public async Task<ReviewImageResponse> GetAsync(Guid id, bool isOnlyApproved, CancellationToken cancellation = default)
         {
-            ReviewImage image = await _context.Images
+            var image = await _context.Images
                 .Include(ri => ri.Review)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(ri => ri.Id == id) ??
+                .FirstOrDefaultAsync(ri => ri.Id == id, cancellation) ??
                 throw new NotFoundException("Изображение не найдено");
 
             return isOnlyApproved is false || image.Review!.IsApproved ? 
@@ -30,102 +30,103 @@ namespace Review.BLL.Services
                 throw new ForbiddenException("Изображение не одобренно администрацией");
         }
 
-        public async Task<List<ReviewImageResponse>> GetAsync(bool isOnlyApproved)
+        public async Task<List<ReviewImageResponse>> GetAsync(bool isOnlyApproved, CancellationToken cancellation = default)
         {
-            List<ReviewImage> images = await _context.Images
+            var images = await _context.Images
                 .Include(ri => ri.Review)
                 .AsNoTracking()
-                .ToListAsync();
+                .ToListAsync(cancellation);
 
-            if(isOnlyApproved)
-                images = images.Where(ri => ri.Review!.IsApproved).ToList();
+            if(isOnlyApproved) images = images.Where(ri => ri.Review!.IsApproved).ToList();
 
             return images.ToResponse();
         }
 
-        public async Task<List<ReviewImageResponse>> GetByUserIdAsync(Guid userId, bool isOnlyApproved)
+        public async Task<List<ReviewImageResponse>> GetByUserIdAsync(Guid userId, bool isOnlyApproved, 
+            CancellationToken cancellation = default)
         {
-            List<ReviewImage> images = await _context.Images
+            var images = await _context.Images
                 .Include(ri => ri.Review)
                 .AsNoTracking()
                 .Where(ri => ri.Review!.UserId == userId)
-                .ToListAsync();
+                .ToListAsync(cancellation);
 
-            if (isOnlyApproved)
-                images = images.Where(ri => ri.Review!.IsApproved).ToList();
+            if (isOnlyApproved) images = images.Where(ri => ri.Review!.IsApproved).ToList();
 
             return images.ToResponse();
         }
 
-        public async Task<List<ReviewImageResponse>> GetByReviewIdAsync(Guid reviewId, bool isOnlyApproved)
+        public async Task<List<ReviewImageResponse>> GetByReviewIdAsync(Guid reviewId, bool isOnlyApproved, 
+            CancellationToken cancellation = default)
         {
-            List<ReviewImage> images = await _context.Images
+            var images = await _context.Images
                 .Include(ri => ri.Review)
                 .AsNoTracking()
                 .Where(ri => ri.ReviewId == reviewId)
-                .ToListAsync();
+                .ToListAsync(cancellation);
 
-            if (isOnlyApproved)
-                images = images.Where(ri => ri.Review!.IsApproved).ToList();
+            if (isOnlyApproved) images = images.Where(ri => ri.Review!.IsApproved).ToList();
 
             return images.ToResponse();
         }
 
-        public async Task<ReviewImageResponse> CreateAsync(Guid userId, ReviewImageRequest request)
+        public async Task<ReviewImageResponse> CreateAsync(Guid userId, ReviewImageRequest request, 
+            CancellationToken cancellation = default)
         {
             if (request.Image is null) throw new BadRequestException("Загрузите картинку в base 64");
 
-            UserReview review = await _context.Reviews
-                .FirstOrDefaultAsync(ur => ur.Id == request.ReviewId) ??
+            var review = await _context.Reviews
+                .FirstOrDefaultAsync(ur => ur.Id == request.ReviewId, cancellation) ??
                 throw new NotFoundException("Отзыв не найден");
 
-            ReviewImage image = request.ToEntity(IsNewGuid: true);
+            var image = new ReviewImage
+            {
+                Id = Guid.NewGuid(),
+                ReviewId = request.ReviewId,
+            };
 
-            if (review.UserId != userId)
-                throw new ForbiddenException("Доступ к отзыву только у создателя");
+            if (review.UserId != userId) throw new ForbiddenException("Доступ к отзыву только у создателя");
 
             review.IsApproved = false;
-            
-            FileService.UploadImageBase64(request.Image, 
-                    @$"reviews/{image.ReviewId}/{image.Id}/", $"{image.Id}");
 
-            await _context.Images.AddAsync(image);
-            await _context.SaveChangesAsync();
+            await _context.Images.AddAsync(image, cancellation);
+            await _context.SaveChangesAsync(cancellation);
 
-            return image.ToResponse();
-        }
-
-        public async Task<ReviewImageResponse> DeleteAsync(Guid userId, Guid id)
-        {
-            ReviewImage image = await _context.Images
-                .Include(ri => ri.Review)
-                .AsNoTracking()
-                .FirstOrDefaultAsync(ri => ri.Id == id) ??
-                throw new NotFoundException("Изображение не найдено");
-
-            if (image.Review!.UserId != userId)
-                throw new ForbiddenException("Доступ к отзыву только у создателя");
-
-            _context.Images.Remove(image);
-            await _context.SaveChangesAsync();
-
-            FileService.RemoveFolder(@$"reviews/{image.ReviewId}/{id}/");
+            FileService.UploadImageBase64(request.Image, $"reviews/{image.ReviewId}/{image.Id}/", $"{image.Id}");
 
             return image.ToResponse();
         }
 
-        public async Task<ReviewImageResponse> DeleteAsync(Guid id)
+        public async Task<ReviewImageResponse> DeleteAsync(Guid userId, Guid id, CancellationToken cancellation = default)
         {
-            ReviewImage image = await _context.Images
+            var image = await _context.Images
                 .Include(ri => ri.Review)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(ri => ri.Id == id) ??
+                .FirstOrDefaultAsync(ri => ri.Id == id, cancellation) ??
+                throw new NotFoundException("Изображение не найдено");
+
+            if (image.Review!.UserId != userId) throw new ForbiddenException("Доступ к отзыву только у создателя");
+
+            _context.Images.Remove(image);
+            await _context.SaveChangesAsync(cancellation);
+
+            FileService.RemoveFolder($"reviews/{image.ReviewId}/{id}/");
+
+            return image.ToResponse();
+        }
+
+        public async Task<ReviewImageResponse> DeleteAsync(Guid id, CancellationToken cancellation = default)
+        {
+            var image = await _context.Images
+                .Include(ri => ri.Review)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(ri => ri.Id == id, cancellation) ??
                 throw new NotFoundException("Изображение не найдено");
 
             _context.Images.Remove(image);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(cancellation);
 
-            FileService.RemoveFolder(@$"reviews/{image.ReviewId}/{id}/");
+            FileService.RemoveFolder($"reviews/{image.ReviewId}/{id}/");
 
             return image.ToResponse();
         }

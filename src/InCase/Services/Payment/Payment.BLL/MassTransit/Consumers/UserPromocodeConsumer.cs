@@ -1,7 +1,6 @@
 ﻿using Infrastructure.MassTransit.User;
 using MassTransit;
 using Payment.BLL.Interfaces;
-using Payment.DAL.Entities;
 
 namespace Payment.BLL.MassTransit.Consumers
 {
@@ -16,17 +15,12 @@ namespace Payment.BLL.MassTransit.Consumers
 
         public async Task Consume(ConsumeContext<UserPromocodeTemplate> context)
         {
-            var template = context.Message;
-
-            if (template.Type?.Name == "balance")
+            if (context.Message.Type?.Name == "balance")
             {
-                UserPromocode? userPromocode = await _promocodeService
-                    .GetAsync(template.Id, template.UserId);
+                var userPromocode = await _promocodeService.GetAsync(context.Message.Id, context.Message.UserId);
 
-                if (userPromocode is null)
-                    await _promocodeService.CreateAsync(template);
-                else
-                    await _promocodeService.UpdateAsync(template);
+                if (userPromocode is null) await _promocodeService.CreateAsync(context.Message);
+                else await _promocodeService.UpdateAsync(context.Message);
             }
         }
     }
