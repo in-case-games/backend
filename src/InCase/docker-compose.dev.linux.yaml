@@ -59,7 +59,7 @@ services:
       - psql
       - rabbitmq
     volumes:
-      - $APPDATA/Microsoft/UserSecrets/$USER_SECRETS_ID_WITHDRAW:/root/.microsoft/usersecrets/$USER_SECRETS_ID_WITHDRAW:ro
+      - $HOME/.microsoft/usersecrets/$USER_SECRETS_ID_AUTH:/root/.microsoft/usersecrets/$USER_SECRETS_ID_AUTH:ro
       - ./../fileserver:/static/images
     ports:
       - "5033:80"
@@ -77,7 +77,7 @@ services:
       - psql
       - rabbitmq
     volumes:
-      - $APPDATA/Microsoft/UserSecrets/$USER_SECRETS_ID_WITHDRAW:/root/.microsoft/usersecrets/$USER_SECRETS_ID_WITHDRAW:ro
+      - $HOME/.microsoft/usersecrets/$USER_SECRETS_ID_EMAIL:/root/.microsoft/usersecrets/$USER_SECRETS_ID_EMAIL:ro
       - ./../fileserver:/static/images
     ports:
       - "5225:80"
@@ -95,7 +95,7 @@ services:
       - psql
       - rabbitmq
     volumes:
-      - $APPDATA/Microsoft/UserSecrets/$USER_SECRETS_ID_WITHDRAW:/root/.microsoft/usersecrets/$USER_SECRETS_ID_WITHDRAW:ro
+      - $HOME/.microsoft/usersecrets/$USER_SECRETS_ID_GAME:/root/.microsoft/usersecrets/$USER_SECRETS_ID_GAME:ro
       - ./../fileserver:/static/images
     ports:
       - "5184:80"
@@ -113,7 +113,7 @@ services:
       - psql
       - rabbitmq
     volumes:
-      - $APPDATA/Microsoft/UserSecrets/$USER_SECRETS_ID_WITHDRAW:/root/.microsoft/usersecrets/$USER_SECRETS_ID_WITHDRAW:ro
+      - $HOME/.microsoft/usersecrets/$USER_SECRETS_ID_IDENTITY:/root/.microsoft/usersecrets/$USER_SECRETS_ID_IDENTITY:ro
       - ./../fileserver:/static/images
     ports:
       - "5259:80"
@@ -131,7 +131,7 @@ services:
       - psql
       - rabbitmq 
     volumes:
-      - $APPDATA/Microsoft/UserSecrets/$USER_SECRETS_ID_WITHDRAW:/root/.microsoft/usersecrets/$USER_SECRETS_ID_WITHDRAW:ro
+      - $HOME/.microsoft/usersecrets/$USER_SECRETS_ID_PAYMENT:/root/.microsoft/usersecrets/$USER_SECRETS_ID_PAYMENT:ro
       - ./../fileserver:/static/images
     ports:
       - "5039:80"
@@ -149,7 +149,7 @@ services:
       - psql
       - rabbitmq 
     volumes:
-      - $APPDATA/Microsoft/UserSecrets/$USER_SECRETS_ID_WITHDRAW:/root/.microsoft/usersecrets/$USER_SECRETS_ID_WITHDRAW:ro
+      - $HOME/.microsoft/usersecrets/$USER_SECRETS_ID_PROMOCODE:/root/.microsoft/usersecrets/$USER_SECRETS_ID_PROMOCODE:ro
       - ./../fileserver:/static/images
     ports:
       - "5163:80"
@@ -167,7 +167,7 @@ services:
       - psql
       - rabbitmq 
     volumes:
-      - $APPDATA/Microsoft/UserSecrets/$USER_SECRETS_ID_WITHDRAW:/root/.microsoft/usersecrets/$USER_SECRETS_ID_WITHDRAW:ro
+      - $HOME/.microsoft/usersecrets/$USER_SECRETS_ID_RESOURCES:/root/.microsoft/usersecrets/$USER_SECRETS_ID_RESOURCES:ro
       - ./../fileserver:/static/images
     ports:
       - "5073:80"
@@ -185,7 +185,7 @@ services:
       - psql
       - rabbitmq 
     volumes:
-      - $APPDATA/Microsoft/UserSecrets/$USER_SECRETS_ID_WITHDRAW:/root/.microsoft/usersecrets/$USER_SECRETS_ID_WITHDRAW:ro
+      - $HOME/.microsoft/usersecrets/$USER_SECRETS_ID_REVIEW:/root/.microsoft/usersecrets/$USER_SECRETS_ID_REVIEW:ro
       - ./../fileserver:/static/images
     ports:
       - "5079:80"
@@ -204,7 +204,7 @@ services:
       - rabbitmq
       - nosqldata
     volumes:
-      - $APPDATA/Microsoft/UserSecrets/$USER_SECRETS_ID_WITHDRAW:/root/.microsoft/usersecrets/$USER_SECRETS_ID_WITHDRAW:ro
+      - $HOME/.microsoft/usersecrets/$USER_SECRETS_ID_STATISTICS:/root/.microsoft/usersecrets/$USER_SECRETS_ID_STATISTICS:ro
       - ./../fileserver:/static/images
     ports:
       - "5231:80"
@@ -222,7 +222,7 @@ services:
       - psql
       - rabbitmq 
     volumes:
-      - $APPDATA/Microsoft/UserSecrets/$USER_SECRETS_ID_WITHDRAW:/root/.microsoft/usersecrets/$USER_SECRETS_ID_WITHDRAW:ro
+      - $HOME/.microsoft/usersecrets/$USER_SECRETS_ID_SUPPORT:/root/.microsoft/usersecrets/$USER_SECRETS_ID_SUPPORT:ro
       - ./../fileserver:/static/images
     ports:
       - "5155:80"
@@ -240,7 +240,7 @@ services:
       - psql
       - rabbitmq 
     volumes:
-      - $APPDATA/Microsoft/UserSecrets/$USER_SECRETS_ID_WITHDRAW:/root/.microsoft/usersecrets/$USER_SECRETS_ID_WITHDRAW:ro
+      - $HOME/.microsoft/usersecrets/$USER_SECRETS_ID_WITHDRAW:/root/.microsoft/usersecrets/$USER_SECRETS_ID_WITHDRAW:ro
       - ./../fileserver:/static/images
     ports:
       - "5187:80"
