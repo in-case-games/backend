@@ -6,18 +6,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EmailSender.BLL.Services
 {
-    public class UserAdditionalInfoService : IUserAdditionalInfoService
+    public class UserAdditionalInfoService(ApplicationDbContext context) : IUserAdditionalInfoService
     {
-        private readonly ApplicationDbContext _context;
-
-        public UserAdditionalInfoService(ApplicationDbContext context)
-        {
-            _context = context;
-        }
-
         public async Task<UserAdditionalInfoResponse> GetByUserIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            var info = await _context.AdditionalInfos
+            var info = await context.AdditionalInfos
                 .AsNoTracking()
                 .FirstOrDefaultAsync(uai => uai.UserId == id, cancellationToken) ??
                 throw new NotFoundException("Информация не найдена");
@@ -32,13 +25,13 @@ namespace EmailSender.BLL.Services
 
         public async Task<UserAdditionalInfoResponse> UpdateNotifyEmailAsync(Guid userId, bool isNotifyEmail, CancellationToken cancellationToken = default)
         {
-            var info = await _context.AdditionalInfos
+            var info = await context.AdditionalInfos
                 .FirstOrDefaultAsync(uai => uai.UserId == userId, cancellationToken) ??
                 throw new NotFoundException("Информация не найдена");
 
             info.IsNotifyEmail = isNotifyEmail;
 
-            await _context.SaveChangesAsync(cancellationToken);
+            await context.SaveChangesAsync(cancellationToken);
 
             return new UserAdditionalInfoResponse()
             {

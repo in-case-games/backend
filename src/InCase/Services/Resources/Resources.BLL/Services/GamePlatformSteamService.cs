@@ -6,13 +6,13 @@ using Microsoft.Extensions.Logging;
 
 namespace Resources.BLL.Services
 {
-    public class GamePlatformSteamService : IGamePlatformService
+    public class GamePlatformSteamService(
+        ILogger<GamePlatformSteamService> logger, 
+        IConfiguration cfg, 
+        IResponseService responseService) : IGamePlatformService
     {
         private const int NumberAttempts = 5;
 
-        private readonly ILogger<GamePlatformSteamService> _logger;
-        private readonly IConfiguration _cfg;
-        private readonly IResponseService _responseService;
         private readonly Dictionary<string, string> _domainUri = new()
         {
             ["csgo"] = "https://market.csgo.com",
@@ -24,18 +24,11 @@ namespace Resources.BLL.Services
             ["dota2"] = "570"
         };
 
-        public GamePlatformSteamService(ILogger<GamePlatformSteamService> logger, IConfiguration cfg, IResponseService responseService)
-        {
-            _logger = logger;
-            _cfg = cfg;
-            _responseService = responseService;
-        }
-
         public async Task<ItemCostResponse> GetAdditionalMarketAsync(string idForMarket, string game, 
             CancellationToken cancellation = default)
         {
             var id = idForMarket.Replace("-", "_");
-            var uri = $"{_domainUri[game]}/api/ItemInfo/{id}/ru/?key={_cfg["MarketTM:Secret"]}";
+            var uri = $"{_domainUri[game]}/api/ItemInfo/{id}/ru/?key={cfg["MarketTM:Secret"]}";
 
             var i = 0;
 
@@ -43,7 +36,7 @@ namespace Resources.BLL.Services
             {
                 try
                 {
-                    var info = await _responseService.GetAsync<ItemInfoTmResponse>(uri, cancellation);
+                    var info = await responseService.GetAsync<ItemInfoTmResponse>(uri, cancellation);
 
                     return info?.Cost is null ?
                         new ItemCostResponse { Success = false, Cost = 0M } :
@@ -51,9 +44,9 @@ namespace Resources.BLL.Services
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError($"Не смог получить стоимость - {idForMarket} тм");
-                    _logger.LogError(ex, ex.Message);
-                    _logger.LogError(ex, ex.StackTrace);
+                    logger.LogError($"Не смог получить стоимость - {idForMarket} тм");
+                    logger.LogError(ex, ex.Message);
+                    logger.LogError(ex, ex.StackTrace);
                     i++;
                 }
 
@@ -79,7 +72,7 @@ namespace Resources.BLL.Services
             {
                 try
                 {
-                    var info = await _responseService.GetAsync<ItemInfoSteamResponse>(uri, cancellation);
+                    var info = await responseService.GetAsync<ItemInfoSteamResponse>(uri, cancellation);
 
                     if (info is null || !info.Success || info.Cost is null)
                     {
@@ -95,9 +88,9 @@ namespace Resources.BLL.Services
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError($"Не смог получить стоимость - {hashName} стим");
-                    _logger.LogError(ex, ex.Message);
-                    _logger.LogError(ex, ex.StackTrace);
+                    logger.LogError($"Не смог получить стоимость - {hashName} стим");
+                    logger.LogError(ex, ex.Message);
+                    logger.LogError(ex, ex.StackTrace);
                     i++;
                 }
 

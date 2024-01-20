@@ -9,21 +9,14 @@ namespace Identity.API.Controllers
 {
     [Route("api/user-role")]
     [ApiController]
-    public class UserRoleController : ControllerBase
+    public class UserRoleController(IUserRoleService roleService) : ControllerBase
     {
-        private readonly IUserRoleService _roleService;
-
-        public UserRoleController(IUserRoleService roleService)
-        {
-            _roleService = roleService;
-        }
-
         [ProducesResponseType(typeof(ApiResult<UserRoleResponse>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> Get(Guid id, CancellationToken cancellation)
         {
-            var response = await _roleService.GetAsync(id, cancellation);
+            var response = await roleService.GetAsync(id, cancellation);
 
             return Ok(ApiResult<UserRoleResponse>.Ok(response));
         }
@@ -33,7 +26,7 @@ namespace Identity.API.Controllers
         [HttpGet]
         public async Task<IActionResult> Get(CancellationToken cancellation)
         {
-            var response = await _roleService.GetAsync(cancellation);
+            var response = await roleService.GetAsync(cancellation);
 
             return Ok(ApiResult<List<UserRoleResponse>>.Ok(response));
         }

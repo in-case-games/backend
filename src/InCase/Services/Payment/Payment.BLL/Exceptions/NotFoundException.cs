@@ -2,8 +2,5 @@
 
 namespace Payment.BLL.Exceptions
 {
-    public class NotFoundException : StatusCodeException
-    {
-        public NotFoundException(string message) : base(ErrorCodes.NotFound, message) { }
-    }
+    public class NotFoundException(string message) : StatusCodeException(ErrorCodes.NotFound, message);
 }

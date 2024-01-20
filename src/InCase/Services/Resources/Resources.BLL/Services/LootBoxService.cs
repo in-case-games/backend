@@ -9,20 +9,11 @@ using Resources.DAL.Entities;
 
 namespace Resources.BLL.Services
 {
-    public class LootBoxService : ILootBoxService
+    public class LootBoxService(ApplicationDbContext context, BasePublisher publisher) : ILootBoxService
     {
-        private readonly ApplicationDbContext _context;
-        private readonly BasePublisher _publisher;
-
-        public LootBoxService(ApplicationDbContext context, BasePublisher publisher)
-        {
-            _context = context;
-            _publisher = publisher;
-        }
-
         public async Task<LootBoxResponse> GetAsync(Guid id, CancellationToken cancellation = default)
         {
-            var box = await _context.LootBoxes
+            var box = await context.LootBoxes
                 .Include(lb => lb.Game)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(lb => lb.Id == id, cancellation) ??
@@ -33,7 +24,7 @@ namespace Resources.BLL.Services
 
         public async Task<LootBoxResponse> GetAsync(string name, CancellationToken cancellation = default)
         {
-            var box = await _context.LootBoxes
+            var box = await context.LootBoxes
                 .Include(lb => lb.Game)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(lb => lb.Name == name, cancellation) ??
@@ -44,7 +35,7 @@ namespace Resources.BLL.Services
 
         public async Task<List<LootBoxResponse>> GetAsync(CancellationToken cancellation = default)
         {
-            var boxes = await _context.LootBoxes
+            var boxes = await context.LootBoxes
                 .Include(lb => lb.Game)
                 .AsNoTracking()
                 .ToListAsync(cancellation);
@@ -54,10 +45,10 @@ namespace Resources.BLL.Services
 
         public async Task<List<LootBoxResponse>> GetByGameIdAsync(Guid id, CancellationToken cancellation = default)
         {
-            if (!await _context.Games.AnyAsync(g => g.Id == id, cancellationToken: cancellation))
+            if (!await context.Games.AnyAsync(g => g.Id == id, cancellationToken: cancellation))
                 throw new NotFoundException("Игра не найдена");
 
-            var boxes = await _context.LootBoxes
+            var boxes = await context.LootBoxes
                 .Include(lb => lb.Game)
                 .AsNoTracking()
                 .Where(lb => lb.GameId == id)
@@ -72,9 +63,9 @@ namespace Resources.BLL.Services
 
             if (request.Image is null) throw new BadRequestException("Загрузите картинку в base 64");
 
-            if (!await _context.Games.AnyAsync(g => g.Id == request.GameId, cancellation))
+            if (!await context.Games.AnyAsync(g => g.Id == request.GameId, cancellation))
                 throw new NotFoundException("Игра не найдена");
-            if (await _context.LootBoxes.AnyAsync(lb => lb.Name == request.Name, cancellation)) 
+            if (await context.LootBoxes.AnyAsync(lb => lb.Name == request.Name, cancellation)) 
                 throw new ConflictException("Название кейса уже занято");
 
             request.IsLocked = true;
@@ -88,10 +79,10 @@ namespace Resources.BLL.Services
                 Cost = request.Cost,
             };
 
-            await _context.LootBoxes.AddAsync(box, cancellation);
-            await _context.SaveChangesAsync(cancellation);
+            await context.LootBoxes.AddAsync(box, cancellation);
+            await context.SaveChangesAsync(cancellation);
             
-            await _publisher.SendAsync(box.ToTemplate(isDeleted: false), cancellation);
+            await publisher.SendAsync(box.ToTemplate(isDeleted: false), cancellation);
 
             FileService.UploadImageBase64(request.Image, $"loot-boxes/{box.Id}/", $"{box.Id}");
             FileService.CreateFolder(@$"loot-box-banners/{box.Id}/");
@@ -103,17 +94,17 @@ namespace Resources.BLL.Services
         {
             ValidationService.IsLootBox(request);
 
-            var oldBox = await _context.LootBoxes
+            var oldBox = await context.LootBoxes
                 .Include(lb => lb.Game)
                 .FirstOrDefaultAsync(lb => lb.Id == request.Id, cancellation) ??
                 throw new NotFoundException("Кейс не найден");
 
-            if (!await _context.Games.AnyAsync(g => g.Id == request.GameId, cancellation))
+            if (!await context.Games.AnyAsync(g => g.Id == request.GameId, cancellation))
                 throw new NotFoundException("Игра не найдена");
-            if (await _context.LootBoxes.AnyAsync(lb => lb.Name == request.Name && lb.Id != request.Id, cancellation))
+            if (await context.LootBoxes.AnyAsync(lb => lb.Name == request.Name && lb.Id != request.Id, cancellation))
                 throw new ConflictException("Название кейса уже занято");
 
-            var boxInventories = await _context.BoxInventories
+            var boxInventories = await context.BoxInventories
                 .Include(lbi => lbi.Item)
                 .OrderBy(lbi => lbi.Item!.Cost)
                 .AsNoTracking()
@@ -135,9 +126,9 @@ namespace Resources.BLL.Services
                 Cost = request.Cost,
             };
 
-            _context.Entry(oldBox).CurrentValues.SetValues(newBox);
-            await _context.SaveChangesAsync(cancellation);
-            await _publisher.SendAsync(newBox.ToTemplate(isDeleted: false), cancellation);
+            context.Entry(oldBox).CurrentValues.SetValues(newBox);
+            await context.SaveChangesAsync(cancellation);
+            await publisher.SendAsync(newBox.ToTemplate(isDeleted: false), cancellation);
 
             if (request.Image is not null)
             {
@@ -149,15 +140,15 @@ namespace Resources.BLL.Services
 
         public async Task<LootBoxResponse> DeleteAsync(Guid id, CancellationToken cancellation = default)
         {
-            var box = await _context.LootBoxes
+            var box = await context.LootBoxes
                 .Include(lb => lb.Game)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(lb => lb.Id == id, cancellation) ??
                 throw new NotFoundException("Кейс не найден");
 
-            _context.LootBoxes.Remove(box);
-            await _context.SaveChangesAsync(cancellation);
-            await _publisher.SendAsync(box.ToTemplate(isDeleted: true), cancellation);
+            context.LootBoxes.Remove(box);
+            await context.SaveChangesAsync(cancellation);
+            await publisher.SendAsync(box.ToTemplate(isDeleted: true), cancellation);
 
             FileService.RemoveFolder($"loot-boxes/{box.Id}/");
             FileService.RemoveFolder($"loot-box-banners/{box.Id}/");

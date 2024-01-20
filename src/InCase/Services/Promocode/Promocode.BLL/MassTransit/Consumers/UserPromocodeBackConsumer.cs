@@ -5,24 +5,17 @@ using Promocode.DAL.Data;
 
 namespace Promocode.BLL.MassTransit.Consumers
 {
-    public class UserPromocodeBackConsumer : IConsumer<UserPromocodeBackTemplate>
+    public class UserPromocodeBackConsumer(ApplicationDbContext context) : IConsumer<UserPromocodeBackTemplate>
     {
-        private readonly ApplicationDbContext _context;
-
-        public UserPromocodeBackConsumer(ApplicationDbContext context)
+        public async Task Consume(ConsumeContext<UserPromocodeBackTemplate> context1)
         {
-            _context = context;
-        }
-
-        public async Task Consume(ConsumeContext<UserPromocodeBackTemplate> context)
-        {
-            var promocode = await _context.UserPromocodes.FirstOrDefaultAsync(ur => ur.Id == context.Message.Id);
+            var promocode = await context.UserPromocodes.FirstOrDefaultAsync(ur => ur.Id == context1.Message.Id);
 
             if(promocode is not null)
             {
                 promocode.IsActivated = true;
 
-                await _context.SaveChangesAsync();
+                await context.SaveChangesAsync();
             }
         }
     }

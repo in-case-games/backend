@@ -5,22 +5,11 @@ using Microsoft.Extensions.Logging;
 
 namespace Authentication.BLL.Services
 {
-    public class UserManagerService : IHostedService
+    public class UserManagerService(
+        IServiceProvider serviceProvider, 
+        IHostApplicationLifetime lifetime, 
+        ILogger<UserManagerService> logger) : IHostedService
     {
-        private readonly IServiceProvider _serviceProvider;
-        private readonly ILogger<UserManagerService> _logger;
-        private readonly IHostApplicationLifetime _lifetime;
-
-        public UserManagerService(
-            IServiceProvider serviceProvider,
-            IHostApplicationLifetime lifetime,
-            ILogger<UserManagerService> logger)
-        {
-            _serviceProvider = serviceProvider;
-            _lifetime = lifetime;
-            _logger = logger;
-        }
-
         public Task StartAsync(CancellationToken cancellationToken)
         {
             _ = DoWork(cancellationToken);
@@ -38,14 +27,14 @@ namespace Authentication.BLL.Services
             {
                 try
                 {
-                    await using var scope = _serviceProvider.CreateAsyncScope();
+                    await using var scope = serviceProvider.CreateAsyncScope();
                     var userService = scope.ServiceProvider.GetService<IUserService>();
                     await userService!.DoWorkManagerAsync(stoppingToken);
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogCritical(ex, ex.Message);
-                    _logger.LogCritical(ex, ex.StackTrace);
+                    logger.LogCritical(ex, ex.Message);
+                    logger.LogCritical(ex, ex.StackTrace);
                 }
 
                 await Task.Delay(300, stoppingToken);
@@ -55,7 +44,7 @@ namespace Authentication.BLL.Services
         private async Task<bool> WaitForAppStartup(CancellationToken stoppingToken)
         {
             var startedSource = new TaskCompletionSource();
-            await using var reg1 = _lifetime.ApplicationStarted.Register(() => startedSource.SetResult());
+            await using var reg1 = lifetime.ApplicationStarted.Register(() => startedSource.SetResult());
 
             var cancelledSource = new TaskCompletionSource();
             await using var reg2 = stoppingToken.Register(() => cancelledSource.SetResult());

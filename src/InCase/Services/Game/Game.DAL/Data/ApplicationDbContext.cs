@@ -4,7 +4,7 @@ using System.Reflection;
 
 namespace Game.DAL.Data
 {
-    public class ApplicationDbContext : DbContext
+    public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
     {
         public DbSet<GameItem> Items => Set<GameItem>();
         public DbSet<LootBox> Boxes => Set<LootBox>();
@@ -14,8 +14,6 @@ namespace Game.DAL.Data
         public DbSet<UserOpening> Openings => Set<UserOpening>();
         public DbSet<UserPromocode> UserPromocodes => Set<UserPromocode>();
         public DbSet<UserPathBanner> PathBanners => Set<UserPathBanner>();
-
-        public ApplicationDbContext(DbContextOptions options) : base(options) {}
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

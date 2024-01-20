@@ -2,8 +2,5 @@
 
 namespace Authentication.BLL.Exceptions
 {
-    public class UnauthorizedException : StatusCodeException
-    {
-        public UnauthorizedException(string message) : base(ErrorCodes.Unauthorized, message) { }
-    }
+    public class UnauthorizedException(string message) : StatusCodeException(ErrorCodes.Unauthorized, message);
 }

@@ -10,21 +10,14 @@ namespace Resources.API.Controllers
 {
     [Route("api/loot-box-banner")]
     [ApiController]
-    public class LootBoxBannerController : ControllerBase
+    public class LootBoxBannerController(ILootBoxBannerService bannerService) : ControllerBase
     {
-        private readonly ILootBoxBannerService _bannerService;
-
-        public LootBoxBannerController(ILootBoxBannerService bannerService)
-        {
-            _bannerService = bannerService;
-        }
-
         [ProducesResponseType(typeof(ApiResult<List<LootBoxBannerResponse>>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> Get(CancellationToken cancellation)
         {
-            var response = await _bannerService.GetAsync(cancellation);
+            var response = await bannerService.GetAsync(cancellation);
 
             return Ok(ApiResult<List<LootBoxBannerResponse>>.Ok(response));
         }
@@ -34,7 +27,7 @@ namespace Resources.API.Controllers
         [HttpGet("active/{isActive:bool}")]
         public async Task<IActionResult> GetByIsActive(CancellationToken cancellation, bool isActive = true)
         {
-            var response = await _bannerService.GetAsync(isActive, cancellation);
+            var response = await bannerService.GetAsync(isActive, cancellation);
 
             return Ok(ApiResult<List<LootBoxBannerResponse>>.Ok(response));
         }
@@ -44,7 +37,7 @@ namespace Resources.API.Controllers
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> Get(Guid id, CancellationToken cancellation)
         {
-            var response = await _bannerService.GetAsync(id, cancellation);
+            var response = await bannerService.GetAsync(id, cancellation);
 
             return Ok(ApiResult<LootBoxBannerResponse>.Ok(response));
         }
@@ -54,7 +47,7 @@ namespace Resources.API.Controllers
         [HttpGet("box/{id:guid}")]
         public async Task<IActionResult> GetByBoxId(Guid id, CancellationToken cancellation)
         {
-            var response = await _bannerService.GetByBoxIdAsync(id, cancellation);
+            var response = await bannerService.GetByBoxIdAsync(id, cancellation);
 
             return Ok(ApiResult<LootBoxBannerResponse>.Ok(response));
         }
@@ -65,7 +58,7 @@ namespace Resources.API.Controllers
         [HttpPost]
         public async Task<IActionResult> Post(LootBoxBannerRequest request, CancellationToken cancellation)
         {
-            var response = await _bannerService.CreateAsync(request, cancellation);
+            var response = await bannerService.CreateAsync(request, cancellation);
 
             return Ok(ApiResult<LootBoxBannerResponse>.Ok(response));
         }
@@ -76,7 +69,7 @@ namespace Resources.API.Controllers
         [HttpPut]
         public async Task<IActionResult> Put(LootBoxBannerRequest request, CancellationToken cancellation)
         {
-            var response = await _bannerService.UpdateAsync(request, cancellation);
+            var response = await bannerService.UpdateAsync(request, cancellation);
 
             return Ok(ApiResult<LootBoxBannerResponse>.Ok(response));
         }
@@ -86,7 +79,7 @@ namespace Resources.API.Controllers
         [HttpDelete("{id:guid}")]
         public async Task<IActionResult> Delete(Guid id, CancellationToken cancellation)
         {
-            var response = await _bannerService.DeleteAsync(id, cancellation);
+            var response = await bannerService.DeleteAsync(id, cancellation);
 
             return Ok(ApiResult<LootBoxBannerResponse>.Ok(response));
         }

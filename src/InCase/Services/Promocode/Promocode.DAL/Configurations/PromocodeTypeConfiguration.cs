@@ -6,9 +6,10 @@ namespace Promocode.DAL.Configurations
 {
     internal class PromocodeTypeConfiguration : BaseEntityConfiguration<PromocodeType>
     {
-        private readonly List<PromocodeType> _types = new() {
-            new PromocodeType { Name = "balance" }, new PromocodeType { Name = "box" }
-        };
+        private readonly List<PromocodeType> _types = [
+            new PromocodeType { Name = "balance" }, 
+            new PromocodeType { Name = "box" }
+        ];
 
         public override void Configure(EntityTypeBuilder<PromocodeType> builder)
         {

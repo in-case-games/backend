@@ -11,21 +11,14 @@ namespace Resources.API.Controllers
 {
     [Route("api/game-item")]
     [ApiController]
-    public class GameItemController : ControllerBase
+    public class GameItemController(IGameItemService itemService) : ControllerBase
     {
-        private readonly IGameItemService _itemService;
-
-        public GameItemController(IGameItemService itemService)
-        {
-            _itemService = itemService;
-        }
-
         [ProducesResponseType(typeof(ApiResult<List<GameItemResponse>>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> Get(CancellationToken cancellation)
         {
-            var response = await _itemService.GetAsync(cancellation);
+            var response = await itemService.GetAsync(cancellation);
 
             return Ok(ApiResult<List<GameItemResponse>>.Ok(response));
         }
@@ -35,7 +28,7 @@ namespace Resources.API.Controllers
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> Get(Guid id, CancellationToken cancellation)
         {
-            var response = await _itemService.GetAsync(id, cancellation);
+            var response = await itemService.GetAsync(id, cancellation);
 
             return Ok(ApiResult<GameItemResponse>.Ok(response));
         }
@@ -45,7 +38,7 @@ namespace Resources.API.Controllers
         [HttpGet("name/{name}")]
         public async Task<IActionResult> Get(string name, CancellationToken cancellation)
         {
-            var response = await _itemService.GetAsync(name, cancellation);
+            var response = await itemService.GetAsync(name, cancellation);
 
             return Ok(ApiResult<List<GameItemResponse>>.Ok(response));
         }
@@ -55,7 +48,7 @@ namespace Resources.API.Controllers
         [HttpGet("hash/{name}")]
         public async Task<IActionResult> GetByHashName(string name, CancellationToken cancellation)
         {
-            var response = await _itemService.GetByHashNameAsync(name, cancellation);
+            var response = await itemService.GetByHashNameAsync(name, cancellation);
 
             return Ok(ApiResult<List<GameItemResponse>>.Ok(response));
         }
@@ -65,7 +58,7 @@ namespace Resources.API.Controllers
         [HttpGet("game/{id:guid}")]
         public async Task<IActionResult> GetByGameId(Guid id, CancellationToken cancellation)
         {
-            var response = await _itemService.GetByGameIdAsync(id, cancellation);
+            var response = await itemService.GetByGameIdAsync(id, cancellation);
 
             return Ok(ApiResult<List<GameItemResponse>>.Ok(response));
         }
@@ -75,7 +68,7 @@ namespace Resources.API.Controllers
         [HttpGet("qualities")]
         public async Task<IActionResult> GetQualities(CancellationToken cancellation)
         {
-            var response = await _itemService.GetQualitiesAsync(cancellation);
+            var response = await itemService.GetQualitiesAsync(cancellation);
 
             return Ok(ApiResult<List<GameItemQuality>>.Ok(response));
         }
@@ -85,7 +78,7 @@ namespace Resources.API.Controllers
         [HttpGet("rarities")]
         public async Task<IActionResult> GetRarities(CancellationToken cancellation)
         {
-            var response = await _itemService.GetRaritiesAsync(cancellation);
+            var response = await itemService.GetRaritiesAsync(cancellation);
 
             return Ok(ApiResult<List<GameItemRarity>>.Ok(response));
         }
@@ -95,7 +88,7 @@ namespace Resources.API.Controllers
         [HttpGet("types")]
         public async Task<IActionResult> GetTypes(CancellationToken cancellation)
         {
-            var response = await _itemService.GetTypesAsync(cancellation);
+            var response = await itemService.GetTypesAsync(cancellation);
 
             return Ok(ApiResult<List<GameItemType>>.Ok(response));
         }
@@ -105,7 +98,7 @@ namespace Resources.API.Controllers
         [HttpGet("quality/{name}")]
         public async Task<IActionResult> GetByQuality(string name, CancellationToken cancellation)
         {
-            var response = await _itemService.GetByQualityAsync(name, cancellation);
+            var response = await itemService.GetByQualityAsync(name, cancellation);
 
             return Ok(ApiResult<List<GameItemResponse>>.Ok(response));
         }
@@ -115,7 +108,7 @@ namespace Resources.API.Controllers
         [HttpGet("rarity/{name}")]
         public async Task<IActionResult> GetByRarity(string name, CancellationToken cancellation)
         {
-            var response = await _itemService.GetByRarityAsync(name, cancellation);
+            var response = await itemService.GetByRarityAsync(name, cancellation);
 
             return Ok(ApiResult<List<GameItemResponse>>.Ok(response));
         }
@@ -125,7 +118,7 @@ namespace Resources.API.Controllers
         [HttpGet("type/{name}")]
         public async Task<IActionResult> GetByType(string name, CancellationToken cancellation)
         {
-            var response = await _itemService.GetByTypeAsync(name, cancellation);
+            var response = await itemService.GetByTypeAsync(name, cancellation);
 
             return Ok(ApiResult<List<GameItemResponse>>.Ok(response));
         }
@@ -136,7 +129,7 @@ namespace Resources.API.Controllers
         [HttpPost]
         public async Task<IActionResult> Post(GameItemRequest request, CancellationToken cancellation)
         {
-            var response = await _itemService.CreateAsync(request, cancellation);
+            var response = await itemService.CreateAsync(request, cancellation);
 
             return Ok(ApiResult<GameItemResponse>.Ok(response));
         }
@@ -147,7 +140,7 @@ namespace Resources.API.Controllers
         [HttpPut]
         public async Task<IActionResult> Put(GameItemRequest request, CancellationToken cancellation)
         {
-            var response = await _itemService.UpdateAsync(request, cancellation);
+            var response = await itemService.UpdateAsync(request, cancellation);
 
             return Ok(ApiResult<GameItemResponse>.Ok(response));
         }
@@ -157,7 +150,7 @@ namespace Resources.API.Controllers
         [HttpDelete("{id:guid}")]
         public async Task<IActionResult> Delete(Guid id, CancellationToken cancellation)
         {
-            var response = await _itemService.DeleteAsync(id, cancellation);
+            var response = await itemService.DeleteAsync(id, cancellation);
 
             return Ok(ApiResult<GameItemResponse>.Ok(response));
         }

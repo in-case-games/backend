@@ -7,20 +7,15 @@ using Withdraw.DAL.Entities;
 
 namespace Withdraw.BLL.Services
 {
-    public class WithdrawItemService : IWithdrawItemService
+    public class WithdrawItemService(
+        MarketTmService tmService, 
+        ILogger<WithdrawItemService> logger) : IWithdrawItemService
     {
         private const int NumberAttempts = 5;
-        private readonly ConcurrentDictionary<string, ITradeMarketService> _marketServices;
-        private readonly ILogger<WithdrawItemService> _logger;
-
-        public WithdrawItemService(MarketTmService tmService, ILogger<WithdrawItemService> logger)
+        private readonly ConcurrentDictionary<string, ITradeMarketService> _marketServices = new()
         {
-            _logger = logger;
-            _marketServices = new ConcurrentDictionary<string, ITradeMarketService>
-            {
-                ["tm"] = tmService,
-            };
-        }
+            ["tm"] = tmService,
+        };
 
         public async Task<BuyItemResponse> BuyItemAsync(ItemInfoResponse info, string tradeUrl, CancellationToken cancellation = default)
         {
@@ -39,14 +34,14 @@ namespace Withdraw.BLL.Services
 
                     item.Market = info.Market;
 
-                    _logger.LogInformation($"The item successfully bought. ItemId: {item.Id}. MarketName: {name}");
+                    logger.LogInformation($"The item successfully bought. ItemId: {item.Id}. MarketName: {name}");
                     return item;
                 }
                 catch (Exception ex) 
                 { 
-                    _logger.LogError($"Не смог купить предмет - {info.Item.Id}");
-                    _logger.LogError(ex, ex.Message);
-                    _logger.LogError(ex, ex.StackTrace);
+                    logger.LogError($"Не смог купить предмет - {info.Item.Id}");
+                    logger.LogError(ex, ex.Message);
+                    logger.LogError(ex, ex.StackTrace);
                     i++; 
                 }
 
@@ -71,9 +66,9 @@ namespace Withdraw.BLL.Services
                 }
                 catch(Exception ex)
                 {
-                    _logger.LogError($"Не смог получить баланс маркета - {marketName}");
-                    _logger.LogError(ex, ex.Message);
-                    _logger.LogError(ex, ex.StackTrace);
+                    logger.LogError($"Не смог получить баланс маркета - {marketName}");
+                    logger.LogError(ex, ex.Message);
+                    logger.LogError(ex, ex.StackTrace);
                     i++;
                 }
 
@@ -106,9 +101,9 @@ namespace Withdraw.BLL.Services
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError($"Не смог получить информацию о предмете - {item.Id}");
-                    _logger.LogError(ex, ex.Message);
-                    _logger.LogError(ex, ex.StackTrace);
+                    logger.LogError($"Не смог получить информацию о предмете - {item.Id}");
+                    logger.LogError(ex, ex.Message);
+                    logger.LogError(ex, ex.StackTrace);
                     i++;
                 }
 
@@ -139,9 +134,9 @@ namespace Withdraw.BLL.Services
                 }
                 catch(Exception ex)
                 {
-                    _logger.LogError($"Не смог получить информацию о выводе - {history.Item!.Id}");
-                    _logger.LogError(ex, ex.Message);
-                    _logger.LogError(ex, ex.StackTrace);
+                    logger.LogError($"Не смог получить информацию о выводе - {history.Item!.Id}");
+                    logger.LogError(ex, ex.Message);
+                    logger.LogError(ex, ex.StackTrace);
                     i++;
                 }
 

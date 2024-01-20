@@ -7,43 +7,36 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Game.BLL.Services
 {
-    public class UserPromocodeService : IUserPromocodeService
+    public class UserPromocodeService(ApplicationDbContext context) : IUserPromocodeService
     {
-        private readonly ApplicationDbContext _context;
-
-        public UserPromocodeService(ApplicationDbContext context)
-        {
-            _context = context;
-        }
-
         public async Task<UserPromocode?> GetAsync(Guid id, CancellationToken cancellation = default) => 
-            await _context.UserPromocodes
+            await context.UserPromocodes
             .AsNoTracking()
             .FirstOrDefaultAsync(ur => ur.Id == id, cancellation);
 
         public async Task CreateAsync(UserPromocodeTemplate template, CancellationToken cancellation = default)
         {
-            if (await _context.UserPromocodes.AnyAsync(up => up.UserId == template.UserId, cancellation))
+            if (await context.UserPromocodes.AnyAsync(up => up.UserId == template.UserId, cancellation))
                 throw new BadRequestException("Уже используется промокод");
 
-            await _context.UserPromocodes.AddAsync(new UserPromocode
+            await context.UserPromocodes.AddAsync(new UserPromocode
             {
                 Id = template.Id,
                 Discount = template.Discount,
                 UserId = template.UserId,
             }, cancellation);
-            await _context.SaveChangesAsync(cancellation);
+            await context.SaveChangesAsync(cancellation);
         }
 
         public async Task UpdateAsync(UserPromocodeTemplate template, CancellationToken cancellation = default)
         {
-            var entityOld = await _context.UserPromocodes
+            var entityOld = await context.UserPromocodes
                 .FirstOrDefaultAsync(ur => ur.Id == template.Id && ur.UserId == template.UserId, cancellation) ??
                 throw new NotFoundException("Промокод пользователя не найден");
 
             entityOld.Discount = template.Discount;
 
-            await _context.SaveChangesAsync(cancellation);
+            await context.SaveChangesAsync(cancellation);
         }
     }
 }

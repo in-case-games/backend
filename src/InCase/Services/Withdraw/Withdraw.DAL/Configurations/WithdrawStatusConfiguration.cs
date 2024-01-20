@@ -6,11 +6,12 @@ namespace Withdraw.DAL.Configurations
 {
     internal class WithdrawStatusConfiguration : BaseEntityConfiguration<WithdrawStatus>
     {
-        private static readonly List<WithdrawStatus> Statuses = new() {
-            new WithdrawStatus { Name = "purchase" }, new WithdrawStatus { Name = "transfer" }, 
+        private static readonly List<WithdrawStatus> Statuses =
+        [
+            new WithdrawStatus { Name = "purchase" }, new WithdrawStatus { Name = "transfer" },
             new WithdrawStatus { Name = "given" }, new WithdrawStatus { Name = "cancel" },
             new WithdrawStatus { Name = "recorded" }, new WithdrawStatus { Name = "blocked" }
-        };
+        ];
 
         public override void Configure(EntityTypeBuilder<WithdrawStatus> builder)
         {

@@ -7,18 +7,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Identity.BLL.Services
 {
-    public class UserRoleService : IUserRoleService
+    public class UserRoleService(ApplicationDbContext context) : IUserRoleService
     {
-        private readonly ApplicationDbContext _context;
-
-        public UserRoleService(ApplicationDbContext context)
-        {
-            _context = context;
-        }
-
         public async Task<UserRoleResponse> GetAsync(Guid id, CancellationToken cancellation = default)
         {
-            var role = await _context.Roles
+            var role = await context.Roles
                 .AsNoTracking()
                 .FirstOrDefaultAsync(ur => ur.Id == id, cancellation) ??
                 throw new NotFoundException("Роль не найдена");
@@ -28,7 +21,7 @@ namespace Identity.BLL.Services
 
         public async Task<List<UserRoleResponse>> GetAsync(CancellationToken cancellation = default)
         {
-            var roles = await _context.Roles
+            var roles = await context.Roles
                 .AsNoTracking()
                 .ToListAsync(cancellation);
 

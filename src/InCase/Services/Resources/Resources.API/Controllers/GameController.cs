@@ -9,21 +9,14 @@ namespace Resources.API.Controllers
 {
     [Route("api/game")]
     [ApiController]
-    public class GameController : ControllerBase
+    public class GameController(IGameService gameService) : ControllerBase
     {
-        private readonly IGameService _gameService;
-
-        public GameController(IGameService gameService)
-        {
-            _gameService = gameService;
-        }
-
         [ProducesResponseType(typeof(ApiResult<List<GameResponse>>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> Get(CancellationToken cancellation)
         {
-            var response = await _gameService.GetAsync(cancellation);
+            var response = await gameService.GetAsync(cancellation);
 
             return Ok(ApiResult<List<GameResponse>>.Ok(response));
         }
@@ -33,7 +26,7 @@ namespace Resources.API.Controllers
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> Get(Guid id, CancellationToken cancellation)
         {
-            var response = await _gameService.GetAsync(id, cancellation);
+            var response = await gameService.GetAsync(id, cancellation);
 
             return Ok(ApiResult<GameResponse>.Ok(response));
         }
@@ -43,7 +36,7 @@ namespace Resources.API.Controllers
         [HttpGet("name/{name}")]
         public async Task<IActionResult> Get(string name, CancellationToken cancellation)
         {
-            var response = await _gameService.GetAsync(name, cancellation);
+            var response = await gameService.GetAsync(name, cancellation);
 
             return Ok(ApiResult<GameResponse>.Ok(response));
         }

@@ -6,24 +6,17 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Game.BLL.MassTransit.Consumers
 {
-    public class UserPaymentConsumer : IConsumer<UserPaymentTemplate>
+    public class UserPaymentConsumer(ApplicationDbContext context) : IConsumer<UserPaymentTemplate>
     {
-        private readonly ApplicationDbContext _context;
-
-        public UserPaymentConsumer(ApplicationDbContext context)
+        public async Task Consume(ConsumeContext<UserPaymentTemplate> context1)
         {
-            _context = context;
-        }
-
-        public async Task Consume(ConsumeContext<UserPaymentTemplate> context)
-        {
-            var info = await _context.AdditionalInfos
-                .FirstOrDefaultAsync(uai => uai.UserId == context.Message.UserId) ??
+            var info = await context.AdditionalInfos
+                .FirstOrDefaultAsync(uai => uai.UserId == context1.Message.UserId) ??
                 throw new NotFoundException("Пользователь не найден");
 
-            info.Balance += context.Message.Amount;
+            info.Balance += context1.Message.Amount;
 
-            await _context.SaveChangesAsync();
+            await context.SaveChangesAsync();
         }
     }
 }

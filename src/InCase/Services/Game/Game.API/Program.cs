@@ -100,62 +100,63 @@ builder.Services.AddMassTransit(x =>
     x.AddConsumer<UserInventoryBackConsumer>();
     x.SetKebabCaseEndpointNameFormatter();
 
-    x.AddBus(provider => Bus.Factory.CreateUsingRabbitMq(cfg =>
+    x.UsingRabbitMq((context, cfg) =>
     {
         cfg.Host(new Uri(builder.Configuration["MassTransit:Uri"]!), h =>
         {
             h.Username(builder.Configuration["MassTransit:Username"]!);
             h.Password(builder.Configuration["MassTransit:Password"]!);
         });
-        cfg.ReceiveEndpoint(ep =>
+        cfg.ReceiveEndpoint(e =>
         {
-            ep.PrefetchCount = 16;
-            ep.UseMessageRetry(r => r.Interval(4, 100));
-            ep.ConfigureConsumer<UserConsumer>(provider);
+            e.PrefetchCount = 16;
+            e.UseMessageRetry(r => r.Interval(4, 100));
+            e.ConfigureConsumer<UserConsumer>(context);
         });
-        cfg.ReceiveEndpoint(ep =>
+        cfg.ReceiveEndpoint(e =>
         {
-            ep.PrefetchCount = 16;
-            ep.UseMessageRetry(r => r.Interval(4, 100));
-            ep.ConfigureConsumer<UserPromocodeConsumer>(provider);
+            e.PrefetchCount = 16;
+            e.UseMessageRetry(r => r.Interval(4, 100));
+            e.ConfigureConsumer<UserPromocodeConsumer>(context);
         });
-        cfg.ReceiveEndpoint(ep =>
+        cfg.ReceiveEndpoint(e =>
         {
-            ep.PrefetchCount = 16;
-            ep.UseMessageRetry(r => r.Interval(4, 100));
-            ep.ConfigureConsumer<UserPaymentConsumer>(provider);
+            e.PrefetchCount = 16;
+            e.UseMessageRetry(r => r.Interval(4, 100));
+            e.ConfigureConsumer<UserPaymentConsumer>(context);
         });
-        cfg.ReceiveEndpoint(ep =>
+        cfg.ReceiveEndpoint(e =>
         {
-            ep.PrefetchCount = 16;
-            ep.UseMessageRetry(r => r.Interval(4, 100));
-            ep.ConfigureConsumer<GameItemConsumer>(provider);
+            e.PrefetchCount = 16;
+            e.UseMessageRetry(r => r.Interval(4, 100));
+            e.ConfigureConsumer<GameItemConsumer>(context);
         });
-        cfg.ReceiveEndpoint(ep =>
+        cfg.ReceiveEndpoint(e =>
         {
-            ep.PrefetchCount = 16;
-            ep.UseMessageRetry(r => r.Interval(4, 100));
-            ep.ConfigureConsumer<LootBoxBannerConsumer>(provider);
+            e.PrefetchCount = 16;
+            e.UseMessageRetry(r => r.Interval(4, 100));
+            e.ConfigureConsumer<LootBoxBannerConsumer>(context);
         });
-        cfg.ReceiveEndpoint(ep =>
+        cfg.ReceiveEndpoint(e =>
         {
-            ep.PrefetchCount = 16;
-            ep.UseMessageRetry(r => r.Interval(4, 100));
-            ep.ConfigureConsumer<LootBoxConsumer>(provider);
+            e.PrefetchCount = 16;
+            e.UseMessageRetry(r => r.Interval(4, 100));
+            e.ConfigureConsumer<LootBoxConsumer>(context);
         });
-        cfg.ReceiveEndpoint(ep =>
+        cfg.ReceiveEndpoint(e =>
         {
-            ep.PrefetchCount = 16;
-            ep.UseMessageRetry(r => r.Interval(4, 100));
-            ep.ConfigureConsumer<LootBoxInventoryConsumer>(provider);
+            e.PrefetchCount = 16;
+            e.UseMessageRetry(r => r.Interval(4, 100));
+            e.ConfigureConsumer<LootBoxInventoryConsumer>(context);
         });
-        cfg.ReceiveEndpoint(ep =>
+        cfg.ReceiveEndpoint(e =>
         {
-            ep.PrefetchCount = 16;
-            ep.UseMessageRetry(r => r.Interval(4, 100));
-            ep.ConfigureConsumer<UserInventoryBackConsumer>(provider);
+            e.PrefetchCount = 16;
+            e.UseMessageRetry(r => r.Interval(4, 100));
+            e.ConfigureConsumer<UserInventoryBackConsumer>(context);
         });
-    }));
+        cfg.ConfigureEndpoints(context);
+    });
 });
 
 builder.Services.AddControllers();

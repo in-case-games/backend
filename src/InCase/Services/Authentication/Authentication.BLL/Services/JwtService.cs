@@ -9,15 +9,8 @@ using System.Text;
 
 namespace Authentication.BLL.Services
 {
-    public class JwtService : IJwtService
+    public class JwtService(IConfiguration configuration) : IJwtService
     {
-        private readonly IConfiguration _configuration;
-
-        public JwtService(IConfiguration configuration)
-        {
-            _configuration = configuration;
-        }
-
         /// <summary>
         ///  Reads and validates a 'JSON Web Token' (JWT) and get claims
         ///  </summary>
@@ -28,7 +21,7 @@ namespace Authentication.BLL.Services
         ///  <returns>A <see cref="ClaimsPrincipal"/> from the JWT. Does not include claims found in the JWT header.</returns>
         public ClaimsPrincipal GetClaimsToken(string token)
         {
-            var secret = Encoding.ASCII.GetBytes(_configuration["JWT:Secret"]!);
+            var secret = Encoding.ASCII.GetBytes(configuration["JWT:Secret"]!);
             var parameters = new TokenValidationParameters
             {
                 ValidateAudience = false,
@@ -62,7 +55,7 @@ namespace Authentication.BLL.Services
         public string CreateEmailToken(in User user)
         {
             var claims = GenerateTokenClaims(in user, "email");
-            var expiration = TimeSpan.FromMinutes(double.Parse(_configuration["JWT:EmailTokenValidityInMinutes"]!));
+            var expiration = TimeSpan.FromMinutes(double.Parse(configuration["JWT:EmailTokenValidityInMinutes"]!));
             var token = GenerateToken(claims, expiration);
 
             return new JwtSecurityTokenHandler().WriteToken(token);
@@ -75,9 +68,9 @@ namespace Authentication.BLL.Services
                     "The role of the user when creating the token is mandatory");
 
             var accessToken = GenerateToken(GenerateAccessTokenClaims(in user), 
-                TimeSpan.FromMinutes(double.Parse(_configuration["JWT:AccessTokenValidityInMinutes"]!)));
+                TimeSpan.FromMinutes(double.Parse(configuration["JWT:AccessTokenValidityInMinutes"]!)));
             var refreshToken = GenerateToken(GenerateTokenClaims(in user, "refresh"), 
-                TimeSpan.FromDays(double.Parse(_configuration["JWT:RefreshTokenValidityInDays"]!)));
+                TimeSpan.FromDays(double.Parse(configuration["JWT:RefreshTokenValidityInDays"]!)));
 
             return new TokensResponse
             {
@@ -90,16 +83,16 @@ namespace Authentication.BLL.Services
 
         private JwtSecurityToken GenerateToken(Claim[] claims, TimeSpan expiration)
         {
-            if (claims == null) throw new ArgumentNullException(nameof(claims));
-
-            return new JwtSecurityToken(_configuration["JWT:ValidIssuer"],
-                _configuration["JWT:ValidAudience"]!,
-                claims,
-                expires: DateTime.UtcNow.Add(expiration),
-                signingCredentials: new SigningCredentials(
-                    new SymmetricSecurityKey(
-                        Encoding.ASCII.GetBytes(_configuration["JWT:Secret"]!)),
-                    SecurityAlgorithms.HmacSha512));
+            return claims == null ?
+                throw new ArgumentNullException(nameof(claims)) :
+                new JwtSecurityToken(
+                    configuration["JWT:ValidIssuer"],
+                    configuration["JWT:ValidAudience"]!,
+                    claims,
+                    expires: DateTime.UtcNow.Add(expiration),
+                    signingCredentials: new SigningCredentials(
+                        new SymmetricSecurityKey(Encoding.ASCII.GetBytes(configuration["JWT:Secret"]!)),
+                        SecurityAlgorithms.HmacSha512));
         }
 
         private static Claim[] GenerateAccessTokenClaims(in User user) => 

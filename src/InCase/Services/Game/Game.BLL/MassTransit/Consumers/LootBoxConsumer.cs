@@ -4,22 +4,15 @@ using MassTransit;
 
 namespace Game.BLL.MassTransit.Consumers
 {
-    public class LootBoxConsumer : IConsumer<LootBoxTemplate>
+    public class LootBoxConsumer(ILootBoxService boxService) : IConsumer<LootBoxTemplate>
     {
-        private readonly ILootBoxService _boxService;
-
-        public LootBoxConsumer(ILootBoxService boxService)
-        {
-            _boxService = boxService;
-        }
-
         public async Task Consume(ConsumeContext<LootBoxTemplate> context)
         {
-            var box = await _boxService.GetAsync(context.Message.Id);
+            var box = await boxService.GetAsync(context.Message.Id);
 
-            if (box is null) await _boxService.CreateAsync(context.Message);
-            else if (context.Message.IsDeleted) await _boxService.DeleteAsync(context.Message.Id);
-            else await _boxService.UpdateAsync(context.Message);
+            if (box is null) await boxService.CreateAsync(context.Message);
+            else if (context.Message.IsDeleted) await boxService.DeleteAsync(context.Message.Id);
+            else await boxService.UpdateAsync(context.Message);
         }
     }
 }

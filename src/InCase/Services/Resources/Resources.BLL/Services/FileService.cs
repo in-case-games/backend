@@ -6,7 +6,7 @@ namespace Resources.BLL.Services
 {
     public static class FileService
     {
-        private const string PathUri = @"/static/images/";
+        private const string PathUri = "/static/images/";
 
         public static void UploadImageBase64(string base64, string filePath, string fileName)
         {
@@ -26,20 +26,6 @@ namespace Resources.BLL.Services
             catch (Exception)
             {
                 throw new ConflictException($"Не удалось создать файл {fileName}");
-            }
-        }
-
-        public static void RemoveFile(string fileName, string filePath)
-        {
-            var absolutePath = PathUri + filePath + fileName;
-
-            try
-            {
-                File.Delete(absolutePath);
-            }
-            catch (Exception)
-            {
-                throw new ConflictException($"Не удалось удалить файл {fileName}");
             }
         }
 

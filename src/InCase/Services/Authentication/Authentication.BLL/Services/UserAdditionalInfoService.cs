@@ -6,22 +6,15 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Authentication.BLL.Services
 {
-    public class UserAdditionalInfoService : IUserAdditionalInfoService
+    public class UserAdditionalInfoService(ApplicationDbContext context) : IUserAdditionalInfoService
     {
-        private readonly ApplicationDbContext _context;
-
-        public UserAdditionalInfoService(ApplicationDbContext context)
-        {
-            _context = context;
-        }
-
         public async Task UpdateAsync(UserAdditionalInfoTemplate template, CancellationToken cancellationToken = default)
         {
-            var info = await _context.AdditionalInfos
+            var info = await context.AdditionalInfos
                 .FirstOrDefaultAsync(uai => uai.UserId == template.UserId, cancellationToken) ?? 
                 throw new NotFoundException("Пользователь не найден");
 
-            var role = await _context.Roles
+            var role = await context.Roles
                 .AsNoTracking()
                 .FirstOrDefaultAsync(ur => ur.Name == template.RoleName, cancellationToken);
 
@@ -29,7 +22,7 @@ namespace Authentication.BLL.Services
 
             if(role is not null) info.RoleId = role.Id;
 
-            await _context.SaveChangesAsync(cancellationToken);
+            await context.SaveChangesAsync(cancellationToken);
         }
     }
 }

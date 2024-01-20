@@ -2,8 +2,5 @@
 
 namespace Identity.BLL.Exceptions
 {
-    public class ConflictException : StatusCodeException
-    {
-        public ConflictException(string message) : base(ErrorCodes.Conflict, message) { }
-    }
+    public class ConflictException(string message) : StatusCodeException(ErrorCodes.Conflict, message);
 }

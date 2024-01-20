@@ -7,64 +7,57 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EmailSender.BLL.Services
 {
-    public class UserService : IUserService
+    public class UserService(ApplicationDbContext context) : IUserService
     {
-        private readonly ApplicationDbContext _context;
-
-        public UserService(ApplicationDbContext context)
-        {
-            _context = context;
-        }
-
         public async Task<User?> GetAsync(Guid id, CancellationToken cancellationToken = default) => 
-            await _context.Users
+            await context.Users
             .Include(u => u.AdditionalInfo)
             .AsNoTracking()
             .FirstOrDefaultAsync(u => u.Id == id, cancellationToken);
 
         public async Task<User?> GetAsync(string email, CancellationToken cancellationToken = default) => 
-            await _context.Users
+            await context.Users
             .Include(u => u.AdditionalInfo)
             .AsNoTracking()
             .FirstOrDefaultAsync(u => u.Email == email, cancellationToken);
 
         public async Task CreateAsync(UserTemplate template, CancellationToken cancellationToken = default)
         {
-            if (await _context.Users.AnyAsync(u => u.Id == template.Id || u.Email == template.Email, cancellationToken))
+            if (await context.Users.AnyAsync(u => u.Id == template.Id || u.Email == template.Email, cancellationToken))
                 throw new ForbiddenException("Пользователь существует");
 
-            await _context.Users.AddAsync(new User
+            await context.Users.AddAsync(new User
             {
                 Id = template.Id,
                 Email = template.Email,
             }, cancellationToken);
-            await _context.AdditionalInfos.AddAsync(new UserAdditionalInfo
+            await context.AdditionalInfos.AddAsync(new UserAdditionalInfo
             {
                 IsNotifyEmail = true,
                 UserId = template.Id,
             }, cancellationToken);
-            await _context.SaveChangesAsync(cancellationToken);
+            await context.SaveChangesAsync(cancellationToken);
         }
 
         public async Task UpdateAsync(UserTemplate template, CancellationToken cancellationToken = default)
         {
-            var user = await _context.Users
+            var user = await context.Users
                 .FirstOrDefaultAsync(u => u.Id == template.Id, cancellationToken) ??
                 throw new NotFoundException("Пользователь не найден");
 
             user.Email = template.Email;
 
-            await _context.SaveChangesAsync(cancellationToken);
+            await context.SaveChangesAsync(cancellationToken);
         }
 
         public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            var user = await _context.Users
+            var user = await context.Users
                 .FirstOrDefaultAsync(u => u.Id == id, cancellationToken) ??
                 throw new NotFoundException("Пользователь не найден");
 
-            _context.Users.Remove(user);
-            await _context.SaveChangesAsync(cancellationToken);
+            context.Users.Remove(user);
+            await context.SaveChangesAsync(cancellationToken);
         }
     }
 }

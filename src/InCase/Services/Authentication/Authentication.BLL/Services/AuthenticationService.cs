@@ -11,25 +11,14 @@ using System.Security.Claims;
 
 namespace Authentication.BLL.Services
 {
-    public class AuthenticationService : IAuthenticationService
+    public class AuthenticationService(
+        IJwtService jwtService, 
+        ApplicationDbContext context, 
+        BasePublisher publisher) : IAuthenticationService
     {
-        private readonly IJwtService _jwtService;
-        private readonly ApplicationDbContext _context;
-        private readonly BasePublisher _publisher;
-
-        public AuthenticationService(
-            IJwtService jwtService,
-            ApplicationDbContext context, 
-            BasePublisher publisher)
-        {
-            _context = context;
-            _jwtService = jwtService;
-            _publisher = publisher;
-        }
-
         public async Task SignInAsync(UserRequest request, CancellationToken cancellationToken = default)
         {
-            var user = await _context.Users
+            var user = await context.Users
                 .Include(u => u.AdditionalInfo)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(u =>
@@ -41,7 +30,7 @@ namespace Authentication.BLL.Services
 
             await CheckUserForBanAsync(user.Id, cancellationToken);
 
-            await _publisher.SendAsync(new EmailTemplate
+            await publisher.SendAsync(new EmailTemplate
             {
                 Email = user.Email!,
                 IsRequiredMessage = true,
@@ -53,7 +42,7 @@ namespace Authentication.BLL.Services
                         Description = $"Подтвердите вход в аккаунт. " +
                         $"Если это были не вы, то срочно измените пароль в настройках вашего аккаунта, " +
                         $"вас автоматически отключит со всех устройств.",
-                        ButtonLink = $"email/confirm/account?token={_jwtService.CreateEmailToken(user)}"
+                        ButtonLink = $"email/confirm/account?token={jwtService.CreateEmailToken(user)}"
                     } : 
                     new EmailBodyTemplate
                     {
@@ -61,7 +50,7 @@ namespace Authentication.BLL.Services
                         Description = $"Для завершения этапа регистрации, " +
                         $"вам необходимо нажать на кнопку ниже для подтверждения почты. " +
                         $"Если это были не вы, проигнорируйте это сообщение.",
-                        ButtonLink = $"email/confirm/account?token={_jwtService.CreateEmailToken(user)}"
+                        ButtonLink = $"email/confirm/account?token={jwtService.CreateEmailToken(user)}"
                     }
             }, cancellationToken);
         }
@@ -72,7 +61,7 @@ namespace Authentication.BLL.Services
                 throw new BadRequestException("Некорректный логин");
             if (!ValidationService.CheckCorrectEmail(request.Email))
                 throw new BadRequestException("Некорректный email");
-            if (await _context.Users.AnyAsync(u => u.Email == request.Email || u.Login == request.Login, cancellationToken))
+            if (await context.Users.AnyAsync(u => u.Email == request.Email || u.Login == request.Login, cancellationToken))
                 throw new ConflictException("Пользователь уже существует");
 
             var user = new User
@@ -84,21 +73,21 @@ namespace Authentication.BLL.Services
 
             CreateNewPassword(ref user, request.Password);
 
-            var role = await _context.Roles
+            var role = await context.Roles
                 .AsNoTracking()
                 .FirstAsync(ur => ur.Name == "user", cancellationToken);
 
-            await _context.Users.AddAsync(user, cancellationToken);
-            await _context.AdditionalInfos.AddAsync(new UserAdditionalInfo
+            await context.Users.AddAsync(user, cancellationToken);
+            await context.AdditionalInfos.AddAsync(new UserAdditionalInfo
             {
                 RoleId = role.Id,
                 UserId = user.Id,
                 DeletionDate = DateTime.UtcNow + TimeSpan.FromDays(1),
                 IsConfirmed = false,
             }, cancellationToken);
-            await _context.SaveChangesAsync(cancellationToken);
-            await _publisher.SendAsync(user.ToTemplate(false), cancellationToken);
-            await _publisher.SendAsync(new EmailTemplate()
+            await context.SaveChangesAsync(cancellationToken);
+            await publisher.SendAsync(user.ToTemplate(false), cancellationToken);
+            await publisher.SendAsync(new EmailTemplate()
             {
                 Email = user.Email!,
                 IsRequiredMessage = true,
@@ -109,7 +98,7 @@ namespace Authentication.BLL.Services
                     Description = $"Для завершения этапа регистрации, " +
                     $"вам необходимо нажать на кнопку ниже для подтверждения почты. " +
                     $"Если это были не вы, проигнорируйте это сообщение.",
-                    ButtonLink = $"email/confirm/account?token={_jwtService.CreateEmailToken(user)}"
+                    ButtonLink = $"email/confirm/account?token={jwtService.CreateEmailToken(user)}"
                 }
             }, cancellationToken);
 
@@ -120,7 +109,7 @@ namespace Authentication.BLL.Services
         {
             var user = await GetUserFromTokenAsync(token, "refresh", cancellationToken);
 
-            var info = await _context.AdditionalInfos
+            var info = await context.AdditionalInfos
                 .AsNoTracking()
                 .FirstOrDefaultAsync(uai => uai.UserId == user.Id, cancellationToken) ??
                 throw new NotFoundException("Пользователь не найден");
@@ -130,17 +119,17 @@ namespace Authentication.BLL.Services
 
             await CheckUserForBanAsync(user.Id, cancellationToken);
 
-            return _jwtService.CreateTokenPair(in user);
+            return jwtService.CreateTokenPair(in user);
         }
 
         public async Task<User> GetUserFromTokenAsync(string token, string type, CancellationToken cancellationToken = default)
         {
-            var claims = _jwtService.GetClaimsToken(token);
+            var claims = jwtService.GetClaimsToken(token);
 
             var id = claims.Claims
                 .Single(c => c.Type == ClaimTypes.NameIdentifier).Value;
 
-            var user = await _context.Users
+            var user = await context.Users
                 .Include(u => u.AdditionalInfo)
                 .Include(u => u.AdditionalInfo!.Role)
                 .AsNoTracking()
@@ -165,7 +154,7 @@ namespace Authentication.BLL.Services
 
         private async Task CheckUserForBanAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            var ban = await _context.Restrictions
+            var ban = await context.Restrictions
                 .AsNoTracking()
                 .FirstOrDefaultAsync(ur => ur.UserId == id, cancellationToken);
 
@@ -174,8 +163,8 @@ namespace Authentication.BLL.Services
                 if (ban.ExpirationDate > DateTime.UtcNow)
                     throw new ForbiddenException($"Вход запрещён до {ban.ExpirationDate}.");
 
-                _context.Restrictions.Remove(ban);
-                await _context.SaveChangesAsync(cancellationToken);
+                context.Restrictions.Remove(ban);
+                await context.SaveChangesAsync(cancellationToken);
             }
         }
     }

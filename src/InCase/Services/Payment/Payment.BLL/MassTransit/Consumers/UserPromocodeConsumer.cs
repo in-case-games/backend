@@ -4,23 +4,16 @@ using Payment.BLL.Interfaces;
 
 namespace Payment.BLL.MassTransit.Consumers
 {
-    public class UserPromocodeConsumer : IConsumer<UserPromocodeTemplate>
+    public class UserPromocodeConsumer(IUserPromocodeService promocodeService) : IConsumer<UserPromocodeTemplate>
     {
-        private readonly IUserPromocodeService _promocodeService;
-
-        public UserPromocodeConsumer(IUserPromocodeService promocodeService)
-        {
-            _promocodeService = promocodeService;
-        }
-
         public async Task Consume(ConsumeContext<UserPromocodeTemplate> context)
         {
             if (context.Message.Type?.Name == "balance")
             {
-                var userPromocode = await _promocodeService.GetAsync(context.Message.Id, context.Message.UserId);
+                var userPromocode = await promocodeService.GetAsync(context.Message.Id, context.Message.UserId);
 
-                if (userPromocode is null) await _promocodeService.CreateAsync(context.Message);
-                else await _promocodeService.UpdateAsync(context.Message);
+                if (userPromocode is null) await promocodeService.CreateAsync(context.Message);
+                else await promocodeService.UpdateAsync(context.Message);
             }
         }
     }

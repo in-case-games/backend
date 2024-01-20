@@ -4,12 +4,10 @@ using System.Reflection;
 
 namespace EmailSender.DAL.Data
 {
-    public class ApplicationDbContext : DbContext
+    public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
     {
         public DbSet<User> Users => Set<User>();
         public DbSet<UserAdditionalInfo> AdditionalInfos => Set<UserAdditionalInfo>();
-
-        public ApplicationDbContext(DbContextOptions options) : base(options) { }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

@@ -6,10 +6,11 @@ namespace Authentication.DAL.Configurations
 {
     internal class UserRoleConfiguration : BaseEntityConfiguration<UserRole>
     {
-        private readonly List<UserRole> _roles = new() {
+        private readonly List<UserRole> _roles =
+        [
             new UserRole { Name = "user" }, new UserRole { Name = "admin" },
-            new UserRole { Name = "owner" }, new UserRole { Name = "bot" },
-        };
+            new UserRole { Name = "owner" }, new UserRole { Name = "bot" }
+        ];
 
         public override void Configure(EntityTypeBuilder<UserRole> builder)
         {
@@ -23,8 +24,7 @@ namespace Authentication.DAL.Configurations
             builder.HasIndex(ur => ur.Name)
                 .IsUnique();
 
-            foreach (var role in _roles)
-                builder.HasData(role);
+            foreach (var role in _roles) builder.HasData(role);
         }
     }
 }

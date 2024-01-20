@@ -11,22 +11,16 @@ namespace EmailSender.API.Controllers
 {
     [Route("api/user")]
     [ApiController]
-    public class UserController : ControllerBase
+    public class UserController(IUserAdditionalInfoService userService) : ControllerBase
     {
-        private readonly IUserAdditionalInfoService _userService;
         private Guid UserId => Guid.Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
-
-        public UserController(IUserAdditionalInfoService userService)
-        {
-            _userService = userService;
-        }
 
         [ProducesResponseType(typeof(ApiResult<UserAdditionalInfoResponse>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("{id:guid}/is-notify")]
         public async Task<IActionResult> GetByUserId(Guid id, CancellationToken cancellationToken)
         {
-            var response = await _userService.GetByUserIdAsync(id, cancellationToken);
+            var response = await userService.GetByUserIdAsync(id, cancellationToken);
 
             return Ok(ApiResult<UserAdditionalInfoResponse>.Ok(response));
         }
@@ -36,7 +30,7 @@ namespace EmailSender.API.Controllers
         [HttpGet("is-notify")]
         public async Task<IActionResult> Get(CancellationToken cancellationToken)
         {
-            var response = await _userService.GetByUserIdAsync(UserId, cancellationToken);
+            var response = await userService.GetByUserIdAsync(UserId, cancellationToken);
 
             return Ok(ApiResult<UserAdditionalInfoResponse>.Ok(response));
         }
@@ -46,7 +40,7 @@ namespace EmailSender.API.Controllers
         [HttpGet("is-notify/{isNotify:bool}")]
         public async Task<IActionResult> ChangeNotifyEmail(bool isNotify, CancellationToken cancellationToken)
         {
-            var response = await _userService.UpdateNotifyEmailAsync(UserId, isNotify, cancellationToken);
+            var response = await userService.UpdateNotifyEmailAsync(UserId, isNotify, cancellationToken);
 
             return Ok(ApiResult<UserAdditionalInfoResponse>.Ok(response));
         }
@@ -56,7 +50,7 @@ namespace EmailSender.API.Controllers
         [HttpGet("{userId:guid}/is-notify/{isNotify:bool}/admin")]
         public async Task<IActionResult> ChangeNotifyEmailByAdmin(Guid userId, bool isNotify, CancellationToken cancellationToken)
         {
-            var response = await _userService.UpdateNotifyEmailAsync(userId, isNotify, cancellationToken);
+            var response = await userService.UpdateNotifyEmailAsync(userId, isNotify, cancellationToken);
 
             return Ok(ApiResult<UserAdditionalInfoResponse>.Ok(response));
         }

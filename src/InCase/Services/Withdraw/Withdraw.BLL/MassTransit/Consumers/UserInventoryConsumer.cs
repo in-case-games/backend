@@ -4,20 +4,13 @@ using Withdraw.BLL.Interfaces;
 
 namespace Withdraw.BLL.MassTransit.Consumers
 {
-    public class UserInventoryConsumer : IConsumer<UserInventoryTemplate>
+    public class UserInventoryConsumer(IUserInventoryService inventoryService) : IConsumer<UserInventoryTemplate>
     {
-        private readonly IUserInventoryService _inventoryService;
-
-        public UserInventoryConsumer(IUserInventoryService inventoryService)
-        {
-            _inventoryService = inventoryService;
-        }
-
         public async Task Consume(ConsumeContext<UserInventoryTemplate> context)
         {
-            var inventory = await _inventoryService.GetByConsumerAsync(context.Message.Id);
+            var inventory = await inventoryService.GetByConsumerAsync(context.Message.Id);
 
-            if(inventory is null) await _inventoryService.CreateAsync(context.Message);
+            if(inventory is null) await inventoryService.CreateAsync(context.Message);
         }
     }
 }

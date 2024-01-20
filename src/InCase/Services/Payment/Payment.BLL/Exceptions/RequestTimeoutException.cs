@@ -2,8 +2,5 @@
 
 namespace Payment.BLL.Exceptions
 {
-    public class RequestTimeoutException : StatusCodeException
-    {
-        public RequestTimeoutException(string message) : base(ErrorCodes.RequestTimeout, message) { }
-    }
+    public class RequestTimeoutException(string message) : StatusCodeException(ErrorCodes.RequestTimeout, message);
 }

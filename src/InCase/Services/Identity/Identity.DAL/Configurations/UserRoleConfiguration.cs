@@ -6,10 +6,11 @@ namespace Identity.DAL.Configurations
 {
     internal class UserRoleConfiguration : BaseEntityConfiguration<UserRole>
     {
-        private readonly List<UserRole> _roles = new() {
-            new UserRole { Name = "user" }, new UserRole { Name = "admin" }, 
-            new UserRole { Name = "owner" }, new UserRole { Name = "bot" },
-        };
+        private readonly List<UserRole> _roles =
+        [
+            new UserRole { Name = "user" }, new UserRole { Name = "admin" },
+            new UserRole { Name = "owner" }, new UserRole { Name = "bot" }
+        ];
 
         public override void Configure(EntityTypeBuilder<UserRole> builder)
         {

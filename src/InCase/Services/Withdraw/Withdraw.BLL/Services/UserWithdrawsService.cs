@@ -11,25 +11,14 @@ using Withdraw.DAL.Entities;
 
 namespace Withdraw.BLL.Services
 {
-    public class UserWithdrawsService : IUserWithdrawsService
+    public class UserWithdrawsService(
+        ApplicationDbContext context, 
+        BasePublisher publisher, 
+        ILogger<UserWithdrawsService> logger) : IUserWithdrawsService
     {
-        private readonly ApplicationDbContext _context;
-        private readonly BasePublisher _publisher;
-        private readonly ILogger<UserWithdrawsService> _logger;
-
-        public UserWithdrawsService(
-            ApplicationDbContext context, 
-            BasePublisher publisher,
-            ILogger<UserWithdrawsService> logger)
-        {
-            _logger = logger;
-            _publisher = publisher;
-            _context = context;
-        }
-
         public async Task<UserHistoryWithdrawResponse> GetAsync(Guid id, CancellationToken cancellation = default)
         {
-            var withdraw = await _context.Withdraws
+            var withdraw = await context.Withdraws
                 .Include(uhw => uhw.Status)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(uhw => uhw.Id == id, cancellation) ?? 
@@ -42,10 +31,10 @@ namespace Withdraw.BLL.Services
         {
             if (count is <= 0 or >= 10000)
                 throw new BadRequestException("Размер выборки должен быть в пределе 1-10000");
-            if (!await _context.Users.AnyAsync(u => u.Id == userId, cancellation))
+            if (!await context.Users.AnyAsync(u => u.Id == userId, cancellation))
                 throw new NotFoundException("Пользователь не найден");
 
-            var withdraws = await _context.Withdraws
+            var withdraws = await context.Withdraws
                 .Include(uhw => uhw.Status)
                 .AsNoTracking()
                 .Where(uhw => uhw.UserId == userId)
@@ -61,7 +50,7 @@ namespace Withdraw.BLL.Services
             if (count is <= 0 or >= 10000) 
                 throw new BadRequestException("Размер выборки должен быть в пределе 1-10000");
 
-            var withdraws = await _context.Withdraws
+            var withdraws = await context.Withdraws
                 .Include(uhw => uhw.Status)
                 .AsNoTracking()
                 .OrderByDescending(uhw => uhw.Date)
@@ -73,7 +62,7 @@ namespace Withdraw.BLL.Services
 
         public async Task<UserInventoryResponse> TransferAsync(Guid id, Guid userId, CancellationToken cancellation = default)
         {
-            var withdraw = await _context.Withdraws
+            var withdraw = await context.Withdraws
                 .Include(uhw => uhw.Status)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(uhw => uhw.Id == id && uhw.UserId == userId, cancellation) ??
@@ -90,16 +79,16 @@ namespace Withdraw.BLL.Services
                 UserId = userId
             };
 
-            _context.Withdraws.Remove(withdraw);
-            await _context.Inventories.AddAsync(inventory, cancellation);
-            await _context.SaveChangesAsync(cancellation);
+            context.Withdraws.Remove(withdraw);
+            await context.Inventories.AddAsync(inventory, cancellation);
+            await context.SaveChangesAsync(cancellation);
 
-            await _publisher.SendAsync(new SiteStatisticsAdminTemplate
+            await publisher.SendAsync(new SiteStatisticsAdminTemplate
             {
                 FundsUsersInventories = inventory.FixedCost
             }, cancellation);
 
-            _logger.LogInformation($"Items successfully transferred. UserId: {userId}. UserHistoryWithdrawId: {id}");
+            logger.LogInformation($"Items successfully transferred. UserId: {userId}. UserHistoryWithdrawId: {id}");
 
             return inventory.ToResponse();
         }

@@ -42,9 +42,9 @@ namespace Identity.BLL.Helpers
             IsDeleted = isDeleted
         };
 
-        public static UserRestriction ToEntity(this UserRestrictionRequest request, bool IsNewGuid = false) => new()
+        public static UserRestriction ToEntity(this UserRestrictionRequest request, bool isNewGuid = false) => new()
         {
-            Id = IsNewGuid ? Guid.NewGuid() : request.Id,
+            Id = isNewGuid ? Guid.NewGuid() : request.Id,
             CreationDate = request.CreationDate,
             Description = request.Description,
             ExpirationDate = request.ExpirationDate,

@@ -9,21 +9,14 @@ namespace Promocode.API.Controllers
 {
     [Route("api/promocode")]
     [ApiController]
-    public class PromocodeController : ControllerBase
+    public class PromocodeController(IPromocodeService promocodeService) : ControllerBase
     {
-        private readonly IPromocodeService _promocodeService;
-
-        public PromocodeController(IPromocodeService promocodeService)
-        {
-            _promocodeService = promocodeService;
-        }
-
         [ProducesResponseType(typeof(ApiResult<List<PromocodeResponse>>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.AdminOwnerBot)]
         [HttpGet]
         public async Task<IActionResult> Get(CancellationToken cancellation)
         {
-            var response = await _promocodeService.GetAsync(cancellation);
+            var response = await promocodeService.GetAsync(cancellation);
 
             return Ok(ApiResult<List<PromocodeResponse>>.Ok(response));
         }
@@ -33,7 +26,7 @@ namespace Promocode.API.Controllers
         [HttpGet("empty")]
         public async Task<IActionResult> GetEmpty(CancellationToken cancellation)
         {
-            var response = await _promocodeService.GetEmptyPromocodesAsync(cancellation);
+            var response = await promocodeService.GetEmptyPromocodesAsync(cancellation);
 
             return Ok(ApiResult<List<PromocodeResponse>>.Ok(response));
         }
@@ -43,7 +36,7 @@ namespace Promocode.API.Controllers
         [HttpGet("name/{name}")]
         public async Task<IActionResult> Get(string name, CancellationToken cancellation)
         {
-            var response = await _promocodeService.GetAsync(name, cancellation);
+            var response = await promocodeService.GetAsync(name, cancellation);
 
             return Ok(ApiResult<PromocodeResponse>.Ok(response));
         }
@@ -53,7 +46,7 @@ namespace Promocode.API.Controllers
         [HttpGet("types")]
         public async Task<IActionResult> GetTypes(CancellationToken cancellation)
         {
-            var response = await _promocodeService.GetTypesAsync(cancellation);
+            var response = await promocodeService.GetTypesAsync(cancellation);
 
             return Ok(ApiResult<List<PromocodeTypeResponse>>.Ok(response));
         }
@@ -63,7 +56,7 @@ namespace Promocode.API.Controllers
         [HttpPost]
         public async Task<IActionResult> Post(PromocodeRequest request, CancellationToken cancellation)
         {
-            var response = await _promocodeService.CreateAsync(request, cancellation);
+            var response = await promocodeService.CreateAsync(request, cancellation);
 
             return Ok(ApiResult<PromocodeResponse>.Ok(response));
         }
@@ -73,7 +66,7 @@ namespace Promocode.API.Controllers
         [HttpPut]
         public async Task<IActionResult> Put(PromocodeRequest request, CancellationToken cancellation)
         {
-            var response = await _promocodeService.UpdateAsync(request, cancellation);
+            var response = await promocodeService.UpdateAsync(request, cancellation);
 
             return Ok(ApiResult<PromocodeResponse>.Ok(response));
         }
@@ -83,7 +76,7 @@ namespace Promocode.API.Controllers
         [HttpDelete("{id:guid}")]
         public async Task<IActionResult> Delete(Guid id, CancellationToken cancellation)
         {
-            var response = await _promocodeService.DeleteAsync(id, cancellation);
+            var response = await promocodeService.DeleteAsync(id, cancellation);
 
             return Ok(ApiResult<PromocodeResponse>.Ok(response));
         }

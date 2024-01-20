@@ -3,18 +3,11 @@ using Statistics.BLL.Repository;
 
 namespace Statistics.BLL.Services
 {
-    public class SiteStatisticsService : ISiteStatisticsService
+    public class SiteStatisticsService(ISiteStatisticsRepository siteStatisticsRepository) : ISiteStatisticsService
     {
-        private readonly ISiteStatisticsRepository _siteStatisticsRepository;
-
-        public SiteStatisticsService(ISiteStatisticsRepository siteStatisticsRepository)
-        {
-            _siteStatisticsRepository = siteStatisticsRepository;
-        }
-
         public async Task<SiteStatisticsResponse> GetAsync(CancellationToken cancellation = default)
         {
-            var stats = await _siteStatisticsRepository.GetAsync(cancellation);
+            var stats = await siteStatisticsRepository.GetAsync(cancellation);
 
             return new SiteStatisticsResponse
             {
@@ -28,7 +21,7 @@ namespace Statistics.BLL.Services
 
         public async Task<SiteStatisticsAdminResponse> GetAdminAsync(CancellationToken cancellation = default)
         {
-            var stats = await _siteStatisticsRepository.GetAdminAsync(cancellation);
+            var stats = await siteStatisticsRepository.GetAdminAsync(cancellation);
 
             return new SiteStatisticsAdminResponse
             {

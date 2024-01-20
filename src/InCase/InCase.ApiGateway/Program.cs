@@ -15,8 +15,8 @@ builder.Logging.AddConfiguration(configuration).ClearProviders().AddNLog();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: policyName,
-        builder => {
-            builder.WithOrigins("http://localhost:3000")
+        cfg => {
+            cfg.WithOrigins("http://localhost:3000")
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials();

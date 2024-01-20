@@ -7,18 +7,11 @@ using Resources.DAL.Data;
 
 namespace Resources.BLL.Services
 {
-    public class GameService : IGameService
+    public class GameService(ApplicationDbContext context) : IGameService
     {
-        private readonly ApplicationDbContext _context;
-
-        public GameService(ApplicationDbContext context)
-        {
-            _context = context;
-        }
-
         public async Task<List<GameResponse>> GetAsync(CancellationToken cancellation = default)
         {
-            var games = await _context.Games
+            var games = await context.Games
                 .Include(g => g.Boxes!)
                     .ThenInclude(lb => lb.Inventories!)
                         .ThenInclude(lb => lb.Item)
@@ -30,7 +23,7 @@ namespace Resources.BLL.Services
 
         public async Task<GameResponse> GetAsync(Guid id, CancellationToken cancellation = default)
         {
-            var game = await _context.Games
+            var game = await context.Games
                 .Include(g => g.Boxes!)
                     .ThenInclude(lb => lb.Inventories!)
                         .ThenInclude(lb => lb.Item)
@@ -43,7 +36,7 @@ namespace Resources.BLL.Services
 
         public async Task<GameResponse> GetAsync(string name, CancellationToken cancellation = default)
         {
-            var game = await _context.Games
+            var game = await context.Games
                 .Include(g => g.Boxes!)
                     .ThenInclude(lb => lb.Inventories!)
                         .ThenInclude(lb => lb.Item)

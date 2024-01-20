@@ -11,22 +11,16 @@ namespace Payment.API.Controllers
 {
     [Route("api/payment")]
     [ApiController]
-    public class PaymentController : ControllerBase
+    public class PaymentController(IPaymentService paymentService) : ControllerBase
     {
-        private readonly IPaymentService _paymentService;
         private Guid UserId => Guid.Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
-
-        public PaymentController(IPaymentService paymentService)
-        {
-            _paymentService = paymentService;
-        }
 
         [ProducesResponseType(typeof(ApiResult<UserPaymentsResponse>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpPost("top-up")]
         public async Task<IActionResult> TopUpBalance(GameMoneyTopUpResponse request, CancellationToken cancellation)
         {
-            var response = await _paymentService.TopUpBalanceAsync(request, cancellation);
+            var response = await paymentService.TopUpBalanceAsync(request, cancellation);
 
             return Ok(ApiResult<UserPaymentsResponse>.Ok(response));
         }
@@ -36,7 +30,7 @@ namespace Payment.API.Controllers
         [HttpGet("balance/{currency}")]
         public async Task<IActionResult> GetBalance(string currency, CancellationToken cancellation)
         {
-            var response = await _paymentService.GetPaymentBalanceAsync(currency, cancellation);
+            var response = await paymentService.GetPaymentBalanceAsync(currency, cancellation);
 
             return Ok(ApiResult<PaymentBalanceResponse>.Ok(response));
         }
@@ -46,7 +40,7 @@ namespace Payment.API.Controllers
         [HttpGet("top-up/signature")]
         public IActionResult GetSignatureForDeposit()
         {
-            var response = _paymentService.GetHashOfDataForDeposit(UserId);
+            var response = paymentService.GetHashOfDataForDeposit(UserId);
 
             return Ok(ApiResult<HashOfDataForDepositResponse>.Ok(response));
         }

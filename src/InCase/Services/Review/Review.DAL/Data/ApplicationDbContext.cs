@@ -4,13 +4,11 @@ using System.Reflection;
 
 namespace Review.DAL.Data
 {
-    public class ApplicationDbContext : DbContext
+    public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
     {
-        public DbSet<ReviewImage> Images { get; set; }
-        public DbSet<User> User { get; set; }
-        public DbSet<UserReview> Reviews { get; set; }
-
-        public ApplicationDbContext(DbContextOptions options) : base(options) { }
+        public DbSet<ReviewImage> Images  => Set<ReviewImage>();
+        public DbSet<User> User => Set<User>();
+        public DbSet<UserReview> Reviews => Set<UserReview>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

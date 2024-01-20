@@ -9,20 +9,11 @@ using Resources.DAL.Entities;
 
 namespace Resources.BLL.Services
 {
-    public class LootBoxBannerService : ILootBoxBannerService
+    public class LootBoxBannerService(ApplicationDbContext context, BasePublisher publisher) : ILootBoxBannerService
     {
-        private readonly ApplicationDbContext _context;
-        private readonly BasePublisher _publisher;
-
-        public LootBoxBannerService(ApplicationDbContext context, BasePublisher publisher)
-        {
-            _context = context;
-            _publisher = publisher;
-        }
-
         public async Task<LootBoxBannerResponse> GetAsync(Guid id, CancellationToken cancellation = default)
         {
-            var banner = await _context.Banners
+            var banner = await context.Banners
                 .Include(lbb => lbb.Box)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(lbb => lbb.Id == id, cancellation) ??
@@ -33,7 +24,7 @@ namespace Resources.BLL.Services
 
         public async Task<List<LootBoxBannerResponse>> GetAsync(CancellationToken cancellation = default)
         {
-            var banners = await _context.Banners
+            var banners = await context.Banners
                 .Include(lbb => lbb.Box)
                 .AsNoTracking()
                 .ToListAsync(cancellation);
@@ -43,7 +34,7 @@ namespace Resources.BLL.Services
 
         public async Task<List<LootBoxBannerResponse>> GetAsync(bool isActive, CancellationToken cancellation = default)
         {
-            var banners = await _context.Banners
+            var banners = await context.Banners
                 .Include(lbb => lbb.Box)
                 .AsNoTracking()
                 .Where(lbb => isActive ? DateTime.UtcNow <= lbb.ExpirationDate : DateTime.UtcNow > lbb.ExpirationDate)
@@ -54,10 +45,10 @@ namespace Resources.BLL.Services
 
         public async Task<LootBoxBannerResponse> GetByBoxIdAsync(Guid id, CancellationToken cancellation = default)
         {
-            if (!await _context.LootBoxes.AnyAsync(lb => lb.Id == id, cancellation))
+            if (!await context.LootBoxes.AnyAsync(lb => lb.Id == id, cancellation))
                 throw new NotFoundException("Кейс не найден");
 
-            var banner = await _context.Banners
+            var banner = await context.Banners
                 .Include(lbb => lbb.Box)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(lbb => lbb.BoxId == id, cancellation) ??
@@ -70,7 +61,7 @@ namespace Resources.BLL.Services
         {
             if (request.Image is null) throw new BadRequestException("Загрузите картинку в base64");
 
-            var box = await _context.LootBoxes
+            var box = await context.LootBoxes
                 .Include(lb => lb.Banner)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(lb => lb.Id == request.BoxId, cancellation) ??
@@ -86,12 +77,12 @@ namespace Resources.BLL.Services
                 BoxId = request.BoxId
             };
 
-            await _context.Banners.AddAsync(banner, cancellation);
-            await _context.SaveChangesAsync(cancellation);
+            await context.Banners.AddAsync(banner, cancellation);
+            await context.SaveChangesAsync(cancellation);
 
             banner.Box = box;
 
-            await _publisher.SendAsync(banner.ToTemplate(isDeleted: false), cancellation);
+            await publisher.SendAsync(banner.ToTemplate(isDeleted: false), cancellation);
 
             FileService.UploadImageBase64(request.Image, $"loot-box-banners/{box.Id}/", $"{banner.Id}");
 
@@ -100,7 +91,7 @@ namespace Resources.BLL.Services
 
         public async Task<LootBoxBannerResponse> UpdateAsync(LootBoxBannerRequest request, CancellationToken cancellation = default)
         {
-            var oldBanner = await _context.Banners
+            var oldBanner = await context.Banners
                 .Include(lbb => lbb.Box)
                 .FirstOrDefaultAsync(lbb => lbb.Id == request.Id, cancellation) ??
                 throw new NotFoundException("Баннер не найден");
@@ -119,24 +110,24 @@ namespace Resources.BLL.Services
                 BoxId = request.BoxId,
             };
 
-            _context.Entry(oldBanner).CurrentValues.SetValues(newBanner);
-            await _context.SaveChangesAsync(cancellation);
-            await _publisher.SendAsync(newBanner.ToTemplate(isDeleted: false), cancellation);
+            context.Entry(oldBanner).CurrentValues.SetValues(newBanner);
+            await context.SaveChangesAsync(cancellation);
+            await publisher.SendAsync(newBanner.ToTemplate(isDeleted: false), cancellation);
 
             return newBanner.ToResponse();
         }
 
         public async Task<LootBoxBannerResponse> DeleteAsync(Guid id, CancellationToken cancellation = default)
         {
-            var banner = await _context.Banners
+            var banner = await context.Banners
                 .Include(lbb => lbb.Box)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(lbb => lbb.Id == id, cancellation) ??
                 throw new NotFoundException("Баннер не найден");
 
-            _context.Banners.Remove(banner);
-            await _context.SaveChangesAsync(cancellation);
-            await _publisher.SendAsync(banner.ToTemplate(isDeleted: true), cancellation);
+            context.Banners.Remove(banner);
+            await context.SaveChangesAsync(cancellation);
+            await publisher.SendAsync(banner.ToTemplate(isDeleted: true), cancellation);
 
             FileService.RemoveFolder($"loot-box-banners/{banner.BoxId}/");
 

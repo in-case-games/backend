@@ -11,29 +11,19 @@ using Withdraw.DAL.Entities;
 
 namespace Withdraw.BLL.Services
 {
-    public class UserInventoryService : IUserInventoryService
+    public class UserInventoryService(
+        ApplicationDbContext context, 
+        IWithdrawItemService withdrawService, 
+        BasePublisher publisher) : IUserInventoryService
     {
-        private readonly ApplicationDbContext _context;
-        private readonly IWithdrawItemService _withdrawService;
-        private readonly BasePublisher _publisher;
         private readonly NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
-
-        public UserInventoryService(
-            ApplicationDbContext context, 
-            IWithdrawItemService withdrawService,
-            BasePublisher publisher)
-        {
-            _context = context;
-            _withdrawService = withdrawService;
-            _publisher = publisher;
-        }
 
         public async Task<List<UserInventoryResponse>> GetAsync(Guid userId, CancellationToken cancellation = default)
         {
-            if (!await _context.Users.AnyAsync(u => u.Id == userId,cancellation))
+            if (!await context.Users.AnyAsync(u => u.Id == userId,cancellation))
                 throw new NotFoundException("Пользователь не найден");
 
-            var inventories = await _context.Inventories
+            var inventories = await context.Inventories
                 .AsNoTracking()
                 .Where(ui => ui.UserId == userId)
                 .ToListAsync(cancellation);
@@ -45,10 +35,10 @@ namespace Withdraw.BLL.Services
         {
             if (count is <= 0 or >= 10000)
                 throw new BadRequestException("Размер выборки должен быть в пределе 1-10000");
-            if (!await _context.Users.AnyAsync(u => u.Id == userId, cancellation))
+            if (!await context.Users.AnyAsync(u => u.Id == userId, cancellation))
                 throw new NotFoundException("Пользователь не найден");
 
-            var inventories = await _context.Inventories
+            var inventories = await context.Inventories
                 .AsNoTracking()
                 .Where(ui => ui.UserId == userId)
                 .OrderByDescending(ui => ui.Date)
@@ -59,13 +49,13 @@ namespace Withdraw.BLL.Services
         }
 
         public async Task<UserInventory?> GetByConsumerAsync(Guid id, CancellationToken cancellation = default) => 
-            await _context.Inventories
+            await context.Inventories
             .AsNoTracking()
             .FirstOrDefaultAsync(ui => ui.Id == id, cancellation);
 
         public async Task<UserInventoryResponse> GetByIdAsync(Guid id, CancellationToken cancellation = default)
         {
-            var inventory = await _context.Inventories
+            var inventory = await context.Inventories
                 .AsNoTracking()
                 .FirstOrDefaultAsync(ui => ui.Id == id, cancellation) ?? 
                 throw new NotFoundException("Инвентарь не найден");
@@ -75,9 +65,9 @@ namespace Withdraw.BLL.Services
 
         public async Task<UserInventoryResponse> CreateAsync(UserInventoryTemplate template, CancellationToken cancellation = default)
         {
-            if (!await _context.Items.AnyAsync(gi => gi.Id == template.ItemId, cancellation))
+            if (!await context.Items.AnyAsync(gi => gi.Id == template.ItemId, cancellation))
                 throw new NotFoundException("Предмет не найден");
-            if (!await _context.Users.AnyAsync(u => u.Id == template.UserId, cancellation))
+            if (!await context.Users.AnyAsync(u => u.Id == template.UserId, cancellation))
                 throw new NotFoundException("Пользователь не найден");
 
             var inventory = new UserInventory
@@ -89,8 +79,8 @@ namespace Withdraw.BLL.Services
                 UserId = template.UserId
             };
 
-            await _context.Inventories.AddAsync(inventory, cancellation);
-            await _context.SaveChangesAsync(cancellation);
+            await context.Inventories.AddAsync(inventory, cancellation);
+            await context.SaveChangesAsync(cancellation);
 
             return inventory.ToResponse();
         }
@@ -103,14 +93,14 @@ namespace Withdraw.BLL.Services
             if (request.Items.Sum(x => x.Count) > 10)
                 throw new BadRequestException("Запрещено выводить более 10 предметов");
 
-            var inventory = await _context.Inventories
+            var inventory = await context.Inventories
                 .Include(ui => ui.Item)
                 .Include(ui => ui.Item!.Game!)
                     .ThenInclude(g => g.Market)
                 .FirstOrDefaultAsync(ui => ui.Id == request.InventoryId && ui.UserId == userId, cancellation) ??
                 throw new NotFoundException("Заменяемый предмет не найден в инвентаре");
 
-            var itemInfo = await _withdrawService
+            var itemInfo = await withdrawService
                 .GetItemInfoAsync(inventory.Item!, cancellation);
 
             if (itemInfo.Count != 0 && itemInfo.PriceKopecks != 0)
@@ -128,7 +118,7 @@ namespace Withdraw.BLL.Services
 
             foreach (var itemModel in request.Items)
             {
-                var gameItem = await _context.Items
+                var gameItem = await context.Items
                                    .AsNoTracking()
                                    .FirstOrDefaultAsync(gi => gi.Id == itemModel.ItemId, cancellation) ?? 
                                throw new NotFoundException($"Предмет с заданным Id {itemModel.ItemId} не найден");
@@ -151,17 +141,17 @@ namespace Withdraw.BLL.Services
 
             if (differenceCost < 0) throw new BadRequestException("Стоимость товара при обмене не может быть выше");
 
-            _context.Inventories.Remove(inventory);
-            await _context.Inventories.AddRangeAsync(inventories, cancellation);
-            await _context.SaveChangesAsync(cancellation);
+            context.Inventories.Remove(inventory);
+            await context.Inventories.AddRangeAsync(inventories, cancellation);
+            await context.SaveChangesAsync(cancellation);
 
             foreach (var template in inventories.Select(userInventory => userInventory.ToTemplate()))
             {
                 template.FixedCost = differenceCost;
-                await _publisher.SendAsync(template, cancellation);
+                await publisher.SendAsync(template, cancellation);
             }
 
-            await _publisher.SendAsync(new SiteStatisticsAdminTemplate { FundsUsersInventories = -differenceCost * request.Items.Count }, cancellation);
+            await publisher.SendAsync(new SiteStatisticsAdminTemplate { FundsUsersInventories = -differenceCost * request.Items.Count }, cancellation);
 
             _logger.Log(NLog.LogLevel.Info, "Exchanged: UserId - {0}," +
                                            " GameItemId - {1}, Game - {2}",
@@ -172,12 +162,12 @@ namespace Withdraw.BLL.Services
         }
         public async Task<SellItemResponse> SellAsync(Guid id, Guid userId, CancellationToken cancellation = default)
         {
-            var user = await _context.Users
+            var user = await context.Users
                 .AsNoTracking()
                 .FirstOrDefaultAsync(uai => uai.Id == userId, cancellation) ??
                 throw new NotFoundException("Пользователь не найден");
 
-            var inventory = await _context.Inventories
+            var inventory = await context.Inventories
                 .AsNoTracking()
                 .Include(userInventory => userInventory.Item)
                 .ThenInclude(gameItem => gameItem!.Game)
@@ -187,22 +177,22 @@ namespace Withdraw.BLL.Services
             _logger.Log(NLog.LogLevel.Info, "Selled: UserId - {0}, GameItemId - {1}, Game - {2}",
                 user.Id, inventory.ItemId, inventory.Item?.Game?.Name);
 
-            _context.Inventories.Remove(inventory);
-            await _context.SaveChangesAsync(cancellation);
+            context.Inventories.Remove(inventory);
+            await context.SaveChangesAsync(cancellation);
 
-            await _publisher.SendAsync(inventory.ToTemplate(), cancellation);
-            await _publisher.SendAsync(new SiteStatisticsAdminTemplate { FundsUsersInventories = -inventory.FixedCost }, cancellation);
+            await publisher.SendAsync(inventory.ToTemplate(), cancellation);
+            await publisher.SendAsync(new SiteStatisticsAdminTemplate { FundsUsersInventories = -inventory.FixedCost }, cancellation);
 
             return new SellItemResponse { Cost = inventory.FixedCost };
         }
 
         public async Task<SellItemResponse> SellLastAsync(Guid itemId, Guid userId, CancellationToken cancellation = default)
         {
-            var user = await _context.Users
+            var user = await context.Users
                 .FirstOrDefaultAsync(uai => uai.Id == userId, cancellation) ??
                 throw new NotFoundException("Пользователь не найден");
             
-            var inventories = await _context.Inventories
+            var inventories = await context.Inventories
                 .AsNoTracking()
                 .Where(ui => ui.UserId == userId && ui.ItemId == itemId).Include(userInventory => userInventory.Item)
                 .ThenInclude(gameItem => gameItem!.Game)
@@ -218,25 +208,25 @@ namespace Withdraw.BLL.Services
                                            user.Id, inventory.ItemId,
                                            inventory.Item?.Game?.Name);
 
-            _context.Inventories.Remove(inventory);
-            await _context.SaveChangesAsync(cancellation);
+            context.Inventories.Remove(inventory);
+            await context.SaveChangesAsync(cancellation);
 
-            await _publisher.SendAsync(inventory.ToTemplate(), cancellation);
+            await publisher.SendAsync(inventory.ToTemplate(), cancellation);
 
             return new SellItemResponse { Cost = inventory.FixedCost };
         }
 
         public async Task<UserInventoryResponse> DeleteAsync(Guid id, CancellationToken cancellation = default)
         {
-            var inventory = await _context.Inventories
+            var inventory = await context.Inventories
                 .AsNoTracking()
                 .FirstOrDefaultAsync(ui => ui.Id == id, cancellation) ??
                 throw new NotFoundException("Предмет не найден в инвентаре");
 
-            _context.Inventories.Remove(inventory);
-            await _context.SaveChangesAsync(cancellation);
+            context.Inventories.Remove(inventory);
+            await context.SaveChangesAsync(cancellation);
 
-            await _publisher.SendAsync(new SiteStatisticsAdminTemplate { FundsUsersInventories = -inventory.FixedCost }, cancellation);
+            await publisher.SendAsync(new SiteStatisticsAdminTemplate { FundsUsersInventories = -inventory.FixedCost }, cancellation);
 
             return inventory.ToResponse();
         }

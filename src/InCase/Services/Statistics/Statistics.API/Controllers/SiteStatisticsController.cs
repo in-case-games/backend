@@ -10,21 +10,14 @@ namespace Statistics.API.Controllers
 {
     [Route("api/site-statistics")]
     [ApiController]
-    public class SiteStatisticsController : ControllerBase
+    public class SiteStatisticsController(ISiteStatisticsService statisticsService) : ControllerBase
     {
-        private readonly ISiteStatisticsService _statisticsService;
-
-        public SiteStatisticsController(ISiteStatisticsService statisticsService)
-        {
-            _statisticsService = statisticsService;
-        }
-
         [ProducesResponseType(typeof(ApiResult<SiteStatisticsResponse>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> Get(CancellationToken cancellation)
         {
-            var response = await _statisticsService.GetAsync(cancellation);
+            var response = await statisticsService.GetAsync(cancellation);
 
             return Ok(ApiResult<SiteStatisticsResponse>.Ok(response));
         }
@@ -34,7 +27,7 @@ namespace Statistics.API.Controllers
         [HttpGet("admin")]
         public async Task<IActionResult> GetAdmin(CancellationToken cancellation)
         {
-            var response = await _statisticsService.GetAdminAsync(cancellation);
+            var response = await statisticsService.GetAdminAsync(cancellation);
 
             return Ok(ApiResult<SiteStatisticsAdminResponse>.Ok(response));
         }

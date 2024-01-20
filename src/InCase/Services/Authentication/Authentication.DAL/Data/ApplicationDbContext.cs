@@ -4,14 +4,12 @@ using System.Reflection;
 
 namespace Authentication.DAL.Data
 {
-    public class ApplicationDbContext : DbContext
+    public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
     {
         public DbSet<User> Users => Set<User>();
         public DbSet<UserAdditionalInfo> AdditionalInfos => Set<UserAdditionalInfo>();
         public DbSet<UserRestriction> Restrictions => Set<UserRestriction>();
         public DbSet<UserRole> Roles => Set<UserRole>();
-
-        public ApplicationDbContext(DbContextOptions options) : base(options) { }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

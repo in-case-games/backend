@@ -1,12 +1,7 @@
 ﻿namespace Review.BLL.Exceptions
 {
-    public class StatusCodeException : Exception
+    public class StatusCodeException(int statusCode, string message) : Exception(message)
     {
-        public int StatusCode { get; set; }
-
-        public StatusCodeException(int statusCode, string message) : base(message)
-        {
-            StatusCode = statusCode;
-        }
+        public int StatusCode { get; set; } = statusCode;
     }
 }

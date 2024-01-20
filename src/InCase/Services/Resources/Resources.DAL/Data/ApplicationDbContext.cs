@@ -4,7 +4,7 @@ using System.Reflection;
 
 namespace Resources.DAL.Data
 {
-    public class ApplicationDbContext : DbContext
+    public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
     {
         public DbSet<Game> Games => Set<Game>();
         public DbSet<GameItem> Items => Set<GameItem>();
@@ -16,8 +16,6 @@ namespace Resources.DAL.Data
         public DbSet<LootBoxBanner> Banners => Set<LootBoxBanner>();
         public DbSet<LootBoxGroup> Groups => Set<LootBoxGroup>();
         public DbSet<LootBoxInventory> BoxInventories => Set<LootBoxInventory>();
-
-        public ApplicationDbContext(DbContextOptions options) : base(options) { }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

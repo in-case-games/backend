@@ -4,23 +4,16 @@ using MassTransit;
 
 namespace Game.BLL.MassTransit.Consumers
 {
-    public class UserPromocodeConsumer : IConsumer<UserPromocodeTemplate>
+    public class UserPromocodeConsumer(IUserPromocodeService promocodeService) : IConsumer<UserPromocodeTemplate>
     {
-        private readonly IUserPromocodeService _promocodeService;
-
-        public UserPromocodeConsumer(IUserPromocodeService promocodeService)
-        {
-            _promocodeService = promocodeService;
-        }
-
         public async Task Consume(ConsumeContext<UserPromocodeTemplate> context)
         {
             if (context.Message.Type?.Name == "box")
             {
-                var promo = await _promocodeService.GetAsync(context.Message.Id);
+                var promo = await promocodeService.GetAsync(context.Message.Id);
 
-                if (promo is null) await _promocodeService.CreateAsync(context.Message);
-                else await _promocodeService.UpdateAsync(context.Message);
+                if (promo is null) await promocodeService.CreateAsync(context.Message);
+                else await promocodeService.UpdateAsync(context.Message);
             }
         }
     }

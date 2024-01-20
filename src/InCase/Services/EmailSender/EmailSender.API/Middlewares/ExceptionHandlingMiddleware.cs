@@ -4,22 +4,13 @@ using EmailSender.BLL.Exceptions;
 
 namespace EmailSender.API.Middlewares
 {
-    public class ExceptionHandlingMiddleware
-    { 
-        private readonly RequestDelegate _next;
-        private readonly ILogger<ExceptionHandlingMiddleware> _logger;
-
-        public ExceptionHandlingMiddleware(RequestDelegate next, ILogger<ExceptionHandlingMiddleware> logger)
-        {
-            _next = next;
-            _logger = logger;
-        }
-
+    public class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<ExceptionHandlingMiddleware> logger)
+    {
         public async Task Invoke(HttpContext context)
         {
             try
             {
-                await _next(context);
+                await next(context);
             }
             catch (StatusCodeException ex)
             {
@@ -29,7 +20,7 @@ namespace EmailSender.API.Middlewares
             {
                 await HandleExceptionAsync(context, "Task was cancelled");
 
-                _logger.LogWarning("Task was cancelled");
+                logger.LogWarning("Task was cancelled");
             }
             catch (Exception ex)
             {

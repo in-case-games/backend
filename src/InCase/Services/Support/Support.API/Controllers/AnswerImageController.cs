@@ -10,22 +10,16 @@ namespace Support.API.Controllers
 {
     [Route("api/answer-image")]
     [ApiController]
-    public class AnswerImageController : ControllerBase
+    public class AnswerImageController(IAnswerImageService imageService) : ControllerBase
     {
-        private readonly IAnswerImageService _imageService;
         private Guid UserId => Guid.Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
-
-        public AnswerImageController(IAnswerImageService imageService)
-        {
-            _imageService = imageService;
-        }
 
         [ProducesResponseType(typeof(ApiResult<AnswerImageResponse>), (int)HttpStatusCode.OK)]
         [AuthorizeByRole(Roles.All)]
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> Get(Guid id, CancellationToken cancellation)
         {
-            var response = await _imageService.GetAsync(UserId, id, cancellation);
+            var response = await imageService.GetAsync(UserId, id, cancellation);
 
             return Ok(ApiResult<AnswerImageResponse>.Ok(response));
         }
@@ -35,7 +29,7 @@ namespace Support.API.Controllers
         [HttpGet("{id:guid}/admin")]
         public async Task<IActionResult> GetByAdmin(Guid id, CancellationToken cancellation)
         {
-            var response = await _imageService.GetAsync(id, cancellation);
+            var response = await imageService.GetAsync(id, cancellation);
 
             return Ok(ApiResult<AnswerImageResponse>.Ok(response));
         }
@@ -45,7 +39,7 @@ namespace Support.API.Controllers
         [HttpGet("answer/{id:guid}")]
         public async Task<IActionResult> GetByAnswerId(Guid id, CancellationToken cancellation)
         {
-            var response = await _imageService.GetByAnswerIdAsync(UserId, id, cancellation);
+            var response = await imageService.GetByAnswerIdAsync(UserId, id, cancellation);
 
             return Ok(ApiResult<List<AnswerImageResponse>>.Ok(response));
         }
@@ -55,7 +49,7 @@ namespace Support.API.Controllers
         [HttpGet("answer/{id:guid}/admin")]
         public async Task<IActionResult> GetByAdminAnswerId(Guid id, CancellationToken cancellation)
         {
-            var response = await _imageService.GetByAnswerIdAsync(id, cancellation);
+            var response = await imageService.GetByAnswerIdAsync(id, cancellation);
 
             return Ok(ApiResult<List<AnswerImageResponse>>.Ok(response));
         }
@@ -65,7 +59,7 @@ namespace Support.API.Controllers
         [HttpGet("topic/{id:guid}")]
         public async Task<IActionResult> GetByTopicId(Guid id, CancellationToken cancellation)
         {
-            var response = await _imageService.GetByTopicIdAsync(UserId, id, cancellation);
+            var response = await imageService.GetByTopicIdAsync(UserId, id, cancellation);
 
             return Ok(ApiResult<List<AnswerImageResponse>>.Ok(response));
         }
@@ -75,7 +69,7 @@ namespace Support.API.Controllers
         [HttpGet("topic/{id:guid}/admin")]
         public async Task<IActionResult> GetByAdminTopicId(Guid id, CancellationToken cancellation)
         {
-            var response = await _imageService.GetByTopicIdAsync(id, cancellation);
+            var response = await imageService.GetByTopicIdAsync(id, cancellation);
 
             return Ok(ApiResult<List<AnswerImageResponse>>.Ok(response));
         }
@@ -85,7 +79,7 @@ namespace Support.API.Controllers
         [HttpGet]
         public async Task<IActionResult> Get(CancellationToken cancellation)
         {
-            var response = await _imageService.GetByUserIdAsync(UserId, cancellation);
+            var response = await imageService.GetByUserIdAsync(UserId, cancellation);
 
             return Ok(ApiResult<List<AnswerImageResponse>>.Ok(response));
         }
@@ -95,7 +89,7 @@ namespace Support.API.Controllers
         [HttpGet("user/{userId:guid}/admin")]
         public async Task<IActionResult> GetByAdminUserId(Guid userId, CancellationToken cancellation)
         {
-            var response = await _imageService.GetByUserIdAsync(userId, cancellation);
+            var response = await imageService.GetByUserIdAsync(userId, cancellation);
 
             return Ok(ApiResult<List<AnswerImageResponse>>.Ok(response));
         }
@@ -106,7 +100,7 @@ namespace Support.API.Controllers
         [HttpPost]
         public async Task<IActionResult> Post(AnswerImageRequest request, CancellationToken cancellation)
         {
-            var response = await _imageService.CreateAsync(UserId, request, cancellation);
+            var response = await imageService.CreateAsync(UserId, request, cancellation);
 
             return Ok(ApiResult<AnswerImageResponse>.Ok(response));
         }
@@ -116,7 +110,7 @@ namespace Support.API.Controllers
         [HttpDelete("{id:guid}")]
         public async Task<IActionResult> Delete(Guid id, CancellationToken cancellation)
         {
-            var response = await _imageService.DeleteAsync(UserId, id, cancellation);
+            var response = await imageService.DeleteAsync(UserId, id, cancellation);
 
             return Ok(ApiResult<AnswerImageResponse>.Ok(response));
         }
@@ -126,7 +120,7 @@ namespace Support.API.Controllers
         [HttpDelete("{id:guid}/admin")]
         public async Task<IActionResult> DeleteByAdmin(Guid id, CancellationToken cancellation)
         {
-            var response = await _imageService.DeleteAsync(id, cancellation);
+            var response = await imageService.DeleteAsync(id, cancellation);
 
             return Ok(ApiResult<AnswerImageResponse>.Ok(response));
         }

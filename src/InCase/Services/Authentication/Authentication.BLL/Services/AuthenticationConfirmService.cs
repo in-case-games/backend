@@ -10,29 +10,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Authentication.BLL.Services
 {
-    public class AuthenticationConfirmService : IAuthenticationConfirmService
+    public class AuthenticationConfirmService(
+        ApplicationDbContext context, 
+        IAuthenticationService authenticationService, 
+        IJwtService jwtService, 
+        BasePublisher publisher) : IAuthenticationConfirmService
     {
-        private readonly ApplicationDbContext _context;
-        private readonly IAuthenticationService _authenticationService;
-        private readonly IJwtService _jwtService;
-        private readonly BasePublisher _publisher;
-
-        public AuthenticationConfirmService(
-            ApplicationDbContext context, 
-            IAuthenticationService authenticationService, 
-            IJwtService jwtService,
-            BasePublisher publisher)
-        {
-            _context = context;
-            _authenticationService = authenticationService;
-            _jwtService = jwtService;
-            _publisher = publisher;
-        }
-
         public async Task<TokensResponse> ConfirmAccountAsync(string token, CancellationToken cancellationToken = default)
         {
-            var user = await _authenticationService.GetUserFromTokenAsync(token, "email", cancellationToken);
-            var tokenPair = _jwtService.CreateTokenPair(in user);
+            var user = await authenticationService.GetUserFromTokenAsync(token, "email", cancellationToken);
+            var tokenPair = jwtService.CreateTokenPair(in user);
             var email = new EmailTemplate
             {
                 Email = user.Email!,
@@ -87,24 +74,24 @@ namespace Authentication.BLL.Services
             user.AdditionalInfo.IsConfirmed = true;
             user.AdditionalInfo.DeletionDate = null;
 
-            _context.AdditionalInfos.Update(user.AdditionalInfo);
-            await _context.SaveChangesAsync(cancellationToken);
-            await _publisher.SendAsync(email, cancellationToken);
+            context.AdditionalInfos.Update(user.AdditionalInfo);
+            await context.SaveChangesAsync(cancellationToken);
+            await publisher.SendAsync(email, cancellationToken);
 
-            if(stats.Users == 1)  await _publisher.SendAsync(stats, cancellationToken);
+            if(stats.Users == 1)  await publisher.SendAsync(stats, cancellationToken);
 
             return tokenPair;
         }
 
         public async Task<UserResponse> DeleteAsync(string token, CancellationToken cancellationToken = default)
         {
-            var user = await _authenticationService.GetUserFromTokenAsync(token, "email", cancellationToken);
+            var user = await authenticationService.GetUserFromTokenAsync(token, "email", cancellationToken);
             
             user.AdditionalInfo!.DeletionDate = DateTime.UtcNow + TimeSpan.FromDays(30);
 
-            _context.AdditionalInfos.Update(user.AdditionalInfo);
-            await _context.SaveChangesAsync(cancellationToken);
-            await _publisher.SendAsync(new EmailTemplate
+            context.AdditionalInfos.Update(user.AdditionalInfo);
+            await context.SaveChangesAsync(cancellationToken);
+            await publisher.SendAsync(new EmailTemplate
             {
                 Email = user.Email!,
                 IsRequiredMessage = true,
@@ -126,18 +113,18 @@ namespace Authentication.BLL.Services
         {
             if (!ValidationService.CheckCorrectEmail(email)) 
                 throw new BadRequestException("Некорректный mail");
-            if (await _context.Users.AsNoTracking().AnyAsync(u => u.Email == email, cancellationToken))
+            if (await context.Users.AsNoTracking().AnyAsync(u => u.Email == email, cancellationToken))
                 throw new ConflictException("Email почта занята");
 
-            var userFromToken = await _authenticationService.GetUserFromTokenAsync(token, "email", cancellationToken);
-            var user = await _context.Users.FirstAsync(u => u.Id == userFromToken.Id, cancellationToken);
+            var userFromToken = await authenticationService.GetUserFromTokenAsync(token, "email", cancellationToken);
+            var user = await context.Users.FirstAsync(u => u.Id == userFromToken.Id, cancellationToken);
             var oldEmail = user.Email!;
 
             user.Email = email;
 
-            await _context.SaveChangesAsync(cancellationToken);
-            await _publisher.SendAsync(user.ToTemplate(false), cancellationToken);
-            await _publisher.SendAsync(new EmailTemplate
+            await context.SaveChangesAsync(cancellationToken);
+            await publisher.SendAsync(user.ToTemplate(false), cancellationToken);
+            await publisher.SendAsync(new EmailTemplate
             {
                 Email = user.Email!,
                 IsRequiredMessage = true,
@@ -150,7 +137,7 @@ namespace Authentication.BLL.Services
                     $"Если это были не вы обратитесь в тех поддержку."
                 }
             }, cancellationToken);
-            await _publisher.SendAsync(new EmailTemplate
+            await publisher.SendAsync(new EmailTemplate
             {
                 Email = oldEmail,
                 IsRequiredMessage = true,
@@ -172,18 +159,18 @@ namespace Authentication.BLL.Services
         {
             if (!ValidationService.CheckCorrectEmail(email)) 
                 throw new BadRequestException("Некорректный mail");
-            if (await _context.Users.AsNoTracking().AnyAsync(u => u.Email == email, cancellationToken))
+            if (await context.Users.AsNoTracking().AnyAsync(u => u.Email == email, cancellationToken))
                 throw new ConflictException("Email почта занята");
 
-            var user = await _context.Users
+            var user = await context.Users
                 .FirstOrDefaultAsync(u => u.Id == userId, cancellationToken) ??
                 throw new NotFoundException("Пользователь не найден");
 
             user.Email = email;
 
-            await _context.SaveChangesAsync(cancellationToken);
-            await _publisher.SendAsync(user.ToTemplate(false), cancellationToken);
-            await _publisher.SendAsync(new EmailTemplate
+            await context.SaveChangesAsync(cancellationToken);
+            await publisher.SendAsync(user.ToTemplate(false), cancellationToken);
+            await publisher.SendAsync(new EmailTemplate
             {
                 Email = user.Email!,
                 IsRequiredMessage = true,
@@ -196,7 +183,7 @@ namespace Authentication.BLL.Services
                     $"Если это была ошибка обратитесь в тех. поддержку"
                 }
             }, cancellationToken);
-            await _publisher.SendAsync(new EmailTemplate
+            await publisher.SendAsync(new EmailTemplate
             {
                 Email = email,
                 IsRequiredMessage = true,
@@ -218,17 +205,17 @@ namespace Authentication.BLL.Services
         {
             if (!ValidationService.CheckCorrectLogin(login)) 
                 throw new BadRequestException("Некорректный логин");
-            if (await _context.Users.AsNoTracking().AnyAsync(u => u.Login == login, cancellationToken))
+            if (await context.Users.AsNoTracking().AnyAsync(u => u.Login == login, cancellationToken))
                 throw new ConflictException("Логин занят");
 
-            var userFromToken = await _authenticationService.GetUserFromTokenAsync(token, "email", cancellationToken);
-            var user = await _context.Users.FirstAsync(u => u.Id == userFromToken.Id, cancellationToken);
+            var userFromToken = await authenticationService.GetUserFromTokenAsync(token, "email", cancellationToken);
+            var user = await context.Users.FirstAsync(u => u.Id == userFromToken.Id, cancellationToken);
 
             user.Login = login;
 
-            await _context.SaveChangesAsync(cancellationToken);
-            await _publisher.SendAsync(user.ToTemplate(false), cancellationToken);
-            await _publisher.SendAsync(new EmailTemplate
+            await context.SaveChangesAsync(cancellationToken);
+            await publisher.SendAsync(user.ToTemplate(false), cancellationToken);
+            await publisher.SendAsync(new EmailTemplate
             {
                 Email = user.Email!,
                 IsRequiredMessage = true,
@@ -249,18 +236,18 @@ namespace Authentication.BLL.Services
         {
             if (!ValidationService.CheckCorrectLogin(login))
                 throw new BadRequestException("Некорректный логин");
-            if (await _context.Users.AsNoTracking().AnyAsync(u => u.Login == login, cancellationToken))
+            if (await context.Users.AsNoTracking().AnyAsync(u => u.Login == login, cancellationToken))
                 throw new ConflictException("Логин занят");
 
-            var user = await _context.Users
+            var user = await context.Users
                 .FirstOrDefaultAsync(u => u.Id == userId, cancellationToken) ??
                 throw new NotFoundException("Пользователь не найден");
 
             user.Login = login;
 
-            await _context.SaveChangesAsync(cancellationToken);
-            await _publisher.SendAsync(user.ToTemplate(false), cancellationToken);
-            await _publisher.SendAsync(new EmailTemplate
+            await context.SaveChangesAsync(cancellationToken);
+            await publisher.SendAsync(user.ToTemplate(false), cancellationToken);
+            await publisher.SendAsync(new EmailTemplate
             {
                 Email = user.Email!,
                 IsRequiredMessage = true,
@@ -279,13 +266,13 @@ namespace Authentication.BLL.Services
 
         public async Task<UserResponse> UpdatePasswordAsync(string password, string token, CancellationToken cancellationToken = default)
         {
-            var user = await _authenticationService.GetUserFromTokenAsync(token, "email", cancellationToken);
+            var user = await authenticationService.GetUserFromTokenAsync(token, "email", cancellationToken);
 
             AuthenticationService.CreateNewPassword(ref user, password);
 
-            _context.Users.Update(user);
-            await _context.SaveChangesAsync(cancellationToken);
-            await _publisher.SendAsync(new EmailTemplate
+            context.Users.Update(user);
+            await context.SaveChangesAsync(cancellationToken);
+            await publisher.SendAsync(new EmailTemplate
             {
                 Email = user.Email!,
                 IsRequiredMessage = true,

@@ -6,9 +6,10 @@ namespace Resources.DAL.Configurations
 {
     internal class GameConfiguration : BaseEntityConfiguration<Game>
     {
-        private readonly List<Game> _games = new() {
-            new Game { Name = "csgo" }, new Game { Name = "dota2" }
-        };
+        private readonly List<Game> _games = [
+            new Game { Name = "csgo" }, 
+            new Game { Name = "dota2" }
+        ];
 
         public override void Configure(EntityTypeBuilder<Game> builder)
         {

@@ -8,22 +8,13 @@ using MimeKit;
 
 namespace EmailSender.BLL.Services
 {
-    public class EmailService : IEmailService
+    public class EmailService(IConfiguration configuration) : IEmailService
     {
-        private readonly string _host;
-        private readonly int _port;
-        private readonly string _smtpEmail;
-        private readonly string _smtpPassword;
-        private readonly string _requestUrl;
-
-        public EmailService(IConfiguration configuration)
-        {
-            _host = configuration["EmailConfig:Host"]!;
-            _port = int.Parse(configuration["EmailConfig:Port"]!);
-            _smtpEmail = configuration["EmailConfig:Email"]!;
-            _smtpPassword = configuration["EmailConfig:Password"]!;
-            _requestUrl = configuration["EmailConfig:AddressCallback"]!;
-        }
+        private readonly string _host = configuration["EmailConfig:Host"]!;
+        private readonly int _port = int.Parse(configuration["EmailConfig:Port"]!);
+        private readonly string _smtpEmail = configuration["EmailConfig:Email"]!;
+        private readonly string _smtpPassword = configuration["EmailConfig:Password"]!;
+        private readonly string _requestUrl = configuration["EmailConfig:AddressCallback"]!;
 
         public async Task SendToEmailAsync(EmailTemplate template, CancellationToken cancellationToken = default)
         {

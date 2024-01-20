@@ -11,21 +11,14 @@ namespace Authentication.API.Controllers
 {
     [Route("api/authentication/confirm")]
     [ApiController]
-    public class AuthenticationConfirmController : ControllerBase
+    public class AuthenticationConfirmController(IAuthenticationConfirmService authConfirmService) : ControllerBase
     {
-        private readonly IAuthenticationConfirmService _authConfirmService;
-
-        public AuthenticationConfirmController(IAuthenticationConfirmService authConfirmService)
-        {
-            _authConfirmService = authConfirmService;
-        }
-
         [ProducesResponseType(typeof(ApiResult<TokensResponse>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpGet("account")]
         public async Task<IActionResult> ConfirmAccount(string token, CancellationToken cancellationToken)
         {
-            var response = await _authConfirmService.ConfirmAccountAsync(token, cancellationToken);
+            var response = await authConfirmService.ConfirmAccountAsync(token, cancellationToken);
 
             return Ok(ApiResult<TokensResponse>.Ok(response));
         }
@@ -35,7 +28,7 @@ namespace Authentication.API.Controllers
         [HttpGet("email/{email}")]
         public async Task<IActionResult> UpdateEmail(string email, string token, CancellationToken cancellationToken)
         {
-            var response = await _authConfirmService.UpdateEmailAsync(email, token, cancellationToken);
+            var response = await authConfirmService.UpdateEmailAsync(email, token, cancellationToken);
 
             return Ok(ApiResult<UserResponse>.Ok(response));
         }
@@ -45,7 +38,7 @@ namespace Authentication.API.Controllers
         [HttpGet("{userId:guid}/email/{email}")]
         public async Task<IActionResult> UpdateEmail(Guid userId, string email, CancellationToken cancellationToken)
         {
-            var response = await _authConfirmService.UpdateEmailByAdminAsync(userId, email, cancellationToken);
+            var response = await authConfirmService.UpdateEmailByAdminAsync(userId, email, cancellationToken);
 
             return Ok(ApiResult<UserResponse>.Ok(response));
         }
@@ -55,7 +48,7 @@ namespace Authentication.API.Controllers
         [HttpGet("login/{login}")]
         public async Task<IActionResult> UpdateLogin(string login, string token, CancellationToken cancellationToken)
         {
-            var response = await _authConfirmService.UpdateLoginAsync(login, token, cancellationToken);
+            var response = await authConfirmService.UpdateLoginAsync(login, token, cancellationToken);
 
             return Ok(ApiResult<UserResponse>.Ok(response));
         }
@@ -65,7 +58,7 @@ namespace Authentication.API.Controllers
         [HttpGet("{userId:guid}/login/{login}")]
         public async Task<IActionResult> UpdateLogin(Guid userId, string login, CancellationToken cancellationToken)
         {
-            var response = await _authConfirmService.UpdateLoginByAdminAsync(userId, login, cancellationToken);
+            var response = await authConfirmService.UpdateLoginByAdminAsync(userId, login, cancellationToken);
 
             return Ok(ApiResult<UserResponse>.Ok(response));
         }
@@ -75,7 +68,7 @@ namespace Authentication.API.Controllers
         [HttpGet("password/{password}")]
         public async Task<IActionResult> UpdatePassword(string password, string token, CancellationToken cancellationToken)
         {
-            var response = await _authConfirmService.UpdatePasswordAsync(password, token, cancellationToken);
+            var response = await authConfirmService.UpdatePasswordAsync(password, token, cancellationToken);
 
             return Ok(ApiResult<UserResponse>.Ok(response));
         }
@@ -85,7 +78,7 @@ namespace Authentication.API.Controllers
         [HttpDelete("account")]
         public async Task<IActionResult> Delete(string token, CancellationToken cancellationToken)
         {
-            var response = await _authConfirmService.DeleteAsync(token, cancellationToken);
+            var response = await authConfirmService.DeleteAsync(token, cancellationToken);
 
             return Ok(ApiResult<UserResponse>.Ok(response));
         }

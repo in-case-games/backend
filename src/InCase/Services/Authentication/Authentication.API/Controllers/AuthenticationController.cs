@@ -10,21 +10,14 @@ namespace Authentication.API.Controllers
 {
     [Route("api/authentication")]
     [ApiController]
-    public class AuthenticationController : ControllerBase
+    public class AuthenticationController(IAuthenticationService authenticationService) : ControllerBase
     {
-        private readonly IAuthenticationService _authenticationService;
-
-        public AuthenticationController(IAuthenticationService authenticationService)
-        {
-            _authenticationService = authenticationService;
-        }
-
         [ProducesResponseType(typeof(ApiResult<string>), (int)HttpStatusCode.OK)]
         [AllowAnonymous]
         [HttpPost("sign-in")]
         public async Task<IActionResult> SignIn(UserRequest request, CancellationToken cancellationToken)
         {
-            await _authenticationService.SignInAsync(request, cancellationToken);
+            await authenticationService.SignInAsync(request, cancellationToken);
 
             return Ok(ApiResult<string>.SentEmail());
         }
@@ -34,7 +27,7 @@ namespace Authentication.API.Controllers
         [HttpPost("sign-up")]
         public async Task<IActionResult> SignUp(UserRequest request, CancellationToken cancellationToken)
         {
-            await _authenticationService.SignUpAsync(request, cancellationToken);
+            await authenticationService.SignUpAsync(request, cancellationToken);
 
             return Ok(ApiResult<string>.SentEmail());
         }
@@ -44,7 +37,7 @@ namespace Authentication.API.Controllers
         [HttpGet("refresh")]
         public async Task<IActionResult> RefreshTokens(string token, CancellationToken cancellationToken)
         {
-            var response = await _authenticationService.RefreshTokensAsync(token, cancellationToken);
+            var response = await authenticationService.RefreshTokensAsync(token, cancellationToken);
 
             return Ok(ApiResult<TokensResponse>.Ok(response));
         }

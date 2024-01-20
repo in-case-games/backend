@@ -6,10 +6,11 @@ namespace Identity.DAL.Configurations
 {
     internal class RestrictionTypeConfiguration : BaseEntityConfiguration<RestrictionType>
     {
-        private readonly List<RestrictionType> _types = new() { 
+        private readonly List<RestrictionType> _types =
+        [
             new RestrictionType { Name = "mute" }, new RestrictionType { Name = "ban" },
             new RestrictionType { Name = "warn" }
-        };
+        ];
 
         public override void Configure(EntityTypeBuilder<RestrictionType> builder)
         {

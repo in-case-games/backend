@@ -48,7 +48,7 @@ namespace Game.BLL.Services
 
             foreach (var length in chances)
             {
-                partsChances.Add(new List<int> { start, start + length - 1 });
+                partsChances.Add([start, start + length - 1]);
                 start += length;
             }
 
