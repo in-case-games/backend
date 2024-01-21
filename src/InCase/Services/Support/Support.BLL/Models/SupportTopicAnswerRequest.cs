@@ -1,13 +1,12 @@
 ﻿using Support.DAL.Entities;
 
-namespace Support.BLL.Models
-{
-    public class SupportTopicAnswerRequest : BaseEntity
-    {
-        public string? Content { get; set; }
-        public DateTime Date { get; set; }
+namespace Support.BLL.Models;
 
-        public Guid? PlaintiffId { get; set; }
-        public Guid TopicId { get; set; }
-    }
+public class SupportTopicAnswerRequest : BaseEntity
+{
+    public string? Content { get; set; }
+    public DateTime Date { get; set; }
+
+    public Guid? PlaintiffId { get; set; }
+    public Guid TopicId { get; set; }
 }

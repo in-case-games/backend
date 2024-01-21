@@ -2,25 +2,15 @@
 using Infrastructure.MassTransit.Email;
 using MassTransit;
 
-namespace EmailSender.BLL.MassTransit.Consumers
+namespace EmailSender.BLL.MassTransit.Consumers;
+
+public class EmailConsumer(IUserService userService, IEmailService emailService) : IConsumer<EmailTemplate>
 {
-    public class EmailConsumer : IConsumer<EmailTemplate>
+    public async Task Consume(ConsumeContext<EmailTemplate> context)
     {
-        private readonly IUserService _userService;
-        private readonly IEmailService _emailService;
+        var user = await userService.GetAsync(context.Message.Email);
 
-        public EmailConsumer(IUserService userService, IEmailService emailService)
-        {
-            _userService = userService;
-            _emailService = emailService;
-        }
-
-        public async Task Consume(ConsumeContext<EmailTemplate> context)
-        {
-            var user = await _userService.GetAsync(context.Message.Email);
-
-            if(user is null || user.AdditionalInfo!.IsNotifyEmail || context.Message.IsRequiredMessage)
-                await _emailService.SendToEmailAsync(context.Message);
-        }
+        if (user is null || user.AdditionalInfo!.IsNotifyEmail || context.Message.IsRequiredMessage)
+            await emailService.SendToEmailAsync(context.Message);
     }
 }

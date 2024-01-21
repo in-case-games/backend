@@ -1,8 +1,7 @@
-﻿namespace Withdraw.BLL.Models
+﻿namespace Withdraw.BLL.Models;
+
+public class WithdrawItemRequest
 {
-    public class WithdrawItemRequest
-    {
-        public Guid InventoryId { get; set; }
-        public string? TradeUrl { get; set; }
-    }
+    public Guid InventoryId { get; set; }
+    public string? TradeUrl { get; set; }
 }

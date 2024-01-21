@@ -1,7 +1,6 @@
-﻿namespace Authentication.BLL.Interfaces
+﻿namespace Authentication.BLL.Interfaces;
+
+public interface IUserService
 {
-    public interface IUserService
-    {
-        public Task DoWorkManagerAsync(CancellationToken stoppingToken);
-    }
+    public Task DoWorkManagerAsync(CancellationToken stoppingToken);
 }

@@ -1,7 +1,6 @@
-﻿namespace Infrastructure.MassTransit
+﻿namespace Infrastructure.MassTransit;
+
+public class BaseTemplate
 {
-    public class BaseTemplate
-    {
-        public Guid Id { get; set; } = Guid.NewGuid();
-    }
+    public Guid Id { get; set; } = Guid.NewGuid();
 }

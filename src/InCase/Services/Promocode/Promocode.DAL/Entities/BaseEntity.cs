@@ -1,7 +1,6 @@
-﻿namespace Promocode.DAL.Entities
+﻿namespace Promocode.DAL.Entities;
+
+public class BaseEntity
 {
-    public class BaseEntity
-    {
-        public Guid Id { get; set; } = Guid.NewGuid();
-    }
+    public Guid Id { get; set; } = Guid.NewGuid();
 }

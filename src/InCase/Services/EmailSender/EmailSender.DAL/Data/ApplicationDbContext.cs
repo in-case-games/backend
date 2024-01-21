@@ -2,20 +2,17 @@
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 
-namespace EmailSender.DAL.Data
+namespace EmailSender.DAL.Data;
+
+public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
 {
-    public class ApplicationDbContext : DbContext
+    public DbSet<User> Users => Set<User>();
+    public DbSet<UserAdditionalInfo> AdditionalInfos => Set<UserAdditionalInfo>();
+
+    protected override void OnModelCreating(ModelBuilder builder)
     {
-        public DbSet<User> Users => Set<User>();
-        public DbSet<UserAdditionalInfo> AdditionalInfos => Set<UserAdditionalInfo>();
+        base.OnModelCreating(builder);
 
-        public ApplicationDbContext(DbContextOptions options) : base(options) { }
-
-        protected override void OnModelCreating(ModelBuilder builder)
-        {
-            base.OnModelCreating(builder);
-
-            builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
-        }
+        builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
     }
 }

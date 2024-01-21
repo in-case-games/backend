@@ -1,41 +1,40 @@
 ﻿using Authentication.BLL.Exceptions;
 
-namespace Authentication.BLL.Services
+namespace Authentication.BLL.Services;
+
+public static class FileService
 {
-    public static class FileService
+    private const string PathUri = "/static/images/";
+
+    public static void RemoveFolder(string path)
     {
-        private const string PathUri = "/static/images/";
+        var absolutePath = PathUri + path;
 
-        public static void RemoveFolder(string path)
+        if (!Directory.Exists(absolutePath)) return;
+
+        try
         {
-            var absolutePath = PathUri + path;
-
-            if (!Directory.Exists(absolutePath)) return;
-
-            try
-            {
-                Directory.Delete(absolutePath, recursive: true);
-            }
-            catch (Exception)
-            {
-                throw new ConflictException($"Не удалось удалить папку {absolutePath}");
-            }
+            Directory.Delete(absolutePath, recursive: true);
         }
-
-        public static void CreateFolder(string path)
+        catch (Exception)
         {
-            var absolutePath = PathUri + path;
+            throw new ConflictException($"Не удалось удалить папку {absolutePath}");
+        }
+    }
 
-            if (Directory.Exists(absolutePath)) return;
+    public static void CreateFolder(string path)
+    {
+        var absolutePath = PathUri + path;
 
-            try
-            {
-                Directory.CreateDirectory(absolutePath);
-            }
-            catch(Exception)
-            {
-                throw new ConflictException($"Не удалось создать папку {absolutePath}");
-            }
+        if (Directory.Exists(absolutePath)) return;
+
+        try
+        {
+            Directory.CreateDirectory(absolutePath);
+        }
+        catch(Exception)
+        {
+            throw new ConflictException($"Не удалось создать папку {absolutePath}");
         }
     }
 }

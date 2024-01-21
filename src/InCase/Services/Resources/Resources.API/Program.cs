@@ -91,14 +91,16 @@ builder.Services.AddMassTransit(x =>
 {
     x.SetKebabCaseEndpointNameFormatter();
 
-    x.AddBus(provider => Bus.Factory.CreateUsingRabbitMq(cfg =>
+    x.UsingRabbitMq((context, cfg) =>
     {
         cfg.Host(new Uri(builder.Configuration["MassTransit:Uri"]!), h =>
         {
             h.Username(builder.Configuration["MassTransit:Username"]!);
             h.Password(builder.Configuration["MassTransit:Password"]!);
         });
-    }));
+
+        cfg.ConfigureEndpoints(context);
+    });
 });
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

@@ -2,22 +2,21 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Withdraw.DAL.Entities;
 
-namespace Withdraw.DAL.Configurations
+namespace Withdraw.DAL.Configurations;
+
+internal class GameConfiguration : BaseEntityConfiguration<Game>
 {
-    internal class GameConfiguration : BaseEntityConfiguration<Game>
+    public override void Configure(EntityTypeBuilder<Game> builder)
     {
-        public override void Configure(EntityTypeBuilder<Game> builder)
-        {
-            base.Configure(builder);
+        base.Configure(builder);
 
-            builder.ToTable(nameof(Game));
+        builder.ToTable(nameof(Game));
 
-            builder.HasIndex(g => g.Name)
-                .IsUnique();
+        builder.HasIndex(g => g.Name)
+            .IsUnique();
 
-            builder.Property(g => g.Name)
-                .HasMaxLength(50)
-                .IsRequired();
-        }
+        builder.Property(g => g.Name)
+            .HasMaxLength(50)
+            .IsRequired();
     }
 }

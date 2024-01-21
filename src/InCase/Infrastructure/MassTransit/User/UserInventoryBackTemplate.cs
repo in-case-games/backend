@@ -1,9 +1,8 @@
-﻿namespace Infrastructure.MassTransit.User
-{
-    public class UserInventoryBackTemplate : BaseTemplate
-    {
-        public decimal FixedCost { get; set; }
+﻿namespace Infrastructure.MassTransit.User;
 
-        public Guid UserId { get; set; }
-    }
+public class UserInventoryBackTemplate : BaseTemplate
+{
+    public decimal FixedCost { get; set; }
+
+    public Guid UserId { get; set; }
 }

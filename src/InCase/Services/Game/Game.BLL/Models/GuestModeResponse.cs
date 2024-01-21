@@ -1,7 +1,6 @@
-﻿namespace Game.BLL.Models
+﻿namespace Game.BLL.Models;
+
+public class GuestModeResponse
 {
-    public class GuestModeResponse
-    {
-        public bool IsGuestMode { get; set; }
-    }
+    public bool IsGuestMode { get; set; }
 }

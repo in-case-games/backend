@@ -5,198 +5,190 @@ using Support.BLL.Interfaces;
 using Support.BLL.Models;
 using Support.DAL.Data;
 
-namespace Support.BLL.Services
+namespace Support.BLL.Services;
+
+public class SupportTopicService(ApplicationDbContext context) : ISupportTopicService
 {
-    public class SupportTopicService : ISupportTopicService
+    public async Task<SupportTopicResponse> GetAsync(Guid userId, Guid id, CancellationToken cancellation = default)
     {
-        private readonly ApplicationDbContext _context;
+        if (!await context.Users.AnyAsync(u => u.Id == userId, cancellation))
+            throw new NotFoundException("Пользователь не найден");
 
-        public SupportTopicService(ApplicationDbContext context)
-        {
-            _context = context;
-        }
+        var topic = await context.Topics
+            .Include(st => st.Answers!)
+                .ThenInclude(sta => sta.Images)
+            .AsNoTracking()
+            .FirstOrDefaultAsync(st => st.Id == id, cancellation) ??
+            throw new NotFoundException("Топик не найден");
 
-        public async Task<SupportTopicResponse> GetAsync(Guid userId, Guid id, CancellationToken cancellation = default)
-        {
-            if (!await _context.Users.AnyAsync(u => u.Id == userId, cancellation))
-                throw new NotFoundException("Пользователь не найден");
+        return topic.UserId == userId ? 
+            topic.ToResponse() :
+            throw new ForbiddenException("Вы не создатель топика");
+    }
 
-            var topic = await _context.Topics
-                .Include(st => st.Answers!)
-                    .ThenInclude(sta => sta.Images)
-                .AsNoTracking()
-                .FirstOrDefaultAsync(st => st.Id == id, cancellation) ??
-                throw new NotFoundException("Топик не найден");
+    public async Task<SupportTopicResponse> GetAsync(Guid id, CancellationToken cancellation = default)
+    {
+        var topic = await context.Topics
+            .Include(st => st.Answers!)
+                .ThenInclude(sta => sta.Images)
+            .AsNoTracking()
+            .FirstOrDefaultAsync(st => st.Id == id, cancellation) ??
+            throw new NotFoundException("Топик не найден");
 
-            return topic.UserId == userId ? 
-                topic.ToResponse() :
-                throw new ForbiddenException("Вы не создатель топика");
-        }
+        return topic.ToResponse();
+    }
 
-        public async Task<SupportTopicResponse> GetAsync(Guid id, CancellationToken cancellation = default)
-        {
-            var topic = await _context.Topics
-                .Include(st => st.Answers!)
-                    .ThenInclude(sta => sta.Images)
-                .AsNoTracking()
-                .FirstOrDefaultAsync(st => st.Id == id, cancellation) ??
-                throw new NotFoundException("Топик не найден");
+    public async Task<List<SupportTopicResponse>> GetByUserIdAsync(Guid userId, CancellationToken cancellation = default)
+    {
+        if (!await context.Users.AnyAsync(u => u.Id == userId, cancellation))
+            throw new NotFoundException("Пользователь не найден");
 
-            return topic.ToResponse();
-        }
+        var topics = await context.Topics
+            .Include(st => st.Answers!)
+                .ThenInclude(sta => sta.Images)
+            .AsNoTracking()
+            .Where(st => st.UserId == userId)
+            .ToListAsync(cancellation);
 
-        public async Task<List<SupportTopicResponse>> GetByUserIdAsync(Guid userId, CancellationToken cancellation = default)
-        {
-            if (!await _context.Users.AnyAsync(u => u.Id == userId, cancellation))
-                throw new NotFoundException("Пользователь не найден");
+        return topics.ToResponse();
+    }
 
-            var topics = await _context.Topics
-                .Include(st => st.Answers!)
-                    .ThenInclude(sta => sta.Images)
-                .AsNoTracking()
-                .Where(st => st.UserId == userId)
-                .ToListAsync(cancellation);
+    public async Task<List<SupportTopicResponse>> GetOpenedTopicsAsync(CancellationToken cancellation = default)
+    {
+        var topics = await context.Topics
+            .Include(st => st.Answers!)
+                .ThenInclude(sta => sta.Images)
+            .AsNoTracking()
+            .Where(st => st.IsClosed == false)
+            .ToListAsync(cancellation);
 
-            return topics.ToResponse();
-        }
+        return topics.ToResponse();
+    }
 
-        public async Task<List<SupportTopicResponse>> GetOpenedTopicsAsync(CancellationToken cancellation = default)
-        {
-            var topics = await _context.Topics
-                .Include(st => st.Answers!)
-                    .ThenInclude(sta => sta.Images)
-                .AsNoTracking()
-                .Where(st => st.IsClosed == false)
-                .ToListAsync(cancellation);
+    public async Task<SupportTopicResponse> CloseTopic(Guid id, CancellationToken cancellation = default)
+    {
+        var topic = await context.Topics
+            .Include(st => st.Answers!)
+                .ThenInclude(sta => sta.Images)
+            .FirstOrDefaultAsync(st => st.Id == id, cancellation) ??
+            throw new NotFoundException("Топик не найден");
 
-            return topics.ToResponse();
-        }
+        topic.IsClosed = true;
 
-        public async Task<SupportTopicResponse> CloseTopic(Guid id, CancellationToken cancellation = default)
-        {
-            var topic = await _context.Topics
-                .Include(st => st.Answers!)
-                    .ThenInclude(sta => sta.Images)
-                .FirstOrDefaultAsync(st => st.Id == id, cancellation) ??
-                throw new NotFoundException("Топик не найден");
+        await context.SaveChangesAsync(cancellation);
 
-            topic.IsClosed = true;
+        return topic.ToResponse();
+    }
 
-            await _context.SaveChangesAsync(cancellation);
+    public async Task<SupportTopicResponse> CloseTopic(Guid userId, Guid id, CancellationToken cancellation = default)
+    {
+        var topic = await context.Topics
+            .Include(st => st.Answers!)
+                .ThenInclude(sta => sta.Images)
+            .FirstOrDefaultAsync(st => st.Id == id, cancellation) ??
+            throw new NotFoundException("Топик не найден");
 
-            return topic.ToResponse();
-        }
+        if (!await context.Users.AnyAsync(u => u.Id == userId, cancellation))
+            throw new NotFoundException("Пользователь не найден");
+        if (topic.UserId != userId)
+            throw new ForbiddenException("Вы не создатель топика");
 
-        public async Task<SupportTopicResponse> CloseTopic(Guid userId, Guid id, CancellationToken cancellation = default)
-        {
-            var topic = await _context.Topics
-                .Include(st => st.Answers!)
-                    .ThenInclude(sta => sta.Images)
-                .FirstOrDefaultAsync(st => st.Id == id, cancellation) ??
-                throw new NotFoundException("Топик не найден");
+        topic.IsClosed = true;
 
-            if (!await _context.Users.AnyAsync(u => u.Id == userId, cancellation))
-                throw new NotFoundException("Пользователь не найден");
-            if (topic.UserId != userId)
-                throw new ForbiddenException("Вы не создатель топика");
+        await context.SaveChangesAsync(cancellation);
 
-            topic.IsClosed = true;
+        return topic.ToResponse();
+    }
 
-            await _context.SaveChangesAsync(cancellation);
+    public async Task<SupportTopicResponse> CreateAsync(SupportTopicRequest request, CancellationToken cancellation = default)
+    {
+        ValidationService.IsSupportTopic(request);
 
-            return topic.ToResponse();
-        }
+        var topics = await context.Topics
+            .AsNoTracking()
+            .Where(st => st.UserId == request.UserId && st.IsClosed == false)
+            .ToListAsync(cancellation);
+        var topic = request.ToEntity(isNewGuid: true);
 
-        public async Task<SupportTopicResponse> CreateAsync(SupportTopicRequest request, CancellationToken cancellation = default)
-        {
-            ValidationService.IsSupportTopic(request);
+        if (!await context.Users.AnyAsync(u => u.Id == request.UserId, cancellation))
+            throw new NotFoundException("Пользователь не найден");
+        if (topics.Count >= 3)
+            throw new ConflictException("Количество открытых топиков не может превышать 3");
 
-            var topics = await _context.Topics
-                .AsNoTracking()
-                .Where(st => st.UserId == request.UserId && st.IsClosed == false)
-                .ToListAsync(cancellation);
-            var topic = request.ToEntity(isNewGuid: true);
+        topic.IsClosed = false;
+        topic.Date = DateTime.UtcNow;
 
-            if (!await _context.Users.AnyAsync(u => u.Id == request.UserId, cancellation))
-                throw new NotFoundException("Пользователь не найден");
-            if (topics.Count >= 3)
-                throw new ConflictException("Количество открытых топиков не может превышать 3");
+        await context.Topics.AddAsync(topic, cancellation);
+        await context.SaveChangesAsync(cancellation);
 
-            topic.IsClosed = false;
-            topic.Date = DateTime.UtcNow;
+        FileService.CreateFolder(@$"topic-answers/{request.Id}/");
 
-            await _context.Topics.AddAsync(topic, cancellation);
-            await _context.SaveChangesAsync(cancellation);
+        return topic.ToResponse();
+    }
 
-            FileService.CreateFolder(@$"topic-answers/{request.Id}/");
+    public async Task<SupportTopicResponse> UpdateAsync(SupportTopicRequest request, CancellationToken cancellation = default)
+    {
+        ValidationService.IsSupportTopic(request);
 
-            return topic.ToResponse();
-        }
+        var topicOld = await context.Topics
+            .Include(st => st.Answers!)
+                .ThenInclude(sta => sta.Images)
+            .FirstOrDefaultAsync(st => st.Id == request.Id, cancellation) ??
+            throw new NotFoundException("Топик не найден");
+        var topic = request.ToEntity(isNewGuid: false);
 
-        public async Task<SupportTopicResponse> UpdateAsync(SupportTopicRequest request, CancellationToken cancellation = default)
-        {
-            ValidationService.IsSupportTopic(request);
+        if (!await context.Users.AnyAsync(u => u.Id == request.UserId, cancellation))
+            throw new NotFoundException("Пользователь не найден");
+        if (topicOld.UserId != request.UserId)
+            throw new ForbiddenException("Вы не создатель топика");
 
-            var topicOld = await _context.Topics
-                .Include(st => st.Answers!)
-                    .ThenInclude(sta => sta.Images)
-                .FirstOrDefaultAsync(st => st.Id == request.Id, cancellation) ??
-                throw new NotFoundException("Топик не найден");
-            var topic = request.ToEntity(isNewGuid: false);
+        topic.Date = topicOld.Date;
+        topic.IsClosed = topicOld.IsClosed;
 
-            if (!await _context.Users.AnyAsync(u => u.Id == request.UserId, cancellation))
-                throw new NotFoundException("Пользователь не найден");
-            if (topicOld.UserId != request.UserId)
-                throw new ForbiddenException("Вы не создатель топика");
+        context.Entry(topicOld).CurrentValues.SetValues(topic);
+        await context.SaveChangesAsync(cancellation);
 
-            topic.Date = topicOld.Date;
-            topic.IsClosed = topicOld.IsClosed;
+        topic.Answers = topicOld.Answers;
 
-            _context.Entry(topicOld).CurrentValues.SetValues(topic);
-            await _context.SaveChangesAsync(cancellation);
+        return topic.ToResponse();
+    }
 
-            topic.Answers = topicOld.Answers;
+    public async Task<SupportTopicResponse> DeleteAsync(Guid userId, Guid id, CancellationToken cancellation = default)
+    {
+        var topic = await context.Topics
+            .Include(st => st.Answers!)
+                .ThenInclude(sta => sta.Images)
+            .AsNoTracking()
+            .FirstOrDefaultAsync(st => st.Id == id, cancellation) ??
+            throw new NotFoundException("Топик не найден");
 
-            return topic.ToResponse();
-        }
+        if (!await context.Users.AnyAsync(u => u.Id == userId, cancellation))
+            throw new NotFoundException("Пользователь не найден");
+        if (topic.UserId != userId)
+            throw new ForbiddenException("Вы не создатель топика");
 
-        public async Task<SupportTopicResponse> DeleteAsync(Guid userId, Guid id, CancellationToken cancellation = default)
-        {
-            var topic = await _context.Topics
-                .Include(st => st.Answers!)
-                    .ThenInclude(sta => sta.Images)
-                .AsNoTracking()
-                .FirstOrDefaultAsync(st => st.Id == id, cancellation) ??
-                throw new NotFoundException("Топик не найден");
+        context.Topics.Remove(topic);
+        await context.SaveChangesAsync(cancellation);
 
-            if (!await _context.Users.AnyAsync(u => u.Id == userId, cancellation))
-                throw new NotFoundException("Пользователь не найден");
-            if (topic.UserId != userId)
-                throw new ForbiddenException("Вы не создатель топика");
+        FileService.RemoveFolder($"topic-answers/{id}/");
 
-            _context.Topics.Remove(topic);
-            await _context.SaveChangesAsync(cancellation);
+        return topic.ToResponse();
+    }
 
-            FileService.RemoveFolder($"topic-answers/{id}/");
+    public async Task<SupportTopicResponse> DeleteAsync(Guid id, CancellationToken cancellation = default)
+    {
+        var topic = await context.Topics
+            .Include(st => st.Answers!)
+                .ThenInclude(sta => sta.Images)
+            .AsNoTracking()
+            .FirstOrDefaultAsync(st => st.Id == id, cancellation) ??
+            throw new NotFoundException("Топик не найден");
 
-            return topic.ToResponse();
-        }
+        context.Topics.Remove(topic);
+        await context.SaveChangesAsync(cancellation);
 
-        public async Task<SupportTopicResponse> DeleteAsync(Guid id, CancellationToken cancellation = default)
-        {
-            var topic = await _context.Topics
-                .Include(st => st.Answers!)
-                    .ThenInclude(sta => sta.Images)
-                .AsNoTracking()
-                .FirstOrDefaultAsync(st => st.Id == id, cancellation) ??
-                throw new NotFoundException("Топик не найден");
+        FileService.RemoveFolder($"topic-answers/{id}/");
 
-            _context.Topics.Remove(topic);
-            await _context.SaveChangesAsync(cancellation);
-
-            FileService.RemoveFolder($"topic-answers/{id}/");
-
-            return topic.ToResponse();
-        }
+        return topic.ToResponse();
     }
 }

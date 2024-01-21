@@ -2,23 +2,20 @@ using Microsoft.EntityFrameworkCore;
 using Identity.DAL.Entities;
 using System.Reflection;
 
-namespace Identity.DAL.Data
+namespace Identity.DAL.Data;
+
+public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
 {
-    public class ApplicationDbContext: DbContext
+    public DbSet<RestrictionType> RestrictionTypes => Set<RestrictionType>();
+    public DbSet<User> Users => Set<User>();
+    public DbSet<UserAdditionalInfo> AdditionalInfos => Set<UserAdditionalInfo>();
+    public DbSet<UserRestriction> Restrictions => Set<UserRestriction>();
+    public DbSet<UserRole> Roles => Set<UserRole>();
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        public DbSet<RestrictionType> RestrictionTypes => Set<RestrictionType>();
-        public DbSet<User> Users => Set<User>();
-        public DbSet<UserAdditionalInfo> AdditionalInfos => Set<UserAdditionalInfo>();
-        public DbSet<UserRestriction> Restrictions => Set<UserRestriction>();
-        public DbSet<UserRole> Roles => Set<UserRole>();
+        base.OnModelCreating(modelBuilder);
 
-        public ApplicationDbContext(DbContextOptions options): base(options) {}
-
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            base.OnModelCreating(modelBuilder);
-
-            modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
-        }
+        modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
     }
 }

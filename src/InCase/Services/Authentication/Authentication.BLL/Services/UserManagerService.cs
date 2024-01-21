@@ -3,66 +3,54 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace Authentication.BLL.Services
+namespace Authentication.BLL.Services;
+
+public class UserManagerService(
+    IServiceProvider serviceProvider, 
+    IHostApplicationLifetime lifetime, 
+    ILogger<UserManagerService> logger) : IHostedService
 {
-    public class UserManagerService : IHostedService
+    public Task StartAsync(CancellationToken cancellationToken)
     {
-        private readonly IServiceProvider _serviceProvider;
-        private readonly ILogger<UserManagerService> _logger;
-        private readonly IHostApplicationLifetime _lifetime;
+        _ = DoWork(cancellationToken);
 
-        public UserManagerService(
-            IServiceProvider serviceProvider,
-            IHostApplicationLifetime lifetime,
-            ILogger<UserManagerService> logger)
+        return Task.CompletedTask;
+    }
+
+    public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
+
+    private async Task DoWork(CancellationToken stoppingToken)
+    {
+        if (!await WaitForAppStartup(stoppingToken)) return;
+
+        while (!stoppingToken.IsCancellationRequested)
         {
-            _serviceProvider = serviceProvider;
-            _lifetime = lifetime;
-            _logger = logger;
-        }
-
-        public Task StartAsync(CancellationToken cancellationToken)
-        {
-            _ = DoWork(cancellationToken);
-
-            return Task.CompletedTask;
-        }
-
-        public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
-
-        private async Task DoWork(CancellationToken stoppingToken)
-        {
-            if (!await WaitForAppStartup(stoppingToken)) return;
-
-            while (!stoppingToken.IsCancellationRequested)
+            try
             {
-                try
-                {
-                    await using var scope = _serviceProvider.CreateAsyncScope();
-                    var userService = scope.ServiceProvider.GetService<IUserService>();
-                    await userService!.DoWorkManagerAsync(stoppingToken);
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogCritical(ex, ex.Message);
-                    _logger.LogCritical(ex, ex.StackTrace);
-                }
-
-                await Task.Delay(300, stoppingToken);
+                await using var scope = serviceProvider.CreateAsyncScope();
+                var userService = scope.ServiceProvider.GetService<IUserService>();
+                await userService!.DoWorkManagerAsync(stoppingToken);
             }
+            catch (Exception ex)
+            {
+                logger.LogCritical(ex, ex.Message);
+                logger.LogCritical(ex, ex.StackTrace);
+            }
+
+            await Task.Delay(1000, stoppingToken);
         }
+    }
 
-        private async Task<bool> WaitForAppStartup(CancellationToken stoppingToken)
-        {
-            var startedSource = new TaskCompletionSource();
-            await using var reg1 = _lifetime.ApplicationStarted.Register(() => startedSource.SetResult());
+    private async Task<bool> WaitForAppStartup(CancellationToken stoppingToken)
+    {
+        var startedSource = new TaskCompletionSource();
+        await using var reg1 = lifetime.ApplicationStarted.Register(() => startedSource.SetResult());
 
-            var cancelledSource = new TaskCompletionSource();
-            await using var reg2 = stoppingToken.Register(() => cancelledSource.SetResult());
+        var cancelledSource = new TaskCompletionSource();
+        await using var reg2 = stoppingToken.Register(() => cancelledSource.SetResult());
 
-            var completedTask = await Task.WhenAny(startedSource.Task, cancelledSource.Task).ConfigureAwait(false);
+        var completedTask = await Task.WhenAny(startedSource.Task, cancelledSource.Task).ConfigureAwait(false);
 
-            return completedTask == startedSource.Task;
-        }
+        return completedTask == startedSource.Task;
     }
 }

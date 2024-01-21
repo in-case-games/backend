@@ -1,12 +1,11 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Payment.DAL.Entities
+namespace Payment.DAL.Entities;
+
+public class User : BaseEntity
 {
-    public class User : BaseEntity
-    {
-        [JsonIgnore]
-        public IEnumerable<UserPayment>? Payments { get; set; }
-        [JsonIgnore]
-        public UserPromocode? Promocode { get; set; }
-    }
+    [JsonIgnore]
+    public IEnumerable<UserPayment>? Payments { get; set; }
+    [JsonIgnore]
+    public UserPromocode? Promocode { get; set; }
 }

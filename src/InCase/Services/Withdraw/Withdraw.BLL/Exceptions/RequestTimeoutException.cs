@@ -1,9 +1,5 @@
 ﻿using Withdraw.BLL.Models;
 
-namespace Withdraw.BLL.Exceptions
-{
-    public class RequestTimeoutException : StatusCodeException
-    {
-        public RequestTimeoutException(string message) : base(ErrorCodes.RequestTimeout, message) { }
-    }
-}
+namespace Withdraw.BLL.Exceptions;
+
+public class RequestTimeoutException(string message) : StatusCodeException(ErrorCodes.RequestTimeout, message);

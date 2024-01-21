@@ -1,7 +1,6 @@
-﻿namespace Payment.BLL.Models
+﻿namespace Payment.BLL.Models;
+
+public class PaymentBalanceResponse
 {
-    public class PaymentBalanceResponse
-    {
-        public decimal Balance { get; set; }
-    }
+    public decimal Balance { get; set; }
 }

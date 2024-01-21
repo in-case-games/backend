@@ -1,20 +1,19 @@
 ﻿using Infrastructure.MassTransit.User;
 using Promocode.DAL.Entities;
 
-namespace Promocode.BLL.Helpers
+namespace Promocode.BLL.Helpers;
+
+public static class UserPromocodeTransformer
 {
-    public static class UserPromocodeTransformer
+    public static UserPromocodeTemplate ToTemplate(this UserPromocode entity) => new()
     {
-        public static UserPromocodeTemplate ToTemplate(this UserPromocode entity) => new()
-        {
-           Id = entity.Id,
-           Discount = entity.Promocode!.Discount,
-           Type = entity.Promocode?.Type is null ? null : new PromocodeTypeTemplate
-           {
-               Id = entity.Promocode.Type.Id,
-               Name = entity.Promocode?.Type.Name,
-           },
-           UserId = entity.UserId,
-        };
-    }
+       Id = entity.Id,
+       Discount = entity.Promocode!.Discount,
+       Type = entity.Promocode?.Type is null ? null : new PromocodeTypeTemplate
+       {
+           Id = entity.Promocode.Type.Id,
+           Name = entity.Promocode?.Type.Name,
+       },
+       UserId = entity.UserId,
+    };
 }

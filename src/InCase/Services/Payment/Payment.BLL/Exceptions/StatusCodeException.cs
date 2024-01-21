@@ -1,12 +1,6 @@
-﻿namespace Payment.BLL.Exceptions
-{
-    public class StatusCodeException : Exception
-    {
-        public int StatusCode { get; set; }
+﻿namespace Payment.BLL.Exceptions;
 
-        public StatusCodeException(int statusCode, string message) : base(message)
-        {
-            StatusCode = statusCode;
-        }
-    }
+public class StatusCodeException(int statusCode, string message) : Exception(message)
+{
+    public int StatusCode { get; set; } = statusCode;
 }

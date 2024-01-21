@@ -2,31 +2,30 @@
 using Resources.BLL.Models;
 using Resources.DAL.Entities;
 
-namespace Resources.BLL.Helpers
+namespace Resources.BLL.Helpers;
+
+public static class LootBoxTransformer
 {
-    public static class LootBoxTransformer
-    {
-        public static LootBoxResponse ToResponse(this LootBox box) =>
-            new()
-            {
-                Id = box.Id,
-                Cost = box.Cost,
-                Name = box.Name,
-                IsLocked = box.IsLocked,
-                Game = box.Game?.Name
-            };
-
-        public static List<LootBoxResponse> ToResponse(this IEnumerable<LootBox> boxes) =>
-            boxes.Select(ToResponse).ToList();
-
-        public static LootBoxTemplate ToTemplate(this LootBox entity, bool isDeleted = false) => new()
+    public static LootBoxResponse ToResponse(this LootBox box) =>
+        new()
         {
-            Id = entity.Id,
-            Cost = entity.Cost,
-            GameId = entity.GameId,
-            IsDeleted = isDeleted,
-            IsLocked = entity.IsLocked,
-            Name = entity.Name
+            Id = box.Id,
+            Cost = box.Cost,
+            Name = box.Name,
+            IsLocked = box.IsLocked,
+            Game = box.Game?.Name
         };
-    }
+
+    public static List<LootBoxResponse> ToResponse(this IEnumerable<LootBox> boxes) =>
+        boxes.Select(ToResponse).ToList();
+
+    public static LootBoxTemplate ToTemplate(this LootBox entity, bool isDeleted = false) => new()
+    {
+        Id = entity.Id,
+        Cost = entity.Cost,
+        GameId = entity.GameId,
+        IsDeleted = isDeleted,
+        IsLocked = entity.IsLocked,
+        Name = entity.Name
+    };
 }

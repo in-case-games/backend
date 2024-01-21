@@ -5,51 +5,43 @@ using Payment.BLL.Interfaces;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace Payment.BLL.Services
+namespace Payment.BLL.Services;
+
+public class EncryptorService(IConfiguration cfg) : IEncryptorService
 {
-    public class EncryptorService : IEncryptorService
+    public string GenerateHmac(byte[] hashOfDataToSign)
     {
-        private readonly IConfiguration _cfg;
+        using var hash = new HMACSHA256(Encoding.ASCII.GetBytes(cfg["GameMoney:HMACSecret"]!));
 
-        public EncryptorService(IConfiguration cfg)
+        var hashBytes = hash.ComputeHash(hashOfDataToSign);
+
+        return BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
+    }
+
+    public bool VerifySignatureRsa(IGameMoneyResponse response)
+    {
+        var hash = Encoding.ASCII.GetBytes(response.ToString());
+        var signature = Encoding.ASCII.GetBytes(response!.SignatureRsa);
+
+        return VerifySignatureRsa(hash, signature);
+    }
+
+    private bool VerifySignatureRsa(byte[] hashOfDataToSign, byte[] signature)
+    {
+        var path = Path.Combine(Directory.GetCurrentDirectory(), "RsaKeys", cfg["GameMoney:RSA:PublicKey"]!);
+        using var reader = new StringReader(File.ReadAllText(path));
+        var param = (RsaKeyParameters)new PemReader(reader).ReadObject();
+        var rsa = new RSACryptoServiceProvider(2048);
+
+        rsa.ImportParameters(new RSAParameters()
         {
-            _cfg = cfg;
-        }
+            Modulus = param.Modulus.ToByteArrayUnsigned(),
+            Exponent = param.Exponent.ToByteArrayUnsigned()
+        });
 
-        public string GenerateHmac(byte[] hashOfDataToSign)
-        {
-            using var hash = new HMACSHA256(Encoding.ASCII.GetBytes(_cfg["GameMoney:HMACSecret"]!));
+        var formatter = new RSAPKCS1SignatureDeformatter(rsa);
+        formatter.SetHashAlgorithm("SHA256");
 
-            var hashBytes = hash.ComputeHash(hashOfDataToSign);
-
-            return BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
-        }
-
-        public bool VerifySignatureRsa(IGameMoneyResponse response)
-        {
-            var hash = Encoding.ASCII.GetBytes(response.ToString());
-            var signature = Encoding.ASCII.GetBytes(response!.SignatureRsa);
-
-            return VerifySignatureRsa(hash, signature);
-        }
-
-        private bool VerifySignatureRsa(byte[] hashOfDataToSign, byte[] signature)
-        {
-            var path = Path.Combine(Directory.GetCurrentDirectory(), "RsaKeys", _cfg["GameMoney:RSA:PublicKey"]!);
-            using var reader = new StringReader(File.ReadAllText(path));
-            var param = (RsaKeyParameters)new PemReader(reader).ReadObject();
-            var rsa = new RSACryptoServiceProvider(2048);
-
-            rsa.ImportParameters(new RSAParameters()
-            {
-                Modulus = param.Modulus.ToByteArrayUnsigned(),
-                Exponent = param.Exponent.ToByteArrayUnsigned()
-            });
-
-            var formatter = new RSAPKCS1SignatureDeformatter(rsa);
-            formatter.SetHashAlgorithm("SHA256");
-
-            return formatter.VerifySignature(hashOfDataToSign, signature);
-        }
+        return formatter.VerifySignature(hashOfDataToSign, signature);
     }
 }

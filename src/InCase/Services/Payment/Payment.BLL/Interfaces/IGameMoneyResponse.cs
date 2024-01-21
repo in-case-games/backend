@@ -1,10 +1,9 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Payment.BLL.Interfaces
+namespace Payment.BLL.Interfaces;
+
+public interface IGameMoneyResponse
 {
-    public interface IGameMoneyResponse
-    {
-        [JsonPropertyName("signature")] public string SignatureRsa { get; set; }
-        public string ToString();
-    }
+    [JsonPropertyName("signature")] public string SignatureRsa { get; set; }
+    public string ToString();
 }

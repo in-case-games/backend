@@ -1,12 +1,11 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Authentication.DAL.Entities
-{
-    public class UserRole : BaseEntity
-    {
-        public string? Name { get; set; }
+namespace Authentication.DAL.Entities;
 
-        [JsonIgnore]
-        public UserAdditionalInfo? AdditionalInfo { get; set; }
-    }
+public class UserRole : BaseEntity
+{
+    public string? Name { get; set; }
+
+    [JsonIgnore]
+    public UserAdditionalInfo? AdditionalInfo { get; set; }
 }
