@@ -1,15 +1,14 @@
 ﻿using Payment.BLL.Interfaces;
 using System.Text.Json.Serialization;
 
-namespace Payment.BLL.Models
-{
-    public class GameMoneyTopUpResponse : IGameMoneyResponse
-    {
-        [JsonPropertyName("status")] public string? StatusAnswer { get; set; }
-        [JsonPropertyName("invoice")] public string? InvoiceId { get; set; }
-        [JsonPropertyName("type")] public string? TypeAnswer { get; set; }
-        [JsonPropertyName("signature")] public string SignatureRsa { get; set; } = null!;
+namespace Payment.BLL.Models;
 
-        public override string ToString() => $"status:{StatusAnswer};invoice:{InvoiceId};type:{TypeAnswer};";
-    }
+public class GameMoneyTopUpResponse : IGameMoneyResponse
+{
+    [JsonPropertyName("status")] public string? StatusAnswer { get; set; }
+    [JsonPropertyName("invoice")] public string? InvoiceId { get; set; }
+    [JsonPropertyName("type")] public string? TypeAnswer { get; set; }
+    [JsonPropertyName("signature")] public string SignatureRsa { get; set; } = null!;
+
+    public override string ToString() => $"status:{StatusAnswer};invoice:{InvoiceId};type:{TypeAnswer};";
 }

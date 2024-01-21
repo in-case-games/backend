@@ -4,75 +4,67 @@ using Resources.BLL.Interfaces;
 using Resources.DAL.Data;
 using Resources.DAL.Entities;
 
-namespace Resources.BLL.Services
+namespace Resources.BLL.Services;
+
+public class GroupLootBoxService(ApplicationDbContext context) : IGroupLootBoxService
 {
-    public class GroupLootBoxService : IGroupLootBoxService
+    public async Task<List<GroupLootBox>> GetAsync(CancellationToken cancellation = default) =>
+        await context.GroupBoxes
+        .AsNoTracking()
+        .ToListAsync(cancellation);
+
+    public async Task<GroupLootBox> GetAsync(Guid id, CancellationToken cancellation = default) =>
+        await context.GroupBoxes
+        .AsNoTracking()
+        .FirstOrDefaultAsync(glb => glb.Id == id, cancellation) ?? 
+        throw new NotFoundException("Группа кейсов не найдена");
+
+    public async Task<GroupLootBox> GetAsync(string name, CancellationToken cancellation = default) =>
+        await context.GroupBoxes
+        .AsNoTracking()
+        .FirstOrDefaultAsync(glb => glb.Name == name, cancellation) ??
+        throw new NotFoundException("Группа кейсов не найдена");
+
+    public async Task<GroupLootBox> CreateAsync(GroupLootBox request, CancellationToken cancellation = default)
     {
-        private readonly ApplicationDbContext _context;
+        ValidationService.IsGroupLootBox(request);
 
-        public GroupLootBoxService(ApplicationDbContext context)
-        {
-            _context = context;
-        }
+        request.Id = Guid.NewGuid();
 
-        public async Task<List<GroupLootBox>> GetAsync(CancellationToken cancellation = default) =>
-            await _context.GroupBoxes
+        if (await context.GroupBoxes.AnyAsync(glb => glb.Name == request.Name, cancellation))
+            throw new ConflictException("Название группы кейсов занято");
+
+        await context.GroupBoxes.AddAsync(request, cancellation);
+        await context.SaveChangesAsync(cancellation);
+
+        return request;
+    }
+
+    public async Task<GroupLootBox> UpdateAsync(GroupLootBox request, CancellationToken cancellation = default)
+    {
+        ValidationService.IsGroupLootBox(request);
+
+        if (!await context.GroupBoxes.AnyAsync(glb => glb.Id == request.Id, cancellation)) 
+            throw new NotFoundException("Группа кейсов не найдена");
+        if (await context.GroupBoxes.AnyAsync(glb => glb.Name == request.Name && glb.Id != request.Id, cancellation))
+            throw new ConflictException("Название группы кейсов занято");
+
+        context.GroupBoxes.Update(request);
+        await context.SaveChangesAsync(cancellation);
+
+        return request;
+    }
+
+    public async Task<GroupLootBox> DeleteAsync(Guid id, CancellationToken cancellation = default)
+    {
+        var group = await context.GroupBoxes
             .AsNoTracking()
-            .ToListAsync(cancellation);
-
-        public async Task<GroupLootBox> GetAsync(Guid id, CancellationToken cancellation = default) =>
-            await _context.GroupBoxes
-            .AsNoTracking()
-            .FirstOrDefaultAsync(glb => glb.Id == id, cancellation) ?? 
+            .FirstOrDefaultAsync(glb => glb.Id == id, cancellation) ??
             throw new NotFoundException("Группа кейсов не найдена");
 
-        public async Task<GroupLootBox> GetAsync(string name, CancellationToken cancellation = default) =>
-            await _context.GroupBoxes
-            .AsNoTracking()
-            .FirstOrDefaultAsync(glb => glb.Name == name, cancellation) ??
-            throw new NotFoundException("Группа кейсов не найдена");
+        context.GroupBoxes.Remove(group);
+        await context.SaveChangesAsync(cancellation);
 
-        public async Task<GroupLootBox> CreateAsync(GroupLootBox request, CancellationToken cancellation = default)
-        {
-            ValidationService.IsGroupLootBox(request);
-
-            request.Id = Guid.NewGuid();
-
-            if (await _context.GroupBoxes.AnyAsync(glb => glb.Name == request.Name, cancellation))
-                throw new ConflictException("Название группы кейсов занято");
-
-            await _context.GroupBoxes.AddAsync(request, cancellation);
-            await _context.SaveChangesAsync(cancellation);
-
-            return request;
-        }
-
-        public async Task<GroupLootBox> UpdateAsync(GroupLootBox request, CancellationToken cancellation = default)
-        {
-            ValidationService.IsGroupLootBox(request);
-
-            if (!await _context.GroupBoxes.AnyAsync(glb => glb.Id == request.Id, cancellation)) 
-                throw new NotFoundException("Группа кейсов не найдена");
-            if (await _context.GroupBoxes.AnyAsync(glb => glb.Name == request.Name && glb.Id != request.Id, cancellation))
-                throw new ConflictException("Название группы кейсов занято");
-
-            _context.GroupBoxes.Update(request);
-            await _context.SaveChangesAsync(cancellation);
-
-            return request;
-        }
-
-        public async Task<GroupLootBox> DeleteAsync(Guid id, CancellationToken cancellation = default)
-        {
-            var group = await _context.GroupBoxes
-                .AsNoTracking()
-                .FirstOrDefaultAsync(glb => glb.Id == id, cancellation) ??
-                throw new NotFoundException("Группа кейсов не найдена");
-
-            _context.GroupBoxes.Remove(group);
-            await _context.SaveChangesAsync(cancellation);
-
-            return group;
-        }
+        return group;
     }
 }

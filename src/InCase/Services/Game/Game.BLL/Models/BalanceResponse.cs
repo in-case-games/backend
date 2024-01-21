@@ -1,7 +1,6 @@
-﻿namespace Game.BLL.Models
+﻿namespace Game.BLL.Models;
+
+public class BalanceResponse
 {
-    public class BalanceResponse
-    {
-        public decimal Balance { get; set; }
-    }
+    public decimal Balance { get; set; }
 }

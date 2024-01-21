@@ -5,150 +5,144 @@ using Withdraw.BLL.Interfaces;
 using Withdraw.BLL.Models;
 using Withdraw.DAL.Entities;
 
-namespace Withdraw.BLL.Services
+namespace Withdraw.BLL.Services;
+
+public class WithdrawItemService(
+    MarketTmService tmService, 
+    ILogger<WithdrawItemService> logger) : IWithdrawItemService
 {
-    public class WithdrawItemService : IWithdrawItemService
+    private const int NumberAttempts = 5;
+    private readonly ConcurrentDictionary<string, ITradeMarketService> _marketServices = new()
     {
-        private const int NumberAttempts = 5;
-        private readonly ConcurrentDictionary<string, ITradeMarketService> _marketServices;
-        private readonly ILogger<WithdrawItemService> _logger;
+        ["tm"] = tmService,
+    };
 
-        public WithdrawItemService(MarketTmService tmService, ILogger<WithdrawItemService> logger)
+    public async Task<BuyItemResponse> BuyItemAsync(ItemInfoResponse info, string tradeUrl, CancellationToken cancellation = default)
+    {
+        var name = info.Market.Name ?? throw new BadRequestException("Название маркета пустое");
+
+        if (!_marketServices.TryGetValue(name, out var value)) 
+            throw new NotFoundException("Маркет не найден");
+
+        var i = 0;
+
+        while (i < NumberAttempts)
         {
-            _logger = logger;
-            _marketServices = new ConcurrentDictionary<string, ITradeMarketService>
+            try
             {
-                ["tm"] = tmService,
-            };
-        }
+                var item = await value.BuyItemAsync(info, tradeUrl, cancellation);
 
-        public async Task<BuyItemResponse> BuyItemAsync(ItemInfoResponse info, string tradeUrl, CancellationToken cancellation = default)
-        {
-            var name = info.Market.Name ?? throw new BadRequestException("Название маркета пустое");
+                item.Market = info.Market;
 
-            if (!_marketServices.TryGetValue(name, out var value)) 
-                throw new NotFoundException("Маркет не найден");
-
-            var i = 0;
-
-            while (i < NumberAttempts)
-            {
-                try
-                {
-                    var item = await value.BuyItemAsync(info, tradeUrl, cancellation);
-
-                    item.Market = info.Market;
-
-                    _logger.LogInformation($"The item successfully bought. ItemId: {item.Id}. MarketName: {name}");
-                    return item;
-                }
-                catch (Exception ex) 
-                { 
-                    _logger.LogError($"Не смог купить предмет - {info.Item.Id}");
-                    _logger.LogError(ex, ex.Message);
-                    _logger.LogError(ex, ex.StackTrace);
-                    i++; 
-                }
-
-                await Task.Delay(1000, cancellation);
+                logger.LogInformation($"The item successfully bought. ItemId: {item.Id}. MarketName: {name}");
+                return item;
+            }
+            catch (Exception ex) 
+            { 
+                logger.LogError($"Не смог купить предмет - {info.Item.Id}");
+                logger.LogError(ex, ex.Message);
+                logger.LogError(ex, ex.StackTrace);
+                i++; 
             }
 
-            throw new RequestTimeoutException("Сервис покупки предметов не отвечает");
+            await Task.Delay(1000, cancellation);
         }
 
-        public async Task<BalanceMarketResponse> GetBalanceAsync(string marketName, CancellationToken cancellation = default)
+        throw new RequestTimeoutException("Сервис покупки предметов не отвечает");
+    }
+
+    public async Task<BalanceMarketResponse> GetBalanceAsync(string marketName, CancellationToken cancellation = default)
+    {
+        if (!_marketServices.TryGetValue(marketName, out var value))
+            throw new NotFoundException("Маркет не найден");
+
+        var i = 0;
+
+        while (i < NumberAttempts)
         {
-            if (!_marketServices.TryGetValue(marketName, out var value))
-                throw new NotFoundException("Маркет не найден");
-
-            var i = 0;
-
-            while (i < NumberAttempts)
+            try
             {
-                try
-                {
-                    return await value.GetBalanceAsync(cancellation);
-                }
-                catch(Exception ex)
-                {
-                    _logger.LogError($"Не смог получить баланс маркета - {marketName}");
-                    _logger.LogError(ex, ex.Message);
-                    _logger.LogError(ex, ex.StackTrace);
-                    i++;
-                }
-
-                await Task.Delay(1000, cancellation);
+                return await value.GetBalanceAsync(cancellation);
+            }
+            catch(Exception ex)
+            {
+                logger.LogError($"Не смог получить баланс маркета - {marketName}");
+                logger.LogError(ex, ex.Message);
+                logger.LogError(ex, ex.StackTrace);
+                i++;
             }
 
-            throw new RequestTimeoutException("Сервис покупки предметов не отвечает");
+            await Task.Delay(1000, cancellation);
         }
 
-        public async Task<ItemInfoResponse> GetItemInfoAsync(GameItem item, CancellationToken cancellation = default)
+        throw new RequestTimeoutException("Сервис покупки предметов не отвечает");
+    }
+
+    public async Task<ItemInfoResponse> GetItemInfoAsync(GameItem item, CancellationToken cancellation = default)
+    {
+        var gameName = item.Game?.Name ?? throw new BadRequestException("Название игры пустое");
+        var market = item.Game?.Market ?? throw new BadRequestException("Название маркета пустое");
+
+        if (!_marketServices.TryGetValue(market.Name!, out var value))
+            throw new NotFoundException("Маркет не найден");
+
+        var i = 0;
+
+        while (i < NumberAttempts)
         {
-            var gameName = item.Game?.Name ?? throw new BadRequestException("Название игры пустое");
-            var market = item.Game?.Market ?? throw new BadRequestException("Название маркета пустое");
-
-            if (!_marketServices.TryGetValue(market.Name!, out var value))
-                throw new NotFoundException("Маркет не найден");
-
-            var i = 0;
-
-            while (i < NumberAttempts)
+            try
             {
-                try
-                {
-                    var info = await value.GetItemInfoAsync(item.IdForMarket!, gameName, cancellation);
-                    
-                    info.Item = item;
-                    info.Market = market;
-                    
-                    return info;
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError($"Не смог получить информацию о предмете - {item.Id}");
-                    _logger.LogError(ex, ex.Message);
-                    _logger.LogError(ex, ex.StackTrace);
-                    i++;
-                }
-
-                await Task.Delay(1000, cancellation);
+                var info = await value.GetItemInfoAsync(item.IdForMarket!, gameName, cancellation);
+                
+                info.Item = item;
+                info.Market = market;
+                
+                return info;
             }
-            
-            throw new RequestTimeoutException("Сервис покупки предмета не отвечает");
-        }
-
-        public async Task<TradeInfoResponse> GetTradeInfoAsync(UserHistoryWithdraw history, CancellationToken cancellation = default)
-        {
-            var name = history.Market?.Name ?? throw new BadRequestException("Название маркета пустое");
-
-            if (!_marketServices.TryGetValue(name, out var value))
-                throw new NotFoundException("Маркет не найден");
-
-            var i = 0;
-
-            while (i < NumberAttempts)
+            catch (Exception ex)
             {
-                try
-                {
-                    var info = await value.GetTradeInfoAsync(history, cancellation);
-
-                    info.Item = history.Item;
-
-                    return info;
-                }
-                catch(Exception ex)
-                {
-                    _logger.LogError($"Не смог получить информацию о выводе - {history.Item!.Id}");
-                    _logger.LogError(ex, ex.Message);
-                    _logger.LogError(ex, ex.StackTrace);
-                    i++;
-                }
-
-                await Task.Delay(1000, cancellation);
+                logger.LogError($"Не смог получить информацию о предмете - {item.Id}");
+                logger.LogError(ex, ex.Message);
+                logger.LogError(ex, ex.StackTrace);
+                i++;
             }
 
-            throw new RequestTimeoutException("Сервис покупки предмета не отвечает");
+            await Task.Delay(1000, cancellation);
         }
+        
+        throw new RequestTimeoutException("Сервис покупки предмета не отвечает");
+    }
+
+    public async Task<TradeInfoResponse> GetTradeInfoAsync(UserHistoryWithdraw history, CancellationToken cancellation = default)
+    {
+        var name = history.Market?.Name ?? throw new BadRequestException("Название маркета пустое");
+
+        if (!_marketServices.TryGetValue(name, out var value))
+            throw new NotFoundException("Маркет не найден");
+
+        var i = 0;
+
+        while (i < NumberAttempts)
+        {
+            try
+            {
+                var info = await value.GetTradeInfoAsync(history, cancellation);
+
+                info.Item = history.Item;
+
+                return info;
+            }
+            catch(Exception ex)
+            {
+                logger.LogError($"Не смог получить информацию о выводе - {history.Item!.Id}");
+                logger.LogError(ex, ex.Message);
+                logger.LogError(ex, ex.StackTrace);
+                i++;
+            }
+
+            await Task.Delay(1000, cancellation);
+        }
+
+        throw new RequestTimeoutException("Сервис покупки предмета не отвечает");
     }
 }

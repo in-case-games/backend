@@ -1,9 +1,8 @@
 ﻿using Identity.DAL.Entities;
 
-namespace Identity.BLL.Models
+namespace Identity.BLL.Models;
+
+public class RestrictionTypeResponse : BaseEntity
 {
-    public class RestrictionTypeResponse : BaseEntity
-    {
-        public string? Name { get; set; }
-    }
+    public string? Name { get; set; }
 }

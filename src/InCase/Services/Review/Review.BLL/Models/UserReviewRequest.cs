@@ -1,15 +1,14 @@
 ﻿using Review.DAL.Entities;
 
-namespace Review.BLL.Models
-{
-    public class UserReviewRequest : BaseEntity
-    {
-        public string? Title { get; set; }
-        public string? Content { get; set; }
-        public DateTime CreationDate { get; set; }
-        public int Score { get; set; }
-        public bool IsApproved { get; set; } = false;
+namespace Review.BLL.Models;
 
-        public Guid UserId { get; set; }
-    }
+public class UserReviewRequest : BaseEntity
+{
+    public string? Title { get; set; }
+    public string? Content { get; set; }
+    public DateTime CreationDate { get; set; }
+    public int Score { get; set; }
+    public bool IsApproved { get; set; } = false;
+
+    public Guid UserId { get; set; }
 }

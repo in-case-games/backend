@@ -88,26 +88,27 @@ builder.Services.AddMassTransit(x =>
     x.AddConsumer<UserPromocodeBackConsumer>();
     x.SetKebabCaseEndpointNameFormatter();
 
-    x.AddBus(provider => Bus.Factory.CreateUsingRabbitMq(cfg =>
+    x.UsingRabbitMq((context, cfg) =>
     {
         cfg.Host(new Uri(builder.Configuration["MassTransit:Uri"]!), h =>
         {
             h.Username(builder.Configuration["MassTransit:Username"]!);
             h.Password(builder.Configuration["MassTransit:Password"]!);
         });
-        cfg.ReceiveEndpoint(ep =>
+        cfg.ReceiveEndpoint(e =>
         {
-            ep.PrefetchCount = 16;
-            ep.UseMessageRetry(r => r.Interval(4, 100));
-            ep.ConfigureConsumer<UserConsumer>(provider);
+            e.PrefetchCount = 16;
+            e.UseMessageRetry(r => r.Interval(4, 100));
+            e.ConfigureConsumer<UserConsumer>(context);
         });
-        cfg.ReceiveEndpoint(ep =>
+        cfg.ReceiveEndpoint(e =>
         {
-            ep.PrefetchCount = 16;
-            ep.UseMessageRetry(r => r.Interval(4, 100));
-            ep.ConfigureConsumer<UserPromocodeBackConsumer>(provider);
+            e.PrefetchCount = 16;
+            e.UseMessageRetry(r => r.Interval(4, 100));
+            e.ConfigureConsumer<UserPromocodeBackConsumer>(context);
         });
-    }));
+        cfg.ConfigureEndpoints(context);
+    });
 });
 
 builder.Services.AddControllers();

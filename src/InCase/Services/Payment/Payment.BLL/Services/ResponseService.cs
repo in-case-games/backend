@@ -2,29 +2,28 @@
 using System.Text.Json;
 using Payment.BLL.Interfaces;
 
-namespace Payment.BLL.Services
+namespace Payment.BLL.Services;
+
+public class ResponseService : IResponseService
 {
-    public class ResponseService : IResponseService
+    private readonly HttpClient _httpClient = new();
+
+    public async Task<IGameMoneyResponse?> ResponsePostAsync(string uri, 
+        IGameMoneyRequest request, CancellationToken cancellation = default)
     {
-        private readonly HttpClient _httpClient = new();
+        var json = JsonContent.Create(request);
+        var response = await _httpClient.PostAsync(uri, json, cancellation);
 
-        public async Task<IGameMoneyResponse?> ResponsePostAsync(string uri, 
-            IGameMoneyRequest request, CancellationToken cancellation = default)
+        if (!response.IsSuccessStatusCode)
         {
-            var json = JsonContent.Create(request);
-            var response = await _httpClient.PostAsync(uri, json, cancellation);
-
-            if (!response.IsSuccessStatusCode)
-            {
-                throw new Exception(response.StatusCode.ToString() +
-                    response.RequestMessage! +
-                    response.Headers +
-                    response.ReasonPhrase! +
-                    response.Content);
-            }
-
-            return await response.Content.ReadFromJsonAsync<IGameMoneyResponse>(
-                new JsonSerializerOptions(JsonSerializerDefaults.Web), cancellation);
+            throw new Exception(response.StatusCode.ToString() +
+                response.RequestMessage! +
+                response.Headers +
+                response.ReasonPhrase! +
+                response.Content);
         }
+
+        return await response.Content.ReadFromJsonAsync<IGameMoneyResponse>(
+            new JsonSerializerOptions(JsonSerializerDefaults.Web), cancellation);
     }
 }

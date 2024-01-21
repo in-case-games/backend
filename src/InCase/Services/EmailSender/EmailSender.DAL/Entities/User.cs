@@ -1,12 +1,11 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace EmailSender.DAL.Entities
-{
-    public class User : BaseEntity
-    {
-        public string? Email { get; set; }  
+namespace EmailSender.DAL.Entities;
 
-        [JsonIgnore]
-        public UserAdditionalInfo? AdditionalInfo { get; set; }
-    }
+public class User : BaseEntity
+{
+    public string? Email { get; set; }  
+
+    [JsonIgnore]
+    public UserAdditionalInfo? AdditionalInfo { get; set; }
 }

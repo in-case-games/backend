@@ -1,20 +1,12 @@
 ﻿using MassTransit;
 
-namespace Review.BLL.MassTransit
+namespace Review.BLL.MassTransit;
+
+public class BasePublisher(IBus bus)
 {
-    public class BasePublisher
+    public async Task SendAsync<T>(T template, CancellationToken cancellation = default) where T : class
     {
-        private readonly IBus _bus;
-
-        public BasePublisher(IBus bus)
-        {
-            _bus = bus;
-        }
-
-        public async Task SendAsync<T>(T template, CancellationToken cancellation = default) where T : class
-        {
-            var endPoint = await _bus.GetPublishSendEndpoint<T>();
-            await endPoint.Send(template, cancellation);
-        }
+        var endPoint = await bus.GetPublishSendEndpoint<T>();
+        await endPoint.Send(template, cancellation);
     }
 }

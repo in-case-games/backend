@@ -2,26 +2,18 @@
 using MassTransit;
 using Payment.BLL.Interfaces;
 
-namespace Payment.BLL.MassTransit.Consumers
+namespace Payment.BLL.MassTransit.Consumers;
+
+public class UserPromocodeConsumer(IUserPromocodeService promocodeService) : IConsumer<UserPromocodeTemplate>
 {
-    public class UserPromocodeConsumer : IConsumer<UserPromocodeTemplate>
+    public async Task Consume(ConsumeContext<UserPromocodeTemplate> context)
     {
-        private readonly IUserPromocodeService _promocodeService;
-
-        public UserPromocodeConsumer(IUserPromocodeService promocodeService)
+        if (context.Message.Type?.Name == "balance")
         {
-            _promocodeService = promocodeService;
-        }
+            var userPromocode = await promocodeService.GetAsync(context.Message.Id, context.Message.UserId);
 
-        public async Task Consume(ConsumeContext<UserPromocodeTemplate> context)
-        {
-            if (context.Message.Type?.Name == "balance")
-            {
-                var userPromocode = await _promocodeService.GetAsync(context.Message.Id, context.Message.UserId);
-
-                if (userPromocode is null) await _promocodeService.CreateAsync(context.Message);
-                else await _promocodeService.UpdateAsync(context.Message);
-            }
+            if (userPromocode is null) await promocodeService.CreateAsync(context.Message);
+            else await promocodeService.UpdateAsync(context.Message);
         }
     }
 }

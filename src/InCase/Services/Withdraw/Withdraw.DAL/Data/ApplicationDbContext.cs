@@ -2,40 +2,37 @@
 using System.Reflection;
 using Withdraw.DAL.Entities;
 
-namespace Withdraw.DAL.Data
+namespace Withdraw.DAL.Data;
+
+public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
 {
-    public class ApplicationDbContext : DbContext
+    public DbSet<Game> Games => Set<Game>();
+    public DbSet<GameItem> Items => Set<GameItem>();
+    public DbSet<GameMarket> Markets => Set<GameMarket>();
+    public DbSet<WithdrawStatus> Statuses => Set<WithdrawStatus>();
+    public DbSet<User> Users => Set<User>();
+    public DbSet<UserHistoryWithdraw> Withdraws => Set<UserHistoryWithdraw>();
+    public DbSet<UserInventory> Inventories => Set<UserInventory>();
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        public DbSet<Game> Games => Set<Game>();
-        public DbSet<GameItem> Items => Set<GameItem>();
-        public DbSet<GameMarket> Markets => Set<GameMarket>();
-        public DbSet<WithdrawStatus> Statuses => Set<WithdrawStatus>();
-        public DbSet<User> Users => Set<User>();
-        public DbSet<UserHistoryWithdraw> Withdraws => Set<UserHistoryWithdraw>();
-        public DbSet<UserInventory> Inventories => Set<UserInventory>();
+        base.OnModelCreating(modelBuilder);
 
-        public ApplicationDbContext(DbContextOptions options) : base(options) { }
+        modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        foreach (var gp in _gamePlatform)
         {
-            base.OnModelCreating(modelBuilder);
+            Game game = new() { Name = gp.Key };
+            GameMarket market = new() { Name = gp.Value, GameId = game.Id };
 
-            modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
-
-            foreach (var gp in _gamePlatform)
-            {
-                Game game = new() { Name = gp.Key };
-                GameMarket market = new() { Name = gp.Value, GameId = game.Id };
-
-                modelBuilder.Entity<Game>().HasData(game);
-                modelBuilder.Entity<GameMarket>().HasData(market);
-            }
+            modelBuilder.Entity<Game>().HasData(game);
+            modelBuilder.Entity<GameMarket>().HasData(market);
         }
-
-        private readonly Dictionary<string, string> _gamePlatform = new()
-        {
-            ["csgo"] = "tm",
-            ["dota2"] = "tm"
-        };
     }
+
+    private readonly Dictionary<string, string> _gamePlatform = new()
+    {
+        ["csgo"] = "tm",
+        ["dota2"] = "tm"
+    };
 }

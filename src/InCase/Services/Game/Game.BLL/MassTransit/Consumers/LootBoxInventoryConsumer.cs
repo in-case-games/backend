@@ -2,24 +2,16 @@
 using Infrastructure.MassTransit.Resources;
 using MassTransit;
 
-namespace Game.BLL.MassTransit.Consumers
+namespace Game.BLL.MassTransit.Consumers;
+
+public class LootBoxInventoryConsumer(ILootBoxInventoryService inventoryService) : IConsumer<LootBoxInventoryTemplate>
 {
-    public class LootBoxInventoryConsumer : IConsumer<LootBoxInventoryTemplate>
+    public async Task Consume(ConsumeContext<LootBoxInventoryTemplate> context)
     {
-        private readonly ILootBoxInventoryService _inventoryService;
+        var inventory = await inventoryService.GetAsync(context.Message.Id);
 
-        public LootBoxInventoryConsumer(ILootBoxInventoryService inventoryService)
-        {
-            _inventoryService = inventoryService;
-        }
-
-        public async Task Consume(ConsumeContext<LootBoxInventoryTemplate> context)
-        {
-            var inventory = await _inventoryService.GetAsync(context.Message.Id);
-
-            if (inventory is null) await _inventoryService.CreateAsync(context.Message);
-            else if (context.Message.IsDeleted) await _inventoryService.DeleteAsync(context.Message.Id);
-            else await _inventoryService.UpdateAsync(context.Message);
-        }
+        if (inventory is null) await inventoryService.CreateAsync(context.Message);
+        else if (context.Message.IsDeleted) await inventoryService.DeleteAsync(context.Message.Id);
+        else await inventoryService.UpdateAsync(context.Message);
     }
 }

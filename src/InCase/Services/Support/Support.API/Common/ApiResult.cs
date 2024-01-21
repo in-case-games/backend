@@ -1,16 +1,9 @@
-﻿namespace Support.API.Common
+﻿namespace Support.API.Common;
+
+public class ApiResult<T>(int code, T data)
 {
-    public class ApiResult<T>
-    {
-        public int Code { get; set; }
-        public T Data { get; set; }
+    public int Code { get; set; } = code;
+    public T Data { get; set; } = data;
 
-        public ApiResult(int code, T data)
-        {
-            Code = code;
-            Data = data;
-        }
-
-        public static ApiResult<T> Ok(T data) => new(0, data);
-    }
+    public static ApiResult<T> Ok(T data) => new(0, data);
 }

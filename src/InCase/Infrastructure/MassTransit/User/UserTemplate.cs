@@ -1,9 +1,8 @@
-﻿namespace Infrastructure.MassTransit.User
+﻿namespace Infrastructure.MassTransit.User;
+
+public class UserTemplate : BaseTemplate
 {
-    public class UserTemplate : BaseTemplate
-    {
-        public string? Email { get; set; }
-        public string? Login { get; set; }
-        public bool IsDeleted { get; set; }
-    }
+    public string? Email { get; set; }
+    public string? Login { get; set; }
+    public bool IsDeleted { get; set; }
 }

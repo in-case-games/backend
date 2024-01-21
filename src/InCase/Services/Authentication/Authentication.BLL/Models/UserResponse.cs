@@ -1,10 +1,9 @@
 ﻿using Authentication.DAL.Entities;
 
-namespace Authentication.BLL.Models
+namespace Authentication.BLL.Models;
+
+public class UserResponse : BaseEntity
 {
-    public class UserResponse : BaseEntity
-    {
-        public string? Email { get; set; }
-        public string? Login { get; set; }
-    }
+    public string? Email { get; set; }
+    public string? Login { get; set; }
 }

@@ -4,26 +4,18 @@ using Infrastructure.MassTransit.User;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 
-namespace Game.BLL.MassTransit.Consumers
+namespace Game.BLL.MassTransit.Consumers;
+
+public class UserInventoryBackConsumer(ApplicationDbContext context) : IConsumer<UserInventoryBackTemplate>
 {
-    public class UserInventoryBackConsumer : IConsumer<UserInventoryBackTemplate>
+    public async Task Consume(ConsumeContext<UserInventoryBackTemplate> context1)
     {
-        private readonly ApplicationDbContext _context;
+        var info = await context.AdditionalInfos
+                .FirstOrDefaultAsync(uai => uai.UserId == context1.Message.UserId) ??
+            throw new NotFoundException("Пользователь не найден");
 
-        public UserInventoryBackConsumer(ApplicationDbContext context)
-        {
-            _context = context;
-        }
+        info.Balance += context1.Message.FixedCost;
 
-        public async Task Consume(ConsumeContext<UserInventoryBackTemplate> context)
-        {
-            var info = await _context.AdditionalInfos
-                .FirstOrDefaultAsync(uai => uai.UserId == context.Message.UserId) ??
-                throw new NotFoundException("Пользователь не найден");
-
-            info.Balance += context.Message.FixedCost;
-
-            await _context.SaveChangesAsync();
-        }
+        await context.SaveChangesAsync();
     }
 }

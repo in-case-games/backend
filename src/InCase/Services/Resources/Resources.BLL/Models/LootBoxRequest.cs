@@ -1,13 +1,12 @@
 ﻿using Resources.DAL.Entities;
 
-namespace Resources.BLL.Models
+namespace Resources.BLL.Models;
+
+public class LootBoxRequest : BaseEntity
 {
-    public class LootBoxRequest : BaseEntity
-    {
-        public string? Image { get; set; }
-        public string? Name { get; set; }
-        public decimal Cost { get; set; }
-        public bool IsLocked { get; set; } = true;
-        public Guid GameId { get; set; }
-    }
+    public string? Image { get; set; }
+    public string? Name { get; set; }
+    public decimal Cost { get; set; }
+    public bool IsLocked { get; set; } = true;
+    public Guid GameId { get; set; }
 }

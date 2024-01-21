@@ -4,26 +4,18 @@ using Infrastructure.MassTransit.User;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 
-namespace Game.BLL.MassTransit.Consumers
+namespace Game.BLL.MassTransit.Consumers;
+
+public class UserPaymentConsumer(ApplicationDbContext context) : IConsumer<UserPaymentTemplate>
 {
-    public class UserPaymentConsumer : IConsumer<UserPaymentTemplate>
+    public async Task Consume(ConsumeContext<UserPaymentTemplate> context1)
     {
-        private readonly ApplicationDbContext _context;
+        var info = await context.AdditionalInfos
+                .FirstOrDefaultAsync(uai => uai.UserId == context1.Message.UserId) ??
+            throw new NotFoundException("Пользователь не найден");
 
-        public UserPaymentConsumer(ApplicationDbContext context)
-        {
-            _context = context;
-        }
+        info.Balance += context1.Message.Amount;
 
-        public async Task Consume(ConsumeContext<UserPaymentTemplate> context)
-        {
-            var info = await _context.AdditionalInfos
-                .FirstOrDefaultAsync(uai => uai.UserId == context.Message.UserId) ??
-                throw new NotFoundException("Пользователь не найден");
-
-            info.Balance += context.Message.Amount;
-
-            await _context.SaveChangesAsync();
-        }
+        await context.SaveChangesAsync();
     }
 }

@@ -2,24 +2,16 @@
 using Infrastructure.MassTransit.User;
 using MassTransit;
 
-namespace Authentication.BLL.MassTransit.Consumers
+namespace Authentication.BLL.MassTransit.Consumers;
+
+public class UserRestrictionConsumer(IUserRestrictionService restrictionService) : IConsumer<UserRestrictionTemplate>
 {
-    public class UserRestrictionConsumer : IConsumer<UserRestrictionTemplate>
+    public async Task Consume(ConsumeContext<UserRestrictionTemplate> context)
     {
-        private readonly IUserRestrictionService _restrictionService;
+        var restriction = await restrictionService.GetAsync(context.Message.Id);
 
-        public UserRestrictionConsumer(IUserRestrictionService restrictionService)
-        {
-            _restrictionService = restrictionService;
-        }
-
-        public async Task Consume(ConsumeContext<UserRestrictionTemplate> context)
-        {
-            var restriction = await _restrictionService.GetAsync(context.Message.Id);
-
-            if (restriction is null) await _restrictionService.CreateAsync(context.Message);
-            else if (context.Message.IsDeleted) await _restrictionService.DeleteAsync(context.Message.Id);
-            else await _restrictionService.UpdateAsync(context.Message);
-        }
+        if (restriction is null) await restrictionService.CreateAsync(context.Message);
+        else if (context.Message.IsDeleted) await restrictionService.DeleteAsync(context.Message.Id);
+        else await restrictionService.UpdateAsync(context.Message);
     }
 }

@@ -1,10 +1,9 @@
 ﻿using Game.DAL.Entities;
 
-namespace Game.BLL.Models
+namespace Game.BLL.Models;
+
+public class GameItemBigOpenResponse : BaseEntity
 {
-    public class GameItemBigOpenResponse : BaseEntity
-    {
-        public int Count { get; set; }
-        public decimal Cost { get; set; }
-    }
+    public int Count { get; set; }
+    public decimal Cost { get; set; }
 }

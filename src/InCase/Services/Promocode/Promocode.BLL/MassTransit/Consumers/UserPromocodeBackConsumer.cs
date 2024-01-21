@@ -3,27 +3,19 @@ using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Promocode.DAL.Data;
 
-namespace Promocode.BLL.MassTransit.Consumers
+namespace Promocode.BLL.MassTransit.Consumers;
+
+public class UserPromocodeBackConsumer(ApplicationDbContext context) : IConsumer<UserPromocodeBackTemplate>
 {
-    public class UserPromocodeBackConsumer : IConsumer<UserPromocodeBackTemplate>
+    public async Task Consume(ConsumeContext<UserPromocodeBackTemplate> context1)
     {
-        private readonly ApplicationDbContext _context;
+        var promocode = await context.UserPromocodes.FirstOrDefaultAsync(ur => ur.Id == context1.Message.Id);
 
-        public UserPromocodeBackConsumer(ApplicationDbContext context)
+        if(promocode is not null)
         {
-            _context = context;
-        }
+            promocode.IsActivated = true;
 
-        public async Task Consume(ConsumeContext<UserPromocodeBackTemplate> context)
-        {
-            var promocode = await _context.UserPromocodes.FirstOrDefaultAsync(ur => ur.Id == context.Message.Id);
-
-            if(promocode is not null)
-            {
-                promocode.IsActivated = true;
-
-                await _context.SaveChangesAsync();
-            }
+            await context.SaveChangesAsync();
         }
     }
 }

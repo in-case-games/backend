@@ -1,10 +1,9 @@
 ﻿using Review.DAL.Entities;
 
-namespace Review.BLL.Models
+namespace Review.BLL.Models;
+
+public class ReviewImageRequest : BaseEntity
 {
-    public class ReviewImageRequest : BaseEntity
-    {
-        public string? Image { get; set; }
-        public Guid ReviewId { get; set; }
-    }
+    public string? Image { get; set; }
+    public Guid ReviewId { get; set; }
 }

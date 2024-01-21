@@ -1,9 +1,5 @@
 ﻿using Review.BLL.Models;
 
-namespace Review.BLL.Exceptions
-{
-    public class BadRequestException : StatusCodeException
-    {
-        public BadRequestException(string message) : base(ErrorCodes.BadRequest, message) { }
-    }
-}
+namespace Review.BLL.Exceptions;
+
+public class BadRequestException(string message) : StatusCodeException(ErrorCodes.BadRequest, message);

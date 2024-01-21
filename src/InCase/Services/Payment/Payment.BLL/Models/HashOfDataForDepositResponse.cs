@@ -1,7 +1,6 @@
-﻿namespace Payment.BLL.Models
+﻿namespace Payment.BLL.Models;
+
+public class HashOfDataForDepositResponse
 {
-    public class HashOfDataForDepositResponse
-    {
-        public string Hmac { get; set; } = null!;
-    }
+    public string Hmac { get; set; } = null!;
 }

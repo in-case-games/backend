@@ -2,26 +2,18 @@
 using Infrastructure.MassTransit.Resources;
 using MassTransit;
 
-namespace Game.BLL.MassTransit.Consumers
+namespace Game.BLL.MassTransit.Consumers;
+
+public class LootBoxBannerConsumer(ILootBoxService boxService) : IConsumer<LootBoxBannerTemplate>
 {
-    public class LootBoxBannerConsumer : IConsumer<LootBoxBannerTemplate>
+    public async Task Consume(ConsumeContext<LootBoxBannerTemplate> context)
     {
-        private readonly ILootBoxService _boxService;
+        var box = await boxService.GetAsync(context.Message.BoxId);
 
-        public LootBoxBannerConsumer(ILootBoxService boxService)
+        if (box is not null)
         {
-            _boxService = boxService;
-        }
-
-        public async Task Consume(ConsumeContext<LootBoxBannerTemplate> context)
-        {
-            var box = await _boxService.GetAsync(context.Message.BoxId);
-
-            if (box is not null)
-            {
-                context.Message.ExpirationDate = context.Message.IsDeleted ? null : context.Message.ExpirationDate;
-                await _boxService.UpdateExpirationBannerAsync(context.Message);        
-            }
+            context.Message.ExpirationDate = context.Message.IsDeleted ? null : context.Message.ExpirationDate;
+            await boxService.UpdateExpirationBannerAsync(context.Message);
         }
     }
 }

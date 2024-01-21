@@ -1,11 +1,10 @@
-﻿namespace Infrastructure.MassTransit.User
+﻿namespace Infrastructure.MassTransit.User;
+
+public class UserPromocodeTemplate : BaseTemplate
 {
-    public class UserPromocodeTemplate : BaseTemplate
-    {
-        public decimal Discount { get; set; }
+    public decimal Discount { get; set; }
 
-        public Guid UserId { get; set; }
+    public Guid UserId { get; set; }
 
-        public PromocodeTypeTemplate? Type { get; set; }
-    }
+    public PromocodeTypeTemplate? Type { get; set; }
 }

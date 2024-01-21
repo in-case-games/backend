@@ -1,12 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 
-namespace Authentication.API.Filters
+namespace Authentication.API.Filters;
+
+public class AuthorizeByRoleAttribute : AuthorizeAttribute
 {
-    public class AuthorizeByRoleAttribute : AuthorizeAttribute
+    public AuthorizeByRoleAttribute(params string[] roles)
     {
-        public AuthorizeByRoleAttribute(params string[] roles)
-        {
-            Roles = string.Join(",", roles);
-        }
+        Roles = string.Join(",", roles);
     }
 }
