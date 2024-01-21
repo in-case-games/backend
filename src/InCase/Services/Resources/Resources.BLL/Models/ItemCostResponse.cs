@@ -1,8 +1,7 @@
-﻿namespace Resources.BLL.Models
+﻿namespace Resources.BLL.Models;
+
+public class ItemCostResponse
 {
-    public class ItemCostResponse
-    {
-        public bool Success { get; set; } = false;
-        public decimal Cost { get; set; }
-    }
+    public bool Success { get; set; } = false;
+    public decimal Cost { get; set; }
 }

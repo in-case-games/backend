@@ -5,27 +5,26 @@ using Identity.BLL.Models;
 using Identity.DAL.Data;
 using Microsoft.EntityFrameworkCore;
 
-namespace Identity.BLL.Services
+namespace Identity.BLL.Services;
+
+public class UserRoleService(ApplicationDbContext context) : IUserRoleService
 {
-    public class UserRoleService(ApplicationDbContext context) : IUserRoleService
+    public async Task<UserRoleResponse> GetAsync(Guid id, CancellationToken cancellation = default)
     {
-        public async Task<UserRoleResponse> GetAsync(Guid id, CancellationToken cancellation = default)
-        {
-            var role = await context.Roles
-                .AsNoTracking()
-                .FirstOrDefaultAsync(ur => ur.Id == id, cancellation) ??
-                throw new NotFoundException("Роль не найдена");
+        var role = await context.Roles
+            .AsNoTracking()
+            .FirstOrDefaultAsync(ur => ur.Id == id, cancellation) ??
+            throw new NotFoundException("Роль не найдена");
 
-            return role.ToResponse();
-        }
+        return role.ToResponse();
+    }
 
-        public async Task<List<UserRoleResponse>> GetAsync(CancellationToken cancellation = default)
-        {
-            var roles = await context.Roles
-                .AsNoTracking()
-                .ToListAsync(cancellation);
+    public async Task<List<UserRoleResponse>> GetAsync(CancellationToken cancellation = default)
+    {
+        var roles = await context.Roles
+            .AsNoTracking()
+            .ToListAsync(cancellation);
 
-            return roles.ToResponse();
-        }
+        return roles.ToResponse();
     }
 }

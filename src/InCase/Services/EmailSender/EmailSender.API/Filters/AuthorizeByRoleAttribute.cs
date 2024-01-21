@@ -1,12 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 
-namespace EmailSender.API.Filters
+namespace EmailSender.API.Filters;
+
+public class AuthorizeByRoleAttribute : AuthorizeAttribute
 {
-    public class AuthorizeByRoleAttribute : AuthorizeAttribute
+    public AuthorizeByRoleAttribute(params string[] roles)
     {
-        public AuthorizeByRoleAttribute(params string[] roles)
-        {
-            Roles = string.Join(",", roles);
-        }
+        Roles = string.Join(",", roles);
     }
 }

@@ -64,8 +64,7 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
-builder.Services.AddSingleton<IMongoClient, MongoClient>(sp =>
-    new MongoClient(builder.Configuration["ConnectionString"]));
+builder.Services.AddSingleton<IMongoClient, MongoClient>(_ => new MongoClient(builder.Configuration["ConnectionString"]));
 builder.Services.AddSingleton<ISiteStatisticsRepository, SiteStatisticsRepository>();
 builder.Services.AddSingleton<ISiteStatisticsService, SiteStatisticsService>();
 

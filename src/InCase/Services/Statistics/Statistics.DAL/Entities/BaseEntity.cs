@@ -1,9 +1,8 @@
 ﻿using MongoDB.Bson;
 
-namespace Statistics.DAL.Entities
+namespace Statistics.DAL.Entities;
+
+public class BaseEntity
 {
-    public class BaseEntity
-    {
-        public ObjectId Id { get; set; } 
-    }
+    public ObjectId Id { get; set; } 
 }

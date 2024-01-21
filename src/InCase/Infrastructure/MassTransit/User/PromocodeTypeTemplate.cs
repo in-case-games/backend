@@ -1,7 +1,6 @@
-﻿namespace Infrastructure.MassTransit.User
+﻿namespace Infrastructure.MassTransit.User;
+
+public class PromocodeTypeTemplate : BaseTemplate
 {
-    public class PromocodeTypeTemplate : BaseTemplate
-    {
-        public string? Name { get; set; }   
-    }
+    public string? Name { get; set; }   
 }

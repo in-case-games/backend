@@ -1,7 +1,6 @@
-﻿namespace Support.DAL.Entities
+﻿namespace Support.DAL.Entities;
+
+public class BaseEntity
 {
-    public class BaseEntity
-    {
-        public Guid Id { get; set; } = Guid.NewGuid();
-    }
+    public Guid Id { get; set; } = Guid.NewGuid();
 }

@@ -4,65 +4,64 @@ using Game.BLL.Models;
 using Game.DAL.Data;
 using Microsoft.EntityFrameworkCore;
 
-namespace Game.BLL.Services
+namespace Game.BLL.Services;
+
+public class UserAdditionalInfoService(ApplicationDbContext context) : IUserAdditionalInfoService
 {
-    public class UserAdditionalInfoService(ApplicationDbContext context) : IUserAdditionalInfoService
+    public async Task<GuestModeResponse> GetGuestModeAsync(Guid userId, CancellationToken cancellation = default)
     {
-        public async Task<GuestModeResponse> GetGuestModeAsync(Guid userId, CancellationToken cancellation = default)
+        var info = await context.AdditionalInfos
+            .AsNoTracking()
+            .FirstOrDefaultAsync(uai => uai.UserId == userId, cancellation) ?? 
+            throw new NotFoundException("Пользователь не найден");
+
+        return new GuestModeResponse
         {
-            var info = await context.AdditionalInfos
-                .AsNoTracking()
-                .FirstOrDefaultAsync(uai => uai.UserId == userId, cancellation) ?? 
-                throw new NotFoundException("Пользователь не найден");
+            IsGuestMode = info.IsGuestMode,
+        };
+    }
 
-            return new GuestModeResponse
-            {
-                IsGuestMode = info.IsGuestMode,
-            };
-        }
+    public async Task<BalanceResponse> GetBalanceAsync(Guid userId, CancellationToken cancellation = default)
+    {
+        var info = await context.AdditionalInfos
+           .AsNoTracking()
+           .FirstOrDefaultAsync(uai => uai.UserId == userId, cancellation) ?? 
+           throw new NotFoundException("Пользователь не найден");
 
-        public async Task<BalanceResponse> GetBalanceAsync(Guid userId, CancellationToken cancellation = default)
+        return new BalanceResponse
         {
-            var info = await context.AdditionalInfos
-               .AsNoTracking()
-               .FirstOrDefaultAsync(uai => uai.UserId == userId, cancellation) ?? 
-               throw new NotFoundException("Пользователь не найден");
+            Balance = info.Balance,
+        };
+    }
 
-            return new BalanceResponse
-            {
-                Balance = info.Balance,
-            };
-        }
+    public async Task<GuestModeResponse> ChangeGuestModeAsync(Guid userId, CancellationToken cancellation = default)
+    {
+        var info = await context.AdditionalInfos
+            .FirstOrDefaultAsync(uai => uai.UserId == userId, cancellation) ??
+            throw new NotFoundException("Пользователь не найден");
 
-        public async Task<GuestModeResponse> ChangeGuestModeAsync(Guid userId, CancellationToken cancellation = default)
+        info.IsGuestMode = !info.IsGuestMode;
+
+        await context.SaveChangesAsync(cancellation);
+
+        return new GuestModeResponse
         {
-            var info = await context.AdditionalInfos
-                .FirstOrDefaultAsync(uai => uai.UserId == userId, cancellation) ??
-                throw new NotFoundException("Пользователь не найден");
+            IsGuestMode = info.IsGuestMode,
+        };
+    }
 
-            info.IsGuestMode = !info.IsGuestMode;
+    public async Task<BalanceResponse> ChangeBalanceByOwnerAsync(Guid userId, decimal balance, CancellationToken cancellation = default)
+    {
+        var info = await context.AdditionalInfos
+            .FirstOrDefaultAsync(uai => uai.UserId == userId, cancellation) ??
+            throw new NotFoundException("Пользователь не найден");
 
-            await context.SaveChangesAsync(cancellation);
+        info.Balance = balance;
 
-            return new GuestModeResponse
-            {
-                IsGuestMode = info.IsGuestMode,
-            };
-        }
+        await context.SaveChangesAsync(cancellation);
 
-        public async Task<BalanceResponse> ChangeBalanceByOwnerAsync(Guid userId, decimal balance, CancellationToken cancellation = default)
-        {
-            var info = await context.AdditionalInfos
-                .FirstOrDefaultAsync(uai => uai.UserId == userId, cancellation) ??
-                throw new NotFoundException("Пользователь не найден");
-
-            info.Balance = balance;
-
-            await context.SaveChangesAsync(cancellation);
-
-            return new BalanceResponse { 
-                Balance = info.Balance,
-            };
-        }
+        return new BalanceResponse { 
+            Balance = info.Balance,
+        };
     }
 }

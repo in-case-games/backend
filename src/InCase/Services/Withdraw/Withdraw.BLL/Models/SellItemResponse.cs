@@ -1,7 +1,6 @@
-﻿namespace Withdraw.BLL.Models
+﻿namespace Withdraw.BLL.Models;
+
+public class SellItemResponse
 {
-    public class SellItemResponse
-    {
-        public decimal Cost { get; set; }
-    }
+    public decimal Cost { get; set; }
 }

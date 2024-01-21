@@ -4,25 +4,24 @@ using Authentication.DAL.Data;
 using Infrastructure.MassTransit.User;
 using Microsoft.EntityFrameworkCore;
 
-namespace Authentication.BLL.Services
+namespace Authentication.BLL.Services;
+
+public class UserAdditionalInfoService(ApplicationDbContext context) : IUserAdditionalInfoService
 {
-    public class UserAdditionalInfoService(ApplicationDbContext context) : IUserAdditionalInfoService
+    public async Task UpdateAsync(UserAdditionalInfoTemplate template, CancellationToken cancellationToken = default)
     {
-        public async Task UpdateAsync(UserAdditionalInfoTemplate template, CancellationToken cancellationToken = default)
-        {
-            var info = await context.AdditionalInfos
-                .FirstOrDefaultAsync(uai => uai.UserId == template.UserId, cancellationToken) ?? 
-                throw new NotFoundException("Пользователь не найден");
+        var info = await context.AdditionalInfos
+            .FirstOrDefaultAsync(uai => uai.UserId == template.UserId, cancellationToken) ?? 
+            throw new NotFoundException("Пользователь не найден");
 
-            var role = await context.Roles
-                .AsNoTracking()
-                .FirstOrDefaultAsync(ur => ur.Name == template.RoleName, cancellationToken);
+        var role = await context.Roles
+            .AsNoTracking()
+            .FirstOrDefaultAsync(ur => ur.Name == template.RoleName, cancellationToken);
 
-            info.DeletionDate = template.DeletionDate;
+        info.DeletionDate = template.DeletionDate;
 
-            if(role is not null) info.RoleId = role.Id;
+        if(role is not null) info.RoleId = role.Id;
 
-            await context.SaveChangesAsync(cancellationToken);
-        }
+        await context.SaveChangesAsync(cancellationToken);
     }
 }

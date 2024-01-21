@@ -6,123 +6,122 @@ using Support.BLL.Models;
 using System.Net;
 using System.Security.Claims;
 
-namespace Support.API.Controllers
+namespace Support.API.Controllers;
+
+[Route("api/answer-image")]
+[ApiController]
+public class AnswerImageController(IAnswerImageService imageService) : ControllerBase
 {
-    [Route("api/answer-image")]
-    [ApiController]
-    public class AnswerImageController(IAnswerImageService imageService) : ControllerBase
+    private Guid UserId => Guid.Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
+
+    [ProducesResponseType(typeof(ApiResult<AnswerImageResponse>), (int)HttpStatusCode.OK)]
+    [AuthorizeByRole(Roles.All)]
+    [HttpGet("{id:guid}")]
+    public async Task<IActionResult> Get(Guid id, CancellationToken cancellation)
     {
-        private Guid UserId => Guid.Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
+        var response = await imageService.GetAsync(UserId, id, cancellation);
 
-        [ProducesResponseType(typeof(ApiResult<AnswerImageResponse>), (int)HttpStatusCode.OK)]
-        [AuthorizeByRole(Roles.All)]
-        [HttpGet("{id:guid}")]
-        public async Task<IActionResult> Get(Guid id, CancellationToken cancellation)
-        {
-            var response = await imageService.GetAsync(UserId, id, cancellation);
+        return Ok(ApiResult<AnswerImageResponse>.Ok(response));
+    }
 
-            return Ok(ApiResult<AnswerImageResponse>.Ok(response));
-        }
+    [ProducesResponseType(typeof(ApiResult<AnswerImageResponse>), (int)HttpStatusCode.OK)]
+    [AuthorizeByRole(Roles.AdminOwnerBot)]
+    [HttpGet("{id:guid}/admin")]
+    public async Task<IActionResult> GetByAdmin(Guid id, CancellationToken cancellation)
+    {
+        var response = await imageService.GetAsync(id, cancellation);
 
-        [ProducesResponseType(typeof(ApiResult<AnswerImageResponse>), (int)HttpStatusCode.OK)]
-        [AuthorizeByRole(Roles.AdminOwnerBot)]
-        [HttpGet("{id:guid}/admin")]
-        public async Task<IActionResult> GetByAdmin(Guid id, CancellationToken cancellation)
-        {
-            var response = await imageService.GetAsync(id, cancellation);
+        return Ok(ApiResult<AnswerImageResponse>.Ok(response));
+    }
 
-            return Ok(ApiResult<AnswerImageResponse>.Ok(response));
-        }
+    [ProducesResponseType(typeof(ApiResult<List<AnswerImageResponse>>), (int)HttpStatusCode.OK)]
+    [AuthorizeByRole(Roles.All)]
+    [HttpGet("answer/{id:guid}")]
+    public async Task<IActionResult> GetByAnswerId(Guid id, CancellationToken cancellation)
+    {
+        var response = await imageService.GetByAnswerIdAsync(UserId, id, cancellation);
 
-        [ProducesResponseType(typeof(ApiResult<List<AnswerImageResponse>>), (int)HttpStatusCode.OK)]
-        [AuthorizeByRole(Roles.All)]
-        [HttpGet("answer/{id:guid}")]
-        public async Task<IActionResult> GetByAnswerId(Guid id, CancellationToken cancellation)
-        {
-            var response = await imageService.GetByAnswerIdAsync(UserId, id, cancellation);
+        return Ok(ApiResult<List<AnswerImageResponse>>.Ok(response));
+    }
 
-            return Ok(ApiResult<List<AnswerImageResponse>>.Ok(response));
-        }
+    [ProducesResponseType(typeof(ApiResult<List<AnswerImageResponse>>), (int)HttpStatusCode.OK)]
+    [AuthorizeByRole(Roles.AdminOwnerBot)]
+    [HttpGet("answer/{id:guid}/admin")]
+    public async Task<IActionResult> GetByAdminAnswerId(Guid id, CancellationToken cancellation)
+    {
+        var response = await imageService.GetByAnswerIdAsync(id, cancellation);
 
-        [ProducesResponseType(typeof(ApiResult<List<AnswerImageResponse>>), (int)HttpStatusCode.OK)]
-        [AuthorizeByRole(Roles.AdminOwnerBot)]
-        [HttpGet("answer/{id:guid}/admin")]
-        public async Task<IActionResult> GetByAdminAnswerId(Guid id, CancellationToken cancellation)
-        {
-            var response = await imageService.GetByAnswerIdAsync(id, cancellation);
+        return Ok(ApiResult<List<AnswerImageResponse>>.Ok(response));
+    }
 
-            return Ok(ApiResult<List<AnswerImageResponse>>.Ok(response));
-        }
+    [ProducesResponseType(typeof(ApiResult<List<AnswerImageResponse>>), (int)HttpStatusCode.OK)]
+    [AuthorizeByRole(Roles.All)]
+    [HttpGet("topic/{id:guid}")]
+    public async Task<IActionResult> GetByTopicId(Guid id, CancellationToken cancellation)
+    {
+        var response = await imageService.GetByTopicIdAsync(UserId, id, cancellation);
 
-        [ProducesResponseType(typeof(ApiResult<List<AnswerImageResponse>>), (int)HttpStatusCode.OK)]
-        [AuthorizeByRole(Roles.All)]
-        [HttpGet("topic/{id:guid}")]
-        public async Task<IActionResult> GetByTopicId(Guid id, CancellationToken cancellation)
-        {
-            var response = await imageService.GetByTopicIdAsync(UserId, id, cancellation);
+        return Ok(ApiResult<List<AnswerImageResponse>>.Ok(response));
+    }
 
-            return Ok(ApiResult<List<AnswerImageResponse>>.Ok(response));
-        }
+    [ProducesResponseType(typeof(ApiResult<List<AnswerImageResponse>>), (int)HttpStatusCode.OK)]
+    [AuthorizeByRole(Roles.AdminOwnerBot)]
+    [HttpGet("topic/{id:guid}/admin")]
+    public async Task<IActionResult> GetByAdminTopicId(Guid id, CancellationToken cancellation)
+    {
+        var response = await imageService.GetByTopicIdAsync(id, cancellation);
 
-        [ProducesResponseType(typeof(ApiResult<List<AnswerImageResponse>>), (int)HttpStatusCode.OK)]
-        [AuthorizeByRole(Roles.AdminOwnerBot)]
-        [HttpGet("topic/{id:guid}/admin")]
-        public async Task<IActionResult> GetByAdminTopicId(Guid id, CancellationToken cancellation)
-        {
-            var response = await imageService.GetByTopicIdAsync(id, cancellation);
+        return Ok(ApiResult<List<AnswerImageResponse>>.Ok(response));
+    }
 
-            return Ok(ApiResult<List<AnswerImageResponse>>.Ok(response));
-        }
+    [ProducesResponseType(typeof(ApiResult<List<AnswerImageResponse>>), (int)HttpStatusCode.OK)]
+    [AuthorizeByRole(Roles.All)]
+    [HttpGet]
+    public async Task<IActionResult> Get(CancellationToken cancellation)
+    {
+        var response = await imageService.GetByUserIdAsync(UserId, cancellation);
 
-        [ProducesResponseType(typeof(ApiResult<List<AnswerImageResponse>>), (int)HttpStatusCode.OK)]
-        [AuthorizeByRole(Roles.All)]
-        [HttpGet]
-        public async Task<IActionResult> Get(CancellationToken cancellation)
-        {
-            var response = await imageService.GetByUserIdAsync(UserId, cancellation);
+        return Ok(ApiResult<List<AnswerImageResponse>>.Ok(response));
+    }
 
-            return Ok(ApiResult<List<AnswerImageResponse>>.Ok(response));
-        }
+    [ProducesResponseType(typeof(ApiResult<List<AnswerImageResponse>>), (int)HttpStatusCode.OK)]
+    [AuthorizeByRole(Roles.All)]
+    [HttpGet("user/{userId:guid}/admin")]
+    public async Task<IActionResult> GetByAdminUserId(Guid userId, CancellationToken cancellation)
+    {
+        var response = await imageService.GetByUserIdAsync(userId, cancellation);
 
-        [ProducesResponseType(typeof(ApiResult<List<AnswerImageResponse>>), (int)HttpStatusCode.OK)]
-        [AuthorizeByRole(Roles.All)]
-        [HttpGet("user/{userId:guid}/admin")]
-        public async Task<IActionResult> GetByAdminUserId(Guid userId, CancellationToken cancellation)
-        {
-            var response = await imageService.GetByUserIdAsync(userId, cancellation);
+        return Ok(ApiResult<List<AnswerImageResponse>>.Ok(response));
+    }
 
-            return Ok(ApiResult<List<AnswerImageResponse>>.Ok(response));
-        }
+    [ProducesResponseType(typeof(ApiResult<AnswerImageResponse>), (int)HttpStatusCode.OK)]
+    [AuthorizeByRole(Roles.All)]
+    [RequestSizeLimit(8388608)]
+    [HttpPost]
+    public async Task<IActionResult> Post(AnswerImageRequest request, CancellationToken cancellation)
+    {
+        var response = await imageService.CreateAsync(UserId, request, cancellation);
 
-        [ProducesResponseType(typeof(ApiResult<AnswerImageResponse>), (int)HttpStatusCode.OK)]
-        [AuthorizeByRole(Roles.All)]
-        [RequestSizeLimit(8388608)]
-        [HttpPost]
-        public async Task<IActionResult> Post(AnswerImageRequest request, CancellationToken cancellation)
-        {
-            var response = await imageService.CreateAsync(UserId, request, cancellation);
+        return Ok(ApiResult<AnswerImageResponse>.Ok(response));
+    }
 
-            return Ok(ApiResult<AnswerImageResponse>.Ok(response));
-        }
+    [ProducesResponseType(typeof(ApiResult<AnswerImageResponse>), (int)HttpStatusCode.OK)]
+    [AuthorizeByRole(Roles.All)]
+    [HttpDelete("{id:guid}")]
+    public async Task<IActionResult> Delete(Guid id, CancellationToken cancellation)
+    {
+        var response = await imageService.DeleteAsync(UserId, id, cancellation);
 
-        [ProducesResponseType(typeof(ApiResult<AnswerImageResponse>), (int)HttpStatusCode.OK)]
-        [AuthorizeByRole(Roles.All)]
-        [HttpDelete("{id:guid}")]
-        public async Task<IActionResult> Delete(Guid id, CancellationToken cancellation)
-        {
-            var response = await imageService.DeleteAsync(UserId, id, cancellation);
+        return Ok(ApiResult<AnswerImageResponse>.Ok(response));
+    }
 
-            return Ok(ApiResult<AnswerImageResponse>.Ok(response));
-        }
+    [ProducesResponseType(typeof(ApiResult<AnswerImageResponse>), (int)HttpStatusCode.OK)]
+    [AuthorizeByRole(Roles.Admin, Roles.Owner)]
+    [HttpDelete("{id:guid}/admin")]
+    public async Task<IActionResult> DeleteByAdmin(Guid id, CancellationToken cancellation)
+    {
+        var response = await imageService.DeleteAsync(id, cancellation);
 
-        [ProducesResponseType(typeof(ApiResult<AnswerImageResponse>), (int)HttpStatusCode.OK)]
-        [AuthorizeByRole(Roles.Admin, Roles.Owner)]
-        [HttpDelete("{id:guid}/admin")]
-        public async Task<IActionResult> DeleteByAdmin(Guid id, CancellationToken cancellation)
-        {
-            var response = await imageService.DeleteAsync(id, cancellation);
-
-            return Ok(ApiResult<AnswerImageResponse>.Ok(response));
-        }
+        return Ok(ApiResult<AnswerImageResponse>.Ok(response));
     }
 }

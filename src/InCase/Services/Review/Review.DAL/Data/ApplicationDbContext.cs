@@ -2,19 +2,18 @@
 using Review.DAL.Entities;
 using System.Reflection;
 
-namespace Review.DAL.Data
+namespace Review.DAL.Data;
+
+public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
 {
-    public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
+    public DbSet<ReviewImage> Images  => Set<ReviewImage>();
+    public DbSet<User> User => Set<User>();
+    public DbSet<UserReview> Reviews => Set<UserReview>();
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        public DbSet<ReviewImage> Images  => Set<ReviewImage>();
-        public DbSet<User> User => Set<User>();
-        public DbSet<UserReview> Reviews => Set<UserReview>();
+        base.OnModelCreating(modelBuilder);
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            base.OnModelCreating(modelBuilder);
-
-            modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
-        }
+        modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
     }
 }

@@ -9,407 +9,406 @@ using Resources.BLL.Models;
 using Resources.DAL.Data;
 using Resources.DAL.Entities;
 
-namespace Resources.BLL.Services
+namespace Resources.BLL.Services;
+
+public class GameItemService(
+    ILogger<GameItemService> logger, 
+    ApplicationDbContext context, 
+    BasePublisher publisher, 
+    GamePlatformSteamService steamService) : IGameItemService
 {
-    public class GameItemService(
-        ILogger<GameItemService> logger, 
-        ApplicationDbContext context, 
-        BasePublisher publisher, 
-        GamePlatformSteamService steamService) : IGameItemService
+    private readonly Dictionary<string, IGamePlatformService> _platformServices = new()
     {
-        private readonly Dictionary<string, IGamePlatformService> _platformServices = new()
-        {
-            ["csgo"] = steamService,
-            ["dota2"] = steamService,
-        };
+        ["csgo"] = steamService,
+        ["dota2"] = steamService,
+    };
 
-        public async Task<GameItemResponse> GetAsync(Guid id, CancellationToken cancellation = default)
-        {
-            var item = await context.Items
-                .Include(gi => gi.Rarity)
-                .Include(gi => gi.Quality)
-                .Include(gi => gi.Type)
-                .Include(gi => gi.Game)
-                .AsNoTracking()
-                .FirstOrDefaultAsync(gi => gi.Id == id, cancellation) ??
-                throw new NotFoundException("Предмет не найден");
+    public async Task<GameItemResponse> GetAsync(Guid id, CancellationToken cancellation = default)
+    {
+        var item = await context.Items
+            .Include(gi => gi.Rarity)
+            .Include(gi => gi.Quality)
+            .Include(gi => gi.Type)
+            .Include(gi => gi.Game)
+            .AsNoTracking()
+            .FirstOrDefaultAsync(gi => gi.Id == id, cancellation) ??
+            throw new NotFoundException("Предмет не найден");
 
-            return item.ToResponse();
-        }
+        return item.ToResponse();
+    }
 
-        public async Task<List<GameItemResponse>> GetAsync(string name, CancellationToken cancellation = default)
-        {
-            var items = await context.Items
-                .Include(gi => gi.Rarity)
-                .Include(gi => gi.Quality)
-                .Include(gi => gi.Type)
-                .Include(gi => gi.Game)
-                .AsNoTracking()
-                .Where(gi => gi.Name == name)
-                .ToListAsync(cancellation);
+    public async Task<List<GameItemResponse>> GetAsync(string name, CancellationToken cancellation = default)
+    {
+        var items = await context.Items
+            .Include(gi => gi.Rarity)
+            .Include(gi => gi.Quality)
+            .Include(gi => gi.Type)
+            .Include(gi => gi.Game)
+            .AsNoTracking()
+            .Where(gi => gi.Name == name)
+            .ToListAsync(cancellation);
 
-            return items.ToResponse();
-        }
+        return items.ToResponse();
+    }
 
-        public async Task<List<GameItemResponse>> GetByGameIdAsync(Guid id, CancellationToken cancellation = default)
-        {
-            if (!await context.Games.AnyAsync(g => g.Id == id, cancellation))
-                throw new NotFoundException("Игра не найдена");
+    public async Task<List<GameItemResponse>> GetByGameIdAsync(Guid id, CancellationToken cancellation = default)
+    {
+        if (!await context.Games.AnyAsync(g => g.Id == id, cancellation))
+            throw new NotFoundException("Игра не найдена");
 
-            var items = await context.Items
-                .Include(gi => gi.Rarity)
-                .Include(gi => gi.Quality)
-                .Include(gi => gi.Type)
-                .Include(gi => gi.Game)
-                .AsNoTracking()
-                .Where(gi => gi.GameId == id)
-                .ToListAsync(cancellation);
+        var items = await context.Items
+            .Include(gi => gi.Rarity)
+            .Include(gi => gi.Quality)
+            .Include(gi => gi.Type)
+            .Include(gi => gi.Game)
+            .AsNoTracking()
+            .Where(gi => gi.GameId == id)
+            .ToListAsync(cancellation);
 
-            return items.ToResponse();
-        }
+        return items.ToResponse();
+    }
 
-        public async Task<List<GameItemResponse>> GetByHashNameAsync(string hash, CancellationToken cancellation = default)
-        {
-            var items = await context.Items
-                .Include(gi => gi.Rarity)
-                .Include(gi => gi.Quality)
-                .Include(gi => gi.Type)
-                .Include(gi => gi.Game)
-                .AsNoTracking()
-                .Where(gi => gi.HashName == hash)
-                .ToListAsync(cancellation);
+    public async Task<List<GameItemResponse>> GetByHashNameAsync(string hash, CancellationToken cancellation = default)
+    {
+        var items = await context.Items
+            .Include(gi => gi.Rarity)
+            .Include(gi => gi.Quality)
+            .Include(gi => gi.Type)
+            .Include(gi => gi.Game)
+            .AsNoTracking()
+            .Where(gi => gi.HashName == hash)
+            .ToListAsync(cancellation);
 
-            return items.ToResponse();
-        }
+        return items.ToResponse();
+    }
 
-        public async Task<List<GameItemResponse>> GetAsync(CancellationToken cancellation = default)
-        {
-            var items = await context.Items
-                .Include(gi => gi.Rarity)
-                .Include(gi => gi.Quality)
-                .Include(gi => gi.Type)
-                .Include(gi => gi.Game)
-                .AsNoTracking()
-                .ToListAsync(cancellation);
-
-            return items.ToResponse();
-        }
-
-        public async Task<List<GameItemResponse>> GetByQualityAsync(string name, CancellationToken cancellation = default)
-        {
-            if (!await context.Qualities.AnyAsync(giq => giq.Name == name, cancellation))
-                throw new NotFoundException("Качество не найдено");
-
-            var items = await context.Items
-                .Include(gi => gi.Quality)
-                .Include(gi => gi.Rarity)
-                .Include(gi => gi.Type)
-                .Include(gi => gi.Game)
-                .AsNoTracking()
-                .Where(gi => gi.Quality!.Name == name)
-                .ToListAsync(cancellation);
-
-            return items.ToResponse();
-        }
-
-        public async Task<List<GameItemResponse>> GetByRarityAsync(string name, CancellationToken cancellation = default)
-        {
-            if (!await context.Rarities.AnyAsync(giq => giq.Name == name, cancellation))
-                throw new NotFoundException("Редкость не найдено");
-
-            var items = await context.Items
-                .Include(gi => gi.Rarity)
-                .Include(gi => gi.Quality)
-                .Include(gi => gi.Type)
-                .Include(gi => gi.Game)
-                .AsNoTracking()
-                .Where(gi => gi.Rarity!.Name == name)
-                .ToListAsync(cancellation);
-
-            return items.ToResponse();
-        }
-
-        public async Task<List<GameItemResponse>> GetByTypeAsync(string name, CancellationToken cancellation = default)
-        {
-            if (!await context.ItemTypes.AnyAsync(giq => giq.Name == name, cancellation))
-                throw new NotFoundException("Тип не найден");
-
-            var items = await context.Items
-                .Include(gi => gi.Type)
-                .Include(gi => gi.Quality)
-                .Include(gi => gi.Rarity)
-                .Include(gi => gi.Game)
-                .AsNoTracking()
-                .Where(gi => gi.Type!.Name == name)
-                .ToListAsync(cancellation);
-
-            return items.ToResponse();
-        }
-
-        public async Task<List<GameItemQuality>> GetQualitiesAsync(CancellationToken cancellation = default) =>
-            await context.Qualities
+    public async Task<List<GameItemResponse>> GetAsync(CancellationToken cancellation = default)
+    {
+        var items = await context.Items
+            .Include(gi => gi.Rarity)
+            .Include(gi => gi.Quality)
+            .Include(gi => gi.Type)
+            .Include(gi => gi.Game)
             .AsNoTracking()
             .ToListAsync(cancellation);
 
-        public async Task<List<GameItemRarity>> GetRaritiesAsync(CancellationToken cancellation = default) =>
-            await context.Rarities
+        return items.ToResponse();
+    }
+
+    public async Task<List<GameItemResponse>> GetByQualityAsync(string name, CancellationToken cancellation = default)
+    {
+        if (!await context.Qualities.AnyAsync(giq => giq.Name == name, cancellation))
+            throw new NotFoundException("Качество не найдено");
+
+        var items = await context.Items
+            .Include(gi => gi.Quality)
+            .Include(gi => gi.Rarity)
+            .Include(gi => gi.Type)
+            .Include(gi => gi.Game)
             .AsNoTracking()
+            .Where(gi => gi.Quality!.Name == name)
             .ToListAsync(cancellation);
 
-        public async Task<List<GameItemType>> GetTypesAsync(CancellationToken cancellation = default) =>
-            await context.ItemTypes
+        return items.ToResponse();
+    }
+
+    public async Task<List<GameItemResponse>> GetByRarityAsync(string name, CancellationToken cancellation = default)
+    {
+        if (!await context.Rarities.AnyAsync(giq => giq.Name == name, cancellation))
+            throw new NotFoundException("Редкость не найдено");
+
+        var items = await context.Items
+            .Include(gi => gi.Rarity)
+            .Include(gi => gi.Quality)
+            .Include(gi => gi.Type)
+            .Include(gi => gi.Game)
             .AsNoTracking()
+            .Where(gi => gi.Rarity!.Name == name)
             .ToListAsync(cancellation);
 
-        public async Task<GameItemResponse> CreateAsync(GameItemRequest request, CancellationToken cancellation = default)
+        return items.ToResponse();
+    }
+
+    public async Task<List<GameItemResponse>> GetByTypeAsync(string name, CancellationToken cancellation = default)
+    {
+        if (!await context.ItemTypes.AnyAsync(giq => giq.Name == name, cancellation))
+            throw new NotFoundException("Тип не найден");
+
+        var items = await context.Items
+            .Include(gi => gi.Type)
+            .Include(gi => gi.Quality)
+            .Include(gi => gi.Rarity)
+            .Include(gi => gi.Game)
+            .AsNoTracking()
+            .Where(gi => gi.Type!.Name == name)
+            .ToListAsync(cancellation);
+
+        return items.ToResponse();
+    }
+
+    public async Task<List<GameItemQuality>> GetQualitiesAsync(CancellationToken cancellation = default) =>
+        await context.Qualities
+        .AsNoTracking()
+        .ToListAsync(cancellation);
+
+    public async Task<List<GameItemRarity>> GetRaritiesAsync(CancellationToken cancellation = default) =>
+        await context.Rarities
+        .AsNoTracking()
+        .ToListAsync(cancellation);
+
+    public async Task<List<GameItemType>> GetTypesAsync(CancellationToken cancellation = default) =>
+        await context.ItemTypes
+        .AsNoTracking()
+        .ToListAsync(cancellation);
+
+    public async Task<GameItemResponse> CreateAsync(GameItemRequest request, CancellationToken cancellation = default)
+    {
+        ValidationService.IsGameItem(request);
+
+        if (request.Image is null) throw new BadRequestException("Загрузите картинку в base64");
+
+        var quality = await context.Qualities
+            .AsNoTracking()
+            .FirstOrDefaultAsync(giq => giq.Id == request.QualityId, cancellation) ??
+            throw new NotFoundException("Качество предмета не найдено");
+        var rarity = await context.Rarities
+            .AsNoTracking()
+            .FirstOrDefaultAsync(gir => gir.Id == request.RarityId, cancellation) ??
+            throw new NotFoundException("Редкость предмета не найдена");
+        var type = await context.ItemTypes
+            .AsNoTracking()
+            .FirstOrDefaultAsync(git => git.Id == request.TypeId, cancellation) ??
+            throw new NotFoundException("Тип предмета не найден");
+        var game = await context.Games
+            .AsNoTracking()
+            .FirstOrDefaultAsync(g => g.Id == request.GameId, cancellation) ??
+            throw new NotFoundException("Игра не найдена");
+
+        var item = request.ToEntity(true);
+
+        await context.Items.AddAsync(item, cancellation);
+        await context.SaveChangesAsync(cancellation);
+
+        item.Game = game;
+        item.Quality = quality;
+        item.Rarity = rarity;
+        item.Type = type;
+
+        await publisher.SendAsync(item.ToTemplate(), cancellation);
+
+        FileService.UploadImageBase64(request.Image, $"game-items/{game.Id}/{item.Id}/", $"{item.Id}");
+
+        return item.ToResponse();
+    }
+
+    public async Task<GameItemResponse> UpdateAsync(GameItemRequest request, CancellationToken cancellation = default)
+    {
+        ValidationService.IsGameItem(request);
+
+        var itemOld = await context.Items
+            .FirstOrDefaultAsync(gi => gi.Id == request.Id, cancellation) ??
+            throw new NotFoundException("Предмет не найден");
+        var quality = await context.Qualities
+            .AsNoTracking()
+            .FirstOrDefaultAsync(giq => giq.Id == request.QualityId, cancellation) ??
+            throw new NotFoundException("Качество предмета не найдено");
+        var rarity = await context.Rarities
+            .AsNoTracking()
+            .FirstOrDefaultAsync(gir => gir.Id == request.RarityId, cancellation) ??
+            throw new NotFoundException("Редкость предмета не найдена");
+        var type = await context.ItemTypes
+            .AsNoTracking()
+            .FirstOrDefaultAsync(git => git.Id == request.TypeId, cancellation) ??
+            throw new NotFoundException("Тип предмета не найден");
+        var game = await context.Games
+            .AsNoTracking()
+            .FirstOrDefaultAsync(g => g.Id == request.GameId, cancellation) ??
+            throw new NotFoundException("Игра не найдена");
+
+        var item = request.ToEntity();
+
+        context.Entry(itemOld).CurrentValues.SetValues(item);
+        await context.SaveChangesAsync(cancellation);
+
+        item.Game = game;
+        item.Quality = quality;
+        item.Rarity = rarity;
+        item.Type = type;
+
+        await publisher.SendAsync(item.ToTemplate(), cancellation);
+
+        await CorrectCostAsync(item.Id, itemOld.Cost, cancellation);
+        await CorrectChancesAsync(item.Id, cancellation);
+
+        if (request.Image is not null)
         {
-            ValidationService.IsGameItem(request);
-
-            if (request.Image is null) throw new BadRequestException("Загрузите картинку в base64");
-
-            var quality = await context.Qualities
-                .AsNoTracking()
-                .FirstOrDefaultAsync(giq => giq.Id == request.QualityId, cancellation) ??
-                throw new NotFoundException("Качество предмета не найдено");
-            var rarity = await context.Rarities
-                .AsNoTracking()
-                .FirstOrDefaultAsync(gir => gir.Id == request.RarityId, cancellation) ??
-                throw new NotFoundException("Редкость предмета не найдена");
-            var type = await context.ItemTypes
-                .AsNoTracking()
-                .FirstOrDefaultAsync(git => git.Id == request.TypeId, cancellation) ??
-                throw new NotFoundException("Тип предмета не найден");
-            var game = await context.Games
-                .AsNoTracking()
-                .FirstOrDefaultAsync(g => g.Id == request.GameId, cancellation) ??
-                throw new NotFoundException("Игра не найдена");
-
-            var item = request.ToEntity(true);
-
-            await context.Items.AddAsync(item, cancellation);
-            await context.SaveChangesAsync(cancellation);
-
-            item.Game = game;
-            item.Quality = quality;
-            item.Rarity = rarity;
-            item.Type = type;
-
-            await publisher.SendAsync(item.ToTemplate(), cancellation);
-
             FileService.UploadImageBase64(request.Image, $"game-items/{game.Id}/{item.Id}/", $"{item.Id}");
-
-            return item.ToResponse();
         }
 
-        public async Task<GameItemResponse> UpdateAsync(GameItemRequest request, CancellationToken cancellation = default)
+        return item.ToResponse();
+    }
+
+    public async Task<GameItemResponse> DeleteAsync(Guid id, CancellationToken cancellation = default)
+    {
+        var item = await context.Items
+            .Include(gi => gi.Rarity)
+            .Include(gi => gi.Quality)
+            .Include(gi => gi.Type)
+            .Include(gi => gi.Game)
+            .AsNoTracking()
+            .FirstOrDefaultAsync(gi => gi.Id == id, cancellation) ??
+            throw new NotFoundException("Предмет не найден");
+
+        context.Items.Remove(item);
+        await context.SaveChangesAsync(cancellation);
+        await publisher.SendAsync(item.ToTemplate(isDeleted: true), cancellation);
+
+        FileService.RemoveFolder($"game-items/{item.GameId}/{id}/");
+
+        return item!.ToResponse();
+    }
+
+    public async Task UpdateCostManagerAsync(CancellationToken cancellationToken = default)
+    {
+        var item = await context.Items
+            .Include(gi => gi.Game)
+            .OrderByDescending(gi => gi.UpdateDate)
+            .Where(gi => gi.UpdateDate + TimeSpan.FromMinutes(5) <= DateTime.UtcNow)
+            .OrderByDescending(gi => gi.UpdateDate)
+            .FirstOrDefaultAsync(cancellationToken);
+
+        if(item is null) return;
+
+        var priceOriginal = await _platformServices[item.Game!.Name!]
+            .GetOriginalMarketAsync(item.HashName ?? "null", item.Game!.Name!, cancellation: cancellationToken);
+        var priceAdditional = await _platformServices[item.Game!.Name!]
+            .GetAdditionalMarketAsync(item.IdForMarket!, item.Game!.Name!, cancellation: cancellationToken);
+
+        var isAdditionalCost = priceOriginal.Cost <= 0 || priceAdditional.Cost > priceOriginal.Cost;
+        var cost = isAdditionalCost ? priceAdditional.Cost : priceOriginal.Cost;
+
+        item.UpdateDate = DateTime.UtcNow;
+
+        if (cost > 0) item.Cost = cost <= 1 ? 7 : cost * 7M;
+
+        context.Items.Update(item);
+        await context.SaveChangesAsync(cancellationToken);
+
+        if (cost <= 0)
         {
-            ValidationService.IsGameItem(request);
+            logger.LogError($"ItemId - {item.Id} не смог получить цену. " +
+                             $"Цена маркет - {priceOriginal}; Цена доп маркета - {priceAdditional}");
+            return;
+        }
 
-            var itemOld = await context.Items
-                .FirstOrDefaultAsync(gi => gi.Id == request.Id, cancellation) ??
-                throw new NotFoundException("Предмет не найден");
-            var quality = await context.Qualities
-                .AsNoTracking()
-                .FirstOrDefaultAsync(giq => giq.Id == request.QualityId, cancellation) ??
-                throw new NotFoundException("Качество предмета не найдено");
-            var rarity = await context.Rarities
-                .AsNoTracking()
-                .FirstOrDefaultAsync(gir => gir.Id == request.RarityId, cancellation) ??
-                throw new NotFoundException("Редкость предмета не найдена");
-            var type = await context.ItemTypes
-                .AsNoTracking()
-                .FirstOrDefaultAsync(git => git.Id == request.TypeId, cancellation) ??
-                throw new NotFoundException("Тип предмета не найден");
-            var game = await context.Games
-                .AsNoTracking()
-                .FirstOrDefaultAsync(g => g.Id == request.GameId, cancellation) ??
-                throw new NotFoundException("Игра не найдена");
+        await publisher.SendAsync(item.ToTemplate(), cancellationToken);
 
-            var item = request.ToEntity();
+        await CorrectCostAsync(item.Id, item.Cost, cancellationToken);
+        await CorrectChancesAsync(item.Id, cancellationToken);
+    }
 
-            context.Entry(itemOld).CurrentValues.SetValues(item);
-            await context.SaveChangesAsync(cancellation);
+    private async Task CorrectCostAsync(Guid itemId, decimal lastPriceItem, CancellationToken cancellationToken = default)
+    {
+        var inventories = await context.BoxInventories
+            .Include(lbi => lbi.Box)
+            .Where(lbi => lbi.ItemId == itemId)
+            .ToListAsync(cancellationToken);
 
-            item.Game = game;
-            item.Quality = quality;
-            item.Rarity = rarity;
-            item.Type = type;
-
-            await publisher.SendAsync(item.ToTemplate(), cancellation);
-
-            await CorrectCostAsync(item.Id, itemOld.Cost, cancellation);
-            await CorrectChancesAsync(item.Id, cancellation);
-
-            if (request.Image is not null)
+        foreach (var box in inventories.Select(inventory => inventory.Box!))
+        {
+            try
             {
-                FileService.UploadImageBase64(request.Image, $"game-items/{game.Id}/{item.Id}/", $"{item.Id}");
-            }
+                var boxInventories = await context.BoxInventories
+                    .Include(lbi => lbi.Item)
+                    .OrderBy(lbi => lbi.Item!.Cost)
+                    .AsNoTracking()
+                    .Where(lbi => lbi.BoxId == box.Id)
+                    .ToListAsync(cancellationToken);
 
-            return item.ToResponse();
-        }
+                var itemMinCost = boxInventories[0].Item!.Cost;
+                var itemTwoCost = boxInventories.FirstOrDefault(lbi => lbi.ItemId != itemId)?.Item?.Cost ?? 0;
+                var itemMaxCost = boxInventories[^1].Item!.Cost;
 
-        public async Task<GameItemResponse> DeleteAsync(Guid id, CancellationToken cancellation = default)
-        {
-            var item = await context.Items
-                .Include(gi => gi.Rarity)
-                .Include(gi => gi.Quality)
-                .Include(gi => gi.Type)
-                .Include(gi => gi.Game)
-                .AsNoTracking()
-                .FirstOrDefaultAsync(gi => gi.Id == id, cancellation) ??
-                throw new NotFoundException("Предмет не найден");
+                var boxCostNew = itemMinCost * (box.Cost / itemMinCost);
 
-            context.Items.Remove(item);
-            await context.SaveChangesAsync(cancellation);
-            await publisher.SendAsync(item.ToTemplate(isDeleted: true), cancellation);
-
-            FileService.RemoveFolder($"game-items/{item.GameId}/{id}/");
-
-            return item!.ToResponse();
-        }
-
-        public async Task UpdateCostManagerAsync(CancellationToken cancellationToken = default)
-        {
-            var item = await context.Items
-                .Include(gi => gi.Game)
-                .OrderByDescending(gi => gi.UpdateDate)
-                .Where(gi => gi.UpdateDate + TimeSpan.FromMinutes(5) <= DateTime.UtcNow)
-                .OrderByDescending(gi => gi.UpdateDate)
-                .FirstOrDefaultAsync(cancellationToken);
-
-            if(item is null) return;
-
-            var priceOriginal = await _platformServices[item.Game!.Name!]
-                .GetOriginalMarketAsync(item.HashName ?? "null", item.Game!.Name!, cancellation: cancellationToken);
-            var priceAdditional = await _platformServices[item.Game!.Name!]
-                .GetAdditionalMarketAsync(item.IdForMarket!, item.Game!.Name!, cancellation: cancellationToken);
-
-            var isAdditionalCost = priceOriginal.Cost <= 0 || priceAdditional.Cost > priceOriginal.Cost;
-            var cost = isAdditionalCost ? priceAdditional.Cost : priceOriginal.Cost;
-
-            item.UpdateDate = DateTime.UtcNow;
-
-            if (cost > 0) item.Cost = cost <= 1 ? 7 : cost * 7M;
-
-            context.Items.Update(item);
-            await context.SaveChangesAsync(cancellationToken);
-
-            if (cost <= 0)
-            {
-                logger.LogError($"ItemId - {item.Id} не смог получить цену. " +
-                                 $"Цена маркет - {priceOriginal}; Цена доп маркета - {priceAdditional}");
-                return;
-            }
-
-            await publisher.SendAsync(item.ToTemplate(), cancellationToken);
-
-            await CorrectCostAsync(item.Id, item.Cost, cancellationToken);
-            await CorrectChancesAsync(item.Id, cancellationToken);
-        }
-
-        private async Task CorrectCostAsync(Guid itemId, decimal lastPriceItem, CancellationToken cancellationToken = default)
-        {
-            var inventories = await context.BoxInventories
-                .Include(lbi => lbi.Box)
-                .Where(lbi => lbi.ItemId == itemId)
-                .ToListAsync(cancellationToken);
-
-            foreach (var box in inventories.Select(inventory => inventory.Box!))
-            {
-                try
+                if (boxInventories[0].Item!.Id == itemId)
                 {
-                    var boxInventories = await context.BoxInventories
-                        .Include(lbi => lbi.Item)
-                        .OrderBy(lbi => lbi.Item!.Cost)
-                        .AsNoTracking()
-                        .Where(lbi => lbi.BoxId == box.Id)
-                        .ToListAsync(cancellationToken);
+                    if (lastPriceItem < box.Cost) boxCostNew = itemMinCost * (box.Cost / lastPriceItem);
+                    else if (itemTwoCost != 0) boxCostNew = itemMinCost * (box.Cost / itemTwoCost);
+                }
 
-                    var itemMinCost = boxInventories[0].Item!.Cost;
-                    var itemTwoCost = boxInventories.FirstOrDefault(lbi => lbi.ItemId != itemId)?.Item?.Cost ?? 0;
-                    var itemMaxCost = boxInventories[^1].Item!.Cost;
+                box.IsLocked = boxCostNew >= itemMaxCost || boxCostNew <= itemMinCost;
+                box.Cost = box.IsLocked ? box.Cost : boxCostNew;
 
-                    var boxCostNew = itemMinCost * (box.Cost / itemMinCost);
+                context.LootBoxes.Update(box);
+                await context.SaveChangesAsync(cancellationToken);
+                await publisher.SendAsync(box.ToTemplate(), cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                logger.LogCritical($"BoxId - {box.Id}; ItemId - {itemId}; не смог обновить стоимость кейса");
+                logger.LogCritical(ex, ex.Message);
+                logger.LogCritical(ex.StackTrace);
 
-                    if (boxInventories[0].Item!.Id == itemId)
-                    {
-                        if (lastPriceItem < box.Cost) boxCostNew = itemMinCost * (box.Cost / lastPriceItem);
-                        else if (itemTwoCost != 0) boxCostNew = itemMinCost * (box.Cost / itemTwoCost);
-                    }
+                box.IsLocked = true;
+                context.LootBoxes.Update(box);
+                await context.SaveChangesAsync(cancellationToken);
+                await publisher.SendAsync(box.ToTemplate(), cancellationToken);
 
-                    box.IsLocked = boxCostNew >= itemMaxCost || boxCostNew <= itemMinCost;
-                    box.Cost = box.IsLocked ? box.Cost : boxCostNew;
+                logger.LogCritical($"BoxId - {box.Id} заблокирован");
+            }
+        }
+    }
 
-                    context.LootBoxes.Update(box);
+    private async Task CorrectChancesAsync(Guid itemId, CancellationToken cancellationToken = default)
+    {
+        var itemInventories = await context.BoxInventories
+            .Include(lbi => lbi.Box)
+            .Where(lbi => lbi.ItemId == itemId)
+            .AsNoTracking()
+            .ToListAsync(cancellationToken);
+
+        foreach (var itemInventory in itemInventories)
+        {
+            try
+            {
+                var weights = new Dictionary<Guid, decimal>();
+                var boxInventories = await context.BoxInventories
+                    .Include(lbi => lbi.Item)
+                    .Where(lbi => lbi.BoxId == itemInventory.Box!.Id)
+                    .ToListAsync(cancellationToken);
+
+                decimal weightAll = 0;
+
+                foreach (var boxInventory in boxInventories)
+                {
+                    var weight = 1M / boxInventory.Item!.Cost;
+
+                    weightAll += weight;
+                    weights.Add(boxInventory.Id, weight);
+                }
+
+                foreach (var boxInventory in boxInventories)
+                {
+                    boxInventory.ChanceWining = decimal.ToInt32(
+                        Math.Round(weights[boxInventory.Id] / weightAll * 10000000M));
+
+                    context.BoxInventories.Update(boxInventory);
                     await context.SaveChangesAsync(cancellationToken);
-                    await publisher.SendAsync(box.ToTemplate(), cancellationToken);
-                }
-                catch (Exception ex)
-                {
-                    logger.LogCritical($"BoxId - {box.Id}; ItemId - {itemId}; не смог обновить стоимость кейса");
-                    logger.LogCritical(ex, ex.Message);
-                    logger.LogCritical(ex.StackTrace);
-
-                    box.IsLocked = true;
-                    context.LootBoxes.Update(box);
-                    await context.SaveChangesAsync(cancellationToken);
-                    await publisher.SendAsync(box.ToTemplate(), cancellationToken);
-
-                    logger.LogCritical($"BoxId - {box.Id} заблокирован");
+                    await publisher.SendAsync(new LootBoxInventoryTemplate()
+                    {
+                        Id = boxInventory.Id,
+                        BoxId = boxInventory.BoxId,
+                        ChanceWining = boxInventory.ChanceWining,
+                        ItemId = boxInventory.ItemId,
+                    }, cancellationToken);
                 }
             }
-        }
-
-        private async Task CorrectChancesAsync(Guid itemId, CancellationToken cancellationToken = default)
-        {
-            var itemInventories = await context.BoxInventories
-                .Include(lbi => lbi.Box)
-                .Where(lbi => lbi.ItemId == itemId)
-                .AsNoTracking()
-                .ToListAsync(cancellationToken);
-
-            foreach (var itemInventory in itemInventories)
+            catch (Exception ex)
             {
-                try
-                {
-                    var weights = new Dictionary<Guid, decimal>();
-                    var boxInventories = await context.BoxInventories
-                        .Include(lbi => lbi.Item)
-                        .Where(lbi => lbi.BoxId == itemInventory.Box!.Id)
-                        .ToListAsync(cancellationToken);
-
-                    decimal weightAll = 0;
-
-                    foreach (var boxInventory in boxInventories)
-                    {
-                        var weight = 1M / boxInventory.Item!.Cost;
-
-                        weightAll += weight;
-                        weights.Add(boxInventory.Id, weight);
-                    }
-
-                    foreach (var boxInventory in boxInventories)
-                    {
-                        boxInventory.ChanceWining = decimal.ToInt32(
-                            Math.Round(weights[boxInventory.Id] / weightAll * 10000000M));
-
-                        context.BoxInventories.Update(boxInventory);
-                        await context.SaveChangesAsync(cancellationToken);
-                        await publisher.SendAsync(new LootBoxInventoryTemplate()
-                        {
-                            Id = boxInventory.Id,
-                            BoxId = boxInventory.BoxId,
-                            ChanceWining = boxInventory.ChanceWining,
-                            ItemId = boxInventory.ItemId,
-                        }, cancellationToken);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    logger.LogCritical($"InventoryId - {itemInventory.Id}; ItemId - {itemId}; не смог обновить шансы");
-                    logger.LogCritical(ex, ex.Message);
-                    logger.LogCritical(ex.StackTrace);
-                }
+                logger.LogCritical($"InventoryId - {itemInventory.Id}; ItemId - {itemId}; не смог обновить шансы");
+                logger.LogCritical(ex, ex.Message);
+                logger.LogCritical(ex.StackTrace);
             }
         }
     }

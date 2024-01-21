@@ -1,10 +1,9 @@
 ﻿using System.Collections;
 
-namespace Game.BLL.Exceptions
+namespace Game.BLL.Exceptions;
+
+public class StatusCodeExtendedException(int statusCode, string message, IEnumerable data) : Exception(message)
 {
-    public class StatusCodeExtendedException(int statusCode, string message, IEnumerable data) : Exception(message)
-    {
-        public int StatusCode { get; set; } = statusCode;
-        public new IEnumerable Data { get; set; } = data;
-    }
+    public int StatusCode { get; set; } = statusCode;
+    public new IEnumerable Data { get; set; } = data;
 }

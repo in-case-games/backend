@@ -1,12 +1,11 @@
 ﻿using Withdraw.BLL.Models;
 
-namespace Withdraw.BLL.Interfaces
+namespace Withdraw.BLL.Interfaces;
+
+public interface IWithdrawService
 {
-    public interface IWithdrawService
-    {
-        public Task<UserHistoryWithdrawResponse> WithdrawItemAsync(WithdrawItemRequest request, Guid userId, CancellationToken cancellation = default);
-        public Task<BalanceMarketResponse> GetMarketBalanceAsync(string marketName, CancellationToken cancellation = default);
-        public Task WithdrawStatusManagerAsync(CancellationToken cancellation = default);
-        public Task<ItemInfoResponse> GetItemInfoAsync(Guid id, CancellationToken cancellation = default);
-    }
+    public Task<UserHistoryWithdrawResponse> WithdrawItemAsync(WithdrawItemRequest request, Guid userId, CancellationToken cancellation = default);
+    public Task<BalanceMarketResponse> GetMarketBalanceAsync(string marketName, CancellationToken cancellation = default);
+    public Task WithdrawStatusManagerAsync(CancellationToken cancellation = default);
+    public Task<ItemInfoResponse> GetItemInfoAsync(Guid id, CancellationToken cancellation = default);
 }

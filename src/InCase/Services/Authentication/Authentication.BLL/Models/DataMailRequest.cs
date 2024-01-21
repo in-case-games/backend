@@ -1,8 +1,7 @@
-﻿namespace Authentication.BLL.Models
+﻿namespace Authentication.BLL.Models;
+
+public class DataMailRequest
 {
-    public class DataMailRequest
-    {
-        public string Login { get; set; } = null!;
-        public string Email { get; set; } = null!;
-    }
+    public string Login { get; set; } = null!;
+    public string Email { get; set; } = null!;
 }

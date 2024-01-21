@@ -2,15 +2,14 @@
 using Microsoft.EntityFrameworkCore;
 using Game.DAL.Entities;
 
-namespace Game.DAL.Configurations
+namespace Game.DAL.Configurations;
+
+internal class BaseEntityConfiguration<TEntity> :
+    IEntityTypeConfiguration<TEntity> where TEntity : BaseEntity
 {
-    internal class BaseEntityConfiguration<TEntity> :
-        IEntityTypeConfiguration<TEntity> where TEntity : BaseEntity
+    public virtual void Configure(EntityTypeBuilder<TEntity> builder)
     {
-        public virtual void Configure(EntityTypeBuilder<TEntity> builder)
-        {
-            builder.HasKey(k => k.Id);
-            builder.HasIndex(i => i.Id).IsUnique();
-        }
+        builder.HasKey(k => k.Id);
+        builder.HasIndex(i => i.Id).IsUnique();
     }
 }
