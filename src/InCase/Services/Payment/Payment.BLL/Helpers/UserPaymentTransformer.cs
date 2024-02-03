@@ -12,7 +12,7 @@ public static class UserPaymentTransformer
             InvoiceId = payment.InvoiceId,
             Amount = payment.Amount,
             Currency = payment.Currency,
-            Date = payment.Date,
+            Date = payment.CreatedAt,
             UserId = payment.UserId,
             Status = payment.Status
         };
