@@ -4,7 +4,7 @@ namespace Payment.BLL.Models.External;
 
 public class InvoiceCreateResponse
 {
-    [JsonPropertyName("id")] public Guid Id { get; set; }
+    [JsonPropertyName("id")] public string? Id { get; set; }
     [JsonPropertyName("status")] public string? Status { get; set; }
     [JsonPropertyName("paid")] public bool Paid { get; set; }
     [JsonPropertyName("amount")] public Amount? Amount { get; set; }
@@ -14,4 +14,5 @@ public class InvoiceCreateResponse
     [JsonPropertyName("recipient")] public Recipient? Recipient { get; set; }
     [JsonPropertyName("refundable")] public bool Refundable { get; set; }
     [JsonPropertyName("test")] public bool Test { get; set; }
+    [JsonIgnore] public Guid? UserId { get; set; }
 }
