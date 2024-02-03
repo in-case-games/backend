@@ -1,11 +1,11 @@
-﻿using Payment.BLL.Models;
+﻿using Payment.BLL.Models.Internal;
 using Payment.DAL.Entities;
 
 namespace Payment.BLL.Helpers;
 
-public static class UserPaymentsTransformer
+public static class UserPaymentTransformer
 {
-    public static UserPaymentsResponse ToResponse(this UserPayment payment) =>
+    public static UserPaymentResponse ToResponse(this UserPayment payment) =>
         new()
         {
             Id = payment.Id,
@@ -13,9 +13,10 @@ public static class UserPaymentsTransformer
             Amount = payment.Amount,
             Currency = payment.Currency,
             Date = payment.Date,
-            Rate = payment.Rate,
+            UserId = payment.UserId,
+            Status = payment.Status
         };
 
-    public static List<UserPaymentsResponse> ToResponse(this List<UserPayment> payments) =>
+    public static List<UserPaymentResponse> ToResponse(this List<UserPayment> payments) =>
         payments.Select(ToResponse).ToList();
 }

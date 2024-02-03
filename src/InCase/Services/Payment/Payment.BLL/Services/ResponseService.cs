@@ -1,29 +1,51 @@
 ﻿using System.Net.Http.Json;
 using System.Text.Json;
+using Microsoft.Extensions.Logging;
+using Payment.BLL.Exceptions;
 using Payment.BLL.Interfaces;
 
 namespace Payment.BLL.Services;
 
-public class ResponseService : IResponseService
+public class ResponseService(ILogger<ResponseService> logger) : IResponseService
 {
     private readonly HttpClient _httpClient = new();
 
-    public async Task<IGameMoneyResponse?> ResponsePostAsync(string uri, 
-        IGameMoneyRequest request, CancellationToken cancellation = default)
+    public async Task<T?> GetAsync<T>(string uri, CancellationToken cancellationToken = default)
     {
-        var json = JsonContent.Create(request);
-        var response = await _httpClient.PostAsync(uri, json, cancellation);
+        var response = await _httpClient.GetAsync(uri, cancellationToken);
 
-        if (!response.IsSuccessStatusCode)
+        if (response.IsSuccessStatusCode)
         {
-            throw new Exception(response.StatusCode.ToString() +
-                response.RequestMessage! +
-                response.Headers +
-                response.ReasonPhrase! +
-                response.Content);
+            return await response.Content.ReadFromJsonAsync<T>(new JsonSerializerOptions(JsonSerializerDefaults.Web), cancellationToken);
         }
 
-        return await response.Content.ReadFromJsonAsync<IGameMoneyResponse>(
-            new JsonSerializerOptions(JsonSerializerDefaults.Web), cancellation);
+        logger.LogError($"GET - Пришел не корректный статус код{Environment.NewLine}" +
+            $"{response.StatusCode}{Environment.NewLine}" +
+            $"{response.RequestMessage}{Environment.NewLine}" +
+            $"{response.Headers}{Environment.NewLine}" +
+            $"{response.ReasonPhrase}{Environment.NewLine}" +
+            $"{response.Content}{Environment.NewLine}");
+
+        throw new UnknownException("Внутренняя ошибка");
+    }
+
+    public async Task<T?> PostAsync<T, TK>(string uri, TK body, CancellationToken cancellationToken = default)
+    {
+        var json = JsonContent.Create(body);
+        var response = await _httpClient.PostAsync(uri, json, cancellationToken);
+
+        if (response.IsSuccessStatusCode)
+        {
+            return await response.Content.ReadFromJsonAsync<T>(new JsonSerializerOptions(JsonSerializerDefaults.Web), cancellationToken);
+        }
+
+        logger.LogError($"POST - Пришел не корректный статус код{Environment.NewLine}" +
+            $"{response.StatusCode}{Environment.NewLine}" +
+            $"{response.RequestMessage}{Environment.NewLine}" +
+            $"{response.Headers}{Environment.NewLine}" +
+            $"{response.ReasonPhrase}{Environment.NewLine}" +
+            $"{response.Content}{Environment.NewLine}");
+
+        throw new UnknownException("Внутренняя ошибка");
     }
 }

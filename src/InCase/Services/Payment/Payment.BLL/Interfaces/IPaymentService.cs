@@ -1,10 +1,9 @@
-﻿using Payment.BLL.Models;
+﻿using Payment.BLL.Models.Internal;
 
 namespace Payment.BLL.Interfaces;
 
 public interface IPaymentService
 {
-    public Task<UserPaymentsResponse> TopUpBalanceAsync(GameMoneyTopUpResponse request, CancellationToken cancellation = default);
-    public Task<PaymentBalanceResponse> GetPaymentBalanceAsync(string currency, CancellationToken cancellation = default);
-    public HashOfDataForDepositResponse GetHashOfDataForDeposit(Guid userId);
+    public Task<UserPaymentResponse> ProcessingInvoiceNotificationAsync(InvoiceNotificationRequest request);
+    public Task<InvoiceUrlResponse> CreateInvoiceUrlAsync(InvoiceUrlRequest request);
 }

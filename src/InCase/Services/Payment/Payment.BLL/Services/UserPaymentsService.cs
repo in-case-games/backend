@@ -2,14 +2,14 @@
 using Payment.BLL.Exceptions;
 using Payment.BLL.Helpers;
 using Payment.BLL.Interfaces;
-using Payment.BLL.Models;
+using Payment.BLL.Models.Internal;
 using Payment.DAL.Data;
 
 namespace Payment.BLL.Services;
 
 public class UserPaymentsService(ApplicationDbContext context) : IUserPaymentsService
 {
-    public async Task<UserPaymentsResponse> GetByIdAsync(Guid id, Guid userId, CancellationToken cancellation = default)
+    public async Task<UserPaymentResponse> GetByIdAsync(Guid id, Guid userId, CancellationToken cancellation = default)
     {
         var payment = await context.Payments
             .AsNoTracking()
@@ -20,7 +20,7 @@ public class UserPaymentsService(ApplicationDbContext context) : IUserPaymentsSe
             throw new ForbiddenException("Счёт оплаты числится на другого пользователя");
     }
 
-    public async Task<List<UserPaymentsResponse>> GetAsync(int count, CancellationToken cancellation = default)
+    public async Task<List<UserPaymentResponse>> GetAsync(int count, CancellationToken cancellation = default)
     {
         if (count is <= 0 or >= 10000)
             throw new BadRequestException("Размер выборки должен быть в пределе 1-10000");
@@ -34,7 +34,7 @@ public class UserPaymentsService(ApplicationDbContext context) : IUserPaymentsSe
         return payments.ToResponse();
     }
 
-    public async Task<List<UserPaymentsResponse>> GetAsync(Guid userId, int count, CancellationToken cancellation = default)
+    public async Task<List<UserPaymentResponse>> GetAsync(Guid userId, int count, CancellationToken cancellation = default)
     {
         if (count is <= 0 or >= 10000)
             throw new BadRequestException("Размер выборки должен быть в пределе 1-10000");

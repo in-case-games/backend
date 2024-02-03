@@ -2,5 +2,6 @@
 
 public interface IResponseService
 {
-    public Task<IGameMoneyResponse?> ResponsePostAsync(string uri, IGameMoneyRequest request, CancellationToken cancellation = default);
+    public Task<T?> GetAsync<T>(string uri, CancellationToken cancellationToken = default);
+    public Task<T?> PostAsync<T, TK>(string uri, TK body, CancellationToken cancellationToken = default);
 }

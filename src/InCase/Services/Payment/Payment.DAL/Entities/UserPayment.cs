@@ -8,11 +8,12 @@ public class UserPayment : BaseEntity
     public DateTime Date { get; set; }
     public string? Currency { get; set; }
     public decimal Amount { get; set; }
-    public decimal Rate { get; set; }
-
-    [JsonIgnore]
     public Guid UserId { get; set; }
+    public Guid StatusId { get; set; }
 
     [JsonIgnore]
     public User? User { get; set; }
+
+    [JsonIgnore]
+    public PaymentStatus? Status { get; set; }
 }

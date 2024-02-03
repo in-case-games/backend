@@ -861,42 +861,6 @@
     },
     //Base: Payment.API
     //EndPoint: payment
-    {
-      "DownstreamPathTemplate": "/api/payment/top-up",
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "host.docker.internal",
-          "Port": 5039
-        }
-      ],
-      "UpstreamPathTemplate": "/api/payment/top-up",
-      "UpstreamHttpMethod": ["Post"]
-    },
-    {
-      "DownstreamPathTemplate": "/api/payment/balance/{currency}",
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "host.docker.internal",
-          "Port": 5039
-        }
-      ],
-      "UpstreamPathTemplate": "/api/payment/balance/{currency}",
-      "UpstreamHttpMethod": ["Get"]
-    },
-    {
-      "DownstreamPathTemplate": "/api/payment/top-up/signature",
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "host.docker.internal",
-          "Port": 5039
-        }
-      ],
-      "UpstreamPathTemplate": "/api/payment/top-up/signature",
-      "UpstreamHttpMethod": ["Get"]
-    },
     //EndPoint: user-payments
     {
       "DownstreamPathTemplate": "/api/user-payments",

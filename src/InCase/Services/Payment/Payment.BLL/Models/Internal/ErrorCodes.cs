@@ -1,4 +1,4 @@
-﻿namespace Payment.BLL.Models;
+﻿namespace Payment.BLL.Models.Internal;
 
 public class ErrorCodes
 {
