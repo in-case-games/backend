@@ -27,7 +27,7 @@ public class UserPaymentsService(ApplicationDbContext context) : IUserPaymentsSe
 
         var payments = await context.Payments
             .AsNoTracking()
-            .OrderByDescending(up => up.Date)
+            .OrderByDescending(up => up.CreatedAt)
             .Take(count)
             .ToListAsync(cancellation);
 
@@ -42,7 +42,7 @@ public class UserPaymentsService(ApplicationDbContext context) : IUserPaymentsSe
         var payments = await context.Payments
             .AsNoTracking()
             .Where(up => up.UserId == userId)
-            .OrderByDescending(up => up.Date)
+            .OrderByDescending(up => up.CreatedAt)
             .Take(count)
             .ToListAsync(cancellation);
 
