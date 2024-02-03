@@ -20,7 +20,7 @@ public class PaymentController(IPaymentService paymentService) : ControllerBase
     [HttpPost]
     public async Task<IActionResult> ProcessingInvoiceNotificationAsync(InvoiceNotificationResponse response, CancellationToken cancellationToken)
     {
-        response.Object!.UserId = UserId;
+        response.UserId = UserId;
         var userResponse = await paymentService.ProcessingInvoiceNotificationAsync(response, cancellationToken);
 
         return Ok(ApiResult<UserPaymentResponse>.Ok(userResponse));

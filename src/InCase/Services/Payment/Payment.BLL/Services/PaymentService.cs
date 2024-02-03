@@ -54,7 +54,7 @@ public class PaymentService(IResponseService responseService, ApplicationDbConte
             InvoiceId = payment.InvoiceId,
             Amount = payment.Amount,
             Currency = payment.Currency,
-            UserId = payment.UserId,
+            UserId = response.UserId,
             Status = payment.Status
         };
     }
