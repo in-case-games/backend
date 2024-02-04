@@ -42,6 +42,9 @@ public class PaymentService(IResponseService responseService, ApplicationDbConte
     {
         cancellationToken.ThrowIfCancellationRequested();
 
+        if (response.Object!.Metadata is null)
+            throw new BadRequestException("Не был передан обязательный обьект metadata");
+
         PaymentStatus? paymentStatus = await context.PaymentStatuses
             .FirstOrDefaultAsync(x => x.Name!.ToLower() == response.Object!.Status);
 
@@ -54,7 +57,7 @@ public class PaymentService(IResponseService responseService, ApplicationDbConte
             InvoiceId = payment.InvoiceId,
             Amount = payment.Amount,
             Currency = payment.Currency,
-            UserId = response.UserId,
+            UserId = response.Object!.Metadata!.UserId,
             Status = payment.Status
         };
     }

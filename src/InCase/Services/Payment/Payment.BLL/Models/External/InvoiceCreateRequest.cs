@@ -8,5 +8,6 @@ public class InvoiceCreateRequest
     [JsonPropertyName("capture")] public bool Capture { get; set; } = true;
     [JsonPropertyName("confirmation")] public Confirmation? Confirmation { get; set; }
     [JsonPropertyName("description")] public string? Description { get; set; } = "InCase.games";
+    [JsonPropertyName("metadata")] public InvoiceCreateMetadata? Metadata { get; set; }
 }
 
