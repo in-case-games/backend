@@ -15,7 +15,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/authentication/confirm/account",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/authentication/confirm/email/{email}",
@@ -27,7 +27,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/authentication/confirm/email/{email}",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/authentication/confirm/{userId}/email/{email}",
@@ -39,7 +39,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/authentication/confirm/{userId}/email/{email}",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/authentication/confirm/login/{login}",
@@ -51,7 +51,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/authentication/confirm/login/{login}",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/authentication/confirm/{userId}/login/{login}",
@@ -63,7 +63,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/authentication/confirm/{userId}/login/{login}",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/authentication/confirm/password/{password}",
@@ -75,7 +75,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/authentication/confirm/password/{password}",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/authentication/confirm/account",
@@ -87,7 +87,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/authentication/confirm/account",
-      "UpstreamHttpMethod": ["Delete"]
+      "UpstreamHttpMethod": [ "Delete" ]
     },
     //EndPoint: authentication
     {
@@ -100,7 +100,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/authentication/sign-in",
-      "UpstreamHttpMethod": ["Post"]
+      "UpstreamHttpMethod": [ "Post" ]
     },
     {
       "DownstreamPathTemplate": "/api/authentication/sign-up",
@@ -112,7 +112,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/authentication/sign-up",
-      "UpstreamHttpMethod": ["Post"]
+      "UpstreamHttpMethod": [ "Post" ]
     },
     {
       "DownstreamPathTemplate": "/api/authentication/refresh",
@@ -124,7 +124,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/authentication/refresh",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     //EndPoint: authentication/sending
     {
@@ -137,7 +137,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/authentication/sending/forgot/password",
-      "UpstreamHttpMethod": ["Put"]
+      "UpstreamHttpMethod": [ "Put" ]
     },
     {
       "DownstreamPathTemplate": "/api/authentication/sending/email/{password}",
@@ -149,7 +149,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/authentication/sending/email/{password}",
-      "UpstreamHttpMethod": ["Put"]
+      "UpstreamHttpMethod": [ "Put" ]
     },
     {
       "DownstreamPathTemplate": "/api/authentication/sending/login/{password}",
@@ -161,7 +161,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/authentication/sending/login/{password}",
-      "UpstreamHttpMethod": ["Put"]
+      "UpstreamHttpMethod": [ "Put" ]
     },
     {
       "DownstreamPathTemplate": "/api/authentication/sending/password/{password}",
@@ -173,7 +173,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/authentication/sending/password/{password}",
-      "UpstreamHttpMethod": ["Put"]
+      "UpstreamHttpMethod": [ "Put" ]
     },
     {
       "DownstreamPathTemplate": "/api/authentication/sending/account/{password}",
@@ -185,7 +185,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/authentication/sending/account/{password}",
-      "UpstreamHttpMethod": ["Delete"]
+      "UpstreamHttpMethod": [ "Delete" ]
     },
     //Base: EmailSender.API
     //EndPoint: user
@@ -199,7 +199,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/{id}/is-notify",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/user/is-notify",
@@ -211,7 +211,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/is-notify",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/user/is-notify/{isNotify}",
@@ -223,7 +223,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/is-notify/{isNotify}",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/user/{userId}/is-notify/{isNotify}/admin",
@@ -235,7 +235,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/admin/{userId}/is-notify/{isNotify}",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     //Base: Game.API
     //EndPoint: loot-box-opening
@@ -249,7 +249,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/opening/box/{id}",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/loot-box-opening/{id}/virtual",
@@ -261,7 +261,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/opening/virtual/box/{id}",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/loot-box-opening/{id}&{count}/virtual",
@@ -273,7 +273,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/opening/virtual/box/{id}&{count}",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/loot-box-opening/{id}&{count}/virtual/admin",
@@ -285,7 +285,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/admin/opening/virtual/box/{id}&{count}",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     //EndPoint: user-additional-info
     {
@@ -298,7 +298,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/guest-mode",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/user-additional-info/balance",
@@ -310,7 +310,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/balance",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/user-additional-info/{userId}/balance",
@@ -322,7 +322,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/{userId}/balance",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/user-additional-info/{userId}/balance/{balance}/owner",
@@ -334,7 +334,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/{userId}/balance/{balance}/owner",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/user-additional-info/guest-mode",
@@ -346,7 +346,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/guest-mode",
-      "UpstreamHttpMethod": ["Put"]
+      "UpstreamHttpMethod": [ "Put" ]
     },
     //EndPoint: user-opening
     {
@@ -359,7 +359,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/history/opening/id/{id}",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/user-opening/roulette",
@@ -371,7 +371,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/history/opening/roulette",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/user-opening/all",
@@ -383,7 +383,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/history/opening/all",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/user-opening",
@@ -395,7 +395,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/history/opening",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/user-opening/ten/last",
@@ -407,7 +407,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/history/opening/ten/last",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/user-opening/{id}/userId",
@@ -419,7 +419,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/{id}/history/opening",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/user-opening/{id}/userId/admin",
@@ -431,7 +431,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/admin/{userId}/history/opening",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/user-opening/box/{id}",
@@ -443,7 +443,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/history/opening/box/{id}",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/user-opening/item/{id}",
@@ -455,7 +455,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/history/opening/item/{id}",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/user-opening/box/{id}/roulette",
@@ -467,7 +467,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/history/opening/roulette/box/{id}",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/user-opening/item/{id}/roulette",
@@ -479,7 +479,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/history/opening/roulette/item/{id}",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     //EndPoint: user-path-banner
     {
@@ -492,7 +492,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/path/banner",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/user-path-banner/{id}",
@@ -504,7 +504,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/path/banner/id/{id}",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/user-path-banner/box/{id}",
@@ -516,7 +516,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/path/banner/box/{id}",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/user-path-banner/item/{id}",
@@ -528,7 +528,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/path/banner/item/{id}",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/user-path-banner",
@@ -540,7 +540,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/path/banner",
-      "UpstreamHttpMethod": ["Post"]
+      "UpstreamHttpMethod": [ "Post" ]
     },
     {
       "DownstreamPathTemplate": "/api/user-path-banner",
@@ -552,7 +552,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/path/banner",
-      "UpstreamHttpMethod": ["Put"]
+      "UpstreamHttpMethod": [ "Put" ]
     },
     {
       "DownstreamPathTemplate": "/api/user-path-banner/{id}",
@@ -564,7 +564,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/path/banner/{id}",
-      "UpstreamHttpMethod": ["Delete"]
+      "UpstreamHttpMethod": [ "Delete" ]
     },
     //Base: Identity.API
     //EndPoint: user-additional-info
@@ -578,7 +578,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/info/id/{id}",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/user-additional-info/user/{id}",
@@ -590,7 +590,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/{id}/info",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/user-additional-info",
@@ -602,7 +602,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/info",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/user-additional-info/role/{id}&{userId}",
@@ -614,7 +614,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/{userId}/info/role/{id}",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/user-additional-info/deletion/date/{userId}",
@@ -626,7 +626,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/{userId}/info/deletion/date",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/user-additional-info/image",
@@ -638,7 +638,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/info/image",
-      "UpstreamHttpMethod": ["Put"]
+      "UpstreamHttpMethod": [ "Put" ]
     },
     {
       "DownstreamPathTemplate": "/api/user-additional-info/image/admin",
@@ -650,7 +650,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/admin/info/image",
-      "UpstreamHttpMethod": ["Put"]
+      "UpstreamHttpMethod": [ "Put" ]
     },
     //EndPoint: user
     {
@@ -663,7 +663,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/id/{id}",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/user",
@@ -675,7 +675,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/user/login/{login}",
@@ -687,7 +687,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/login/{login}",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     //EndPoint: user-restriction
     {
@@ -700,7 +700,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/restriction/id/{id}",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/user-restriction/user/{id}",
@@ -712,7 +712,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/{id}/restriction",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/user-restriction/login/{login}",
@@ -724,7 +724,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/login/{login}/restriction",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/user-restriction",
@@ -736,7 +736,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/restriction",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/user-restriction/{userId}&{ownerId}",
@@ -748,7 +748,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/{userId}/restriction/owner/{ownerId}",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/user-restriction/owner/{id}",
@@ -760,7 +760,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/restriction/owner/{id}",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/user-restriction/owner",
@@ -772,7 +772,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/restriction/owner",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/user-restriction/{userId}/owner",
@@ -784,7 +784,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/{userId}/restriction/owner",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/user-restriction/types",
@@ -796,7 +796,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/restriction/types",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/user-restriction",
@@ -808,7 +808,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/restriction",
-      "UpstreamHttpMethod": ["Post"]
+      "UpstreamHttpMethod": [ "Post" ]
     },
     {
       "DownstreamPathTemplate": "/api/user-restriction",
@@ -820,7 +820,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/restriction",
-      "UpstreamHttpMethod": ["Put"]
+      "UpstreamHttpMethod": [ "Put" ]
     },
     {
       "DownstreamPathTemplate": "/api/user-restriction/{id}",
@@ -832,7 +832,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/restriction/{id}",
-      "UpstreamHttpMethod": ["Delete"]
+      "UpstreamHttpMethod": [ "Delete" ]
     },
     //EndPoint: user-role
     {
@@ -845,7 +845,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/role/id/{id}",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/user-role",
@@ -857,12 +857,12 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/role",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     //Base: Payment.API
     //EndPoint: payment
     {
-      "DownstreamPathTemplate": "/api/payment/top-up",
+      "DownstreamPathTemplate": "/api/payments/invoice",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -870,11 +870,11 @@
           "Port": 5039
         }
       ],
-      "UpstreamPathTemplate": "/api/payment/top-up",
-      "UpstreamHttpMethod": ["Post"]
+      "UpstreamPathTemplate": "/api/payments/invoice",
+      "UpstreamHttpMethod": [ "Post" ]
     },
     {
-      "DownstreamPathTemplate": "/api/payment/balance/{currency}",
+      "DownstreamPathTemplate": "/api/payments/notify",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -882,20 +882,8 @@
           "Port": 5039
         }
       ],
-      "UpstreamPathTemplate": "/api/payment/balance/{currency}",
-      "UpstreamHttpMethod": ["Get"]
-    },
-    {
-      "DownstreamPathTemplate": "/api/payment/top-up/signature",
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "host.docker.internal",
-          "Port": 5039
-        }
-      ],
-      "UpstreamPathTemplate": "/api/payment/top-up/signature",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamPathTemplate": "/api/payments/notify",
+      "UpstreamHttpMethod": [ "Post" ]
     },
     //EndPoint: user-payments
     {
@@ -908,7 +896,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/history/payment",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/user-payments/{id}",
@@ -920,7 +908,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/history/payment/id/{id}",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/user-payments/admin",
@@ -932,7 +920,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/admin/history/payment",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/user-payments/{userId}/admin",
@@ -944,7 +932,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/admin/{userId}/history/payment",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     //Base: Promocode.API
     //EndPoint: promocode
@@ -958,7 +946,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/promocode",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/promocode/empty",
@@ -970,7 +958,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/promocode/empty",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/promocode/name/{name}",
@@ -982,7 +970,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/promocode/name/{name}",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/promocode/types",
@@ -994,7 +982,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/promocode/types",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/promocode",
@@ -1006,7 +994,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/promocode",
-      "UpstreamHttpMethod": ["Post"]
+      "UpstreamHttpMethod": [ "Post" ]
     },
     {
       "DownstreamPathTemplate": "/api/promocode",
@@ -1018,7 +1006,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/promocode",
-      "UpstreamHttpMethod": ["Put"]
+      "UpstreamHttpMethod": [ "Put" ]
     },
     {
       "DownstreamPathTemplate": "/api/promocode/{id}",
@@ -1030,7 +1018,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/promocode/{id}",
-      "UpstreamHttpMethod": ["Delete"]
+      "UpstreamHttpMethod": [ "Delete" ]
     },
     //EndPoint: user-promocodes
     {
@@ -1043,7 +1031,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/promocode",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/user-promocodes/{id}",
@@ -1055,7 +1043,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/promocode/id/{id}",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/user-promocodes/admin",
@@ -1067,7 +1055,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/admin/promocode",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/user-promocodes/user/{userId}/admin",
@@ -1079,7 +1067,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/admin/{userId}/promocode",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/user-promocodes/{id}/admin",
@@ -1091,7 +1079,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/admin/promocode/{id}",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/user-promocodes/activate/{name}",
@@ -1103,7 +1091,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/promocode/activate/{name}",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/user-promocodes/exchange/{name}",
@@ -1115,7 +1103,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/promocode/exchange/{name}",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     //Base: Resources.API
     //EndPoint: game
@@ -1129,7 +1117,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/game",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/game/{id}",
@@ -1141,7 +1129,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/game/id/{id}",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/game/name/{name}",
@@ -1153,7 +1141,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/game/name/{name}",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     //EndPoint: game-item
     {
@@ -1166,7 +1154,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/game/item",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/game-item/{id}",
@@ -1178,7 +1166,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/game/item/id/{id}",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/game-item/name/{name}",
@@ -1190,7 +1178,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/game/item/name/{name}",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/game-item/hash/{name}",
@@ -1202,7 +1190,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/game/item/hash/{name}",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/game-item/game/{id}",
@@ -1214,7 +1202,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/game/{id}/item",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/game-item/qualities",
@@ -1226,7 +1214,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/game/item/qualities",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/game-item/rarities",
@@ -1238,7 +1226,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/game/item/rarities",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/game-item/types",
@@ -1250,7 +1238,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/game/item/types",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/game-item/quality/{name}",
@@ -1262,7 +1250,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/game/item/quality/{name}",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/game-item/rarity/{name}",
@@ -1274,7 +1262,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/game/item/rarity/{name}",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/game-item/type/{name}",
@@ -1286,7 +1274,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/game/item/type/{name}",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/game-item",
@@ -1298,7 +1286,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/game/item",
-      "UpstreamHttpMethod": ["Post"]
+      "UpstreamHttpMethod": [ "Post" ]
     },
     {
       "DownstreamPathTemplate": "/api/game-item",
@@ -1310,7 +1298,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/game/item",
-      "UpstreamHttpMethod": ["Put"]
+      "UpstreamHttpMethod": [ "Put" ]
     },
     {
       "DownstreamPathTemplate": "/api/game-item/{id}",
@@ -1322,7 +1310,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/game/item/{id}",
-      "UpstreamHttpMethod": ["Delete"]
+      "UpstreamHttpMethod": [ "Delete" ]
     },
     //EndPoint: group-loot-box
     {
@@ -1335,7 +1323,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/group-box",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/group-loot-box/{id}",
@@ -1347,7 +1335,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/group-box/id/{id}",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/group-loot-box/name/{name}",
@@ -1359,7 +1347,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/group-box/name/{name}",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/group-loot-box",
@@ -1371,7 +1359,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/group-box",
-      "UpstreamHttpMethod": ["Post"]
+      "UpstreamHttpMethod": [ "Post" ]
     },
     {
       "DownstreamPathTemplate": "/api/group-loot-box",
@@ -1383,7 +1371,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/group-box",
-      "UpstreamHttpMethod": ["Put"]
+      "UpstreamHttpMethod": [ "Put" ]
     },
     {
       "DownstreamPathTemplate": "/api/group-loot-box/{id}",
@@ -1395,7 +1383,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/group-box/{id}",
-      "UpstreamHttpMethod": ["Delete"]
+      "UpstreamHttpMethod": [ "Delete" ]
     },
     //EndPoint: loot-box-banner
     {
@@ -1408,7 +1396,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/box/banner",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/loot-box-banner/active/{isActive}",
@@ -1420,7 +1408,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/box/banner/active/{isActive}",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/loot-box-banner/{id}",
@@ -1432,7 +1420,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/box/banner/id/{id}",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/loot-box-banner/box/{id}",
@@ -1444,7 +1432,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/box/{id}/banner",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/loot-box-banner",
@@ -1456,7 +1444,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/box/banner",
-      "UpstreamHttpMethod": ["Post"]
+      "UpstreamHttpMethod": [ "Post" ]
     },
     {
       "DownstreamPathTemplate": "/api/loot-box-banner",
@@ -1468,7 +1456,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/box/banner",
-      "UpstreamHttpMethod": ["Put"]
+      "UpstreamHttpMethod": [ "Put" ]
     },
     {
       "DownstreamPathTemplate": "/api/loot-box-banner/{id}",
@@ -1480,7 +1468,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/box/banner/{id}",
-      "UpstreamHttpMethod": ["Delete"]
+      "UpstreamHttpMethod": [ "Delete" ]
     },
     //EndPoint: loot-box
     {
@@ -1493,7 +1481,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/box",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/loot-box/game/{id}",
@@ -1505,7 +1493,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/game/{id}/box",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/loot-box/{id}",
@@ -1517,7 +1505,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/box/id/{id}",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/loot-box/name/{name}",
@@ -1529,7 +1517,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/box/name/{name}",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/loot-box",
@@ -1541,7 +1529,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/box",
-      "UpstreamHttpMethod": ["Post"]
+      "UpstreamHttpMethod": [ "Post" ]
     },
     {
       "DownstreamPathTemplate": "/api/loot-box",
@@ -1553,7 +1541,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/box",
-      "UpstreamHttpMethod": ["Put"]
+      "UpstreamHttpMethod": [ "Put" ]
     },
     {
       "DownstreamPathTemplate": "/api/loot-box/{id}",
@@ -1565,7 +1553,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/box/id/{id}",
-      "UpstreamHttpMethod": ["Delete"]
+      "UpstreamHttpMethod": [ "Delete" ]
     },
     //EndPoint: loot-box-group
     {
@@ -1578,7 +1566,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/box/group",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/loot-box-group/{id}",
@@ -1590,7 +1578,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/box/group/id/{id}",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/loot-box-group/game/{id}",
@@ -1602,7 +1590,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/box/group/game/{id}",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/loot-box-group/box/{id}",
@@ -1614,7 +1602,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/box/{id}/group",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/loot-box-group/group/{id}",
@@ -1626,7 +1614,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/box/group/{id}",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/loot-box-group",
@@ -1638,7 +1626,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/box/group",
-      "UpstreamHttpMethod": ["Post"]
+      "UpstreamHttpMethod": [ "Post" ]
     },
     {
       "DownstreamPathTemplate": "/api/loot-box-group",
@@ -1650,7 +1638,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/box/group",
-      "UpstreamHttpMethod": ["Put"]
+      "UpstreamHttpMethod": [ "Put" ]
     },
     {
       "DownstreamPathTemplate": "/api/loot-box-group/{id}",
@@ -1662,7 +1650,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/box/group/{id}",
-      "UpstreamHttpMethod": ["Delete"]
+      "UpstreamHttpMethod": [ "Delete" ]
     },
     //EndPoint: loot-box-inventory
     {
@@ -1675,7 +1663,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/box/inventory/id/{id}",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/loot-box-inventory/box/{id}",
@@ -1687,7 +1675,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/box/{id}/inventory",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/loot-box-inventory/item/{id}",
@@ -1699,7 +1687,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/box/inventory/item/{id}",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/loot-box-inventory",
@@ -1711,7 +1699,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/box/inventory",
-      "UpstreamHttpMethod": ["Post"]
+      "UpstreamHttpMethod": [ "Post" ]
     },
     {
       "DownstreamPathTemplate": "/api/loot-box-inventory",
@@ -1723,7 +1711,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/box/inventory",
-      "UpstreamHttpMethod": ["Put"]
+      "UpstreamHttpMethod": [ "Put" ]
     },
     {
       "DownstreamPathTemplate": "/api/loot-box-inventory/{id}",
@@ -1735,7 +1723,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/box/inventory/{id}",
-      "UpstreamHttpMethod": ["Delete"]
+      "UpstreamHttpMethod": [ "Delete" ]
     },
     //Base: Review.API
     //EndPoint: review-image
@@ -1749,7 +1737,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/review/image",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/review-image/admin",
@@ -1761,7 +1749,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/admin/review/image",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/review-image/{id}",
@@ -1773,7 +1761,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/review/image/id/{id}",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/review-image/{id}/admin",
@@ -1785,7 +1773,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/admin/review/image/id/{id}",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/review-image/user/{id}",
@@ -1797,7 +1785,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/{id}/review/image",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/review-image/user",
@@ -1809,7 +1797,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/review/image",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/review-image/user/{userId}/admin",
@@ -1821,7 +1809,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/admin/{userId}/review/image",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/review-image/review/{id}",
@@ -1833,7 +1821,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/review/{id}/image",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/review-image/review/{id}/admin",
@@ -1845,7 +1833,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/admin/review/{id}/image",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/review-image",
@@ -1857,7 +1845,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/review/image",
-      "UpstreamHttpMethod": ["Post"]
+      "UpstreamHttpMethod": [ "Post" ]
     },
     {
       "DownstreamPathTemplate": "/api/review-image/{id}",
@@ -1869,7 +1857,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/review/image/{id}",
-      "UpstreamHttpMethod": ["Delete"]
+      "UpstreamHttpMethod": [ "Delete" ]
     },
     {
       "DownstreamPathTemplate": "/api/review-image/{id}/admin",
@@ -1881,7 +1869,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/admin/review/image/id/{id}",
-      "UpstreamHttpMethod": ["Delete"]
+      "UpstreamHttpMethod": [ "Delete" ]
     },
     //EndPoint: user-review
     {
@@ -1894,7 +1882,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/review/all",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/user-review/last/{count}",
@@ -1906,7 +1894,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/review/last/{count}",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/user-review/last/{count}/admin",
@@ -1918,7 +1906,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/admin/review/last/{count}",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/user-review/{id}",
@@ -1930,7 +1918,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/review/id/{id}",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/user-review/user/{id}",
@@ -1942,7 +1930,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/{id}/review",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/user-review/admin",
@@ -1954,7 +1942,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/admin/review",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/user-review/{id}/admin",
@@ -1966,7 +1954,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/admin/review/id/{id}",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/user-review/user/{userId}/admin",
@@ -1978,7 +1966,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/admin/{userId}/review",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/user-review",
@@ -1990,7 +1978,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/review",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/user-review/{id}/approve",
@@ -2002,7 +1990,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/review/{id}/approve",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/user-review/{id}/denied",
@@ -2014,7 +2002,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/review/{id}/denied",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/user-review",
@@ -2026,7 +2014,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/review",
-      "UpstreamHttpMethod": ["Post"]
+      "UpstreamHttpMethod": [ "Post" ]
     },
     {
       "DownstreamPathTemplate": "/api/user-review",
@@ -2038,7 +2026,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/review",
-      "UpstreamHttpMethod": ["Put"]
+      "UpstreamHttpMethod": [ "Put" ]
     },
     {
       "DownstreamPathTemplate": "/api/user-review/{id}",
@@ -2050,7 +2038,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/review/{id}",
-      "UpstreamHttpMethod": ["Delete"]
+      "UpstreamHttpMethod": [ "Delete" ]
     },
     {
       "DownstreamPathTemplate": "/api/user-review/{id}/admin",
@@ -2062,7 +2050,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/admin/review/{id}",
-      "UpstreamHttpMethod": ["Delete"]
+      "UpstreamHttpMethod": [ "Delete" ]
     },
     //Base: Statistics.API
     //EndPoint: site-statistics
@@ -2076,7 +2064,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/site/statistics",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/site-statistics/admin",
@@ -2088,7 +2076,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/admin/site/statistics",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     //Base: Support.API
     //EndPoint: answer-image
@@ -2102,7 +2090,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/topic/answer/image/id/{id}",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/answer-image/{id}/admin",
@@ -2114,7 +2102,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/admin/topic/answer/image/id/{id}",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/answer-image/answer/{id}",
@@ -2126,7 +2114,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/topic/answer/{id}/image",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/answer-image/answer/{id}/admin",
@@ -2138,7 +2126,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/admin/topic/answer/{id}/image",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/answer-image/topic/{id}",
@@ -2150,7 +2138,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/topic/{id}/answer/image",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/answer-image/topic/{id}/admin",
@@ -2162,7 +2150,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/admin/topic/{id}/answer/image",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/answer-image",
@@ -2174,7 +2162,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/topic/answer/image",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/answer-image/user/{userId}/admin",
@@ -2186,7 +2174,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/admin/{userId}/topic/answer/image",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/answer-image",
@@ -2198,7 +2186,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/topic/answer/image",
-      "UpstreamHttpMethod": ["Post"]
+      "UpstreamHttpMethod": [ "Post" ]
     },
     {
       "DownstreamPathTemplate": "/api/answer-image/{id}",
@@ -2210,7 +2198,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/topic/answer/image/{id}",
-      "UpstreamHttpMethod": ["Delete"]
+      "UpstreamHttpMethod": [ "Delete" ]
     },
     {
       "DownstreamPathTemplate": "/api/answer-image/{id}/admin",
@@ -2222,7 +2210,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/admin/topic/answer/image/{id}",
-      "UpstreamHttpMethod": ["Delete"]
+      "UpstreamHttpMethod": [ "Delete" ]
     },
     //EndPoint: support-topic-answer
     {
@@ -2235,7 +2223,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/topic/answer/id/{id}",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/support-topic-answer/{id}/admin",
@@ -2247,7 +2235,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/admin/topic/answer/id/{id}",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/support-topic-answer",
@@ -2259,7 +2247,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/topic/answer",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/support-topic-answer/user/{userId}/admin",
@@ -2271,7 +2259,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/admin/{userId}/topic/answer",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/support-topic-answer/topic/{id}",
@@ -2283,7 +2271,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/topic/{id}/answer",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/support-topic-answer/topic/{id}/admin",
@@ -2295,7 +2283,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/admin/topic/{id}/answer",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/support-topic-answer",
@@ -2307,7 +2295,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/topic/answer",
-      "UpstreamHttpMethod": ["Post"]
+      "UpstreamHttpMethod": [ "Post" ]
     },
     {
       "DownstreamPathTemplate": "/api/support-topic-answer/admin",
@@ -2319,7 +2307,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/admin/topic/answer",
-      "UpstreamHttpMethod": ["Post"]
+      "UpstreamHttpMethod": [ "Post" ]
     },
     {
       "DownstreamPathTemplate": "/api/support-topic-answer",
@@ -2331,7 +2319,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/topic/answer",
-      "UpstreamHttpMethod": ["Put"]
+      "UpstreamHttpMethod": [ "Put" ]
     },
     {
       "DownstreamPathTemplate": "/api/support-topic-answer/{id}",
@@ -2343,7 +2331,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/topic/answer/{id}",
-      "UpstreamHttpMethod": ["Delete"]
+      "UpstreamHttpMethod": [ "Delete" ]
     },
     //EndPoint: support-topic
     {
@@ -2356,7 +2344,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/topic/id/{id}",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/support-topic/{id}/admin",
@@ -2368,7 +2356,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/admin/topic/id/{id}",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/support-topic",
@@ -2380,7 +2368,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/topic",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/support-topic/user/{userId}/admin",
@@ -2392,7 +2380,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/admin/{userId}/topic",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/support-topic/opened",
@@ -2404,7 +2392,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/topic/opened",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/support-topic/{id}/close",
@@ -2416,7 +2404,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/topic/{id}/close",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/support-topic/{id}/close/admin",
@@ -2428,7 +2416,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/admin/topic/{id}/close",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/support-topic",
@@ -2440,7 +2428,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/topic",
-      "UpstreamHttpMethod": ["Post"]
+      "UpstreamHttpMethod": [ "Post" ]
     },
     {
       "DownstreamPathTemplate": "/api/support-topic",
@@ -2452,7 +2440,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/topic",
-      "UpstreamHttpMethod": ["Put"]
+      "UpstreamHttpMethod": [ "Put" ]
     },
     {
       "DownstreamPathTemplate": "/api/support-topic/{id}",
@@ -2464,7 +2452,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/topic/{id}",
-      "UpstreamHttpMethod": ["Delete"]
+      "UpstreamHttpMethod": [ "Delete" ]
     },
     {
       "DownstreamPathTemplate": "/api/support-topic/{id}/admin",
@@ -2476,7 +2464,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/admin/topic/{id}",
-      "UpstreamHttpMethod": ["Delete"]
+      "UpstreamHttpMethod": [ "Delete" ]
     },
     //Base: Withdraw.API
     //EndPoint: user-inventory
@@ -2490,7 +2478,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/inventory/id/{id}",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/user-inventory/user/{id}",
@@ -2502,7 +2490,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/{id}/inventory",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/user-inventory",
@@ -2514,7 +2502,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/inventory",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/user-inventory/{userId}/admin",
@@ -2526,7 +2514,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/admin/{userId}/inventory",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/user-inventory",
@@ -2538,7 +2526,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/inventory",
-      "UpstreamHttpMethod": ["Post"]
+      "UpstreamHttpMethod": [ "Post" ]
     },
     {
       "DownstreamPathTemplate": "/api/user-inventory/exchange",
@@ -2550,7 +2538,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/inventory/exchange",
-      "UpstreamHttpMethod": ["Put"]
+      "UpstreamHttpMethod": [ "Put" ]
     },
     {
       "DownstreamPathTemplate": "/api/user-inventory/{id}/sell",
@@ -2562,7 +2550,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/inventory/{id}/sell",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/user-inventory/last/sell/{itemId}",
@@ -2574,7 +2562,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/inventory/last/sell/{itemId}",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/user-inventory/{id}",
@@ -2586,7 +2574,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/inventory/{id}",
-      "UpstreamHttpMethod": ["Delete"]
+      "UpstreamHttpMethod": [ "Delete" ]
     },
     //EndPoint: user-withdraws
     {
@@ -2599,7 +2587,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/history/withdraw/id/{id}",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/user-withdraws/user/{id}",
@@ -2611,7 +2599,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/{id}/history/withdraw",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/user-withdraws/100/last",
@@ -2623,7 +2611,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/history/withdraw/100/last",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/user-withdraws",
@@ -2635,7 +2623,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/history/withdraw",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/user-withdraws/admin",
@@ -2647,7 +2635,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/admin/history/withdraw",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/user-withdraws/{userId}/admin",
@@ -2659,7 +2647,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/admin/{userId}/history/withdraw",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/user-withdraws/{id}/transfer",
@@ -2671,7 +2659,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/user/history/withdraw/{id}/transfer",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     //EndPoint: withdraw
     {
@@ -2684,7 +2672,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/withdraw",
-      "UpstreamHttpMethod": ["Post"]
+      "UpstreamHttpMethod": [ "Post" ]
     },
     {
       "DownstreamPathTemplate": "/api/withdraw/market/{name}/balance",
@@ -2696,7 +2684,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/withdraw/market/{name}/balance",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/api/withdraw/item/{id}",
@@ -2708,7 +2696,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/withdraw/item/id/{id}",
-      "UpstreamHttpMethod": ["Get"]
+      "UpstreamHttpMethod": [ "Get" ]
     }
   ]
 }

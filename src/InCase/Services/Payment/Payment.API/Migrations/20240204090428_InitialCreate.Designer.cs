@@ -12,7 +12,7 @@ using Payment.DAL.Data;
 namespace Payment.API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230518065057_InitialCreate")]
+    [Migration("20240204090428_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -20,10 +20,53 @@ namespace Payment.API.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.5")
+                .HasAnnotation("ProductVersion", "8.0.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+
+            modelBuilder.Entity("Payment.DAL.Entities.PaymentStatus", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("text")
+                        .HasColumnName("name");
+
+                    b.HasKey("Id")
+                        .HasName("pk_payment_status");
+
+                    b.HasIndex("Id")
+                        .IsUnique()
+                        .HasDatabaseName("ix_payment_status_id");
+
+                    b.ToTable("PaymentStatus", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("e67b2c93-e669-4360-bb26-ec14afa924e4"),
+                            Name = "pending"
+                        },
+                        new
+                        {
+                            Id = new Guid("75ee2237-6379-4a4d-b059-92bf0819ce63"),
+                            Name = "waiting"
+                        },
+                        new
+                        {
+                            Id = new Guid("da9ffd86-a510-4253-9145-e2b4fb68e4ef"),
+                            Name = "succeeded"
+                        },
+                        new
+                        {
+                            Id = new Guid("4a2d6cca-b5fb-4888-9df8-b07a8f74f5b6"),
+                            Name = "canceled"
+                        });
+                });
 
             modelBuilder.Entity("Payment.DAL.Entities.User", b =>
                 {
@@ -53,22 +96,22 @@ namespace Payment.API.Migrations
                         .HasColumnType("DECIMAL(18,5)")
                         .HasColumnName("amount");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
                     b.Property<string>("Currency")
                         .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("currency");
 
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("date");
-
                     b.Property<string>("InvoiceId")
                         .HasColumnType("text")
                         .HasColumnName("invoice_id");
 
-                    b.Property<decimal>("Rate")
-                        .HasColumnType("DECIMAL(6,5)")
-                        .HasColumnName("rate");
+                    b.Property<Guid>("StatusId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("status_id");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid")
@@ -80,6 +123,9 @@ namespace Payment.API.Migrations
                     b.HasIndex("Id")
                         .IsUnique()
                         .HasDatabaseName("ix_user_payment_id");
+
+                    b.HasIndex("StatusId")
+                        .HasDatabaseName("ix_user_payment_status_id");
 
                     b.HasIndex("UserId")
                         .HasDatabaseName("ix_user_payment_user_id");
@@ -118,12 +164,21 @@ namespace Payment.API.Migrations
 
             modelBuilder.Entity("Payment.DAL.Entities.UserPayment", b =>
                 {
+                    b.HasOne("Payment.DAL.Entities.PaymentStatus", "Status")
+                        .WithOne("Payment")
+                        .HasForeignKey("Payment.DAL.Entities.UserPayment", "StatusId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_user_payment_payment_status_status_id");
+
                     b.HasOne("Payment.DAL.Entities.User", "User")
                         .WithMany("Payments")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_user_payment_user_user_id");
+
+                    b.Navigation("Status");
 
                     b.Navigation("User");
                 });
@@ -138,6 +193,11 @@ namespace Payment.API.Migrations
                         .HasConstraintName("fk_user_promocode_user_user_id");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Payment.DAL.Entities.PaymentStatus", b =>
+                {
+                    b.Navigation("Payment");
                 });
 
             modelBuilder.Entity("Payment.DAL.Entities.User", b =>

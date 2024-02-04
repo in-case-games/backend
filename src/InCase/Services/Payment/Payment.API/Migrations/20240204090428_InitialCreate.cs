@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace Payment.API.Migrations
 {
     /// <inheritdoc />
@@ -11,6 +13,18 @@ namespace Payment.API.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "PaymentStatus",
+                columns: table => new
+                {
+                    id = table.Column<Guid>(type: "uuid", nullable: false),
+                    name = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_payment_status", x => x.id);
+                });
+
             migrationBuilder.CreateTable(
                 name: "User",
                 columns: table => new
@@ -28,15 +42,21 @@ namespace Payment.API.Migrations
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
                     invoice_id = table.Column<string>(type: "text", nullable: true),
-                    date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     currency = table.Column<string>(type: "text", nullable: false),
                     amount = table.Column<decimal>(type: "numeric(18,5)", nullable: false),
-                    rate = table.Column<decimal>(type: "numeric(6,5)", nullable: false),
-                    user_id = table.Column<Guid>(type: "uuid", nullable: false)
+                    user_id = table.Column<Guid>(type: "uuid", nullable: false),
+                    status_id = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("pk_user_payment", x => x.id);
+                    table.ForeignKey(
+                        name: "fk_user_payment_payment_status_status_id",
+                        column: x => x.status_id,
+                        principalTable: "PaymentStatus",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "fk_user_payment_user_user_id",
                         column: x => x.user_id,
@@ -64,6 +84,23 @@ namespace Payment.API.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.InsertData(
+                table: "PaymentStatus",
+                columns: new[] { "id", "name" },
+                values: new object[,]
+                {
+                    { new Guid("4a2d6cca-b5fb-4888-9df8-b07a8f74f5b6"), "canceled" },
+                    { new Guid("75ee2237-6379-4a4d-b059-92bf0819ce63"), "waiting" },
+                    { new Guid("da9ffd86-a510-4253-9145-e2b4fb68e4ef"), "succeeded" },
+                    { new Guid("e67b2c93-e669-4360-bb26-ec14afa924e4"), "pending" }
+                });
+
+            migrationBuilder.CreateIndex(
+                name: "ix_payment_status_id",
+                table: "PaymentStatus",
+                column: "id",
+                unique: true);
+
             migrationBuilder.CreateIndex(
                 name: "ix_user_id",
                 table: "User",
@@ -75,6 +112,11 @@ namespace Payment.API.Migrations
                 table: "UserPayment",
                 column: "id",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "ix_user_payment_status_id",
+                table: "UserPayment",
+                column: "status_id");
 
             migrationBuilder.CreateIndex(
                 name: "ix_user_payment_user_id",
@@ -102,6 +144,9 @@ namespace Payment.API.Migrations
 
             migrationBuilder.DropTable(
                 name: "UserPromocode");
+
+            migrationBuilder.DropTable(
+                name: "PaymentStatus");
 
             migrationBuilder.DropTable(
                 name: "User");

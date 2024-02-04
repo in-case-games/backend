@@ -9,6 +9,7 @@ public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
     public DbSet<User> Users => Set<User>();
     public DbSet<UserPayment> Payments => Set<UserPayment>();
     public DbSet<UserPromocode> UserPromocodes => Set<UserPromocode>();
+    public DbSet<PaymentStatus> PaymentStatuses => Set<PaymentStatus>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

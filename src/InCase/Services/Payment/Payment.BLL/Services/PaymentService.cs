@@ -1,81 +1,118 @@
-﻿using Infrastructure.MassTransit.Statistics;
-using Infrastructure.MassTransit.User;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Payment.BLL.Exceptions;
+using Microsoft.Extensions.Logging;
 using Payment.BLL.Helpers;
 using Payment.BLL.Interfaces;
-using Payment.BLL.MassTransit;
-using Payment.BLL.Models;
+using Payment.BLL.Models.External;
+using Payment.BLL.Models.External.YooKassa;
+using Payment.BLL.Models.Internal;
 using Payment.DAL.Data;
 using Payment.DAL.Entities;
+using System.Net;
+using Payment.BLL.MassTransit;
 
 namespace Payment.BLL.Services;
 
 public class PaymentService(
-    IGameMoneyService gmService, 
-    ApplicationDbContext context, 
-    IEncryptorService rsaService, 
+    IResponseService responseService, 
+    ILogger<PaymentService> logger, 
+    ApplicationDbContext context,
     BasePublisher publisher) : IPaymentService
 {
-    public async Task<UserPaymentsResponse> TopUpBalanceAsync(GameMoneyTopUpResponse request, CancellationToken cancellation = default)
+    public const string InvoiceCreateUri = "https://api.yookassa.ru/v3/payments";
+    public const string WebhookCreateUri = "https://api.yookassa.ru/v3/webhooks";
+    /*
+     private readonly IPAddress[] _webhookAddresses =
+    [
+        IPAddress.Parse("185.71.76.0/27"),
+        IPAddress.Parse("185.71.77.0/27"),
+        IPAddress.Parse("77.75.153.0/25"),
+        IPAddress.Parse("77.75.156.11"),
+        IPAddress.Parse("77.75.156.35"),
+        IPAddress.Parse("77.75.154.128/25"),
+        IPAddress.Parse("2a02:5180::/32")
+    ];
+    */
+
+    public async Task<bool> BindToEventAsync(BindingToEventRequest requestModel, CancellationToken cancellationToken = default)
     {
-        if (request.StatusAnswer?.ToLower() != "paid") throw new BadRequestException("Платеж отклонен");
-        if (!rsaService.VerifySignatureRsa(request)) throw new ForbiddenException("Неверная подпись rsa");
-        if (!await context.Payments.AnyAsync(up => up.InvoiceId == request.InvoiceId!, cancellation))
-            throw new ConflictException("Платеж уже есть в системе, ждем пополнения");
+        cancellationToken.ThrowIfCancellationRequested();
 
-        var invoice = await gmService.GetInvoiceInfoAsync(request.InvoiceId!, cancellation) ?? 
-            throw new RequestTimeoutException("Платеж не найден");
+        if (!requestModel.IsValid())
+            throw new BadRequestException("Неверная модель привязки");
 
-        var promocode = await context.UserPromocodes
-            .AsNoTracking()
-            .FirstOrDefaultAsync(ur => ur.UserId == invoice.UserId, cancellation);
+        await responseService
+            .PostAsync<BindingToEventResponse, BindingToEventRequest>(WebhookCreateUri, requestModel, cancellationToken);
 
-        var pay = invoice.Amount;
-
-        if (promocode is not null)
-        {
-            await publisher.SendAsync(new UserPromocodeBackTemplate
-            {
-                Id = promocode.Id
-            }, cancellation);
-
-            context.UserPromocodes.Remove(promocode);
-
-            pay += pay * promocode.Discount;
-        }
-
-        var payment = new UserPayment
-        {
-            Amount = pay,
-            Currency = invoice.CurrencyProject,
-            Date = DateTime.Today.AddSeconds(invoice.Time),
-            InvoiceId = invoice.InvoiceId,
-            Rate = invoice.Rate,
-            UserId = invoice.UserId
-        };
-
-        // CHECK: Notify true game money
-        await gmService.SendSuccess(cancellation);
-        await context.Payments.AddAsync(payment, cancellation);
-        await context.SaveChangesAsync(cancellation);
-        await publisher.SendAsync(new UserPaymentTemplate
-        {
-            Id = payment.Id,
-            Amount = payment.Amount,
-            Currency = payment.Currency,
-            Date = payment.Date,
-            Rate = payment.Rate,
-            UserId = payment.UserId
-        }, cancellation);
-        await publisher.SendAsync(new SiteStatisticsAdminTemplate { TotalReplenishedFunds = pay }, cancellation);
-
-        return payment.ToResponse();
+        return true;
     }
 
-    public async Task<PaymentBalanceResponse> GetPaymentBalanceAsync(string currency, 
-        CancellationToken cancellation = default) => await gmService.GetBalanceAsync(currency, cancellation);
+    public async Task ProcessingInvoiceNotificationAsync(InvoiceNotificationResponse response, CancellationToken cancellationToken = default)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
 
-    public HashOfDataForDepositResponse GetHashOfDataForDeposit(Guid userId) =>
-        gmService.GetHashOfDataForDeposit(userId);
+        var findPayment = await context.Payments
+            .AsNoTracking()
+            .Include(p => p.Status)
+            .FirstOrDefaultAsync(p => p.InvoiceId == response.Object!.Id, cancellationToken);
+
+        var paymentStatus = await context.PaymentStatuses
+            .FirstOrDefaultAsync(x => x.Name!.ToLower() == response.Object!.Status, cancellationToken);
+
+        if(!ValidationService.IsValidInvoiceNotificationResponse(findPayment, response, paymentStatus, logger)) return;
+
+        if (findPayment is null)
+        {
+            findPayment = (await context.Payments.AddAsync(new UserPayment
+            {
+                InvoiceId = response.Object!.Id,
+                CreatedAt = DateTime.UtcNow,
+                Amount = response.Object!.Amount!.Value!,
+                Currency = response.Object!.Amount!.Currency,
+                UserId = response.Object!.Metadata!.UserId,
+                StatusId = paymentStatus!.Id,
+            }, cancellationToken)).Entity;
+        }
+        else
+        {
+            findPayment.StatusId = paymentStatus!.Id;
+
+            context.Entry(findPayment).Property(p => p.StatusId).IsModified = true;
+        }
+
+        await context.SaveChangesAsync(cancellationToken);
+
+        if (paymentStatus.Name == "succeeded")
+        { 
+            await publisher.SendAsync(findPayment.ToTemplate(), cancellationToken);
+        }
+    }
+
+    public async Task<InvoiceUrlResponse> CreateInvoiceUrlAsync(InvoiceUrlRequest request, CancellationToken cancellationToken = default)
+    {
+        ValidationService.InvoiceUrlRequest(request);
+
+        request.Amount!.Currency = request.Amount.Currency?.ToUpper();
+
+        responseService.FillYooKassaHttpClientHeaders();
+
+        var response = await responseService
+            .PostAsync<InvoiceCreateResponse, InvoiceCreateRequest>(InvoiceCreateUri, request.ToRequest(), cancellationToken);
+
+        logger.LogTrace($"POST invoice create response - {response}");
+
+        ValidationService.InvoiceCreateResponse(response);
+
+        var status = await context.PaymentStatuses.FirstAsync(ps => ps.Name == "pending", cancellationToken);
+
+        var entity = response!.ToEntity(request.User!, status);
+
+        await context.Payments.AddAsync(entity, cancellationToken);
+        await context.SaveChangesAsync(cancellationToken);
+
+        return new InvoiceUrlResponse { Url = response!.Confirmation!.ConfirmationUrl };
+    }
+
+    private static bool ValidateIpAddress(IEnumerable<IPAddress> addresses, IPAddress currentAddress) => 
+        addresses.Any(x => x.Equals(currentAddress));
 }
