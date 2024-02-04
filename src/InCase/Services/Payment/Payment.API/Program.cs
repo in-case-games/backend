@@ -83,6 +83,7 @@ builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<IUserPaymentsService, UserPaymentsService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserPromocodeService, UserPromocodeService>();
+builder.Services.AddHostedService<PaymentManagerService>();
 
 builder.Services.AddMassTransit(x =>
 {

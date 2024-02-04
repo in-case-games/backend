@@ -20,11 +20,36 @@ public class PaymentService(
         throw new NotImplementedException();
     }
 
+    public async Task DoWorkManagerAsync(CancellationToken cancellationToken)
+    {
+        var payments = await context.Payments
+            .AsNoTracking()
+            .Include(p => p.Status)
+            .Where(p => p.ExpiresAt < DateTime.UtcNow && p.Status!.Name != "canceled" && p.Status.Name != "succeeded")
+            .Take(10)
+            .ToListAsync(cancellationToken);
+
+        var canceledStatus = await context.PaymentStatuses.FirstAsync(ps => ps.Name == "canceled", cancellationToken);
+
+        foreach (var payment in payments)
+        {
+            payment.StatusId = canceledStatus.Id;
+            payment.ExpiresAt = null;
+            context.Entry(payment).Property(p => p.StatusId).IsModified = true;
+            context.Entry(payment).Property(p => p.ExpiresAt).IsModified = true;
+            await context.SaveChangesAsync(cancellationToken);
+
+            logger.LogTrace($"PaymentId - {payment.Id} истек по времени, изменили на статус отменён");
+        }
+    }
+
     public async Task<InvoiceUrlResponse> CreateInvoiceUrlAsync(InvoiceUrlRequest request, CancellationToken cancellationToken = default)
     {
         ValidationService.InvoiceUrlRequest(request);
 
         request.Amount!.Currency = request.Amount.Currency?.ToUpper();
+
+        responseService.FillYooKassaHttpClientHeaders();
 
         var response = await responseService
             .PostAsync<InvoiceCreateResponse, InvoiceCreateRequest>(InvoiceCreateUri, request.ToRequest(), cancellationToken);

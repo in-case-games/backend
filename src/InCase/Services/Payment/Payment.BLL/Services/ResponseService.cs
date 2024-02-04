@@ -14,16 +14,6 @@ public class ResponseService(ILogger<ResponseService> logger, IConfiguration con
 
     public async Task<T?> GetAsync<T>(string uri, CancellationToken cancellationToken = default)
     {
-        var secret = $"{configuration["YooKassa:Id"]!}:{configuration["YooKassa:Secret"]!}";
-        var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(secret);
-
-        _httpClient.DefaultRequestHeaders.Accept
-            .Add(new MediaTypeWithQualityHeaderValue("application/json"));
-        _httpClient.DefaultRequestHeaders
-            .Add("Idempotence-Key", Guid.NewGuid().ToString());
-        _httpClient.DefaultRequestHeaders.Authorization = 
-            new AuthenticationHeaderValue("Basic", Convert.ToBase64String(plainTextBytes));
-
         var response = await _httpClient.GetAsync(uri, cancellationToken);
 
         if (response.IsSuccessStatusCode)
@@ -43,16 +33,6 @@ public class ResponseService(ILogger<ResponseService> logger, IConfiguration con
 
     public async Task<T?> PostAsync<T, TK>(string uri, TK body, CancellationToken cancellationToken = default)
     {
-        var secret = $"{configuration["YooKassa:Id"]!}:{configuration["YooKassa:Secret"]!}";
-        var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(secret);
-
-        _httpClient.DefaultRequestHeaders.Accept
-            .Add(new MediaTypeWithQualityHeaderValue("application/json"));
-        _httpClient.DefaultRequestHeaders
-            .Add("Idempotence-Key", Guid.NewGuid().ToString());
-        _httpClient.DefaultRequestHeaders.Authorization =
-            new AuthenticationHeaderValue("Basic", Convert.ToBase64String(plainTextBytes));
-
         var json = JsonContent.Create(body);
         var response = await _httpClient.PostAsync(uri, json, cancellationToken);
 
@@ -69,5 +49,20 @@ public class ResponseService(ILogger<ResponseService> logger, IConfiguration con
             $"{response.Content}{Environment.NewLine}");
 
         throw new UnknownException("Внутренняя ошибка");
+    }
+
+    public void FillYooKassaHttpClientHeaders()
+    {
+        _httpClient.DefaultRequestHeaders.Clear();
+
+        var secret = $"{configuration["YooKassa:Id"]!}:{configuration["YooKassa:Secret"]!}";
+        var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(secret);
+
+        _httpClient.DefaultRequestHeaders.Accept
+            .Add(new MediaTypeWithQualityHeaderValue("application/json"));
+        _httpClient.DefaultRequestHeaders
+            .Add("Idempotence-Key", Guid.NewGuid().ToString());
+        _httpClient.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue("Basic", Convert.ToBase64String(plainTextBytes));
     }
 }
