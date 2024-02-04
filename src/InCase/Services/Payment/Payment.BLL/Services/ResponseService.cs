@@ -1,12 +1,14 @@
-﻿using System.Net.Http.Json;
+﻿using System.Net.Http.Headers;
+using System.Net.Http.Json;
 using System.Text.Json;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Payment.BLL.Exceptions;
 using Payment.BLL.Interfaces;
 
 namespace Payment.BLL.Services;
 
-public class ResponseService(ILogger<ResponseService> logger) : IResponseService
+public class ResponseService(ILogger<ResponseService> logger, IConfiguration configuration) : IResponseService
 {
     private readonly HttpClient _httpClient = new();
 
@@ -47,5 +49,20 @@ public class ResponseService(ILogger<ResponseService> logger) : IResponseService
             $"{response.Content}{Environment.NewLine}");
 
         throw new UnknownException("Внутренняя ошибка");
+    }
+
+    public void FillYooKassaHttpClientHeaders()
+    {
+        _httpClient.DefaultRequestHeaders.Clear();
+
+        var secret = $"{configuration["YooKassa:Id"]!}:{configuration["YooKassa:Secret"]!}";
+        var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(secret);
+
+        _httpClient.DefaultRequestHeaders.Accept
+            .Add(new MediaTypeWithQualityHeaderValue("application/json"));
+        _httpClient.DefaultRequestHeaders
+            .Add("Idempotence-Key", Guid.NewGuid().ToString());
+        _httpClient.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue("Basic", Convert.ToBase64String(plainTextBytes));
     }
 }

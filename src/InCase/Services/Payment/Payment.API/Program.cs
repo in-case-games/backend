@@ -79,6 +79,7 @@ builder.Services.AddSwaggerGen(options =>
 
 builder.Services.AddSingleton<BasePublisher>();
 builder.Services.AddSingleton<IResponseService, ResponseService>();
+builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<IUserPaymentsService, UserPaymentsService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserPromocodeService, UserPromocodeService>();

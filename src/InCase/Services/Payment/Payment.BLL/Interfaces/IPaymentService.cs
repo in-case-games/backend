@@ -6,6 +6,6 @@ namespace Payment.BLL.Interfaces;
 public interface IPaymentService
 {
     public Task<bool> BindToEventAsync(BindingToEventRequest requestModel, CancellationToken cancellationToken = default);
-    public Task<UserPaymentResponse> ProcessingInvoiceNotificationAsync(InvoiceNotificationResponse request, CancellationToken cancellationToken = default);
-    public Task<InvoiceUrlResponse> CreateInvoiceUrlAsync(InvoiceUrlRequest request);
+    public Task ProcessingInvoiceNotificationAsync(InvoiceNotificationResponse request, CancellationToken cancellationToken = default);
+    public Task<InvoiceUrlResponse> CreateInvoiceUrlAsync(InvoiceUrlRequest request, CancellationToken cancellationToken = default);
 }

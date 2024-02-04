@@ -8,9 +8,10 @@ internal class PaymentStatusConfiguration : BaseEntityConfiguration<PaymentStatu
 {
     private readonly List<PaymentStatus> _statuses =
     [
-        new PaymentStatus { Name = "wait" },
-        new PaymentStatus { Name = "success" },
-        new PaymentStatus { Name = "cancel" },
+        new PaymentStatus { Name = "pending" },
+        new PaymentStatus { Name = "waiting" },
+        new PaymentStatus { Name = "succeeded" },
+        new PaymentStatus { Name = "canceled" },
     ];
 
     public override void Configure(EntityTypeBuilder<PaymentStatus> builder)

@@ -13,6 +13,7 @@ public class UserPaymentsService(ApplicationDbContext context) : IUserPaymentsSe
     {
         var payment = await context.Payments
             .AsNoTracking()
+            .Include(p => p.Status)
             .FirstOrDefaultAsync(up => up.Id == id, cancellation) ?? 
             throw new NotFoundException("Счёт оплаты не найден");
 
@@ -27,8 +28,9 @@ public class UserPaymentsService(ApplicationDbContext context) : IUserPaymentsSe
 
         var payments = await context.Payments
             .AsNoTracking()
-            .OrderByDescending(up => up.Date)
+            .OrderByDescending(up => up.CreatedAt)
             .Take(count)
+            .Include(p => p.Status)
             .ToListAsync(cancellation);
 
         return payments.ToResponse();
@@ -42,8 +44,9 @@ public class UserPaymentsService(ApplicationDbContext context) : IUserPaymentsSe
         var payments = await context.Payments
             .AsNoTracking()
             .Where(up => up.UserId == userId)
-            .OrderByDescending(up => up.Date)
+            .OrderByDescending(up => up.CreatedAt)
             .Take(count)
+            .Include(p => p.Status)
             .ToListAsync(cancellation);
 
         return payments.ToResponse();

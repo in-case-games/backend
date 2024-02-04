@@ -17,7 +17,7 @@ internal class UserPaymentConfiguration : BaseEntityConfiguration<UserPayment>
         builder.HasIndex(up => up.StatusId)
             .IsUnique(false);
 
-        builder.Property(up => up.Date)
+        builder.Property(up => up.CreatedAt)
             .IsRequired();
         builder.Property(up => up.Currency)
             .IsRequired();
