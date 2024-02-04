@@ -14,4 +14,5 @@ public class InvoiceCreateResponse
     [JsonPropertyName("recipient")] public Recipient? Recipient { get; set; }
     [JsonPropertyName("refundable")] public bool Refundable { get; set; }
     [JsonPropertyName("test")] public bool Test { get; set; }
+    [JsonPropertyName("metadata")] public InvoiceCreateMetadata? Metadata { get; set; }
 }
