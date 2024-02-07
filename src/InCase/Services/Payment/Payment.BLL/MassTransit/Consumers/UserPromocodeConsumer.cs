@@ -10,9 +10,9 @@ public class UserPromocodeConsumer(IUserPromocodeService promocodeService) : ICo
     {
         if (context.Message.Type?.Name == "balance")
         {
-            var userPromocode = await promocodeService.GetAsync(context.Message.Id, context.Message.UserId);
+            var promo = await promocodeService.GetAsync(context.Message.UserId);
 
-            if (userPromocode is null) await promocodeService.CreateAsync(context.Message);
+            if (promo is null) await promocodeService.CreateAsync(context.Message);
             else await promocodeService.UpdateAsync(context.Message);
         }
     }

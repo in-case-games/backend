@@ -10,7 +10,7 @@ public class UserPromocodeConsumer(IUserPromocodeService promocodeService) : ICo
     {
         if (context.Message.Type?.Name == "box")
         {
-            var promo = await promocodeService.GetAsync(context.Message.Id);
+            var promo = await promocodeService.GetAsync(context.Message.UserId);
 
             if (promo is null) await promocodeService.CreateAsync(context.Message);
             else await promocodeService.UpdateAsync(context.Message);

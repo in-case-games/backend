@@ -9,10 +9,10 @@ namespace Game.BLL.Services;
 
 public class UserPromocodeService(ApplicationDbContext context) : IUserPromocodeService
 {
-    public async Task<UserPromocode?> GetAsync(Guid id, CancellationToken cancellation = default) => 
+    public async Task<UserPromocode?> GetAsync(Guid userId, CancellationToken cancellation = default) => 
         await context.UserPromocodes
         .AsNoTracking()
-        .FirstOrDefaultAsync(ur => ur.Id == id, cancellation);
+        .FirstOrDefaultAsync(ur => ur.UserId == userId, cancellation);
 
     public async Task CreateAsync(UserPromocodeTemplate template, CancellationToken cancellation = default)
     {

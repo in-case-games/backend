@@ -10,6 +10,7 @@ using Payment.DAL.Data;
 using Payment.DAL.Entities;
 using System.Net;
 using Payment.BLL.MassTransit;
+using Infrastructure.MassTransit.User;
 
 namespace Payment.BLL.Services;
 
@@ -83,7 +84,26 @@ public class PaymentService(
         await context.SaveChangesAsync(cancellationToken);
 
         if (paymentStatus.Name == "succeeded")
-        { 
+        {
+            var promo = await context.UserPromocodes
+                .FirstOrDefaultAsync(up => up.UserId == findPayment.UserId, cancellationToken);
+
+            if (promo is not null)
+            {
+                promo.Discount = promo.Discount >= 0.99M ? 1 : promo.Discount;
+                promo.Discount += 1;
+
+                findPayment.Amount *= promo.Discount;
+                
+                context.UserPromocodes.Remove(promo);
+                await context.SaveChangesAsync(cancellationToken);
+
+                await publisher.SendAsync(new UserPromocodeBackTemplate
+                {
+                    Id = promo.Id,
+                }, cancellationToken);
+            }
+
             await publisher.SendAsync(findPayment.ToTemplate(), cancellationToken);
         }
     }

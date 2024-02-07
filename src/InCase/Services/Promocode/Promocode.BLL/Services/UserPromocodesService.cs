@@ -117,6 +117,8 @@ public class UserPromocodesService(ApplicationDbContext context, BasePublisher p
 
         if (promocode.NumberActivations <= 0 || promocode.ExpirationDate <= DateTime.UtcNow)
             throw new ConflictException("Промокод истёк");
+        if (await context.UserPromocodes.AnyAsync(up => up.PromocodeId == promocode.Id))
+            throw new ConflictException("Промокод уже используется/использован");
 
         var userPromocode = await context.UserPromocodes
             .AsNoTracking()
@@ -125,9 +127,6 @@ public class UserPromocodesService(ApplicationDbContext context, BasePublisher p
             uhp.IsActivated == false &&
             uhp.UserId == userId, cancellation) ??
             throw new ConflictException("Промокод не активировался");
-
-        if (userPromocode.PromocodeId == promocode.Id)
-            throw new ConflictException("Промокод уже используется");
 
         var promocodeOld = await context.Promocodes
             .AsNoTracking()
