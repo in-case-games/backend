@@ -2,7 +2,6 @@
 using Infrastructure.MassTransit.User;
 
 namespace Authentication.BLL.Interfaces;
-
 public interface IUserRestrictionService
 {
     public Task<UserRestriction?> GetAsync(Guid id, CancellationToken cancellationToken = default);

@@ -1,5 +1,4 @@
 ﻿namespace Withdraw.BLL.Models;
-
 public class ErrorCodes
 {
     public const int BadRequest = 0;

@@ -5,7 +5,6 @@ using Withdraw.BLL.Models;
 using Withdraw.DAL.Entities;
 
 namespace Withdraw.BLL.Services;
-
 public class MarketTmService(IConfiguration cfg, IResponseService responseService) : ITradeMarketService
 {
     private readonly Dictionary<string, string> _domainUri = new()

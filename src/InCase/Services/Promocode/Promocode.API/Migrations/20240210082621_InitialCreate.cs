@@ -14,15 +14,15 @@ namespace Promocode.API.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "PromocodeType",
+                name: "PromoCodeType",
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
-                    name = table.Column<string>(type: "text", nullable: false)
+                    name = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_promocode_type", x => x.id);
+                    table.PrimaryKey("pk_promo_code_type", x => x.id);
                 });
 
             migrationBuilder.CreateTable(
@@ -37,7 +37,7 @@ namespace Promocode.API.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "PromocodeEntity",
+                name: "PromoCode",
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -49,36 +49,36 @@ namespace Promocode.API.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_promocode_entity", x => x.id);
+                    table.PrimaryKey("pk_promo_code", x => x.id);
                     table.ForeignKey(
-                        name: "fk_promocode_entity_promocodes_types_type_id",
+                        name: "fk_promo_code_promo_codes_types_type_id",
                         column: x => x.type_id,
-                        principalTable: "PromocodeType",
+                        principalTable: "PromoCodeType",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserPromocode",
+                name: "UserPromoCode",
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
                     date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     is_activated = table.Column<bool>(type: "boolean", nullable: false),
                     user_id = table.Column<Guid>(type: "uuid", nullable: false),
-                    promocode_id = table.Column<Guid>(type: "uuid", nullable: false)
+                    promo_code_id = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_user_promocode", x => x.id);
+                    table.PrimaryKey("pk_user_promo_code", x => x.id);
                     table.ForeignKey(
-                        name: "fk_user_promocode_promocode_entity_promocode_id",
-                        column: x => x.promocode_id,
-                        principalTable: "PromocodeEntity",
+                        name: "fk_user_promo_code_promo_code_promo_code_id",
+                        column: x => x.promo_code_id,
+                        principalTable: "PromoCode",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "fk_user_promocode_user_user_id",
+                        name: "fk_user_promo_code_user_user_id",
                         column: x => x.user_id,
                         principalTable: "User",
                         principalColumn: "id",
@@ -86,40 +86,40 @@ namespace Promocode.API.Migrations
                 });
 
             migrationBuilder.InsertData(
-                table: "PromocodeType",
+                table: "PromoCodeType",
                 columns: new[] { "id", "name" },
                 values: new object[,]
                 {
-                    { new Guid("0d91a9a1-2c32-4393-80f8-c1f296060417"), "box" },
-                    { new Guid("d4dddc0d-869c-4793-bb8d-024206baac53"), "balance" }
+                    { new Guid("2fafb979-66e2-4ec5-a5bd-b6b29f270815"), "balance" },
+                    { new Guid("713fe6db-768d-4d85-826e-19ccc4428115"), "box" }
                 });
 
             migrationBuilder.CreateIndex(
-                name: "ix_promocode_entity_id",
-                table: "PromocodeEntity",
+                name: "ix_promo_code_id",
+                table: "PromoCode",
                 column: "id",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "ix_promocode_entity_name",
-                table: "PromocodeEntity",
+                name: "ix_promo_code_name",
+                table: "PromoCode",
                 column: "name",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "ix_promocode_entity_type_id",
-                table: "PromocodeEntity",
+                name: "ix_promo_code_type_id",
+                table: "PromoCode",
                 column: "type_id");
 
             migrationBuilder.CreateIndex(
-                name: "ix_promocode_type_id",
-                table: "PromocodeType",
+                name: "ix_promo_code_type_id1",
+                table: "PromoCodeType",
                 column: "id",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "ix_promocode_type_name",
-                table: "PromocodeType",
+                name: "ix_promo_code_type_name",
+                table: "PromoCodeType",
                 column: "name",
                 unique: true);
 
@@ -130,19 +130,19 @@ namespace Promocode.API.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "ix_user_promocode_id",
-                table: "UserPromocode",
+                name: "ix_user_promo_code_id",
+                table: "UserPromoCode",
                 column: "id",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "ix_user_promocode_promocode_id",
-                table: "UserPromocode",
-                column: "promocode_id");
+                name: "ix_user_promo_code_promo_code_id",
+                table: "UserPromoCode",
+                column: "promo_code_id");
 
             migrationBuilder.CreateIndex(
-                name: "ix_user_promocode_user_id",
-                table: "UserPromocode",
+                name: "ix_user_promo_code_user_id",
+                table: "UserPromoCode",
                 column: "user_id");
         }
 
@@ -150,16 +150,16 @@ namespace Promocode.API.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "UserPromocode");
+                name: "UserPromoCode");
 
             migrationBuilder.DropTable(
-                name: "PromocodeEntity");
+                name: "PromoCode");
 
             migrationBuilder.DropTable(
                 name: "User");
 
             migrationBuilder.DropTable(
-                name: "PromocodeType");
+                name: "PromoCodeType");
         }
     }
 }

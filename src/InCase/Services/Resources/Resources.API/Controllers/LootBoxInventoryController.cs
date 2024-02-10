@@ -7,7 +7,6 @@ using Resources.BLL.Models;
 using System.Net;
 
 namespace Resources.API.Controllers;
-
 [Route("api/loot-box-inventory")]
 [ApiController]
 public class LootBoxInventoryController(ILootBoxInventoryService inventoryService) : ControllerBase

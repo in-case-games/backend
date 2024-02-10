@@ -6,20 +6,19 @@ using Payment.DAL.Data;
 using Payment.DAL.Entities;
 
 namespace Payment.BLL.Services;
-
-public class UserPromocodeService(ApplicationDbContext context) : IUserPromocodeService
+public class UserPromoCodeService(ApplicationDbContext context) : IUserPromoCodeService
 {
-    public async Task<UserPromocode?> GetAsync(Guid id, Guid userId, CancellationToken cancellation = default) => 
-        await context.UserPromocodes
+    public async Task<UserPromoCode?> GetAsync(Guid userId, CancellationToken cancellation = default) => 
+        await context.UserPromoCodes
         .AsNoTracking()
-        .FirstOrDefaultAsync(ur => ur.Id == id && ur.UserId == userId, cancellation);
+        .FirstOrDefaultAsync(ur => ur.UserId == userId, cancellation);
 
-    public async Task CreateAsync(UserPromocodeTemplate template, CancellationToken cancellation = default)
+    public async Task CreateAsync(UserPromoCodeTemplate template, CancellationToken cancellation = default)
     {
-        if (!await context.UserPromocodes.AnyAsync(up => up.UserId == template.UserId, cancellation))
+        if (await context.UserPromoCodes.AnyAsync(up => up.UserId == template.UserId, cancellation))
             throw new BadRequestException("Уже используется промокод");
 
-        await context.UserPromocodes.AddAsync(new UserPromocode
+        await context.UserPromoCodes.AddAsync(new UserPromoCode
         {
             Id = template.Id,
             Discount = template.Discount,
@@ -28,19 +27,13 @@ public class UserPromocodeService(ApplicationDbContext context) : IUserPromocode
         await context.SaveChangesAsync(cancellation);
     }
 
-    public async Task UpdateAsync(UserPromocodeTemplate template, CancellationToken cancellation = default)
+    public async Task UpdateAsync(UserPromoCodeTemplate template, CancellationToken cancellation = default)
     {
-        var entityOld = await context.UserPromocodes
-            .AsNoTracking()
+        var entityOld = await context.UserPromoCodes
             .FirstOrDefaultAsync(ur => ur.Id == template.Id && ur.UserId == template.UserId, cancellation) ??
             throw new NotFoundException("Промокод пользователя не найден");
 
-        context.Entry(entityOld).CurrentValues.SetValues(new UserPromocode
-        {
-            Id = template.Id,
-            Discount = template.Discount,
-            UserId = template.UserId,
-        });
+        entityOld.Discount = template.Discount;
         await context.SaveChangesAsync(cancellation);
     }
 }

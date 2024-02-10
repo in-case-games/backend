@@ -1,11 +1,12 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace Promocode.DAL.Entities;
-
-public class PromocodeType : BaseEntity
+public class PromoCodeType : BaseEntity
 {
+    [MaxLength(50)]
     public string? Name { get; set; }
 
     [JsonIgnore]
-    public PromocodeEntity? Promocode { get; set; }
+    public PromoCode? PromoCode { get; set; }
 }

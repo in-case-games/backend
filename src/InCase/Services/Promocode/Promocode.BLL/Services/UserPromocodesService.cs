@@ -8,60 +8,59 @@ using Promocode.DAL.Data;
 using Promocode.DAL.Entities;
 
 namespace Promocode.BLL.Services;
-
-public class UserPromocodesService(ApplicationDbContext context, BasePublisher publisher) : IUserPromocodesService
+public class UserPromoCodesService(ApplicationDbContext context, BasePublisher publisher) : IUserPromoCodesService
 {
-    public async Task<UserPromocodeResponse> GetAsync(Guid id, CancellationToken cancellation = default)
+    public async Task<UserPromoCodeResponse> GetAsync(Guid id, CancellationToken cancellation = default)
     {
-        var promocode = await context.UserPromocodes
-            .Include(uhp => uhp.Promocode)
-            .Include(uhp => uhp.Promocode!.Type)
+        var promoCode = await context.UserPromoCodes
+            .Include(uhp => uhp.PromoCode)
+            .Include(uhp => uhp.PromoCode!.Type)
             .AsNoTracking()
             .FirstOrDefaultAsync(uhp => uhp.Id == id, cancellation) ??
             throw new NotFoundException("История активации промокода не найдена");
 
-        return promocode.ToResponse();
+        return promoCode.ToResponse();
     }
 
-    public async Task<UserPromocodeResponse> GetAsync(Guid id, Guid userId, CancellationToken cancellation = default)
+    public async Task<UserPromoCodeResponse> GetAsync(Guid id, Guid userId, CancellationToken cancellation = default)
     {
-        var promocode = await context.UserPromocodes
-            .Include(uhp => uhp.Promocode)
-            .Include(uhp => uhp.Promocode!.Type)
+        var promoCode = await context.UserPromoCodes
+            .Include(uhp => uhp.PromoCode)
+            .Include(uhp => uhp.PromoCode!.Type)
             .AsNoTracking()
             .FirstOrDefaultAsync(uhp => uhp.Id == id, cancellation) ??
             throw new NotFoundException("История активации промокода не найдена");
 
-        return promocode.UserId == userId ?
-            promocode.ToResponse() :
+        return promoCode.UserId == userId ?
+            promoCode.ToResponse() :
             throw new ForbiddenException("История активации числится на другого пользователя");
     }
 
-    public async Task<List<UserPromocodeResponse>> GetAsync(Guid userId, int count, CancellationToken cancellation = default)
+    public async Task<List<UserPromoCodeResponse>> GetAsync(Guid userId, int count, CancellationToken cancellation = default)
     {
         if (count is <= 0 or >= 10000)
             throw new BadRequestException("Размер выборки должен быть в пределе 1-10000");
 
-        var promocode = await context.UserPromocodes
-            .Include(uhp => uhp.Promocode)
-            .Include(uhp => uhp.Promocode!.Type)
+        var promoCode = await context.UserPromoCodes
+            .Include(uhp => uhp.PromoCode)
+            .Include(uhp => uhp.PromoCode!.Type)
             .AsNoTracking()
             .Where(uhp => uhp.UserId == userId)
             .OrderByDescending(uhp => uhp.Date)
             .Take(count)
             .ToListAsync(cancellation);
 
-        return promocode.ToResponse();
+        return promoCode.ToResponse();
     }
 
-    public async Task<List<UserPromocodeResponse>> GetAsync(int count, CancellationToken cancellation = default)
+    public async Task<List<UserPromoCodeResponse>> GetAsync(int count, CancellationToken cancellation = default)
     {
         if (count is <= 0 or >= 10000)
             throw new BadRequestException("Размер выборки должен быть в пределе 1-10000");
 
-        var history = await context.UserPromocodes
-            .Include(uhp => uhp.Promocode)
-            .Include(uhp => uhp.Promocode!.Type)
+        var history = await context.UserPromoCodes
+            .Include(uhp => uhp.PromoCode)
+            .Include(uhp => uhp.PromoCode!.Type)
             .AsNoTracking()
             .OrderByDescending(uhp => uhp.Date)
             .Take(count)
@@ -70,86 +69,85 @@ public class UserPromocodesService(ApplicationDbContext context, BasePublisher p
         return history.ToResponse();
     }
 
-    public async Task<UserPromocodeResponse> ActivateAsync(Guid userId, string name, CancellationToken cancellation = default)
+    public async Task<UserPromoCodeResponse> ActivateAsync(Guid userId, string name, CancellationToken cancellation = default)
     {
-        var promocode = await context.Promocodes
+        var promoCode = await context.PromoCodes
             .Include(p => p.Type)
             .FirstOrDefaultAsync(p => p.Name == name, cancellation) ??
             throw new NotFoundException("Промокод не найден");
 
-        var isUsedType = await context.UserPromocodes.AnyAsync(up =>
-            up.Promocode!.Type!.Id == promocode.TypeId &&
+        var isUsedType = await context.UserPromoCodes.AnyAsync(up =>
+            up.PromoCode!.Type!.Id == promoCode.TypeId &&
             up.IsActivated == false &&
             up.UserId == userId, cancellation);
 
-        if (promocode.NumberActivations <= 0 || promocode.ExpirationDate <= DateTime.UtcNow)
+        if (promoCode.NumberActivations <= 0 || promoCode.ExpirationDate <= DateTime.UtcNow)
             throw new ForbiddenException("Промокод истёк");
-        if (await context.UserPromocodes.AnyAsync(uhp => uhp.PromocodeId == promocode.Id, cancellation))
+        if (await context.UserPromoCodes.AnyAsync(uhp => uhp.PromoCodeId == promoCode.Id, cancellation))
             throw new ConflictException("Промокод уже используется");
         if (isUsedType)
             throw new ConflictException("Тип промокода уже используется");
 
-        var userPromocode = new UserPromocode
+        var userPromoCode = new UserPromoCode
         {
             IsActivated = false,
             Date = DateTime.UtcNow,
-            PromocodeId = promocode.Id,
+            PromoCodeId = promoCode.Id,
             UserId = userId,
-            Promocode = promocode,
+            PromoCode = promoCode,
         };
 
-        promocode.NumberActivations--;
+        promoCode.NumberActivations--;
 
-        await context.UserPromocodes.AddAsync(userPromocode, cancellation);
+        await context.UserPromoCodes.AddAsync(userPromoCode, cancellation);
         await context.SaveChangesAsync(cancellation);
-        await publisher.SendAsync(userPromocode.ToTemplate(), cancellation);
+        await publisher.SendAsync(userPromoCode.ToTemplate(), cancellation);
 
-        return userPromocode.ToResponse();
+        return userPromoCode.ToResponse();
     }
 
-    public async Task<UserPromocodeResponse> ExchangeAsync(Guid userId, string name, CancellationToken cancellation = default)
+    public async Task<UserPromoCodeResponse> ExchangeAsync(Guid userId, string name, CancellationToken cancellation = default)
     {
-        var promocode = await context.Promocodes
+        var promoCode = await context.PromoCodes
             .Include(p => p.Type)
             .AsNoTracking()
             .FirstOrDefaultAsync(p => p.Name == name, cancellation) ??
             throw new NotFoundException("Промокод не найден");
 
-        if (promocode.NumberActivations <= 0 || promocode.ExpirationDate <= DateTime.UtcNow)
+        if (promoCode.NumberActivations <= 0 || promoCode.ExpirationDate <= DateTime.UtcNow)
             throw new ConflictException("Промокод истёк");
+        if (await context.UserPromoCodes.AnyAsync(up => up.PromoCodeId == promoCode.Id, cancellation))
+            throw new ConflictException("Промокод уже используется/использован");
 
-        var userPromocode = await context.UserPromocodes
+        var userPromoCode = await context.UserPromoCodes
             .AsNoTracking()
             .FirstOrDefaultAsync(uhp =>
-            uhp.Promocode!.Type!.Id == promocode.TypeId &&
+            uhp.PromoCode!.Type!.Id == promoCode.TypeId &&
             uhp.IsActivated == false &&
             uhp.UserId == userId, cancellation) ??
             throw new ConflictException("Промокод не активировался");
 
-        if (userPromocode.PromocodeId == promocode.Id)
-            throw new ConflictException("Промокод уже используется");
-
-        var promocodeOld = await context.Promocodes
+        var promoCodeOld = await context.PromoCodes
             .AsNoTracking()
-            .FirstOrDefaultAsync(p => p.Id == userPromocode.PromocodeId, cancellation) ??
+            .FirstOrDefaultAsync(p => p.Id == userPromoCode.PromoCodeId, cancellation) ??
             throw new NotFoundException("Прошлый промокод не найден");
 
-        promocodeOld.NumberActivations++;
-        promocode.NumberActivations--;
+        promoCodeOld.NumberActivations++;
+        promoCode.NumberActivations--;
 
-        userPromocode.Date = DateTime.UtcNow;
-        userPromocode.PromocodeId = promocode.Id;
+        userPromoCode.Date = DateTime.UtcNow;
+        userPromoCode.PromoCodeId = promoCode.Id;
 
-        context.Entry(promocodeOld).Property(p => p.NumberActivations).IsModified = true;
-        context.Entry(promocode).Property(p => p.NumberActivations).IsModified = true;
-        context.Entry(userPromocode).Property(p => p.Date).IsModified = true;
-        context.Entry(userPromocode).Property(p => p.PromocodeId).IsModified = true;
+        context.Entry(promoCodeOld).Property(p => p.NumberActivations).IsModified = true;
+        context.Entry(promoCode).Property(p => p.NumberActivations).IsModified = true;
+        context.Entry(userPromoCode).Property(p => p.Date).IsModified = true;
+        context.Entry(userPromoCode).Property(p => p.PromoCodeId).IsModified = true;
         await context.SaveChangesAsync(cancellation);
 
-        userPromocode.Promocode = promocode;
+        userPromoCode.PromoCode = promoCode;
 
-        await publisher.SendAsync(userPromocode.ToTemplate(), cancellation);
+        await publisher.SendAsync(userPromoCode.ToTemplate(), cancellation);
 
-        return userPromocode.ToResponse();
+        return userPromoCode.ToResponse();
     }
 }

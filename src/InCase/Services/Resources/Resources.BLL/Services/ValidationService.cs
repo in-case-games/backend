@@ -3,7 +3,6 @@ using Resources.BLL.Models;
 using Resources.DAL.Entities;
 
 namespace Resources.BLL.Services;
-
 public static class ValidationService
 {
     public static void IsGameItem(GameItemRequest request)

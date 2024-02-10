@@ -3,14 +3,13 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Game.DAL.Configurations;
-
-internal class PromocodeConfiguration : BaseEntityConfiguration<UserPromocode>
+internal class PromoCodeConfiguration : BaseEntityConfiguration<UserPromoCode>
 {
-    public override void Configure(EntityTypeBuilder<UserPromocode> builder)
+    public override void Configure(EntityTypeBuilder<UserPromoCode> builder)
     {
         base.Configure(builder);
 
-        builder.ToTable(nameof(UserPromocode));
+        builder.ToTable(nameof(UserPromoCode));
 
         builder.Property(gi => gi.Discount)
             .HasColumnType("DECIMAL(18,5)")

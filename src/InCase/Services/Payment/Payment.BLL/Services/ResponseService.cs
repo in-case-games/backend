@@ -7,7 +7,6 @@ using Payment.BLL.Exceptions;
 using Payment.BLL.Interfaces;
 
 namespace Payment.BLL.Services;
-
 public class ResponseService(ILogger<ResponseService> logger, IConfiguration configuration) : IResponseService
 {
     private readonly HttpClient _httpClient = new();

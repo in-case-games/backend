@@ -1,12 +1,12 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
-namespace Payment.DAL.Entities
+namespace Payment.DAL.Entities;
+public class PaymentStatus : BaseEntity
 {
-    public class PaymentStatus : BaseEntity
-    {
-        public string? Name { get; set; }
+    [MaxLength(50)]
+    public string? Name { get; set; }
 
-        [JsonIgnore]
-        public UserPayment? Payment { get; set; }
-    }
+    [JsonIgnore]
+    public UserPayment? Payment { get; set; }
 }

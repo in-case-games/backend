@@ -1,7 +1,6 @@
 ﻿using Support.BLL.Models;
 
 namespace Support.BLL.Interfaces;
-
 public interface IAnswerImageService
 {
     public Task<AnswerImageResponse> GetAsync(Guid userId, Guid id, CancellationToken cancellation = default);

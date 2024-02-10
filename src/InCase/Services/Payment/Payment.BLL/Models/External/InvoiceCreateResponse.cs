@@ -1,7 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
 namespace Payment.BLL.Models.External;
-
 public class InvoiceCreateResponse
 {
     [JsonPropertyName("id")] public string? Id { get; set; }

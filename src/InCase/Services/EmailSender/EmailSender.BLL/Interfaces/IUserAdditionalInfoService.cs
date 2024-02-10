@@ -1,7 +1,6 @@
 ﻿using EmailSender.BLL.Models;
 
 namespace EmailSender.BLL.Interfaces;
-
 public interface IUserAdditionalInfoService
 {
     public Task<UserAdditionalInfoResponse> GetByUserIdAsync(Guid id, CancellationToken cancellationToken = default);

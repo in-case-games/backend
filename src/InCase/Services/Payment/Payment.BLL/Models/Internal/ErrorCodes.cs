@@ -1,5 +1,4 @@
 ﻿namespace Payment.BLL.Models.Internal;
-
 public class ErrorCodes
 {
     public const int BadRequest = 0;

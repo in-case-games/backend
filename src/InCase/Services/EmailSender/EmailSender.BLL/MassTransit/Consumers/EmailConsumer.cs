@@ -3,7 +3,6 @@ using Infrastructure.MassTransit.Email;
 using MassTransit;
 
 namespace EmailSender.BLL.MassTransit.Consumers;
-
 public class EmailConsumer(IUserService userService, IEmailService emailService) : IConsumer<EmailTemplate>
 {
     public async Task Consume(ConsumeContext<EmailTemplate> context)

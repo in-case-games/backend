@@ -1,7 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
 namespace Game.DAL.Entities;
-
 public class UserOpening : BaseEntity
 {
     public DateTime Date { get; set; } = DateTime.UtcNow;

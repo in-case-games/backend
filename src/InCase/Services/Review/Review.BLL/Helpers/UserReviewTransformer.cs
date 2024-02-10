@@ -2,7 +2,6 @@
 using Review.DAL.Entities;
 
 namespace Review.BLL.Helpers;
-
 public static class UserReviewTransformer
 {
     public static UserReview ToEntity(this UserReviewRequest request, bool isNewGuid = false) => new()

@@ -1,5 +1,4 @@
 ﻿namespace Resources.API.Common;
-
 public class Roles
 {
     public const string User = "user";

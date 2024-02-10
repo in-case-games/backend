@@ -3,7 +3,6 @@ using Authentication.DAL.Entities;
 using Infrastructure.MassTransit.User;
 
 namespace Authentication.BLL.Helpers;
-
 public static class UserTransformer
 {
     public static UserResponse ToResponse(this User entity, bool isNewGuid = false) => new()

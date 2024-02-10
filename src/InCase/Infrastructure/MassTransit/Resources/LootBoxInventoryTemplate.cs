@@ -1,5 +1,4 @@
 ﻿namespace Infrastructure.MassTransit.Resources;
-
 public class LootBoxInventoryTemplate : BaseTemplate
 {
     public int ChanceWining { get; set; }

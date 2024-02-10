@@ -6,7 +6,6 @@ using Resources.BLL.Models;
 using System.Net;
 
 namespace Resources.API.Controllers;
-
 [Route("api/game")]
 [ApiController]
 public class GameController(IGameService gameService) : ControllerBase

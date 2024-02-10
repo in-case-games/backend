@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using Game.DAL.Entities;
 
 namespace Game.DAL.Configurations;
-
 internal class BaseEntityConfiguration<TEntity> :
     IEntityTypeConfiguration<TEntity> where TEntity : BaseEntity
 {

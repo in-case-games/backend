@@ -17,7 +17,7 @@ namespace Identity.API.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.8")
+                .HasAnnotation("ProductVersion", "8.0.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -51,17 +51,17 @@ namespace Identity.API.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("a44a72f7-8846-4fec-b841-d9c38fb9fd8c"),
+                            Id = new Guid("74d18816-f889-4ba0-922e-af0b8bcb99f9"),
                             Name = "mute"
                         },
                         new
                         {
-                            Id = new Guid("83152563-d337-45ff-8e2b-b2426a6f430d"),
+                            Id = new Guid("8f1607ae-93a0-4fb0-92f3-26b605d54181"),
                             Name = "ban"
                         },
                         new
                         {
-                            Id = new Guid("57ce30a8-b79e-4244-b152-74071af54df6"),
+                            Id = new Guid("d432b11a-9610-4650-b81a-d4725bbbef83"),
                             Name = "warn"
                         });
                 });
@@ -213,22 +213,22 @@ namespace Identity.API.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("ddec1425-8250-4aeb-bd66-2fa51950381c"),
+                            Id = new Guid("9ddb1237-1ea0-47d4-90d1-57a7631ef7b9"),
                             Name = "user"
                         },
                         new
                         {
-                            Id = new Guid("de9e5842-12a3-49d0-ae2a-b6454aa9353c"),
+                            Id = new Guid("3f073033-de1d-4303-acd9-f5fc4c7ac7d3"),
                             Name = "admin"
                         },
                         new
                         {
-                            Id = new Guid("796ffdcf-a63f-4b34-9c17-4756fd0d9ce7"),
+                            Id = new Guid("e4035b60-18f0-4493-b528-2166cf21df42"),
                             Name = "owner"
                         },
                         new
                         {
-                            Id = new Guid("9238ea12-1465-455b-bf6a-669f4228d3f2"),
+                            Id = new Guid("f1494bbf-d6d5-449a-8806-f90ff58fe231"),
                             Name = "bot"
                         });
                 });
@@ -240,7 +240,7 @@ namespace Identity.API.Migrations
                         .HasForeignKey("Identity.DAL.Entities.UserAdditionalInfo", "RoleId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired()
-                        .HasConstraintName("fk_user_additional_info_roles_role_id");
+                        .HasConstraintName("fk_user_additional_info_user_roles_role_id");
 
                     b.HasOne("Identity.DAL.Entities.User", "User")
                         .WithOne("AdditionalInfo")

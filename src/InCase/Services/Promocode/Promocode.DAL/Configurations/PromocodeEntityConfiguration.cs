@@ -3,14 +3,13 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Promocode.DAL.Entities;
 
 namespace Promocode.DAL.Configurations;
-
-internal class PromocodeEntityConfiguration : BaseEntityConfiguration<PromocodeEntity>
+internal class PromoCodeEntityConfiguration : BaseEntityConfiguration<PromoCode>
 {
-    public override void Configure(EntityTypeBuilder<PromocodeEntity> builder)
+    public override void Configure(EntityTypeBuilder<PromoCode> builder)
     {
         base.Configure(builder);
 
-        builder.ToTable(nameof(PromocodeEntity));
+        builder.ToTable(nameof(PromoCode));
 
         builder.HasIndex(pe => pe.Name)
             .IsUnique();
@@ -29,7 +28,7 @@ internal class PromocodeEntityConfiguration : BaseEntityConfiguration<PromocodeE
             .IsRequired();
 
         builder.HasOne(pe => pe.Type)
-            .WithOne(pt => pt.Promocode)
+            .WithOne(pt => pt.PromoCode)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }

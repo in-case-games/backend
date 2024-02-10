@@ -18,7 +18,7 @@ namespace Payment.API.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
-                    name = table.Column<string>(type: "text", nullable: true)
+                    name = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -41,10 +41,11 @@ namespace Payment.API.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
-                    invoice_id = table.Column<string>(type: "text", nullable: true),
-                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    currency = table.Column<string>(type: "text", nullable: false),
+                    invoice_id = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    currency = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     amount = table.Column<decimal>(type: "numeric(18,5)", nullable: false),
+                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    update_to = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     user_id = table.Column<Guid>(type: "uuid", nullable: false),
                     status_id = table.Column<Guid>(type: "uuid", nullable: false)
                 },
@@ -66,7 +67,7 @@ namespace Payment.API.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserPromocode",
+                name: "UserPromoCode",
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -75,9 +76,9 @@ namespace Payment.API.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_user_promocode", x => x.id);
+                    table.PrimaryKey("pk_user_promo_code", x => x.id);
                     table.ForeignKey(
-                        name: "fk_user_promocode_user_user_id",
+                        name: "fk_user_promo_code_user_user_id",
                         column: x => x.user_id,
                         principalTable: "User",
                         principalColumn: "id",
@@ -89,16 +90,22 @@ namespace Payment.API.Migrations
                 columns: new[] { "id", "name" },
                 values: new object[,]
                 {
-                    { new Guid("4a2d6cca-b5fb-4888-9df8-b07a8f74f5b6"), "canceled" },
-                    { new Guid("75ee2237-6379-4a4d-b059-92bf0819ce63"), "waiting" },
-                    { new Guid("da9ffd86-a510-4253-9145-e2b4fb68e4ef"), "succeeded" },
-                    { new Guid("e67b2c93-e669-4360-bb26-ec14afa924e4"), "pending" }
+                    { new Guid("3f5584fe-3420-4ecd-959a-f8380473ef7e"), "waiting" },
+                    { new Guid("75de0151-2d2e-4161-b016-8f70656d10af"), "succeeded" },
+                    { new Guid("99d02ba4-9ed3-4295-97ad-8dfc1ca34e97"), "canceled" },
+                    { new Guid("af01255d-15b7-4d34-ae01-2fcb3769dfd2"), "pending" }
                 });
 
             migrationBuilder.CreateIndex(
                 name: "ix_payment_status_id",
                 table: "PaymentStatus",
                 column: "id",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "ix_payment_status_name",
+                table: "PaymentStatus",
+                column: "name",
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -124,14 +131,14 @@ namespace Payment.API.Migrations
                 column: "user_id");
 
             migrationBuilder.CreateIndex(
-                name: "ix_user_promocode_id",
-                table: "UserPromocode",
+                name: "ix_user_promo_code_id",
+                table: "UserPromoCode",
                 column: "id",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "ix_user_promocode_user_id",
-                table: "UserPromocode",
+                name: "ix_user_promo_code_user_id",
+                table: "UserPromoCode",
                 column: "user_id",
                 unique: true);
         }
@@ -143,7 +150,7 @@ namespace Payment.API.Migrations
                 name: "UserPayment");
 
             migrationBuilder.DropTable(
-                name: "UserPromocode");
+                name: "UserPromoCode");
 
             migrationBuilder.DropTable(
                 name: "PaymentStatus");

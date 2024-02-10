@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Authorization;
 using System.Net;
 
 namespace Identity.API.Controllers;
-
 [Route("api/user-additional-info")]
 [ApiController]
 public class UserAdditionalInfoController(IUserAdditionalInfoService infoService) : Controller

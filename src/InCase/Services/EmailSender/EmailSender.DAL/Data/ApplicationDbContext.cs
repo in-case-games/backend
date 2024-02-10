@@ -3,11 +3,10 @@ using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 
 namespace EmailSender.DAL.Data;
-
 public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
 {
     public DbSet<User> Users => Set<User>();
-    public DbSet<UserAdditionalInfo> AdditionalInfos => Set<UserAdditionalInfo>();
+    public DbSet<UserAdditionalInfo> UserAdditionalInfos => Set<UserAdditionalInfo>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

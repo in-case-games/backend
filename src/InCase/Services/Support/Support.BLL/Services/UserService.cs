@@ -6,7 +6,6 @@ using Support.DAL.Data;
 using Support.DAL.Entities;
 
 namespace Support.BLL.Services;
-
 public class UserService(ApplicationDbContext context) : IUserService
 {
     public async Task<User?> GetAsync(Guid id, CancellationToken cancellation = default) => 

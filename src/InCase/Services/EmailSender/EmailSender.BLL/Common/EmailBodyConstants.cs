@@ -1,5 +1,4 @@
 ﻿namespace EmailSender.BLL.Common;
-
 public class EmailBodyConstants
 {
     public const string ButtonPair1 = "<div style=\"padding-bottom:30px;text-align:center\"><a href=\"";

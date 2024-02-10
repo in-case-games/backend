@@ -7,7 +7,6 @@ using System.Net;
 using System.Security.Claims;
 
 namespace Game.API.Controllers;
-
 [Route("api/loot-box-opening")]
 [ApiController]
 public class LootBoxOpeningController(ILootBoxOpeningService openingService) : ControllerBase

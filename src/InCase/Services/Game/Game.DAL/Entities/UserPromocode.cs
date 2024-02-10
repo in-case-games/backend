@@ -1,8 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 
 namespace Game.DAL.Entities;
-
-public class UserPromocode : BaseEntity
+public class UserPromoCode : BaseEntity
 {
     public decimal Discount { get; set; }
 

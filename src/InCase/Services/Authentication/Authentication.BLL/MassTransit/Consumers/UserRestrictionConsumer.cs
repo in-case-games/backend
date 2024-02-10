@@ -3,7 +3,6 @@ using Infrastructure.MassTransit.User;
 using MassTransit;
 
 namespace Authentication.BLL.MassTransit.Consumers;
-
 public class UserRestrictionConsumer(IUserRestrictionService restrictionService) : IConsumer<UserRestrictionTemplate>
 {
     public async Task Consume(ConsumeContext<UserRestrictionTemplate> context)

@@ -1,7 +1,6 @@
 ﻿using Identity.BLL.Models;
 
 namespace Identity.BLL.Interfaces;
-
 public interface IUserRestrictionService
 {
     public Task<UserRestrictionResponse> GetAsync(Guid id, CancellationToken cancellation = default);

@@ -10,7 +10,6 @@ using Microsoft.Extensions.Logging;
 using Withdraw.BLL.MassTransit;
 
 namespace Withdraw.BLL.Services;
-
 public class WithdrawService(
     IWithdrawItemService withdrawService, 
     ILogger<WithdrawService> logger, 
@@ -19,7 +18,7 @@ public class WithdrawService(
 {
     public async Task<ItemInfoResponse> GetItemInfoAsync(Guid id, CancellationToken cancellation = default)
     {
-        var item = await context.Items
+        var item = await context.GameItems
             .Include(gi => gi.Game)
             .Include(gi => gi.Game!.Market)
             .AsNoTracking()
@@ -35,7 +34,7 @@ public class WithdrawService(
     public async Task<UserHistoryWithdrawResponse> WithdrawItemAsync(WithdrawItemRequest request, Guid userId,
         CancellationToken cancellation = default)
     {
-        var inventory = await context.Inventories
+        var inventory = await context.UserInventories
             .Include(ui => ui.Item)
             .Include(ui => ui.Item!.Game)
             .Include(ui => ui.Item!.Game!.Market)
@@ -55,7 +54,7 @@ public class WithdrawService(
 
         if (balance.Balance <= price) throw new PaymentRequiredException("Ожидаем пополнения сервиса покупки");
 
-        var status = await context.Statuses
+        var status = await context.WithdrawStatuses
             .AsNoTracking()
             .FirstAsync(iws => iws.Name == "recorded", cancellation);
 
@@ -74,8 +73,8 @@ public class WithdrawService(
 
         logger.LogInformation($"UserId - {userId} оформил заявку на вывод - {item.Id}");
 
-        context.Inventories.Remove(inventory);
-        await context.Withdraws.AddAsync(withdraw, cancellation);
+        context.UserInventories.Remove(inventory);
+        await context.UserHistoryWithdraws.AddAsync(withdraw, cancellation);
         await context.SaveChangesAsync(cancellation);
 
         logger.LogInformation($"UserId - {userId} сделал заявку на вывод - {item.Id}");
@@ -89,7 +88,7 @@ public class WithdrawService(
 
     public async Task WithdrawStatusManagerAsync(CancellationToken cancellation = default)
     {
-        var withdraw = await context.Withdraws
+        var withdraw = await context.UserHistoryWithdraws
             .Include(uhw => uhw.Item)
             .Include(uhw => uhw.Item!.Game)
             .Include(uhw => uhw.Market)
@@ -113,7 +112,7 @@ public class WithdrawService(
         context.Entry(withdraw).Property(p => p.Date).IsModified = true;
         context.Entry(withdraw).Property(p => p.InvoiceId).IsModified = true;
 
-        var statuses = await context.Statuses
+        var statuses = await context.WithdrawStatuses
             .AsNoTracking()
             .ToListAsync(cancellation);
 

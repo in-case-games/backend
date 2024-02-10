@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using Resources.DAL.Entities;
 
 namespace Resources.DAL.Configurations;
-
 internal class BaseEntityConfiguration<TEntity> :
     IEntityTypeConfiguration<TEntity> where TEntity : BaseEntity
 {

@@ -1,17 +1,16 @@
 ﻿using System.Text.Json.Serialization;
 
 namespace Promocode.DAL.Entities;
-
-public class UserPromocode : BaseEntity
+public class UserPromoCode : BaseEntity
 {
     public DateTime Date { get; set; }
     public bool IsActivated { get; set; } = false;
-    public PromocodeEntity? Promocode { get; set; }
+    public PromoCode? PromoCode { get; set; }
 
     [JsonIgnore]
     public Guid UserId { get; set; }
     [JsonIgnore]
-    public Guid PromocodeId { get; set; }
+    public Guid PromoCodeId { get; set; }
     [JsonIgnore]
     public User? User { get; set; }
 }

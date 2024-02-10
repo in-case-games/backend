@@ -3,7 +3,6 @@ using Payment.BLL.Models.Internal;
 using Payment.DAL.Entities;
 
 namespace Payment.BLL.Helpers;
-
 public static class UserPaymentTransformer
 {
     private const int RubToInCoin = 7;

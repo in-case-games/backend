@@ -2,7 +2,6 @@
 using Resources.DAL.Entities;
 
 namespace Resources.BLL.Helpers;
-
 public static class LootBoxGroupTransformer
 {
     public static LootBoxGroupResponse ToResponse(this LootBoxGroup group) =>

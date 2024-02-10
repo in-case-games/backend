@@ -17,7 +17,7 @@ namespace Support.API.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.8")
+                .HasAnnotation("ProductVersion", "8.0.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -155,7 +155,7 @@ namespace Support.API.Migrations
                         .HasForeignKey("AnswerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_answer_image_answers_answer_id");
+                        .HasConstraintName("fk_answer_image_support_topic_answers_answer_id");
 
                     b.Navigation("Answer");
                 });
@@ -185,7 +185,7 @@ namespace Support.API.Migrations
                         .HasForeignKey("TopicId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_support_topic_answer_topics_topic_id");
+                        .HasConstraintName("fk_support_topic_answer_support_topics_topic_id");
 
                     b.Navigation("Plaintiff");
 

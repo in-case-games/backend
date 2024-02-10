@@ -1,8 +1,7 @@
 ﻿using Promocode.DAL.Entities;
 
 namespace Promocode.BLL.Models;
-
-public class PromocodeRequest : BaseEntity
+public class PromoCodeRequest : BaseEntity
 {
     public string? Name { get; set; }
     public decimal Discount { get; set; }

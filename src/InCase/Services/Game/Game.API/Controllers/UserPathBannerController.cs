@@ -7,7 +7,6 @@ using System.Net;
 using System.Security.Claims;
 
 namespace Game.API.Controllers;
-
 [Route("api/user-path-banner")]
 [ApiController]
 public class UserPathBannerController(IUserPathBannerService pathService) : ControllerBase

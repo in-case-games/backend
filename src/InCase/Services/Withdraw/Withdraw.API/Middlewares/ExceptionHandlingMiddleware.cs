@@ -3,7 +3,6 @@ using System.Text.Json;
 using Withdraw.BLL.Exceptions;
 
 namespace Withdraw.API.Middlewares;
-
 public class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<ExceptionHandlingMiddleware> logger)
 {
     public async Task Invoke(HttpContext context)

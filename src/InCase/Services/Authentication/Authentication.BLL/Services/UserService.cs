@@ -7,7 +7,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace Authentication.BLL.Services;
-
 public class UserService(ILogger<UserService> logger, ApplicationDbContext context, BasePublisher publisher) : IUserService
 {
     public async Task DoWorkManagerAsync(CancellationToken cancellationToken)

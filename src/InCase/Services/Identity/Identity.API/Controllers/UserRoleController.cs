@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
 namespace Identity.API.Controllers;
-
 [Route("api/user-role")]
 [ApiController]
 public class UserRoleController(IUserRoleService roleService) : ControllerBase

@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Resources.DAL.Entities;
 
 namespace Resources.DAL.Configurations;
-
 internal class LootBoxConfiguration : BaseEntityConfiguration<LootBox>
 {
     public override void Configure(EntityTypeBuilder<LootBox> builder)
@@ -18,6 +17,7 @@ internal class LootBoxConfiguration : BaseEntityConfiguration<LootBox>
             .IsUnique();
 
         builder.Property(lb => lb.Name)
+            .HasMaxLength(50)
             .IsRequired();
         builder.Property(lb => lb.IsLocked)
             .IsRequired();

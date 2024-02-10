@@ -1,7 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
 namespace Game.DAL.Entities;
-
 public class LootBox : BaseEntity
 {
     public decimal Cost { get; set; }

@@ -1,7 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
 namespace Game.DAL.Entities;
-
 public class User : BaseEntity
 {
     [JsonIgnore]
@@ -11,5 +10,5 @@ public class User : BaseEntity
     [JsonIgnore]
     public IEnumerable<UserOpening>? Openings { get; set; }
     [JsonIgnore]
-    public UserPromocode? Promocode { get; set; }
+    public UserPromoCode? PromoCode { get; set; }
 }

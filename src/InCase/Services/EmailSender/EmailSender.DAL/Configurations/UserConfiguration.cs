@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace EmailSender.DAL.Configurations;
-
 internal class UserConfiguration : BaseEntityConfiguration<User>
 {
     public override void Configure(EntityTypeBuilder<User> builder)
@@ -13,6 +12,7 @@ internal class UserConfiguration : BaseEntityConfiguration<User>
         builder.ToTable(nameof(User));
 
         builder.Property(u => u.Email)
+            .HasMaxLength(50)
             .IsRequired();
     }
 }

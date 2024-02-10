@@ -1,5 +1,4 @@
 ﻿namespace Infrastructure.MassTransit.Email;
-
 public class EmailBannerTemplate
 {
     public string? ImageUri { get; set; }

@@ -1,9 +1,10 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace Support.DAL.Entities;
-
 public class SupportTopicAnswer : BaseEntity
 {
+    [MaxLength(120)]
     public string? Content { get; set; }
     public DateTime Date { get; set; }
 

@@ -7,7 +7,6 @@ using Statistics.BLL.Models;
 using System.Net;
 
 namespace Statistics.API.Controllers;
-
 [Route("api/site-statistics")]
 [ApiController]
 public class SiteStatisticsController(ISiteStatisticsService statisticsService) : ControllerBase

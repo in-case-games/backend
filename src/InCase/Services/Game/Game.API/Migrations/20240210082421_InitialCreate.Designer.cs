@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Game.API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230718093936_InitialCreate")]
+    [Migration("20240210082421_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -20,7 +20,7 @@ namespace Game.API.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.9")
+                .HasAnnotation("ProductVersion", "8.0.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -256,7 +256,7 @@ namespace Game.API.Migrations
                     b.ToTable("UserPathBanner", (string)null);
                 });
 
-            modelBuilder.Entity("Game.DAL.Entities.UserPromocode", b =>
+            modelBuilder.Entity("Game.DAL.Entities.UserPromoCode", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -272,17 +272,17 @@ namespace Game.API.Migrations
                         .HasColumnName("user_id");
 
                     b.HasKey("Id")
-                        .HasName("pk_user_promocode");
+                        .HasName("pk_user_promo_code");
 
                     b.HasIndex("Id")
                         .IsUnique()
-                        .HasDatabaseName("ix_user_promocode_id");
+                        .HasDatabaseName("ix_user_promo_code_id");
 
                     b.HasIndex("UserId")
                         .IsUnique()
-                        .HasDatabaseName("ix_user_promocode_user_id");
+                        .HasDatabaseName("ix_user_promo_code_user_id");
 
-                    b.ToTable("UserPromocode", (string)null);
+                    b.ToTable("UserPromoCode", (string)null);
                 });
 
             modelBuilder.Entity("Game.DAL.Entities.LootBoxInventory", b =>
@@ -378,14 +378,14 @@ namespace Game.API.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Game.DAL.Entities.UserPromocode", b =>
+            modelBuilder.Entity("Game.DAL.Entities.UserPromoCode", b =>
                 {
                     b.HasOne("Game.DAL.Entities.User", "User")
-                        .WithOne("Promocode")
-                        .HasForeignKey("Game.DAL.Entities.UserPromocode", "UserId")
+                        .WithOne("PromoCode")
+                        .HasForeignKey("Game.DAL.Entities.UserPromoCode", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_user_promocode_users_user_id");
+                        .HasConstraintName("fk_user_promo_code_users_user_id");
 
                     b.Navigation("User");
                 });
@@ -416,7 +416,7 @@ namespace Game.API.Migrations
 
                     b.Navigation("Paths");
 
-                    b.Navigation("Promocode");
+                    b.Navigation("PromoCode");
                 });
 #pragma warning restore 612, 618
         }

@@ -58,7 +58,7 @@ namespace Support.API.Migrations
                 {
                     table.PrimaryKey("pk_support_topic_answer", x => x.id);
                     table.ForeignKey(
-                        name: "fk_support_topic_answer_topics_topic_id",
+                        name: "fk_support_topic_answer_support_topics_topic_id",
                         column: x => x.topic_id,
                         principalTable: "SupportTopic",
                         principalColumn: "id",
@@ -82,7 +82,7 @@ namespace Support.API.Migrations
                 {
                     table.PrimaryKey("pk_answer_image", x => x.id);
                     table.ForeignKey(
-                        name: "fk_answer_image_answers_answer_id",
+                        name: "fk_answer_image_support_topic_answers_answer_id",
                         column: x => x.answer_id,
                         principalTable: "SupportTopicAnswer",
                         principalColumn: "id",

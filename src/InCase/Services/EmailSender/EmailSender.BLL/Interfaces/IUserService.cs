@@ -2,7 +2,6 @@
 using Infrastructure.MassTransit.User;
 
 namespace EmailSender.BLL.Interfaces;
-
 public interface IUserService
 {
     public Task<User?> GetAsync(Guid id, CancellationToken cancellationToken = default);

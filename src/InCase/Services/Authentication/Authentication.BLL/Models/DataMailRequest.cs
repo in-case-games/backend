@@ -1,5 +1,4 @@
 ﻿namespace Authentication.BLL.Models;
-
 public class DataMailRequest
 {
     public string Login { get; set; } = null!;

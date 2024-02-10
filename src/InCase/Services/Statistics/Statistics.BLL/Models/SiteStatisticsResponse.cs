@@ -1,5 +1,4 @@
 ﻿namespace Statistics.BLL.Models;
-
 public class SiteStatisticsResponse
 {
     public int Users { get; set; } = 0;

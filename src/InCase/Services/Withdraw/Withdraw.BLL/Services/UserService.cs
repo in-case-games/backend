@@ -6,7 +6,6 @@ using Withdraw.DAL.Data;
 using Withdraw.DAL.Entities;
 
 namespace Withdraw.BLL.Services;
-
 public class UserService(ApplicationDbContext context) : IUserService
 {
     public async Task<User?> GetAsync(Guid id, CancellationToken cancellation = default) => 

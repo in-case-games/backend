@@ -5,7 +5,6 @@ using System.Text.Json.Serialization;
 using Microsoft.Extensions.Logging;
 
 namespace Resources.BLL.Services;
-
 public class GamePlatformSteamService(
     ILogger<GamePlatformSteamService> logger, 
     IConfiguration cfg, 

@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Resources.DAL.Entities;
 
 namespace Resources.DAL.Configurations;
-
 internal class GameItemConfiguration : BaseEntityConfiguration<GameItem>
 {
     public override void Configure(EntityTypeBuilder<GameItem> builder)
@@ -27,8 +26,10 @@ internal class GameItemConfiguration : BaseEntityConfiguration<GameItem>
         builder.Property(gi => gi.UpdateDate)
             .IsRequired();
         builder.Property(gi => gi.HashName)
+            .HasMaxLength(200)
             .IsRequired(false);
         builder.Property(gi => gi.IdForMarket)
+            .HasMaxLength(200)
             .IsRequired();
         builder.Property(gi => gi.Cost)
             .HasColumnType("DECIMAL(18,5)")

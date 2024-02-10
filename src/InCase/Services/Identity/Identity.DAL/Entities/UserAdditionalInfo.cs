@@ -1,7 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
 namespace Identity.DAL.Entities;
-
 public class UserAdditionalInfo : BaseEntity
 {
     public DateTime CreationDate { get; set; }

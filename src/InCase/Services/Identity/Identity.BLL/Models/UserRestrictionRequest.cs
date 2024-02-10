@@ -1,7 +1,6 @@
 ﻿using Identity.DAL.Entities;
 
 namespace Identity.BLL.Models;
-
 public class UserRestrictionRequest : BaseEntity
 {
     public DateTime CreationDate { get; set; }

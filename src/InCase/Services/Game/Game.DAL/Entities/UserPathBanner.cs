@@ -1,7 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
 namespace Game.DAL.Entities;
-
 public class UserPathBanner : BaseEntity
 {
     public int NumberSteps { get; set; }

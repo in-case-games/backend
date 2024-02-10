@@ -17,7 +17,7 @@ namespace Authentication.API.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.9")
+                .HasAnnotation("ProductVersion", "8.0.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -43,12 +43,14 @@ namespace Authentication.API.Migrations
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
                         .HasColumnName("password_hash");
 
                     b.Property<string>("PasswordSalt")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
                         .HasColumnName("password_salt");
 
                     b.HasKey("Id")
@@ -166,22 +168,22 @@ namespace Authentication.API.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("dba56c87-19fc-4c9f-92a1-77e9cb086e10"),
+                            Id = new Guid("963a6321-2405-4b3f-97fb-4e9f55a0e4b5"),
                             Name = "user"
                         },
                         new
                         {
-                            Id = new Guid("0eab92ff-28cf-43aa-94b6-ccf531e60041"),
+                            Id = new Guid("6320cc85-c75c-43db-8dc4-6a195bf182a5"),
                             Name = "admin"
                         },
                         new
                         {
-                            Id = new Guid("a217b81f-9078-45f9-98b5-f2a1d82fbc1d"),
+                            Id = new Guid("860ad14c-07da-4953-a60c-e863459579b1"),
                             Name = "owner"
                         },
                         new
                         {
-                            Id = new Guid("82695d93-9d02-459c-b262-39e343ea107e"),
+                            Id = new Guid("322e9d7b-1513-4a87-9750-0ef17687d26b"),
                             Name = "bot"
                         });
                 });
@@ -193,7 +195,7 @@ namespace Authentication.API.Migrations
                         .HasForeignKey("Authentication.DAL.Entities.UserAdditionalInfo", "RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_user_additional_info_roles_role_id");
+                        .HasConstraintName("fk_user_additional_info_user_roles_role_id");
 
                     b.HasOne("Authentication.DAL.Entities.User", "User")
                         .WithOne("AdditionalInfo")

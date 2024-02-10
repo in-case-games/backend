@@ -5,7 +5,6 @@ using Statistics.BLL.Repository;
 using Statistics.DAL.Entities;
 
 namespace Statistics.BLL.MassTransit.Consumers;
-
 public class StatisticsAdminConsumer : IConsumer<SiteStatisticsAdminTemplate>
 {
     private readonly IMongoCollection<SiteStatisticsAdmin> _siteStatisticsAdmin;

@@ -3,7 +3,6 @@ using Infrastructure.MassTransit.Resources;
 using MassTransit;
 
 namespace Game.BLL.MassTransit.Consumers;
-
 public class GameItemConsumer(IGameItemService itemService) : IConsumer<GameItemTemplate>
 {
     public async Task Consume(ConsumeContext<GameItemTemplate> context)

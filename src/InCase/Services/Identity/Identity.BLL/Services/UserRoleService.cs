@@ -6,12 +6,11 @@ using Identity.DAL.Data;
 using Microsoft.EntityFrameworkCore;
 
 namespace Identity.BLL.Services;
-
 public class UserRoleService(ApplicationDbContext context) : IUserRoleService
 {
     public async Task<UserRoleResponse> GetAsync(Guid id, CancellationToken cancellation = default)
     {
-        var role = await context.Roles
+        var role = await context.UserRoles
             .AsNoTracking()
             .FirstOrDefaultAsync(ur => ur.Id == id, cancellation) ??
             throw new NotFoundException("Роль не найдена");
@@ -21,7 +20,7 @@ public class UserRoleService(ApplicationDbContext context) : IUserRoleService
 
     public async Task<List<UserRoleResponse>> GetAsync(CancellationToken cancellation = default)
     {
-        var roles = await context.Roles
+        var roles = await context.UserRoles
             .AsNoTracking()
             .ToListAsync(cancellation);
 

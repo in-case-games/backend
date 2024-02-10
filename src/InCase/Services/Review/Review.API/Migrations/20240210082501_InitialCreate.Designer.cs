@@ -12,7 +12,7 @@ using Review.DAL.Data;
 namespace Review.API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230703133313_InitialCreate")]
+    [Migration("20240210082501_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -20,7 +20,7 @@ namespace Review.API.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.8")
+                .HasAnnotation("ProductVersion", "8.0.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -121,7 +121,7 @@ namespace Review.API.Migrations
                         .HasForeignKey("ReviewId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_review_image_reviews_review_id");
+                        .HasConstraintName("fk_review_image_user_reviews_review_id");
 
                     b.Navigation("Review");
                 });

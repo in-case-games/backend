@@ -1,7 +1,6 @@
 ﻿using Game.BLL.Models;
 
 namespace Game.BLL.Interfaces;
-
 public interface IUserPathBannerService
 {
     public Task<List<UserPathBannerResponse>> GetByUserIdAsync(Guid userId, CancellationToken cancellation = default);

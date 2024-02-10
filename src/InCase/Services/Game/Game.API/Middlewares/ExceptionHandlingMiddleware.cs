@@ -3,7 +3,6 @@ using System.Net;
 using System.Text.Json;
 
 namespace Game.API.Middlewares;
-
 public class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<ExceptionHandlingMiddleware> logger)
 {
     public async Task Invoke(HttpContext context)

@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Resources.DAL.Entities;
 
 namespace Resources.DAL.Configurations;
-
 internal class GameItemRarityConfiguration : BaseEntityConfiguration<GameItemRarity>
 {
     private readonly List<GameItemRarity> _rarities =

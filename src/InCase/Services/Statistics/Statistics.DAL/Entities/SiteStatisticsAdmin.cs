@@ -1,5 +1,4 @@
 ﻿namespace Statistics.DAL.Entities;
-
 public class SiteStatisticsAdmin : BaseEntity
 {
     public decimal FundsUsersInventories { get; set; } = 0;

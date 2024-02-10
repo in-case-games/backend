@@ -1,12 +1,9 @@
 ﻿using Microsoft.Extensions.Logging;
 using Payment.BLL.Exceptions;
 using Payment.BLL.Models.External;
-using Payment.BLL.Models.External.YooKassa;
 using Payment.BLL.Models.Internal;
-using Payment.DAL.Entities;
 
 namespace Payment.BLL.Services;
-
 public static class ValidationService
 {
     public static void InvoiceUrlRequest(InvoiceUrlRequest? request)
@@ -17,30 +14,15 @@ public static class ValidationService
         if (request.Amount.Currency?.ToUpper() != "RUB") throw new BadRequestException("Укажите валюту RUB");
     }
 
-    public static void InvoiceCreateResponse(InvoiceCreateResponse? response)
+    public static bool InvoiceCreateResponse<T>(InvoiceCreateResponse? response, ILogger<T> logger)
     {
-        if (response?.Amount is null || 
-            string.IsNullOrEmpty(response.Status) ||
-            response.Confirmation is null ||
-            response.Recipient is null) throw new UnknownException("Внутренняя ошибка");
-    }
+        if (response?.Amount is null && 
+            string.IsNullOrEmpty(response?.Status) && 
+            response?.Confirmation is null && 
+            response?.Recipient is null) return false;
+        
+        logger.LogCritical($"{response.Id} - пришел не корректный счет");
 
-    public static bool IsValidInvoiceNotificationResponse(UserPayment? payment, 
-        InvoiceNotificationResponse notify, PaymentStatus? status, ILogger<PaymentService> logger)
-    {
-        if (payment is null && notify.Object!.Metadata is null)
-        {
-            logger.LogCritical($"{notify.Object.Id} - не был передан объект metadata");
-            return false;
-        }
-        if (payment is not null && payment.Status!.Name == "succeeded")
-        {
-            logger.LogCritical($"{notify.Object!.Id} - уже был отработан платежной системой");
-            return false;
-        }
-        if (status is not null) return true;
-
-        logger.LogCritical($"{notify.Object!.Id} - status {notify.Object!.Status} не найден");
-        return false;
+        return true;
     }
 }

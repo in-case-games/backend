@@ -9,7 +9,6 @@ using Infrastructure.MassTransit.Statistics;
 using Microsoft.EntityFrameworkCore;
 
 namespace Authentication.BLL.Services;
-
 public class AuthenticationConfirmService(
     ApplicationDbContext context, 
     IAuthenticationService authenticationService, 
@@ -74,7 +73,7 @@ public class AuthenticationConfirmService(
         user.AdditionalInfo.IsConfirmed = true;
         user.AdditionalInfo.DeletionDate = null;
 
-        context.AdditionalInfos.Update(user.AdditionalInfo);
+        context.UserAdditionalInfos.Update(user.AdditionalInfo);
         await context.SaveChangesAsync(cancellationToken);
         await publisher.SendAsync(email, cancellationToken);
 
@@ -89,7 +88,7 @@ public class AuthenticationConfirmService(
         
         user.AdditionalInfo!.DeletionDate = DateTime.UtcNow + TimeSpan.FromDays(30);
 
-        context.AdditionalInfos.Update(user.AdditionalInfo);
+        context.UserAdditionalInfos.Update(user.AdditionalInfo);
         await context.SaveChangesAsync(cancellationToken);
         await publisher.SendAsync(new EmailTemplate
         {

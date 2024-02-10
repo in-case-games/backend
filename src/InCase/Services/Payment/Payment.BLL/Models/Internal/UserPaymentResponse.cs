@@ -1,7 +1,6 @@
 ﻿using Payment.DAL.Entities;
 
 namespace Payment.BLL.Models.Internal;
-
 public class UserPaymentResponse : BaseEntity
 {
     public string? InvoiceId { get; set; }

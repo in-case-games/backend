@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Identity.DAL.Configurations;
-
 internal class BaseEntityConfiguration<TEntity> : 
     IEntityTypeConfiguration<TEntity> where TEntity : BaseEntity
 {

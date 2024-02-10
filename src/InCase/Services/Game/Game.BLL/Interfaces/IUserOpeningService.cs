@@ -1,7 +1,6 @@
 ﻿using Game.BLL.Models;
 
 namespace Game.BLL.Interfaces;
-
 public interface IUserOpeningService
 {
     public Task<UserOpeningResponse> GetAsync(Guid id, CancellationToken cancellation = default);

@@ -5,7 +5,6 @@ using Payment.BLL.Interfaces;
 using Payment.DAL.Data;
 
 namespace Payment.BLL.MassTransit.Consumers;
-
 public class UserConsumer(IUserService userService, ApplicationDbContext context) : IConsumer<UserTemplate>
 {
     public async Task Consume(ConsumeContext<UserTemplate> context1)

@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
 
-namespace Authentication.API.Migrations
+namespace Identity.API.Migrations
 {
     /// <inheritdoc />
     public partial class InitialCreate : Migration
@@ -14,14 +14,23 @@ namespace Authentication.API.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "RestrictionType",
+                columns: table => new
+                {
+                    id = table.Column<Guid>(type: "uuid", nullable: false),
+                    name = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_restriction_type", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "User",
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
-                    email = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
-                    login = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
-                    password_hash = table.Column<string>(type: "text", nullable: false),
-                    password_salt = table.Column<string>(type: "text", nullable: false)
+                    login = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -45,12 +54,28 @@ namespace Authentication.API.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
+                    creation_date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     expiration_date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    user_id = table.Column<Guid>(type: "uuid", nullable: false)
+                    description = table.Column<string>(type: "character varying(120)", maxLength: 120, nullable: true),
+                    user_id = table.Column<Guid>(type: "uuid", nullable: false),
+                    owner_id = table.Column<Guid>(type: "uuid", nullable: true),
+                    type_id = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("pk_user_restriction", x => x.id);
+                    table.ForeignKey(
+                        name: "fk_user_restriction_restriction_type_type_id",
+                        column: x => x.type_id,
+                        principalTable: "RestrictionType",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "fk_user_restriction_user_owner_id",
+                        column: x => x.owner_id,
+                        principalTable: "User",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "fk_user_restriction_user_user_id",
                         column: x => x.user_id,
@@ -64,7 +89,7 @@ namespace Authentication.API.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
-                    is_confirmed = table.Column<bool>(type: "boolean", nullable: false),
+                    creation_date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     deletion_date = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     role_id = table.Column<Guid>(type: "uuid", nullable: false),
                     user_id = table.Column<Guid>(type: "uuid", nullable: false)
@@ -73,11 +98,10 @@ namespace Authentication.API.Migrations
                 {
                     table.PrimaryKey("pk_user_additional_info", x => x.id);
                     table.ForeignKey(
-                        name: "fk_user_additional_info_roles_role_id",
+                        name: "fk_user_additional_info_user_roles_role_id",
                         column: x => x.role_id,
                         principalTable: "UserRole",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "id");
                     table.ForeignKey(
                         name: "fk_user_additional_info_users_user_id",
                         column: x => x.user_id,
@@ -87,20 +111,36 @@ namespace Authentication.API.Migrations
                 });
 
             migrationBuilder.InsertData(
+                table: "RestrictionType",
+                columns: new[] { "id", "name" },
+                values: new object[,]
+                {
+                    { new Guid("74d18816-f889-4ba0-922e-af0b8bcb99f9"), "mute" },
+                    { new Guid("8f1607ae-93a0-4fb0-92f3-26b605d54181"), "ban" },
+                    { new Guid("d432b11a-9610-4650-b81a-d4725bbbef83"), "warn" }
+                });
+
+            migrationBuilder.InsertData(
                 table: "UserRole",
                 columns: new[] { "id", "name" },
                 values: new object[,]
                 {
-                    { new Guid("7549d74d-7b55-462f-ad66-c286b3279390"), "bot" },
-                    { new Guid("c68544ad-f45a-4145-ba19-95b73024f94b"), "admin" },
-                    { new Guid("c6ff75e9-1ca0-440c-a9f1-1cb033439b63"), "owner" },
-                    { new Guid("fc375bf3-4e87-4c5a-8143-5d1d47f319d2"), "user" }
+                    { new Guid("3f073033-de1d-4303-acd9-f5fc4c7ac7d3"), "admin" },
+                    { new Guid("9ddb1237-1ea0-47d4-90d1-57a7631ef7b9"), "user" },
+                    { new Guid("e4035b60-18f0-4493-b528-2166cf21df42"), "owner" },
+                    { new Guid("f1494bbf-d6d5-449a-8806-f90ff58fe231"), "bot" }
                 });
 
             migrationBuilder.CreateIndex(
-                name: "ix_user_email",
-                table: "User",
-                column: "email",
+                name: "ix_restriction_type_id",
+                table: "RestrictionType",
+                column: "id",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "ix_restriction_type_name",
+                table: "RestrictionType",
+                column: "name",
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -139,10 +179,19 @@ namespace Authentication.API.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "ix_user_restriction_owner_id",
+                table: "UserRestriction",
+                column: "owner_id");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_user_restriction_type_id",
+                table: "UserRestriction",
+                column: "type_id");
+
+            migrationBuilder.CreateIndex(
                 name: "ix_user_restriction_user_id",
                 table: "UserRestriction",
-                column: "user_id",
-                unique: true);
+                column: "user_id");
 
             migrationBuilder.CreateIndex(
                 name: "ix_user_role_id",
@@ -168,6 +217,9 @@ namespace Authentication.API.Migrations
 
             migrationBuilder.DropTable(
                 name: "UserRole");
+
+            migrationBuilder.DropTable(
+                name: "RestrictionType");
 
             migrationBuilder.DropTable(
                 name: "User");

@@ -4,16 +4,15 @@ using Microsoft.EntityFrameworkCore;
 using Promocode.DAL.Data;
 
 namespace Promocode.BLL.MassTransit.Consumers;
-
-public class UserPromocodeBackConsumer(ApplicationDbContext context) : IConsumer<UserPromocodeBackTemplate>
+public class UserPromoCodeBackConsumer(ApplicationDbContext context) : IConsumer<UserPromoCodeBackTemplate>
 {
-    public async Task Consume(ConsumeContext<UserPromocodeBackTemplate> context1)
+    public async Task Consume(ConsumeContext<UserPromoCodeBackTemplate> context1)
     {
-        var promocode = await context.UserPromocodes.FirstOrDefaultAsync(ur => ur.Id == context1.Message.Id);
+        var promoCode = await context.UserPromoCodes.FirstOrDefaultAsync(ur => ur.Id == context1.Message.Id);
 
-        if(promocode is not null)
+        if(promoCode is not null)
         {
-            promocode.IsActivated = true;
+            promoCode.IsActivated = true;
 
             await context.SaveChangesAsync();
         }

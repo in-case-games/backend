@@ -2,7 +2,6 @@
 using Withdraw.DAL.Entities;
 
 namespace Withdraw.BLL.Helpers;
-
 public static class UserHistoryWithdrawTransformer
 {
     public static UserHistoryWithdrawResponse ToResponse(this UserHistoryWithdraw withdraw) =>

@@ -3,7 +3,6 @@ using Infrastructure.MassTransit.User;
 using MassTransit;
 
 namespace Identity.BLL.MassTransit.Consumers;
-
 public class UserConsumer(IUserService userService) : IConsumer<UserTemplate>
 {
     public async Task Consume(ConsumeContext<UserTemplate> context)

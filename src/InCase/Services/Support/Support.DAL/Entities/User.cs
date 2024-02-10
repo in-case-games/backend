@@ -1,7 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
 namespace Support.DAL.Entities;
-
 public class User : BaseEntity
 {
     [JsonIgnore]

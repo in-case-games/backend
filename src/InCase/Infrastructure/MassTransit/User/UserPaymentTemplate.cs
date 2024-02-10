@@ -1,5 +1,4 @@
 ﻿namespace Infrastructure.MassTransit.User;
-
 public class UserPaymentTemplate : BaseTemplate
 {
     public DateTime Date { get; set; }

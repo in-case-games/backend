@@ -7,7 +7,6 @@ using Microsoft.Extensions.Configuration;
 using MimeKit;
 
 namespace EmailSender.BLL.Services;
-
 public class EmailService(IConfiguration configuration) : IEmailService
 {
     private readonly string _host = configuration["EmailConfig:Host"]!;

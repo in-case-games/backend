@@ -1,7 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
 namespace Payment.BLL.Models.External;
-
 public class Confirmation
 {
     [JsonPropertyName("type")] public string? Type { get; set; }

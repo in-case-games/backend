@@ -1,13 +1,13 @@
-﻿using Authentication.BLL.Interfaces;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Payment.BLL.Interfaces;
 
-namespace Authentication.BLL.Services;
-public class UserManagerService(
-    IServiceProvider serviceProvider, 
-    IHostApplicationLifetime lifetime, 
-    ILogger<UserManagerService> logger) : IHostedService
+namespace Payment.BLL.Services;
+public class PaymentManagerService(
+    IServiceProvider serviceProvider,
+    IHostApplicationLifetime lifetime,
+    ILogger<PaymentManagerService> logger) : IHostedService
 {
     public Task StartAsync(CancellationToken cancellationToken)
     {
@@ -18,17 +18,17 @@ public class UserManagerService(
 
     public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
 
-    private async Task DoWork(CancellationToken stoppingToken)
+    private async Task DoWork(CancellationToken cancellationToken)
     {
-        if (!await WaitForAppStartup(stoppingToken)) return;
+        if (!await WaitForAppStartup(cancellationToken)) return;
 
-        while (!stoppingToken.IsCancellationRequested)
+        while (!cancellationToken.IsCancellationRequested)
         {
             try
             {
                 await using var scope = serviceProvider.CreateAsyncScope();
-                var userService = scope.ServiceProvider.GetService<IUserService>();
-                await userService!.DoWorkManagerAsync(stoppingToken);
+                var paymentService = scope.ServiceProvider.GetService<IPaymentService>();
+                await paymentService!.DoWorkManagerAsync(cancellationToken);
             }
             catch (Exception ex)
             {
@@ -36,7 +36,7 @@ public class UserManagerService(
                 logger.LogCritical(ex, ex.StackTrace);
             }
 
-            await Task.Delay(1000, stoppingToken);
+            await Task.Delay(1000, cancellationToken);
         }
     }
 

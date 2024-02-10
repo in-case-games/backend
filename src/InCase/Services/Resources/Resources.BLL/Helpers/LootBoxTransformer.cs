@@ -3,7 +3,6 @@ using Resources.BLL.Models;
 using Resources.DAL.Entities;
 
 namespace Resources.BLL.Helpers;
-
 public static class LootBoxTransformer
 {
     public static LootBoxResponse ToResponse(this LootBox box) =>

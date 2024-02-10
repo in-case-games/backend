@@ -2,17 +2,16 @@
 using Promocode.DAL.Entities;
 
 namespace Promocode.BLL.Helpers;
-
-public static class UserPromocodeTransformer
+public static class UserPromoCodeTransformer
 {
-    public static UserPromocodeTemplate ToTemplate(this UserPromocode entity) => new()
+    public static UserPromoCodeTemplate ToTemplate(this UserPromoCode entity) => new()
     {
        Id = entity.Id,
-       Discount = entity.Promocode!.Discount,
-       Type = entity.Promocode?.Type is null ? null : new PromocodeTypeTemplate
+       Discount = entity.PromoCode!.Discount,
+       Type = entity.PromoCode?.Type is null ? null : new PromoCodeTypeTemplate
        {
-           Id = entity.Promocode.Type.Id,
-           Name = entity.Promocode?.Type.Name,
+           Id = entity.PromoCode.Type.Id,
+           Name = entity.PromoCode?.Type.Name,
        },
        UserId = entity.UserId,
     };

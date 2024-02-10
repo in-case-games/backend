@@ -1,7 +1,6 @@
 ﻿using Game.DAL.Entities;
 
 namespace Game.BLL.Models;
-
 public class UserOpeningResponse : BaseEntity
 {
     public DateTime Date { get; set; }

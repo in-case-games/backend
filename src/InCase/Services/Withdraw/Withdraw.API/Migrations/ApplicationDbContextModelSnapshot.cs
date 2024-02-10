@@ -17,7 +17,7 @@ namespace Withdraw.API.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.9")
+                .HasAnnotation("ProductVersion", "8.0.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -51,12 +51,12 @@ namespace Withdraw.API.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("2167273e-9b38-4832-8aad-06d4ea8034fe"),
+                            Id = new Guid("5c10082a-dd45-4741-8978-38ea2a2ee3c1"),
                             Name = "csgo"
                         },
                         new
                         {
-                            Id = new Guid("9e7eebcd-44d6-49f3-a5e9-5530f50dcf40"),
+                            Id = new Guid("bfbab25a-1472-42b0-8cfa-53c424925915"),
                             Name = "dota2"
                         });
                 });
@@ -78,7 +78,8 @@ namespace Withdraw.API.Migrations
 
                     b.Property<string>("IdForMarket")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
                         .HasColumnName("id_for_market");
 
                     b.HasKey("Id")
@@ -107,7 +108,8 @@ namespace Withdraw.API.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
                         .HasColumnName("name");
 
                     b.HasKey("Id")
@@ -128,14 +130,14 @@ namespace Withdraw.API.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("cede606e-f821-44b4-8c70-ea836cbddb1a"),
-                            GameId = new Guid("2167273e-9b38-4832-8aad-06d4ea8034fe"),
+                            Id = new Guid("9e9740b0-a3ad-4f4f-81cf-59521b1195e6"),
+                            GameId = new Guid("5c10082a-dd45-4741-8978-38ea2a2ee3c1"),
                             Name = "tm"
                         },
                         new
                         {
-                            Id = new Guid("8e6ce950-9744-4c92-ae4c-dad991cbf1ea"),
-                            GameId = new Guid("9e7eebcd-44d6-49f3-a5e9-5530f50dcf40"),
+                            Id = new Guid("f5cd2eb4-b980-459f-b1f1-3d24b677bb55"),
+                            GameId = new Guid("bfbab25a-1472-42b0-8cfa-53c424925915"),
                             Name = "tm"
                         });
                 });
@@ -174,7 +176,8 @@ namespace Withdraw.API.Migrations
 
                     b.Property<string>("InvoiceId")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
                         .HasColumnName("invoice_id");
 
                     b.Property<Guid>("ItemId")
@@ -191,7 +194,8 @@ namespace Withdraw.API.Migrations
 
                     b.Property<string>("TradeUrl")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasMaxLength(300)
+                        .HasColumnType("character varying(300)")
                         .HasColumnName("trade_url");
 
                     b.Property<DateTime>("UpdateDate")
@@ -275,7 +279,8 @@ namespace Withdraw.API.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
                         .HasColumnName("name");
 
                     b.HasKey("Id")
@@ -294,32 +299,32 @@ namespace Withdraw.API.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("19c09bea-beb8-4973-967b-54f320dc6383"),
+                            Id = new Guid("e53f8b41-3ea8-4e4a-943a-6bd1e037f85f"),
                             Name = "purchase"
                         },
                         new
                         {
-                            Id = new Guid("f49cabfc-a3f2-4d9c-9180-de1291861fe0"),
+                            Id = new Guid("39632003-ced8-4cdb-916f-71868341b292"),
                             Name = "transfer"
                         },
                         new
                         {
-                            Id = new Guid("0ef9de6c-f80d-4219-94a4-0539092a9618"),
+                            Id = new Guid("72b0df2e-0811-4be3-a11f-68c9d2e3fc23"),
                             Name = "given"
                         },
                         new
                         {
-                            Id = new Guid("ab55ab99-8658-4abf-a4e8-9211fde98007"),
+                            Id = new Guid("ac048979-c783-4a7e-bacd-05b3d3015989"),
                             Name = "cancel"
                         },
                         new
                         {
-                            Id = new Guid("f4b2532a-6391-424f-b79d-7ae2a9f6bf70"),
+                            Id = new Guid("abf8e6e2-929d-46f5-8602-837ec5e95990"),
                             Name = "recorded"
                         },
                         new
                         {
-                            Id = new Guid("bab4e5ac-232f-4455-9774-87e9b287a7f3"),
+                            Id = new Guid("23625508-d1a8-4c3f-abb8-d182a83e9832"),
                             Name = "blocked"
                         });
                 });
@@ -369,7 +374,7 @@ namespace Withdraw.API.Migrations
                         .HasForeignKey("Withdraw.DAL.Entities.UserHistoryWithdraw", "StatusId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_user_history_withdraw_statuses_status_id");
+                        .HasConstraintName("fk_user_history_withdraw_withdraw_statuses_status_id");
 
                     b.HasOne("Withdraw.DAL.Entities.User", "User")
                         .WithMany("HistoriesWithdraws")

@@ -1,16 +1,13 @@
 ﻿using System.Net;
 using System.Security.Claims;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Payment.API.Common;
 using Payment.API.Filters;
 using Payment.BLL.Interfaces;
-using Payment.BLL.Models.External.YooKassa;
 using Payment.BLL.Models.Internal;
 using Payment.DAL.Entities;
 
 namespace Payment.API.Controllers;
-
 [Route("api/payments")]
 [ApiController]
 public class PaymentsController(IPaymentService paymentService) : ControllerBase
@@ -27,15 +24,5 @@ public class PaymentsController(IPaymentService paymentService) : ControllerBase
         var response = await paymentService.CreateInvoiceUrlAsync(request, cancellationToken);
 
         return Ok(ApiResult<InvoiceUrlResponse>.Ok(response));
-    }
-
-    [ProducesResponseType((int)HttpStatusCode.OK)]
-    [AllowAnonymous]
-    [HttpPost("notify")]
-    public async Task<IActionResult> ProcessingInvoiceNotificationAsync(InvoiceNotificationResponse response, CancellationToken cancellationToken)
-    {
-        await paymentService.ProcessingInvoiceNotificationAsync(response, cancellationToken);
-
-        return Ok();
     }
 }

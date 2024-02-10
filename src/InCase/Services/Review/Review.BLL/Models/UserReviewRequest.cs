@@ -1,7 +1,6 @@
 ﻿using Review.DAL.Entities;
 
 namespace Review.BLL.Models;
-
 public class UserReviewRequest : BaseEntity
 {
     public string? Title { get; set; }

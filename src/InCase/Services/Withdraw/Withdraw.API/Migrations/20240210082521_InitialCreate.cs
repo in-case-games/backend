@@ -41,7 +41,7 @@ namespace Withdraw.API.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
-                    name = table.Column<string>(type: "text", nullable: false)
+                    name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -53,7 +53,7 @@ namespace Withdraw.API.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
-                    id_for_market = table.Column<string>(type: "text", nullable: false),
+                    id_for_market = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     cost = table.Column<decimal>(type: "numeric(18,5)", nullable: false),
                     game_id = table.Column<Guid>(type: "uuid", nullable: false)
                 },
@@ -73,7 +73,7 @@ namespace Withdraw.API.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
-                    name = table.Column<string>(type: "text", nullable: false),
+                    name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     game_id = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
@@ -119,8 +119,8 @@ namespace Withdraw.API.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
-                    invoice_id = table.Column<string>(type: "text", nullable: false),
-                    trade_url = table.Column<string>(type: "text", nullable: false),
+                    invoice_id = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    trade_url = table.Column<string>(type: "character varying(300)", maxLength: 300, nullable: false),
                     fixed_cost = table.Column<decimal>(type: "numeric(18,5)", nullable: false),
                     date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     update_date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
@@ -145,15 +145,15 @@ namespace Withdraw.API.Migrations
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "fk_user_history_withdraw_statuses_status_id",
-                        column: x => x.status_id,
-                        principalTable: "WithdrawStatus",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
                         name: "fk_user_history_withdraw_user_user_id",
                         column: x => x.user_id,
                         principalTable: "User",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "fk_user_history_withdraw_withdraw_statuses_status_id",
+                        column: x => x.status_id,
+                        principalTable: "WithdrawStatus",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -163,8 +163,8 @@ namespace Withdraw.API.Migrations
                 columns: new[] { "id", "name" },
                 values: new object[,]
                 {
-                    { new Guid("2167273e-9b38-4832-8aad-06d4ea8034fe"), "csgo" },
-                    { new Guid("9e7eebcd-44d6-49f3-a5e9-5530f50dcf40"), "dota2" }
+                    { new Guid("5c10082a-dd45-4741-8978-38ea2a2ee3c1"), "csgo" },
+                    { new Guid("bfbab25a-1472-42b0-8cfa-53c424925915"), "dota2" }
                 });
 
             migrationBuilder.InsertData(
@@ -172,12 +172,12 @@ namespace Withdraw.API.Migrations
                 columns: new[] { "id", "name" },
                 values: new object[,]
                 {
-                    { new Guid("0ef9de6c-f80d-4219-94a4-0539092a9618"), "given" },
-                    { new Guid("19c09bea-beb8-4973-967b-54f320dc6383"), "purchase" },
-                    { new Guid("ab55ab99-8658-4abf-a4e8-9211fde98007"), "cancel" },
-                    { new Guid("bab4e5ac-232f-4455-9774-87e9b287a7f3"), "blocked" },
-                    { new Guid("f49cabfc-a3f2-4d9c-9180-de1291861fe0"), "transfer" },
-                    { new Guid("f4b2532a-6391-424f-b79d-7ae2a9f6bf70"), "recorded" }
+                    { new Guid("23625508-d1a8-4c3f-abb8-d182a83e9832"), "blocked" },
+                    { new Guid("39632003-ced8-4cdb-916f-71868341b292"), "transfer" },
+                    { new Guid("72b0df2e-0811-4be3-a11f-68c9d2e3fc23"), "given" },
+                    { new Guid("abf8e6e2-929d-46f5-8602-837ec5e95990"), "recorded" },
+                    { new Guid("ac048979-c783-4a7e-bacd-05b3d3015989"), "cancel" },
+                    { new Guid("e53f8b41-3ea8-4e4a-943a-6bd1e037f85f"), "purchase" }
                 });
 
             migrationBuilder.InsertData(
@@ -185,8 +185,8 @@ namespace Withdraw.API.Migrations
                 columns: new[] { "id", "game_id", "name" },
                 values: new object[,]
                 {
-                    { new Guid("8e6ce950-9744-4c92-ae4c-dad991cbf1ea"), new Guid("9e7eebcd-44d6-49f3-a5e9-5530f50dcf40"), "tm" },
-                    { new Guid("cede606e-f821-44b4-8c70-ea836cbddb1a"), new Guid("2167273e-9b38-4832-8aad-06d4ea8034fe"), "tm" }
+                    { new Guid("9e9740b0-a3ad-4f4f-81cf-59521b1195e6"), new Guid("5c10082a-dd45-4741-8978-38ea2a2ee3c1"), "tm" },
+                    { new Guid("f5cd2eb4-b980-459f-b1f1-3d24b677bb55"), new Guid("bfbab25a-1472-42b0-8cfa-53c424925915"), "tm" }
                 });
 
             migrationBuilder.CreateIndex(

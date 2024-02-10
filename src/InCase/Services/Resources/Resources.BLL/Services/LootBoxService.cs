@@ -8,7 +8,6 @@ using Resources.DAL.Data;
 using Resources.DAL.Entities;
 
 namespace Resources.BLL.Services;
-
 public class LootBoxService(ApplicationDbContext context, BasePublisher publisher) : ILootBoxService
 {
     public async Task<LootBoxResponse> GetAsync(Guid id, CancellationToken cancellation = default)
@@ -104,7 +103,7 @@ public class LootBoxService(ApplicationDbContext context, BasePublisher publishe
         if (await context.LootBoxes.AnyAsync(lb => lb.Name == request.Name && lb.Id != request.Id, cancellation))
             throw new ConflictException("Название кейса уже занято");
 
-        var boxInventories = await context.BoxInventories
+        var boxInventories = await context.LootBoxInventories
             .Include(lbi => lbi.Item)
             .OrderBy(lbi => lbi.Item!.Cost)
             .AsNoTracking()

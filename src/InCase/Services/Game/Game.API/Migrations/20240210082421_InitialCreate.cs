@@ -164,7 +164,7 @@ namespace Game.API.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserPromocode",
+                name: "UserPromoCode",
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -173,9 +173,9 @@ namespace Game.API.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_user_promocode", x => x.id);
+                    table.PrimaryKey("pk_user_promo_code", x => x.id);
                     table.ForeignKey(
-                        name: "fk_user_promocode_users_user_id",
+                        name: "fk_user_promo_code_users_user_id",
                         column: x => x.user_id,
                         principalTable: "User",
                         principalColumn: "id",
@@ -271,14 +271,14 @@ namespace Game.API.Migrations
                 column: "user_id");
 
             migrationBuilder.CreateIndex(
-                name: "ix_user_promocode_id",
-                table: "UserPromocode",
+                name: "ix_user_promo_code_id",
+                table: "UserPromoCode",
                 column: "id",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "ix_user_promocode_user_id",
-                table: "UserPromocode",
+                name: "ix_user_promo_code_user_id",
+                table: "UserPromoCode",
                 column: "user_id",
                 unique: true);
         }
@@ -299,7 +299,7 @@ namespace Game.API.Migrations
                 name: "UserPathBanner");
 
             migrationBuilder.DropTable(
-                name: "UserPromocode");
+                name: "UserPromoCode");
 
             migrationBuilder.DropTable(
                 name: "GameItem");

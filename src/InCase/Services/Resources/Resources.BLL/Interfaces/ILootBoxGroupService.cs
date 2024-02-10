@@ -1,7 +1,6 @@
 ﻿using Resources.BLL.Models;
 
 namespace Resources.BLL.Interfaces;
-
 public interface ILootBoxGroupService
 {
     public Task<LootBoxGroupResponse> GetAsync(Guid id, CancellationToken cancellation = default);

@@ -6,7 +6,6 @@ using Infrastructure.MassTransit.User;
 using Microsoft.EntityFrameworkCore;
 
 namespace EmailSender.BLL.Services;
-
 public class UserService(ApplicationDbContext context) : IUserService
 {
     public async Task<User?> GetAsync(Guid id, CancellationToken cancellationToken = default) => 
@@ -31,7 +30,7 @@ public class UserService(ApplicationDbContext context) : IUserService
             Id = template.Id,
             Email = template.Email,
         }, cancellationToken);
-        await context.AdditionalInfos.AddAsync(new UserAdditionalInfo
+        await context.UserAdditionalInfos.AddAsync(new UserAdditionalInfo
         {
             IsNotifyEmail = true,
             UserId = template.Id,

@@ -1,7 +1,6 @@
 ﻿using Game.DAL.Entities;
 
 namespace Game.BLL.Services;
-
 public static class OpenLootBoxService
 {
     private static readonly Random Random = new();
