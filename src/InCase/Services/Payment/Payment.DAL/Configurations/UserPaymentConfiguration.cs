@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Payment.DAL.Entities;
 
 namespace Payment.DAL.Configurations;
-
 internal class UserPaymentConfiguration : BaseEntityConfiguration<UserPayment>
 {
     public override void Configure(EntityTypeBuilder<UserPayment> builder)
@@ -19,7 +18,13 @@ internal class UserPaymentConfiguration : BaseEntityConfiguration<UserPayment>
 
         builder.Property(up => up.CreatedAt)
             .IsRequired();
+        builder.Property(up => up.UpdateTo)
+            .IsRequired();
+        builder.Property(up => up.InvoiceId)
+            .HasMaxLength(100)
+            .IsRequired();
         builder.Property(up => up.Currency)
+            .HasMaxLength(100)
             .IsRequired();
         builder.Property(up => up.Amount)
             .HasColumnType("DECIMAL(18,5)")

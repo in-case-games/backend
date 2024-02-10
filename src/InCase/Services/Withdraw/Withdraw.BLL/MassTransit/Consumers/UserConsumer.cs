@@ -3,7 +3,6 @@ using MassTransit;
 using Withdraw.BLL.Interfaces;
 
 namespace Withdraw.BLL.MassTransit.Consumers;
-
 public class UserConsumer(IUserService userService) : IConsumer<UserTemplate>
 {
     public async Task Consume(ConsumeContext<UserTemplate> context)

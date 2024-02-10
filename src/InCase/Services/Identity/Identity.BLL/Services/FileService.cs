@@ -3,7 +3,6 @@ using ImageMagick;
 using System.Text.RegularExpressions;
 
 namespace Identity.BLL.Services;
-
 public static class FileService
 {
     private const string PathUri = "/static/images/";
@@ -75,7 +74,7 @@ public static class FileService
 
     public static (string extensionFile, string base64) SplitBase64(string base64)
     {
-        var piecesFirst = base64.Split(";")[0].Split(@"/");
+        var piecesFirst = base64.Split(";")[0].Split("/");
         var piecesSecond = base64.Split(",");
 
         if (piecesSecond.Length <= 1 || piecesFirst.Length <= 1) 

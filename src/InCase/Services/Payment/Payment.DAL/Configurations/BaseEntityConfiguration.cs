@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using Payment.DAL.Entities;
 
 namespace Payment.DAL.Configurations;
-
 internal class BaseEntityConfiguration<TEntity> :
     IEntityTypeConfiguration<TEntity> where TEntity : BaseEntity
 {

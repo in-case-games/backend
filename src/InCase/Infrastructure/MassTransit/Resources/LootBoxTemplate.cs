@@ -1,5 +1,4 @@
 ﻿namespace Infrastructure.MassTransit.Resources;
-
 public class LootBoxTemplate : BaseTemplate
 {
     public string? Name { get; set; }

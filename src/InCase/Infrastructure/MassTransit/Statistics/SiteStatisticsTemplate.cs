@@ -1,5 +1,4 @@
 ﻿namespace Infrastructure.MassTransit.Statistics;
-
 public class SiteStatisticsTemplate
 {
     public int Users { get; set; } = 0;

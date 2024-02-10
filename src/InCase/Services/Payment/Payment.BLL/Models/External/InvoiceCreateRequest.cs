@@ -1,7 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
 namespace Payment.BLL.Models.External;
-
 public class InvoiceCreateRequest
 {
     [JsonPropertyName("amount")] public Amount? Amount { get; set; }

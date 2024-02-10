@@ -6,11 +6,10 @@ using Infrastructure.MassTransit.User;
 using Microsoft.EntityFrameworkCore;
 
 namespace Authentication.BLL.Services;
-
 public class UserRestrictionService(ApplicationDbContext context) : IUserRestrictionService
 {
     public async Task<UserRestriction?> GetAsync(Guid id, CancellationToken cancellationToken = default) => 
-        await context.Restrictions
+        await context.UserRestrictions
         .AsNoTracking()
         .FirstOrDefaultAsync(ur => ur.Id == id, cancellationToken);
 
@@ -19,7 +18,7 @@ public class UserRestrictionService(ApplicationDbContext context) : IUserRestric
         if (!await context.Users.AnyAsync(u => u.Id == template.UserId, cancellationToken))
             throw new NotFoundException("Пользователь не найден");
 
-        await context.Restrictions.AddAsync(new UserRestriction()
+        await context.UserRestrictions.AddAsync(new UserRestriction()
         {
             Id = template.Id,
             ExpirationDate = template.ExpirationDate,
@@ -33,7 +32,7 @@ public class UserRestrictionService(ApplicationDbContext context) : IUserRestric
         if (!await context.Users.AnyAsync(u => u.Id == template.UserId, cancellationToken))
             throw new NotFoundException("Пользователь не найден");
 
-        var old = await context.Restrictions
+        var old = await context.UserRestrictions
             .FirstOrDefaultAsync(ur => ur.Id == template.Id, cancellationToken) ??
             throw new NotFoundException("Эффект не найден");;
 
@@ -48,12 +47,12 @@ public class UserRestrictionService(ApplicationDbContext context) : IUserRestric
 
     public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        var restriction = await context.Restrictions
+        var restriction = await context.UserRestrictions
             .AsNoTracking()
             .FirstOrDefaultAsync(ur => ur.Id == id, cancellationToken) ??
             throw new NotFoundException("Эффект не найден");
 
-        context.Restrictions.Remove(restriction);
+        context.UserRestrictions.Remove(restriction);
         await context.SaveChangesAsync(cancellationToken);
     }
 }

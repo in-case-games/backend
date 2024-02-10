@@ -1,5 +1,4 @@
 ﻿namespace Authentication.BLL.Models;
-
 public class TokensResponse
 {
     public string? AccessToken { get; set; }

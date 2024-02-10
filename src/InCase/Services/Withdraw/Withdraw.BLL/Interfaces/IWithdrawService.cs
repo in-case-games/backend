@@ -1,7 +1,6 @@
 ﻿using Withdraw.BLL.Models;
 
 namespace Withdraw.BLL.Interfaces;
-
 public interface IWithdrawService
 {
     public Task<UserHistoryWithdrawResponse> WithdrawItemAsync(WithdrawItemRequest request, Guid userId, CancellationToken cancellation = default);

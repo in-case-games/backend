@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Resources.DAL.Entities;
 
 namespace Resources.DAL.Configurations;
-
 internal class GameItemQualityConfiguration : BaseEntityConfiguration<GameItemQuality>
 {
     private readonly List<GameItemQuality> _qualities =

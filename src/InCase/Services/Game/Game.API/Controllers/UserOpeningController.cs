@@ -8,7 +8,6 @@ using System.Net;
 using System.Security.Claims;
 
 namespace Game.API.Controllers;
-
 [Route("api/user-opening")]
 [ApiController]
 public class UserOpeningController(IUserOpeningService openingService) : ControllerBase

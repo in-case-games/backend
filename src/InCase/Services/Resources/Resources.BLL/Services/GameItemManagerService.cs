@@ -4,7 +4,6 @@ using Microsoft.Extensions.Logging;
 using Resources.BLL.Interfaces;
 
 namespace Resources.BLL.Services;
-
 public class GameItemManagerService(
     IServiceProvider serviceProvider, 
     ILogger<GameItemManagerService> logger, 

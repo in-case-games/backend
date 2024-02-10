@@ -56,7 +56,7 @@ namespace Review.API.Migrations
                 {
                     table.PrimaryKey("pk_review_image", x => x.id);
                     table.ForeignKey(
-                        name: "fk_review_image_reviews_review_id",
+                        name: "fk_review_image_user_reviews_review_id",
                         column: x => x.review_id,
                         principalTable: "UserReview",
                         principalColumn: "id",

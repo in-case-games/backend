@@ -1,11 +1,12 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace Identity.DAL.Entities;
-
 public class UserRestriction : BaseEntity
 {
     public DateTime CreationDate { get; set; }
     public DateTime ExpirationDate { get; set; }
+    [MaxLength(120)]
     public string? Description { get; set; }
 
     [JsonIgnore]

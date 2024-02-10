@@ -82,12 +82,13 @@ builder.Services.AddSingleton<IResponseService, ResponseService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<IUserPaymentsService, UserPaymentsService>();
 builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IUserPromocodeService, UserPromocodeService>();
+builder.Services.AddScoped<IUserPromoCodeService, UserPromoCodeService>();
+builder.Services.AddHostedService<PaymentManagerService>();
 
 builder.Services.AddMassTransit(x =>
 {
     x.AddConsumer<UserConsumer>();
-    x.AddConsumer<UserPromocodeConsumer>();
+    x.AddConsumer<UserPromoCodeConsumer>();
     x.SetKebabCaseEndpointNameFormatter();
 
     x.UsingRabbitMq((context, cfg) =>
@@ -107,7 +108,7 @@ builder.Services.AddMassTransit(x =>
         {
             e.PrefetchCount = 16;
             e.UseMessageRetry(r => r.Interval(4, 100));
-            e.ConfigureConsumer<UserPromocodeConsumer>(context);
+            e.ConfigureConsumer<UserPromoCodeConsumer>(context);
         });
         cfg.ConfigureEndpoints(context);
     });

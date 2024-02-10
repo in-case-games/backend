@@ -78,14 +78,14 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 builder.Services.AddSingleton<BasePublisher>();
-builder.Services.AddScoped<IUserPromocodesService, UserPromocodesService>();
-builder.Services.AddScoped<IPromocodeService, PromocodeService>();
+builder.Services.AddScoped<IUserPromoCodesService, UserPromoCodesService>();
+builder.Services.AddScoped<IPromoCodeService, PromoCodeService>();
 builder.Services.AddScoped<IUserService, UserService>();
 
 builder.Services.AddMassTransit(x =>
 {
     x.AddConsumer<UserConsumer>();
-    x.AddConsumer<UserPromocodeBackConsumer>();
+    x.AddConsumer<UserPromoCodeBackConsumer>();
     x.SetKebabCaseEndpointNameFormatter();
 
     x.UsingRabbitMq((context, cfg) =>
@@ -105,7 +105,7 @@ builder.Services.AddMassTransit(x =>
         {
             e.PrefetchCount = 16;
             e.UseMessageRetry(r => r.Interval(4, 100));
-            e.ConfigureConsumer<UserPromocodeBackConsumer>(context);
+            e.ConfigureConsumer<UserPromoCodeBackConsumer>(context);
         });
         cfg.ConfigureEndpoints(context);
     });

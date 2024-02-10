@@ -3,7 +3,6 @@ using System.Security.Claims;
 using Authentication.BLL.Models;
 
 namespace Authentication.BLL.Interfaces;
-
 public interface IJwtService
 {
     public ClaimsPrincipal GetClaimsToken(string token);

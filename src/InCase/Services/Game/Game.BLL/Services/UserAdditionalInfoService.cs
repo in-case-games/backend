@@ -5,12 +5,11 @@ using Game.DAL.Data;
 using Microsoft.EntityFrameworkCore;
 
 namespace Game.BLL.Services;
-
 public class UserAdditionalInfoService(ApplicationDbContext context) : IUserAdditionalInfoService
 {
     public async Task<GuestModeResponse> GetGuestModeAsync(Guid userId, CancellationToken cancellation = default)
     {
-        var info = await context.AdditionalInfos
+        var info = await context.UserAdditionalInfos
             .AsNoTracking()
             .FirstOrDefaultAsync(uai => uai.UserId == userId, cancellation) ?? 
             throw new NotFoundException("Пользователь не найден");
@@ -23,7 +22,7 @@ public class UserAdditionalInfoService(ApplicationDbContext context) : IUserAddi
 
     public async Task<BalanceResponse> GetBalanceAsync(Guid userId, CancellationToken cancellation = default)
     {
-        var info = await context.AdditionalInfos
+        var info = await context.UserAdditionalInfos
            .AsNoTracking()
            .FirstOrDefaultAsync(uai => uai.UserId == userId, cancellation) ?? 
            throw new NotFoundException("Пользователь не найден");
@@ -36,7 +35,7 @@ public class UserAdditionalInfoService(ApplicationDbContext context) : IUserAddi
 
     public async Task<GuestModeResponse> ChangeGuestModeAsync(Guid userId, CancellationToken cancellation = default)
     {
-        var info = await context.AdditionalInfos
+        var info = await context.UserAdditionalInfos
             .FirstOrDefaultAsync(uai => uai.UserId == userId, cancellation) ??
             throw new NotFoundException("Пользователь не найден");
 
@@ -52,7 +51,7 @@ public class UserAdditionalInfoService(ApplicationDbContext context) : IUserAddi
 
     public async Task<BalanceResponse> ChangeBalanceByOwnerAsync(Guid userId, decimal balance, CancellationToken cancellation = default)
     {
-        var info = await context.AdditionalInfos
+        var info = await context.UserAdditionalInfos
             .FirstOrDefaultAsync(uai => uai.UserId == userId, cancellation) ??
             throw new NotFoundException("Пользователь не найден");
 

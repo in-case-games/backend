@@ -1,5 +1,4 @@
 ﻿namespace Statistics.BLL.Models;
-
 public class SiteStatisticsAdminResponse
 {
     public decimal FundsUsersInventories { get; set; } = 0;

@@ -1,5 +1,4 @@
 ﻿namespace Support.BLL.Models;
-
 public class ErrorCodes
 {
     public const int BadRequest = 0;

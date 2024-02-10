@@ -10,7 +10,6 @@ using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 namespace Authentication.BLL.Services;
-
 public class AuthenticationService(
     IJwtService jwtService, 
     ApplicationDbContext context, 
@@ -73,12 +72,12 @@ public class AuthenticationService(
 
         CreateNewPassword(ref user, request.Password);
 
-        var role = await context.Roles
+        var role = await context.UserRoles
             .AsNoTracking()
             .FirstAsync(ur => ur.Name == "user", cancellationToken);
 
         await context.Users.AddAsync(user, cancellationToken);
-        await context.AdditionalInfos.AddAsync(new UserAdditionalInfo
+        await context.UserAdditionalInfos.AddAsync(new UserAdditionalInfo
         {
             RoleId = role.Id,
             UserId = user.Id,
@@ -109,7 +108,7 @@ public class AuthenticationService(
     {
         var user = await GetUserFromTokenAsync(token, "refresh", cancellationToken);
 
-        var info = await context.AdditionalInfos
+        var info = await context.UserAdditionalInfos
             .AsNoTracking()
             .FirstOrDefaultAsync(uai => uai.UserId == user.Id, cancellationToken) ??
             throw new NotFoundException("Пользователь не найден");
@@ -154,7 +153,7 @@ public class AuthenticationService(
 
     private async Task CheckUserForBanAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        var ban = await context.Restrictions
+        var ban = await context.UserRestrictions
             .AsNoTracking()
             .FirstOrDefaultAsync(ur => ur.UserId == id, cancellationToken);
 
@@ -163,7 +162,7 @@ public class AuthenticationService(
             if (ban.ExpirationDate > DateTime.UtcNow)
                 throw new ForbiddenException($"Вход запрещён до {ban.ExpirationDate}.");
 
-            context.Restrictions.Remove(ban);
+            context.UserRestrictions.Remove(ban);
             await context.SaveChangesAsync(cancellationToken);
         }
     }

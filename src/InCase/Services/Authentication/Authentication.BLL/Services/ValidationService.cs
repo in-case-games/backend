@@ -5,7 +5,6 @@ using System.Security.Claims;
 using System.Text.RegularExpressions;
 
 namespace Authentication.BLL.Services;
-
 public static class ValidationService
 {
     private static readonly Regex PasswordRegex = new("^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{5,}$");

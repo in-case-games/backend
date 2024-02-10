@@ -3,7 +3,6 @@ using Withdraw.BLL.Models;
 using Withdraw.DAL.Entities;
 
 namespace Withdraw.BLL.Helpers;
-
 public static class UserInventoryTransformer
 {
     public static UserInventoryResponse ToResponse(this UserInventory inventory) =>

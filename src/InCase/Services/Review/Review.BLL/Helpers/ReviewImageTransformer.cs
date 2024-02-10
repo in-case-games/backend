@@ -2,7 +2,6 @@
 using Review.DAL.Entities;
 
 namespace Review.BLL.Helpers;
-
 public static class ReviewImageTransformer
 {
     public static ReviewImageResponse ToResponse(this ReviewImage entity) => new()

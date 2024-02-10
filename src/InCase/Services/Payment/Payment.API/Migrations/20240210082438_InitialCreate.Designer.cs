@@ -12,7 +12,7 @@ using Payment.DAL.Data;
 namespace Payment.API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240204090428_InitialCreate")]
+    [Migration("20240210082438_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -33,7 +33,9 @@ namespace Payment.API.Migrations
                         .HasColumnName("id");
 
                     b.Property<string>("Name")
-                        .HasColumnType("text")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
                         .HasColumnName("name");
 
                     b.HasKey("Id")
@@ -43,27 +45,31 @@ namespace Payment.API.Migrations
                         .IsUnique()
                         .HasDatabaseName("ix_payment_status_id");
 
+                    b.HasIndex("Name")
+                        .IsUnique()
+                        .HasDatabaseName("ix_payment_status_name");
+
                     b.ToTable("PaymentStatus", (string)null);
 
                     b.HasData(
                         new
                         {
-                            Id = new Guid("e67b2c93-e669-4360-bb26-ec14afa924e4"),
+                            Id = new Guid("af01255d-15b7-4d34-ae01-2fcb3769dfd2"),
                             Name = "pending"
                         },
                         new
                         {
-                            Id = new Guid("75ee2237-6379-4a4d-b059-92bf0819ce63"),
+                            Id = new Guid("3f5584fe-3420-4ecd-959a-f8380473ef7e"),
                             Name = "waiting"
                         },
                         new
                         {
-                            Id = new Guid("da9ffd86-a510-4253-9145-e2b4fb68e4ef"),
+                            Id = new Guid("75de0151-2d2e-4161-b016-8f70656d10af"),
                             Name = "succeeded"
                         },
                         new
                         {
-                            Id = new Guid("4a2d6cca-b5fb-4888-9df8-b07a8f74f5b6"),
+                            Id = new Guid("99d02ba4-9ed3-4295-97ad-8dfc1ca34e97"),
                             Name = "canceled"
                         });
                 });
@@ -102,16 +108,23 @@ namespace Payment.API.Migrations
 
                     b.Property<string>("Currency")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
                         .HasColumnName("currency");
 
                     b.Property<string>("InvoiceId")
-                        .HasColumnType("text")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
                         .HasColumnName("invoice_id");
 
                     b.Property<Guid>("StatusId")
                         .HasColumnType("uuid")
                         .HasColumnName("status_id");
+
+                    b.Property<DateTime>("UpdateTo")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("update_to");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid")
@@ -133,7 +146,7 @@ namespace Payment.API.Migrations
                     b.ToTable("UserPayment", (string)null);
                 });
 
-            modelBuilder.Entity("Payment.DAL.Entities.UserPromocode", b =>
+            modelBuilder.Entity("Payment.DAL.Entities.UserPromoCode", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -149,17 +162,17 @@ namespace Payment.API.Migrations
                         .HasColumnName("user_id");
 
                     b.HasKey("Id")
-                        .HasName("pk_user_promocode");
+                        .HasName("pk_user_promo_code");
 
                     b.HasIndex("Id")
                         .IsUnique()
-                        .HasDatabaseName("ix_user_promocode_id");
+                        .HasDatabaseName("ix_user_promo_code_id");
 
                     b.HasIndex("UserId")
                         .IsUnique()
-                        .HasDatabaseName("ix_user_promocode_user_id");
+                        .HasDatabaseName("ix_user_promo_code_user_id");
 
-                    b.ToTable("UserPromocode", (string)null);
+                    b.ToTable("UserPromoCode", (string)null);
                 });
 
             modelBuilder.Entity("Payment.DAL.Entities.UserPayment", b =>
@@ -183,14 +196,14 @@ namespace Payment.API.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Payment.DAL.Entities.UserPromocode", b =>
+            modelBuilder.Entity("Payment.DAL.Entities.UserPromoCode", b =>
                 {
                     b.HasOne("Payment.DAL.Entities.User", "User")
-                        .WithOne("Promocode")
-                        .HasForeignKey("Payment.DAL.Entities.UserPromocode", "UserId")
+                        .WithOne("PromoCode")
+                        .HasForeignKey("Payment.DAL.Entities.UserPromoCode", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_user_promocode_user_user_id");
+                        .HasConstraintName("fk_user_promo_code_user_user_id");
 
                     b.Navigation("User");
                 });
@@ -204,7 +217,7 @@ namespace Payment.API.Migrations
                 {
                     b.Navigation("Payments");
 
-                    b.Navigation("Promocode");
+                    b.Navigation("PromoCode");
                 });
 #pragma warning restore 612, 618
         }

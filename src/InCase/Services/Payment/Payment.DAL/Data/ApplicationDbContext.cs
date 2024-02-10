@@ -3,12 +3,11 @@ using Payment.DAL.Entities;
 using System.Reflection;
 
 namespace Payment.DAL.Data;
-
 public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
 {
     public DbSet<User> Users => Set<User>();
-    public DbSet<UserPayment> Payments => Set<UserPayment>();
-    public DbSet<UserPromocode> UserPromocodes => Set<UserPromocode>();
+    public DbSet<UserPayment> UserPayments => Set<UserPayment>();
+    public DbSet<UserPromoCode> UserPromoCodes => Set<UserPromoCode>();
     public DbSet<PaymentStatus> PaymentStatuses => Set<PaymentStatus>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

@@ -9,12 +9,11 @@ using Resources.DAL.Data;
 using Resources.DAL.Entities;
 
 namespace Resources.BLL.Services;
-
 public class LootBoxInventoryService(ApplicationDbContext context, BasePublisher publisher) : ILootBoxInventoryService
 {
     public async Task<LootBoxInventoryResponse> GetAsync(Guid id, CancellationToken cancellation = default)
     {
-        var inventory = await context.BoxInventories
+        var inventory = await context.LootBoxInventories
             .Include(lbi => lbi.Item)
             .Include(lbi => lbi!.Item!.Rarity)
             .Include(lbi => lbi!.Item!.Quality)
@@ -33,7 +32,7 @@ public class LootBoxInventoryService(ApplicationDbContext context, BasePublisher
         if (!await context.LootBoxes.AnyAsync(lbi => lbi.Id == id, cancellation))
             throw new NotFoundException("Кейс не найден");
 
-        var inventories = await context.BoxInventories
+        var inventories = await context.LootBoxInventories
             .Include(lbi => lbi.Item)
             .Include(lbi => lbi!.Item!.Rarity)
             .Include(lbi => lbi!.Item!.Quality)
@@ -48,10 +47,10 @@ public class LootBoxInventoryService(ApplicationDbContext context, BasePublisher
 
     public async Task<List<LootBoxInventoryResponse>> GetByItemIdAsync(Guid id, CancellationToken cancellation = default)
     {
-        if (!await context.Items.AnyAsync(lbi => lbi.Id == id, cancellation))
+        if (!await context.GameItems.AnyAsync(lbi => lbi.Id == id, cancellation))
             throw new NotFoundException("Предмет не найден");
 
-        var inventories = await context.BoxInventories
+        var inventories = await context.LootBoxInventories
             .Include(lbi => lbi.Box)
             .AsNoTracking()
             .Where(lbi => lbi.ItemId == id)
@@ -69,7 +68,7 @@ public class LootBoxInventoryService(ApplicationDbContext context, BasePublisher
             .FirstOrDefaultAsync(lb => lb.Id == request.BoxId, cancellation) ??
             throw new NotFoundException("Кейс не найден");
 
-        var item = await context.Items
+        var item = await context.GameItems
             .Include(gi => gi.Rarity)
             .Include(gi => gi.Quality)
             .Include(gi => gi.Type)
@@ -89,7 +88,7 @@ public class LootBoxInventoryService(ApplicationDbContext context, BasePublisher
         if (box.GameId != item.GameId) 
             throw new ConflictException("Кейс и предмет должны быть с одной игры");
 
-        await context.BoxInventories.AddAsync(inventory, cancellation);
+        await context.LootBoxInventories.AddAsync(inventory, cancellation);
         await context.SaveChangesAsync(cancellation);
         await publisher.SendAsync(new LootBoxInventoryTemplate
         {
@@ -112,7 +111,7 @@ public class LootBoxInventoryService(ApplicationDbContext context, BasePublisher
             .FirstOrDefaultAsync(lb => lb.Id == request.BoxId, cancellation) ??
             throw new NotFoundException("Кейс не найден");
 
-        var item = await context.Items
+        var item = await context.GameItems
             .Include(gi => gi.Rarity)
             .Include(gi => gi.Quality)
             .Include(gi => gi.Type)
@@ -121,7 +120,7 @@ public class LootBoxInventoryService(ApplicationDbContext context, BasePublisher
             .FirstOrDefaultAsync(gi => gi.Id == request.ItemId, cancellation) ??
             throw new NotFoundException("Предмет не найден");
 
-        if (!await context.BoxInventories.AnyAsync(lbi => lbi.Id == request.Id, cancellation))
+        if (!await context.LootBoxInventories.AnyAsync(lbi => lbi.Id == request.Id, cancellation))
             throw new NotFoundException("Содержимое кейса не найдено");
         if (box.GameId != item.GameId)
             throw new ConflictException("Кейс и предмет должны быть с одной игры");
@@ -134,7 +133,7 @@ public class LootBoxInventoryService(ApplicationDbContext context, BasePublisher
             ChanceWining = request.ChanceWining
         };
 
-        context.BoxInventories.Update(inventory);
+        context.LootBoxInventories.Update(inventory);
         await context.SaveChangesAsync(cancellation);
         await publisher.SendAsync(new LootBoxInventoryTemplate
         {
@@ -152,7 +151,7 @@ public class LootBoxInventoryService(ApplicationDbContext context, BasePublisher
 
     public async Task<LootBoxInventoryResponse> DeleteAsync(Guid id, CancellationToken cancellation = default)
     {
-        var inventory = await context.BoxInventories
+        var inventory = await context.LootBoxInventories
             .Include(lbi => lbi.Item)
             .Include(lbi => lbi!.Item!.Rarity)
             .Include(lbi => lbi!.Item!.Quality)
@@ -163,7 +162,7 @@ public class LootBoxInventoryService(ApplicationDbContext context, BasePublisher
             .FirstOrDefaultAsync(lbi => lbi.Id == id, cancellation) ?? 
             throw new NotFoundException("Содержимое кейса не найдено");
 
-        context.BoxInventories.Remove(inventory);
+        context.LootBoxInventories.Remove(inventory);
         await context.SaveChangesAsync(cancellation);
         await publisher.SendAsync(new LootBoxInventoryTemplate
         {

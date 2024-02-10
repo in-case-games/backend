@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Resources.DAL.Entities;
 
 namespace Resources.DAL.Configurations;
-
 internal class LootBoxGroupConfiguration : BaseEntityConfiguration<LootBoxGroup>
 {
     public override void Configure(EntityTypeBuilder<LootBoxGroup> builder)

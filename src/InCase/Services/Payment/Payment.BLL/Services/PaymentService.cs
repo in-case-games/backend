@@ -1,110 +1,93 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Payment.BLL.Exceptions;
 using Microsoft.Extensions.Logging;
 using Payment.BLL.Helpers;
 using Payment.BLL.Interfaces;
 using Payment.BLL.Models.External;
-using Payment.BLL.Models.External.YooKassa;
 using Payment.BLL.Models.Internal;
 using Payment.DAL.Data;
-using Payment.DAL.Entities;
-using System.Net;
 using Payment.BLL.MassTransit;
 using Infrastructure.MassTransit.User;
+using Payment.BLL.Exceptions;
 
 namespace Payment.BLL.Services;
-
 public class PaymentService(
     IResponseService responseService, 
     ILogger<PaymentService> logger, 
     ApplicationDbContext context,
     BasePublisher publisher) : IPaymentService
 {
-    public const string InvoiceCreateUri = "https://api.yookassa.ru/v3/payments";
-    public const string WebhookCreateUri = "https://api.yookassa.ru/v3/webhooks";
-    /*
-     private readonly IPAddress[] _webhookAddresses =
-    [
-        IPAddress.Parse("185.71.76.0/27"),
-        IPAddress.Parse("185.71.77.0/27"),
-        IPAddress.Parse("77.75.153.0/25"),
-        IPAddress.Parse("77.75.156.11"),
-        IPAddress.Parse("77.75.156.35"),
-        IPAddress.Parse("77.75.154.128/25"),
-        IPAddress.Parse("2a02:5180::/32")
-    ];
-    */
+    public const string InvoiceUri = "https://api.yookassa.ru/v3/payments";
 
-    public async Task<bool> BindToEventAsync(BindingToEventRequest requestModel, CancellationToken cancellationToken = default)
+    public async Task DoWorkManagerAsync(CancellationToken cancellationToken = default)
     {
-        cancellationToken.ThrowIfCancellationRequested();
-
-        if (!requestModel.IsValid())
-            throw new BadRequestException("Неверная модель привязки");
-
-        await responseService
-            .PostAsync<BindingToEventResponse, BindingToEventRequest>(WebhookCreateUri, requestModel, cancellationToken);
-
-        return true;
-    }
-
-    public async Task ProcessingInvoiceNotificationAsync(InvoiceNotificationResponse response, CancellationToken cancellationToken = default)
-    {
-        cancellationToken.ThrowIfCancellationRequested();
-
-        var findPayment = await context.Payments
+        var payments = await context.UserPayments
             .AsNoTracking()
             .Include(p => p.Status)
-            .FirstOrDefaultAsync(p => p.InvoiceId == response.Object!.Id, cancellationToken);
+            .Where(p => p.Status!.Name != "canceled" && 
+                                  p.Status!.Name != "succeeded" &&
+                                  p.UpdateTo <= DateTime.UtcNow)
+            .OrderByDescending(p => p.UpdateTo)
+            .Take(3)
+            .ToListAsync(cancellationToken);
 
-        var paymentStatus = await context.PaymentStatuses
-            .FirstOrDefaultAsync(x => x.Name!.ToLower() == response.Object!.Status, cancellationToken);
+        var statuses = await context.PaymentStatuses.ToListAsync(cancellationToken);
 
-        if(!ValidationService.IsValidInvoiceNotificationResponse(findPayment, response, paymentStatus, logger)) return;
-
-        if (findPayment is null)
+        foreach (var payment in payments)
         {
-            findPayment = (await context.Payments.AddAsync(new UserPayment
+            payment.UpdateTo = DateTime.UtcNow.AddSeconds(30);
+            context.Entry(payment).Property(p => p.UpdateTo).IsModified = true;
+            await context.SaveChangesAsync(cancellationToken);
+
+            responseService.FillYooKassaHttpClientHeaders();
+            var response = await responseService
+                .GetAsync<InvoiceCreateResponse>(InvoiceUri + $"/{payment.InvoiceId}", cancellationToken);
+
+            logger.LogTrace($"Получил информацию о платеже - {response}");
+
+            if (!ValidationService.InvoiceCreateResponse(response, logger)) continue;
+
+            var statusName = response?.Status?.Contains("waiting", StringComparison.OrdinalIgnoreCase) is false ? 
+                                    response.Status?.ToLower() : 
+                                    "waiting";
+
+            var status = statuses.FirstOrDefault(s => s.Name?.ToLower() == statusName);
+
+            if (status is null)
             {
-                InvoiceId = response.Object!.Id,
-                CreatedAt = DateTime.UtcNow,
-                Amount = response.Object!.Amount!.Value!,
-                Currency = response.Object!.Amount!.Currency,
-                UserId = response.Object!.Metadata!.UserId,
-                StatusId = paymentStatus!.Id,
-            }, cancellationToken)).Entity;
-        }
-        else
-        {
-            findPayment.StatusId = paymentStatus!.Id;
+                logger.LogCritical($"{response?.Id} - неизвестный статус {response?.Status}");
+                continue;
+            }
+            if (payment.StatusId == status.Id)
+            {
+                logger.LogTrace($"{response?.Id} - статус уже отработан {response?.Status}");
+                continue;
+            }
 
-            context.Entry(findPayment).Property(p => p.StatusId).IsModified = true;
-        }
+            payment.StatusId = status.Id;
+            context.Entry(payment).Property(p => p.StatusId).IsModified = true;
+            await context.SaveChangesAsync(cancellationToken);
 
-        await context.SaveChangesAsync(cancellationToken);
+            if (status.Name != "succeeded") continue;
 
-        if (paymentStatus.Name == "succeeded")
-        {
-            var promo = await context.UserPromocodes
-                .FirstOrDefaultAsync(up => up.UserId == findPayment.UserId, cancellationToken);
+            var promo = await context.UserPromoCodes
+                .FirstOrDefaultAsync(up => up.UserId == payment.UserId, cancellationToken);
 
             if (promo is not null)
             {
                 promo.Discount = promo.Discount >= 0.99M ? 1 : promo.Discount;
                 promo.Discount += 1;
+                payment.Amount *= promo.Discount;
 
-                findPayment.Amount *= promo.Discount;
-                
-                context.UserPromocodes.Remove(promo);
+                context.UserPromoCodes.Remove(promo);
                 await context.SaveChangesAsync(cancellationToken);
 
-                await publisher.SendAsync(new UserPromocodeBackTemplate
+                await publisher.SendAsync(new UserPromoCodeBackTemplate
                 {
                     Id = promo.Id,
                 }, cancellationToken);
             }
 
-            await publisher.SendAsync(findPayment.ToTemplate(), cancellationToken);
+            await publisher.SendAsync(payment.ToTemplate(), cancellationToken);
         }
     }
 
@@ -115,24 +98,19 @@ public class PaymentService(
         request.Amount!.Currency = request.Amount.Currency?.ToUpper();
 
         responseService.FillYooKassaHttpClientHeaders();
-
         var response = await responseService
-            .PostAsync<InvoiceCreateResponse, InvoiceCreateRequest>(InvoiceCreateUri, request.ToRequest(), cancellationToken);
+            .PostAsync<InvoiceCreateResponse, InvoiceCreateRequest>(InvoiceUri, request.ToRequest(), cancellationToken);
 
-        logger.LogTrace($"POST invoice create response - {response}");
+        logger.LogTrace($"Получил информацию о создании платежа - {response}");
 
-        ValidationService.InvoiceCreateResponse(response);
+        if(!ValidationService.InvoiceCreateResponse(response, logger)) throw new UnknownException("Внутренняя ошибка");
 
         var status = await context.PaymentStatuses.FirstAsync(ps => ps.Name == "pending", cancellationToken);
+        var entity = response!.ToEntity(request.User!.Id, status.Id);
 
-        var entity = response!.ToEntity(request.User!, status);
-
-        await context.Payments.AddAsync(entity, cancellationToken);
+        await context.UserPayments.AddAsync(entity, cancellationToken);
         await context.SaveChangesAsync(cancellationToken);
 
         return new InvoiceUrlResponse { Url = response!.Confirmation!.ConfirmationUrl };
     }
-
-    private static bool ValidateIpAddress(IEnumerable<IPAddress> addresses, IPAddress currentAddress) => 
-        addresses.Any(x => x.Equals(currentAddress));
 }

@@ -1,7 +1,6 @@
 ﻿using Support.DAL.Entities;
 
 namespace Support.BLL.Models;
-
 public class SupportTopicResponse : BaseEntity
 {
     public string? Title { get; set; }

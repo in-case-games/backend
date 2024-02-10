@@ -10,7 +10,6 @@ using Withdraw.DAL.Data;
 using Withdraw.DAL.Entities;
 
 namespace Withdraw.BLL.Services;
-
 public class UserWithdrawsService(
     ApplicationDbContext context, 
     BasePublisher publisher, 
@@ -18,7 +17,7 @@ public class UserWithdrawsService(
 {
     public async Task<UserHistoryWithdrawResponse> GetAsync(Guid id, CancellationToken cancellation = default)
     {
-        var withdraw = await context.Withdraws
+        var withdraw = await context.UserHistoryWithdraws
             .Include(uhw => uhw.Status)
             .AsNoTracking()
             .FirstOrDefaultAsync(uhw => uhw.Id == id, cancellation) ?? 
@@ -34,7 +33,7 @@ public class UserWithdrawsService(
         if (!await context.Users.AnyAsync(u => u.Id == userId, cancellation))
             throw new NotFoundException("Пользователь не найден");
 
-        var withdraws = await context.Withdraws
+        var withdraws = await context.UserHistoryWithdraws
             .Include(uhw => uhw.Status)
             .AsNoTracking()
             .Where(uhw => uhw.UserId == userId)
@@ -50,7 +49,7 @@ public class UserWithdrawsService(
         if (count is <= 0 or >= 10000) 
             throw new BadRequestException("Размер выборки должен быть в пределе 1-10000");
 
-        var withdraws = await context.Withdraws
+        var withdraws = await context.UserHistoryWithdraws
             .Include(uhw => uhw.Status)
             .AsNoTracking()
             .OrderByDescending(uhw => uhw.Date)
@@ -62,7 +61,7 @@ public class UserWithdrawsService(
 
     public async Task<UserInventoryResponse> TransferAsync(Guid id, Guid userId, CancellationToken cancellation = default)
     {
-        var withdraw = await context.Withdraws
+        var withdraw = await context.UserHistoryWithdraws
             .Include(uhw => uhw.Status)
             .AsNoTracking()
             .FirstOrDefaultAsync(uhw => uhw.Id == id && uhw.UserId == userId, cancellation) ??
@@ -79,8 +78,8 @@ public class UserWithdrawsService(
             UserId = userId
         };
 
-        context.Withdraws.Remove(withdraw);
-        await context.Inventories.AddAsync(inventory, cancellation);
+        context.UserHistoryWithdraws.Remove(withdraw);
+        await context.UserInventories.AddAsync(inventory, cancellation);
         await context.SaveChangesAsync(cancellation);
 
         await publisher.SendAsync(new SiteStatisticsAdminTemplate
@@ -88,7 +87,7 @@ public class UserWithdrawsService(
             FundsUsersInventories = inventory.FixedCost
         }, cancellation);
 
-        logger.LogInformation($"Items successfully transferred. UserId: {userId}. UserHistoryWithdrawId: {id}");
+        logger.LogInformation($"GameItems successfully transferred. UserId: {userId}. UserHistoryWithdrawId: {id}");
 
         return inventory.ToResponse();
     }

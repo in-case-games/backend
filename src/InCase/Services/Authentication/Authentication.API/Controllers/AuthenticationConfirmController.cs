@@ -1,6 +1,5 @@
 ﻿using Authentication.API.Common;
 using Authentication.API.Filters;
-using Authentication.BLL;
 using Authentication.BLL.Interfaces;
 using Authentication.BLL.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -8,7 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
 namespace Authentication.API.Controllers;
-
 [Route("api/authentication/confirm")]
 [ApiController]
 public class AuthenticationConfirmController(IAuthenticationConfirmService authConfirmService) : ControllerBase

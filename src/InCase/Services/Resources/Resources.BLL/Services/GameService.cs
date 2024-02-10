@@ -6,7 +6,6 @@ using Resources.BLL.Models;
 using Resources.DAL.Data;
 
 namespace Resources.BLL.Services;
-
 public class GameService(ApplicationDbContext context) : IGameService
 {
     public async Task<List<GameResponse>> GetAsync(CancellationToken cancellation = default)

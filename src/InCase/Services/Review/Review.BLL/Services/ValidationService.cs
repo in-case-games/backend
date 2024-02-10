@@ -2,7 +2,6 @@
 using Review.BLL.Models;
 
 namespace Review.BLL.Services;
-
 public static class ValidationService
 {
     public static void IsUserReview(UserReviewRequest request)

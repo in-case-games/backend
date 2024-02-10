@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using EmailSender.DAL.Entities;
 
 namespace EmailSender.DAL.Configurations;
-
 internal class BaseEntityConfiguration<TEntity> :
     IEntityTypeConfiguration<TEntity> where TEntity : BaseEntity
 {

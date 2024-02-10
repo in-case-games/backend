@@ -7,7 +7,6 @@ using System.Net;
 using System.Security.Claims;
 
 namespace Support.API.Controllers;
-
 [Route("api/support-topic")]
 [ApiController]
 public class SupportTopicController(ISupportTopicService topicService) : ControllerBase

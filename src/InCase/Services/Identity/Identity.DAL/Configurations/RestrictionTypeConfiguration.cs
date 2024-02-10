@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Identity.DAL.Entities;
 
 namespace Identity.DAL.Configurations;
-
 internal class RestrictionTypeConfiguration : BaseEntityConfiguration<RestrictionType>
 {
     private readonly List<RestrictionType> _types =

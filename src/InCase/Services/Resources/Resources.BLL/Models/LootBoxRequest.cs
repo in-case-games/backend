@@ -1,7 +1,6 @@
 ﻿using Resources.DAL.Entities;
 
 namespace Resources.BLL.Models;
-
 public class LootBoxRequest : BaseEntity
 {
     public string? Image { get; set; }

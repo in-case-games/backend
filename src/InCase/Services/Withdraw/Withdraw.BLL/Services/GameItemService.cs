@@ -6,11 +6,10 @@ using Withdraw.DAL.Data;
 using Withdraw.DAL.Entities;
 
 namespace Withdraw.BLL.Services;
-
 public class GameItemService(ApplicationDbContext context) : IGameItemService
 {
     public async Task<GameItem?> GetAsync(Guid id, CancellationToken cancellation = default) => 
-        await context.Items
+        await context.GameItems
         .AsNoTracking()
         .FirstOrDefaultAsync(gi => gi.Id == id, cancellation);
 
@@ -30,13 +29,13 @@ public class GameItemService(ApplicationDbContext context) : IGameItemService
 
         item.GameId = game.Id;
 
-        await context.Items.AddAsync(item, cancellation);
+        await context.GameItems.AddAsync(item, cancellation);
         await context.SaveChangesAsync(cancellation);
     }
 
     public async Task UpdateAsync(GameItemTemplate template, CancellationToken cancellation = default)
     {
-        var item = await context.Items
+        var item = await context.GameItems
             .FirstOrDefaultAsync(gi => gi.Id == template.Id, cancellation) ??
             throw new NotFoundException("Предмет не найден");
 
@@ -55,12 +54,12 @@ public class GameItemService(ApplicationDbContext context) : IGameItemService
 
     public async Task DeleteAsync(Guid id, CancellationToken cancellation = default)
     {
-        var item = await context.Items
+        var item = await context.GameItems
             .AsNoTracking()
             .FirstOrDefaultAsync(gi => gi.Id == id, cancellation) ??
             throw new NotFoundException("Предмет не найден");
 
-        context.Items.Remove(item);
+        context.GameItems.Remove(item);
         await context.SaveChangesAsync(cancellation);
     }
 }

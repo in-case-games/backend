@@ -1,5 +1,4 @@
 ﻿namespace Infrastructure.MassTransit.Email;
-
 public class EmailBodyTemplate
 {
     public string Title { get; set; } = string.Empty;

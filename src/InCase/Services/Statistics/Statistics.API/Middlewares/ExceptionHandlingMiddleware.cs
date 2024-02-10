@@ -1,7 +1,6 @@
 ﻿using System.Text.Json;
 
 namespace Statistics.API.Middlewares;
-
 public class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<ExceptionHandlingMiddleware> logger)
 {
     public async Task Invoke(HttpContext context)

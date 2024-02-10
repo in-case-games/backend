@@ -2,7 +2,6 @@
 using Withdraw.DAL.Entities;
 
 namespace Withdraw.BLL.Interfaces;
-
 public interface IGameItemService
 {
     public Task<GameItem?> GetAsync(Guid id, CancellationToken cancellation = default);

@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Withdraw.DAL.Entities;
 
 namespace Withdraw.DAL.Configurations;
-
 internal class WithdrawStatusConfiguration : BaseEntityConfiguration<WithdrawStatus>
 {
     private static readonly List<WithdrawStatus> Statuses =
@@ -22,6 +21,7 @@ internal class WithdrawStatusConfiguration : BaseEntityConfiguration<WithdrawSta
         builder.HasIndex(ws => ws.Name)
             .IsUnique();
         builder.Property(ws => ws.Name)
+            .HasMaxLength(100)
             .IsRequired();
 
         foreach(var stat in Statuses) builder.HasData(stat);

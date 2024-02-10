@@ -7,7 +7,6 @@ using Resources.BLL.Models;
 using System.Net;
 
 namespace Resources.API.Controllers;
-
 [Route("api/loot-box-banner")]
 [ApiController]
 public class LootBoxBannerController(ILootBoxBannerService bannerService) : ControllerBase

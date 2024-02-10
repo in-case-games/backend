@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Review.DAL.Entities;
 
 namespace Review.DAL.Configurations;
-
 internal class ReviewImageConfiguration : BaseEntityConfiguration<ReviewImage>
 {
     public override void Configure(EntityTypeBuilder<ReviewImage> builder)

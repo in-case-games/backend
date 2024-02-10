@@ -2,7 +2,6 @@
 using Withdraw.DAL.Entities;
 
 namespace Withdraw.BLL.Interfaces;
-
 public interface IUserService
 {
     public Task<User?> GetAsync(Guid id, CancellationToken cancellation = default);

@@ -1,5 +1,4 @@
 ﻿namespace Infrastructure.MassTransit.Resources;
-
 public class LootBoxBannerTemplate : BaseTemplate
 {
     public DateTime CreationDate { get; set; }

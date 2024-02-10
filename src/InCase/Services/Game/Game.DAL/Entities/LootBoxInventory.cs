@@ -1,7 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
 namespace Game.DAL.Entities;
-
 public class LootBoxInventory : BaseEntity
 {
     public int ChanceWining { get; set; }

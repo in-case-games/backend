@@ -8,12 +8,11 @@ using Identity.BLL.MassTransit;
 using Infrastructure.MassTransit.User;
 
 namespace Identity.BLL.Services;
-
 public class UserAdditionalInfoService(ApplicationDbContext context, BasePublisher publisher) : IUserAdditionalInfoService
 {
     public async Task<UserAdditionalInfoResponse> GetAsync(Guid id, CancellationToken cancellation = default)
     {
-        var info = await context.AdditionalInfos
+        var info = await context.UserAdditionalInfos
             .Include(uai => uai.Role)
             .AsNoTracking()
             .FirstOrDefaultAsync(uai => uai.Id == id, cancellation) ??
@@ -24,7 +23,7 @@ public class UserAdditionalInfoService(ApplicationDbContext context, BasePublish
 
     public async Task<UserAdditionalInfoResponse> GetByUserIdAsync(Guid userId, CancellationToken cancellation = default)
     {
-        var info = await context.AdditionalInfos
+        var info = await context.UserAdditionalInfos
             .Include(uai => uai.Role)
             .AsNoTracking()
             .FirstOrDefaultAsync(uai => uai.UserId == userId, cancellation) ??
@@ -38,7 +37,7 @@ public class UserAdditionalInfoService(ApplicationDbContext context, BasePublish
         if (deletionDate is not null && deletionDate <= DateTime.UtcNow)
             throw new BadRequestException("Дата не корректна");
 
-        var info = await context.AdditionalInfos
+        var info = await context.UserAdditionalInfos
             .Include(uai => uai.Role)
             .FirstOrDefaultAsync(uai => uai.UserId == userId, cancellation) ??
             throw new NotFoundException("Пользователь не найден");
@@ -61,7 +60,7 @@ public class UserAdditionalInfoService(ApplicationDbContext context, BasePublish
     {
         if (request.Image is null) throw new BadRequestException("Загрузите картинку в base64");
 
-        var info = await context.AdditionalInfos
+        var info = await context.UserAdditionalInfos
             .Include(uai => uai.Role)
             .FirstOrDefaultAsync(uai => uai.UserId == request.UserId, cancellation) ??
             throw new NotFoundException("Пользователь не найден");
@@ -73,11 +72,11 @@ public class UserAdditionalInfoService(ApplicationDbContext context, BasePublish
 
     public async Task<UserAdditionalInfoResponse> UpdateRoleAsync(Guid userId, Guid roleId, CancellationToken cancellation = default)
     {
-        var role = await context.Roles
+        var role = await context.UserRoles
             .AsNoTracking()
             .FirstOrDefaultAsync(ur => ur.Id == roleId, cancellation) ??
             throw new NotFoundException("Роль не найдена");
-        var info = await context.AdditionalInfos
+        var info = await context.UserAdditionalInfos
             .Include(uai => uai.Role)
             .FirstOrDefaultAsync(uai => uai.UserId == userId, cancellation) ??
             throw new NotFoundException("Пользователь не найден");

@@ -1,7 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
 namespace Resources.DAL.Entities;
-
 public class LootBoxGroup : BaseEntity
 {
     public GroupLootBox? Group { get; set; }

@@ -1,7 +1,6 @@
 ﻿using Review.BLL.Models;
 
 namespace Review.BLL.Interfaces;
-
 public interface IReviewImageService
 {
     public Task<ReviewImageResponse> GetAsync(Guid id, bool isOnlyApproved, CancellationToken cancellation = default);

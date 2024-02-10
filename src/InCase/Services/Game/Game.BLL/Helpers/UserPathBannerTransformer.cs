@@ -2,7 +2,6 @@
 using Game.DAL.Entities;
 
 namespace Game.BLL.Helpers;
-
 public static class UserPathBannerTransformer
 {
     public static UserPathBannerResponse ToResponse(this UserPathBanner banner) =>

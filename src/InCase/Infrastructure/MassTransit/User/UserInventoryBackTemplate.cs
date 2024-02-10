@@ -1,5 +1,4 @@
 ﻿namespace Infrastructure.MassTransit.User;
-
 public class UserInventoryBackTemplate : BaseTemplate
 {
     public decimal FixedCost { get; set; }

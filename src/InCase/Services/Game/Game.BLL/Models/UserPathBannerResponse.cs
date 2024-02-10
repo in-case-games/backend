@@ -1,7 +1,6 @@
 ﻿using Game.DAL.Entities;
 
 namespace Game.BLL.Models;
-
 public class UserPathBannerResponse : BaseEntity
 {
     public int NumberSteps { get; set; }

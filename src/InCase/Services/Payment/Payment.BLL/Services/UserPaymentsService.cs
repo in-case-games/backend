@@ -6,12 +6,11 @@ using Payment.BLL.Models.Internal;
 using Payment.DAL.Data;
 
 namespace Payment.BLL.Services;
-
 public class UserPaymentsService(ApplicationDbContext context) : IUserPaymentsService
 {
     public async Task<UserPaymentResponse> GetByIdAsync(Guid id, Guid userId, CancellationToken cancellation = default)
     {
-        var payment = await context.Payments
+        var payment = await context.UserPayments
             .AsNoTracking()
             .Include(p => p.Status)
             .FirstOrDefaultAsync(up => up.Id == id, cancellation) ?? 
@@ -26,7 +25,7 @@ public class UserPaymentsService(ApplicationDbContext context) : IUserPaymentsSe
         if (count is <= 0 or >= 10000)
             throw new BadRequestException("Размер выборки должен быть в пределе 1-10000");
 
-        var payments = await context.Payments
+        var payments = await context.UserPayments
             .AsNoTracking()
             .OrderByDescending(up => up.CreatedAt)
             .Take(count)
@@ -41,7 +40,7 @@ public class UserPaymentsService(ApplicationDbContext context) : IUserPaymentsSe
         if (count is <= 0 or >= 10000)
             throw new BadRequestException("Размер выборки должен быть в пределе 1-10000");
 
-        var payments = await context.Payments
+        var payments = await context.UserPayments
             .AsNoTracking()
             .Where(up => up.UserId == userId)
             .OrderByDescending(up => up.CreatedAt)

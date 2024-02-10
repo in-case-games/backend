@@ -3,7 +3,6 @@ using Payment.BLL.Models.Internal;
 using Payment.DAL.Entities;
 
 namespace Payment.BLL.Helpers;
-
 public static class InvoiceCreateTransformer
 {
     public static InvoiceCreateRequest ToRequest(this InvoiceUrlRequest request) => 
@@ -18,15 +17,16 @@ public static class InvoiceCreateTransformer
             },
         };
 
-    public static UserPayment ToEntity(this InvoiceCreateResponse response, User user, PaymentStatus status) => 
+    public static UserPayment ToEntity(this InvoiceCreateResponse response, Guid userId, Guid statusId) => 
         new()
         {
             Id = Guid.NewGuid(),
             InvoiceId = response.Id,
             CreatedAt = response.CreatedAt.ToUniversalTime(),
+            UpdateTo = DateTime.UtcNow.AddSeconds(30),
             Currency = response.Amount!.Currency,
             Amount = response.Amount.Value,
-            UserId = user.Id,
-            StatusId = status.Id,
+            UserId = userId,
+            StatusId = statusId,
         };
 }

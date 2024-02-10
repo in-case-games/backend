@@ -8,12 +8,11 @@ using Review.BLL.Models;
 using Review.DAL.Data;
 
 namespace Review.BLL.Services;
-
 public class UserReviewService(ApplicationDbContext context, BasePublisher publisher) : IUserReviewService
 {
     public async Task<UserReviewResponse> GetAsync(Guid id, bool isOnlyApproved, CancellationToken cancellation = default)
     {
-        var review = await context.Reviews
+        var review = await context.UserReviews
             .Include(review => review.Images)
             .AsNoTracking()
             .FirstOrDefaultAsync(ur => ur.Id == id, cancellation) ??
@@ -26,7 +25,7 @@ public class UserReviewService(ApplicationDbContext context, BasePublisher publi
 
     public async Task<List<UserReviewResponse>> GetAsync(bool isOnlyApproved, CancellationToken cancellation = default)
     {
-        var reviews = await context.Reviews
+        var reviews = await context.UserReviews
             .Include(review => review.Images)
             .AsNoTracking()
             .ToListAsync(cancellation);
@@ -38,7 +37,7 @@ public class UserReviewService(ApplicationDbContext context, BasePublisher publi
 
     public async Task<List<UserReviewResponse>> GetAsync(bool isOnlyApproved, int count, CancellationToken cancellation = default)
     {
-        var reviews = await context.Reviews
+        var reviews = await context.UserReviews
             .Include(review => review.Images)
             .AsNoTracking()
             .ToListAsync(cancellation);
@@ -50,7 +49,7 @@ public class UserReviewService(ApplicationDbContext context, BasePublisher publi
 
     public async Task<List<UserReviewResponse>> GetByUserIdAsync(Guid userId, bool isOnlyApproved, CancellationToken cancellation = default)
     {
-        var reviews = await context.Reviews
+        var reviews = await context.UserReviews
             .Include(review => review.Images)
             .AsNoTracking()
             .Where(ur => ur.UserId == userId)
@@ -65,9 +64,9 @@ public class UserReviewService(ApplicationDbContext context, BasePublisher publi
     {
         ValidationService.IsUserReview(request);
 
-        if (await context.Reviews.AnyAsync(u => u.UserId == request.UserId, cancellation))
+        if (await context.UserReviews.AnyAsync(u => u.UserId == request.UserId, cancellation))
             throw new ConflictException("У вас уже есть отзыв");
-        if (!await context.User.AnyAsync(u => u.Id == request.UserId, cancellation))
+        if (!await context.Users.AnyAsync(u => u.Id == request.UserId, cancellation))
             throw new NotFoundException("Пользователь не найден");
 
         var review = request.ToEntity(isNewGuid: true);
@@ -75,7 +74,7 @@ public class UserReviewService(ApplicationDbContext context, BasePublisher publi
         review.CreationDate = DateTime.UtcNow;
         review.IsApproved = false;
 
-        await context.Reviews.AddAsync(review, cancellation);
+        await context.UserReviews.AddAsync(review, cancellation);
         await context.SaveChangesAsync(cancellation);
         await publisher.SendAsync(new SiteStatisticsTemplate { Reviews = 1 }, cancellation);
 
@@ -86,7 +85,7 @@ public class UserReviewService(ApplicationDbContext context, BasePublisher publi
 
     public async Task<UserReviewResponse> DeniedReviewAsync(Guid id, CancellationToken cancellation = default)
     {
-        var review = await context.Reviews
+        var review = await context.UserReviews
             .Include(review => review.Images)
             .FirstOrDefaultAsync(ur => ur.Id == id, cancellation) ??
             throw new NotFoundException("Отзыв не найден");
@@ -100,7 +99,7 @@ public class UserReviewService(ApplicationDbContext context, BasePublisher publi
 
     public async Task<UserReviewResponse> ApproveReviewAsync(Guid id, CancellationToken cancellation = default)
     {
-        var review = await context.Reviews
+        var review = await context.UserReviews
             .Include(review => review.Images)
             .FirstOrDefaultAsync(ur => ur.Id == id, cancellation) ??
             throw new NotFoundException("Отзыв не найден");
@@ -116,12 +115,12 @@ public class UserReviewService(ApplicationDbContext context, BasePublisher publi
     {
         ValidationService.IsUserReview(request);
 
-        if (!await context.User.AnyAsync(u => u.Id == request.UserId, cancellation))
+        if (!await context.Users.AnyAsync(u => u.Id == request.UserId, cancellation))
             throw new NotFoundException("Пользователь не найден");
 
         var review = request.ToEntity(isNewGuid: false);
 
-        var reviewOld = await context.Reviews
+        var reviewOld = await context.UserReviews
             .Include(ur => ur.Images)
             .FirstOrDefaultAsync(ur => ur.Id == review.Id, cancellationToken: cancellation) ??
             throw new NotFoundException("Отзыв не найден");
@@ -140,7 +139,7 @@ public class UserReviewService(ApplicationDbContext context, BasePublisher publi
 
     public async Task<UserReviewResponse> DeleteAsync(Guid userId, Guid id, CancellationToken cancellation = default)
     {
-        var review = await context.Reviews
+        var review = await context.UserReviews
             .Include(ur => ur.Images)
             .AsNoTracking()
             .FirstOrDefaultAsync(ur => ur.Id == id, cancellation) ??
@@ -148,7 +147,7 @@ public class UserReviewService(ApplicationDbContext context, BasePublisher publi
 
         if (review.UserId != userId) throw new ForbiddenException("Доступ к отзыву только у создателя");
 
-        context.Reviews.Remove(review);
+        context.UserReviews.Remove(review);
         await context.SaveChangesAsync(cancellation);
         await publisher.SendAsync(new SiteStatisticsTemplate { Reviews = -1 }, cancellation);
 
@@ -159,13 +158,13 @@ public class UserReviewService(ApplicationDbContext context, BasePublisher publi
 
     public async Task<UserReviewResponse> DeleteAsync(Guid id, CancellationToken cancellation = default)
     {
-        var review = await context.Reviews
+        var review = await context.UserReviews
             .Include(ur => ur.Images)
             .AsNoTracking()
             .FirstOrDefaultAsync(ur => ur.Id == id, cancellation) ??
             throw new NotFoundException("Отзыв не найден");
 
-        context.Reviews.Remove(review);
+        context.UserReviews.Remove(review);
         await context.SaveChangesAsync(cancellation);
         await publisher.SendAsync(new SiteStatisticsTemplate { Reviews = -1 }, cancellation);
 

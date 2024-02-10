@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Withdraw.DAL.Entities;
 
 namespace Withdraw.DAL.Configurations;
-
 internal class GameItemConfiguration : BaseEntityConfiguration<GameItem>
 {
     public override void Configure(EntityTypeBuilder<GameItem> builder)
@@ -16,6 +15,7 @@ internal class GameItemConfiguration : BaseEntityConfiguration<GameItem>
             .IsUnique(false);
 
         builder.Property(gi => gi.IdForMarket)
+            .HasMaxLength(100)
             .IsRequired();
         builder.Property(gi => gi.Cost)
             .HasColumnType("DECIMAL(18,5)")

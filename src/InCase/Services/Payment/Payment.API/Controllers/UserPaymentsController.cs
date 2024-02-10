@@ -7,7 +7,6 @@ using System.Net;
 using System.Security.Claims;
 
 namespace Payment.API.Controllers;
-
 [Route("api/user-payments")]
 [ApiController]
 public class UserPaymentsController(IUserPaymentsService paymentsService) : ControllerBase

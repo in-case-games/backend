@@ -2,7 +2,6 @@
 using Resources.DAL.Entities;
 
 namespace Resources.BLL.Helpers;
-
 public static class GameTransformer
 {
     public static GameResponse ToResponse(this Game game) =>

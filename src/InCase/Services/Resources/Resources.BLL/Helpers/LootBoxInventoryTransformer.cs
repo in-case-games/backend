@@ -2,7 +2,6 @@
 using Resources.DAL.Entities;
 
 namespace Resources.BLL.Helpers;
-
 public static class LootBoxInventoryTransformer
 {
     public static LootBoxInventoryResponse ToResponse(this LootBoxInventory inventory) =>

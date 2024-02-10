@@ -1,8 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 
 namespace Payment.DAL.Entities;
-
-public class UserPromocode : BaseEntity
+public class UserPromoCode : BaseEntity
 {
     public decimal Discount { get; set; }
 

@@ -873,18 +873,6 @@
       "UpstreamPathTemplate": "/api/payments/invoice",
       "UpstreamHttpMethod": [ "Post" ]
     },
-    {
-      "DownstreamPathTemplate": "/api/payments/notify",
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "host.docker.internal",
-          "Port": 5039
-        }
-      ],
-      "UpstreamPathTemplate": "/api/payments/notify",
-      "UpstreamHttpMethod": [ "Post" ]
-    },
     //EndPoint: user-payments
     {
       "DownstreamPathTemplate": "/api/user-payments",
@@ -934,10 +922,10 @@
       "UpstreamPathTemplate": "/api/admin/{userId}/history/payment",
       "UpstreamHttpMethod": [ "Get" ]
     },
-    //Base: Promocode.API
-    //EndPoint: promocode
+    //Base: PromoCode.API
+    //EndPoint: promo-code
     {
-      "DownstreamPathTemplate": "/api/promocode",
+      "DownstreamPathTemplate": "/api/promo-code",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -945,11 +933,11 @@
           "Port": 5163
         }
       ],
-      "UpstreamPathTemplate": "/api/promocode",
+      "UpstreamPathTemplate": "/api/promo-code",
       "UpstreamHttpMethod": [ "Get" ]
     },
     {
-      "DownstreamPathTemplate": "/api/promocode/empty",
+      "DownstreamPathTemplate": "/api/promo-code/empty",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -957,11 +945,11 @@
           "Port": 5163
         }
       ],
-      "UpstreamPathTemplate": "/api/promocode/empty",
+      "UpstreamPathTemplate": "/api/promo-code/empty",
       "UpstreamHttpMethod": [ "Get" ]
     },
     {
-      "DownstreamPathTemplate": "/api/promocode/name/{name}",
+      "DownstreamPathTemplate": "/api/promo-code/name/{name}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -969,11 +957,11 @@
           "Port": 5163
         }
       ],
-      "UpstreamPathTemplate": "/api/promocode/name/{name}",
+      "UpstreamPathTemplate": "/api/promo-code/name/{name}",
       "UpstreamHttpMethod": [ "Get" ]
     },
     {
-      "DownstreamPathTemplate": "/api/promocode/types",
+      "DownstreamPathTemplate": "/api/promo-code/types",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -981,11 +969,11 @@
           "Port": 5163
         }
       ],
-      "UpstreamPathTemplate": "/api/promocode/types",
+      "UpstreamPathTemplate": "/api/promo-code/types",
       "UpstreamHttpMethod": [ "Get" ]
     },
     {
-      "DownstreamPathTemplate": "/api/promocode",
+      "DownstreamPathTemplate": "/api/promo-code",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -993,11 +981,11 @@
           "Port": 5163
         }
       ],
-      "UpstreamPathTemplate": "/api/promocode",
+      "UpstreamPathTemplate": "/api/promo-code",
       "UpstreamHttpMethod": [ "Post" ]
     },
     {
-      "DownstreamPathTemplate": "/api/promocode",
+      "DownstreamPathTemplate": "/api/promo-code",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -1005,11 +993,11 @@
           "Port": 5163
         }
       ],
-      "UpstreamPathTemplate": "/api/promocode",
+      "UpstreamPathTemplate": "/api/promo-code",
       "UpstreamHttpMethod": [ "Put" ]
     },
     {
-      "DownstreamPathTemplate": "/api/promocode/{id}",
+      "DownstreamPathTemplate": "/api/promo-code/{id}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -1017,12 +1005,12 @@
           "Port": 5163
         }
       ],
-      "UpstreamPathTemplate": "/api/promocode/{id}",
+      "UpstreamPathTemplate": "/api/promo-code/{id}",
       "UpstreamHttpMethod": [ "Delete" ]
     },
-    //EndPoint: user-promocodes
+    //EndPoint: user-promo-codes
     {
-      "DownstreamPathTemplate": "/api/user-promocodes",
+      "DownstreamPathTemplate": "/api/user-promo-codes",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -1030,11 +1018,11 @@
           "Port": 5163
         }
       ],
-      "UpstreamPathTemplate": "/api/user/promocode",
+      "UpstreamPathTemplate": "/api/user/promo-code",
       "UpstreamHttpMethod": [ "Get" ]
     },
     {
-      "DownstreamPathTemplate": "/api/user-promocodes/{id}",
+      "DownstreamPathTemplate": "/api/user-promo-codes/{id}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -1042,11 +1030,11 @@
           "Port": 5163
         }
       ],
-      "UpstreamPathTemplate": "/api/user/promocode/id/{id}",
+      "UpstreamPathTemplate": "/api/user/promo-code/id/{id}",
       "UpstreamHttpMethod": [ "Get" ]
     },
     {
-      "DownstreamPathTemplate": "/api/user-promocodes/admin",
+      "DownstreamPathTemplate": "/api/user-promo-codes/admin",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -1058,7 +1046,7 @@
       "UpstreamHttpMethod": [ "Get" ]
     },
     {
-      "DownstreamPathTemplate": "/api/user-promocodes/user/{userId}/admin",
+      "DownstreamPathTemplate": "/api/user-promo-codes/user/{userId}/admin",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -1066,11 +1054,11 @@
           "Port": 5163
         }
       ],
-      "UpstreamPathTemplate": "/api/admin/{userId}/promocode",
+      "UpstreamPathTemplate": "/api/admin/{userId}/promo-code",
       "UpstreamHttpMethod": [ "Get" ]
     },
     {
-      "DownstreamPathTemplate": "/api/user-promocodes/{id}/admin",
+      "DownstreamPathTemplate": "/api/user-promo-codes/{id}/admin",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -1078,11 +1066,11 @@
           "Port": 5163
         }
       ],
-      "UpstreamPathTemplate": "/api/admin/promocode/{id}",
+      "UpstreamPathTemplate": "/api/admin/promo-code/{id}",
       "UpstreamHttpMethod": [ "Get" ]
     },
     {
-      "DownstreamPathTemplate": "/api/user-promocodes/activate/{name}",
+      "DownstreamPathTemplate": "/api/user-promo-codes/activate/{name}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -1090,11 +1078,11 @@
           "Port": 5163
         }
       ],
-      "UpstreamPathTemplate": "/api/user/promocode/activate/{name}",
+      "UpstreamPathTemplate": "/api/user/promo-code/activate/{name}",
       "UpstreamHttpMethod": [ "Get" ]
     },
     {
-      "DownstreamPathTemplate": "/api/user-promocodes/exchange/{name}",
+      "DownstreamPathTemplate": "/api/user-promo-codes/exchange/{name}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -1102,7 +1090,7 @@
           "Port": 5163
         }
       ],
-      "UpstreamPathTemplate": "/api/user/promocode/exchange/{name}",
+      "UpstreamPathTemplate": "/api/user/promo-code/exchange/{name}",
       "UpstreamHttpMethod": [ "Get" ]
     },
     //Base: Resources.API

@@ -1,5 +1,4 @@
 ﻿namespace Game.API.Common;
-
 public class Roles
 {
     public const string User = "user";

@@ -1,5 +1,4 @@
 ﻿namespace Infrastructure.MassTransit.Email;
-
 public class EmailTemplate
 {
     public string Email { get; set; } = null!;

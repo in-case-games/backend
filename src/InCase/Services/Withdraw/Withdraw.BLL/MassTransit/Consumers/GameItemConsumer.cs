@@ -3,7 +3,6 @@ using MassTransit;
 using Withdraw.BLL.Interfaces;
 
 namespace Withdraw.BLL.MassTransit.Consumers;
-
 public class GameItemConsumer(IGameItemService itemService) : IConsumer<GameItemTemplate>
 {
     public async Task Consume(ConsumeContext<GameItemTemplate> context)

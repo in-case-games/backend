@@ -3,7 +3,6 @@ using Withdraw.BLL.Models;
 using Withdraw.DAL.Entities;
 
 namespace Withdraw.BLL.Interfaces;
-
 public interface IUserInventoryService
 {
     public Task<UserInventoryResponse> GetByIdAsync(Guid id, CancellationToken cancellation = default);

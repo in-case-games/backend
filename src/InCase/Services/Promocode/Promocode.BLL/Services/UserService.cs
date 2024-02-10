@@ -6,7 +6,6 @@ using Promocode.DAL.Data;
 using Promocode.DAL.Entities;
 
 namespace Promocode.BLL.Services;
-
 public class UserService(ApplicationDbContext context) : IUserService
 {
     public async Task<User?> GetAsync(Guid id, CancellationToken cancellation = default) => 

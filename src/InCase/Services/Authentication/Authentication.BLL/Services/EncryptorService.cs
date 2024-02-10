@@ -2,7 +2,6 @@
 using System.Security.Cryptography;
 
 namespace Authentication.BLL.Services;
-
 public static class EncryptorService
 {
     public static string GenerationHashSha512(string password, byte[] salt) => 

@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Identity.DAL.Entities;
 
 namespace Identity.DAL.Configurations;
-
 internal class UserAdditionalInfoConfiguration : BaseEntityConfiguration<UserAdditionalInfo>
 {
     public override void Configure(EntityTypeBuilder<UserAdditionalInfo> builder)

@@ -2,7 +2,6 @@
 using Resources.DAL.Entities;
 
 namespace Resources.BLL.Interfaces;
-
 public interface IGameItemService
 {
     public Task<GameItemResponse> GetAsync(Guid id, CancellationToken cancellation = default);

@@ -7,7 +7,6 @@ using Resources.BLL.Models;
 using System.Net;
 
 namespace Resources.API.Controllers;
-
 [Route("api/loot-box-group")]
 [ApiController]
 public class LootBoxGroupController(ILootBoxGroupService groupService) : ControllerBase

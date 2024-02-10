@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Withdraw.DAL.Entities;
 
 namespace Withdraw.DAL.Configurations;
-
 internal class UserHistoryWithdrawConfiguration : BaseEntityConfiguration<UserHistoryWithdraw>
 {
     public override void Configure(EntityTypeBuilder<UserHistoryWithdraw> builder)
@@ -24,8 +23,10 @@ internal class UserHistoryWithdrawConfiguration : BaseEntityConfiguration<UserHi
             .IsUnique(false);
 
         builder.Property(uhw => uhw.InvoiceId)
+            .HasMaxLength(100)
             .IsRequired();
         builder.Property(uhw => uhw.TradeUrl)
+            .HasMaxLength(300)
             .IsRequired();
         builder.Property(uhw => uhw.FixedCost)
             .HasColumnType("DECIMAL(18,5)")

@@ -7,7 +7,6 @@ using System.Net;
 using System.Security.Claims;
 
 namespace Game.API.Controllers;
-
 [Route("api/user-additional-info")]
 [ApiController]
 public class UserAdditionalInfoController(IUserAdditionalInfoService infoService) : ControllerBase

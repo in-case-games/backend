@@ -8,7 +8,6 @@ using System.Net;
 using System.Security.Claims;
 
 namespace Review.API.Controllers;
-
 [Route("api/user-review")]
 [ApiController]
 public class UserReviewController(IUserReviewService userReviewService) : ControllerBase

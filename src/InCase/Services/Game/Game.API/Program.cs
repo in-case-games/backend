@@ -83,7 +83,7 @@ builder.Services.AddScoped<IUserAdditionalInfoService, UserAdditionalInfoService
 builder.Services.AddScoped<IUserOpeningService, UserOpeningService>();
 builder.Services.AddScoped<ILootBoxOpeningService, LootBoxOpeningService>();
 builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IUserPromocodeService, UserPromocodeService>();
+builder.Services.AddScoped<IUserPromoCodeService, UserPromoCodeService>();
 builder.Services.AddScoped<IGameItemService, GameItemService>();
 builder.Services.AddScoped<ILootBoxService, LootBoxService>();
 builder.Services.AddScoped<ILootBoxInventoryService, LootBoxInventoryService>();
@@ -91,7 +91,7 @@ builder.Services.AddScoped<ILootBoxInventoryService, LootBoxInventoryService>();
 builder.Services.AddMassTransit(x =>
 {
     x.AddConsumer<UserConsumer>();
-    x.AddConsumer<UserPromocodeConsumer>();
+    x.AddConsumer<UserPromoCodeConsumer>();
     x.AddConsumer<UserPaymentConsumer>();
     x.AddConsumer<GameItemConsumer>();
     x.AddConsumer<LootBoxBannerConsumer>();
@@ -117,7 +117,7 @@ builder.Services.AddMassTransit(x =>
         {
             e.PrefetchCount = 16;
             e.UseMessageRetry(r => r.Interval(4, 100));
-            e.ConfigureConsumer<UserPromocodeConsumer>(context);
+            e.ConfigureConsumer<UserPromoCodeConsumer>(context);
         });
         cfg.ReceiveEndpoint(e =>
         {

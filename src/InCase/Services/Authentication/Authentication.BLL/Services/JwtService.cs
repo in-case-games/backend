@@ -9,7 +9,6 @@ using System.Text;
 using Authentication.BLL.Models;
 
 namespace Authentication.BLL.Services;
-
 public class JwtService(IConfiguration configuration) : IJwtService
 {
     /// <summary>

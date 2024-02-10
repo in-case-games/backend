@@ -8,12 +8,11 @@ using Identity.DAL.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Identity.BLL.Services;
-
 public class UserRestrictionService(ApplicationDbContext context, BasePublisher publisher) : IUserRestrictionService
 {
     public async Task<UserRestrictionResponse> GetAsync(Guid id, CancellationToken cancellation = default)
     {
-        var restriction = await context.Restrictions
+        var restriction = await context.UserRestrictions
             .AsNoTracking()
             .FirstOrDefaultAsync(ur => ur.Id == id, cancellation) ??
             throw new NotFoundException("Эффект не найден");
@@ -28,7 +27,7 @@ public class UserRestrictionService(ApplicationDbContext context, BasePublisher 
         if (!await context.Users.AnyAsync(u => u.Id == ownerId, cancellation))
             throw new NotFoundException("Обвинитель не найден");
 
-        var restrictions = await context.Restrictions
+        var restrictions = await context.UserRestrictions
             .Include(ur => ur.Type)
             .AsNoTracking()
             .Where(ur => ur.OwnerId == ownerId && ur.UserId == userId)
@@ -108,7 +107,7 @@ public class UserRestrictionService(ApplicationDbContext context, BasePublisher 
 
         if (userRole != "user") throw new ForbiddenException("Эффект можно наложить только на пользователя");
 
-        await context.Restrictions.AddAsync(restriction, cancellation);
+        await context.UserRestrictions.AddAsync(restriction, cancellation);
         await context.SaveChangesAsync(cancellation);
 
         if (request.TypeId != type.Id)
@@ -143,7 +142,7 @@ public class UserRestrictionService(ApplicationDbContext context, BasePublisher 
             .AsNoTracking()
             .FirstOrDefaultAsync(u => u.Id == request.OwnerId, cancellation) ??
             throw new NotFoundException("Обвинитель не найден");
-        var restrictionOld = await context.Restrictions
+        var restrictionOld = await context.UserRestrictions
             .Include(ur => ur.Type)
             .FirstOrDefaultAsync(ur => ur.Id == request.Id, cancellation) ??
             throw new NotFoundException("Эффект не найден");
@@ -174,13 +173,13 @@ public class UserRestrictionService(ApplicationDbContext context, BasePublisher 
 
     public async Task<UserRestrictionResponse> DeleteAsync(Guid id, CancellationToken cancellation = default)
     {
-        var restriction = await context.Restrictions
+        var restriction = await context.UserRestrictions
             .Include(ur => ur.Type)
             .AsNoTracking()
             .FirstOrDefaultAsync(ur => ur.Id == id, cancellation) ??
             throw new NotFoundException("Эффект не найден");
 
-        context.Restrictions.Remove(restriction);
+        context.UserRestrictions.Remove(restriction);
         await context.SaveChangesAsync(cancellation);
         await publisher.SendAsync(restriction.ToTemplate(isDeleted: true), cancellation);
 
@@ -192,7 +191,7 @@ public class UserRestrictionService(ApplicationDbContext context, BasePublisher 
         RestrictionType type,
         CancellationToken cancellation = default)
     {
-        var restrictions = await context.Restrictions
+        var restrictions = await context.UserRestrictions
             .Include(ur => ur.Type)
             .AsNoTracking()
             .Where(ur => ur.UserId == request.UserId)

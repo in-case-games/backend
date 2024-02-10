@@ -3,7 +3,6 @@ using Identity.DAL.Entities;
 using Infrastructure.MassTransit.User;
 
 namespace Identity.BLL.Interfaces;
-
 public interface IUserService
 {
     public Task<UserResponse> GetAsync(Guid id, CancellationToken cancellation = default);

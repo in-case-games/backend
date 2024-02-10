@@ -1,7 +1,6 @@
 ﻿using Resources.DAL.Entities;
 
 namespace Resources.BLL.Interfaces;
-
 public interface IGroupLootBoxService
 {
     public Task<List<GroupLootBox>> GetAsync(CancellationToken cancellation = default);

@@ -2,7 +2,6 @@
 using Authentication.DAL.Entities;
 
 namespace Authentication.BLL.Interfaces;
-
 public interface IAuthenticationService
 {
     public Task SignInAsync(UserRequest request, CancellationToken cancellationToken = default);

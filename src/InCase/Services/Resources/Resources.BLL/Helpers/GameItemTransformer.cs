@@ -3,7 +3,6 @@ using Resources.BLL.Models;
 using Resources.DAL.Entities;
 
 namespace Resources.BLL.Helpers;
-
 public static class GameItemTransformer
 {
     public static GameItemResponse ToResponse(this GameItem item) =>

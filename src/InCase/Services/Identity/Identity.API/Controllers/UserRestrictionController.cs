@@ -8,7 +8,6 @@ using System.Net;
 using System.Security.Claims;
 
 namespace Identity.API.Controllers;
-
 [Route("api/user-restriction")]
 [ApiController]
 public class UserRestrictionController(IUserRestrictionService restrictionService) : ControllerBase

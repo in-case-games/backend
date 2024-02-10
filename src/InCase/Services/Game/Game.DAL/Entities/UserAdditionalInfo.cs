@@ -1,7 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
 namespace Game.DAL.Entities;
-
 public class UserAdditionalInfo : BaseEntity
 {
     public decimal Balance { get; set; } = 0;
