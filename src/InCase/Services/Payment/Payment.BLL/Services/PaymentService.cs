@@ -34,7 +34,7 @@ public class PaymentService(
 
         foreach (var payment in payments)
         {
-            payment.UpdateTo = DateTime.UtcNow.AddSeconds(30);
+            payment.UpdateTo = DateTime.UtcNow.AddMinutes(5);
             context.Entry(payment).Property(p => p.UpdateTo).IsModified = true;
             await context.SaveChangesAsync(cancellationToken);
 

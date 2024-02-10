@@ -10,7 +10,7 @@ public static class InvoiceCreateTransformer
         {
             Amount = request.Amount,
             Capture = true,
-            Confirmation = new Confirmation { Type = "redirect", ReturnUrl = "https://localhost:3000/" },
+            Confirmation = new Confirmation { Type = "redirect", ReturnUrl = "http://localhost:3000/" },
             Metadata = new InvoiceCreateMetadata
             {
                 UserId = request.User!.Id
