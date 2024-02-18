@@ -263,3 +263,7 @@ services:
       - "5001:8080"
     volumes:
       - ~/.aspnet/https:/https:ro
+
+volumes:
+  database:
+  rabbitmq:      

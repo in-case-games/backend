@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Infrastructure.MassTransit.Statistics;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Payment.BLL.Helpers;
 using Payment.BLL.Interfaces;
@@ -88,6 +89,10 @@ public class PaymentService(
             }
 
             await publisher.SendAsync(payment.ToTemplate(), cancellationToken);
+            await publisher.SendAsync(new SiteStatisticsAdminTemplate
+            {
+                TotalReplenishedFunds = payment.Amount
+            }, cancellationToken);
         }
     }
 
