@@ -7,7 +7,7 @@ services:
     restart: always
     volumes:
       - ./../fileserver:/static/images
-      - ./../nginx/conf.d/:/etc/nginx/conf.d/
+      - ./../nginx/conf.dev.d/:/etc/nginx/conf.d/
     ports:
       - "8080:8080"
 

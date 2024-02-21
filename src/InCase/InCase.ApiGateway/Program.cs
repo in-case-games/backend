@@ -4,14 +4,15 @@ using Ocelot.Middleware;
 
 const string policyName = "CorsPolicy";
 
+var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development";
 var builder = WebApplication.CreateBuilder(args);
 var configuration = new ConfigurationBuilder()
-    .AddJsonFile("ocelot.json")
+    .AddJsonFile($"ocelot.{env}.json")
     .AddJsonFile("appsettings.Development.json")
     .Build();
-var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development";
 
 builder.Configuration.AddEnvironmentVariables();
+
 builder.Logging.AddConfiguration(configuration).ClearProviders().AddNLog();
 
 builder.Services.AddCors(options =>

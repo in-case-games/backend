@@ -1,6 +1,6 @@
 {
   "GlobalConfiguration": {
-    "BaseUrl": "https://localhost:5000"
+    "BaseUrl": "https://localhost:443"
   },
   "Routes": [
     //Base: Authentication.API
@@ -10,8 +10,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5033
+          "Host": "auth-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/authentication/confirm/account",
@@ -22,8 +22,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5033
+          "Host": "auth-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/authentication/confirm/email/{email}",
@@ -34,8 +34,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5033
+          "Host": "auth-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/authentication/confirm/{userId}/email/{email}",
@@ -46,8 +46,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5033
+          "Host": "auth-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/authentication/confirm/login/{login}",
@@ -58,8 +58,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5033
+          "Host": "auth-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/authentication/confirm/{userId}/login/{login}",
@@ -70,8 +70,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5033
+          "Host": "auth-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/authentication/confirm/password/{password}",
@@ -82,8 +82,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5033
+          "Host": "auth-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/authentication/confirm/account",
@@ -95,8 +95,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5033
+          "Host": "auth-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/authentication/sign-in",
@@ -107,8 +107,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5033
+          "Host": "auth-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/authentication/sign-up",
@@ -119,8 +119,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5033
+          "Host": "auth-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/authentication/refresh",
@@ -132,8 +132,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5033
+          "Host": "auth-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/authentication/sending/forgot/password",
@@ -144,8 +144,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5033
+          "Host": "auth-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/authentication/sending/email/{password}",
@@ -156,8 +156,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5033
+          "Host": "auth-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/authentication/sending/login/{password}",
@@ -168,8 +168,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5033
+          "Host": "auth-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/authentication/sending/password/{password}",
@@ -180,8 +180,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5033
+          "Host": "auth-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/authentication/sending/account/{password}",
@@ -194,8 +194,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5225
+          "Host": "email-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/{id}/is-notify",
@@ -206,8 +206,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5225
+          "Host": "email-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/is-notify",
@@ -218,8 +218,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5225
+          "Host": "email-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/is-notify/{isNotify}",
@@ -230,8 +230,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5225
+          "Host": "email-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/admin/{userId}/is-notify/{isNotify}",
@@ -244,8 +244,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5184
+          "Host": "game-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/opening/box/{id}",
@@ -256,8 +256,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5184
+          "Host": "game-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/opening/virtual/box/{id}",
@@ -268,8 +268,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5184
+          "Host": "game-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/opening/virtual/box/{id}&{count}",
@@ -280,8 +280,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5184
+          "Host": "game-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/admin/opening/virtual/box/{id}&{count}",
@@ -293,8 +293,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5184
+          "Host": "game-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/guest-mode",
@@ -305,8 +305,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5184
+          "Host": "game-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/balance",
@@ -317,8 +317,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5184
+          "Host": "game-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/{userId}/balance",
@@ -329,8 +329,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5184
+          "Host": "game-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/{userId}/balance/{balance}/owner",
@@ -341,8 +341,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5184
+          "Host": "game-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/guest-mode",
@@ -354,8 +354,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5184
+          "Host": "game-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/history/opening/id/{id}",
@@ -366,8 +366,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5184
+          "Host": "game-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/history/opening/roulette",
@@ -378,8 +378,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5184
+          "Host": "game-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/history/opening/all",
@@ -390,8 +390,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5184
+          "Host": "game-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/history/opening",
@@ -402,8 +402,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5184
+          "Host": "game-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/history/opening/ten/last",
@@ -414,8 +414,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5184
+          "Host": "game-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/{id}/history/opening",
@@ -426,8 +426,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5184
+          "Host": "game-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/admin/{userId}/history/opening",
@@ -438,8 +438,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5184
+          "Host": "game-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/history/opening/box/{id}",
@@ -450,8 +450,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5184
+          "Host": "game-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/history/opening/item/{id}",
@@ -462,8 +462,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5184
+          "Host": "game-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/history/opening/roulette/box/{id}",
@@ -474,8 +474,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5184
+          "Host": "game-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/history/opening/roulette/item/{id}",
@@ -487,8 +487,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5184
+          "Host": "game-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/path/banner",
@@ -499,8 +499,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5184
+          "Host": "game-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/path/banner/id/{id}",
@@ -511,8 +511,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5184
+          "Host": "game-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/path/banner/box/{id}",
@@ -523,8 +523,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5184
+          "Host": "game-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/path/banner/item/{id}",
@@ -535,8 +535,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5184
+          "Host": "game-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/path/banner",
@@ -547,8 +547,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5184
+          "Host": "game-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/path/banner",
@@ -559,8 +559,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5184
+          "Host": "game-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/path/banner/{id}",
@@ -573,8 +573,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5259
+          "Host": "identity-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/info/id/{id}",
@@ -585,8 +585,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5259
+          "Host": "identity-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/{id}/info",
@@ -597,8 +597,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5259
+          "Host": "identity-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/info",
@@ -609,8 +609,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5259
+          "Host": "identity-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/{userId}/info/role/{id}",
@@ -621,8 +621,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5259
+          "Host": "identity-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/{userId}/info/deletion/date",
@@ -633,8 +633,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5259
+          "Host": "identity-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/info/image",
@@ -645,8 +645,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5259
+          "Host": "identity-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/admin/info/image",
@@ -658,8 +658,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5259
+          "Host": "identity-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/id/{id}",
@@ -670,8 +670,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5259
+          "Host": "identity-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user",
@@ -682,8 +682,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5259
+          "Host": "identity-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/login/{login}",
@@ -695,8 +695,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5259
+          "Host": "identity-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/restriction/id/{id}",
@@ -707,8 +707,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5259
+          "Host": "identity-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/{id}/restriction",
@@ -719,8 +719,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5259
+          "Host": "identity-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/login/{login}/restriction",
@@ -731,8 +731,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5259
+          "Host": "identity-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/restriction",
@@ -743,8 +743,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5259
+          "Host": "identity-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/{userId}/restriction/owner/{ownerId}",
@@ -755,8 +755,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5259
+          "Host": "identity-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/restriction/owner/{id}",
@@ -767,8 +767,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5259
+          "Host": "identity-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/restriction/owner",
@@ -779,8 +779,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5259
+          "Host": "identity-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/{userId}/restriction/owner",
@@ -791,8 +791,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5259
+          "Host": "identity-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/restriction/types",
@@ -803,8 +803,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5259
+          "Host": "identity-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/restriction",
@@ -815,8 +815,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5259
+          "Host": "identity-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/restriction",
@@ -827,8 +827,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5259
+          "Host": "identity-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/restriction/{id}",
@@ -840,8 +840,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5259
+          "Host": "identity-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/role/id/{id}",
@@ -852,8 +852,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5259
+          "Host": "identity-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/role",
@@ -866,8 +866,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5039
+          "Host": "payment-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/payments/invoice",
@@ -879,8 +879,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5039
+          "Host": "payment-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/history/payment",
@@ -891,8 +891,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5039
+          "Host": "payment-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/history/payment/id/{id}",
@@ -903,8 +903,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5039
+          "Host": "payment-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/admin/history/payment",
@@ -915,8 +915,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5039
+          "Host": "payment-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/admin/{userId}/history/payment",
@@ -929,8 +929,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5163
+          "Host": "promocode-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/promo-code",
@@ -941,8 +941,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5163
+          "Host": "promocode-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/promo-code/empty",
@@ -953,8 +953,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5163
+          "Host": "promocode-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/promo-code/name/{name}",
@@ -965,8 +965,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5163
+          "Host": "promocode-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/promo-code/types",
@@ -977,8 +977,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5163
+          "Host": "promocode-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/promo-code",
@@ -989,8 +989,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5163
+          "Host": "promocode-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/promo-code",
@@ -1001,8 +1001,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5163
+          "Host": "promocode-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/promo-code/{id}",
@@ -1014,8 +1014,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5163
+          "Host": "promocode-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/promo-code",
@@ -1026,8 +1026,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5163
+          "Host": "promocode-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/promo-code/id/{id}",
@@ -1038,8 +1038,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5163
+          "Host": "promocode-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/admin/promocode",
@@ -1050,8 +1050,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5163
+          "Host": "promocode-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/admin/{userId}/promo-code",
@@ -1062,8 +1062,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5163
+          "Host": "promocode-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/admin/promo-code/{id}",
@@ -1074,8 +1074,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5163
+          "Host": "promocode-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/promo-code/activate/{name}",
@@ -1086,8 +1086,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5163
+          "Host": "promocode-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/promo-code/exchange/{name}",
@@ -1100,8 +1100,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5073
+          "Host": "resources-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/game",
@@ -1112,8 +1112,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5073
+          "Host": "resources-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/game/id/{id}",
@@ -1124,8 +1124,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5073
+          "Host": "resources-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/game/name/{name}",
@@ -1137,8 +1137,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5073
+          "Host": "resources-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/game/item",
@@ -1149,8 +1149,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5073
+          "Host": "resources-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/game/item/id/{id}",
@@ -1161,8 +1161,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5073
+          "Host": "resources-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/game/item/name/{name}",
@@ -1173,8 +1173,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5073
+          "Host": "resources-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/game/item/hash/{name}",
@@ -1185,8 +1185,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5073
+          "Host": "resources-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/game/{id}/item",
@@ -1197,8 +1197,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5073
+          "Host": "resources-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/game/item/qualities",
@@ -1209,8 +1209,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5073
+          "Host": "resources-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/game/item/rarities",
@@ -1221,8 +1221,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5073
+          "Host": "resources-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/game/item/types",
@@ -1233,8 +1233,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5073
+          "Host": "resources-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/game/item/quality/{name}",
@@ -1245,8 +1245,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5073
+          "Host": "resources-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/game/item/rarity/{name}",
@@ -1257,8 +1257,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5073
+          "Host": "resources-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/game/item/type/{name}",
@@ -1269,8 +1269,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5073
+          "Host": "resources-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/game/item",
@@ -1281,8 +1281,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5073
+          "Host": "resources-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/game/item",
@@ -1293,8 +1293,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5073
+          "Host": "resources-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/game/item/{id}",
@@ -1306,8 +1306,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5073
+          "Host": "resources-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/group-box",
@@ -1318,8 +1318,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5073
+          "Host": "resources-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/group-box/id/{id}",
@@ -1330,8 +1330,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5073
+          "Host": "resources-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/group-box/name/{name}",
@@ -1342,8 +1342,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5073
+          "Host": "resources-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/group-box",
@@ -1354,8 +1354,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5073
+          "Host": "resources-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/group-box",
@@ -1366,8 +1366,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5073
+          "Host": "resources-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/group-box/{id}",
@@ -1379,8 +1379,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5073
+          "Host": "resources-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/box/banner",
@@ -1391,8 +1391,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5073
+          "Host": "resources-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/box/banner/active/{isActive}",
@@ -1403,8 +1403,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5073
+          "Host": "resources-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/box/banner/id/{id}",
@@ -1415,8 +1415,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5073
+          "Host": "resources-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/box/{id}/banner",
@@ -1427,8 +1427,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5073
+          "Host": "resources-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/box/banner",
@@ -1439,8 +1439,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5073
+          "Host": "resources-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/box/banner",
@@ -1451,8 +1451,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5073
+          "Host": "resources-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/box/banner/{id}",
@@ -1464,8 +1464,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5073
+          "Host": "resources-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/box",
@@ -1476,8 +1476,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5073
+          "Host": "resources-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/game/{id}/box",
@@ -1488,8 +1488,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5073
+          "Host": "resources-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/box/id/{id}",
@@ -1500,8 +1500,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5073
+          "Host": "resources-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/box/name/{name}",
@@ -1512,8 +1512,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5073
+          "Host": "resources-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/box",
@@ -1524,8 +1524,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5073
+          "Host": "resources-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/box",
@@ -1536,8 +1536,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5073
+          "Host": "resources-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/box/id/{id}",
@@ -1549,8 +1549,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5073
+          "Host": "resources-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/box/group",
@@ -1561,8 +1561,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5073
+          "Host": "resources-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/box/group/id/{id}",
@@ -1573,8 +1573,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5073
+          "Host": "resources-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/box/group/game/{id}",
@@ -1585,8 +1585,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5073
+          "Host": "resources-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/box/{id}/group",
@@ -1597,8 +1597,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5073
+          "Host": "resources-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/box/group/{id}",
@@ -1609,8 +1609,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5073
+          "Host": "resources-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/box/group",
@@ -1621,8 +1621,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5073
+          "Host": "resources-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/box/group",
@@ -1633,8 +1633,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5073
+          "Host": "resources-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/box/group/{id}",
@@ -1646,8 +1646,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5073
+          "Host": "resources-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/box/inventory/id/{id}",
@@ -1658,8 +1658,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5073
+          "Host": "resources-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/box/{id}/inventory",
@@ -1670,8 +1670,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5073
+          "Host": "resources-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/box/inventory/item/{id}",
@@ -1682,8 +1682,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5073
+          "Host": "resources-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/box/inventory",
@@ -1694,8 +1694,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5073
+          "Host": "resources-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/box/inventory",
@@ -1706,8 +1706,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5073
+          "Host": "resources-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/box/inventory/{id}",
@@ -1720,8 +1720,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5079
+          "Host": "review-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/review/image",
@@ -1732,8 +1732,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5079
+          "Host": "review-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/admin/review/image",
@@ -1744,8 +1744,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5079
+          "Host": "review-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/review/image/id/{id}",
@@ -1756,8 +1756,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5079
+          "Host": "review-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/admin/review/image/id/{id}",
@@ -1768,8 +1768,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5079
+          "Host": "review-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/{id}/review/image",
@@ -1780,8 +1780,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5079
+          "Host": "review-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/review/image",
@@ -1792,8 +1792,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5079
+          "Host": "review-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/admin/{userId}/review/image",
@@ -1804,8 +1804,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5079
+          "Host": "review-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/review/{id}/image",
@@ -1816,8 +1816,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5079
+          "Host": "review-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/admin/review/{id}/image",
@@ -1828,8 +1828,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5079
+          "Host": "review-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/review/image",
@@ -1840,8 +1840,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5079
+          "Host": "review-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/review/image/{id}",
@@ -1852,8 +1852,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5079
+          "Host": "review-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/admin/review/image/id/{id}",
@@ -1865,8 +1865,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5079
+          "Host": "review-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/review/all",
@@ -1877,8 +1877,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5079
+          "Host": "review-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/review/last/{count}",
@@ -1889,8 +1889,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5079
+          "Host": "review-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/admin/review/last/{count}",
@@ -1901,8 +1901,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5079
+          "Host": "review-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/review/id/{id}",
@@ -1913,8 +1913,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5079
+          "Host": "review-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/{id}/review",
@@ -1925,8 +1925,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5079
+          "Host": "review-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/admin/review",
@@ -1937,8 +1937,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5079
+          "Host": "review-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/admin/review/id/{id}",
@@ -1949,8 +1949,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5079
+          "Host": "review-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/admin/{userId}/review",
@@ -1961,8 +1961,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5079
+          "Host": "review-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/review",
@@ -1973,8 +1973,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5079
+          "Host": "review-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/review/{id}/approve",
@@ -1985,8 +1985,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5079
+          "Host": "review-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/review/{id}/denied",
@@ -1997,8 +1997,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5079
+          "Host": "review-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/review",
@@ -2009,8 +2009,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5079
+          "Host": "review-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/review",
@@ -2021,8 +2021,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5079
+          "Host": "review-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/review/{id}",
@@ -2033,8 +2033,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5079
+          "Host": "review-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/admin/review/{id}",
@@ -2059,8 +2059,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5231
+          "Host": "statistics-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/admin/site/statistics",
@@ -2073,8 +2073,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5155
+          "Host": "support-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/topic/answer/image/id/{id}",
@@ -2085,8 +2085,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5155
+          "Host": "support-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/admin/topic/answer/image/id/{id}",
@@ -2097,8 +2097,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5155
+          "Host": "support-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/topic/answer/{id}/image",
@@ -2109,8 +2109,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5155
+          "Host": "support-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/admin/topic/answer/{id}/image",
@@ -2121,8 +2121,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5155
+          "Host": "support-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/topic/{id}/answer/image",
@@ -2133,8 +2133,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5155
+          "Host": "support-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/admin/topic/{id}/answer/image",
@@ -2145,8 +2145,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5155
+          "Host": "support-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/topic/answer/image",
@@ -2157,8 +2157,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5155
+          "Host": "support-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/admin/{userId}/topic/answer/image",
@@ -2169,8 +2169,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5155
+          "Host": "support-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/topic/answer/image",
@@ -2181,8 +2181,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5155
+          "Host": "support-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/topic/answer/image/{id}",
@@ -2193,8 +2193,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5155
+          "Host": "support-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/admin/topic/answer/image/{id}",
@@ -2206,8 +2206,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5155
+          "Host": "support-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/topic/answer/id/{id}",
@@ -2218,8 +2218,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5155
+          "Host": "support-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/admin/topic/answer/id/{id}",
@@ -2230,8 +2230,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5155
+          "Host": "support-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/topic/answer",
@@ -2242,8 +2242,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5155
+          "Host": "support-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/admin/{userId}/topic/answer",
@@ -2254,8 +2254,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5155
+          "Host": "support-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/topic/{id}/answer",
@@ -2266,8 +2266,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5155
+          "Host": "support-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/admin/topic/{id}/answer",
@@ -2278,8 +2278,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5155
+          "Host": "support-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/topic/answer",
@@ -2290,8 +2290,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5155
+          "Host": "support-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/admin/topic/answer",
@@ -2302,8 +2302,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5155
+          "Host": "support-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/topic/answer",
@@ -2314,8 +2314,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5155
+          "Host": "support-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/topic/answer/{id}",
@@ -2327,8 +2327,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5155
+          "Host": "support-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/topic/id/{id}",
@@ -2339,8 +2339,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5155
+          "Host": "support-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/admin/topic/id/{id}",
@@ -2351,8 +2351,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5155
+          "Host": "support-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/topic",
@@ -2363,8 +2363,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5155
+          "Host": "support-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/admin/{userId}/topic",
@@ -2375,8 +2375,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5155
+          "Host": "support-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/topic/opened",
@@ -2387,8 +2387,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5155
+          "Host": "support-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/topic/{id}/close",
@@ -2399,8 +2399,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5155
+          "Host": "support-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/admin/topic/{id}/close",
@@ -2411,8 +2411,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5155
+          "Host": "support-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/topic",
@@ -2423,8 +2423,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5155
+          "Host": "support-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/topic",
@@ -2435,8 +2435,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5155
+          "Host": "support-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/topic/{id}",
@@ -2447,8 +2447,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5155
+          "Host": "support-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/admin/topic/{id}",
@@ -2461,8 +2461,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5187
+          "Host": "withdraw-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/inventory/id/{id}",
@@ -2473,8 +2473,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5187
+          "Host": "withdraw-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/{id}/inventory",
@@ -2485,8 +2485,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5187
+          "Host": "withdraw-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/inventory",
@@ -2497,8 +2497,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5187
+          "Host": "withdraw-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/admin/{userId}/inventory",
@@ -2509,8 +2509,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5187
+          "Host": "withdraw-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/inventory",
@@ -2521,8 +2521,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5187
+          "Host": "withdraw-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/inventory/exchange",
@@ -2533,8 +2533,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5187
+          "Host": "withdraw-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/inventory/{id}/sell",
@@ -2545,8 +2545,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5187
+          "Host": "withdraw-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/inventory/last/sell/{itemId}",
@@ -2557,8 +2557,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5187
+          "Host": "withdraw-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/inventory/{id}",
@@ -2570,8 +2570,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5187
+          "Host": "withdraw-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/history/withdraw/id/{id}",
@@ -2582,8 +2582,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5187
+          "Host": "withdraw-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/{id}/history/withdraw",
@@ -2594,8 +2594,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5187
+          "Host": "withdraw-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/history/withdraw/100/last",
@@ -2606,8 +2606,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5187
+          "Host": "withdraw-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/history/withdraw",
@@ -2618,8 +2618,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5187
+          "Host": "withdraw-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/admin/history/withdraw",
@@ -2630,8 +2630,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5187
+          "Host": "withdraw-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/admin/{userId}/history/withdraw",
@@ -2642,8 +2642,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5187
+          "Host": "withdraw-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/user/history/withdraw/{id}/transfer",
@@ -2655,8 +2655,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5187
+          "Host": "withdraw-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/withdraw",
@@ -2667,8 +2667,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5187
+          "Host": "withdraw-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/withdraw/market/{name}/balance",
@@ -2679,8 +2679,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5187
+          "Host": "withdraw-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/withdraw/item/id/{id}",
