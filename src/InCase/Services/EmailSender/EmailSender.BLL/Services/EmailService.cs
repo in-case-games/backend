@@ -9,11 +9,13 @@ using MimeKit;
 namespace EmailSender.BLL.Services;
 public class EmailService(IConfiguration configuration) : IEmailService
 {
-    private readonly string _host = configuration["EmailConfig:Host"]!;
-    private readonly int _port = int.Parse(configuration["EmailConfig:Port"]!);
-    private readonly string _smtpEmail = configuration["EmailConfig:Email"]!;
-    private readonly string _smtpPassword = configuration["EmailConfig:Password"]!;
-    private readonly string _requestUrl = configuration["EmailConfig:AddressCallback"]!;
+    private static readonly string Env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development";
+
+    private readonly string _host = configuration[$"EmailConfig:Host:{Env}"]!;
+    private readonly int _port = int.Parse(configuration[$"EmailConfig:Port:{Env}"]!);
+    private readonly string _smtpEmail = configuration[$"EmailConfig:Email:{Env}"]!;
+    private readonly string _smtpPassword = configuration[$"EmailConfig:Password:{Env}"]!;
+    private readonly string _requestUrl = configuration[$"EmailConfig:AddressCallback:{Env}"]!;
 
     public async Task SendToEmailAsync(EmailTemplate template, CancellationToken cancellationToken = default)
     {

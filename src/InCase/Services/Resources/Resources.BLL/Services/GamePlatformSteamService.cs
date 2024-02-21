@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using System.Globalization;
+using Microsoft.Extensions.Configuration;
 using Resources.BLL.Interfaces;
 using Resources.BLL.Models;
 using System.Text.Json.Serialization;
@@ -11,6 +12,9 @@ public class GamePlatformSteamService(
     IResponseService responseService) : IGamePlatformService
 {
     private const int NumberAttempts = 5;
+    private static readonly string Env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development";
+
+    private readonly string? _secret = cfg[$"MarketTM:Secret:{Env}"];
 
     private readonly Dictionary<string, string> _domainUri = new()
     {
@@ -27,7 +31,7 @@ public class GamePlatformSteamService(
         CancellationToken cancellation = default)
     {
         var id = idForMarket.Replace("-", "_");
-        var uri = $"{_domainUri[game]}/api/ItemInfo/{id}/ru/?key={cfg["MarketTM:Secret"]}";
+        var uri = $"{_domainUri[game]}/api/ItemInfo/{id}/ru/?key={_secret}";
 
         var i = 0;
 
@@ -78,10 +82,10 @@ public class GamePlatformSteamService(
                     return new ItemCostResponse { Success = false, Cost = 0M };
                 }
 
-                var temp = info!.Cost!.Replace(" pуб.", "");
+                var temp = info.Cost!.Replace(" pуб.", "");
                 var cost = decimal.Parse(temp);
 
-                if (temp != cost.ToString()) cost /= 100;
+                if (temp != cost.ToString(CultureInfo.InvariantCulture)) cost /= 100;
 
                 return new ItemCostResponse { Success = true, Cost = cost };
             }

@@ -184,6 +184,7 @@ public class GameItemService(
             throw new NotFoundException("Игра не найдена");
 
         var item = request.ToEntity(true);
+        item.UpdateDate = DateTime.UtcNow - TimeSpan.FromMinutes(50);
 
         await context.GameItems.AddAsync(item, cancellation);
         await context.SaveChangesAsync(cancellation);
@@ -225,6 +226,7 @@ public class GameItemService(
             throw new NotFoundException("Игра не найдена");
 
         var item = request.ToEntity();
+        item.UpdateDate = DateTime.UtcNow - TimeSpan.FromMinutes(50);
 
         context.Entry(itemOld).CurrentValues.SetValues(item);
         await context.SaveChangesAsync(cancellation);
@@ -272,7 +274,7 @@ public class GameItemService(
         var item = await context.GameItems
             .Include(gi => gi.Game)
             .OrderByDescending(gi => gi.UpdateDate)
-            .Where(gi => gi.UpdateDate + TimeSpan.FromMinutes(5) <= DateTime.UtcNow)
+            .Where(gi => gi.UpdateDate + TimeSpan.FromHours(1) <= DateTime.UtcNow)
             .OrderByDescending(gi => gi.UpdateDate)
             .FirstOrDefaultAsync(cancellationToken);
 

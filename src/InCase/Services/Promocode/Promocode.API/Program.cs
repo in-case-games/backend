@@ -14,19 +14,14 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.Development.json").Build();
+var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development";
 
+builder.Configuration.AddEnvironmentVariables();
 builder.Logging.AddConfiguration(configuration).ClearProviders().AddNLog();
-
 builder.Services.AddDbContextPool<ApplicationDbContext>(
     options => {
         options.UseSnakeCaseNamingConvention();
-        options.UseNpgsql(
-#if DEBUG
-        builder.Configuration["ConnectionStrings:DevelopmentConnection"],
-#else
-        builder.Configuration["ConnectionStrings:ProductionConnection"],
-#endif
-        b => b.MigrationsAssembly("Promocode.API"));
+        options.UseNpgsql(builder.Configuration[$"ConnectionStrings:{env}"], b => b.MigrationsAssembly("Promocode.API"));
     }
 );
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -37,14 +32,13 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         options.TokenValidationParameters = new TokenValidationParameters()
         {
             ValidateIssuer = true,
-            ValidIssuer = builder.Configuration["JWT:ValidIssuer"]!,
+            ValidIssuer = builder.Configuration[$"JWT:ValidIssuer:{env}"]!,
 
             ValidateAudience = true,
-            ValidAudience = builder.Configuration["JWT:ValidAudience"]!,
+            ValidAudience = builder.Configuration[$"JWT:ValidAudience:{env}"]!,
             ValidateLifetime = true,
 
-            IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(builder.Configuration["JWT:Secret"]!)),
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration[$"JWT:Secret:{env}"]!)),
 
             ValidateIssuerSigningKey = true,
         };
@@ -90,10 +84,10 @@ builder.Services.AddMassTransit(x =>
 
     x.UsingRabbitMq((context, cfg) =>
     {
-        cfg.Host(new Uri(builder.Configuration["MassTransit:Uri"]!), h =>
+        cfg.Host(new Uri(builder.Configuration[$"MassTransit:Uri:{env}"]!), h =>
         {
-            h.Username(builder.Configuration["MassTransit:Username"]!);
-            h.Password(builder.Configuration["MassTransit:Password"]!);
+            h.Username(builder.Configuration[$"MassTransit:Username:{env}"]!);
+            h.Password(builder.Configuration[$"MassTransit:Password:{env}"]!);
         });
         cfg.ReceiveEndpoint(e =>
         {

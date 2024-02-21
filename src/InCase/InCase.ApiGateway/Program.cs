@@ -2,21 +2,23 @@ using NLog.Extensions.Logging;
 using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
 
-var builder = WebApplication.CreateBuilder(args);
 const string policyName = "CorsPolicy";
 
+var builder = WebApplication.CreateBuilder(args);
 var configuration = new ConfigurationBuilder()
     .AddJsonFile("ocelot.json")
     .AddJsonFile("appsettings.Development.json")
     .Build();
+var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development";
 
+builder.Configuration.AddEnvironmentVariables();
 builder.Logging.AddConfiguration(configuration).ClearProviders().AddNLog();
 
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: policyName,
         cfg => {
-            cfg.WithOrigins("http://localhost:3000")
+            cfg.WithOrigins(env == "Production" ? "https://in-case.games" : "http://localhost:3000")
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials();

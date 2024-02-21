@@ -2047,8 +2047,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "host.docker.internal",
-          "Port": 5231
+          "Host": "statistics-api",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/site/statistics",
