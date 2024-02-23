@@ -6,9 +6,9 @@ services:
     hostname: fileserver
     restart: always
     volumes:
-      - ~/fileserver:/static/images
-      - ~/.ssl/:/etc/.ssl/private/
-      - ~/nginx/conf.prod.d/:/etc/nginx/conf.d/
+      - "fileserver:/static/images"
+      - ".ssl/:/etc/.ssl/private/"
+      - "nginx/conf.prod.d/:/etc/nginx/conf.d/"
     ports:
       - "8080:8080"
 
@@ -17,19 +17,21 @@ services:
     hostname: mongodb
     restart: always
     env_file:
-      - .enviroments/mongo.prod.env
+      - ".enviroments/mongo.prod.env"
     volumes:
-      - .db/mongo:/data/db
+      - "data/mongo:/data/db"
     ports:
       - "127.0.0.1:27017:27017"
 
   rabbitmq:
     image: rabbitmq:3.10.7-management
-    hostname: rabbitmq
+    hostname: mabbit
     container_name: rabbitmq
     restart: always
     env_file:
-      - .enviroments/rabbitmq.prod.env
+      - ".enviroments/rabbitmq.prod.env"
+    volumes:
+      - "data/rabbitmq:/var/lib/rabbitmq/mnesia/"
     expose:
       - "5672"
       - "15672"
@@ -41,13 +43,10 @@ services:
     hostname: psql
     container_name: psql
     restart: always
-    command: postgres -c 'max_connections=200'
-    stdin_open: true
-    tty: true
     env_file:
-      - .enviroments/psql.prod.env
+      - ".enviroments/psql.prod.env"
     volumes:
-      - .db/psql:/var/lib/postgresql/data/pgdata  
+      - "data/psql:/var/lib/postgresql/data"
     ports:
       - "127.0.0.1:5432:5432"
 
@@ -56,13 +55,13 @@ services:
     environment: 
       ASPNETCORE_ENVIRONMENT: Production
     env_file:
-      - .enviroments/auth-api.env  
+      - ".enviroments/auth-api.env"
     depends_on:
-      - psql
-      - rabbitmq
+      - "psql"
+      - "rabbitmq"
     volumes:
-      - ~/fileserver:/static/images
-      - ~/logs/debug:/root/logs/debug
+      - "fileserver:/static/images"
+      - "logs/debug:/root/logs/debug"
     ports:
       - "127.0.0.1:5033:8080"
 
@@ -71,13 +70,13 @@ services:
     environment: 
       ASPNETCORE_ENVIRONMENT: Production
     env_file:
-      - .enviroments/email-api.env    
+      - ".enviroments/email-api.env"
     depends_on:
-      - psql
-      - rabbitmq
+      - "psql"
+      - "rabbitmq"
     volumes:
-      - ~/fileserver:/static/images
-      - ~/logs/debug:/root/logs/debug
+      - "fileserver:/static/images"
+      - "logs/debug:/root/logs/debug"
     ports:
       - "127.0.0.1:5225:8080"
 
@@ -86,13 +85,13 @@ services:
     environment: 
       ASPNETCORE_ENVIRONMENT: Production
     env_file:
-      - .enviroments/game-api.env    
+      - ".enviroments/game-api.env"
     depends_on:
-      - psql
-      - rabbitmq
+      - "psql"
+      - "rabbitmq"
     volumes:
-      - ~/fileserver:/static/images
-      - ~/logs/debug:/root/logs/debug
+      - "fileserver:/static/images"
+      - "logs/debug:/root/logs/debug"
     ports:
       - "127.0.0.1:5184:8080"
 
@@ -101,13 +100,13 @@ services:
     environment: 
       ASPNETCORE_ENVIRONMENT: Production
     env_file:
-      - .enviroments/identity-api.env    
+      - ".enviroments/identity-api.env"
     depends_on:
-      - psql
-      - rabbitmq
+      - "psql"
+      - "rabbitmq"
     volumes:
-      - ~/fileserver:/static/images
-      - ~/logs/debug:/root/logs/debug
+      - "fileserver:/static/images"
+      - "logs/debug:/root/logs/debug"
     ports:
       - "127.0.0.1:5259:8080"
 
@@ -116,13 +115,13 @@ services:
     environment: 
       ASPNETCORE_ENVIRONMENT: Production
     env_file:
-      - .enviroments/payment-api.env    
+      - ".enviroments/payment-api.env"
     depends_on:
-      - psql
-      - rabbitmq
+      - "psql"
+      - "rabbitmq"
     volumes:
-      - ~/fileserver:/static/images
-      - ~/logs/debug:/root/logs/debug
+      - "fileserver:/static/images"
+      - "logs/debug:/root/logs/debug"
     ports:
       - "127.0.0.1:5039:8080"
 
@@ -131,13 +130,13 @@ services:
     environment: 
       ASPNETCORE_ENVIRONMENT: Production
     env_file:
-      - .enviroments/promocode-api.env    
+      - ".enviroments/promocode-api.env"
     depends_on:
-      - psql
-      - rabbitmq
+      - "psql"
+      - "rabbitmq"
     volumes:
-      - ~/fileserver:/static/images
-      - ~/logs/debug:/root/logs/debug
+      - "fileserver:/static/images"
+      - "logs/debug:/root/logs/debug"
     ports:
       - "127.0.0.1:5163:8080"
 
@@ -146,13 +145,13 @@ services:
     environment: 
       ASPNETCORE_ENVIRONMENT: Production
     env_file:
-      - .enviroments/resources-api.env    
+      - ".enviroments/resources-api.env"
     depends_on:
-      - psql
-      - rabbitmq
+      - "psql"
+      - "rabbitmq"
     volumes:
-      - ~/fileserver:/static/images
-      - ~/logs/debug:/root/logs/debug
+      - "fileserver:/static/images"
+      - "logs/debug:/root/logs/debug"
     ports:
       - "127.0.0.1:5073:8080"
 
@@ -161,13 +160,13 @@ services:
     environment: 
       ASPNETCORE_ENVIRONMENT: Production
     env_file:
-      - .enviroments/review-api.env    
+      - ".enviroments/review-api.env"
     depends_on:
-      - psql
-      - rabbitmq
+      - "psql"
+      - "rabbitmq"
     volumes:
-      - ~/fileserver:/static/images
-      - ~/logs/debug:/root/logs/debug
+      - "fileserver:/static/images"
+      - "logs/debug:/root/logs/debug"
     ports:
       - "127.0.0.1:5079:8080"
 
@@ -176,13 +175,13 @@ services:
     environment: 
       ASPNETCORE_ENVIRONMENT: Production
     env_file:
-      - .enviroments/statistics-api.env    
+      - ".enviroments/statistics-api.env"
     depends_on:
-      - nosqldata
-      - rabbitmq
+      - "nosqldata"
+      - "rabbitmq"
     volumes:
-      - ~/fileserver:/static/images
-      - ~/logs/debug:/root/logs/debug
+      - "fileserver:/static/images"
+      - "logs/debug:/root/logs/debug"
     ports:
       - "127.0.0.1:5231:8080"
 
@@ -191,13 +190,13 @@ services:
     environment: 
       ASPNETCORE_ENVIRONMENT: Production
     env_file:
-      - .enviroments/support-api.env    
+      - ".enviroments/support-api.env"
     depends_on:
-      - psql
-      - rabbitmq
+      - "psql"
+      - "rabbitmq"
     volumes:
-      - ~/fileserver:/static/images
-      - ~/logs/debug:/root/logs/debug
+      - "fileserver:/static/images"
+      - "logs/debug:/root/logs/debug"
     ports:
       - "127.0.0.1:5155:8080"
 
@@ -206,13 +205,13 @@ services:
     environment: 
       ASPNETCORE_ENVIRONMENT: Production
     env_file:
-      - .enviroments/withdraw-api.env    
+      - ".enviroments/withdraw-api.env"
     depends_on:
-      - psql
-      - rabbitmq
+      - "psql"
+      - "rabbitmq"
     volumes:
-      - ~/fileserver:/static/images
-      - ~/logs/debug:/root/logs/debug
+      - "fileserver:/static/images"
+      - "logs/debug:/root/logs/debug"
     ports:
       - "127.0.0.1:5187:8080"
 
@@ -221,15 +220,13 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Production
     env_file:
-      - .enviroments/gateway-api.env      
+      - ".enviroments/gateway-api.prod.env"
     ports:
       - "443:443"
-      - "80:80"
+      - "80:8080"
     volumes:
-      - ~/.aspnet/https:/https:ro
-      - ~/logs/debug:/root/logs/debug
-      - ~/.ssl/:/etc/.ssl/private/
-
+      - ".ssl/:/etc/.ssl/private/"
+      - "logs/debug:/root/logs/debug"
 volumes:
   database:
-  rabbitmq:      
+  rabbitmq:

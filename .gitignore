@@ -402,3 +402,6 @@ InCase/InCase.IntegrationTests/
 
 # Local application settings
 appsetings.Local.json
+
+src/data
+src/fileserver/users

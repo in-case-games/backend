@@ -21,7 +21,7 @@ services:
     volumes:
       - "../data/mongo:/data/db"
     ports:
-      - "27017:27017"
+      - "127.0.0.1:27017:27017"
 
   rabbitmq:
     image: rabbitmq:3.10.7-management
@@ -36,7 +36,7 @@ services:
       - "5672"
       - "15672"
     ports:
-      - "15672:15672"
+      - "127.0.0.1:15672:15672"
 
   psql: 
     image: postgres:13.3
@@ -48,7 +48,7 @@ services:
     volumes:
       - "../data/psql:/var/lib/postgresql/data"
     ports:
-      - "5432:5432"
+      - "127.0.0.1:5432:5432"
 
   auth-api: 
     image: "auth-api"
@@ -66,7 +66,7 @@ services:
       - "../fileserver:/static/images"
       - "../logs/debug:/root/logs/debug"
     ports:
-      - "5033:8080"
+      - "127.0.0.1:5033:8080"
 
   email-api:
     image: "email-api"
@@ -84,7 +84,7 @@ services:
       - "../fileserver:/static/images"
       - "../logs/debug:/root/logs/debug"
     ports:
-      - "5225:8080"
+      - "127.0.0.1:5225:8080"
 
   game-api:
     image: "game-api"
@@ -102,7 +102,7 @@ services:
       - "../fileserver:/static/images"
       - "../logs/debug:/root/logs/debug"
     ports:
-      - "5184:8080"
+      - "127.0.0.1:5184:8080"
 
   identity-api:
     image: "identity-api"
@@ -120,7 +120,7 @@ services:
       - "../fileserver:/static/images"
       - "../logs/debug:/root/logs/debug"
     ports:
-      - "5259:8080"
+      - "127.0.0.1:5259:8080"
 
   payment-api:
     image: "payment-api"
@@ -138,7 +138,7 @@ services:
       - "../fileserver:/static/images"
       - "../logs/debug:/root/logs/debug"
     ports:
-      - "5039:8080"
+      - "127.0.0.1:5039:8080"
 
   promocode-api:
     image: "promocode-api"
@@ -156,7 +156,7 @@ services:
       - "../fileserver:/static/images"
       - "../logs/debug:/root/logs/debug"
     ports:
-      - "5163:8080"
+      - "127.0.0.1:5163:8080"
 
   resources-api:
     image: "resources-api"
@@ -174,7 +174,7 @@ services:
       - "../fileserver:/static/images"
       - "../logs/debug:/root/logs/debug"
     ports:
-      - "5073:8080"
+      - "127.0.0.1:5073:8080"
 
   review-api:
     image: "review-api"
@@ -192,7 +192,7 @@ services:
       - "../fileserver:/static/images"
       - "../logs/debug:/root/logs/debug"
     ports:
-      - "5079:8080"
+      - "127.0.0.1:5079:8080"
 
   statistics-api:
     image: "statistics-api"
@@ -210,7 +210,7 @@ services:
       - "../fileserver:/static/images"
       - "../logs/debug:/root/logs/debug"
     ports:
-      - "5231:8080"
+      - "127.0.0.1:5231:8080"
 
   support-api:
     image: "support-api"
@@ -228,7 +228,7 @@ services:
       - "../fileserver:/static/images"
       - "../logs/debug:/root/logs/debug"
     ports:
-      - "5155:8080"
+      - "127.0.0.1:5155:8080"
 
   withdraw-api:
     image: "withdraw-api"
@@ -246,7 +246,7 @@ services:
       - "../fileserver:/static/images"
       - "../logs/debug:/root/logs/debug"
     ports:
-      - "5187:8080"
+      - "127.0.0.1:5187:8080"
 
   gateway-api:
     image: "gateway-api"
