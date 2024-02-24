@@ -184,7 +184,8 @@ public class GameItemService(
             throw new NotFoundException("Игра не найдена");
 
         var item = request.ToEntity(true);
-        item.UpdateDate = DateTime.UtcNow - TimeSpan.FromMinutes(50);
+        item.UpdateTo = DateTime.UtcNow.AddMinutes(10);
+        item.UpdatedIn = DateTime.UtcNow;
 
         await context.GameItems.AddAsync(item, cancellation);
         await context.SaveChangesAsync(cancellation);
@@ -226,7 +227,8 @@ public class GameItemService(
             throw new NotFoundException("Игра не найдена");
 
         var item = request.ToEntity();
-        item.UpdateDate = DateTime.UtcNow - TimeSpan.FromMinutes(50);
+        item.UpdateTo = DateTime.UtcNow.AddMinutes(10);
+        item.UpdatedIn = DateTime.UtcNow;
 
         context.Entry(itemOld).CurrentValues.SetValues(item);
         await context.SaveChangesAsync(cancellation);
@@ -273,9 +275,9 @@ public class GameItemService(
     {
         var item = await context.GameItems
             .Include(gi => gi.Game)
-            .OrderByDescending(gi => gi.UpdateDate)
-            .Where(gi => gi.UpdateDate + TimeSpan.FromHours(1) <= DateTime.UtcNow)
-            .OrderByDescending(gi => gi.UpdateDate)
+            .OrderByDescending(gi => gi.UpdateTo)
+            .Where(gi => gi.UpdateTo <= DateTime.UtcNow)
+            .OrderByDescending(gi => gi.UpdateTo)
             .FirstOrDefaultAsync(cancellationToken);
 
         if(item is null) return;
@@ -288,7 +290,8 @@ public class GameItemService(
         var isAdditionalCost = priceOriginal.Cost <= 0 || priceAdditional.Cost > priceOriginal.Cost;
         var cost = isAdditionalCost ? priceAdditional.Cost : priceOriginal.Cost;
 
-        item.UpdateDate = DateTime.UtcNow;
+        item.UpdateTo = DateTime.UtcNow.AddHours(1);
+        item.UpdatedIn = DateTime.UtcNow;
 
         if (cost > 0) item.Cost = cost <= 1 ? 7 : cost * 7M;
 

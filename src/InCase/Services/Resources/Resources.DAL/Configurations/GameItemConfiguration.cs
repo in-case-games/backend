@@ -23,7 +23,9 @@ internal class GameItemConfiguration : BaseEntityConfiguration<GameItem>
         builder.Property(gi => gi.Name)
             .HasMaxLength(50)
             .IsRequired();
-        builder.Property(gi => gi.UpdateDate)
+        builder.Property(gi => gi.UpdatedIn)
+            .IsRequired();
+        builder.Property(gi => gi.UpdateTo)
             .IsRequired();
         builder.Property(gi => gi.HashName)
             .HasMaxLength(200)

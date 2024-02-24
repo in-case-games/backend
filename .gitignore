@@ -405,3 +405,4 @@ appsetings.Local.json
 
 src/data
 src/fileserver/users
+src/fileserver/game-items
