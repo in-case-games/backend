@@ -1,21 +1,48 @@
-<p align="center">
-  <img src="https://sun9-9.userapi.com/impg/TvxOs5Z6Oq4zIVtUnJD0uvbLUPHa86M0OkuSBQ/xwSvc-KOU-s.jpg?size=107x55&quality=96&sign=80e1a5000a20607c8bd1afe5453abefc&type=album" />
-	<h1 align="center">Открытие кейсов по играм</h1>
-</p>
+# InCase - Backend
 
-### Напутствие
+<img src="https://sun9-9.userapi.com/impg/TvxOs5Z6Oq4zIVtUnJD0uvbLUPHa86M0OkuSBQ/xwSvc-KOU-s.jpg?size=107x55&quality=96&sign=80e1a5000a20607c8bd1afe5453abefc&type=album" align="right"/>
 
-Кейсы - сущности содержащие определенные игровые предметы.
-У каждого предмета в кейсе, есть своя цена и вероятность на выпадение.
-Вероятность находится, по математической формуле весов.
+#### [Наш сайт](https://in-case.games) | [API](https://api.in-case.games/api/) | [Документация](docs/redirection.md)
 
-### Формула весов
+> Коммерческий проект по открытию кейсов.</br>
+> Кейсы могут содержать в себе любые предметы из
+> списка подключенных игр.
 
-#### Обозначения:
+<b>Подключенные игры:</b>
 
-- ch|a1 - вероятность выпадения предмета a1 </br>
-- cost|a1 - стоимость предмета a1 </br>
-- wh|a1 - вес предмета a1 или 1/cost|a1</br>
-- wh|all - вес всех предметов </br>
+- Counter-Strike: Global Offensive
+- Dota 2
 
-#### Формула: ch|a1 = (wh|a1)/(wh|all)
+<b>Технологии на серверной части:</b>
+
+- Asp .Net Core & .Net 8
+- Docker Compose
+- Nginx
+- Postgressql & MongoDb
+- MassTransit & RabbitMq
+
+# Первый запуск
+
+> Весь запуск происходит через Docker Compose.</br>
+> compose.\*-close.yaml закрывает доступ к контейнерам, через внешнее подключение.
+
+<b>Разработка:</b>
+
+1. Меняем .env файлы конфигураций
+2. `docker-compose -f compose.dev.yaml --verbose up --build`
+
+<b>Выпуск:</b>
+
+1. Меняем .env файлы конфигураций
+2. `docker-compose -f compose.prod-close.yaml --verbose build`
+3. `docker save -o images.tar payment-api resources-api review-api support-api game-api promocode-api auth-api identity-api withdraw-api statistics-api email-api gateway-api`
+4. Переносим images.tar на сервер
+5. `docker load -i images.tar`
+6. `docker-compose -f compose.prod-close.yaml --verbose up`
+
+# Ссылки
+
+- [Главная страница сайта](https://in-case.games/)
+- [API](https://api.in-case.games/api/)
+- [Документация](docs/redirection.md)
+- [FAQ](https://in-case.games/faq)

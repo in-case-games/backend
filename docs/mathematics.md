@@ -1,21 +1,26 @@
-<p align="center">
-  <img src="https://sun9-9.userapi.com/impg/TvxOs5Z6Oq4zIVtUnJD0uvbLUPHa86M0OkuSBQ/xwSvc-KOU-s.jpg?size=107x55&quality=96&sign=80e1a5000a20607c8bd1afe5453abefc&type=album" />
-	<h1 align="center">Математика, формулы, шизофрения</h1>
-</p>
+# InCase - Backend | Математика, Формулы ...
 
-### Напутствие
+<img src="https://sun9-9.userapi.com/impg/TvxOs5Z6Oq4zIVtUnJD0uvbLUPHa86M0OkuSBQ/xwSvc-KOU-s.jpg?size=107x55&quality=96&sign=80e1a5000a20607c8bd1afe5453abefc&type=album" align="right"/>
 
-Кейсы - сущности содержащие определенные игровые предметы.
-У каждого предмета в кейсе, есть своя цена и вероятность на выпадение.
+#### [Наш сайт](https://in-case.games) | [API](https://api.in-case.games/api/) | [Документация](docs/redirection.md)
+
+> Коммерческий проект по открытию кейсов.</br>
+> Кейсы могут содержать в себе любые предметы из
+> списка подключенных игр.
+
+<b>Напутствие:</b>
+
+У каждого предмета в кейсе, есть своя цена и вероятность на выпадение.</br>
 Вероятность находится, по математической формуле весов.
 
-### Формула весов
+<b>Обозначения:</b>
 
-#### Обозначения:
+- chance - вероятность выпадения предмета</br>
+- cost - стоимость предмета</br>
+- wh - вес предмета или 1/cost</br>
+- whAll - вес всех предметов или (1/cost1) + ... + (1/costn)</br>
 
-- ch|a1 - вероятность выпадения предмета a1 </br>
-- cost|a1 - стоимость предмета a1 </br>
-- wh|a1 - вес предмета a1 или 1/cost|a1</br>
-- wh|all - вес всех предметов </br>
+<b>Формулы:</b>
 
-#### Формула: ch|a1 = (wh|a1)/(wh|all)
+- Сокращенный вид: chance = wh/whAll
+- Полный вид: chance = (1/cost1)/((1/cost1) + ... + (1/costn))
