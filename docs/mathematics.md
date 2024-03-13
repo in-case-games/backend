@@ -22,5 +22,5 @@
 
 <b>Формулы:</b>
 
-- Сокращенный вид: chance = wh/whAll
-- Полный вид: chance = (1/cost1)/((1/cost1) + ... + (1/costn))
+- Сокращенный вид: <b>chance = wh/whAll</b>
+- Полный вид: <b>chance = (1/cost1)/((1/cost1) + ... + (1/costn))</b>
