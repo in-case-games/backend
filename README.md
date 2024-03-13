@@ -23,6 +23,7 @@
 
 # Первый запуск
 
+> [!TIP]
 > Весь запуск происходит через Docker Compose.</br>
 > compose.\*-close.yaml закрывает доступ к контейнерам, через внешнее подключение.
 
@@ -39,6 +40,12 @@
 4. Переносим images.tar на сервер
 5. `docker load -i images.tar`
 6. `docker-compose -f compose.prod-close.yaml --verbose up`
+
+> [!IMPORTANT]
+>
+> 1. Перенести папку src/fileserver с папкой mailbox
+> 2. Перенести папку src/nginx с папкой conf.\*.d
+> 3. Создать папку .ssl и перенести туда certificate.pfx
 
 # Ссылки
 
