@@ -16,12 +16,15 @@ public static class ValidationService
 
     public static bool InvoiceCreateResponse<T>(InvoiceCreateResponse? response, ILogger<T> logger)
     {
-        if (response?.Amount is null && 
-            string.IsNullOrEmpty(response?.Status) && 
-            response?.Confirmation is null && 
-            response?.Recipient is null) return false;
-        
-        logger.LogCritical($"{response.Id} - пришел не корректный счет");
+        if (response?.Amount is null || string.IsNullOrEmpty(response?.Status)) 
+        {
+            logger.LogCritical($"Пришел не корректный счет - {response?.Id}{Environment.NewLine}" +
+                               $"Сумма - {response?.Amount}{Environment.NewLine}" +
+                               $"Статус - {response?.Status}{Environment.NewLine}" +
+                               $"Ссылка для возврата - {response?.Confirmation?.ReturnUrl}{Environment.NewLine}" +
+                               $"АккаунтId - {response?.Recipient?.AccountId}{Environment.NewLine}");
+            return false;
+        }
 
         return true;
     }
