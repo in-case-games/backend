@@ -1,268 +1,278 @@
 version: '3.8'
 services:
   fileserver:
-    image: nginx
     container_name: fileserver
     hostname: fileserver
+    image: nginx
     restart: always
     volumes:
-      - '../fileserver:/static/images'
-      - '.ssl/:/etc/.ssl/private/'
-      - '../nginx/conf.dev.d/:/etc/nginx/conf.d/'
+      - ../fileserver:/static/images
+      - ../nginx/conf.dev.d/:/etc/nginx/conf.d/
     ports:
-      - '8080:8080'
+      - 8080:8080
 
   nosqldata:
-    image: mongo
+    container_name: mongodb
     hostname: mongodb
+    image: mongo
     restart: always
     env_file:
-      - '.enviroments/mongo.dev.env'
+      - .enviroments/mongo.dev.env
     volumes:
-      - '../data/mongo:/data/db'
+      - ../data/mongo:/data/db
     ports:
-      - '127.0.0.1:27017:27017'
+      - 127.0.0.1:27017:27017
 
   rabbitmq:
-    image: rabbitmq:3.10.7-management
-    hostname: mabbit
     container_name: rabbitmq
+    hostname: mabbit
+    image: rabbitmq:3.10.7-management
     restart: always
     env_file:
-      - '.enviroments/rabbitmq.dev.env'
+      - .enviroments/rabbitmq.dev.env
     volumes:
-      - '../data/rabbitmq:/var/lib/rabbitmq/mnesia/'
-    expose:
-      - '5672'
-      - '15672'
+      - ../data/rabbitmq:/var/lib/rabbitmq/mnesia/
     ports:
-      - '127.0.0.1:15672:15672'
+      - 127.0.0.1:15672:15672
+      - 127.0.0.1:5672:5672
 
   psql:
-    image: postgres:13.3
-    hostname: psql
     container_name: psql
+    hostname: psql
+    image: postgres:13.3
     restart: always
     env_file:
-      - '.enviroments/psql.dev.env'
+      - .enviroments/psql.dev.env
     volumes:
-      - '../data/psql:/var/lib/postgresql/data'
+      - ../data/psql:/var/lib/postgresql/data
     ports:
-      - '127.0.0.1:5432:5432'
+      - 127.0.0.1:5432:5432
 
   auth-api:
-    image: 'auth-api'
+    container_name: auth-api
+    image: auth-api:1.0.0
     environment:
       ASPNETCORE_ENVIRONMENT: Development
     build:
       context: .
       dockerfile: Services/Authentication/Authentication.API/Dockerfile
-    env_file:
-      - '.enviroments/auth-api.env'
     depends_on:
-      - 'psql'
-      - 'rabbitmq'
+      - psql
+      - rabbitmq
+    env_file:
+      - .enviroments/auth-api.env
     volumes:
-      - '../fileserver:/static/images'
-      - '../logs/debug:/root/logs/debug'
+      - ../fileserver:/static/images
+      - ../logs:/root/logs
     ports:
-      - '127.0.0.1:5033:8080'
+      - 127.0.0.1:5033:8080
 
   email-api:
-    image: 'email-api'
+    container_name: email-api
+    image: email-api:1.0.0
     environment:
       ASPNETCORE_ENVIRONMENT: Development
     build:
       context: .
       dockerfile: Services/EmailSender/EmailSender.API/Dockerfile
-    env_file:
-      - '.enviroments/email-api.env'
     depends_on:
-      - 'psql'
-      - 'rabbitmq'
+      - psql
+      - rabbitmq
+    env_file:
+      - .enviroments/email-api.env
     volumes:
-      - '../fileserver:/static/images'
-      - '../logs/debug:/root/logs/debug'
+      - ../fileserver:/static/images
+      - ../logs:/root/logs
     ports:
-      - '127.0.0.1:5225:8080'
+      - 127.0.0.1:5225:8080
 
   game-api:
-    image: 'game-api'
+    container_name: game-api
+    image: game-api:1.0.0
     environment:
       ASPNETCORE_ENVIRONMENT: Development
     build:
       context: .
       dockerfile: Services/Game/Game.API/Dockerfile
-    env_file:
-      - '.enviroments/game-api.env'
     depends_on:
-      - 'psql'
-      - 'rabbitmq'
+      - psql
+      - rabbitmq
+    env_file:
+      - .enviroments/game-api.env
     volumes:
-      - '../fileserver:/static/images'
-      - '../logs/debug:/root/logs/debug'
+      - ../fileserver:/static/images
+      - ../logs:/root/logs
     ports:
-      - '127.0.0.1:5184:8080'
+      - 127.0.0.1:5184:8080
 
   identity-api:
-    image: 'identity-api'
+    container_name: identity-api
+    image: identity-api:1.0.0
     environment:
       ASPNETCORE_ENVIRONMENT: Development
     build:
       context: .
       dockerfile: Services/Identity/Identity.API/Dockerfile
-    env_file:
-      - '.enviroments/identity-api.env'
     depends_on:
-      - 'psql'
-      - 'rabbitmq'
+      - psql
+      - rabbitmq
+    env_file:
+      - .enviroments/identity-api.env
     volumes:
-      - '../fileserver:/static/images'
-      - '../logs/debug:/root/logs/debug'
+      - ../fileserver:/static/images
+      - ../logs:/root/logs
     ports:
-      - '127.0.0.1:5259:8080'
+      - 127.0.0.1:5259:8080
 
   payment-api:
-    image: 'payment-api'
+    container_name: payment-api
+    image: payment-api:1.0.0
     environment:
       ASPNETCORE_ENVIRONMENT: Development
     build:
       context: .
       dockerfile: Services/Payment/Payment.API/Dockerfile
-    env_file:
-      - '.enviroments/payment-api.env'
     depends_on:
-      - 'psql'
-      - 'rabbitmq'
+      - psql
+      - rabbitmq
+    env_file:
+      - .enviroments/payment-api.env
     volumes:
-      - '../fileserver:/static/images'
-      - '../logs/debug:/root/logs/debug'
+      - ../fileserver:/static/images
+      - ../logs:/root/logs
     ports:
-      - '127.0.0.1:5039:8080'
+      - 127.0.0.1:5039:8080
 
   promocode-api:
-    image: 'promocode-api'
+    container_name: promocode-api
+    image: promocode-api:1.0.0
     environment:
       ASPNETCORE_ENVIRONMENT: Development
     build:
       context: .
       dockerfile: Services/Promocode/Promocode.API/Dockerfile
-    env_file:
-      - '.enviroments/promocode-api.env'
     depends_on:
-      - 'psql'
-      - 'rabbitmq'
+      - psql
+      - rabbitmq
+    env_file:
+      - .enviroments/promocode-api.env
     volumes:
-      - '../fileserver:/static/images'
-      - '../logs/debug:/root/logs/debug'
+      - ../fileserver:/static/images
+      - ../logs:/root/logs
     ports:
-      - '127.0.0.1:5163:8080'
+      - 127.0.0.1:5163:8080
 
   resources-api:
-    image: 'resources-api'
+    container_name: resources-api
+    image: resources-api:1.0.0
     environment:
       ASPNETCORE_ENVIRONMENT: Development
     build:
       context: .
       dockerfile: Services/Resources/Resources.API/Dockerfile
-    env_file:
-      - '.enviroments/resources-api.env'
     depends_on:
-      - 'psql'
-      - 'rabbitmq'
+      - psql
+      - rabbitmq
+    env_file:
+      - .enviroments/resources-api.env
     volumes:
-      - '../fileserver:/static/images'
-      - '../logs/debug:/root/logs/debug'
+      - ../fileserver:/static/images
+      - ../logs:/root/logs
     ports:
-      - '127.0.0.1:5073:8080'
+      - 127.0.0.1:5073:8080
 
   review-api:
-    image: 'review-api'
+    container_name: review-api
+    image: review-api:1.0.0
     environment:
       ASPNETCORE_ENVIRONMENT: Development
     build:
       context: .
       dockerfile: Services/Review/Review.API/Dockerfile
-    env_file:
-      - '.enviroments/review-api.env'
     depends_on:
-      - 'psql'
-      - 'rabbitmq'
+      - psql
+      - rabbitmq
+    env_file:
+      - .enviroments/review-api.env
     volumes:
-      - '../fileserver:/static/images'
-      - '../logs/debug:/root/logs/debug'
+      - ../fileserver:/static/images
+      - ../logs:/root/logs
     ports:
-      - '127.0.0.1:5079:8080'
+      - 127.0.0.1:5079:8080
 
   statistics-api:
-    image: 'statistics-api'
+    container_name: statistics-api
+    image: statistics-api:1.0.0
     environment:
       ASPNETCORE_ENVIRONMENT: Development
     build:
       context: .
       dockerfile: Services/Statistics/Statistics.API/Dockerfile
-    env_file:
-      - '.enviroments/statistics-api.env'
     depends_on:
-      - 'nosqldata'
-      - 'rabbitmq'
+      - nosqldata
+      - rabbitmq
+    env_file:
+      - .enviroments/statistics-api.env
     volumes:
-      - '../fileserver:/static/images'
-      - '../logs/debug:/root/logs/debug'
+      - ../fileserver:/static/images
+      - ../logs:/root/logs
     ports:
-      - '127.0.0.1:5231:8080'
+      - 127.0.0.1:5231:8080
 
   support-api:
-    image: 'support-api'
+    container_name: support-api
+    image: support-api:1.0.0
     environment:
       ASPNETCORE_ENVIRONMENT: Development
     build:
       context: .
       dockerfile: Services/Support/Support.API/Dockerfile
-    env_file:
-      - '.enviroments/support-api.env'
     depends_on:
-      - 'psql'
-      - 'rabbitmq'
+      - psql
+      - rabbitmq
+    env_file:
+      - .enviroments/support-api.env
     volumes:
-      - '../fileserver:/static/images'
-      - '../logs/debug:/root/logs/debug'
+      - ../fileserver:/static/images
+      - ../logs:/root/logs
     ports:
-      - '127.0.0.1:5155:8080'
+      - 127.0.0.1:5155:8080
 
   withdraw-api:
-    image: 'withdraw-api'
+    container_name: withdraw-api
+    image: withdraw-api:1.0.0
     environment:
       ASPNETCORE_ENVIRONMENT: Development
     build:
       context: .
       dockerfile: Services/Withdraw/Withdraw.API/Dockerfile
-    env_file:
-      - '.enviroments/withdraw-api.env'
     depends_on:
-      - 'psql'
-      - 'rabbitmq'
+      - psql
+      - rabbitmq
+    env_file:
+      - .enviroments/withdraw-api.env
     volumes:
-      - '../fileserver:/static/images'
-      - '../logs/debug:/root/logs/debug'
+      - ../fileserver:/static/images
+      - ../logs:/root/logs
     ports:
-      - '127.0.0.1:5187:8080'
+      - 127.0.0.1:5187:8080
 
   gateway-api:
-    image: 'gateway-api'
+    container_name: gateway-api
+    image: gateway-api:1.0.0
     environment:
       ASPNETCORE_ENVIRONMENT: Development
     build:
       context: .
       dockerfile: InCase.ApiGateway/Dockerfile
     env_file:
-      - '.enviroments/gateway-api.dev.env'
-    ports:
-      - '5000:443'
-      - '5001:8080'
+      - .enviroments/gateway-api.dev.env
     volumes:
-      - '.ssl/:/etc/.ssl/private/'
-      - '../logs/debug:/root/logs/debug'
+      - ../.ssl/:/etc/.ssl/private/
+      - ../logs:/root/logs
+    ports:
+      - 5000:443
+      - 5001:8080
 volumes:
   database:
   rabbitmq:

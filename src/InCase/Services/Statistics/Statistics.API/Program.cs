@@ -11,8 +11,10 @@ using Statistics.BLL.Services;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
-var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.Development.json").Build();
 var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development";
+var configuration = new ConfigurationBuilder()
+    .AddJsonFile($"appsettings.{env}.json")
+    .Build();
 
 builder.Configuration.AddEnvironmentVariables();
 builder.Logging.AddConfiguration(configuration).ClearProviders().AddNLog();

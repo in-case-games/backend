@@ -8,7 +8,7 @@ var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Devel
 var builder = WebApplication.CreateBuilder(args);
 var configuration = new ConfigurationBuilder()
     .AddJsonFile($"ocelot.{env}.json")
-    .AddJsonFile("appsettings.Development.json")
+    .AddJsonFile($"appsettings.{env}.json")
     .Build();
 
 builder.Configuration.AddEnvironmentVariables();

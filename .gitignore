@@ -404,5 +404,6 @@ InCase/InCase.IntegrationTests/
 appsetings.Local.json
 
 src/data
+src/logs
 src/fileserver/users
 src/fileserver/game-items
