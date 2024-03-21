@@ -9,8 +9,10 @@ public class LootBoxInventoryConsumer(ILootBoxInventoryService inventoryService)
     {
         var inventory = await inventoryService.GetAsync(context.Message.Id);
 
-        if (inventory is null) await inventoryService.CreateAsync(context.Message);
-        else if (context.Message.IsDeleted) await inventoryService.DeleteAsync(context.Message.Id);
-        else await inventoryService.UpdateAsync(context.Message);
+        if (inventory is not null && context.Message.IsDeleted) await inventoryService.DeleteAsync(context.Message.Id);
+        else if(!context.Message.IsDeleted) {
+            if (inventory is null) await inventoryService.CreateAsync(context.Message);
+            else await inventoryService.UpdateAsync(context.Message);
+        } 
     }
 }

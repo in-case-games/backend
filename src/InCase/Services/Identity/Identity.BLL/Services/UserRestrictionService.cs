@@ -181,7 +181,10 @@ public class UserRestrictionService(ApplicationDbContext context, BasePublisher 
 
         context.UserRestrictions.Remove(restriction);
         await context.SaveChangesAsync(cancellation);
-        await publisher.SendAsync(restriction.ToTemplate(isDeleted: true), cancellation);
+        
+        if(restriction.Type!.Name == "ban") {
+            await publisher.SendAsync(restriction.ToTemplate(isDeleted: true), cancellation);
+        }
 
         return restriction.ToResponse();
     }

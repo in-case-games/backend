@@ -9,7 +9,7 @@ public class UserConsumer(IUserService userService) : IConsumer<UserTemplate>
     {
         var user = await userService.GetAsync(context.Message.Id);
 
-        if (user is null) await userService.CreateAsync(context.Message);
-        else if (context.Message.IsDeleted) await userService.DeleteAsync(user.Id);
+        if (user is not null && context.Message.IsDeleted) await userService.DeleteAsync(user.Id);
+        if (user is null && !context.Message.IsDeleted) await userService.CreateAsync(context.Message);
     }
 }
