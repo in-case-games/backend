@@ -14,7 +14,7 @@ public class GamePlatformSteamService(
     private const int NumberAttempts = 5;
     private static readonly string Env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development";
 
-    private readonly string? _secret = cfg[$"MarketTM:Secret:{Env}"];
+    private readonly string? _secret = cfg[$"MarketTM:{Env}"];
 
     private readonly Dictionary<string, string> _domainUri = new()
     {

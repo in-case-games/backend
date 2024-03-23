@@ -52,6 +52,8 @@ public class WithdrawService(
 
         var balance = await withdrawService.GetBalanceAsync(info.Market.Name!, cancellation);
 
+        logger.LogInformation($"info - {price}; balance - {balance.Balance}");
+
         if (balance.Balance <= price) throw new PaymentRequiredException("Ожидаем пополнения сервиса покупки");
 
         var status = await context.WithdrawStatuses
