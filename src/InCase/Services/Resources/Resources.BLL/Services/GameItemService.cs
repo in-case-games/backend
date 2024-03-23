@@ -287,6 +287,8 @@ public class GameItemService(
         var priceAdditional = await _platformServices[item.Game!.Name!]
             .GetAdditionalMarketAsync(item.IdForMarket!, item.Game!.Name!, cancellation: cancellationToken);
 
+        logger.LogInformation($"costs: item - {item.Cost}; original - {priceOriginal.Cost}; additional - {priceAdditional.Cost}");
+
         var isAdditionalCost = priceOriginal.Cost <= 0 || priceAdditional.Cost > priceOriginal.Cost;
         var cost = isAdditionalCost ? priceAdditional.Cost : priceOriginal.Cost;
 
