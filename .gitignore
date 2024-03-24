@@ -408,3 +408,4 @@ src/logs
 src/fileserver/users
 src/fileserver/game-items
 src/fileserver/loot-boxes
+src/fileserver/loot-box-banners
