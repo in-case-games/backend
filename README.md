@@ -30,16 +30,16 @@
 <b>Разработка:</b>
 
 1. Меняем .env файлы конфигураций
-2. `docker-compose -f compose.dev.yaml --verbose up --build`
+2. `docker-compose -f compose.yaml -f compose.dev.yaml --verbose up --build`
 
 <b>Выпуск:</b>
 
 1. Меняем .env файлы конфигураций
-2. `docker-compose -f compose.prod-close.yaml --verbose build`
+2. `docker-compose -f compose.yaml -f compose.dev.yaml --verbose build`
 3. `docker save -o images.tar payment-api resources-api review-api support-api game-api promocode-api auth-api identity-api withdraw-api statistics-api email-api gateway-api`
 4. Переносим images.tar на сервер
 5. `docker load -i images.tar`
-6. `docker-compose -f compose.prod-close.yaml --verbose up`
+6. `docker-compose -f compose.yaml -f compose.prod.close.yaml --verbose up`
 
 > [!IMPORTANT]
 >

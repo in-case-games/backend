@@ -1,10 +1,6 @@
 version: '3.8'
 services:
   fileserver:
-    container_name: fileserver
-    hostname: fileserver
-    image: nginx
-    restart: always
     volumes:
       - ~/fileserver:/static/images
       - ~/.ssl/ca.crt:/etc/ssl/ca.crt
@@ -14,10 +10,6 @@ services:
       - 8080:8080
 
   nosqldata:
-    container_name: mongodb
-    hostname: mongodb
-    image: mongo
-    restart: always
     env_file:
       - .enviroments/mongo.prod.env
     volumes:
@@ -26,10 +18,6 @@ services:
       - 27017:27017
 
   rabbitmq:
-    container_name: rabbitmq
-    hostname: mabbit
-    image: rabbitmq:3.10.7-management
-    restart: always
     env_file:
       - .enviroments/rabbitmq.prod.env
     volumes:
@@ -39,10 +27,6 @@ services:
       - 15672:15672
 
   psql:
-    container_name: psql
-    hostname: psql
-    image: postgres:13.3
-    restart: always
     env_file:
       - .enviroments/psql.prod.env
     volumes:
@@ -51,16 +35,8 @@ services:
       - 5432:5432
 
   auth-api:
-    container_name: auth-api
-    image: auth-api:1.0.0
     environment:
       ASPNETCORE_ENVIRONMENT: Production
-    build:
-      context: .
-      dockerfile: Services/Authentication/Authentication.API/Dockerfile
-    depends_on:
-      - psql
-      - rabbitmq
     env_file:
       - .enviroments/auth-api.env
     volumes:
@@ -70,16 +46,8 @@ services:
       - 5033:8080
 
   email-api:
-    container_name: email-api
-    image: email-api:1.0.0
     environment:
       ASPNETCORE_ENVIRONMENT: Production
-    build:
-      context: .
-      dockerfile: Services/EmailSender/EmailSender.API/Dockerfile
-    depends_on:
-      - psql
-      - rabbitmq
     env_file:
       - .enviroments/email-api.env
     volumes:
@@ -89,16 +57,8 @@ services:
       - 5225:8080
 
   game-api:
-    container_name: game-api
-    image: game-api:1.0.0
     environment:
       ASPNETCORE_ENVIRONMENT: Production
-    build:
-      context: .
-      dockerfile: Services/Game/Game.API/Dockerfile
-    depends_on:
-      - psql
-      - rabbitmq
     env_file:
       - .enviroments/game-api.env
     volumes:
@@ -108,16 +68,8 @@ services:
       - 5184:8080
 
   identity-api:
-    container_name: identity-api
-    image: identity-api:1.0.0
     environment:
       ASPNETCORE_ENVIRONMENT: Production
-    build:
-      context: .
-      dockerfile: Services/Identity/Identity.API/Dockerfile
-    depends_on:
-      - psql
-      - rabbitmq
     env_file:
       - .enviroments/identity-api.env
     volumes:
@@ -127,16 +79,8 @@ services:
       - 5259:8080
 
   payment-api:
-    container_name: payment-api
-    image: payment-api:1.0.0
     environment:
       ASPNETCORE_ENVIRONMENT: Production
-    build:
-      context: .
-      dockerfile: Services/Payment/Payment.API/Dockerfile
-    depends_on:
-      - psql
-      - rabbitmq
     env_file:
       - .enviroments/payment-api.env
     volumes:
@@ -146,16 +90,8 @@ services:
       - 5039:8080
 
   promocode-api:
-    container_name: promocode-api
-    image: promocode-api:1.0.0
     environment:
       ASPNETCORE_ENVIRONMENT: Production
-    build:
-      context: .
-      dockerfile: Services/Promocode/Promocode.API/Dockerfile
-    depends_on:
-      - psql
-      - rabbitmq
     env_file:
       - .enviroments/promocode-api.env
     volumes:
@@ -165,16 +101,8 @@ services:
       - 5163:8080
 
   resources-api:
-    container_name: resources-api
-    image: resources-api:1.0.0
     environment:
       ASPNETCORE_ENVIRONMENT: Production
-    build:
-      context: .
-      dockerfile: Services/Resources/Resources.API/Dockerfile
-    depends_on:
-      - psql
-      - rabbitmq
     env_file:
       - .enviroments/resources-api.env
     volumes:
@@ -184,16 +112,8 @@ services:
       - 5073:8080
 
   review-api:
-    container_name: review-api
-    image: review-api:1.0.0
     environment:
       ASPNETCORE_ENVIRONMENT: Production
-    build:
-      context: .
-      dockerfile: Services/Review/Review.API/Dockerfile
-    depends_on:
-      - psql
-      - rabbitmq
     env_file:
       - .enviroments/review-api.env
     volumes:
@@ -203,16 +123,8 @@ services:
       - 5079:8080
 
   statistics-api:
-    container_name: statistics-api
-    image: statistics-api:1.0.0
     environment:
       ASPNETCORE_ENVIRONMENT: Production
-    build:
-      context: .
-      dockerfile: Services/Statistics/Statistics.API/Dockerfile
-    depends_on:
-      - psql
-      - rabbitmq
     env_file:
       - .enviroments/statistics-api.env
     volumes:
@@ -222,16 +134,8 @@ services:
       - 5231:8080
 
   support-api:
-    container_name: support-api
-    image: support-api:1.0.0
     environment:
       ASPNETCORE_ENVIRONMENT: Production
-    build:
-      context: .
-      dockerfile: Services/Support/Support.API/Dockerfile
-    depends_on:
-      - psql
-      - rabbitmq
     env_file:
       - .enviroments/support-api.env
     volumes:
@@ -241,16 +145,8 @@ services:
       - 5155:8080
 
   withdraw-api:
-    container_name: withdraw-api
-    image: withdraw-api:1.0.0
     environment:
       ASPNETCORE_ENVIRONMENT: Production
-    build:
-      context: .
-      dockerfile: Services/Withdraw/Withdraw.API/Dockerfile
-    depends_on:
-      - psql
-      - rabbitmq
     env_file:
       - .enviroments/withdraw-api.env
     volumes:
@@ -260,13 +156,8 @@ services:
       - 5187:8080
 
   gateway-api:
-    container_name: gateway-api
-    image: gateway-api:1.0.0
     environment:
       ASPNETCORE_ENVIRONMENT: Production
-    build:
-      context: .
-      dockerfile: InCase.ApiGateway/Dockerfile
     env_file:
       - .enviroments/gateway-api.prod.env
     volumes:
