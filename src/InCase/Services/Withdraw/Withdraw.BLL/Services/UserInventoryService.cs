@@ -143,13 +143,11 @@ public class UserInventoryService(
         context.UserInventories.Remove(inventory);
         await context.UserInventories.AddRangeAsync(inventories, cancellation);
         await context.SaveChangesAsync(cancellation);
-
-        foreach (var template in inventories.Select(userInventory => userInventory.ToTemplate()))
-        {
-            template.FixedCost = differenceCost;
-            await publisher.SendAsync(template, cancellation);
-        }
-
+        
+        await publisher.SendAsync(new UserInventoryBackTemplate() {
+            FixedCost = differenceCost,
+            UserId = userId
+        }, cancellation);
         await publisher.SendAsync(new SiteStatisticsAdminTemplate { FundsUsersInventories = -differenceCost * request.Items.Count }, cancellation);
 
         _logger.Log(NLog.LogLevel.Info, "Exchanged: UserId - {0}," +
