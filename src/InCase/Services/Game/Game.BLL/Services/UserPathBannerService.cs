@@ -104,7 +104,6 @@ public class UserPathBannerService(ApplicationDbContext context) : IUserPathBann
 
         var banner = new UserPathBanner
         {
-            Id = request.Id,
             BoxId = request.BoxId,
             ItemId = request.ItemId,
             UserId = request.UserId,

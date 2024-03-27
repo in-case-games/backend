@@ -7,6 +7,9 @@ using Withdraw.DAL.Entities;
 namespace Withdraw.BLL.Services;
 public class MarketTmService(IConfiguration cfg, IResponseService responseService) : ITradeMarketService
 {
+    private static readonly string Env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development";
+    private readonly string? _secret = cfg[$"MarketTM:{Env}"];
+
     private readonly Dictionary<string, string> _domainUri = new()
     {
         ["csgo"] = "https://market.csgo.com",
@@ -26,7 +29,7 @@ public class MarketTmService(IConfiguration cfg, IResponseService responseServic
 
     public async Task<BalanceMarketResponse> GetBalanceAsync(CancellationToken cancellation = default)
     {
-        var uri = $"{_domainUri["csgo"]}/api/GetMoney/?key={cfg["MarketTM:Secret"]}";
+        var uri = $"{_domainUri["csgo"]}/api/GetMoney/?key={_secret}";
         
         var response = await responseService.GetAsync<BalanceTmResponse>(uri, cancellation);
 
@@ -37,7 +40,7 @@ public class MarketTmService(IConfiguration cfg, IResponseService responseServic
         CancellationToken cancellation = default)
     {
         var id = idForMarket.Replace("-", "_");
-        var uri = $"{_domainUri[game]}/api/ItemInfo/{id}/ru/?key={cfg["MarketTM:Secret"]}";
+        var uri = $"{_domainUri[game]}/api/ItemInfo/{id}/ru/?key={_secret}";
 
         var info = await responseService.GetAsync<ItemInfoTmResponse>(uri, cancellation);
 
@@ -63,11 +66,11 @@ public class MarketTmService(IConfiguration cfg, IResponseService responseServic
 
         try
         {
-            var tradeUrl = $"{_domainUri[name]}/api/Trades/?key={cfg["MarketTM:Secret"]}";
+            var tradeUrl = $"{_domainUri[name]}/api/Trades/?key={_secret}";
 
-            var trades = await responseService.GetAsync<List<TradeInfoTmResponse>>(tradeUrl, cancellation) ?? new();
+            var trades = await responseService.GetAsync<List<TradeInfoTmResponse>>(tradeUrl, cancellation) ?? [];
 
-            var status = trades!.First(f => f.Id == id).Status!;
+            var status = trades.First(f => f.Id == id).Status!;
 
             info.Status = _tradeStatuses["t_" + status];
         }
@@ -76,7 +79,7 @@ public class MarketTmService(IConfiguration cfg, IResponseService responseServic
             var start = ((DateTimeOffset)history.Date).ToUnixTimeSeconds();
             var end = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
 
-            var historyUrl = $"{_domainUri[name]}/api/OperationHistory/{start}/{end}/?key={cfg["MarketTM:Secret"]}";
+            var historyUrl = $"{_domainUri[name]}/api/OperationHistory/{start}/{end}/?key={_secret}";
 
             var answer = await responseService.GetAsync<AnswerOperationHistoryTmResponse>(historyUrl, cancellation);
 
@@ -98,7 +101,7 @@ public class MarketTmService(IConfiguration cfg, IResponseService responseServic
         var partner = split[0].Split("=")[1];
         var token = split[1].Split("=")[1];
 
-        var url = $"{_domainUri[name]}/api/Buy/{id}/{price}//?key={cfg["MarketTM:Secret"]}&partner={partner}&token={token}";
+        var url = $"{_domainUri[name]}/api/Buy/{id}/{price}//?key={_secret}&partner={partner}&token={token}";
 
         var response = await responseService.GetAsync<BuyItemTmResponse>(url, cancellation);
         

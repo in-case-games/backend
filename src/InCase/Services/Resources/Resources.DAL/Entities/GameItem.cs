@@ -11,7 +11,8 @@ public class GameItem : BaseEntity
     [MaxLength(200)]
     public string? IdForMarket { get; set; }
     public decimal Cost { get; set; }
-    public DateTime UpdateDate { get; set; } = DateTime.UtcNow;
+    public DateTime UpdatedIn { get; set; } = DateTime.UtcNow;
+    public DateTime UpdateTo { get; set; } = DateTime.UtcNow;
 
     public GameItemQuality? Quality { get; set; }
     public GameItemType? Type { get; set; }

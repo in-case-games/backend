@@ -5,12 +5,17 @@ using Payment.DAL.Entities;
 namespace Payment.BLL.Helpers;
 public static class InvoiceCreateTransformer
 {
+    private static readonly string Env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development";
+
     public static InvoiceCreateRequest ToRequest(this InvoiceUrlRequest request) => 
         new()
         {
             Amount = request.Amount,
             Capture = true,
-            Confirmation = new Confirmation { Type = "redirect", ReturnUrl = "http://localhost:3000/" },
+            Confirmation = new Confirmation { 
+                Type = "redirect", 
+                ReturnUrl = Env == "Production" ? "https://in-case.games" : "http://localhost:3000/" 
+            },
             Metadata = new InvoiceCreateMetadata
             {
                 UserId = request.User!.Id

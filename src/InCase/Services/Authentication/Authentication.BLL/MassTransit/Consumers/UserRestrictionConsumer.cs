@@ -9,8 +9,10 @@ public class UserRestrictionConsumer(IUserRestrictionService restrictionService)
     {
         var restriction = await restrictionService.GetAsync(context.Message.Id);
 
-        if (restriction is null) await restrictionService.CreateAsync(context.Message);
-        else if (context.Message.IsDeleted) await restrictionService.DeleteAsync(context.Message.Id);
-        else await restrictionService.UpdateAsync(context.Message);
+        if (restriction is not null && context.Message.IsDeleted) await restrictionService.DeleteAsync(restriction.Id);
+        else if(!context.Message.IsDeleted) {
+            if (restriction is null) await restrictionService.CreateAsync(context.Message);
+            else await restrictionService.UpdateAsync(context.Message);
+        }
     }
 }

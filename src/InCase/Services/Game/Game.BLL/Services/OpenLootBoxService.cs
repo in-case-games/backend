@@ -5,7 +5,7 @@ public static class OpenLootBoxService
 {
     private static readonly Random Random = new();
 
-    public const decimal RevenuePercentage = 0.10M;
+    public const decimal RevenuePercentage = 0.05M;
     public const decimal RetentionPercentageBanner = 0.20M;
 
     public static decimal GetRevenue(decimal boxCost) => boxCost * RevenuePercentage;

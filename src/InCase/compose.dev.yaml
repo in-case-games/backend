@@ -1,265 +1,205 @@
-version: "3.8"
+version: '3.8'
 services:
-  nginx:
-    image: nginx
-    container_name: fileserver
-    hostname: fileserver
-    restart: always
+  fileserver:
     volumes:
-      - ./../fileserver:/static/images
-      - ./../nginx/conf.d/:/etc/nginx/conf.d/
+      - ../fileserver:/static/images
+      - ../nginx/conf.dev.d/:/etc/nginx/conf.d/
     ports:
-      - "8080:8080"
+      - 8080:8080
 
   nosqldata:
-    image: mongo
-    hostname: mongodb
-    restart: always
+    env_file:
+      - .enviroments/mongo.dev.env
+    volumes:
+      - ../data/mongo:/data/db
     ports:
-      - "27017:27017"
+      - 27017:27017
 
   rabbitmq:
-    image: rabbitmq:3.10.7-management
-    hostname: rabbitmq
-    container_name: rabbitmq
-    restart: always
-    expose:
-      - "5672"
-      - "15672"
-    volumes:
-      - rabbitmq:/rabbitmq
-    ports:
-      - "15672:15672"
-
-  psql: 
-    image: postgres:13.3
-    hostname: psql
-    container_name: psql
-    restart: always
-    command: postgres -c 'max_connections=200'
-    stdin_open: true
-    tty: true
     env_file:
-      - pg.env
-    ports:
-      - "5432:5432"
+      - .enviroments/rabbitmq.dev.env
     volumes:
-      - database:/var/lib/postgresql/data
+      - ../data/rabbitmq:/var/lib/rabbitmq/mnesia/
+    ports:
+      - 5672:5672
+      - 15672:15672
 
-  auth-api: 
-    image: "auth-api"
-    environment: 
+  psql:
+    env_file:
+      - .enviroments/psql.dev.env
+    volumes:
+      - ../data/psql:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+
+  auth-api:
+    environment:
       ASPNETCORE_ENVIRONMENT: Development
     build:
       context: .
       dockerfile: Services/Authentication/Authentication.API/Dockerfile
     env_file:
-      - .env
-    depends_on:
-      - psql
-      - rabbitmq
+      - .enviroments/auth-api.env
     volumes:
-      - $APPDATA/Microsoft/UserSecrets/$USER_SECRETS_ID_AUTH:/root/.microsoft/usersecrets/$USER_SECRETS_ID_AUTH:ro
-      - ./../fileserver:/static/images
+      - ../fileserver:/static/images
+      - ../logs:/root/logs
     ports:
-      - "5033:8080"
+      - 5033:8080
 
   email-api:
-    image: "email-api"
-    environment: 
+    environment:
       ASPNETCORE_ENVIRONMENT: Development
     build:
       context: .
       dockerfile: Services/EmailSender/EmailSender.API/Dockerfile
     env_file:
-      - .env
-    depends_on:
-      - psql
-      - rabbitmq
+      - .enviroments/email-api.env
     volumes:
-      - $APPDATA/Microsoft/UserSecrets/$USER_SECRETS_ID_EMAIL:/root/.microsoft/usersecrets/$USER_SECRETS_ID_EMAIL:ro
-      - ./../fileserver:/static/images
+      - ../fileserver:/static/images
+      - ../logs:/root/logs
     ports:
-      - "5225:8080"
+      - 5225:8080
 
   game-api:
-    image: "game-api"
-    environment: 
+    environment:
       ASPNETCORE_ENVIRONMENT: Development
     build:
       context: .
       dockerfile: Services/Game/Game.API/Dockerfile
     env_file:
-      - .env
-    depends_on:
-      - psql
-      - rabbitmq
+      - .enviroments/game-api.env
     volumes:
-      - $APPDATA/Microsoft/UserSecrets/$USER_SECRETS_ID_GAME:/root/.microsoft/usersecrets/$USER_SECRETS_ID_GAME:ro
-      - ./../fileserver:/static/images
+      - ../fileserver:/static/images
+      - ../logs:/root/logs
     ports:
-      - "5184:8080"
+      - 5184:8080
 
   identity-api:
-    image: "identity-api"
-    environment: 
+    environment:
       ASPNETCORE_ENVIRONMENT: Development
     build:
       context: .
       dockerfile: Services/Identity/Identity.API/Dockerfile
     env_file:
-      - .env
-    depends_on:
-      - psql
-      - rabbitmq
+      - .enviroments/identity-api.env
     volumes:
-      - $APPDATA/Microsoft/UserSecrets/$USER_SECRETS_ID_IDENTITY:/root/.microsoft/usersecrets/$USER_SECRETS_ID_IDENTITY:ro
-      - ./../fileserver:/static/images
+      - ../fileserver:/static/images
+      - ../logs:/root/logs
     ports:
-      - "5259:8080"
+      - 5259:8080
 
   payment-api:
-    image: "payment-api"
-    environment: 
+    environment:
       ASPNETCORE_ENVIRONMENT: Development
     build:
       context: .
       dockerfile: Services/Payment/Payment.API/Dockerfile
     env_file:
-      - .env
-    depends_on:
-      - psql
-      - rabbitmq 
+      - .enviroments/payment-api.env
     volumes:
-      - $APPDATA/Microsoft/UserSecrets/$USER_SECRETS_ID_PAYMENT:/root/.microsoft/usersecrets/$USER_SECRETS_ID_PAYMENT:ro
-      - ./../fileserver:/static/images
+      - ../fileserver:/static/images
+      - ../logs:/root/logs
     ports:
-      - "5039:8080"
+      - 5039:8080
 
   promocode-api:
-    image: "promocode-api"
-    environment: 
+    environment:
       ASPNETCORE_ENVIRONMENT: Development
     build:
       context: .
       dockerfile: Services/Promocode/Promocode.API/Dockerfile
     env_file:
-      - .env
-    depends_on:
-      - psql
-      - rabbitmq 
+      - .enviroments/promocode-api.env
     volumes:
-      - $APPDATA/Microsoft/UserSecrets/$USER_SECRETS_ID_PROMOCODE:/root/.microsoft/usersecrets/$USER_SECRETS_ID_PROMOCODE:ro
-      - ./../fileserver:/static/images
+      - ../fileserver:/static/images
+      - ../logs:/root/logs
     ports:
-      - "5163:8080"
+      - 5163:8080
 
   resources-api:
-    image: "resources-api"
-    environment: 
+    environment:
       ASPNETCORE_ENVIRONMENT: Development
     build:
       context: .
       dockerfile: Services/Resources/Resources.API/Dockerfile
     env_file:
-      - .env
-    depends_on:
-      - psql
-      - rabbitmq 
+      - .enviroments/resources-api.env
     volumes:
-      - $APPDATA/Microsoft/UserSecrets/$USER_SECRETS_ID_RESOURCES:/root/.microsoft/usersecrets/$USER_SECRETS_ID_RESOURCES:ro
-      - ./../fileserver:/static/images
+      - ../fileserver:/static/images
+      - ../logs:/root/logs
     ports:
-      - "5073:8080"
+      - 5073:8080
 
   review-api:
-    image: "review-api"
-    environment: 
+    environment:
       ASPNETCORE_ENVIRONMENT: Development
     build:
       context: .
       dockerfile: Services/Review/Review.API/Dockerfile
     env_file:
-      - .env
-    depends_on:
-      - psql
-      - rabbitmq 
+      - .enviroments/review-api.env
     volumes:
-      - $APPDATA/Microsoft/UserSecrets/$USER_SECRETS_ID_REVIEW:/root/.microsoft/usersecrets/$USER_SECRETS_ID_REVIEW:ro
-      - ./../fileserver:/static/images
+      - ../fileserver:/static/images
+      - ../logs:/root/logs
     ports:
-      - "5079:8080"
+      - 5079:8080
 
   statistics-api:
-    image: "statistics-api"
-    environment: 
+    environment:
       ASPNETCORE_ENVIRONMENT: Development
     build:
       context: .
       dockerfile: Services/Statistics/Statistics.API/Dockerfile
     env_file:
-      - .env
-    depends_on:
-      - psql
-      - rabbitmq
-      - nosqldata
+      - .enviroments/statistics-api.env
     volumes:
-      - $APPDATA/Microsoft/UserSecrets/$USER_SECRETS_ID_STATISTICS:/root/.microsoft/usersecrets/$USER_SECRETS_ID_STATISTICS:ro
-      - ./../fileserver:/static/images
+      - ../fileserver:/static/images
+      - ../logs:/root/logs
     ports:
-      - "5231:8080"
+      - 5231:8080
 
   support-api:
-    image: "support-api"
-    environment: 
+    environment:
       ASPNETCORE_ENVIRONMENT: Development
     build:
       context: .
       dockerfile: Services/Support/Support.API/Dockerfile
     env_file:
-      - .env
-    depends_on:
-      - psql
-      - rabbitmq 
+      - .enviroments/support-api.env
     volumes:
-      - $APPDATA/Microsoft/UserSecrets/$USER_SECRETS_ID_SUPPORT:/root/.microsoft/usersecrets/$USER_SECRETS_ID_SUPPORT:ro
-      - ./../fileserver:/static/images
+      - ../fileserver:/static/images
+      - ../logs:/root/logs
     ports:
-      - "5155:8080"
+      - 5155:8080
 
   withdraw-api:
-    image: "withdraw-api"
-    environment: 
+    environment:
       ASPNETCORE_ENVIRONMENT: Development
     build:
       context: .
       dockerfile: Services/Withdraw/Withdraw.API/Dockerfile
     env_file:
-      - .env
-    depends_on:
-      - psql
-      - rabbitmq 
+      - .enviroments/withdraw-api.env
     volumes:
-      - $APPDATA/Microsoft/UserSecrets/$USER_SECRETS_ID_WITHDRAW:/root/.microsoft/usersecrets/$USER_SECRETS_ID_WITHDRAW:ro
-      - ./../fileserver:/static/images
+      - ../fileserver:/static/images
+      - ../logs:/root/logs
     ports:
-      - "5187:8080"
+      - 5187:8080
 
   gateway-api:
-    image: "gateway-api"
     environment:
       ASPNETCORE_ENVIRONMENT: Development
-      ASPNETCORE_HTTPS_PORT: "5000"
-      ASPNETCORE_URLS: https://+:443;http://+:8080
-      ASPNETCORE_Kestrel__Certificates__Default__Password: password 
-      ASPNETCORE_Kestrel__Certificates__Default__Path: /https/aspnetapp.pfx
     build:
       context: .
       dockerfile: InCase.ApiGateway/Dockerfile
     env_file:
-      - .env
-    ports:
-      - "5000:443"
-      - "5001:8080"
+      - .enviroments/gateway-api.dev.env
     volumes:
-      - ~/.aspnet/https:/https:ro
+      - ../.ssl/:/etc/.ssl/private/
+      - ../logs:/root/logs
+    ports:
+      - 5000:443
+      - 5001:8080
+volumes:
+  database:
+  rabbitmq:

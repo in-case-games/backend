@@ -9,7 +9,10 @@ using Payment.BLL.Interfaces;
 namespace Payment.BLL.Services;
 public class ResponseService(ILogger<ResponseService> logger, IConfiguration configuration) : IResponseService
 {
+    private static readonly string Env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development";
+
     private readonly HttpClient _httpClient = new();
+    private readonly string _yooKassaSecret = $"{configuration[$"YooKassa:Id:{Env}"]!}:{configuration[$"YooKassa:Secret:{Env}"]!}";
 
     public async Task<T?> GetAsync<T>(string uri, CancellationToken cancellationToken = default)
     {
@@ -54,8 +57,7 @@ public class ResponseService(ILogger<ResponseService> logger, IConfiguration con
     {
         _httpClient.DefaultRequestHeaders.Clear();
 
-        var secret = $"{configuration["YooKassa:Id"]!}:{configuration["YooKassa:Secret"]!}";
-        var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(secret);
+        var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(_yooKassaSecret);
 
         _httpClient.DefaultRequestHeaders.Accept
             .Add(new MediaTypeWithQualityHeaderValue("application/json"));

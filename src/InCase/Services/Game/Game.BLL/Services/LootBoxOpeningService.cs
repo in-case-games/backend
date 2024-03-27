@@ -100,14 +100,14 @@ public class LootBoxOpeningService(
 
         box.Balance -= expenses;
 
-        logger.LogTrace($"UID - {userId}, открыл - {id}, выпало - {winItem.Id}, сняло - {boxCost}");
+        logger.LogTrace($"ID={id}|UID={userId}|WID={winItem.Id}|COST={boxCost}|REV={revenue}|EXP={expenses}");
 
         context.Entry(info).Property(p => p.Balance).IsModified = true;
         context.Entry(box).Property(p => p.Balance).IsModified = true;
         await context.UserOpenings.AddAsync(opening, cancellation);
         await context.SaveChangesAsync(cancellation);
 
-        logger.LogTrace($"UID - {userId}, UOID - {opening.Id} зафиксировал");
+        logger.LogTrace($"ID={id}|Box_Balance={box.Balance}|Зафиксировано");
 
         await publisher.SendAsync(new UserInventoryTemplate
         {
