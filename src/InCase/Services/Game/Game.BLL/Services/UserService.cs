@@ -6,7 +6,6 @@ using Infrastructure.MassTransit.User;
 using Microsoft.EntityFrameworkCore;
 
 namespace Game.BLL.Services;
-
 public class UserService(ApplicationDbContext context) : IUserService
 {
     public async Task<User?> GetAsync(Guid id, CancellationToken cancellation = default) => 
@@ -20,7 +19,7 @@ public class UserService(ApplicationDbContext context) : IUserService
             throw new NotFoundException("Пользователь существует");
 
         await context.Users.AddAsync(new User { Id = template.Id, }, cancellation);
-        await context.AdditionalInfos.AddAsync(new UserAdditionalInfo
+        await context.UserAdditionalInfos.AddAsync(new UserAdditionalInfo
         {
             UserId = template.Id,
             Balance = 0,

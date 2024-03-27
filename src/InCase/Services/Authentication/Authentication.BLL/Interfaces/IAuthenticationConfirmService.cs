@@ -1,7 +1,6 @@
 ﻿using Authentication.BLL.Models;
 
 namespace Authentication.BLL.Interfaces;
-
 public interface IAuthenticationConfirmService
 {
     public Task<TokensResponse> ConfirmAccountAsync(string token, CancellationToken cancellationToken = default);

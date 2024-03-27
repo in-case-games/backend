@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using Review.DAL.Entities;
 
 namespace Review.DAL.Configurations;
-
 internal class BaseEntityConfiguration<TEntity> :
     IEntityTypeConfiguration<TEntity> where TEntity : BaseEntity
 {

@@ -8,7 +8,6 @@ using Infrastructure.MassTransit.User;
 using Microsoft.EntityFrameworkCore;
 
 namespace Identity.BLL.Services;
-
 public class UserService(ApplicationDbContext context) : IUserService
 {
     public async Task<User?> GetByConsumerAsync(Guid id, CancellationToken cancellation = default) => 
@@ -67,14 +66,14 @@ public class UserService(ApplicationDbContext context) : IUserService
         if (await context.Users.AnyAsync(u => u.Id == template.Id, cancellation))
             throw new ForbiddenException("Пользователь существует");
 
-        var role = await context.Roles.FirstAsync(ur => ur.Name == "user", cancellation);
+        var role = await context.UserRoles.FirstAsync(ur => ur.Name == "user", cancellation);
 
         await context.Users.AddAsync(new User
         {
             Id = template.Id,
             Login = template.Login
         }, cancellation);
-        await context.AdditionalInfos.AddAsync(new UserAdditionalInfo
+        await context.UserAdditionalInfos.AddAsync(new UserAdditionalInfo
         {
             UserId = template.Id,
             CreationDate = DateTime.UtcNow,

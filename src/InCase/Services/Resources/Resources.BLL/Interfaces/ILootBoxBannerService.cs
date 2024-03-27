@@ -1,7 +1,6 @@
 ﻿using Resources.BLL.Models;
 
 namespace Resources.BLL.Interfaces;
-
 public interface ILootBoxBannerService
 {
     public Task<LootBoxBannerResponse> GetAsync(Guid id, CancellationToken cancellation = default);

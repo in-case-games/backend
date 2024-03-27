@@ -1,12 +1,12 @@
 ﻿using Resources.DAL.Entities;
 
 namespace Resources.BLL.Models;
-
 public class GameItemResponse : BaseEntity
 {
     public string? Name { get; set; }
     public string? IdForMarket { get; set; }
-    public DateTime UpdateDate { get; set; }
+    public DateTime UpdateTo { get; set; }
+    public DateTime UpdatedIn { get; set; }
     public string? HashName { get; set; }
     public decimal Cost { get; set; }
     public string? Game { get; set; }

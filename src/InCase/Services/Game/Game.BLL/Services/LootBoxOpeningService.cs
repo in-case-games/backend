@@ -10,7 +10,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace Game.BLL.Services;
-
 public class LootBoxOpeningService(
     ILogger<LootBoxOpeningService> logger, 
     ApplicationDbContext context, 
@@ -18,19 +17,19 @@ public class LootBoxOpeningService(
 {
     public async Task<GameItemResponse> OpenBox(Guid userId, Guid id, CancellationToken cancellation = default)
     {
-        var box = await context.Boxes
+        var box = await context.LootBoxes
             .Include(lb => lb.Inventories!)
             .ThenInclude(lbi => lbi.Item)
             .AsNoTracking()
             .FirstOrDefaultAsync(lb => lb.Id == id, cancellation) ??
             throw new NotFoundException("Кейс не найден");
 
-        var info = await context.AdditionalInfos
+        var info = await context.UserAdditionalInfos
             .AsNoTracking()
             .FirstOrDefaultAsync(uai => uai.UserId == userId, cancellation) ??
             throw new NotFoundException("Пользователь не найден");
 
-        var promo = await context.UserPromocodes
+        var promo = await context.UserPromoCodes
             .AsNoTracking()
             .FirstOrDefaultAsync(uhp => uhp.UserId == userId, cancellation);
 
@@ -38,15 +37,15 @@ public class LootBoxOpeningService(
         if (info.Balance < box.Cost) throw new PaymentRequiredException("Недостаточно средств");
         if (promo is not null)
         {
-            await publisher.SendAsync(new UserPromocodeBackTemplate
+            await publisher.SendAsync(new UserPromoCodeBackTemplate
             {
                 Id = promo.Id,
             }, cancellation);
 
-            context.UserPromocodes.Remove(promo);
+            context.UserPromoCodes.Remove(promo);
         }
 
-        var path = await context.PathBanners
+        var path = await context.UserPathBanners
             .AsNoTracking()
             .FirstOrDefaultAsync(upb => upb.BoxId == box.Id && upb.UserId == userId, cancellation);
 
@@ -73,20 +72,20 @@ public class LootBoxOpeningService(
             {
                 winItem = box.Inventories?
                               .FirstOrDefault(f => f.ItemId == path.ItemId)?.Item ??
-                          await context.Items
+                          await context.GameItems
                               .AsNoTracking()
                               .FirstOrDefaultAsync(i => i.Id == path.ItemId, cancellation);
 
                 winItem!.Cost = path.FixedCost;
                 expenses = retention;
 
-                context.PathBanners.Remove(path);
+                context.UserPathBanners.Remove(path);
             }
             else
             {
                 revenue = 0;
 
-                context.PathBanners.Attach(path);
+                context.UserPathBanners.Attach(path);
                 context.Entry(path).Property(p => p.NumberSteps).IsModified = true;
             }
         }
@@ -101,14 +100,14 @@ public class LootBoxOpeningService(
 
         box.Balance -= expenses;
 
-        logger.LogTrace($"UID - {userId}, открыл - {id}, выпало - {winItem.Id}, сняло - {boxCost}");
+        logger.LogTrace($"ID={id}|UID={userId}|WID={winItem.Id}|COST={boxCost}|REV={revenue}|EXP={expenses}");
 
         context.Entry(info).Property(p => p.Balance).IsModified = true;
         context.Entry(box).Property(p => p.Balance).IsModified = true;
-        await context.Openings.AddAsync(opening, cancellation);
+        await context.UserOpenings.AddAsync(opening, cancellation);
         await context.SaveChangesAsync(cancellation);
 
-        logger.LogTrace($"UID - {userId}, UOID - {opening.Id} зафиксировал");
+        logger.LogTrace($"ID={id}|Box_Balance={box.Balance}|Зафиксировано");
 
         await publisher.SendAsync(new UserInventoryTemplate
         {
@@ -133,12 +132,12 @@ public class LootBoxOpeningService(
 
     public async Task<GameItemResponse> OpenVirtualBox(Guid userId, Guid id, CancellationToken cancellation = default)
     {
-        var userInfo = await context.AdditionalInfos
+        var userInfo = await context.UserAdditionalInfos
             .AsNoTracking()
             .FirstOrDefaultAsync(uai => uai.UserId == userId, cancellation) ??
             throw new NotFoundException("Пользователь не найден");
 
-        var box = await context.Boxes
+        var box = await context.LootBoxes
             .Include(lb => lb.Inventories!)
                 .ThenInclude(lbi => lbi.Item)
             .AsNoTracking()
@@ -155,7 +154,7 @@ public class LootBoxOpeningService(
 
         box.VirtualBalance -= expenses;
 
-        context.Boxes.Attach(box);
+        context.LootBoxes.Attach(box);
         context.Entry(box).Property(p => p.VirtualBalance).IsModified = true;
         await context.SaveChangesAsync(cancellation);
 
@@ -177,12 +176,12 @@ public class LootBoxOpeningService(
         if (count < 1 || (count > 100 && !isAdmin))
             throw new BadRequestException("Количество открытий должно быть в диапазоне от 1 до 100");
 
-        var userInfo = await context.AdditionalInfos
+        var userInfo = await context.UserAdditionalInfos
             .AsNoTracking()
             .FirstOrDefaultAsync(uai => uai.UserId == userId, cancellation) ??
             throw new NotFoundException("Пользователь не найден");
 
-        var box = await context.Boxes
+        var box = await context.LootBoxes
             .Include(lb => lb.Inventories!)
                 .ThenInclude(lbi => lbi.Item)
             .AsNoTracking()
@@ -191,7 +190,7 @@ public class LootBoxOpeningService(
 
         if (!userInfo.IsGuestMode) throw new ForbiddenException("Не включен режим гостя");
 
-        context.Boxes.Attach(box);
+        context.LootBoxes.Attach(box);
         context.Entry(box).Property(p => p.VirtualBalance).IsModified = true;
 
         var winItems = new List<GameItemBigOpenResponse>();

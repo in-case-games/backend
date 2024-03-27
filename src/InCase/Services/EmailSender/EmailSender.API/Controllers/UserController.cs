@@ -8,7 +8,6 @@ using System.Net;
 using System.Security.Claims;
 
 namespace EmailSender.API.Controllers;
-
 [Route("api/user")]
 [ApiController]
 public class UserController(IUserAdditionalInfoService userService) : ControllerBase

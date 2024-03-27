@@ -4,7 +4,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 namespace Authentication.BLL.Services;
-
 public class UserManagerService(
     IServiceProvider serviceProvider, 
     IHostApplicationLifetime lifetime, 

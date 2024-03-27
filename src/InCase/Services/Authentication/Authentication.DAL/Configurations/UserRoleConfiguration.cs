@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Authentication.DAL.Configurations;
-
 internal class UserRoleConfiguration : BaseEntityConfiguration<UserRole>
 {
     private readonly List<UserRole> _roles =

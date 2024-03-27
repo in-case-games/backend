@@ -1,7 +1,6 @@
 ﻿using Support.BLL.Models;
 
 namespace Support.BLL.Interfaces;
-
 public interface ISupportTopicService
 {
     public Task<SupportTopicResponse> GetAsync(Guid userId, Guid id, CancellationToken cancellation = default);

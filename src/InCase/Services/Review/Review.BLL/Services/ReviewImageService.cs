@@ -7,12 +7,11 @@ using Review.DAL.Data;
 using Review.DAL.Entities;
 
 namespace Review.BLL.Services;
-
 public class ReviewImageService(ApplicationDbContext context) : IReviewImageService
 {
     public async Task<ReviewImageResponse> GetAsync(Guid id, bool isOnlyApproved, CancellationToken cancellation = default)
     {
-        var image = await context.Images
+        var image = await context.ReviewImages
             .Include(ri => ri.Review)
             .AsNoTracking()
             .FirstOrDefaultAsync(ri => ri.Id == id, cancellation) ??
@@ -25,7 +24,7 @@ public class ReviewImageService(ApplicationDbContext context) : IReviewImageServ
 
     public async Task<List<ReviewImageResponse>> GetAsync(bool isOnlyApproved, CancellationToken cancellation = default)
     {
-        var images = await context.Images
+        var images = await context.ReviewImages
             .Include(ri => ri.Review)
             .AsNoTracking()
             .ToListAsync(cancellation);
@@ -38,7 +37,7 @@ public class ReviewImageService(ApplicationDbContext context) : IReviewImageServ
     public async Task<List<ReviewImageResponse>> GetByUserIdAsync(Guid userId, bool isOnlyApproved, 
         CancellationToken cancellation = default)
     {
-        var images = await context.Images
+        var images = await context.ReviewImages
             .Include(ri => ri.Review)
             .AsNoTracking()
             .Where(ri => ri.Review!.UserId == userId)
@@ -52,7 +51,7 @@ public class ReviewImageService(ApplicationDbContext context) : IReviewImageServ
     public async Task<List<ReviewImageResponse>> GetByReviewIdAsync(Guid reviewId, bool isOnlyApproved, 
         CancellationToken cancellation = default)
     {
-        var images = await context.Images
+        var images = await context.ReviewImages
             .Include(ri => ri.Review)
             .AsNoTracking()
             .Where(ri => ri.ReviewId == reviewId)
@@ -68,7 +67,7 @@ public class ReviewImageService(ApplicationDbContext context) : IReviewImageServ
     {
         if (request.Image is null) throw new BadRequestException("Загрузите картинку в base 64");
 
-        var review = await context.Reviews
+        var review = await context.UserReviews
             .FirstOrDefaultAsync(ur => ur.Id == request.ReviewId, cancellation) ??
             throw new NotFoundException("Отзыв не найден");
 
@@ -82,7 +81,7 @@ public class ReviewImageService(ApplicationDbContext context) : IReviewImageServ
 
         review.IsApproved = false;
 
-        await context.Images.AddAsync(image, cancellation);
+        await context.ReviewImages.AddAsync(image, cancellation);
         await context.SaveChangesAsync(cancellation);
 
         FileService.UploadImageBase64(request.Image, $"reviews/{image.ReviewId}/{image.Id}/", $"{image.Id}");
@@ -92,7 +91,7 @@ public class ReviewImageService(ApplicationDbContext context) : IReviewImageServ
 
     public async Task<ReviewImageResponse> DeleteAsync(Guid userId, Guid id, CancellationToken cancellation = default)
     {
-        var image = await context.Images
+        var image = await context.ReviewImages
             .Include(ri => ri.Review)
             .AsNoTracking()
             .FirstOrDefaultAsync(ri => ri.Id == id, cancellation) ??
@@ -100,7 +99,7 @@ public class ReviewImageService(ApplicationDbContext context) : IReviewImageServ
 
         if (image.Review!.UserId != userId) throw new ForbiddenException("Доступ к отзыву только у создателя");
 
-        context.Images.Remove(image);
+        context.ReviewImages.Remove(image);
         await context.SaveChangesAsync(cancellation);
 
         FileService.RemoveFolder($"reviews/{image.ReviewId}/{id}/");
@@ -110,13 +109,13 @@ public class ReviewImageService(ApplicationDbContext context) : IReviewImageServ
 
     public async Task<ReviewImageResponse> DeleteAsync(Guid id, CancellationToken cancellation = default)
     {
-        var image = await context.Images
+        var image = await context.ReviewImages
             .Include(ri => ri.Review)
             .AsNoTracking()
             .FirstOrDefaultAsync(ri => ri.Id == id, cancellation) ??
             throw new NotFoundException("Изображение не найдено");
 
-        context.Images.Remove(image);
+        context.ReviewImages.Remove(image);
         await context.SaveChangesAsync(cancellation);
 
         FileService.RemoveFolder($"reviews/{image.ReviewId}/{id}/");

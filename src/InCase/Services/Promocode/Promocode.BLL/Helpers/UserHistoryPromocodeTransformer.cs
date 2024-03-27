@@ -2,19 +2,18 @@
 using Promocode.DAL.Entities;
 
 namespace Promocode.BLL.Helpers;
-
-public static class UserHistoryPromocodeTransformer
+public static class UserHistoryPromoCodeTransformer
 {
-    public static UserPromocodeResponse ToResponse(this UserPromocode history) =>
+    public static UserPromoCodeResponse ToResponse(this UserPromoCode history) =>
         new() { 
             Id = history.Id,
             Date = history.Date,
             IsActivated = history.IsActivated,
-            Discount = history.Promocode is null ? null : (int)(history.Promocode.Discount * 100),
-            Name = history.Promocode?.Name,
-            Type = history.Promocode?.Type?.Name
+            Discount = history.PromoCode is null ? null : (int)(history.PromoCode.Discount * 100),
+            Name = history.PromoCode?.Name,
+            Type = history.PromoCode?.Type?.Name
         };
 
-    public static List<UserPromocodeResponse> ToResponse(this List<UserPromocode> histories) => 
+    public static List<UserPromoCodeResponse> ToResponse(this List<UserPromoCode> histories) => 
         histories.Select(ToResponse).ToList();
 }

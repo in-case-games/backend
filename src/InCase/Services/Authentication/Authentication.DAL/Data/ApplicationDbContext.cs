@@ -3,13 +3,12 @@ using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 
 namespace Authentication.DAL.Data;
-
 public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
 {
     public DbSet<User> Users => Set<User>();
-    public DbSet<UserAdditionalInfo> AdditionalInfos => Set<UserAdditionalInfo>();
-    public DbSet<UserRestriction> Restrictions => Set<UserRestriction>();
-    public DbSet<UserRole> Roles => Set<UserRole>();
+    public DbSet<UserAdditionalInfo> UserAdditionalInfos => Set<UserAdditionalInfo>();
+    public DbSet<UserRestriction> UserRestrictions => Set<UserRestriction>();
+    public DbSet<UserRole> UserRoles => Set<UserRole>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

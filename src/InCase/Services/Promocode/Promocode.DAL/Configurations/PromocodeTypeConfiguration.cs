@@ -3,21 +3,21 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Promocode.DAL.Entities;
 
 namespace Promocode.DAL.Configurations;
-
-internal class PromocodeTypeConfiguration : BaseEntityConfiguration<PromocodeType>
+internal class PromoCodeTypeConfiguration : BaseEntityConfiguration<PromoCodeType>
 {
-    private readonly List<PromocodeType> _types = [
-        new PromocodeType { Name = "balance" }, 
-        new PromocodeType { Name = "box" }
+    private readonly List<PromoCodeType> _types = [
+        new PromoCodeType { Name = "balance" }, 
+        new PromoCodeType { Name = "box" }
     ];
 
-    public override void Configure(EntityTypeBuilder<PromocodeType> builder)
+    public override void Configure(EntityTypeBuilder<PromoCodeType> builder)
     {
         base.Configure(builder);
 
-        builder.ToTable(nameof(PromocodeType));
+        builder.ToTable(nameof(PromoCodeType));
 
         builder.Property(pt => pt.Name)
+            .HasMaxLength(50)
             .IsRequired();
         builder.HasIndex(pt => pt.Name)
             .IsUnique();

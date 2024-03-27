@@ -9,7 +9,6 @@ using Withdraw.BLL.Interfaces;
 using Withdraw.BLL.Models;
 
 namespace Withdraw.API.Controllers;
-
 [Route("api/user-inventory")]
 [ApiController]
 public class UserInventoryController(IUserInventoryService userInventoryService) : ControllerBase

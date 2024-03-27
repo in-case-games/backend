@@ -2,7 +2,6 @@
 using Infrastructure.MassTransit.Resources;
 
 namespace Game.BLL.Interfaces;
-
 public interface ILootBoxService
 {
     public Task<LootBox?> GetAsync(Guid id, CancellationToken cancellation = default);

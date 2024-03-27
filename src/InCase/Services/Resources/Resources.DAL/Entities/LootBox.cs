@@ -1,9 +1,10 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace Resources.DAL.Entities;
-
 public class LootBox : BaseEntity
 {
+    [MaxLength(50)]
     public string? Name { get; set; }
     public decimal Cost { get; set; }
     public bool IsLocked { get; set; }

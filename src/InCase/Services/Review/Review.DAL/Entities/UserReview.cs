@@ -1,10 +1,12 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace Review.DAL.Entities;
-
 public class UserReview : BaseEntity
 {
+    [MaxLength(50)]
     public string? Title { get; set; }
+    [MaxLength(120)]
     public string? Content { get; set; }
     public DateTime CreationDate { get; set; }
     public int Score { get; set; }

@@ -2,7 +2,6 @@
 using Support.BLL.Models;
 
 namespace Support.BLL.Services;
-
 public static class ValidationService
 {
     public static void IsSupportTopicAnswer(SupportTopicAnswerRequest request)

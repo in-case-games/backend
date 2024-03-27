@@ -2,7 +2,6 @@
 using Support.DAL.Entities;
 
 namespace Support.BLL.Helpers;
-
 public static class AnswerImageTransformer
 {
     public static AnswerImageResponse ToResponse(this AnswerImage entity) => new()

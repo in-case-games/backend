@@ -6,7 +6,6 @@ using Support.BLL.Models;
 using Support.DAL.Data;
 
 namespace Support.BLL.Services;
-
 public class SupportTopicAnswerService(ApplicationDbContext context) : ISupportTopicAnswerService
 {
     public async Task<SupportTopicAnswerResponse> GetAsync(Guid userId, Guid id, CancellationToken cancellation = default)
@@ -14,12 +13,12 @@ public class SupportTopicAnswerService(ApplicationDbContext context) : ISupportT
         if (!await context.Users.AnyAsync(u => u.Id == userId, cancellation))
             throw new NotFoundException("Пользователь не найден");
 
-        var answer = await context.Answers
+        var answer = await context.SupportTopicAnswers
             .Include(sta => sta.Images)
             .AsNoTracking()
             .FirstOrDefaultAsync(sta => sta.Id == id, cancellation) ??
             throw new NotFoundException("Сообщение не найдено");
-        var topic = await context.Topics
+        var topic = await context.SupportTopics
             .AsNoTracking()
             .FirstOrDefaultAsync(st => st.Id == answer.TopicId, cancellation) ??
             throw new NotFoundException("Топик не найден");
@@ -31,7 +30,7 @@ public class SupportTopicAnswerService(ApplicationDbContext context) : ISupportT
 
     public async Task<SupportTopicAnswerResponse> GetAsync(Guid id, CancellationToken cancellation = default)
     {
-        var answer = await context.Answers
+        var answer = await context.SupportTopicAnswers
             .Include(sta => sta.Images)
             .AsNoTracking()
             .FirstOrDefaultAsync(sta => sta.Id == id, cancellation) ??
@@ -46,7 +45,7 @@ public class SupportTopicAnswerService(ApplicationDbContext context) : ISupportT
         if (!await context.Users.AnyAsync(u => u.Id == userId, cancellation))
             throw new NotFoundException("Пользователь не найден");
 
-        var topics = await context.Topics
+        var topics = await context.SupportTopics
             .Include(st => st.Answers!)
                 .ThenInclude(sta => sta.Images)
             .AsNoTracking()
@@ -65,7 +64,7 @@ public class SupportTopicAnswerService(ApplicationDbContext context) : ISupportT
         if (!await context.Users.AnyAsync(u => u.Id == userId, cancellation))
             throw new NotFoundException("Пользователь не найден");
 
-        var topic = await context.Topics
+        var topic = await context.SupportTopics
             .Include(st => st.Answers!)
                 .ThenInclude(sta => sta.Images)
             .AsNoTracking()
@@ -79,7 +78,7 @@ public class SupportTopicAnswerService(ApplicationDbContext context) : ISupportT
 
     public async Task<List<SupportTopicAnswerResponse>> GetByTopicIdAsync(Guid id, CancellationToken cancellation = default)
     {
-        var topic = await context.Topics
+        var topic = await context.SupportTopics
             .Include(st => st.Answers!)
                 .ThenInclude(sta => sta.Images)
             .AsNoTracking()
@@ -93,7 +92,7 @@ public class SupportTopicAnswerService(ApplicationDbContext context) : ISupportT
     {
         ValidationService.IsSupportTopicAnswer(request);
 
-        var topic = await context.Topics
+        var topic = await context.SupportTopics
             .FirstOrDefaultAsync(st => st.Id == request.TopicId, cancellation) ??
             throw new NotFoundException("Топик не найден");
         var answer = request.ToEntity(isNewGuid: true);
@@ -106,7 +105,7 @@ public class SupportTopicAnswerService(ApplicationDbContext context) : ISupportT
         if (!await context.Users.AnyAsync(u => u.Id == request.PlaintiffId, cancellation))
             throw new NotFoundException("Пользователь не найден");
 
-        await context.Answers.AddAsync(answer, cancellation);
+        await context.SupportTopicAnswers.AddAsync(answer, cancellation);
         await context.SaveChangesAsync(cancellation);
 
         FileService.CreateFolder(@$"topic-answers/{answer.TopicId}/{request.Id}/");
@@ -118,14 +117,14 @@ public class SupportTopicAnswerService(ApplicationDbContext context) : ISupportT
     {
         ValidationService.IsSupportTopicAnswer(request);
 
-        if (!await context.Topics.AnyAsync(st => st.Id == request.TopicId, cancellation))
+        if (!await context.SupportTopics.AnyAsync(st => st.Id == request.TopicId, cancellation))
             throw new NotFoundException("Топик не найден");
 
         request.Date = DateTime.UtcNow;
 
         var answer = request.ToEntity(isNewGuid: true);
 
-        await context.Answers.AddAsync(answer, cancellation);
+        await context.SupportTopicAnswers.AddAsync(answer, cancellation);
         await context.SaveChangesAsync(cancellation);
 
         FileService.CreateFolder(@$"topic-answers/{answer.TopicId}/{request.Id}/");
@@ -137,7 +136,7 @@ public class SupportTopicAnswerService(ApplicationDbContext context) : ISupportT
     {
         ValidationService.IsSupportTopicAnswer(request);
 
-        var answerOld = await context.Answers
+        var answerOld = await context.SupportTopicAnswers
             .FirstOrDefaultAsync(sta => sta.Id == request.Id, cancellation) ??
             throw new NotFoundException("Ответ не найден");
         var answer = request.ToEntity();
@@ -148,7 +147,7 @@ public class SupportTopicAnswerService(ApplicationDbContext context) : ISupportT
             throw new ForbiddenException("Вы не создатель сообщения");
         if (!await context.Users.AnyAsync(u => u.Id == request.PlaintiffId, cancellation))
             throw new NotFoundException("Пользователь не найден");
-        if (!await context.Topics.AnyAsync(st => st.Id == request.TopicId, cancellation))
+        if (!await context.SupportTopics.AnyAsync(st => st.Id == request.TopicId, cancellation))
             throw new NotFoundException("Топик не найден");
 
         context.Entry(answerOld).CurrentValues.SetValues(answer);
@@ -159,7 +158,7 @@ public class SupportTopicAnswerService(ApplicationDbContext context) : ISupportT
 
     public async Task<SupportTopicAnswerResponse> DeleteAsync(Guid userId, Guid id, CancellationToken cancellation = default)
     {
-        var answer = await context.Answers
+        var answer = await context.SupportTopicAnswers
             .AsNoTracking()
             .FirstOrDefaultAsync(sta => sta.Id == id, cancellation) ??
             throw new NotFoundException("Ответ не найден");
@@ -169,7 +168,7 @@ public class SupportTopicAnswerService(ApplicationDbContext context) : ISupportT
         if (answer.PlaintiffId != userId)
             throw new ForbiddenException("Вы не создатель сообщения");
 
-        context.Answers.Remove(answer);
+        context.SupportTopicAnswers.Remove(answer);
         await context.SaveChangesAsync(cancellation);
 
         FileService.RemoveFolder($"topic-answers/{answer.TopicId}/{id}/");

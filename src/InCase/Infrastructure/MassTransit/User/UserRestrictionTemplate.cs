@@ -1,5 +1,4 @@
 ﻿namespace Infrastructure.MassTransit.User;
-
 public class UserRestrictionTemplate : BaseTemplate
 {
     public DateTime CreationDate { get; set; }

@@ -1,5 +1,4 @@
 ﻿namespace Review.API.Common;
-
 public class ApiResult<T>(int code, T data)
 {
     public int Code { get; set; } = code;

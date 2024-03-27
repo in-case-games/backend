@@ -3,7 +3,6 @@ using System.Net.Http.Json;
 using System.Text.Json;
 
 namespace Resources.BLL.Services;
-
 public class ResponseService : IResponseService
 {
     private readonly HttpClient _httpClient = new();

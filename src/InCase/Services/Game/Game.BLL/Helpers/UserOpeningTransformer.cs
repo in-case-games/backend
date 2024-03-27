@@ -2,7 +2,6 @@
 using Game.DAL.Entities;
 
 namespace Game.BLL.Helpers;
-
 public static class UserOpeningTransformer
 {
     public static List<UserOpeningResponse> ToResponse(this List<UserOpening> openings) =>

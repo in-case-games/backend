@@ -35,5 +35,4 @@
 	<ItemGroup>
 		<ProjectReference Include="..\Authentication.BLL\Authentication.BLL.csproj" />
 	</ItemGroup>
-	
 </Project>

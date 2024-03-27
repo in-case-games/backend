@@ -6,7 +6,6 @@ using Support.BLL.Models;
 using Support.DAL.Data;
 
 namespace Support.BLL.Services;
-
 public class SupportTopicService(ApplicationDbContext context) : ISupportTopicService
 {
     public async Task<SupportTopicResponse> GetAsync(Guid userId, Guid id, CancellationToken cancellation = default)
@@ -14,7 +13,7 @@ public class SupportTopicService(ApplicationDbContext context) : ISupportTopicSe
         if (!await context.Users.AnyAsync(u => u.Id == userId, cancellation))
             throw new NotFoundException("Пользователь не найден");
 
-        var topic = await context.Topics
+        var topic = await context.SupportTopics
             .Include(st => st.Answers!)
                 .ThenInclude(sta => sta.Images)
             .AsNoTracking()
@@ -28,7 +27,7 @@ public class SupportTopicService(ApplicationDbContext context) : ISupportTopicSe
 
     public async Task<SupportTopicResponse> GetAsync(Guid id, CancellationToken cancellation = default)
     {
-        var topic = await context.Topics
+        var topic = await context.SupportTopics
             .Include(st => st.Answers!)
                 .ThenInclude(sta => sta.Images)
             .AsNoTracking()
@@ -43,7 +42,7 @@ public class SupportTopicService(ApplicationDbContext context) : ISupportTopicSe
         if (!await context.Users.AnyAsync(u => u.Id == userId, cancellation))
             throw new NotFoundException("Пользователь не найден");
 
-        var topics = await context.Topics
+        var topics = await context.SupportTopics
             .Include(st => st.Answers!)
                 .ThenInclude(sta => sta.Images)
             .AsNoTracking()
@@ -55,7 +54,7 @@ public class SupportTopicService(ApplicationDbContext context) : ISupportTopicSe
 
     public async Task<List<SupportTopicResponse>> GetOpenedTopicsAsync(CancellationToken cancellation = default)
     {
-        var topics = await context.Topics
+        var topics = await context.SupportTopics
             .Include(st => st.Answers!)
                 .ThenInclude(sta => sta.Images)
             .AsNoTracking()
@@ -67,7 +66,7 @@ public class SupportTopicService(ApplicationDbContext context) : ISupportTopicSe
 
     public async Task<SupportTopicResponse> CloseTopic(Guid id, CancellationToken cancellation = default)
     {
-        var topic = await context.Topics
+        var topic = await context.SupportTopics
             .Include(st => st.Answers!)
                 .ThenInclude(sta => sta.Images)
             .FirstOrDefaultAsync(st => st.Id == id, cancellation) ??
@@ -82,7 +81,7 @@ public class SupportTopicService(ApplicationDbContext context) : ISupportTopicSe
 
     public async Task<SupportTopicResponse> CloseTopic(Guid userId, Guid id, CancellationToken cancellation = default)
     {
-        var topic = await context.Topics
+        var topic = await context.SupportTopics
             .Include(st => st.Answers!)
                 .ThenInclude(sta => sta.Images)
             .FirstOrDefaultAsync(st => st.Id == id, cancellation) ??
@@ -104,7 +103,7 @@ public class SupportTopicService(ApplicationDbContext context) : ISupportTopicSe
     {
         ValidationService.IsSupportTopic(request);
 
-        var topics = await context.Topics
+        var topics = await context.SupportTopics
             .AsNoTracking()
             .Where(st => st.UserId == request.UserId && st.IsClosed == false)
             .ToListAsync(cancellation);
@@ -118,7 +117,7 @@ public class SupportTopicService(ApplicationDbContext context) : ISupportTopicSe
         topic.IsClosed = false;
         topic.Date = DateTime.UtcNow;
 
-        await context.Topics.AddAsync(topic, cancellation);
+        await context.SupportTopics.AddAsync(topic, cancellation);
         await context.SaveChangesAsync(cancellation);
 
         FileService.CreateFolder(@$"topic-answers/{request.Id}/");
@@ -130,7 +129,7 @@ public class SupportTopicService(ApplicationDbContext context) : ISupportTopicSe
     {
         ValidationService.IsSupportTopic(request);
 
-        var topicOld = await context.Topics
+        var topicOld = await context.SupportTopics
             .Include(st => st.Answers!)
                 .ThenInclude(sta => sta.Images)
             .FirstOrDefaultAsync(st => st.Id == request.Id, cancellation) ??
@@ -155,7 +154,7 @@ public class SupportTopicService(ApplicationDbContext context) : ISupportTopicSe
 
     public async Task<SupportTopicResponse> DeleteAsync(Guid userId, Guid id, CancellationToken cancellation = default)
     {
-        var topic = await context.Topics
+        var topic = await context.SupportTopics
             .Include(st => st.Answers!)
                 .ThenInclude(sta => sta.Images)
             .AsNoTracking()
@@ -167,7 +166,7 @@ public class SupportTopicService(ApplicationDbContext context) : ISupportTopicSe
         if (topic.UserId != userId)
             throw new ForbiddenException("Вы не создатель топика");
 
-        context.Topics.Remove(topic);
+        context.SupportTopics.Remove(topic);
         await context.SaveChangesAsync(cancellation);
 
         FileService.RemoveFolder($"topic-answers/{id}/");
@@ -177,14 +176,14 @@ public class SupportTopicService(ApplicationDbContext context) : ISupportTopicSe
 
     public async Task<SupportTopicResponse> DeleteAsync(Guid id, CancellationToken cancellation = default)
     {
-        var topic = await context.Topics
+        var topic = await context.SupportTopics
             .Include(st => st.Answers!)
                 .ThenInclude(sta => sta.Images)
             .AsNoTracking()
             .FirstOrDefaultAsync(st => st.Id == id, cancellation) ??
             throw new NotFoundException("Топик не найден");
 
-        context.Topics.Remove(topic);
+        context.SupportTopics.Remove(topic);
         await context.SaveChangesAsync(cancellation);
 
         FileService.RemoveFolder($"topic-answers/{id}/");

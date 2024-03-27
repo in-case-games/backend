@@ -10,7 +10,6 @@ using Withdraw.DAL.Data;
 using Withdraw.DAL.Entities;
 
 namespace Withdraw.BLL.Services;
-
 public class UserInventoryService(
     ApplicationDbContext context, 
     IWithdrawItemService withdrawService, 
@@ -23,7 +22,7 @@ public class UserInventoryService(
         if (!await context.Users.AnyAsync(u => u.Id == userId,cancellation))
             throw new NotFoundException("Пользователь не найден");
 
-        var inventories = await context.Inventories
+        var inventories = await context.UserInventories
             .AsNoTracking()
             .Where(ui => ui.UserId == userId)
             .ToListAsync(cancellation);
@@ -38,7 +37,7 @@ public class UserInventoryService(
         if (!await context.Users.AnyAsync(u => u.Id == userId, cancellation))
             throw new NotFoundException("Пользователь не найден");
 
-        var inventories = await context.Inventories
+        var inventories = await context.UserInventories
             .AsNoTracking()
             .Where(ui => ui.UserId == userId)
             .OrderByDescending(ui => ui.Date)
@@ -49,13 +48,13 @@ public class UserInventoryService(
     }
 
     public async Task<UserInventory?> GetByConsumerAsync(Guid id, CancellationToken cancellation = default) => 
-        await context.Inventories
+        await context.UserInventories
         .AsNoTracking()
         .FirstOrDefaultAsync(ui => ui.Id == id, cancellation);
 
     public async Task<UserInventoryResponse> GetByIdAsync(Guid id, CancellationToken cancellation = default)
     {
-        var inventory = await context.Inventories
+        var inventory = await context.UserInventories
             .AsNoTracking()
             .FirstOrDefaultAsync(ui => ui.Id == id, cancellation) ?? 
             throw new NotFoundException("Инвентарь не найден");
@@ -65,7 +64,7 @@ public class UserInventoryService(
 
     public async Task<UserInventoryResponse> CreateAsync(UserInventoryTemplate template, CancellationToken cancellation = default)
     {
-        if (!await context.Items.AnyAsync(gi => gi.Id == template.ItemId, cancellation))
+        if (!await context.GameItems.AnyAsync(gi => gi.Id == template.ItemId, cancellation))
             throw new NotFoundException("Предмет не найден");
         if (!await context.Users.AnyAsync(u => u.Id == template.UserId, cancellation))
             throw new NotFoundException("Пользователь не найден");
@@ -79,7 +78,7 @@ public class UserInventoryService(
             UserId = template.UserId
         };
 
-        await context.Inventories.AddAsync(inventory, cancellation);
+        await context.UserInventories.AddAsync(inventory, cancellation);
         await context.SaveChangesAsync(cancellation);
 
         return inventory.ToResponse();
@@ -93,7 +92,7 @@ public class UserInventoryService(
         if (request.Items.Sum(x => x.Count) > 10)
             throw new BadRequestException("Запрещено выводить более 10 предметов");
 
-        var inventory = await context.Inventories
+        var inventory = await context.UserInventories
             .Include(ui => ui.Item)
             .Include(ui => ui.Item!.Game!)
                 .ThenInclude(g => g.Market)
@@ -118,7 +117,7 @@ public class UserInventoryService(
 
         foreach (var itemModel in request.Items)
         {
-            var gameItem = await context.Items
+            var gameItem = await context.GameItems
                                .AsNoTracking()
                                .FirstOrDefaultAsync(gi => gi.Id == itemModel.ItemId, cancellation) ?? 
                            throw new NotFoundException($"Предмет с заданным Id {itemModel.ItemId} не найден");
@@ -141,16 +140,14 @@ public class UserInventoryService(
 
         if (differenceCost < 0) throw new BadRequestException("Стоимость товара при обмене не может быть выше");
 
-        context.Inventories.Remove(inventory);
-        await context.Inventories.AddRangeAsync(inventories, cancellation);
+        context.UserInventories.Remove(inventory);
+        await context.UserInventories.AddRangeAsync(inventories, cancellation);
         await context.SaveChangesAsync(cancellation);
-
-        foreach (var template in inventories.Select(userInventory => userInventory.ToTemplate()))
-        {
-            template.FixedCost = differenceCost;
-            await publisher.SendAsync(template, cancellation);
-        }
-
+        
+        await publisher.SendAsync(new UserInventoryBackTemplate() {
+            FixedCost = differenceCost,
+            UserId = userId
+        }, cancellation);
         await publisher.SendAsync(new SiteStatisticsAdminTemplate { FundsUsersInventories = -differenceCost * request.Items.Count }, cancellation);
 
         _logger.Log(NLog.LogLevel.Info, "Exchanged: UserId - {0}," +
@@ -167,7 +164,7 @@ public class UserInventoryService(
             .FirstOrDefaultAsync(uai => uai.Id == userId, cancellation) ??
             throw new NotFoundException("Пользователь не найден");
 
-        var inventory = await context.Inventories
+        var inventory = await context.UserInventories
             .AsNoTracking()
             .Include(userInventory => userInventory.Item)
             .ThenInclude(gameItem => gameItem!.Game)
@@ -177,7 +174,7 @@ public class UserInventoryService(
         _logger.Log(NLog.LogLevel.Info, "Selled: UserId - {0}, GameItemId - {1}, Game - {2}",
             user.Id, inventory.ItemId, inventory.Item?.Game?.Name);
 
-        context.Inventories.Remove(inventory);
+        context.UserInventories.Remove(inventory);
         await context.SaveChangesAsync(cancellation);
 
         await publisher.SendAsync(inventory.ToTemplate(), cancellation);
@@ -192,7 +189,7 @@ public class UserInventoryService(
             .FirstOrDefaultAsync(uai => uai.Id == userId, cancellation) ??
             throw new NotFoundException("Пользователь не найден");
         
-        var inventories = await context.Inventories
+        var inventories = await context.UserInventories
             .AsNoTracking()
             .Where(ui => ui.UserId == userId && ui.ItemId == itemId).Include(userInventory => userInventory.Item)
             .ThenInclude(gameItem => gameItem!.Game)
@@ -208,7 +205,7 @@ public class UserInventoryService(
                                        user.Id, inventory.ItemId,
                                        inventory.Item?.Game?.Name);
 
-        context.Inventories.Remove(inventory);
+        context.UserInventories.Remove(inventory);
         await context.SaveChangesAsync(cancellation);
 
         await publisher.SendAsync(inventory.ToTemplate(), cancellation);
@@ -218,12 +215,12 @@ public class UserInventoryService(
 
     public async Task<UserInventoryResponse> DeleteAsync(Guid id, CancellationToken cancellation = default)
     {
-        var inventory = await context.Inventories
+        var inventory = await context.UserInventories
             .AsNoTracking()
             .FirstOrDefaultAsync(ui => ui.Id == id, cancellation) ??
             throw new NotFoundException("Предмет не найден в инвентаре");
 
-        context.Inventories.Remove(inventory);
+        context.UserInventories.Remove(inventory);
         await context.SaveChangesAsync(cancellation);
 
         await publisher.SendAsync(new SiteStatisticsAdminTemplate { FundsUsersInventories = -inventory.FixedCost }, cancellation);

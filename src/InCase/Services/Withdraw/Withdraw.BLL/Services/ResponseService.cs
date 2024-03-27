@@ -3,7 +3,6 @@ using System.Text.Json;
 using Withdraw.BLL.Interfaces;
 
 namespace Withdraw.BLL.Services;
-
 public class ResponseService : IResponseService
 {
     private readonly HttpClient _httpClient = new();

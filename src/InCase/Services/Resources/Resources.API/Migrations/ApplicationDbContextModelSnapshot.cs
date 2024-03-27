@@ -17,7 +17,7 @@ namespace Resources.API.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.9")
+                .HasAnnotation("ProductVersion", "8.0.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -31,7 +31,8 @@ namespace Resources.API.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
                         .HasColumnName("name");
 
                     b.HasKey("Id")
@@ -50,12 +51,12 @@ namespace Resources.API.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("d04fbc9a-58c4-436d-abd8-26c634beb3bf"),
+                            Id = new Guid("abbfb420-dae7-44d7-bd47-5f5bcd0deefd"),
                             Name = "csgo"
                         },
                         new
                         {
-                            Id = new Guid("e01b068c-002b-4e4e-96ab-768529d9d480"),
+                            Id = new Guid("0656dcbf-ca6e-4bd3-a3d5-03694a025688"),
                             Name = "dota2"
                         });
                 });
@@ -76,12 +77,14 @@ namespace Resources.API.Migrations
                         .HasColumnName("game_id");
 
                     b.Property<string>("HashName")
-                        .HasColumnType("text")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
                         .HasColumnName("hash_name");
 
                     b.Property<string>("IdForMarket")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
                         .HasColumnName("id_for_market");
 
                     b.Property<string>("Name")
@@ -102,9 +105,13 @@ namespace Resources.API.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("type_id");
 
-                    b.Property<DateTime>("UpdateDate")
+                    b.Property<DateTime>("UpdateTo")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("update_date");
+                        .HasColumnName("update_to");
+
+                    b.Property<DateTime>("UpdatedIn")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_in");
 
                     b.HasKey("Id")
                         .HasName("pk_game_item");
@@ -157,32 +164,32 @@ namespace Resources.API.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("7701d4fa-9239-4020-98e8-d9881cc4224c"),
+                            Id = new Guid("88e5b272-838d-4670-a1d3-90852573178e"),
                             Name = "none"
                         },
                         new
                         {
-                            Id = new Guid("079abd4d-ef08-4a0a-8d56-4021f59555c4"),
+                            Id = new Guid("30b2f1b7-b18c-4766-a2af-b23f87353d3c"),
                             Name = "battle scarred"
                         },
                         new
                         {
-                            Id = new Guid("b64f5c59-1e55-433b-a8ce-5f633f615b6b"),
+                            Id = new Guid("c1932347-4f57-47ba-9520-200db38d7b65"),
                             Name = "well worn"
                         },
                         new
                         {
-                            Id = new Guid("6d5e25eb-b4c8-4702-8839-14c1055e7df7"),
+                            Id = new Guid("cf908158-0055-4c76-84a6-06e95788c8af"),
                             Name = "field tested"
                         },
                         new
                         {
-                            Id = new Guid("f711475e-bf9f-46c9-8e70-a820d5e38e68"),
+                            Id = new Guid("7f585ff4-47c6-40c6-912b-68a22d36df9e"),
                             Name = "minimal wear"
                         },
                         new
                         {
-                            Id = new Guid("c1440e66-01a3-4def-8cfc-50ce4637e447"),
+                            Id = new Guid("70a1b37d-5a6a-467d-ac3f-3eca74946a45"),
                             Name = "factory new"
                         });
                 });
@@ -216,32 +223,32 @@ namespace Resources.API.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("d5f0afc1-f517-4157-93a9-4e74c2eec708"),
+                            Id = new Guid("4f80c19f-1b87-4243-9758-ed7f8187d3cf"),
                             Name = "white"
                         },
                         new
                         {
-                            Id = new Guid("fc159512-3c7d-49e3-88fa-2dcdd5cc17a6"),
+                            Id = new Guid("21eae503-9658-4b3d-a78a-89e22be4d892"),
                             Name = "blue"
                         },
                         new
                         {
-                            Id = new Guid("eb101a50-dc98-4de6-872c-a5b97da63f38"),
+                            Id = new Guid("f0a06c72-60a2-4373-83ac-a8f3950f7bfe"),
                             Name = "violet"
                         },
                         new
                         {
-                            Id = new Guid("151aaaeb-543b-4104-85cb-01361e75856a"),
+                            Id = new Guid("deecaa63-5cf3-47ed-a7fe-0245c62cabc2"),
                             Name = "pink"
                         },
                         new
                         {
-                            Id = new Guid("e21d482a-072a-4b05-9284-f8aa3ad01b4d"),
+                            Id = new Guid("64468c4b-7a7e-4271-924c-47b2db552f26"),
                             Name = "red"
                         },
                         new
                         {
-                            Id = new Guid("e8209aa9-b1d6-4f11-a59e-990153d26c12"),
+                            Id = new Guid("f306871e-934a-4c68-9eff-6c5b96522c4d"),
                             Name = "gold"
                         });
                 });
@@ -275,37 +282,37 @@ namespace Resources.API.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("4bda7d0d-85cf-46da-8edd-d61a986022cf"),
+                            Id = new Guid("8e43dc43-d06f-44ab-ad1b-bb959ed5248f"),
                             Name = "none"
                         },
                         new
                         {
-                            Id = new Guid("0b9ab934-43ae-455d-9b86-a92c97244744"),
+                            Id = new Guid("20604cd5-b3c4-431c-bfba-8588b5afe54c"),
                             Name = "pistol"
                         },
                         new
                         {
-                            Id = new Guid("9b2cef4b-c572-49bd-a276-4a351125f9d0"),
+                            Id = new Guid("811b1698-d806-4fa1-a274-394d6e45ed83"),
                             Name = "weapon"
                         },
                         new
                         {
-                            Id = new Guid("c88d90a7-8785-4adb-aae7-c5122ecf12fe"),
+                            Id = new Guid("70e1c841-89e9-48f6-a228-84eee9fd235e"),
                             Name = "rifle"
                         },
                         new
                         {
-                            Id = new Guid("6857ec87-7b45-48ef-ac09-3434cf09bc26"),
+                            Id = new Guid("1c5fb394-83c1-4989-9a18-f2be173f3545"),
                             Name = "knife"
                         },
                         new
                         {
-                            Id = new Guid("b04145ae-b2b2-4b00-b20f-2136c14d4919"),
+                            Id = new Guid("b6a553f2-54ba-4d17-ac1b-0a44fc523e7d"),
                             Name = "gloves"
                         },
                         new
                         {
-                            Id = new Guid("4f31ae71-4599-47de-a266-536bf3c9dca6"),
+                            Id = new Guid("560776ed-fda8-43ee-bd70-dff65bc36140"),
                             Name = "other"
                         });
                 });
@@ -319,7 +326,8 @@ namespace Resources.API.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
                         .HasColumnName("name");
 
                     b.HasKey("Id")
@@ -357,7 +365,8 @@ namespace Resources.API.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
                         .HasColumnName("name");
 
                     b.HasKey("Id")
@@ -497,21 +506,21 @@ namespace Resources.API.Migrations
                         .HasForeignKey("Resources.DAL.Entities.GameItem", "QualityId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_game_item_qualities_quality_id");
+                        .HasConstraintName("fk_game_item_game_item_qualities_quality_id");
 
                     b.HasOne("Resources.DAL.Entities.GameItemRarity", "Rarity")
                         .WithOne("Item")
                         .HasForeignKey("Resources.DAL.Entities.GameItem", "RarityId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_game_item_rarities_rarity_id");
+                        .HasConstraintName("fk_game_item_game_item_rarities_rarity_id");
 
                     b.HasOne("Resources.DAL.Entities.GameItemType", "Type")
                         .WithOne("Item")
                         .HasForeignKey("Resources.DAL.Entities.GameItem", "TypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_game_item_item_types_type_id");
+                        .HasConstraintName("fk_game_item_game_item_types_type_id");
 
                     b.Navigation("Game");
 

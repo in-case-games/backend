@@ -2,7 +2,6 @@
 using Infrastructure.MassTransit.Resources;
 
 namespace Game.BLL.Interfaces;
-
 public interface IGameItemService
 {
     public Task<GameItem?> GetAsync(Guid id, CancellationToken cancellation = default);

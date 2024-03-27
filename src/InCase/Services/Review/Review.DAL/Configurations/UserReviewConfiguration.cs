@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Review.DAL.Entities;
 
 namespace Review.DAL.Configurations;
-
 internal class UserReviewConfiguration : BaseEntityConfiguration<UserReview>
 {
     public override void Configure(EntityTypeBuilder<UserReview> builder)

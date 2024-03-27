@@ -8,7 +8,6 @@ using Withdraw.BLL.Interfaces;
 using Withdraw.BLL.Models;
 
 namespace Withdraw.API.Controllers;
-
 [Route("api/withdraw")]
 [ApiController]
 public class WithdrawController(IWithdrawService withdrawService) : ControllerBase

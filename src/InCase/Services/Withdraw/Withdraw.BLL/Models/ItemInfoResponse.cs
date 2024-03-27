@@ -1,7 +1,6 @@
 ﻿using Withdraw.DAL.Entities;
 
 namespace Withdraw.BLL.Models;
-
 public class ItemInfoResponse
 {
     public string? Id { get; set; }

@@ -2,27 +2,26 @@
 using Promocode.DAL.Entities;
 
 namespace Promocode.BLL.Helpers;
-
-public static class PromocodeTransformer
+public static class PromoCodeTransformer
 {
-    public static PromocodeResponse ToResponse(this PromocodeEntity promocode) =>
+    public static PromoCodeResponse ToResponse(this PromoCode promoCode) =>
         new()
         {
-            Id = promocode.Id,
-            NumberActivations = promocode.NumberActivations,
-            Discount = promocode.Discount,
-            ExpirationDate = promocode.ExpirationDate,
-            Name = promocode.Name,
-            Type = promocode.Type
+            Id = promoCode.Id,
+            NumberActivations = promoCode.NumberActivations,
+            Discount = promoCode.Discount,
+            ExpirationDate = promoCode.ExpirationDate,
+            Name = promoCode.Name,
+            Type = promoCode.Type
         };
 
-    public static List<PromocodeResponse> ToResponse(this List<PromocodeEntity> promocodes) => 
-        promocodes.Select(ToResponse).ToList();
+    public static List<PromoCodeResponse> ToResponse(this List<PromoCode> promoCodes) => 
+        promoCodes.Select(ToResponse).ToList();
 
-    public static PromocodeEntity ToEntity(this PromocodeRequest request, bool IsNewGuid = false) =>
+    public static PromoCode ToEntity(this PromoCodeRequest request, bool isNewGuid = false) =>
         new()
         {
-            Id = IsNewGuid ? Guid.NewGuid() : request.Id,
+            Id = isNewGuid ? Guid.NewGuid() : request.Id,
             Discount = request.Discount,
             ExpirationDate = request.ExpirationDate,
             NumberActivations = request.NumberActivations,

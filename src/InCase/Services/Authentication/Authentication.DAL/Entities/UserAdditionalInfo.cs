@@ -1,7 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
 namespace Authentication.DAL.Entities;
-
 public class UserAdditionalInfo : BaseEntity
 {
     public bool IsConfirmed { get; set; } = false;

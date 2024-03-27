@@ -1,14 +1,18 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace Resources.DAL.Entities;
-
 public class GameItem : BaseEntity
 {
+    [MaxLength(50)]
     public string? Name { get; set; }
+    [MaxLength(200)]
     public string? HashName { get; set; }
+    [MaxLength(200)]
     public string? IdForMarket { get; set; }
     public decimal Cost { get; set; }
-    public DateTime UpdateDate { get; set; } = DateTime.UtcNow;
+    public DateTime UpdatedIn { get; set; } = DateTime.UtcNow;
+    public DateTime UpdateTo { get; set; } = DateTime.UtcNow;
 
     public GameItemQuality? Quality { get; set; }
     public GameItemType? Type { get; set; }

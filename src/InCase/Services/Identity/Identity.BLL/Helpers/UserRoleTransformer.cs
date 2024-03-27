@@ -2,7 +2,6 @@
 using Identity.DAL.Entities;
 
 namespace Identity.BLL.Helpers;
-
 public static class UserRoleTransformer
 {
     public static UserRoleResponse ToResponse(this UserRole role) => new()

@@ -2,7 +2,6 @@
 using Statistics.DAL.Entities;
 
 namespace Statistics.BLL.Repository;
-
 public class SiteStatisticsRepository : ISiteStatisticsRepository
 {
     private readonly IMongoCollection<SiteStatistics> _siteStatistics;

@@ -1,7 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
 namespace Withdraw.DAL.Entities;
-
 public class UserInventory : BaseEntity
 {
     public DateTime Date { get; set; }

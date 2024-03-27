@@ -1,7 +1,6 @@
 ﻿using Authentication.BLL.Exceptions;
 
 namespace Authentication.BLL.Services;
-
 public static class FileService
 {
     private const string PathUri = "/static/images/";

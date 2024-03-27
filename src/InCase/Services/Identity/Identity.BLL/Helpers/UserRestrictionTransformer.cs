@@ -3,7 +3,6 @@ using Identity.DAL.Entities;
 using Infrastructure.MassTransit.User;
 
 namespace Identity.BLL.Helpers;
-
 public static class UserRestrictionTransformer
 {
     public static List<RestrictionTypeResponse> ToResponse(this List<RestrictionType> entities) =>

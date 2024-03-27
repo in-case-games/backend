@@ -6,7 +6,6 @@ using Payment.DAL.Data;
 using Payment.DAL.Entities;
 
 namespace Payment.BLL.Services;
-
 public class UserService(ApplicationDbContext context) : IUserService
 {
     public async Task CreateAsync(UserTemplate template, CancellationToken cancellation = default)

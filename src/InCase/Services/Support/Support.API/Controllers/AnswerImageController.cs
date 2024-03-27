@@ -7,7 +7,6 @@ using System.Net;
 using System.Security.Claims;
 
 namespace Support.API.Controllers;
-
 [Route("api/answer-image")]
 [ApiController]
 public class AnswerImageController(IAnswerImageService imageService) : ControllerBase

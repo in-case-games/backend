@@ -9,9 +9,16 @@ using System.Text;
 using Authentication.BLL.Models;
 
 namespace Authentication.BLL.Services;
-
 public class JwtService(IConfiguration configuration) : IJwtService
 {
+    private static readonly string Env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development";
+    private readonly double _emailTokenValidityInMinutes = double.Parse(configuration[$"JWT:EmailTokenValidityInMinutes:{Env}"]!);
+    private readonly double _accessTokenValidityInMinutes = double.Parse(configuration[$"JWT:AccessTokenValidityInMinutes:{Env}"]!);
+    private readonly double _refreshTokenValidityInDays = double.Parse(configuration[$"JWT:RefreshTokenValidityInDays:{Env}"]!);
+    private readonly string? _validIssuer = configuration[$"JWT:ValidIssuer:{Env}"];
+    private readonly string? _validAudience = configuration[$"JWT:ValidAudience:{Env}"];
+    private readonly byte[] _jwtSecret = Encoding.ASCII.GetBytes(configuration[$"JWT:Secret:{Env}"]!);
+
     /// <summary>
     ///  Reads and validates a 'JSON Web Token' (JWT) and get claims
     ///  </summary>
@@ -22,7 +29,7 @@ public class JwtService(IConfiguration configuration) : IJwtService
     ///  <returns>A <see cref="ClaimsPrincipal"/> from the JWT. Does not include claims found in the JWT header.</returns>
     public ClaimsPrincipal GetClaimsToken(string token)
     {
-        var secret = Encoding.ASCII.GetBytes(configuration["JWT:Secret"]!);
+        var secret = Encoding.ASCII.GetBytes(configuration[$"JWT:Secret:{Env}"]!);
         var parameters = new TokenValidationParameters
         {
             ValidateAudience = false,
@@ -56,7 +63,7 @@ public class JwtService(IConfiguration configuration) : IJwtService
     public string CreateEmailToken(in User user)
     {
         var claims = GenerateTokenClaims(in user, "email");
-        var expiration = TimeSpan.FromMinutes(double.Parse(configuration["JWT:EmailTokenValidityInMinutes"]!));
+        var expiration = TimeSpan.FromMinutes(_emailTokenValidityInMinutes);
         var token = GenerateToken(claims, expiration);
 
         return new JwtSecurityTokenHandler().WriteToken(token);
@@ -68,10 +75,8 @@ public class JwtService(IConfiguration configuration) : IJwtService
             throw new ArgumentNullException(nameof(user), 
                 "The role of the user when creating the token is mandatory");
 
-        var accessToken = GenerateToken(GenerateAccessTokenClaims(in user), 
-            TimeSpan.FromMinutes(double.Parse(configuration["JWT:AccessTokenValidityInMinutes"]!)));
-        var refreshToken = GenerateToken(GenerateTokenClaims(in user, "refresh"), 
-            TimeSpan.FromDays(double.Parse(configuration["JWT:RefreshTokenValidityInDays"]!)));
+        var accessToken = GenerateToken(GenerateAccessTokenClaims(in user), TimeSpan.FromMinutes(_accessTokenValidityInMinutes));
+        var refreshToken = GenerateToken(GenerateTokenClaims(in user, "refresh"), TimeSpan.FromDays(_refreshTokenValidityInDays));
 
         return new TokensResponse
         {
@@ -84,16 +89,13 @@ public class JwtService(IConfiguration configuration) : IJwtService
 
     private JwtSecurityToken GenerateToken(Claim[] claims, TimeSpan expiration)
     {
-        return claims == null ?
-            throw new ArgumentNullException(nameof(claims)) :
-            new JwtSecurityToken(
-                configuration["JWT:ValidIssuer"],
-                configuration["JWT:ValidAudience"]!,
-                claims,
-                expires: DateTime.UtcNow.Add(expiration),
-                signingCredentials: new SigningCredentials(
-                    new SymmetricSecurityKey(Encoding.ASCII.GetBytes(configuration["JWT:Secret"]!)),
-                    SecurityAlgorithms.HmacSha512));
+        var credentials = new SigningCredentials(new SymmetricSecurityKey(_jwtSecret), SecurityAlgorithms.HmacSha512);
+
+        return claims == null ? 
+            throw new ArgumentNullException(nameof(claims)) : 
+            new JwtSecurityToken(_validIssuer, _validAudience, claims, 
+                                 expires: DateTime.UtcNow.Add(expiration), 
+                                 signingCredentials: credentials);
     }
 
     private static Claim[] GenerateAccessTokenClaims(in User user) =>

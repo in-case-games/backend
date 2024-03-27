@@ -3,7 +3,6 @@ using Resources.BLL.Models;
 using Resources.DAL.Entities;
 
 namespace Resources.BLL.Helpers;
-
 public static class GameItemTransformer
 {
     public static GameItemResponse ToResponse(this GameItem item) =>
@@ -17,7 +16,8 @@ public static class GameItemTransformer
             Game = item.Game?.Name,
             HashName = item.HashName,
             IdForMarket = item.IdForMarket,
-            UpdateDate = item.UpdateDate,
+            UpdateTo = item.UpdateTo,
+            UpdatedIn = item.UpdatedIn
         };
 
     public static List<GameItemResponse> ToResponse(this IEnumerable<GameItem> items) =>

@@ -2,7 +2,6 @@
 using Withdraw.DAL.Entities;
 
 namespace Withdraw.BLL.Interfaces;
-
 public interface IWithdrawItemService
 {
     public Task<BalanceMarketResponse> GetBalanceAsync(string marketName, CancellationToken cancellation = default);

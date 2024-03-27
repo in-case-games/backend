@@ -1,5 +1,4 @@
 ﻿namespace Infrastructure.MassTransit.User;
-
 public class UserTemplate : BaseTemplate
 {
     public string? Email { get; set; }

@@ -1,7 +1,6 @@
 ﻿using Game.DAL.Entities;
 
 namespace Game.BLL.Models;
-
 public class UserPathBannerRequest : BaseEntity
 {
     public Guid ItemId { get; set; }

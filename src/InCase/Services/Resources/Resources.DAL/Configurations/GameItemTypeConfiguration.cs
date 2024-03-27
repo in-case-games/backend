@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Resources.DAL.Entities;
 
 namespace Resources.DAL.Configurations;
-
 internal class GameItemTypeConfiguration : BaseEntityConfiguration<GameItemType>
 {
     private readonly List<GameItemType> _types =

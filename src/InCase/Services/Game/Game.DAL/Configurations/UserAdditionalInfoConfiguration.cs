@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Game.DAL.Configurations;
-
 internal class UserAdditionalInfoConfiguration : BaseEntityConfiguration<UserAdditionalInfo>
 {
     public override void Configure(EntityTypeBuilder<UserAdditionalInfo> builder)

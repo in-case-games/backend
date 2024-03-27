@@ -7,12 +7,11 @@ using Resources.DAL.Data;
 using Resources.DAL.Entities;
 
 namespace Resources.BLL.Services;
-
 public class LootBoxGroupService(ApplicationDbContext context) : ILootBoxGroupService
 {
     public async Task<LootBoxGroupResponse> GetAsync(Guid id, CancellationToken cancellation = default)
     {
-        var group =  await context.Groups
+        var group =  await context.LootBoxGroups
             .Include(lbg => lbg.Game)
             .Include(lbg => lbg.Box)
             .Include(lbg => lbg.Group)
@@ -25,7 +24,7 @@ public class LootBoxGroupService(ApplicationDbContext context) : ILootBoxGroupSe
 
     public async Task<List<LootBoxGroupResponse>> GetAsync(CancellationToken cancellation = default)
     {
-        var groups = await context.Groups
+        var groups = await context.LootBoxGroups
             .Include(lbg => lbg.Game)
             .Include(lbg => lbg.Box)
             .Include(lbg => lbg.Group)
@@ -37,7 +36,7 @@ public class LootBoxGroupService(ApplicationDbContext context) : ILootBoxGroupSe
 
     public async Task<List<LootBoxGroupResponse>> GetByBoxIdAsync(Guid id, CancellationToken cancellation = default)
     {
-        var groups = await context.Groups
+        var groups = await context.LootBoxGroups
             .Include(lbg => lbg.Game)
             .Include(lbg => lbg.Box)
             .Include(lbg => lbg.Group)
@@ -50,7 +49,7 @@ public class LootBoxGroupService(ApplicationDbContext context) : ILootBoxGroupSe
 
     public async Task<List<LootBoxGroupResponse>> GetByGameIdAsync(Guid id, CancellationToken cancellation = default)
     {
-        var groups = await context.Groups
+        var groups = await context.LootBoxGroups
             .Include(lbg => lbg.Game)
             .Include(lbg => lbg.Box)
             .Include(lbg => lbg.Group)
@@ -63,7 +62,7 @@ public class LootBoxGroupService(ApplicationDbContext context) : ILootBoxGroupSe
 
     public async Task<List<LootBoxGroupResponse>> GetByGroupIdAsync(Guid id, CancellationToken cancellation = default)
     {
-        var groups = await context.Groups
+        var groups = await context.LootBoxGroups
             .Include(lbg => lbg.Game)
             .Include(lbg => lbg.Box)
             .Include(lbg => lbg.Group)
@@ -84,12 +83,12 @@ public class LootBoxGroupService(ApplicationDbContext context) : ILootBoxGroupSe
             .AsNoTracking()
             .FirstOrDefaultAsync(lb => lb.Id == request.GameId, cancellation) ??
             throw new NotFoundException("Игра не найдена");
-        var group = await context.GroupBoxes
+        var group = await context.GroupLootBoxes
             .AsNoTracking()
             .FirstOrDefaultAsync(lb => lb.Id == request.GroupId, cancellation) ??
             throw new NotFoundException("Группа не найдена");
         
-        if (await context.Groups.AnyAsync(lb => lb.BoxId == request.BoxId && lb.GroupId == request.GroupId, cancellation))
+        if (await context.LootBoxGroups.AnyAsync(lb => lb.BoxId == request.BoxId && lb.GroupId == request.GroupId, cancellation))
             throw new ConflictException("Кейс уже есть в этой группе");
 
         var boxGroup = new LootBoxGroup
@@ -100,7 +99,7 @@ public class LootBoxGroupService(ApplicationDbContext context) : ILootBoxGroupSe
             GroupId = request.GroupId,
         };
 
-        await context.Groups.AddAsync(boxGroup, cancellation);
+        await context.LootBoxGroups.AddAsync(boxGroup, cancellation);
         await context.SaveChangesAsync(cancellation);
 
         boxGroup.Game = game;
@@ -120,12 +119,12 @@ public class LootBoxGroupService(ApplicationDbContext context) : ILootBoxGroupSe
             .AsNoTracking()
             .FirstOrDefaultAsync(lb => lb.Id == request.GameId, cancellation) ??
             throw new NotFoundException("Игра не найдена");
-        var group = await context.GroupBoxes
+        var group = await context.GroupLootBoxes
             .AsNoTracking()
             .FirstOrDefaultAsync(lb => lb.Id == request.GroupId, cancellation) ??
             throw new NotFoundException("Группа не найдена");
 
-        if (await context.Groups.AnyAsync(lb => lb.BoxId == request.BoxId && lb.GroupId == request.GroupId, cancellation))
+        if (await context.LootBoxGroups.AnyAsync(lb => lb.BoxId == request.BoxId && lb.GroupId == request.GroupId, cancellation))
             throw new ConflictException("Кейс уже есть в этой группе");
 
         var boxGroup = new LootBoxGroup
@@ -136,7 +135,7 @@ public class LootBoxGroupService(ApplicationDbContext context) : ILootBoxGroupSe
             GroupId = request.GroupId
         };
 
-        context.Groups.Update(boxGroup);
+        context.LootBoxGroups.Update(boxGroup);
         await context.SaveChangesAsync(cancellation);
 
         boxGroup.Game = game;
@@ -148,7 +147,7 @@ public class LootBoxGroupService(ApplicationDbContext context) : ILootBoxGroupSe
 
     public async Task<LootBoxGroupResponse> DeleteAsync(Guid id, CancellationToken cancellation = default)
     {
-        var group = await context.Groups
+        var group = await context.LootBoxGroups
             .Include(lbg => lbg.Game)
             .Include(lbg => lbg.Box)
             .Include(lbg => lbg.Group)
@@ -156,7 +155,7 @@ public class LootBoxGroupService(ApplicationDbContext context) : ILootBoxGroupSe
             .FirstOrDefaultAsync(lbg => lbg.Id == id, cancellation) ??
             throw new NotFoundException("Группа кейсов не найдена");
 
-        context.Groups.Remove(group);
+        context.LootBoxGroups.Remove(group);
         await context.SaveChangesAsync(cancellation);
 
         return group.ToResponse();

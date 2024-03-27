@@ -6,65 +6,64 @@ using Promocode.BLL.Models;
 using Promocode.DAL.Data;
 
 namespace Promocode.BLL.Services;
-
-public class PromocodeService(ApplicationDbContext context) : IPromocodeService
+public class PromoCodeService(ApplicationDbContext context) : IPromoCodeService
 {
-    public async Task<List<PromocodeResponse>> GetAsync(CancellationToken cancellation = default)
+    public async Task<List<PromoCodeResponse>> GetAsync(CancellationToken cancellation = default)
     {
-        var promocodes = await context.Promocodes
+        var promoCodes = await context.PromoCodes
             .Include(pe => pe.Type)
             .AsNoTracking()
             .ToListAsync(cancellation);
 
-        return promocodes.ToResponse();
+        return promoCodes.ToResponse();
     }
 
-    public async Task<PromocodeResponse> GetAsync(string name, CancellationToken cancellation = default)
+    public async Task<PromoCodeResponse> GetAsync(string name, CancellationToken cancellation = default)
     {
-        var promocode = await context.Promocodes
+        var promoCode = await context.PromoCodes
             .Include(pe => pe.Type)
             .AsNoTracking()
             .FirstOrDefaultAsync(pe => pe.Name == name, cancellation) ??
             throw new NotFoundException("Промокод не найден");
 
-        return promocode.ToResponse();
+        return promoCode.ToResponse();
     }
 
-    public async Task<List<PromocodeResponse>> GetEmptyPromocodesAsync(CancellationToken cancellation = default)
+    public async Task<List<PromoCodeResponse>> GetEmptyPromoCodesAsync(CancellationToken cancellation = default)
     {
-        var promocodes = await context.Promocodes
+        var promoCodes = await context.PromoCodes
             .Include(pe => pe.Type)
             .AsNoTracking()
             .Where(pe => pe.NumberActivations <= 0)
             .ToListAsync(cancellation);
 
-        return promocodes.ToResponse();
+        return promoCodes.ToResponse();
     }
 
-    public async Task<List<PromocodeTypeResponse>> GetTypesAsync(CancellationToken cancellation = default)
+    public async Task<List<PromoCodeTypeResponse>> GetTypesAsync(CancellationToken cancellation = default)
     {
-        var types = await context.PromocodesTypes
+        var types = await context.PromoCodesTypes
             .AsNoTracking()
             .ToListAsync(cancellation);
 
         return types.ToResponse();
     }
 
-    public async Task<PromocodeResponse> CreateAsync(PromocodeRequest request, CancellationToken cancellation = default)
+    public async Task<PromoCodeResponse> CreateAsync(PromoCodeRequest request, CancellationToken cancellation = default)
     {
-        ValidationService.IsPromocode(request);
+        ValidationService.IsPromoCode(request);
 
-        if (await context.Promocodes.AnyAsync(pe => pe.Name == request.Name, cancellation))
+        if (await context.PromoCodes.AnyAsync(pe => pe.Name == request.Name, cancellation))
             throw new ConflictException("Имя промокода уже используется");
 
-        var type = await context.PromocodesTypes
+        var type = await context.PromoCodesTypes
             .AsNoTracking()
             .FirstOrDefaultAsync(pt => pt.Id == request.TypeId, cancellation) ?? 
             throw new NotFoundException("Тип промокода не найден");
 
         var entity = request.ToEntity(true);
 
-        await context.Promocodes.AddAsync(entity, cancellation);
+        await context.PromoCodes.AddAsync(entity, cancellation);
         await context.SaveChangesAsync(cancellation);
 
         entity.Type = type;
@@ -72,44 +71,44 @@ public class PromocodeService(ApplicationDbContext context) : IPromocodeService
         return entity.ToResponse();
     }
 
-    public async Task<PromocodeResponse> UpdateAsync(PromocodeRequest request, CancellationToken cancellation = default)
+    public async Task<PromoCodeResponse> UpdateAsync(PromoCodeRequest request, CancellationToken cancellation = default)
     {
-        ValidationService.IsPromocode(request);
+        ValidationService.IsPromoCode(request);
 
-        var isExist = await context.Promocodes
+        var isExist = await context.PromoCodes
             .AsNoTracking()
             .AnyAsync(pe => pe.Name == request.Name && pe.Id != request.Id, cancellation);
 
         if (isExist) throw new ConflictException("Имя промокода уже занято");
-        if (!await context.Promocodes.AnyAsync(pe => pe.Id == request.Id, cancellation))
+        if (!await context.PromoCodes.AnyAsync(pe => pe.Id == request.Id, cancellation))
             throw new NotFoundException("Промокод не найден");
 
-        var type = await context.PromocodesTypes
+        var type = await context.PromoCodesTypes
             .AsNoTracking()
             .FirstOrDefaultAsync(pt => pt.Id == request.TypeId, cancellation) ??
             throw new NotFoundException("Тип промокода не найден");
 
-        var promocode = request.ToEntity();
+        var promoCode = request.ToEntity();
 
-        context.Promocodes.Update(promocode);
+        context.PromoCodes.Update(promoCode);
         await context.SaveChangesAsync(cancellation);
 
-        promocode.Type = type;
+        promoCode.Type = type;
 
-        return promocode.ToResponse();
+        return promoCode.ToResponse();
     }
 
-    public async Task<PromocodeResponse> DeleteAsync(Guid id, CancellationToken cancellation = default)
+    public async Task<PromoCodeResponse> DeleteAsync(Guid id, CancellationToken cancellation = default)
     {
-        var promocode = await context.Promocodes
+        var promoCode = await context.PromoCodes
             .Include(pe => pe.Type)
             .AsNoTracking()
             .FirstOrDefaultAsync(pe => pe.Id == id, cancellation) ??
             throw new NotFoundException("Промокод не найден");
 
-        context.Promocodes.Remove(promocode);
+        context.PromoCodes.Remove(promoCode);
         await context.SaveChangesAsync(cancellation);
 
-        return promocode.ToResponse();
+        return promoCode.ToResponse();
     }
 }

@@ -1,7 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
 namespace Support.DAL.Entities;
-
 public class AnswerImage : BaseEntity
 {
     [JsonIgnore]

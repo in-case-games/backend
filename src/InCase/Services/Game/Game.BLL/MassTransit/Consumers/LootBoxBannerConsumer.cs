@@ -3,7 +3,6 @@ using Infrastructure.MassTransit.Resources;
 using MassTransit;
 
 namespace Game.BLL.MassTransit.Consumers;
-
 public class LootBoxBannerConsumer(ILootBoxService boxService) : IConsumer<LootBoxBannerTemplate>
 {
     public async Task Consume(ConsumeContext<LootBoxBannerTemplate> context)

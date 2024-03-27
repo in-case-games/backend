@@ -1,9 +1,10 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace Withdraw.DAL.Entities;
-
 public class GameItem : BaseEntity
 {
+    [MaxLength(100)]
     public string? IdForMarket { get; set; }
     public decimal Cost { get; set; }
 

@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Authentication.DAL.Configurations;
-
 internal class UserConfiguration : BaseEntityConfiguration<User>
 {
     public override void Configure(EntityTypeBuilder<User> builder)
@@ -25,8 +24,10 @@ internal class UserConfiguration : BaseEntityConfiguration<User>
             .IsRequired();
 
         builder.Property(p => p.PasswordSalt)
+            .HasMaxLength(200)
             .IsRequired();
         builder.Property(p => p.PasswordHash)
+            .HasMaxLength(200)
             .IsRequired();
     }
 }

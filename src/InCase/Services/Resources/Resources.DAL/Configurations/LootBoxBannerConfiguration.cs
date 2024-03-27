@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Resources.DAL.Entities;
 
 namespace Resources.DAL.Configurations;
-
 internal class LootBoxBannerConfiguration : BaseEntityConfiguration<LootBoxBanner>
 {
     public override void Configure(EntityTypeBuilder<LootBoxBanner> builder)

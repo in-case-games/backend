@@ -1,7 +1,6 @@
 ﻿using Authentication.BLL.Models;
 
 namespace Authentication.BLL.Interfaces;
-
 public interface IAuthenticationSendingService
 {
     public Task ForgotPasswordAsync(DataMailRequest request, CancellationToken cancellationToken = default);

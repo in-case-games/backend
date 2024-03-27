@@ -7,7 +7,6 @@ using Infrastructure.MassTransit.Email;
 using Authentication.BLL.MassTransit;
 
 namespace Authentication.BLL.Services;
-
 public class AuthenticationSendingService(
     IJwtService jwtService, 
     ApplicationDbContext context, 

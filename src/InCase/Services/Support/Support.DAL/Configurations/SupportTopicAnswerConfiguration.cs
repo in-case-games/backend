@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Support.DAL.Entities;
 
 namespace Support.DAL.Configurations;
-
 internal class SupportTopicAnswerConfiguration : BaseEntityConfiguration<SupportTopicAnswer>
 {
     public override void Configure(EntityTypeBuilder<SupportTopicAnswer> builder)

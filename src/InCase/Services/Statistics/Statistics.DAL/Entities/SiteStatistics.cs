@@ -1,5 +1,4 @@
 ﻿namespace Statistics.DAL.Entities;
-
 public class SiteStatistics : BaseEntity
 {
     public int Users { get; set; } = 0;

@@ -1,5 +1,4 @@
 ﻿namespace Infrastructure.MassTransit.User;
-
 public class UserInventoryTemplate : BaseTemplate
 {
     public DateTime Date { get; set; }

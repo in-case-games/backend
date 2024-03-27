@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Authentication.DAL.Configurations;
-
 internal class UserRestrictionConfiguration : BaseEntityConfiguration<UserRestriction>
 {
     public override void Configure(EntityTypeBuilder<UserRestriction> builder)

@@ -7,7 +7,6 @@ using Support.DAL.Data;
 using Support.DAL.Entities;
 
 namespace Support.BLL.Services;
-
 public class AnswerImageService(ApplicationDbContext context) : IAnswerImageService
 {
     public async Task<AnswerImageResponse> GetAsync(Guid userId, Guid id, CancellationToken cancellation = default)
@@ -15,15 +14,15 @@ public class AnswerImageService(ApplicationDbContext context) : IAnswerImageServ
         if (!await context.Users.AnyAsync(u => u.Id == userId, cancellation))
             throw new NotFoundException("Пользователь не найден");
 
-        var image = await context.Images
+        var image = await context.AnswerImages
             .AsNoTracking()
             .FirstOrDefaultAsync(ai => ai.Id == id, cancellation) ??
             throw new NotFoundException("Картинка не найдена");
-        var answer = await context.Answers
+        var answer = await context.SupportTopicAnswers
             .AsNoTracking()
             .FirstOrDefaultAsync(sta => sta.Id == image.AnswerId, cancellation) ??
             throw new NotFoundException("Сообщение не найдено");
-        var topic = await context.Topics
+        var topic = await context.SupportTopics
             .AsNoTracking()
             .FirstOrDefaultAsync(st => st.Id == answer.TopicId, cancellation) ??
             throw new NotFoundException("Топик не найден");
@@ -35,7 +34,7 @@ public class AnswerImageService(ApplicationDbContext context) : IAnswerImageServ
 
     public async Task<AnswerImageResponse> GetAsync(Guid id, CancellationToken cancellation = default)
     {
-        var image = await context.Images
+        var image = await context.AnswerImages
             .AsNoTracking()
             .FirstOrDefaultAsync(ai => ai.Id == id, cancellation) ??
             throw new NotFoundException("Картинка не найдена");
@@ -49,12 +48,12 @@ public class AnswerImageService(ApplicationDbContext context) : IAnswerImageServ
         if (!await context.Users.AnyAsync(u => u.Id == userId, cancellation))
             throw new NotFoundException("Пользователь не найден");
 
-        var answer = await context.Answers
+        var answer = await context.SupportTopicAnswers
             .Include(sta => sta.Images)
             .AsNoTracking()
             .FirstOrDefaultAsync(sta => sta.Id == id, cancellation) ??
             throw new NotFoundException("Сообщение не найдено");
-        var topic = await context.Topics
+        var topic = await context.SupportTopics
             .AsNoTracking()
             .FirstOrDefaultAsync(st => st.Id == answer.TopicId, cancellation) ??
             throw new NotFoundException("Топик не найден");
@@ -66,7 +65,7 @@ public class AnswerImageService(ApplicationDbContext context) : IAnswerImageServ
 
     public async Task<List<AnswerImageResponse>> GetByAnswerIdAsync(Guid id, CancellationToken cancellation = default)
     {
-        var answer = await context.Answers
+        var answer = await context.SupportTopicAnswers
             .Include(sta => sta.Images)
             .AsNoTracking()
             .FirstOrDefaultAsync(sta => sta.Id == id, cancellation) ??
@@ -81,7 +80,7 @@ public class AnswerImageService(ApplicationDbContext context) : IAnswerImageServ
         if (!await context.Users.AnyAsync(u => u.Id == userId, cancellation))
             throw new NotFoundException("Пользователь не найден");
 
-        var topic = await context.Topics
+        var topic = await context.SupportTopics
             .Include(st => st.Answers!)
                 .ThenInclude(sta => sta.Images)
             .AsNoTracking()
@@ -98,7 +97,7 @@ public class AnswerImageService(ApplicationDbContext context) : IAnswerImageServ
         if (!await context.Users.AnyAsync(u => u.Id == userId, cancellation))
             throw new NotFoundException("Пользователь не найден");
 
-        var answers = await context.Answers
+        var answers = await context.SupportTopicAnswers
             .Include(sta => sta.Images)
             .AsNoTracking()
             .Where(st => st.PlaintiffId == userId)
@@ -109,7 +108,7 @@ public class AnswerImageService(ApplicationDbContext context) : IAnswerImageServ
 
     public async Task<List<AnswerImageResponse>> GetByTopicIdAsync(Guid id, CancellationToken cancellation = default)
     {
-        var topic = await context.Topics
+        var topic = await context.SupportTopics
             .Include(st => st.Answers!)
                 .ThenInclude(sta => sta.Images)
             .AsNoTracking()
@@ -127,7 +126,7 @@ public class AnswerImageService(ApplicationDbContext context) : IAnswerImageServ
         if (!await context.Users.AnyAsync(u => u.Id == userId, cancellation))
             throw new NotFoundException("Пользователь не найден");
 
-        var answer = await context.Answers
+        var answer = await context.SupportTopicAnswers
             .AsNoTracking()
             .FirstOrDefaultAsync(sta => sta.Id == request.AnswerId, cancellation) ??
             throw new NotFoundException("Сообщение не найдено");
@@ -140,7 +139,7 @@ public class AnswerImageService(ApplicationDbContext context) : IAnswerImageServ
             AnswerId = request.AnswerId,
         };
 
-        await context.Images.AddAsync(image, cancellation);
+        await context.AnswerImages.AddAsync(image, cancellation);
         await context.SaveChangesAsync(cancellation);
 
         FileService.UploadImageBase64(request.Image, 
@@ -155,20 +154,20 @@ public class AnswerImageService(ApplicationDbContext context) : IAnswerImageServ
         if (!await context.Users.AnyAsync(u => u.Id == userId, cancellation))
             throw new NotFoundException("Пользователь не найден");
 
-        var image = await context.Images
+        var image = await context.AnswerImages
             .AsNoTracking()
             .FirstOrDefaultAsync(ai => ai.Id == id, cancellation) ??
             throw new NotFoundException("Картинка не найдена");
-        var answer = await context.Answers
+        var answer = await context.SupportTopicAnswers
             .AsNoTracking()
             .FirstOrDefaultAsync(sta => sta.Id == image.AnswerId, cancellation) ??
             throw new NotFoundException("Сообщение не найдено");
-        if(!await context.Topics.AnyAsync(st => st.Id == answer.TopicId, cancellation))
+        if(!await context.SupportTopics.AnyAsync(st => st.Id == answer.TopicId, cancellation))
             throw new NotFoundException("Топик не найден");
 
         if (answer.PlaintiffId != userId) throw new ForbiddenException("Вы не создатель сообщения");
 
-        context.Images.Remove(image);
+        context.AnswerImages.Remove(image);
         await context.SaveChangesAsync(cancellation);
 
         FileService.RemoveFolder($"topic-answers/{answer.TopicId}/{image.AnswerId}/{id}/");
@@ -178,16 +177,16 @@ public class AnswerImageService(ApplicationDbContext context) : IAnswerImageServ
 
     public async Task<AnswerImageResponse> DeleteAsync(Guid id, CancellationToken cancellation = default)
     {
-        var image = await context.Images
+        var image = await context.AnswerImages
             .AsNoTracking()
             .FirstOrDefaultAsync(ai => ai.Id == id, cancellation) ??
             throw new NotFoundException("Картинка не найдена");
-        var answer = await context.Answers
+        var answer = await context.SupportTopicAnswers
             .AsNoTracking()
             .FirstOrDefaultAsync(sta => sta.Id == image.AnswerId, cancellation) ??
             throw new NotFoundException("Сообщение не найдено");
 
-        context.Images.Remove(image);
+        context.AnswerImages.Remove(image);
         await context.SaveChangesAsync(cancellation);
 
         FileService.RemoveFolder($"topic-answers/{answer.TopicId}/{image.AnswerId}/{id}/");

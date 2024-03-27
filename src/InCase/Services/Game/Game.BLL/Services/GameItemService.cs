@@ -6,17 +6,16 @@ using Infrastructure.MassTransit.Resources;
 using Microsoft.EntityFrameworkCore;
 
 namespace Game.BLL.Services;
-
 public class GameItemService(ApplicationDbContext context) : IGameItemService
 {
     public async Task<GameItem?> GetAsync(Guid id, CancellationToken cancellation = default) =>
-        await context.Items
+        await context.GameItems
             .AsNoTracking()
             .FirstOrDefaultAsync(gi => gi.Id == id, cancellation);
 
     public async Task CreateAsync(GameItemTemplate template, CancellationToken cancellation = default)
     {
-        await context.Items.AddAsync(new GameItem
+        await context.GameItems.AddAsync(new GameItem
         {
             Id = template.Id,
             Cost = template.Cost
@@ -26,7 +25,7 @@ public class GameItemService(ApplicationDbContext context) : IGameItemService
 
     public async Task UpdateAsync(GameItemTemplate template, CancellationToken cancellation = default)
     {
-        var item = await context.Items
+        var item = await context.GameItems
                 .FirstOrDefaultAsync(gi => gi.Id == template.Id, cancellation) ??
             throw new NotFoundException("Предмет не найден");
 
@@ -37,12 +36,12 @@ public class GameItemService(ApplicationDbContext context) : IGameItemService
 
     public async Task DeleteAsync(Guid id, CancellationToken cancellation = default)
     {
-        var item = await context.Items
+        var item = await context.GameItems
                 .AsNoTracking()
                 .FirstOrDefaultAsync(gi => gi.Id == id, cancellation) ??
             throw new NotFoundException("Предмет не найден");
 
-        context.Items.Remove(item);
+        context.GameItems.Remove(item);
         await context.SaveChangesAsync(cancellation);
     }
 }

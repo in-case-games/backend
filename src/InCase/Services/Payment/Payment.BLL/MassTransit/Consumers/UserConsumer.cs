@@ -5,7 +5,6 @@ using Payment.BLL.Interfaces;
 using Payment.DAL.Data;
 
 namespace Payment.BLL.MassTransit.Consumers;
-
 public class UserConsumer(IUserService userService, ApplicationDbContext context) : IConsumer<UserTemplate>
 {
     public async Task Consume(ConsumeContext<UserTemplate> context1)
@@ -14,7 +13,7 @@ public class UserConsumer(IUserService userService, ApplicationDbContext context
             .AsNoTracking()
             .FirstOrDefaultAsync(u => u.Id == context1.Message.Id);
 
-        if (user is null) await userService.CreateAsync(context1.Message);
-        else if (context1.Message.IsDeleted) await userService.DeleteAsync(user.Id);
+        if(user is not null && context1.Message.IsDeleted) await userService.DeleteAsync(user.Id);
+        else if(user is null && !context1.Message.IsDeleted) await userService.CreateAsync(context1.Message);
     }
 }

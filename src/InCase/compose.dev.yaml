@@ -1,0 +1,205 @@
+version: '3.8'
+services:
+  fileserver:
+    volumes:
+      - ../fileserver:/static/images
+      - ../nginx/conf.dev.d/:/etc/nginx/conf.d/
+    ports:
+      - 8080:8080
+
+  nosqldata:
+    env_file:
+      - .enviroments/mongo.dev.env
+    volumes:
+      - ../data/mongo:/data/db
+    ports:
+      - 27017:27017
+
+  rabbitmq:
+    env_file:
+      - .enviroments/rabbitmq.dev.env
+    volumes:
+      - ../data/rabbitmq:/var/lib/rabbitmq/mnesia/
+    ports:
+      - 5672:5672
+      - 15672:15672
+
+  psql:
+    env_file:
+      - .enviroments/psql.dev.env
+    volumes:
+      - ../data/psql:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+
+  auth-api:
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+    build:
+      context: .
+      dockerfile: Services/Authentication/Authentication.API/Dockerfile
+    env_file:
+      - .enviroments/auth-api.env
+    volumes:
+      - ../fileserver:/static/images
+      - ../logs:/root/logs
+    ports:
+      - 5033:8080
+
+  email-api:
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+    build:
+      context: .
+      dockerfile: Services/EmailSender/EmailSender.API/Dockerfile
+    env_file:
+      - .enviroments/email-api.env
+    volumes:
+      - ../fileserver:/static/images
+      - ../logs:/root/logs
+    ports:
+      - 5225:8080
+
+  game-api:
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+    build:
+      context: .
+      dockerfile: Services/Game/Game.API/Dockerfile
+    env_file:
+      - .enviroments/game-api.env
+    volumes:
+      - ../fileserver:/static/images
+      - ../logs:/root/logs
+    ports:
+      - 5184:8080
+
+  identity-api:
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+    build:
+      context: .
+      dockerfile: Services/Identity/Identity.API/Dockerfile
+    env_file:
+      - .enviroments/identity-api.env
+    volumes:
+      - ../fileserver:/static/images
+      - ../logs:/root/logs
+    ports:
+      - 5259:8080
+
+  payment-api:
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+    build:
+      context: .
+      dockerfile: Services/Payment/Payment.API/Dockerfile
+    env_file:
+      - .enviroments/payment-api.env
+    volumes:
+      - ../fileserver:/static/images
+      - ../logs:/root/logs
+    ports:
+      - 5039:8080
+
+  promocode-api:
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+    build:
+      context: .
+      dockerfile: Services/Promocode/Promocode.API/Dockerfile
+    env_file:
+      - .enviroments/promocode-api.env
+    volumes:
+      - ../fileserver:/static/images
+      - ../logs:/root/logs
+    ports:
+      - 5163:8080
+
+  resources-api:
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+    build:
+      context: .
+      dockerfile: Services/Resources/Resources.API/Dockerfile
+    env_file:
+      - .enviroments/resources-api.env
+    volumes:
+      - ../fileserver:/static/images
+      - ../logs:/root/logs
+    ports:
+      - 5073:8080
+
+  review-api:
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+    build:
+      context: .
+      dockerfile: Services/Review/Review.API/Dockerfile
+    env_file:
+      - .enviroments/review-api.env
+    volumes:
+      - ../fileserver:/static/images
+      - ../logs:/root/logs
+    ports:
+      - 5079:8080
+
+  statistics-api:
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+    build:
+      context: .
+      dockerfile: Services/Statistics/Statistics.API/Dockerfile
+    env_file:
+      - .enviroments/statistics-api.env
+    volumes:
+      - ../fileserver:/static/images
+      - ../logs:/root/logs
+    ports:
+      - 5231:8080
+
+  support-api:
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+    build:
+      context: .
+      dockerfile: Services/Support/Support.API/Dockerfile
+    env_file:
+      - .enviroments/support-api.env
+    volumes:
+      - ../fileserver:/static/images
+      - ../logs:/root/logs
+    ports:
+      - 5155:8080
+
+  withdraw-api:
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+    build:
+      context: .
+      dockerfile: Services/Withdraw/Withdraw.API/Dockerfile
+    env_file:
+      - .enviroments/withdraw-api.env
+    volumes:
+      - ../fileserver:/static/images
+      - ../logs:/root/logs
+    ports:
+      - 5187:8080
+
+  gateway-api:
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+    build:
+      context: .
+      dockerfile: InCase.ApiGateway/Dockerfile
+    env_file:
+      - .enviroments/gateway-api.dev.env
+    volumes:
+      - ../.ssl/:/etc/.ssl/private/
+      - ../logs:/root/logs
+    ports:
+      - 5000:443
+      - 5001:8080
+volumes:
+  database:
+  rabbitmq:

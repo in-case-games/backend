@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
 namespace Authentication.API.Controllers;
-
 [Route("api/authentication/sending")]
 [ApiController]
 public class AuthenticationSendingController(IAuthenticationSendingService authSendingService) : ControllerBase

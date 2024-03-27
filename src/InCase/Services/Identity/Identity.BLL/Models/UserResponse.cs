@@ -1,7 +1,6 @@
 ﻿using Identity.DAL.Entities;
 
 namespace Identity.BLL.Models;
-
 public class UserResponse : BaseEntity
 {
     public string? Login { get; set; }

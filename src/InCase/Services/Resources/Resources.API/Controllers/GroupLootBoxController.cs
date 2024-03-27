@@ -7,7 +7,6 @@ using Resources.DAL.Entities;
 using System.Net;
 
 namespace Resources.API.Controllers;
-
 [Route("api/group-loot-box")]
 [ApiController]
 public class GroupLootBoxController(IGroupLootBoxService groupBoxService) : ControllerBase

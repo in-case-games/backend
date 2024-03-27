@@ -1,7 +1,6 @@
 ﻿using Withdraw.DAL.Entities;
 
 namespace Withdraw.BLL.Models;
-
 public class UserHistoryWithdrawResponse : BaseEntity
 {
     public string? InvoiceId { get; set; }

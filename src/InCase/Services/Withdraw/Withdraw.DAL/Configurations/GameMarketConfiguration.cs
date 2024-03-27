@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Withdraw.DAL.Entities;
 
 namespace Withdraw.DAL.Configurations;
-
 internal class GameMarketConfiguration : BaseEntityConfiguration<GameMarket>
 {
     public override void Configure(EntityTypeBuilder<GameMarket> builder)
@@ -18,6 +17,7 @@ internal class GameMarketConfiguration : BaseEntityConfiguration<GameMarket>
             .IsUnique(false);
 
         builder.Property(gm => gm.Name)
+            .HasMaxLength(100)
             .IsRequired();
 
         builder.HasOne(gm => gm.Game)

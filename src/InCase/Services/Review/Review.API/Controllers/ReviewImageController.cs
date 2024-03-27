@@ -8,7 +8,6 @@ using System.Net;
 using System.Security.Claims;
 
 namespace Review.API.Controllers;
-
 [Route("api/review-image")]
 [ApiController]
 public class ReviewImageController(IReviewImageService reviewImageService) : ControllerBase

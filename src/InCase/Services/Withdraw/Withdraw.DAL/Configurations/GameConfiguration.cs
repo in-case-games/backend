@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Withdraw.DAL.Entities;
 
 namespace Withdraw.DAL.Configurations;
-
 internal class GameConfiguration : BaseEntityConfiguration<Game>
 {
     public override void Configure(EntityTypeBuilder<Game> builder)

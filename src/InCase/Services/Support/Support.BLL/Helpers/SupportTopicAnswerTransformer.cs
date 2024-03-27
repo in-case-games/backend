@@ -2,7 +2,6 @@
 using Support.DAL.Entities;
 
 namespace Support.BLL.Helpers;
-
 public static class SupportTopicAnswerTransformer
 {
     public static SupportTopicAnswer ToEntity(this SupportTopicAnswerRequest request, bool isNewGuid = false) => 

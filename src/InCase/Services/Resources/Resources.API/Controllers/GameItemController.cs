@@ -8,7 +8,6 @@ using Resources.DAL.Entities;
 using System.Net;
 
 namespace Resources.API.Controllers;
-
 [Route("api/game-item")]
 [ApiController]
 public class GameItemController(IGameItemService itemService) : ControllerBase

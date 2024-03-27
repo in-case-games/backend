@@ -1,5 +1,4 @@
 ﻿namespace Infrastructure.MassTransit.User;
-
-public class UserPromocodeBackTemplate : BaseTemplate
+public class UserPromoCodeBackTemplate : BaseTemplate
 {
 }

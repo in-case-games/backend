@@ -1,10 +1,12 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace Withdraw.DAL.Entities;
-
 public class UserHistoryWithdraw : BaseEntity
 {
+    [MaxLength(100)]
     public string? InvoiceId { get; set; }
+    [MaxLength(300)]
     public string? TradeUrl { get; set; }
     public decimal FixedCost { get; set; }
     public DateTime Date { get; set; }

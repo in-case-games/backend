@@ -3,7 +3,6 @@ using Resources.BLL.Exceptions;
 using System.Text.RegularExpressions;
 
 namespace Resources.BLL.Services;
-
 public static class FileService
 {
     private const string PathUri = "/static/images/";
