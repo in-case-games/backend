@@ -195,11 +195,9 @@ services:
     env_file:
       - .enviroments/gateway-api.dev.env
     volumes:
-      - ../.ssl/:/etc/.ssl/private/
       - ../logs:/root/logs
     ports:
-      - 5000:443
-      - 5001:8080
+      - 5000:8080
 volumes:
   database:
   rabbitmq:
