@@ -12,7 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Game.DAL\Game.DAL.csproj" />
-	<ProjectReference Include="..\..\..\Infrastructure\Infrastructure.csproj" />
+	  <ProjectReference Include="..\..\..\Infrastructure\Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>
