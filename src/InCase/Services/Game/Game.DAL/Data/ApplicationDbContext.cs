@@ -3,16 +3,19 @@ using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 
 namespace Game.DAL.Data;
-public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
+public class ApplicationDbContext: DbContext
 {
-    public DbSet<GameItem> GameItems => Set<GameItem>();
-    public DbSet<LootBox> LootBoxes => Set<LootBox>();
-    public DbSet<LootBoxInventory> LootBoxInventories => Set<LootBoxInventory>();
-    public DbSet<User> Users => Set<User>();
-    public DbSet<UserAdditionalInfo> UserAdditionalInfos => Set<UserAdditionalInfo>();
-    public DbSet<UserOpening> UserOpenings => Set<UserOpening>();
-    public DbSet<UserPromoCode> UserPromoCodes => Set<UserPromoCode>();
-    public DbSet<UserPathBanner> UserPathBanners => Set<UserPathBanner>();
+    public virtual DbSet<GameItem> GameItems => Set<GameItem>();
+    public virtual DbSet<LootBox> LootBoxes => Set<LootBox>();
+    public virtual DbSet<LootBoxInventory> LootBoxInventories => Set<LootBoxInventory>();
+    public virtual DbSet<User> Users => Set<User>();
+    public virtual DbSet<UserAdditionalInfo> UserAdditionalInfos => Set<UserAdditionalInfo>();
+    public virtual DbSet<UserOpening> UserOpenings => Set<UserOpening>();
+    public virtual DbSet<UserPromoCode> UserPromoCodes => Set<UserPromoCode>();
+    public virtual DbSet<UserPathBanner> UserPathBanners => Set<UserPathBanner>();
+
+    public ApplicationDbContext() {  }
+    public ApplicationDbContext(DbContextOptions options) : base(options) { }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

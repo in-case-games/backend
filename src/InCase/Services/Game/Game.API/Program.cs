@@ -73,7 +73,8 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
-builder.Services.AddSingleton<BasePublisher>();
+builder.Services.AddSingleton<IBasePublisher, BasePublisher>();
+builder.Services.AddScoped<IApplicationDbContextWrapper, ApplicationDbContextWrapper>();
 builder.Services.AddScoped<IUserPathBannerService, UserPathBannerService>();
 builder.Services.AddScoped<IUserAdditionalInfoService, UserAdditionalInfoService>();
 builder.Services.AddScoped<IUserOpeningService, UserOpeningService>();
