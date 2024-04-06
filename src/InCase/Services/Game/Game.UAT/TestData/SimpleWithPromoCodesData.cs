@@ -4,7 +4,7 @@ using Game.UAT.Models;
 using Game.UAT.Helpers;
 
 namespace Game.UAT.TestData;
-public class SimpleData : IEnumerable<object[]>
+public class SimpleWithPromoCodesData : IEnumerable<object[]>
 {
 	private readonly List<GameItem> _gameItems = [
 		new() { 
@@ -61,7 +61,10 @@ public class SimpleData : IEnumerable<object[]>
 	];
 	private readonly List<UserOpening> _userOpenings = [];
 	private readonly List<UserPathBanner> _userPathBanners = [];
-	private readonly List<UserPromoCode> _userPromoCodes = [];
+	private readonly List<UserPromoCode> _userPromoCodes = [
+		new() { Discount = 0.5M, UserId = new Guid("44e233f0-ec99-4e56-9df4-8ca8761b86b9") },
+		new() { Discount = 0.3M, UserId = new Guid("c56a68d2-5759-462c-aa02-ba9151cfac22") }
+	];
 
 	public IEnumerator<object[]> GetEnumerator()
 	{

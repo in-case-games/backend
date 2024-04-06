@@ -4,7 +4,7 @@ using Game.UAT.Models;
 using Game.UAT.Helpers;
 
 namespace Game.UAT.TestData;
-public class SimpleData : IEnumerable<object[]>
+public class SimpleWithPathBannersData : IEnumerable<object[]>
 {
 	private readonly List<GameItem> _gameItems = [
 		new() { 
@@ -41,6 +41,7 @@ public class SimpleData : IEnumerable<object[]>
 		new() { 
 			Id = new Guid("8a5ba229-0a21-4154-9855-8e44e0dd647d"), 
 			Cost = 5000,
+			ExpirationBannerDate = DateTime.UtcNow.AddYears(90)
 		} 
 	];
 	private readonly List<User> _users = [ 
@@ -60,7 +61,22 @@ public class SimpleData : IEnumerable<object[]>
 		}
 	];
 	private readonly List<UserOpening> _userOpenings = [];
-	private readonly List<UserPathBanner> _userPathBanners = [];
+	private readonly List<UserPathBanner> _userPathBanners = [
+		new() {
+			NumberSteps = 1,
+			FixedCost = 9115,
+			ItemId = new Guid("26033696-a831-4202-a7df-eaf97554ce5f"),
+			UserId = new Guid("44e233f0-ec99-4e56-9df4-8ca8761b86b9"),
+			BoxId = new Guid("8a5ba229-0a21-4154-9855-8e44e0dd647d")
+		},
+		new() {
+			NumberSteps = 2,
+			FixedCost = 9000,
+			ItemId = new Guid("26033696-a831-4202-a7df-eaf97554ce5f"),
+			UserId = new Guid("c56a68d2-5759-462c-aa02-ba9151cfac22"),
+			BoxId = new Guid("8a5ba229-0a21-4154-9855-8e44e0dd647d")
+		}
+	];
 	private readonly List<UserPromoCode> _userPromoCodes = [];
 
 	public IEnumerator<object[]> GetEnumerator()
@@ -70,11 +86,13 @@ public class SimpleData : IEnumerable<object[]>
 			var id = _userPathBanners[i].BoxId;
 			_userPathBanners[i].Box = _lootBoxes.First(lb => lb.Id == id);
 		}
-		for(var i = 0; i < _lootBoxInventories.Count; i++) {
+		for (var i = 0; i < _lootBoxInventories.Count; i++) 
+		{
 			var id = _lootBoxInventories[i].ItemId;
 			_lootBoxInventories[i].Item = _gameItems.First(gi => gi.Id == id);
 		}
-		for(var i = 0; i < _lootBoxes.Count; i++) {
+		for (var i = 0; i < _lootBoxes.Count; i++) 
+		{
 			var id = _lootBoxes[i].Id;
 			_lootBoxes[i].Inventories = _lootBoxInventories.Where(lbi => lbi.BoxId == id);
 		}
