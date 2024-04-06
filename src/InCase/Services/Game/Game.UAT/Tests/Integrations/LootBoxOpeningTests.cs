@@ -19,14 +19,11 @@ public class LootBoxOpeningTests
 		var lootBox = imageDb.Data.LootBoxes[Random.Next(0, imageDb.Data.LootBoxes.Count)];
 		var userInfos = imageDb.Data.UserAdditionalInfos.Where(uai => uai.Balance >= lootBox.Cost).ToList();
 		var userInfo = userInfos[Random.Next(0, userInfos.Count)];
-
-		var tokenSource = new CancellationTokenSource();
-		tokenSource.CancelAfter(5000);
 			
-		var openingService = MockHelper.FillLootBoxOpeningService(imageDb, tokenSource: tokenSource);
+		var openingService = MockHelper.FillLootBoxOpeningService(imageDb);
 
 		//Act
-		var winItem = await openingService.OpenBoxAsync(userInfo.UserId, lootBox.Id, tokenSource.Token);
+		var winItem = await openingService.OpenBoxAsync(userInfo.UserId, lootBox.Id);
 		var isHasItem = imageDb.Data.LootBoxInventories.Any(lbi => lbi.BoxId == lootBox.Id && lbi.ItemId == winItem.Id);
 
 		//Assert
@@ -43,16 +40,13 @@ public class LootBoxOpeningTests
 		var lootBox = imageDb.Data.LootBoxes[Random.Next(0, imageDb.Data.LootBoxes.Count)];
 		var userInfos = imageDb.Data.UserAdditionalInfos.Where(uai => uai.Balance >= lootBox.Cost).ToList();
 		var userInfo = userInfos[Random.Next(0, userInfos.Count)];
-
-		var tokenSource = new CancellationTokenSource();
-		tokenSource.CancelAfter(5000);
 			
-		var openingService = MockHelper.FillLootBoxOpeningService(imageDb, tokenSource: tokenSource);
+		var openingService = MockHelper.FillLootBoxOpeningService(imageDb);
 
 		//Act
 		var userBalanceExpected = userInfo.Balance - lootBox.Cost;
 
-		var winItem = await openingService.OpenBoxAsync(userInfo.UserId, lootBox.Id, tokenSource.Token);
+		var winItem = await openingService.OpenBoxAsync(userInfo.UserId, lootBox.Id);
 
 		var revenue = lootBox.Cost * CommonConstants.RevenuePercentage;
 		var lootBoxBalanceExpected = lootBox.Cost - revenue - winItem.Cost;
@@ -73,13 +67,11 @@ public class LootBoxOpeningTests
 		var userInfo = userInfos[Random.Next(0, userInfos.Count)];
 		
 		var publishObjects = new List<object>();
-		var tokenSource = new CancellationTokenSource();
-		tokenSource.CancelAfter(5000);
 			
-		var openingService = MockHelper.FillLootBoxOpeningService(imageDb, publishObjects, tokenSource);
+		var openingService = MockHelper.FillLootBoxOpeningService(imageDb, publishObjects);
 
 		//Act
-		var winItem = await openingService.OpenBoxAsync(userInfo.UserId, lootBox.Id, tokenSource.Token);
+		var winItem = await openingService.OpenBoxAsync(userInfo.UserId, lootBox.Id);
 
 		UserInventoryTemplate inventoryTemplate = new();
 
@@ -108,13 +100,11 @@ public class LootBoxOpeningTests
 		var userInfo = userInfos[Random.Next(0, userInfos.Count)];
 		
 		var publishObjects = new List<object>();
-		var tokenSource = new CancellationTokenSource();
-		tokenSource.CancelAfter(5000);
 			
-		var openingService = MockHelper.FillLootBoxOpeningService(imageDb, publishObjects, tokenSource);
+		var openingService = MockHelper.FillLootBoxOpeningService(imageDb, publishObjects);
 
 		//Act
-		var winItem = await openingService.OpenBoxAsync(userInfo.UserId, lootBox.Id, tokenSource.Token);
+		var winItem = await openingService.OpenBoxAsync(userInfo.UserId, lootBox.Id);
 
 		SiteStatisticsTemplate statisticsTemplate = new();
 
@@ -145,13 +135,11 @@ public class LootBoxOpeningTests
 		var userInfo = userInfos[Random.Next(0, userInfos.Count)];
 		
 		var publishObjects = new List<object>();
-		var tokenSource = new CancellationTokenSource();
-		tokenSource.CancelAfter(5000);
 			
-		var openingService = MockHelper.FillLootBoxOpeningService(imageDb, publishObjects, tokenSource);
+		var openingService = MockHelper.FillLootBoxOpeningService(imageDb, publishObjects);
 
 		//Act
-		var winItem = await openingService.OpenBoxAsync(userInfo.UserId, lootBox.Id, tokenSource.Token);
+		var winItem = await openingService.OpenBoxAsync(userInfo.UserId, lootBox.Id);
 
 		var revenue = lootBox.Cost * CommonConstants.RevenuePercentage;
 
@@ -173,6 +161,40 @@ public class LootBoxOpeningTests
 	}
 	
 	[Theory]
+	[ClassData(typeof(SimpleData))]
+	[ClassData(typeof(SimpleExtendedData))]
+	public async void OpenBox_SimpleData_PositiveBalance(ImageDb imageDb)
+	{
+		//Arrange
+		var minFixBalance = 0M;
+		var iterationTopLvl = Random.Next(100, 200);
+
+		var openingService = MockHelper.FillLootBoxOpeningService(imageDb);
+
+		//Act
+		for(var i = 0; i < iterationTopLvl; i++) 
+		{
+			var lootBox = imageDb.Data.LootBoxes[Random.Next(0, imageDb.Data.LootBoxes.Count)];
+			var iterationLowerLvl = Random.Next(1, 10);
+
+			for(var j = 0; j < iterationLowerLvl; j++) 
+			{
+				var userInfos = imageDb.Data.UserAdditionalInfos.Where(uai => uai.Balance >= lootBox.Cost).ToList();
+				var userInfo = userInfos[Random.Next(0, userInfos.Count)];
+
+				var winItem = await openingService.OpenBoxAsync(userInfo.UserId, lootBox.Id);
+				
+				var revenue = lootBox.Cost * CommonConstants.RevenuePercentage;
+
+				minFixBalance = minFixBalance > lootBox.Balance ? lootBox.Balance : minFixBalance;
+			}
+		}
+
+		//Assert
+		Assert.Equal(0, minFixBalance);
+	}
+
+	[Theory]
 	[ClassData(typeof(SimpleWithPromoCodesData))]
 	[ClassData(typeof(SimpleWithPromoCodesExtendedData))]
 	public async void OpenBox_PromoCodesData_SmallPriceWinItem(ImageDb imageDb)
@@ -181,15 +203,11 @@ public class LootBoxOpeningTests
 		var lootBox = imageDb.Data.LootBoxes[Random.Next(0, imageDb.Data.LootBoxes.Count)];
 		var userInfos = imageDb.Data.UserAdditionalInfos.Where(uai => uai.Balance >= lootBox.Cost).ToList();
 		var userInfo = userInfos[Random.Next(0, userInfos.Count)];
-		
-		var publishObjects = new List<object>();
-		var tokenSource = new CancellationTokenSource();
-		tokenSource.CancelAfter(5000);
 			
-		var openingService = MockHelper.FillLootBoxOpeningService(imageDb, publishObjects, tokenSource);
+		var openingService = MockHelper.FillLootBoxOpeningService(imageDb);
 
 		//Act
-		var winItem = await openingService.OpenBoxAsync(userInfo.UserId, lootBox.Id, tokenSource.Token);
+		var winItem = await openingService.OpenBoxAsync(userInfo.UserId, lootBox.Id);
 		var isHasItem = imageDb.Data.LootBoxInventories.Any(lbi => lbi.BoxId == lootBox.Id && lbi.ItemId == winItem.Id);
 
 		//Assert
@@ -208,17 +226,13 @@ public class LootBoxOpeningTests
 		var userInfo = userInfos[Random.Next(0, userInfos.Count)];
 		var promoCode = imageDb.Data.UserPromoCodes.First(upc => upc.UserId == userInfo.UserId);
 
-		var publishObjects = new List<object>();
-		var tokenSource = new CancellationTokenSource();
-		tokenSource.CancelAfter(5000);
-			
-		var openingService = MockHelper.FillLootBoxOpeningService(imageDb, publishObjects, tokenSource);
+		var openingService = MockHelper.FillLootBoxOpeningService(imageDb);
 
 		//Act
 		var lootBoxCost = promoCode.Discount >= 0.99M ? 1 : lootBox.Cost * (1M - promoCode.Discount);
 		var userBalanceExpected = userInfo.Balance - lootBoxCost;
 
-		var winItem = await openingService.OpenBoxAsync(userInfo.UserId, lootBox.Id, tokenSource.Token);
+		var winItem = await openingService.OpenBoxAsync(userInfo.UserId, lootBox.Id);
 
 		var revenue = lootBoxCost * CommonConstants.RevenuePercentage;
 		var lootBoxBalanceExpected = lootBoxCost - revenue - winItem.Cost;
@@ -240,15 +254,13 @@ public class LootBoxOpeningTests
 		var promoCode = imageDb.Data.UserPromoCodes.First(upc => upc.UserId == userInfo.UserId);
 		
 		var publishObjects = new List<object>();
-		var tokenSource = new CancellationTokenSource();
-		tokenSource.CancelAfter(5000);
 			
-		var openingService = MockHelper.FillLootBoxOpeningService(imageDb, publishObjects, tokenSource);
+		var openingService = MockHelper.FillLootBoxOpeningService(imageDb, publishObjects);
 
 		//Act
 		var lootBoxCost = promoCode.Discount >= 0.99M ? 1 : lootBox.Cost * (1M - promoCode.Discount);
 		var revenue = lootBoxCost * CommonConstants.RevenuePercentage;
-		var winItem = await openingService.OpenBoxAsync(userInfo.UserId, lootBox.Id, tokenSource.Token);
+		var winItem = await openingService.OpenBoxAsync(userInfo.UserId, lootBox.Id);
 
 		SiteStatisticsAdminTemplate statisticsAdminTemplate = new();
 		UserPromoCodeBackTemplate userPromoCodeBackTemplate = new();
@@ -286,15 +298,12 @@ public class LootBoxOpeningTests
 		
 		var lootBox = pathBanner.Box!;
 		var userInfo = imageDb.Data.UserAdditionalInfos.First(uai => uai.UserId == pathBanner.UserId);
-		
-		var tokenSource = new CancellationTokenSource();
-		tokenSource.CancelAfter(5000);
 			
-		var openingService = MockHelper.FillLootBoxOpeningService(imageDb, tokenSource:tokenSource);
+		var openingService = MockHelper.FillLootBoxOpeningService(imageDb);
 
 		//Act
 		var numberStepExpected = pathBanner.NumberSteps - 1;
-		var winItem = await openingService.OpenBoxAsync(userInfo.UserId, lootBox.Id, tokenSource.Token);
+		var winItem = await openingService.OpenBoxAsync(userInfo.UserId, lootBox.Id);
 		var isHasItem = imageDb.Data.LootBoxInventories.Any(lbi => lbi.BoxId == lootBox.Id && lbi.ItemId == winItem.Id);
 
 		//Assert
@@ -319,14 +328,11 @@ public class LootBoxOpeningTests
 		
 		var lootBox = pathBanner.Box!;
 		var userInfo = imageDb.Data.UserAdditionalInfos.First(uai => uai.UserId == pathBanner.UserId);
-		
-		var tokenSource = new CancellationTokenSource();
-		tokenSource.CancelAfter(5000);
 			
-		var openingService = MockHelper.FillLootBoxOpeningService(imageDb, tokenSource: tokenSource);
+		var openingService = MockHelper.FillLootBoxOpeningService(imageDb);
 
 		//Act
-		var winItem = await openingService.OpenBoxAsync(userInfo.UserId, lootBox.Id, tokenSource.Token);
+		var winItem = await openingService.OpenBoxAsync(userInfo.UserId, lootBox.Id);
 
 		//Assert
 		Assert.Equal(pathBanner.ItemId, winItem.Id);
@@ -350,15 +356,12 @@ public class LootBoxOpeningTests
 		var lootBox = pathBanner.Box!;
 		var userInfo = imageDb.Data.UserAdditionalInfos.First(uai => uai.UserId == pathBanner.UserId);
 		
-		var tokenSource = new CancellationTokenSource();
-		tokenSource.CancelAfter(5000);
-			
-		var openingService = MockHelper.FillLootBoxOpeningService(imageDb, tokenSource: tokenSource);
+		var openingService = MockHelper.FillLootBoxOpeningService(imageDb);
 
 		//Act
 		var userBalanceExpected = userInfo.Balance - lootBox.Cost;
 
-		await openingService.OpenBoxAsync(userInfo.UserId, lootBox.Id, tokenSource.Token);
+		await openingService.OpenBoxAsync(userInfo.UserId, lootBox.Id);
 
 		var revenue = lootBox.Cost * CommonConstants.RevenuePercentageBanner;
 		var retentionBanner = lootBox.Cost * CommonConstants.RetentionPercentageBanner;
@@ -385,16 +388,13 @@ public class LootBoxOpeningTests
 		
 		var lootBox = pathBanner.Box!;
 		var userInfo = imageDb.Data.UserAdditionalInfos.First(uai => uai.UserId == pathBanner.UserId);
-		
-		var tokenSource = new CancellationTokenSource();
-		tokenSource.CancelAfter(5000);
 			
-		var openingService = MockHelper.FillLootBoxOpeningService(imageDb, tokenSource: tokenSource);
+		var openingService = MockHelper.FillLootBoxOpeningService(imageDb);
 
 		//Act
 		var userBalanceExpected = userInfo.Balance - lootBox.Cost;
 
-		var winItem = await openingService.OpenBoxAsync(userInfo.UserId, lootBox.Id, tokenSource.Token);
+		var winItem = await openingService.OpenBoxAsync(userInfo.UserId, lootBox.Id);
 
 		var revenue = lootBox.Cost * CommonConstants.RevenuePercentageBanner;
 		var retentionBanner = lootBox.Cost * CommonConstants.RetentionPercentageBanner;
@@ -423,13 +423,11 @@ public class LootBoxOpeningTests
 		var userInfo = imageDb.Data.UserAdditionalInfos.First(uai => uai.UserId == pathBanner.UserId);
 		
 		var publishObjects = new List<object>();
-		var tokenSource = new CancellationTokenSource();
-		tokenSource.CancelAfter(5000);
 			
-		var openingService = MockHelper.FillLootBoxOpeningService(imageDb, publishObjects, tokenSource);
+		var openingService = MockHelper.FillLootBoxOpeningService(imageDb, publishObjects);
 
 		//Act
-		await openingService.OpenBoxAsync(userInfo.UserId, lootBox.Id, tokenSource.Token);
+		await openingService.OpenBoxAsync(userInfo.UserId, lootBox.Id);
 
 		var revenue = lootBox.Cost * CommonConstants.RevenuePercentageBanner;
 
