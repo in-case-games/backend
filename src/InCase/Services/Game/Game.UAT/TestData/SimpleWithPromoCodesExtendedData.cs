@@ -104,7 +104,7 @@ public class SimpleWithPromoCodesExtendedData : IEnumerable<object[]>
 	];
 	private readonly List<UserAdditionalInfo> _userAdditionalInfos = [ 
 		new() { 
-			Balance = 10000000000, 
+			Balance = int.MaxValue, 
 			IsGuestMode = false, 
 			UserId = new Guid("44e233f0-ec99-4e56-9df4-8ca8761b86b9")
 		},

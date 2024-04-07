@@ -91,12 +91,12 @@ public class SimpleWithPathBannersExtendedData : IEnumerable<object[]>
 		new() { 
 			Id = new Guid("b8df38f1-7043-4354-bf46-3ed8cf1b0de9"), 
 			Cost = 4000,
-			ExpirationBannerDate = DateTime.UtcNow.AddYears(90)
+			ExpirationBannerDate = DateTime.MaxValue
 		},
 		new() { 
 			Id = new Guid("891bd4c1-1a3f-435f-b7af-5e68207a905e"), 
 			Cost = 6000,
-			ExpirationBannerDate = DateTime.UtcNow.AddYears(90)
+			ExpirationBannerDate = DateTime.MaxValue
 		} 
 	];
 	private readonly List<User> _users = [ 
@@ -106,7 +106,7 @@ public class SimpleWithPathBannersExtendedData : IEnumerable<object[]>
 	];
 	private readonly List<UserAdditionalInfo> _userAdditionalInfos = [ 
 		new() { 
-			Balance = 10000000000, 
+			Balance = int.MaxValue, 
 			IsGuestMode = false, 
 			UserId = new Guid("44e233f0-ec99-4e56-9df4-8ca8761b86b9")
 		},

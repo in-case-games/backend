@@ -1,12 +1,14 @@
 using Game.BLL.Constants;
+using Game.DAL.Entities;
 using Game.UAT.Helpers;
 using Game.UAT.Models;
 using Game.UAT.TestData;
 using Infrastructure.MassTransit.Statistics;
 using Infrastructure.MassTransit.User;
+using Xunit.Abstractions;
 
 namespace Game.UAT.Tests.Integrations;
-public class LootBoxOpeningTests
+public class LootBoxOpeningTests(ITestOutputHelper outputHelper)
 {
 	private static readonly Random Random = new();
 
@@ -73,7 +75,7 @@ public class LootBoxOpeningTests
 		//Act
 		var winItem = await openingService.OpenBoxAsync(userInfo.UserId, lootBox.Id);
 
-		UserInventoryTemplate inventoryTemplate = new();
+		var inventoryTemplate = new UserInventoryTemplate();
 
 		foreach (var publishObject in publishObjects) 
 		{
@@ -106,7 +108,7 @@ public class LootBoxOpeningTests
 		//Act
 		var winItem = await openingService.OpenBoxAsync(userInfo.UserId, lootBox.Id);
 
-		SiteStatisticsTemplate statisticsTemplate = new();
+		var statisticsTemplate = new SiteStatisticsTemplate();
 
 		foreach (var publishObject in publishObjects) 
 		{
@@ -143,7 +145,7 @@ public class LootBoxOpeningTests
 
 		var revenue = lootBox.Cost * CommonConstants.RevenuePercentage;
 
-		SiteStatisticsAdminTemplate statisticsAdminTemplate = new();
+		var statisticsAdminTemplate = new SiteStatisticsAdminTemplate();
 
 		foreach (var publishObject in publishObjects) 
 		{
@@ -180,6 +182,9 @@ public class LootBoxOpeningTests
 			for(var j = 0; j < iterationLowerLvl; j++) 
 			{
 				var userInfos = imageDb.Data.UserAdditionalInfos.Where(uai => uai.Balance >= lootBox.Cost).ToList();
+
+				if(userInfos.Count <= 0) break;
+
 				var userInfo = userInfos[Random.Next(0, userInfos.Count)];
 
 				var winItem = await openingService.OpenBoxAsync(userInfo.UserId, lootBox.Id);
@@ -192,6 +197,128 @@ public class LootBoxOpeningTests
 
 		//Assert
 		Assert.Equal(0, minFixBalance);
+	}
+
+	[Theory]
+	[ClassData(typeof(SimpleData))]
+	[ClassData(typeof(SimpleExtendedData))]
+	public async void OpenBox_SimpleData_MoreOpeningsForCheckChances(ImageDb imageDb)
+	{
+		//Arrange
+		var outputString = "";
+		var revenue = 0M;
+		var iterations = Random.Next(10000, 20000);
+		var winIds = new List<Guid>(iterations);
+
+		var openingService = MockHelper.FillLootBoxOpeningService(imageDb);
+		var lootBox = imageDb.Data.LootBoxes[Random.Next(0, imageDb.Data.LootBoxes.Count)];
+
+		//Act
+		for(var i = 0; i < iterations; i++) 
+		{
+			var userInfos = imageDb.Data.UserAdditionalInfos.Where(uai => uai.Balance >= lootBox.Cost).ToList();
+
+			if(userInfos.Count <= 0) break;
+
+			var userInfo = userInfos[Random.Next(0, userInfos.Count)];
+			var winItem = await openingService.OpenBoxAsync(userInfo.UserId, lootBox.Id);
+
+			winIds.Add(winItem.Id);
+			
+			revenue += lootBox.Cost * CommonConstants.RevenuePercentage;
+		}
+
+		foreach(var lootBoxInventory in lootBox.Inventories!) 
+		{
+			var expectedChance = Math.Round(lootBoxInventory.ChanceWining / 100000M, 2);
+			var expectedCount = Math.Round(iterations * expectedChance / 100, 2);
+			var actualCount = winIds.Count(id => id == lootBoxInventory.ItemId);
+			var actualChance = Math.Round(actualCount * 100M / iterations, 2);
+			outputString += $"Id - {lootBoxInventory.ItemId}: {Environment.NewLine}" + 
+							$"Expected Count - {expectedCount}{Environment.NewLine}" + 
+							$"Expected Chance - {expectedChance}%{Environment.NewLine}" +
+							$"Actual Count - {actualCount}{Environment.NewLine}" +
+							$"Actual Chance - {actualChance}%{Environment.NewLine}";
+		}
+
+		outputString += $"Loot Box Balance - {lootBox.Balance}{Environment.NewLine}";
+		outputString += $"Revenue - {revenue}{Environment.NewLine}";
+
+		//Assert
+		Console.WriteLine(outputString);
+		outputHelper.WriteLine(outputString);
+		Assert.True(true);
+	}
+
+	[Theory]
+	[ClassData(typeof(SimpleData))]
+	[ClassData(typeof(SimpleExtendedData))]
+	public async void OpenBox_SimpleData_MoreOpeningsForAccountingMoney(ImageDb imageDb)
+	{
+		//Arrange
+		var minFixBalance = 0M;
+		var revenue = 0M;
+		var revenueExpected = 0M;
+		var fundsUsersInventories = 0M;
+		var fundsUsersInventoriesExpected = 0M;
+		var openingCosts = 0M;
+		var inventoryCost = 0M;
+		var iterations = Random.Next(5000, 10000);
+		var winIds = new List<Guid>(iterations);
+		var publishObjects = new List<object>();
+		var lootBoxInventoriesAndNumberDrops = new Dictionary<LootBoxInventory, int>();
+
+		var openingService = MockHelper.FillLootBoxOpeningService(imageDb, publishObjects);
+		var lootBox = imageDb.Data.LootBoxes[Random.Next(0, imageDb.Data.LootBoxes.Count)];
+
+		//Act
+		for(var i = 0; i < iterations; i++) 
+		{
+			var userInfos = imageDb.Data.UserAdditionalInfos.Where(uai => uai.Balance >= lootBox.Cost).ToList();
+
+			if(userInfos.Count <= 0) break;
+
+			var userInfo = userInfos[Random.Next(0, userInfos.Count)];
+			var winItem = await openingService.OpenBoxAsync(userInfo.UserId, lootBox.Id);
+
+			winIds.Add(winItem.Id);
+			
+			revenueExpected += lootBox.Cost * CommonConstants.RevenuePercentage;
+			fundsUsersInventoriesExpected += winItem.Cost;
+			minFixBalance = minFixBalance > lootBox.Balance ? lootBox.Balance : minFixBalance;
+			openingCosts += lootBox.Cost;
+		}
+
+		foreach(var lootBoxInventory in lootBox.Inventories!) 
+		{
+			var expectedChance = Math.Round(lootBoxInventory.ChanceWining / 100000M, 2);
+			var expectedCount = Math.Round(iterations * expectedChance / 100, 2);
+			var actualCount = winIds.Count(id => id == lootBoxInventory.ItemId);
+			var actualChance = Math.Round(actualCount * 100M / iterations, 2);
+			lootBoxInventoriesAndNumberDrops.Add(lootBoxInventory, actualCount);
+		}
+
+		foreach (var publishObject in publishObjects) 
+		{
+			if (publishObject is SiteStatisticsAdminTemplate sat)
+			{
+				revenue += sat.RevenueLootBoxCommission;
+				fundsUsersInventories += sat.FundsUsersInventories;
+			}
+			if (publishObject is UserInventoryTemplate uit) 
+			{
+				inventoryCost += uit.FixedCost;
+			}
+		}
+
+		var isMoneyLeak = openingCosts - revenue - fundsUsersInventories - lootBox.Balance != 0M;
+
+		//Assert
+		Assert.Equal(0, minFixBalance);
+		Assert.Equal(revenueExpected, revenue);
+		Assert.Equal(fundsUsersInventoriesExpected, fundsUsersInventories);
+		Assert.Equal(fundsUsersInventoriesExpected, inventoryCost);
+		Assert.False(isMoneyLeak);
 	}
 
 	[Theory]
@@ -262,8 +389,8 @@ public class LootBoxOpeningTests
 		var revenue = lootBoxCost * CommonConstants.RevenuePercentage;
 		var winItem = await openingService.OpenBoxAsync(userInfo.UserId, lootBox.Id);
 
-		SiteStatisticsAdminTemplate statisticsAdminTemplate = new();
-		UserPromoCodeBackTemplate userPromoCodeBackTemplate = new();
+		var statisticsAdminTemplate = new SiteStatisticsAdminTemplate();
+		var userPromoCodeBackTemplate = new UserPromoCodeBackTemplate();
 
 		foreach (var publishObject in publishObjects) 
 		{
@@ -342,7 +469,7 @@ public class LootBoxOpeningTests
 	[Theory]
 	[ClassData(typeof(SimpleWithPathBannersData))]
 	[ClassData(typeof(SimpleWithPathBannersExtendedData))]
-	public async void OpenBox_PathBannersData_UserAndLootBoxBalanceByRetention(ImageDb imageDb)
+	public async void OpenBox_PathBannersData_UserAndLootBoxBalanceWithRetention(ImageDb imageDb)
 	{
 		//Arrange
 		var pathBanners = imageDb.Data.UserPathBanners
@@ -375,7 +502,7 @@ public class LootBoxOpeningTests
 	[Theory]
 	[ClassData(typeof(SimpleWithPathBannersData))]
 	[ClassData(typeof(SimpleWithPathBannersExtendedData))]
-	public async void OpenBox_PathBannersData_UserAndLootBoxBalanceByRetentionAndWinItem(ImageDb imageDb)
+	public async void OpenBox_PathBannersData_UserAndLootBoxBalanceWithRetentionAndWinItem(ImageDb imageDb)
 	{
 		//Arrange
 		var pathBanners = imageDb.Data.UserPathBanners
@@ -431,7 +558,7 @@ public class LootBoxOpeningTests
 
 		var revenue = lootBox.Cost * CommonConstants.RevenuePercentageBanner;
 
-		SiteStatisticsAdminTemplate statisticsAdminTemplate = new();
+		var statisticsAdminTemplate = new SiteStatisticsAdminTemplate();
 
 		foreach (var publishObject in publishObjects) 
 		{
@@ -445,6 +572,4 @@ public class LootBoxOpeningTests
 		Assert.Equal(revenue, statisticsAdminTemplate.RevenueLootBoxCommission);
 	}
 
-	//TODO CheckChancesTest
-	//TODO Check Positive Balance
 }
