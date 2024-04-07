@@ -1,4 +1,5 @@
-﻿using Game.BLL.Exceptions;
+﻿using Game.BLL.Constants;
+using Game.BLL.Exceptions;
 using Game.BLL.Interfaces;
 using Game.BLL.Models;
 using Game.DAL.Data;
@@ -37,10 +38,7 @@ public class LootBoxOpeningService(
 		if (info.Balance < box.Cost) throw new PaymentRequiredException("Недостаточно средств");
 		if (promo is not null)
 		{
-			await publisher.SendAsync(new UserPromoCodeBackTemplate
-			{
-				Id = promo.Id,
-			}, cancellation);
+			await publisher.SendAsync(new UserPromoCodeBackTemplate { Id = promo.Id }, cancellation);
 
 			context.UserPromoCodes.Remove(promo);
 		}
@@ -55,18 +53,21 @@ public class LootBoxOpeningService(
 		info.Balance -= boxCost;
 		box.Balance += boxCost;
 
-		var winItem = OpenLootBoxService.RandomizeBySmallest(in box);
-		var revenue = OpenLootBoxService.GetRevenue(box.Cost);
-		var expenses = OpenLootBoxService.GetExpenses(winItem.Cost, revenue);
-
-		if (path is not null && 
+		var isPlayBanner = path is not null && 
 			box.ExpirationBannerDate is not null && 
-			box.ExpirationBannerDate >= DateTime.UtcNow)
-		{
-			--path.NumberSteps;
+			box.ExpirationBannerDate >= DateTime.UtcNow;
+		var winItem = OpenLootBoxService.RandomizeBySmallest(in box, isPlayBanner);
+		var revenue = boxCost * CommonConstants.RevenuePercentage;
+		var expenses = winItem.Cost + revenue;
 
-			var retention = OpenLootBoxService.GetRetentionBanner(box.Cost);
-			expenses = winItem.Cost + retention;
+		if (isPlayBanner)
+		{
+			--path!.NumberSteps;
+
+			var retentionBanner = box.Cost * CommonConstants.RetentionPercentageBanner;
+
+			revenue = boxCost * CommonConstants.RevenuePercentageBanner;
+			expenses = retentionBanner + revenue;
 
 			if (path.NumberSteps == 0)
 			{
@@ -74,16 +75,13 @@ public class LootBoxOpeningService(
 					await context.GameItems
 						.AsNoTracking()
 						.FirstOrDefaultAsync(i => i.Id == path.ItemId, cancellation);
-
 				winItem!.Cost = path.FixedCost;
-				expenses = retention;
 
 				context.UserPathBanners.Remove(path);
 			}
 			else
 			{
-				revenue = 0;
-
+				expenses += winItem.Cost;
 				context.UserPathBanners.Attach(path);
 				contextWrapper.SetEntryIsModifyProperty(path, p => p.NumberSteps);
 			}
@@ -148,9 +146,9 @@ public class LootBoxOpeningService(
 
 		box.VirtualBalance += box.Cost;
 
-		var winItem = OpenLootBoxService.RandomizeBySmallest(in box, true);
-		var revenue = OpenLootBoxService.GetRevenue(box.Cost);
-		var expenses = OpenLootBoxService.GetExpenses(winItem.Cost, revenue);
+		var winItem = OpenLootBoxService.RandomizeBySmallest(in box, false, true);
+		var revenue = box.Cost * CommonConstants.RevenuePercentage;
+		var expenses = winItem.Cost + revenue;
 
 		box.VirtualBalance -= expenses;
 
@@ -164,7 +162,6 @@ public class LootBoxOpeningService(
 			Cost = winItem.Cost,
 		};
 	}
-
 
 	public async Task<List<GameItemBigOpenResponse>> OpenVirtualBoxAsync(
 		Guid userId,
@@ -201,19 +198,19 @@ public class LootBoxOpeningService(
 			{
 				box.VirtualBalance += box.Cost;
 
-				var item = OpenLootBoxService.RandomizeBySmallest(in box, true);
-				var revenue = OpenLootBoxService.GetRevenue(box.Cost);
-				var expenses = OpenLootBoxService.GetExpenses(item.Cost, revenue);
+				var winItem = OpenLootBoxService.RandomizeBySmallest(in box, false, true);
+				var revenue = box.Cost * CommonConstants.RevenuePercentage;
+				var expenses = winItem.Cost + revenue;
 
 				box.VirtualBalance -= expenses;
 
-				var index = winItems.FindIndex(gi => gi.Id == item.Id);
+				var index = winItems.FindIndex(gi => gi.Id == winItem.Id);
 
 				if (index != -1) winItems[index].Count++;
 				else winItems.Add(new GameItemBigOpenResponse 
 				{ 
-					Id = item.Id, 
-					Cost = item.Cost, 
+					Id = winItem.Id, 
+					Cost = winItem.Cost, 
 					Count = 1 
 				});
 

@@ -4,7 +4,7 @@ using Game.UAT.Helpers;
 using Game.UAT.Models;
 
 namespace Game.UAT.TestData;
-public class SimpleExtendedData : IEnumerable<object[]>
+public class SimpleWithPathBannersExtendedData : IEnumerable<object[]>
 {
 	private readonly List<GameItem> _gameItems = [
 		new() { 
@@ -91,10 +91,12 @@ public class SimpleExtendedData : IEnumerable<object[]>
 		new() { 
 			Id = new Guid("b8df38f1-7043-4354-bf46-3ed8cf1b0de9"), 
 			Cost = 4000,
+			ExpirationBannerDate = DateTime.MaxValue
 		},
 		new() { 
 			Id = new Guid("891bd4c1-1a3f-435f-b7af-5e68207a905e"), 
 			Cost = 6000,
+			ExpirationBannerDate = DateTime.MaxValue
 		} 
 	];
 	private readonly List<User> _users = [ 
@@ -120,7 +122,50 @@ public class SimpleExtendedData : IEnumerable<object[]>
 		}
 	];
 	private readonly List<UserOpening> _userOpenings = [];
-	private readonly List<UserPathBanner> _userPathBanners = [];
+	private readonly List<UserPathBanner> _userPathBanners = [
+		new() {
+			NumberSteps = 1,
+			FixedCost = 8800,
+			ItemId = new Guid("6726a162-abd1-4db3-be34-23c4b25754a4"),
+			UserId = new Guid("44e233f0-ec99-4e56-9df4-8ca8761b86b9"),
+			BoxId = new Guid("b8df38f1-7043-4354-bf46-3ed8cf1b0de9")
+		},
+		new() {
+			NumberSteps = 2,
+			FixedCost = 4400,
+			ItemId = new Guid("6d4b6cca-2ba5-4caa-8a1f-ef7372957a59"),
+			UserId = new Guid("44e233f0-ec99-4e56-9df4-8ca8761b86b9"),
+			BoxId = new Guid("891bd4c1-1a3f-435f-b7af-5e68207a905e")
+		},
+		new() {
+			NumberSteps = 1,
+			FixedCost = 8700,
+			ItemId = new Guid("6726a162-abd1-4db3-be34-23c4b25754a4"),
+			UserId = new Guid("c56a68d2-5759-462c-aa02-ba9151cfac22"),
+			BoxId = new Guid("891bd4c1-1a3f-435f-b7af-5e68207a905e")
+		},
+		new() {
+			NumberSteps = 2,
+			FixedCost = 9300,
+			ItemId = new Guid("6726a162-abd1-4db3-be34-23c4b25754a4"),
+			UserId = new Guid("c56a68d2-5759-462c-aa02-ba9151cfac22"),
+			BoxId = new Guid("b8df38f1-7043-4354-bf46-3ed8cf1b0de9")
+		},
+		new() {
+			NumberSteps = 1,
+			FixedCost = 7115,
+			ItemId = new Guid("6726a162-abd1-4db3-be34-23c4b25754a4"),
+			UserId = new Guid("c44ed294-e63d-438c-ac7e-7d7f6bb58b24"),
+			BoxId = new Guid("b8df38f1-7043-4354-bf46-3ed8cf1b0de9")
+		},
+		new() {
+			NumberSteps = 2,
+			FixedCost = 17000,
+			ItemId = new Guid("85630b60-4f92-4992-92c5-935082407631"),
+			UserId = new Guid("c44ed294-e63d-438c-ac7e-7d7f6bb58b24"),
+			BoxId = new Guid("891bd4c1-1a3f-435f-b7af-5e68207a905e")
+		}
+	];
 	private readonly List<UserPromoCode> _userPromoCodes = [];
 
 	public IEnumerator<object[]> GetEnumerator()

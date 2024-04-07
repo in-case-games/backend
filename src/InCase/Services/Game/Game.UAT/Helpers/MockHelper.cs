@@ -1,5 +1,9 @@
+using System.Linq.Expressions;
+using Game.BLL.Interfaces;
+using Game.BLL.Services;
 using Game.DAL.Data;
 using Game.UAT.Models;
+using Microsoft.Extensions.Logging;
 using MockQueryable.Moq;
 using Moq;
 
@@ -28,5 +32,37 @@ public class MockHelper
 		mockContext.Setup(m => m.UserPromoCodes).Returns(userPromoCodesMockSet.Object);
 
 		return mockContext;
+	}
+
+	public static void FillSetupsApplicationDbContextWrapper(Mock<ApplicationDbContextWrapper> mockWrapperContext) 
+	{
+		mockWrapperContext.Setup(m => 
+			m.SetEntryIsModifyProperty(
+				It.IsAny<It.IsAnyType>(), 
+				It.IsAny<Expression<Func<It.IsAnyType, decimal>>>(), 
+				It.IsAny<bool>())).Callback(new InvocationAction(i => {}));
+	}
+
+	public static LootBoxOpeningService FillLootBoxOpeningService(
+		ImageDb imageDb, 
+		List<object>? publishObjects = default, 
+		CancellationTokenSource? tokenSource = default) 
+	{
+		var mockLogger = new Mock<ILogger<LootBoxOpeningService>>();
+		var mockPublisher = new Mock<IBasePublisher>();
+		var mockWrapperContext = new Mock<ApplicationDbContextWrapper>(imageDb.MockContext.Object);
+		
+		FillSetupsApplicationDbContextWrapper(mockWrapperContext);
+
+		var token = tokenSource?.Token ?? new CancellationToken();
+
+		mockPublisher.Setup(m => m.SendAsync(It.IsAny<It.IsAnyType>(), token))
+			.Callback(new InvocationAction(i => { publishObjects?.Add(i.Arguments[0]); }));
+			
+		return new LootBoxOpeningService(
+			imageDb.MockContext.Object, 
+			mockLogger.Object, 
+			mockPublisher.Object, 
+			mockWrapperContext.Object);
 	}
 }

@@ -1,4 +1,5 @@
-﻿using Game.BLL.Exceptions;
+﻿using Game.BLL.Constants;
+using Game.BLL.Exceptions;
 using Game.BLL.Helpers;
 using Game.BLL.Interfaces;
 using Game.BLL.Models;
@@ -107,7 +108,7 @@ public class UserPathBannerService(ApplicationDbContext context) : IUserPathBann
             BoxId = request.BoxId,
             ItemId = request.ItemId,
             UserId = request.UserId,
-            NumberSteps = (int)Math.Ceiling(inventory.Item.Cost / (box.Cost * 0.2M)),
+            NumberSteps = (int)Math.Ceiling(inventory.Item.Cost / (box.Cost * CommonConstants.RetentionPercentageBanner)),
             FixedCost = inventory.Item.Cost
         };
 
