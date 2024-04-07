@@ -21,6 +21,7 @@ public class GameItemService(
         ["csgo"] = steamService,
         ["dota2"] = steamService,
     };
+    private const decimal DifferenceBetweenMinCosts = 1.3M;
 
     public async Task<GameItemResponse> GetAsync(Guid id, CancellationToken cancellation = default)
     {
@@ -343,7 +344,7 @@ public class GameItemService(
                     else if (itemTwoCost != 0) boxCostNew = itemMinCost * (box.Cost / itemTwoCost);
                 }
 
-                box.IsLocked = boxCostNew >= itemMaxCost || boxCostNew <= itemMinCost;
+                box.IsLocked = boxCostNew >= itemMaxCost || boxCostNew <= itemMinCost * DifferenceBetweenMinCosts;
                 box.Cost = box.IsLocked ? box.Cost : boxCostNew;
 
                 context.LootBoxes.Update(box);
