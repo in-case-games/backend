@@ -1,0 +1,28 @@
+name-template: v$NEXT_PATCH_VERSION
+tag-template: v$NEXT_PATCH_VERSION
+categories:
+  - title: 🚀 New Features
+    labels:
+      - type:feature
+
+  - title: 🐛 Bugs Fixes
+    labels:
+      - type:HOT FIX
+      - type:FIX
+
+  - title: 🎯 We need to improve
+    labels:
+      - type:enhancement
+
+  - title: 📄 Documentation
+    labels:
+      - type:documentation
+
+  - title: 🆘 Help is needed
+    labels:
+      - type:HELP
+
+change-template: - $TITLE @$AUTHOR (#$NUMBER)
+template: |
+  ## Changes
+  $CHANGES
