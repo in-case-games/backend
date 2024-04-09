@@ -8,17 +8,17 @@ on:
 
 jobs:
   microservices-tests:
-
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v3
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: 8.0.x
+      - name: Checkout repository
+        uses: actions/checkout@v3
         
-    - name: Tests Game.UAT
-      run: |
-            cd src/InCase/Services/Game/Game.UAT
-            dotnet test
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 8.0.x
+          
+      - name: Tests Game.UAT
+        run: |
+              cd src/InCase/Services/Game/Game.UAT
+              dotnet test

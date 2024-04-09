@@ -1,0 +1,110 @@
+version: '3.8'
+services:
+  fileserver:
+    image: nginx
+    container_name: fileserver
+    hostname: fileserver
+    restart: always
+
+  nosqldata:
+    image: mongo
+    container_name: mongodb
+    hostname: mongodb
+    restart: always
+
+  rabbitmq:
+    image: rabbitmq:3.10.7-management
+    container_name: rabbitmq
+    hostname: mabbit
+    restart: always
+
+  psql:
+    image: postgres:13.3
+    container_name: psql
+    hostname: psql
+    restart: always
+
+  auth-api:
+    image: auth-api:1.0.0
+    container_name: auth-api
+    depends_on:
+      - psql
+      - rabbitmq
+
+  email-api:
+    image: email-api:1.0.0
+    container_name: email-api
+    depends_on:
+      - psql
+      - rabbitmq
+
+  game-api:
+    image: game-api:1.0.0
+    container_name: game-api
+    depends_on:
+      - psql
+      - rabbitmq
+
+  identity-api:
+    image: identity-api:1.0.0
+    container_name: identity-api
+    depends_on:
+      - psql
+      - rabbitmq
+
+  payment-api:
+    image: payment-api:1.0.0
+    container_name: payment-api
+    depends_on:
+      - psql
+      - rabbitmq
+
+  promocode-api:
+    image: promocode-api:1.0.0
+    container_name: promocode-api
+    depends_on:
+      - psql
+      - rabbitmq
+
+  resources-api:
+    image: resources-api:1.0.0
+    container_name: resources-api
+    depends_on:
+      - psql
+      - rabbitmq
+
+  review-api:
+    image: review-api:1.0.0
+    container_name: review-api
+    depends_on:
+      - psql
+      - rabbitmq
+
+  statistics-api:
+    image: statistics-api:1.0.0
+    container_name: statistics-api
+    depends_on:
+      - psql
+      - rabbitmq
+
+  support-api:
+    image: support-api:1.0.0
+    container_name: support-api
+    depends_on:
+      - psql
+      - rabbitmq
+
+  withdraw-api:
+    image: withdraw-api:1.0.0
+    container_name: withdraw-api
+    depends_on:
+      - psql
+      - rabbitmq
+
+  gateway-api:
+    image: gateway-api:1.0.0
+    container_name: gateway-api
+
+volumes:
+  database:
+  rabbitmq:

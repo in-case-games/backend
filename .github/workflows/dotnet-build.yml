@@ -7,318 +7,318 @@ on:
     branches: [ "InCase.dev", "InCase.prod" ]
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v3
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: 8.0.x
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 8.0.x
 
-    - name: Restore Authentication.API dependencies
-      run: |
-            cd src/InCase/Services/Authentication/Authentication.API
-            dotnet restore 
-    - name: Build Authentication.API service
-      run: |
-            cd src/InCase/Services/Authentication/Authentication.API
-            dotnet build
+      - name: Restore Authentication.API dependencies
+        run: |
+              cd src/InCase/Services/Authentication/Authentication.API
+              dotnet restore 
+      - name: Build Authentication.API service
+        run: |
+              cd src/InCase/Services/Authentication/Authentication.API
+              dotnet build
 
-    - name: Restore Authentication.BLL dependencies
-      run: |
-            cd src/InCase/Services/Authentication/Authentication.BLL
-            dotnet restore 
-    - name: Build Authentication.BLL service
-      run: |
-            cd src/InCase/Services/Authentication/Authentication.BLL
-            dotnet build
-            
-    - name: Restore Authentication.DAL dependencies
-      run: |
-            cd src/InCase/Services/Authentication/Authentication.DAL
-            dotnet restore 
-    - name: Build Authentication.DAL service
-      run: |
-            cd src/InCase/Services/Authentication/Authentication.DAL
-            dotnet build
+      - name: Restore Authentication.BLL dependencies
+        run: |
+              cd src/InCase/Services/Authentication/Authentication.BLL
+              dotnet restore 
+      - name: Build Authentication.BLL service
+        run: |
+              cd src/InCase/Services/Authentication/Authentication.BLL
+              dotnet build
+              
+      - name: Restore Authentication.DAL dependencies
+        run: |
+              cd src/InCase/Services/Authentication/Authentication.DAL
+              dotnet restore 
+      - name: Build Authentication.DAL service
+        run: |
+              cd src/InCase/Services/Authentication/Authentication.DAL
+              dotnet build
 
-    - name: Restore EmailSender.API dependencies
-      run: |
-            cd src/InCase/Services/EmailSender/EmailSender.API
-            dotnet restore
-    - name: Build EmailSender.API service
-      run: |
-            cd src/InCase/Services/EmailSender/EmailSender.API
-            dotnet build
+      - name: Restore EmailSender.API dependencies
+        run: |
+              cd src/InCase/Services/EmailSender/EmailSender.API
+              dotnet restore
+      - name: Build EmailSender.API service
+        run: |
+              cd src/InCase/Services/EmailSender/EmailSender.API
+              dotnet build
 
-    - name: Restore EmailSender.BLL dependencies
-      run: |
-            cd src/InCase/Services/EmailSender/EmailSender.BLL
-            dotnet restore 
-    - name: Build EmailSender.BLL service
-      run: |
-            cd src/InCase/Services/EmailSender/EmailSender.BLL
-            dotnet build
-            
-    - name: Restore EmailSender.DAL dependencies
-      run: |
-            cd src/InCase/Services/EmailSender/EmailSender.DAL
-            dotnet restore 
-    - name: Build EmailSender.DAL service
-      run: |
-            cd src/InCase/Services/EmailSender/EmailSender.DAL
-            dotnet build
+      - name: Restore EmailSender.BLL dependencies
+        run: |
+              cd src/InCase/Services/EmailSender/EmailSender.BLL
+              dotnet restore 
+      - name: Build EmailSender.BLL service
+        run: |
+              cd src/InCase/Services/EmailSender/EmailSender.BLL
+              dotnet build
+              
+      - name: Restore EmailSender.DAL dependencies
+        run: |
+              cd src/InCase/Services/EmailSender/EmailSender.DAL
+              dotnet restore 
+      - name: Build EmailSender.DAL service
+        run: |
+              cd src/InCase/Services/EmailSender/EmailSender.DAL
+              dotnet build
 
-    - name: Restore Game.API dependencies
-      run: |
-            cd src/InCase/Services/Game/Game.API
-            dotnet restore
-    - name: Build Game.API service
-      run: |
-            cd src/InCase/Services/Game/Game.API
-            dotnet build
+      - name: Restore Game.API dependencies
+        run: |
+              cd src/InCase/Services/Game/Game.API
+              dotnet restore
+      - name: Build Game.API service
+        run: |
+              cd src/InCase/Services/Game/Game.API
+              dotnet build
 
-    - name: Restore Game.BLL dependencies
-      run: |
-            cd src/InCase/Services/Game/Game.BLL
-            dotnet restore 
-    - name: Build Game.BLL service
-      run: |
-            cd src/InCase/Services/Game/Game.BLL
-            dotnet build
-            
-    - name: Restore Game.DAL dependencies
-      run: |
-            cd src/InCase/Services/Game/Game.DAL
-            dotnet restore 
-    - name: Build Game.DAL service
-      run: |
-            cd src/InCase/Services/Game/Game.DAL
-            dotnet build
+      - name: Restore Game.BLL dependencies
+        run: |
+              cd src/InCase/Services/Game/Game.BLL
+              dotnet restore 
+      - name: Build Game.BLL service
+        run: |
+              cd src/InCase/Services/Game/Game.BLL
+              dotnet build
+              
+      - name: Restore Game.DAL dependencies
+        run: |
+              cd src/InCase/Services/Game/Game.DAL
+              dotnet restore 
+      - name: Build Game.DAL service
+        run: |
+              cd src/InCase/Services/Game/Game.DAL
+              dotnet build
 
-    - name: Restore Game.UAT dependencies
-      run: |
-            cd src/InCase/Services/Game/Game.UAT
-            dotnet restore 
-    - name: Build Game.UAT service
-      run: |
-            cd src/InCase/Services/Game/Game.UAT
-            dotnet build
+      - name: Restore Game.UAT dependencies
+        run: |
+              cd src/InCase/Services/Game/Game.UAT
+              dotnet restore 
+      - name: Build Game.UAT service
+        run: |
+              cd src/InCase/Services/Game/Game.UAT
+              dotnet build
 
-    - name: Restore Identity.API dependencies 
-      run: |
-            cd src/InCase/Services/Identity/Identity.API
-            dotnet restore
-    - name: Build Identity.API service
-      run: |
-            cd src/InCase/Services/Identity/Identity.API
-            dotnet build
+      - name: Restore Identity.API dependencies 
+        run: |
+              cd src/InCase/Services/Identity/Identity.API
+              dotnet restore
+      - name: Build Identity.API service
+        run: |
+              cd src/InCase/Services/Identity/Identity.API
+              dotnet build
 
-    - name: Restore Identity.BLL dependencies
-      run: |
-            cd src/InCase/Services/Identity/Identity.BLL
-            dotnet restore 
-    - name: Build Identity.BLL service
-      run: |
-            cd src/InCase/Services/Identity/Identity.BLL
-            dotnet build
-            
-    - name: Restore Identity.DAL dependencies
-      run: |
-            cd src/InCase/Services/Identity/Identity.DAL
-            dotnet restore 
-    - name: Build Identity.DAL service
-      run: |
-            cd src/InCase/Services/Identity/Identity.DAL
-            dotnet build
+      - name: Restore Identity.BLL dependencies
+        run: |
+              cd src/InCase/Services/Identity/Identity.BLL
+              dotnet restore 
+      - name: Build Identity.BLL service
+        run: |
+              cd src/InCase/Services/Identity/Identity.BLL
+              dotnet build
+              
+      - name: Restore Identity.DAL dependencies
+        run: |
+              cd src/InCase/Services/Identity/Identity.DAL
+              dotnet restore 
+      - name: Build Identity.DAL service
+        run: |
+              cd src/InCase/Services/Identity/Identity.DAL
+              dotnet build
 
-    - name: Restore Payment.API dependencies
-      run: |
-            cd src/InCase/Services/Payment/Payment.API
-            dotnet restore
-    - name: Build Payment.API service
-      run: |
-            cd src/InCase/Services/Payment/Payment.API
-            dotnet build
+      - name: Restore Payment.API dependencies
+        run: |
+              cd src/InCase/Services/Payment/Payment.API
+              dotnet restore
+      - name: Build Payment.API service
+        run: |
+              cd src/InCase/Services/Payment/Payment.API
+              dotnet build
 
-    - name: Restore Payment.BLL dependencies
-      run: |
-            cd src/InCase/Services/Payment/Payment.BLL
-            dotnet restore 
-    - name: Build Payment.BLL service
-      run: |
-            cd src/InCase/Services/Payment/Payment.BLL
-            dotnet build
-            
-    - name: Restore Payment.DAL dependencies
-      run: |
-            cd src/InCase/Services/Payment/Payment.DAL
-            dotnet restore 
-    - name: Build Payment.DAL service
-      run: |
-            cd src/InCase/Services/Payment/Payment.DAL
-            dotnet build
+      - name: Restore Payment.BLL dependencies
+        run: |
+              cd src/InCase/Services/Payment/Payment.BLL
+              dotnet restore 
+      - name: Build Payment.BLL service
+        run: |
+              cd src/InCase/Services/Payment/Payment.BLL
+              dotnet build
+              
+      - name: Restore Payment.DAL dependencies
+        run: |
+              cd src/InCase/Services/Payment/Payment.DAL
+              dotnet restore 
+      - name: Build Payment.DAL service
+        run: |
+              cd src/InCase/Services/Payment/Payment.DAL
+              dotnet build
 
-    - name: Restore Promocode.API dependencies 
-      run: |
-            cd src/InCase/Services/Promocode/Promocode.API
-            dotnet restore
-    - name: Build Promocode.API service
-      run: |
-            cd src/InCase/Services/Promocode/Promocode.API
-            dotnet build
+      - name: Restore Promocode.API dependencies 
+        run: |
+              cd src/InCase/Services/Promocode/Promocode.API
+              dotnet restore
+      - name: Build Promocode.API service
+        run: |
+              cd src/InCase/Services/Promocode/Promocode.API
+              dotnet build
 
-    - name: Restore Promocode.BLL dependencies
-      run: |
-            cd src/InCase/Services/Promocode/Promocode.BLL
-            dotnet restore 
-    - name: Build Promocode.BLL service
-      run: |
-            cd src/InCase/Services/Promocode/Promocode.BLL
-            dotnet build
-            
-    - name: Restore Promocode.DAL dependencies
-      run: |
-            cd src/InCase/Services/Promocode/Promocode.DAL
-            dotnet restore 
-    - name: Build Promocode.DAL service
-      run: |
-            cd src/InCase/Services/Promocode/Promocode.DAL
-            dotnet build
+      - name: Restore Promocode.BLL dependencies
+        run: |
+              cd src/InCase/Services/Promocode/Promocode.BLL
+              dotnet restore 
+      - name: Build Promocode.BLL service
+        run: |
+              cd src/InCase/Services/Promocode/Promocode.BLL
+              dotnet build
+              
+      - name: Restore Promocode.DAL dependencies
+        run: |
+              cd src/InCase/Services/Promocode/Promocode.DAL
+              dotnet restore 
+      - name: Build Promocode.DAL service
+        run: |
+              cd src/InCase/Services/Promocode/Promocode.DAL
+              dotnet build
 
-    - name: Restore Resources.API dependencies
-      run: |
-            cd src/InCase/Services/Resources/Resources.API
-            dotnet restore
-    - name: Build Resources.API service
-      run: |
-            cd src/InCase/Services/Resources/Resources.API
-            dotnet build
+      - name: Restore Resources.API dependencies
+        run: |
+              cd src/InCase/Services/Resources/Resources.API
+              dotnet restore
+      - name: Build Resources.API service
+        run: |
+              cd src/InCase/Services/Resources/Resources.API
+              dotnet build
 
-    - name: Restore Resources.BLL dependencies
-      run: |
-            cd src/InCase/Services/Resources/Resources.BLL
-            dotnet restore 
-    - name: Build Resources.BLL service
-      run: |
-            cd src/InCase/Services/Resources/Resources.BLL
-            dotnet build
-            
-    - name: Restore Resources.DAL dependencies
-      run: |
-            cd src/InCase/Services/Resources/Resources.DAL
-            dotnet restore 
-    - name: Build Resources.DAL service
-      run: |
-            cd src/InCase/Services/Resources/Resources.DAL
-            dotnet build
+      - name: Restore Resources.BLL dependencies
+        run: |
+              cd src/InCase/Services/Resources/Resources.BLL
+              dotnet restore 
+      - name: Build Resources.BLL service
+        run: |
+              cd src/InCase/Services/Resources/Resources.BLL
+              dotnet build
+              
+      - name: Restore Resources.DAL dependencies
+        run: |
+              cd src/InCase/Services/Resources/Resources.DAL
+              dotnet restore 
+      - name: Build Resources.DAL service
+        run: |
+              cd src/InCase/Services/Resources/Resources.DAL
+              dotnet build
 
-    - name: Restore Review.API dependencies
-      run: |
-            cd src/InCase/Services/Review/Review.API
-            dotnet restore
-    - name: Build Review.API service
-      run: |
-            cd src/InCase/Services/Review/Review.API
-            dotnet build
+      - name: Restore Review.API dependencies
+        run: |
+              cd src/InCase/Services/Review/Review.API
+              dotnet restore
+      - name: Build Review.API service
+        run: |
+              cd src/InCase/Services/Review/Review.API
+              dotnet build
 
-    - name: Restore Review.BLL dependencies
-      run: |
-            cd src/InCase/Services/Review/Review.BLL
-            dotnet restore 
-    - name: Build Review.BLL service
-      run: |
-            cd src/InCase/Services/Review/Review.BLL
-            dotnet build
-            
-    - name: Restore Review.DAL dependencies
-      run: |
-            cd src/InCase/Services/Review/Review.DAL
-            dotnet restore 
-    - name: Build Review.DAL service
-      run: |
-            cd src/InCase/Services/Review/Review.DAL
-            dotnet build
+      - name: Restore Review.BLL dependencies
+        run: |
+              cd src/InCase/Services/Review/Review.BLL
+              dotnet restore 
+      - name: Build Review.BLL service
+        run: |
+              cd src/InCase/Services/Review/Review.BLL
+              dotnet build
+              
+      - name: Restore Review.DAL dependencies
+        run: |
+              cd src/InCase/Services/Review/Review.DAL
+              dotnet restore 
+      - name: Build Review.DAL service
+        run: |
+              cd src/InCase/Services/Review/Review.DAL
+              dotnet build
 
-    - name: Restore Statistics.API dependencies
-      run: |
-            cd src/InCase/Services/Statistics/Statistics.API
-            dotnet restore
-    - name: Build Statistics.API service
-      run: |
-            cd src/InCase/Services/Statistics/Statistics.API
-            dotnet build
+      - name: Restore Statistics.API dependencies
+        run: |
+              cd src/InCase/Services/Statistics/Statistics.API
+              dotnet restore
+      - name: Build Statistics.API service
+        run: |
+              cd src/InCase/Services/Statistics/Statistics.API
+              dotnet build
 
-    - name: Restore Statistics.BLL dependencies
-      run: |
-            cd src/InCase/Services/Statistics/Statistics.BLL
-            dotnet restore 
-    - name: Build Statistics.BLL service
-      run: |
-            cd src/InCase/Services/Statistics/Statistics.BLL
-            dotnet build
-            
-    - name: Restore Statistics.DAL dependencies
-      run: |
-            cd src/InCase/Services/Statistics/Statistics.DAL
-            dotnet restore 
-    - name: Build Statistics.DAL service
-      run: |
-            cd src/InCase/Services/Statistics/Statistics.DAL
-            dotnet build
+      - name: Restore Statistics.BLL dependencies
+        run: |
+              cd src/InCase/Services/Statistics/Statistics.BLL
+              dotnet restore 
+      - name: Build Statistics.BLL service
+        run: |
+              cd src/InCase/Services/Statistics/Statistics.BLL
+              dotnet build
+              
+      - name: Restore Statistics.DAL dependencies
+        run: |
+              cd src/InCase/Services/Statistics/Statistics.DAL
+              dotnet restore 
+      - name: Build Statistics.DAL service
+        run: |
+              cd src/InCase/Services/Statistics/Statistics.DAL
+              dotnet build
 
-    - name: Restore Support.API dependencies
-      run: |
-            cd src/InCase/Services/Support/Support.API
-            dotnet restore
-    - name: Build Support.API dependencies
-      run: |
-            cd src/InCase/Services/Support/Support.API
-            dotnet build
+      - name: Restore Support.API dependencies
+        run: |
+              cd src/InCase/Services/Support/Support.API
+              dotnet restore
+      - name: Build Support.API dependencies
+        run: |
+              cd src/InCase/Services/Support/Support.API
+              dotnet build
 
-    - name: Restore Support.BLL dependencies
-      run: |
-            cd src/InCase/Services/Support/Support.BLL
-            dotnet restore 
-    - name: Build Support.BLL service
-      run: |
-            cd src/InCase/Services/Support/Support.BLL
-            dotnet build
-            
-    - name: Restore Support.DAL dependencies
-      run: |
-            cd src/InCase/Services/Support/Support.DAL
-            dotnet restore 
-    - name: Build Support.DAL service
-      run: |
-            cd src/InCase/Services/Support/Support.DAL
-            dotnet build          
+      - name: Restore Support.BLL dependencies
+        run: |
+              cd src/InCase/Services/Support/Support.BLL
+              dotnet restore 
+      - name: Build Support.BLL service
+        run: |
+              cd src/InCase/Services/Support/Support.BLL
+              dotnet build
+              
+      - name: Restore Support.DAL dependencies
+        run: |
+              cd src/InCase/Services/Support/Support.DAL
+              dotnet restore 
+      - name: Build Support.DAL service
+        run: |
+              cd src/InCase/Services/Support/Support.DAL
+              dotnet build          
 
-    - name: Restore Withdraw.API dependencies
-      run: |
-            cd src/InCase/Services/Withdraw/Withdraw.API
-            dotnet restore
-    - name: Build Withdraw.API service
-      run: |
-            cd src/InCase/Services/Withdraw/Withdraw.API
-            dotnet build
+      - name: Restore Withdraw.API dependencies
+        run: |
+              cd src/InCase/Services/Withdraw/Withdraw.API
+              dotnet restore
+      - name: Build Withdraw.API service
+        run: |
+              cd src/InCase/Services/Withdraw/Withdraw.API
+              dotnet build
 
-    - name: Restore Withdraw.BLL dependencies
-      run: |
-            cd src/InCase/Services/Withdraw/Withdraw.BLL
-            dotnet restore 
-    - name: Build Withdraw.BLL service
-      run: |
-            cd src/InCase/Services/Withdraw/Withdraw.BLL
-            dotnet build
-            
-    - name: Restore Withdraw.DAL dependencies
-      run: |
-            cd src/InCase/Services/Withdraw/Withdraw.DAL
-            dotnet restore 
-    - name: Build Withdraw.DAL service
-      run: |
-            cd src/InCase/Services/Withdraw/Withdraw.DAL
-            dotnet build               
+      - name: Restore Withdraw.BLL dependencies
+        run: |
+              cd src/InCase/Services/Withdraw/Withdraw.BLL
+              dotnet restore 
+      - name: Build Withdraw.BLL service
+        run: |
+              cd src/InCase/Services/Withdraw/Withdraw.BLL
+              dotnet build
+              
+      - name: Restore Withdraw.DAL dependencies
+        run: |
+              cd src/InCase/Services/Withdraw/Withdraw.DAL
+              dotnet restore 
+      - name: Build Withdraw.DAL service
+        run: |
+              cd src/InCase/Services/Withdraw/Withdraw.DAL
+              dotnet build               
