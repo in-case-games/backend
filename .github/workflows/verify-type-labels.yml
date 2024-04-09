@@ -8,6 +8,6 @@ jobs:
   verify-type-labels:
     runs-on: ubuntu-latest
     steps:
-      - uses: zwaldowski/match-label-action@v2
+      - uses: zwaldowski/match-label-action@v5
         with:
-          allowed: type:feature, type:HOT FIX, type:FIX, type:enhancement, type:documentation, type:HELP
+          allowed: 'type:feature, type:HOT FIX, type:FIX, type:enhancement, type:documentation, type:HELP'
