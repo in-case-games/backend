@@ -18,7 +18,7 @@ public class LootBoxOpeningController(ILootBoxOpeningService openingService) : C
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> Get(Guid id, CancellationToken cancellation)
     {
-        var response = await openingService.OpenBox(UserId, id, cancellation);
+        var response = await openingService.OpenBoxAsync(UserId, id, cancellation);
 
         return Ok(ApiResult<GameItemResponse>.Ok(response));
     }
@@ -28,7 +28,7 @@ public class LootBoxOpeningController(ILootBoxOpeningService openingService) : C
     [HttpGet("{id:guid}/virtual")]
     public async Task<IActionResult> GetVirtual(Guid id, CancellationToken cancellation)
     {
-        var response = await openingService.OpenVirtualBox(UserId, id, cancellation);
+        var response = await openingService.OpenVirtualBoxAsync(UserId, id, cancellation);
 
         return Ok(ApiResult<GameItemResponse>.Ok(response));
     }
@@ -38,7 +38,7 @@ public class LootBoxOpeningController(ILootBoxOpeningService openingService) : C
     [HttpGet("{id:guid}&{count:int}/virtual")]
     public async Task<IActionResult> GetVirtual(Guid id, int count, CancellationToken cancellation)
     {
-        var response = await openingService.OpenVirtualBox(UserId, id, count, cancellation: cancellation);
+        var response = await openingService.OpenVirtualBoxAsync(UserId, id, count, cancellation: cancellation);
 
         return Ok(ApiResult<List<GameItemBigOpenResponse>>.Ok(response));
     }
@@ -48,7 +48,7 @@ public class LootBoxOpeningController(ILootBoxOpeningService openingService) : C
     [HttpGet("{id:guid}&{count:int}/virtual/admin")]
     public async Task<IActionResult> GetVirtualByAdmin(Guid id, int count, CancellationToken cancellation)
     {
-        var response = await openingService.OpenVirtualBox(UserId, id, count, isAdmin: true, cancellation);
+        var response = await openingService.OpenVirtualBoxAsync(UserId, id, count, isAdmin: true, cancellation);
 
         return Ok(ApiResult<List<GameItemBigOpenResponse>>.Ok(response));
     }

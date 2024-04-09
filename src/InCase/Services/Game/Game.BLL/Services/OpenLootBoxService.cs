@@ -1,66 +1,68 @@
-﻿using Game.DAL.Entities;
+﻿using Game.BLL.Constants;
+using Game.DAL.Entities;
 
 namespace Game.BLL.Services;
 public static class OpenLootBoxService
 {
-    private static readonly Random Random = new();
+	private static readonly Random Random = new();
 
-    public const decimal RevenuePercentage = 0.05M;
-    public const decimal RetentionPercentageBanner = 0.20M;
+	public static GameItem RandomizeBySmallest(in LootBox box, bool isPlayBanner, bool isVirtual = false)
+	{
+		var index = Randomize(box.Inventories!.Select(s => s.ChanceWining));
+		var item = box.Inventories!.ToList()[index].Item!;
 
-    public static decimal GetRevenue(decimal boxCost) => boxCost * RevenuePercentage;
-    public static decimal GetExpenses(decimal winItemCost, decimal revenue) => winItemCost + revenue;
-    public static decimal GetRetentionBanner(decimal boxCost) => boxCost * RetentionPercentageBanner;
+		if (IsProfitCase(item, box, isPlayBanner, isVirtual)) return item;
+		
+		return box.Inventories!.Select(s => s.Item).MinBy(m => m!.Cost)!;
+	}
 
-    public static GameItem RandomizeBySmallest(in LootBox box, bool isVirtual = false)
-    {
-        var chances = box.Inventories!
-            .Select(s => s.ChanceWining)
-            .ToList();
+	/*
+		Неучтенный момент с тем, что стоимость кейса может быть ниже при промокоде и может фальшивить revenue, 
+		который зависит от стоимости кейса динамически. 
+		Пример: 
+			Кейс стоит - 400 
+			При промокоде будет - 300
+			А здесь все равно учет идет как 400 на 38, 39 строке
+	*/
+	private static bool IsProfitCase(GameItem item, LootBox box, bool isPlayBanner, bool isVirtual = false)
+	{
+		var balance = isVirtual ? box.VirtualBalance : box.Balance;
+		var revenue = box.Cost * CommonConstants.RevenuePercentage;
+		var availableBalance = balance - revenue;
 
-        var index = Randomizer(chances);
-        var item = box.Inventories!.ToList()[index].Item!;
+		if(isPlayBanner) 
+		{
+			var revenueBanner = balance * CommonConstants.RevenuePercentageBanner;
+			var retentionBanner = box.Cost * CommonConstants.RetentionPercentageBanner;
 
-        if (IsProfitCase(item, box, isVirtual)) return item;
+			availableBalance = balance - retentionBanner - revenueBanner;
+		}
 
-        var items = box.Inventories!
-            .Select(s => s.Item)
-            .ToList()!;
+		return item.Cost <= availableBalance;
+	}
 
-        return items.MinBy(m => m!.Cost)!;
-    }
+	private static int Randomize(IEnumerable<int> chances)
+	{
+		var partsChances = new List<List<int>>();
+		var start = 0;
+		var index = 0;
 
-    private static bool IsProfitCase(GameItem item, LootBox box, bool isVirtual = false)
-    {
-        var balance = isVirtual ? box.VirtualBalance : box.Balance;
-        var revenue = balance * RevenuePercentage;
-        var availableBalance = balance - revenue;
+		foreach (var length in chances)
+		{
+			partsChances.Add([start, start + length - 1]);
+			start += length;
+		}
 
-        return item.Cost <= availableBalance;
-    }
+		var maxValue = partsChances[^1][1];
+		var random = Random.Next(0, maxValue + 1);
 
-    private static int Randomizer(IEnumerable<int> chances)
-    {
-        var partsChances = new List<List<int>>();
-        var start = 0;
-        var index = 0;
+		for (var i = 0; i < partsChances.Count; i++)
+		{
+			var part = partsChances[i];
 
-        foreach (var length in chances)
-        {
-            partsChances.Add([start, start + length - 1]);
-            start += length;
-        }
+			if (part[0] <= random && part[1] >= random) index = i;
+		}
 
-        var maxValue = partsChances[^1][1];
-        var random = Random.Next(0, maxValue + 1);
-
-        for (var i = 0; i < partsChances.Count; i++)
-        {
-            var part = partsChances[i];
-
-            if (part[0] <= random && part[1] >= random) index = i;
-        }
-
-        return index;
-    }
+		return index;
+	}
 }

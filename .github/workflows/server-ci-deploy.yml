@@ -1,0 +1,155 @@
+name: Build docker image and deploy server ci
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+jobs:
+  server-ci-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+        
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GitHub Registry
+        uses: docker/login-action@v3 
+        with:
+          registry: ghcr.io
+          username: Ferbray
+          password: ${{ secrets.REGISTRY_TOKEN }}
+          
+      - name: Build&Deploy auth-api
+        uses: docker/build-push-action@v5
+        with:
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/auth-api:${{ github.event.release.tag_name }}
+            ghcr.io/${{ github.repository_owner }}/auth-api:latest
+          build-args: |
+            build_mode=Release
+            
+      - name: Build&Deploy email-api
+        uses: docker/build-push-action@v5
+        with:
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/email-api:${{ github.event.release.tag_name }}
+            ghcr.io/${{ github.repository_owner }}/email-api:latest
+          build-args: |
+            build_mode=Release
+
+      - name: Build&Deploy game-api
+        uses: docker/build-push-action@v5
+        with:
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/game-api:${{ github.event.release.tag_name }}
+            ghcr.io/${{ github.repository_owner }}/game-api:latest
+          build-args: |
+            build_mode=Release
+
+      - name: Build&Deploy identity-api
+        uses: docker/build-push-action@v5
+        with:
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/identity-api:${{ github.event.release.tag_name }}
+            ghcr.io/${{ github.repository_owner }}/identity-api:latest
+          build-args: |
+            build_mode=Release
+
+      - name: Build&Deploy payment-api
+        uses: docker/build-push-action@v5
+        with:
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/payment-api:${{ github.event.release.tag_name }}
+            ghcr.io/${{ github.repository_owner }}/payment-api:latest
+          build-args: |
+            build_mode=Release
+
+      - name: Build&Deploy promocode-api
+        uses: docker/build-push-action@v5
+        with:
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/promocode-api:${{ github.event.release.tag_name }}
+            ghcr.io/${{ github.repository_owner }}/promocode-api:latest
+          build-args: |
+            build_mode=Release
+
+      - name: Build&Deploy resources-api
+        uses: docker/build-push-action@v5
+        with:
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/resources-api:${{ github.event.release.tag_name }}
+            ghcr.io/${{ github.repository_owner }}/resources-api:latest
+          build-args: |
+            build_mode=Release
+
+      - name: Build&Deploy review-api
+        uses: docker/build-push-action@v5
+        with:
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/review-api:${{ github.event.release.tag_name }}
+            ghcr.io/${{ github.repository_owner }}/review-api:latest
+          build-args: |
+            build_mode=Release
+
+      - name: Build&Deploy statistics-api
+        uses: docker/build-push-action@v5
+        with:
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/statistics-api:${{ github.event.release.tag_name }}
+            ghcr.io/${{ github.repository_owner }}/statistics-api:latest
+          build-args: |
+            build_mode=Release
+
+      - name: Build&Deploy support-api
+        uses: docker/build-push-action@v5
+        with:
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/support-api:${{ github.event.release.tag_name }}
+            ghcr.io/${{ github.repository_owner }}/support-api:latest
+          build-args: |
+            build_mode=Release
+
+      - name: Build&Deploy withdraw-api
+        uses: docker/build-push-action@v5
+        with:
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/withdraw-api:${{ github.event.release.tag_name }}
+            ghcr.io/${{ github.repository_owner }}/withdraw-api:latest
+          build-args: |
+            build_mode=Release
+
+      - name: Build&Deploy gateway-api
+        uses: docker/build-push-action@v5
+        with:
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/gateway-api:${{ github.event.release.tag_name }}
+            ghcr.io/${{ github.repository_owner }}/gateway-api:latest
+          build-args: |
+            build_mode=Release
+
+      - name: Run deploy on server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          password: ${{ secrets.SERVER_KEY }}
+          port: ${{ secrets.SERVER_PORT }}
+          script: |
+            sudo docker-compose -f compose-ci.yml -f compose.prod.yml -p prod pull
+            sudo docker-compose -f compose-ci.yml -f compose.prod.yml -p prod up -d

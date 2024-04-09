@@ -11,7 +11,7 @@ services:
 
   nosqldata:
     env_file:
-      - .enviroments/mongo.prod.env
+      - .environments/mongo.prod.env
     volumes:
       - ~/data/mongo:/data/db
     ports:
@@ -19,7 +19,7 @@ services:
 
   rabbitmq:
     env_file:
-      - .enviroments/rabbitmq.prod.env
+      - .environments/rabbitmq.prod.env
     volumes:
       - ~/data/rabbitmq:/var/lib/rabbitmq/mnesia/
     ports:
@@ -28,7 +28,7 @@ services:
 
   psql:
     env_file:
-      - .enviroments/psql.prod.env
+      - .environments/psql.prod.env
     volumes:
       - ~/data/psql:/var/lib/postgresql/data
     ports:
@@ -38,7 +38,7 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Production
     env_file:
-      - .enviroments/auth-api.env
+      - .environments/auth-api.env
     volumes:
       - ~/fileserver:/static/images
       - ~/logs:/root/logs
@@ -49,7 +49,7 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Production
     env_file:
-      - .enviroments/email-api.env
+      - .environments/email-api.env
     volumes:
       - ~/fileserver:/static/images
       - ~/logs:/root/logs
@@ -60,7 +60,7 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Production
     env_file:
-      - .enviroments/game-api.env
+      - .environments/game-api.env
     volumes:
       - ~/fileserver:/static/images
       - ~/logs:/root/logs
@@ -71,7 +71,7 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Production
     env_file:
-      - .enviroments/identity-api.env
+      - .environments/identity-api.env
     volumes:
       - ~/fileserver:/static/images
       - ~/logs:/root/logs
@@ -82,7 +82,7 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Production
     env_file:
-      - .enviroments/payment-api.env
+      - .environments/payment-api.env
     volumes:
       - ~/fileserver:/static/images
       - ~/logs:/root/logs
@@ -93,7 +93,7 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Production
     env_file:
-      - .enviroments/promocode-api.env
+      - .environments/promocode-api.env
     volumes:
       - ~/fileserver:/static/images
       - ~/logs:/root/logs
@@ -104,7 +104,7 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Production
     env_file:
-      - .enviroments/resources-api.env
+      - .environments/resources-api.env
     volumes:
       - ~/fileserver:/static/images
       - ~/logs:/root/logs
@@ -115,7 +115,7 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Production
     env_file:
-      - .enviroments/review-api.env
+      - .environments/review-api.env
     volumes:
       - ~/fileserver:/static/images
       - ~/logs:/root/logs
@@ -126,7 +126,7 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Production
     env_file:
-      - .enviroments/statistics-api.env
+      - .environments/statistics-api.env
     volumes:
       - ~/fileserver:/static/images
       - ~/logs:/root/logs
@@ -137,7 +137,7 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Production
     env_file:
-      - .enviroments/support-api.env
+      - .environments/support-api.env
     volumes:
       - ~/fileserver:/static/images
       - ~/logs:/root/logs
@@ -148,7 +148,7 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Production
     env_file:
-      - .enviroments/withdraw-api.env
+      - .environments/withdraw-api.env
     volumes:
       - ~/fileserver:/static/images
       - ~/logs:/root/logs
@@ -159,13 +159,14 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Production
     env_file:
-      - .enviroments/gateway-api.prod.env
+      - .environments/gateway-api.prod.env
     volumes:
       - ~/.ssl/:/etc/.ssl/private/
       - ~/logs:/root/logs
     ports:
       - 443:443
       - 80:8080
+      
 volumes:
   database:
   rabbitmq:
