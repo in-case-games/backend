@@ -1,28 +1,29 @@
-name-template: v$NEXT_PATCH_VERSION
-tag-template: v$NEXT_PATCH_VERSION
+name-template: 'v$NEXT_PATCH_VERSION'
+tag-template: 'v$NEXT_PATCH_VERSION'
 categories:
-  - title: 🚀 New Features
+  - title: '🚀 New Features'
     labels:
-      - type:feature
+      - 'feature'
 
-  - title: 🐛 Bugs Fixes
+  - title: '🐛 Bugs Fixes'
     labels:
-      - type:HOT FIX
-      - type:FIX
+      - 'HOT FIX'
+      - 'FIX'
 
-  - title: 🎯 We need to improve
+  - title: '🎯 We need to improve'
     labels:
-      - type:enhancement
+      - 'enhancement'
 
-  - title: 📄 Documentation
+  - title: '📄 Documentation'
     labels:
-      - type:documentation
+      - 'documentation'
 
-  - title: 🆘 Help is needed
+  - title: '🆘 Help is needed'
     labels:
-      - type:HELP
+      - 'HELP'
 
-change-template: - $TITLE @$AUTHOR (#$NUMBER)
+change-template: '- $TITLE @$AUTHOR (#$NUMBER)'
 template: |
   ## Changes
+  
   $CHANGES
