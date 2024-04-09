@@ -28,8 +28,8 @@ jobs:
         with:
           push: true
           tags: |
-            ghcr.io/${{ github.repository_owner }}/auth-api:${{ github.event.release.tag_name }}
-            ghcr.io/${{ github.repository_owner }}/auth-api:latest
+            ghcr.io/Ferbray/auth-api:${{ github.event.release.tag_name }}
+            ghcr.io/Ferbray/auth-api:latest
           build-args: |
             build_mode=Release
             
@@ -38,8 +38,8 @@ jobs:
         with:
           push: true
           tags: |
-            ghcr.io/${{ github.repository_owner }}/email-api:${{ github.event.release.tag_name }}
-            ghcr.io/${{ github.repository_owner }}/email-api:latest
+            ghcr.io/Ferbray/email-api:${{ github.event.release.tag_name }}
+            ghcr.io/Ferbray/email-api:latest
           build-args: |
             build_mode=Release
 
@@ -48,8 +48,8 @@ jobs:
         with:
           push: true
           tags: |
-            ghcr.io/${{ github.repository_owner }}/game-api:${{ github.event.release.tag_name }}
-            ghcr.io/${{ github.repository_owner }}/game-api:latest
+            ghcr.io/Ferbray/game-api:${{ github.event.release.tag_name }}
+            ghcr.io/Ferbray/game-api:latest
           build-args: |
             build_mode=Release
 
@@ -58,8 +58,8 @@ jobs:
         with:
           push: true
           tags: |
-            ghcr.io/${{ github.repository_owner }}/identity-api:${{ github.event.release.tag_name }}
-            ghcr.io/${{ github.repository_owner }}/identity-api:latest
+            ghcr.io/Ferbray/identity-api:${{ github.event.release.tag_name }}
+            ghcr.io/Ferbray/identity-api:latest
           build-args: |
             build_mode=Release
 
@@ -68,8 +68,8 @@ jobs:
         with:
           push: true
           tags: |
-            ghcr.io/${{ github.repository_owner }}/payment-api:${{ github.event.release.tag_name }}
-            ghcr.io/${{ github.repository_owner }}/payment-api:latest
+            ghcr.io/Ferbray/payment-api:${{ github.event.release.tag_name }}
+            ghcr.io/Ferbray/payment-api:latest
           build-args: |
             build_mode=Release
 
@@ -78,8 +78,8 @@ jobs:
         with:
           push: true
           tags: |
-            ghcr.io/${{ github.repository_owner }}/promocode-api:${{ github.event.release.tag_name }}
-            ghcr.io/${{ github.repository_owner }}/promocode-api:latest
+            ghcr.io/Ferbray/promocode-api:${{ github.event.release.tag_name }}
+            ghcr.io/Ferbray/promocode-api:latest
           build-args: |
             build_mode=Release
 
@@ -88,8 +88,8 @@ jobs:
         with:
           push: true
           tags: |
-            ghcr.io/${{ github.repository_owner }}/resources-api:${{ github.event.release.tag_name }}
-            ghcr.io/${{ github.repository_owner }}/resources-api:latest
+            ghcr.io/Ferbray/resources-api:${{ github.event.release.tag_name }}
+            ghcr.io/Ferbray/resources-api:latest
           build-args: |
             build_mode=Release
 
@@ -98,8 +98,8 @@ jobs:
         with:
           push: true
           tags: |
-            ghcr.io/${{ github.repository_owner }}/review-api:${{ github.event.release.tag_name }}
-            ghcr.io/${{ github.repository_owner }}/review-api:latest
+            ghcr.io/Ferbray/review-api:${{ github.event.release.tag_name }}
+            ghcr.io/Ferbray/review-api:latest
           build-args: |
             build_mode=Release
 
@@ -108,8 +108,8 @@ jobs:
         with:
           push: true
           tags: |
-            ghcr.io/${{ github.repository_owner }}/statistics-api:${{ github.event.release.tag_name }}
-            ghcr.io/${{ github.repository_owner }}/statistics-api:latest
+            ghcr.io/Ferbray/statistics-api:${{ github.event.release.tag_name }}
+            ghcr.io/Ferbray/statistics-api:latest
           build-args: |
             build_mode=Release
 
@@ -118,8 +118,8 @@ jobs:
         with:
           push: true
           tags: |
-            ghcr.io/${{ github.repository_owner }}/support-api:${{ github.event.release.tag_name }}
-            ghcr.io/${{ github.repository_owner }}/support-api:latest
+            ghcr.io/Ferbray/support-api:${{ github.event.release.tag_name }}
+            ghcr.io/Ferbray/support-api:latest
           build-args: |
             build_mode=Release
 
@@ -128,8 +128,8 @@ jobs:
         with:
           push: true
           tags: |
-            ghcr.io/${{ github.repository_owner }}/withdraw-api:${{ github.event.release.tag_name }}
-            ghcr.io/${{ github.repository_owner }}/withdraw-api:latest
+            ghcr.io/Ferbray/withdraw-api:${{ github.event.release.tag_name }}
+            ghcr.io/Ferbray/withdraw-api:latest
           build-args: |
             build_mode=Release
 
@@ -138,8 +138,8 @@ jobs:
         with:
           push: true
           tags: |
-            ghcr.io/${{ github.repository_owner }}/gateway-api:${{ github.event.release.tag_name }}
-            ghcr.io/${{ github.repository_owner }}/gateway-api:latest
+            ghcr.io/Ferbray/gateway-api:${{ github.event.release.tag_name }}
+            ghcr.io/Ferbray/gateway-api:latest
           build-args: |
             build_mode=Release
 
