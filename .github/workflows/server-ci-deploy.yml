@@ -151,5 +151,5 @@ jobs:
           password: ${{ secrets.SERVER_KEY }}
           port: ${{ secrets.SERVER_PORT }}
           script: |
-            sudo docker-compose -f docker-compose.prod-ci.yml -p prod pull
-            sudo docker-compose -f docker-compose.prod-ci.yml -p prod up -d
+            sudo docker-compose -f compose-ci.yml -f compose.prod.yml -p prod pull
+            sudo docker-compose -f compose-ci.yml -f compose.prod.yml -p prod up -d
