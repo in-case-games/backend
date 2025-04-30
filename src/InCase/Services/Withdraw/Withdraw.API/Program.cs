@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using NLog.Extensions.Logging;
 using System.Text;
+using Withdraw.API.Initializers;
 using Withdraw.API.Middlewares;
 using Withdraw.BLL.Interfaces;
 using Withdraw.BLL.MassTransit;
@@ -73,7 +74,6 @@ builder.Services.AddSwaggerGen(options =>
         }
     });
 });
-Console.WriteLine(builder.Configuration);
 
 builder.Services.AddLogging(b => 
     b.AddDebug()
@@ -133,11 +133,8 @@ builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
-using (var scope = app.Services.CreateScope())
-{
-    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    context.Database.Migrate();
-}
+var initializer = new Initializer(app.Services);
+initializer.InitializeDb();
 
 if (app.Environment.IsDevelopment())
 {

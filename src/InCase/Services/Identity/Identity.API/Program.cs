@@ -11,6 +11,7 @@ using MassTransit;
 using Identity.BLL.MassTransit.Consumers;
 using Identity.BLL.MassTransit;
 using NLog.Extensions.Logging;
+using Identity.API.Initializers;
 
 var builder = WebApplication.CreateBuilder(args);
 var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development";
@@ -109,11 +110,8 @@ builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
-using (var scope = app.Services.CreateScope())
-{
-    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    context.Database.Migrate();
-}
+var initializer = new Initializer(app.Services);
+initializer.InitializeDb();
 
 if (app.Environment.IsDevelopment())
 {

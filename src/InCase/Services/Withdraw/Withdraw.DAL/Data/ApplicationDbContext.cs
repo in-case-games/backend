@@ -18,20 +18,5 @@ public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
         base.OnModelCreating(modelBuilder);
 
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
-
-        foreach (var gp in _gamePlatform)
-        {
-            Game game = new() { Name = gp.Key };
-            GameMarket market = new() { Name = gp.Value, GameId = game.Id };
-
-            modelBuilder.Entity<Game>().HasData(game);
-            modelBuilder.Entity<GameMarket>().HasData(market);
-        }
     }
-
-    private readonly Dictionary<string, string> _gamePlatform = new()
-    {
-        ["csgo"] = "tm",
-        ["dota2"] = "tm"
-    };
 }

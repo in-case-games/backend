@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using NLog.Extensions.Logging;
+using Promocode.API.Initializers;
 using Promocode.API.Middlewares;
 using Promocode.BLL.Interfaces;
 using Promocode.BLL.MassTransit;
@@ -113,11 +114,8 @@ builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
-using (var scope = app.Services.CreateScope())
-{
-    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    context.Database.Migrate();
-}
+var initializer = new Initializer(app.Services);
+initializer.InitializeDb();
 
 if (app.Environment.IsDevelopment())
 {

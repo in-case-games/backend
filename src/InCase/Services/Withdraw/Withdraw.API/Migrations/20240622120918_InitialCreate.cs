@@ -159,34 +159,16 @@ namespace Withdraw.API.Migrations
                 });
 
             migrationBuilder.InsertData(
-                table: "Game",
-                columns: new[] { "id", "name" },
-                values: new object[,]
-                {
-                    { new Guid("5c10082a-dd45-4741-8978-38ea2a2ee3c1"), "csgo" },
-                    { new Guid("bfbab25a-1472-42b0-8cfa-53c424925915"), "dota2" }
-                });
-
-            migrationBuilder.InsertData(
                 table: "WithdrawStatus",
                 columns: new[] { "id", "name" },
                 values: new object[,]
                 {
-                    { new Guid("23625508-d1a8-4c3f-abb8-d182a83e9832"), "blocked" },
-                    { new Guid("39632003-ced8-4cdb-916f-71868341b292"), "transfer" },
-                    { new Guid("72b0df2e-0811-4be3-a11f-68c9d2e3fc23"), "given" },
-                    { new Guid("abf8e6e2-929d-46f5-8602-837ec5e95990"), "recorded" },
-                    { new Guid("ac048979-c783-4a7e-bacd-05b3d3015989"), "cancel" },
-                    { new Guid("e53f8b41-3ea8-4e4a-943a-6bd1e037f85f"), "purchase" }
-                });
-
-            migrationBuilder.InsertData(
-                table: "GameMarket",
-                columns: new[] { "id", "game_id", "name" },
-                values: new object[,]
-                {
-                    { new Guid("9e9740b0-a3ad-4f4f-81cf-59521b1195e6"), new Guid("5c10082a-dd45-4741-8978-38ea2a2ee3c1"), "tm" },
-                    { new Guid("f5cd2eb4-b980-459f-b1f1-3d24b677bb55"), new Guid("bfbab25a-1472-42b0-8cfa-53c424925915"), "tm" }
+                    { new Guid("2a78ab78-63df-4510-88ec-e82a6218732e"), "cancel" },
+                    { new Guid("43a35ab6-5e1e-4acd-bb44-72a9765e83ae"), "purchase" },
+                    { new Guid("b8a456cc-28f8-4bf3-9378-d1fe4d4acae6"), "recorded" },
+                    { new Guid("ba8842a1-3f54-43ae-b5a4-2528ceeb0e05"), "blocked" },
+                    { new Guid("bbd6cd28-e658-428d-8991-77227fccaf03"), "transfer" },
+                    { new Guid("ce39d823-0fc6-4da2-9b92-135ea316953e"), "given" }
                 });
 
             migrationBuilder.CreateIndex(

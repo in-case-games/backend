@@ -3,8 +3,6 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
-
 namespace Resources.API.Migrations
 {
     /// <inheritdoc />
@@ -215,55 +213,6 @@ namespace Resources.API.Migrations
                         principalTable: "LootBox",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.InsertData(
-                table: "Game",
-                columns: new[] { "id", "name" },
-                values: new object[,]
-                {
-                    { new Guid("0656dcbf-ca6e-4bd3-a3d5-03694a025688"), "dota2" },
-                    { new Guid("abbfb420-dae7-44d7-bd47-5f5bcd0deefd"), "csgo" }
-                });
-
-            migrationBuilder.InsertData(
-                table: "GameItemQuality",
-                columns: new[] { "id", "name" },
-                values: new object[,]
-                {
-                    { new Guid("30b2f1b7-b18c-4766-a2af-b23f87353d3c"), "battle scarred" },
-                    { new Guid("70a1b37d-5a6a-467d-ac3f-3eca74946a45"), "factory new" },
-                    { new Guid("7f585ff4-47c6-40c6-912b-68a22d36df9e"), "minimal wear" },
-                    { new Guid("88e5b272-838d-4670-a1d3-90852573178e"), "none" },
-                    { new Guid("c1932347-4f57-47ba-9520-200db38d7b65"), "well worn" },
-                    { new Guid("cf908158-0055-4c76-84a6-06e95788c8af"), "field tested" }
-                });
-
-            migrationBuilder.InsertData(
-                table: "GameItemRarity",
-                columns: new[] { "id", "name" },
-                values: new object[,]
-                {
-                    { new Guid("21eae503-9658-4b3d-a78a-89e22be4d892"), "blue" },
-                    { new Guid("4f80c19f-1b87-4243-9758-ed7f8187d3cf"), "white" },
-                    { new Guid("64468c4b-7a7e-4271-924c-47b2db552f26"), "red" },
-                    { new Guid("deecaa63-5cf3-47ed-a7fe-0245c62cabc2"), "pink" },
-                    { new Guid("f0a06c72-60a2-4373-83ac-a8f3950f7bfe"), "violet" },
-                    { new Guid("f306871e-934a-4c68-9eff-6c5b96522c4d"), "gold" }
-                });
-
-            migrationBuilder.InsertData(
-                table: "GameItemType",
-                columns: new[] { "id", "name" },
-                values: new object[,]
-                {
-                    { new Guid("1c5fb394-83c1-4989-9a18-f2be173f3545"), "knife" },
-                    { new Guid("20604cd5-b3c4-431c-bfba-8588b5afe54c"), "pistol" },
-                    { new Guid("560776ed-fda8-43ee-bd70-dff65bc36140"), "other" },
-                    { new Guid("70e1c841-89e9-48f6-a228-84eee9fd235e"), "rifle" },
-                    { new Guid("811b1698-d806-4fa1-a274-394d6e45ed83"), "weapon" },
-                    { new Guid("8e43dc43-d06f-44ab-ad1b-bb959ed5248f"), "none" },
-                    { new Guid("b6a553f2-54ba-4d17-ac1b-0a44fc523e7d"), "gloves" }
                 });
 
             migrationBuilder.CreateIndex(

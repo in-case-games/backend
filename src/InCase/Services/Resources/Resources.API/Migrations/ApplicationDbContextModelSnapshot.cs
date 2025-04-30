@@ -47,18 +47,6 @@ namespace Resources.API.Migrations
                         .HasDatabaseName("ix_game_name");
 
                     b.ToTable("Game", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("abbfb420-dae7-44d7-bd47-5f5bcd0deefd"),
-                            Name = "csgo"
-                        },
-                        new
-                        {
-                            Id = new Guid("0656dcbf-ca6e-4bd3-a3d5-03694a025688"),
-                            Name = "dota2"
-                        });
                 });
 
             modelBuilder.Entity("Resources.DAL.Entities.GameItem", b =>
@@ -160,38 +148,6 @@ namespace Resources.API.Migrations
                         .HasDatabaseName("ix_game_item_quality_name");
 
                     b.ToTable("GameItemQuality", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("88e5b272-838d-4670-a1d3-90852573178e"),
-                            Name = "none"
-                        },
-                        new
-                        {
-                            Id = new Guid("30b2f1b7-b18c-4766-a2af-b23f87353d3c"),
-                            Name = "battle scarred"
-                        },
-                        new
-                        {
-                            Id = new Guid("c1932347-4f57-47ba-9520-200db38d7b65"),
-                            Name = "well worn"
-                        },
-                        new
-                        {
-                            Id = new Guid("cf908158-0055-4c76-84a6-06e95788c8af"),
-                            Name = "field tested"
-                        },
-                        new
-                        {
-                            Id = new Guid("7f585ff4-47c6-40c6-912b-68a22d36df9e"),
-                            Name = "minimal wear"
-                        },
-                        new
-                        {
-                            Id = new Guid("70a1b37d-5a6a-467d-ac3f-3eca74946a45"),
-                            Name = "factory new"
-                        });
                 });
 
             modelBuilder.Entity("Resources.DAL.Entities.GameItemRarity", b =>
@@ -219,38 +175,6 @@ namespace Resources.API.Migrations
                         .HasDatabaseName("ix_game_item_rarity_name");
 
                     b.ToTable("GameItemRarity", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("4f80c19f-1b87-4243-9758-ed7f8187d3cf"),
-                            Name = "white"
-                        },
-                        new
-                        {
-                            Id = new Guid("21eae503-9658-4b3d-a78a-89e22be4d892"),
-                            Name = "blue"
-                        },
-                        new
-                        {
-                            Id = new Guid("f0a06c72-60a2-4373-83ac-a8f3950f7bfe"),
-                            Name = "violet"
-                        },
-                        new
-                        {
-                            Id = new Guid("deecaa63-5cf3-47ed-a7fe-0245c62cabc2"),
-                            Name = "pink"
-                        },
-                        new
-                        {
-                            Id = new Guid("64468c4b-7a7e-4271-924c-47b2db552f26"),
-                            Name = "red"
-                        },
-                        new
-                        {
-                            Id = new Guid("f306871e-934a-4c68-9eff-6c5b96522c4d"),
-                            Name = "gold"
-                        });
                 });
 
             modelBuilder.Entity("Resources.DAL.Entities.GameItemType", b =>
@@ -278,43 +202,6 @@ namespace Resources.API.Migrations
                         .HasDatabaseName("ix_game_item_type_name");
 
                     b.ToTable("GameItemType", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("8e43dc43-d06f-44ab-ad1b-bb959ed5248f"),
-                            Name = "none"
-                        },
-                        new
-                        {
-                            Id = new Guid("20604cd5-b3c4-431c-bfba-8588b5afe54c"),
-                            Name = "pistol"
-                        },
-                        new
-                        {
-                            Id = new Guid("811b1698-d806-4fa1-a274-394d6e45ed83"),
-                            Name = "weapon"
-                        },
-                        new
-                        {
-                            Id = new Guid("70e1c841-89e9-48f6-a228-84eee9fd235e"),
-                            Name = "rifle"
-                        },
-                        new
-                        {
-                            Id = new Guid("1c5fb394-83c1-4989-9a18-f2be173f3545"),
-                            Name = "knife"
-                        },
-                        new
-                        {
-                            Id = new Guid("b6a553f2-54ba-4d17-ac1b-0a44fc523e7d"),
-                            Name = "gloves"
-                        },
-                        new
-                        {
-                            Id = new Guid("560776ed-fda8-43ee-bd70-dff65bc36140"),
-                            Name = "other"
-                        });
                 });
 
             modelBuilder.Entity("Resources.DAL.Entities.GroupLootBox", b =>

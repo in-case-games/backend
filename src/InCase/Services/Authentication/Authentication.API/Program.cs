@@ -1,3 +1,4 @@
+using Authentication.API.Initializers;
 using Authentication.API.Middlewares;
 using Authentication.BLL.Interfaces;
 using Authentication.BLL.MassTransit;
@@ -119,11 +120,8 @@ builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
-using (var scope = app.Services.CreateScope())
-{
-    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    context.Database.Migrate();
-}
+var initializer = new Initializer(app.Services);
+initializer.InitializeDb();
 
 if (app.Environment.IsDevelopment())
 {

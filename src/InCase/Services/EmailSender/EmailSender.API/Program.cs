@@ -1,3 +1,4 @@
+using EmailSender.API.Initializers;
 using EmailSender.API.Middlewares;
 using EmailSender.BLL.Interfaces;
 using EmailSender.BLL.MassTransit.Consumers;
@@ -112,12 +113,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddAuthorization();
 
 var app = builder.Build();
-
-using (var scope = app.Services.CreateScope())
-{
-    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    context.Database.Migrate();
-}
+var initializer = new Initializer(app.Services);
+initializer.InitializeDb();
 
 if (app.Environment.IsDevelopment())
 {
